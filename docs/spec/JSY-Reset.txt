@@ -1,0 +1,28 @@
+https://forum-photovoltaique.fr/viewtopic.php?p=717586&sid=3db9427c877401e7d57c0ffbc6f50096#p717586
+
+Departement/Region : 38
+Professionnel PV : NON
+Contact : 
+Re: jsy-mk-194T module qui compte dans les 2 sens
+par Thierry3838 » 21 sept. 2023 11:32
+
+Bonjour,
+
+Voici les commandes a envoyé au jsy pour faire un reset des compteurs d'énergie (sauf erreur de ma part):
+on a 2 bobines qui comptent en + et - donc :
+- Positive energy 1 :
+commande : 0x01, 0x10, 0x00, 0x4B, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0xB6, 0x2C
+réponse : 0110004B000231DE
+-Negative energy 1 :
+commande : 0x01, 0x10, 0x00, 0x4D, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0x36, 0x06
+réponse : 0110004D0002D1DF
+- Positive energy 2 :
+commande : 0x01, 0x10, 0x00, 0x53, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0xB6, 0x86
+réponse : 011000530002B1D9
+-Negative energy 2 :
+commande : 0x01, 0x10, 0x00, 0x55, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0x36, 0xAC
+réponse : 01100055000251D8
+
+Pour le calcul du CRC vous pouvez allez sur https://crccalc.com/ et choisir CRC-16/modbus
+
+Thierry

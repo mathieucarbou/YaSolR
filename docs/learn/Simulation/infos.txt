@@ -1,0 +1,27 @@
+Avatar du membremichelg34
+Messages : 769
+Enregistré le : 29 nov. 2021 14:42
+Departement/Region : 34
+Professionnel PV : Non
+Contact : 
+Re: Router via TRIAC et "Pollution" du réseau
+par michelg34 » 01 oct. 2023 10:27
+
+Si vous voulez expérimenter par vous-même, il vaut mieux commencer par faire des simulations, c'est moins coûteux et moins dangereux...  ;)
+
+Voilà un exemple avec LTspice (simulateur SPICE gratuit dispo ici https://www.analog.com/en/design-center/design-tools-and-calculators/ltspice-simulator.html)
+
+ triac_LTspice_view_fft.zip
+(12.11 Kio) Téléchargé 2 fois
+
+
+Extraire les fichiers, ouvrir avec LTSpice le schéma (fichier .asc), lancer la simulation (Simulate->Run), activer la fenêtre de resultat (.wav) en cliquant dessus, puis faire une FFT (View->FFT, puis choisir I(L3)). Cela devrait afficher la pollution harmonique.
+
+image_2023-10-01_102316984.png
+
+
+La simulation est exécutée 3x en variant une inductance L2 mise en sortie du triac, entre rien (1uH pour le fil) et des valeurs déjà élevées.
+Après y-a plus qu'à bricoler/simuler avec des idées de génie pour tenter d'améliorer les choses...
+Bon courage.
+:sun:
+6x Trina Solar Vertex S 395W + 3x APS DS3-L, toiture 17deg sud-ouest, latitude 43.6deg nord

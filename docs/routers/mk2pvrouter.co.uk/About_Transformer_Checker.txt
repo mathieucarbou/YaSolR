@@ -1,0 +1,26 @@
+/* Transformer_Checker is based on Mk2_RF_datalog_3.ino
+ *  
+ * Every 1-phase Mk2 PV Router control board has a mains transformer with two secondary outputs.  One output provides 
+ * a low-voltage replica of the AC mains voltage; the other is rectified to provide a low-voltage DC supply for the 
+ * processor.  Although the power consumption of the Atmel 328P processor is fairly constant, it will be increase 
+ * whenever the output stage is activated.  The increased draw from the DC supply will cause the amplitude of the AC signal 
+ * from the other output to slightly decrease.
+ * 
+ * This sketch can be used to quantify the above effect. A standard output stage should be connected to the primary 
+ * output port but no AC load should be connected otherwise a consequent reduction in the local mains voltage 
+ * could adversely affect this test.
+ * 
+ * Via the Serial Monitor, this sketch will display the percentage reduction in the measured Vrms value whenever 
+ * the output stage is activated.  By adding an extra LED which operates in anti-phase with the primary output, the  
+ * reduction in Vrms can be effectively eliminated.  Both LEDs can be driven by the same output port but with their other 
+ * terminals connected to opposite power rails via series resistors of appropriate values. 
+ * 
+ * Any reduction in the measured Vrms value when the output stage is activated represents a non-linearity which will
+ * result in less than ideal performance.  By means of this sketch, an extra LED and series resistor can be used to 
+ * minimise any such effect.
+ * 
+ * July 2021: first release.
+ * 
+ *      Robin Emley
+ *      www.Mk2PVrouter.co.uk
+ */

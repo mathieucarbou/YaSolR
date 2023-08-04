@@ -1,0 +1,81 @@
+Detail for my sketch, Mk2_multiLoad_wired_7a.ino
+ *
+ * This sketch is for diverting suplus PV power using multiple hard-wired loads.  
+ * An external switch allows either load 0 or Load 1 to have the highest 
+ * priority.  Any number of loads can be supported by the logic, a dedicated 
+ * IO pin being required for each one. 
+ *
+ * This sketch is intended for use with my PCB-based hardware for the Mk2 PV Router.  
+ * The selector switch, as mentioned above, connects to the "mode" port which has been 
+ * re-assigned for priority selection. "Normal" mode can be achieved by setting the 
+ * anti-flicker offset prameter to zero at compile-time.
+ *
+ * The integral voltage sensor is fed from one of the secondary coils of the transformer. 
+ * Current is measured via Current Transformers at the CT1 and CT1 ports.  
+ * CT1 is for 'grid' current, to be measured at the grid supply point.
+ * CT2 is for the 'diverted' current, so that energy which is diverted via the primary
+ *  dump-load can be recorded and displayed locally.
+ *
+ * A persistence-based 4-digit display is supported. To free up the necessary IO pins
+ * for driving multiple loads, the pin-saving hardware needs to be in place.  
+ * These extra logic chips (ICs 3 and 4) reduce the number of IO pins 
+ * that are needed to drive the display.  The freed-up pins are available at the 
+ * J1-5 connector.  The uppermost position has been assigned to drive Load 1,
+ * the next one down is for Load 2, and the lowest one is for Load 5.  The control signal
+ * for Load 0 is available at the "trigger" connector.  
+ *
+ * With the green (rev 2.1) version of my PCB, each of the additional outputs has an 
+ * associated ground pin.  It is therefore more sensible for those outputs to be active-high
+ * rather than active-low.  With a 5V regulator rather than the normal 3.3V one, these 
+ * outputs are able to drive an SSR directly. energymonitor.org/emon/node/1757
+ *
+ * September 2014: renamed as Mk2_multiLoad_CAT5_3, with these changes:
+ * - reimplementation of cycleCount, as it could have overflowed with unpredictable results;
+ * - the functions increaseLoadIfPossible() and decreaseLoadIfPossible() have been tidied;
+ * - energyThreshold_long has been renamed as midPointOfEnergyBucket_long.
+ *
+ * December 2014: renamed as Mk2_multiLoad_CAT5_4, with these changes:
+ * - persistence check added for zero-crossing detection (polarityConfirmed);
+ * - lowestNoOfSampleSetsPerMainsCycle added, to check for any disturbances;
+ * - the logic for each of the 5 additional loads has been inverted by use of the '!' character.
+ *     these outputs are now active-high rather than active-low
+ *
+ * November 2015: renamed as Mk2_multiLoad_wired_5, with these changes:
+ * - the original twin-threshold algorithm for energy state management has been reinstated;
+ * - improved mechanism for controlling multiple loads (faster and more accurate);
+ * - the phaseCal mechanism has been reinstated;
+ * - SWEETZONE_IN_JOULES has been replaced by WORKING_RANGE_IN_JOULES.
+ *
+ * January 2015: renamed as Mk2_multiLoad_wired_5a, with this change:
+ * - minor bug-fix in allGeneralProcessing() which affects how the energy thresholds are adjusted immediately
+ *     after a change of load-state has tqaken place. 
+ *
+ * January 2015: renamed as Mk2_multiLoad_wired_6, with this change:
+ * - reinstatement of min & max limits for the energy bucket's level.  This section was lost during the 
+ *   conversion from version 4 to version 5.  The absence of this section prevents diversion from starting 
+ *   in the correct manner.  Versions 5 and 5a should therefore not be used.  Version 6 is believed to be
+ *   a correct implementation of the improved mechanism for controlling multiple loads.  
+ *
+ * January 2016: renamed as Mk2_multiLoad_wired_6a, with a minor change in the ISR to 
+ *   remove a timing uncertainty.
+ *
+ * January 2016: updated to Mk2_multiLoad_wired_6b:
+ *   The variables to store the ADC results are now declared as "volatile" to remove 
+ *   any possibility of incorrect operation due to optimisation by the compiler.
+ *
+ * February 2016: updated to Mk2_multiLoad_wired_7, with these changes:
+ * - improvements to the start-up logic.  The start of normal operation is now 
+ *    synchronised with the start of a new mains cycle.
+ * - reduce the amount of feedback in the Low Pass Filter for removing the DC content
+ *     from the Vsample stream. This resolves an anomaly which has been present since 
+ *     the start of this project.  Although the amount of feedback has previously been 
+ *     excessive, this anomaly has had minimal effect on the system's overall behaviour.
+ * - tidying of the "confirmPolarity" logic to make its behaviour more clear
+ *   
+ * February 2020: updated to Mk2_multiLoad_wired_7a with these changes:
+ * - removal of some redundant code in the logic for determining the next load state.
+ * 
+ *
+ *      Robin Emley
+ *      www.Mk2PVrouter.co.uk
+ */

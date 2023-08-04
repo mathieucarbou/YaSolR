@@ -1,0 +1,924 @@
+
+/*
+LITTLEFSimpl::exists() bug with Platformio (ESP32 arduino framework) in Visual Studio Code
+Fix by adding third argument
+File f = open(path, "r", false);
+
+*/
+
+
+
+// Includes: <Arduino.h> for Serial etc., WiFi.h for WiFi support
+#include <Arduino.h>
+#include <WiFi.h>
+
+// for Smarty
+#include <PubSubClient.h>
+#include <ArduinoJson.h>
+
+// for modbus Invrters read power
+
+#include <AsyncTCP.h>
+
+#include <ESPAsyncWebServer.h>
+#include <FS.h>
+#include <LITTLEFS.h>
+
+/*
+#define USE_LittleFS
+
+#include <FS.h>
+
+#ifdef USE_LittleFS
+#define SPIFFS LITTLEFS
+#include <LITTLEFS.h>
+#else
+#include <SPIFFS.h>
+#endif
+*/
+// PID
+#include <QuickPID.h>
+#include <analogWrite.h>
+//#include <sTune.h>
+
+// Include the header for the ModbusClient TCP style
+#include <ModbusClientTCPasync.h>
+
+#include "credentials.h"
+
+//#define BUILTIN_LED 2
+#define Alarm 27
+#define SSR_1 13
+#define SSR_2 14
+#define DAC1 25 // Identify the digital to analog converter pin
+#define DAC2 26 // Identify the digital to analog converter pin
+
+///////////////////
+
+//#include <LibPrintf.h>
+
+#include "special_settings.h"
+// switch on (1)or  of (0) serial.print = serial.print replaced by debug //
+//#define DEBUG 1 in special special_settings.h
+
+#if DEBUG == 1
+#define debug(x) Serial.print(x)
+#define debugln(x) Serial.println(x)
+#else
+#define debug(x)
+#define debugln(x)
+#endif
+
+////////////////////
+
+uint16_t DS3_Pow_L1;
+uint16_t DS3_Pow_L2;
+uint16_t DS3_Pow_L3;
+uint16_t DS3_Pow_tot;
+
+uint16_t DS3_Pow_L1_L2;
+uint16_t DS3_Pow_L1_L3;
+uint16_t DS3_Pow_L2_L3;
+
+uint16_t Basic_load_L1;
+uint16_t Basic_load_L2;
+uint16_t Basic_load_L3;
+
+uint16_t Basic_load_tot;
+
+uint16_t Voltaik_Surplus_L1;
+uint16_t Voltaik_Surplus_L2;
+uint16_t Voltaik_Surplus_L3;
+
+uint16_t Voltaik_Surplus_tot;
+
+uint32_t maxInflightRequests = 1;
+// Für Smarty
+float var_Bezug_tot = 0;
+float var_Einsp_tot = 0;
+float var_Einsp_L1 = 0;
+float var_Einsp_L2 = 0;
+float var_Einsp_L3 = 0;
+
+float val_Bezug_tot = 0;
+float val_Einsp_tot = 0;
+float val_Einsp_L1 = 0;
+float val_Einsp_L2 = 0;
+float val_Einsp_L3 = 0;
+
+int val_Surplus = 0;
+int val_inverter = 0;
+
+// map range
+
+int min_range1 = 10;
+int max_range1 = 20;
+
+int min_range2 = 10;
+int max_range2 = 20;
+
+int val_DAC_1 = 0;
+int val_DAC_2 = 0;
+// PID
+
+float Setpoint_1;
+float aggKp_1;
+float aggKi_1;
+float aggKd_1;
+float consKp_1;
+float consKi_1;
+float consKd_1;
+float Input_1;
+float Output_1;
+
+float Setpoint_2;
+float aggKp_2;
+float aggKi_2;
+float aggKd_2;
+float consKp_2;
+float consKi_2;
+float consKd_2;
+float Input_2;
+float Output_2;
+
+QuickPID myPID_1(&Input_1, &Output_1, &Setpoint_1);
+QuickPID myPID_2(&Input_2, &Output_2, &Setpoint_2);
+
+// int select_Input_1 ;
+// int select_Input_2 ;
+
+// webpage Input
+
+const char* PARAM_INPUT_1 = "input_1";
+const char* PARAM_INPUT_2 = "input_2";
+const char *PARAM_INPUT_3 = "input_3";
+const char *PARAM_INPUT_4 = "input_4";
+
+const char *PARAM_INT_1 = "inputInt_1";
+const char *PARAM_INT_2 = "inputInt_2";
+const char *PARAM_INT_3 = "inputInt_3";
+const char *PARAM_INT_4 = "inputInt_4";
+
+const char *PARAM_Setpoint_1 = "Setpoint_1";
+const char *PARAM_Kp = "Kp";
+const char *PARAM_Ki = "Ki";
+const char *PARAM_Kd = "Kd";
+
+const char *PARAM_STRING = "inputString";
+const char *PARAM_INT = "inputInt";
+const char *PARAM_FLOAT = "inputFloat";
+// Modbus on off
+int MB_on_off = 1;
+
+// MQTT settings see credentials.h
+
+// Smarty subscriptions see specialsettings.h
+
+WiFiClient ESP32_Client;
+PubSubClient MQTT_Client(ESP32_Client);
+StaticJsonDocument<64> doc;
+
+int msg = 0;
+int msg_L1 = 0;
+int msg_L2 = 0;
+int msg_L3 = 0;
+
+// LITTLEFS
+unsigned int totalBytes = LITTLEFS.totalBytes();
+unsigned int usedBytes = LITTLEFS.usedBytes();
+
+// Webserver for parameter data input
+
+AsyncWebServer server(80);
+
+void notFound(AsyncWebServerRequest *request)
+{
+  request->send(404, "text/plain", "Not found");
+}
+
+String readFile(fs::FS &fs, const char *path)
+{
+  // Serial.printf("Reading file: %s\r\n", path);
+  File file = fs.open(path, "r");
+  if (!file || file.isDirectory())
+  {
+    debugln("- empty file or failed to open file");
+    return String();
+  }
+  // debugln("- read from file:");
+  String fileContent;
+  while (file.available())
+  {
+    fileContent += String((char)file.read());
+  }
+  file.close();
+  // debugln(fileContent);
+  return fileContent;
+}
+
+void writeFile(fs::FS &fs, const char *path, const char *message)
+{
+  Serial.printf("Writing file: %s\r\n", path);
+  File file = fs.open(path, "w");
+  if (!file)
+  {
+    debugln("- failed to open file for writing");
+    return;
+  }
+  if (file.print(message))
+  {
+    debugln("- file written");
+  }
+  else
+  {
+    debugln("- write failed");
+  }
+  file.close();
+}
+
+// Replaces placeholder with stored values
+
+String processor(const String &var)
+{
+  debugln(var);
+  Serial.print("var");
+  Serial.println(var);
+  if (var == "inputString")
+  {
+    return readFile(LITTLEFS, "/inputString.txt");
+  }
+  else if (var == "inputInt")
+  {
+    return readFile(LITTLEFS, "/inputInt.txt");
+  }
+  else if (var == "inputFloat")
+  {
+    return readFile(LITTLEFS, "/inputFloat.txt");
+  }
+  else if (var == "inputInt_1")
+  {
+    return readFile(LITTLEFS, "/inputInt_1.txt");
+  }
+  else if (var == "inputInt_2")
+  {
+    return readFile(LITTLEFS, "/inputInt_2.txt");
+  }
+  else if (var == "inputInt_3")
+  {
+    return readFile(LITTLEFS, "/inputInt_3.txt");
+  }
+  else if (var == "inputInt_4")
+  {
+    return readFile(LITTLEFS, "/inputInt_4.txt");
+  }
+  else if (var == "Setpoint_1")
+  {
+    return readFile(LITTLEFS, "/Setpoint_1.txt");
+  }
+  else if (var == "Kp")
+  {
+    return readFile(LITTLEFS, "/Kp.txt");
+  }
+  else if (var == "Ki")
+  {
+    return readFile(LITTLEFS, "/Ki.txt");
+  }
+  else if (var == "Kd")
+  {
+    return readFile(LITTLEFS, "/Kd.txt");
+  }
+  return String();
+}
+
+// ModbusMessage DATA;
+
+///////////////////
+
+char ssid[] = MY_SSID; // SSID and ...
+char pass[] = MY_PASS; // password for the WiFi network used
+
+// Create a ModbusTCP client instance
+ModbusClientTCPasync MB(ip, port);
+
+// Define an onData handler function to receive the regular responses
+// Arguments are Modbus server ID, the function code requested, the message data and length of it,
+// plus a user-supplied token to identify the causing request
+void handleData(ModbusMessage response, uint32_t token)
+{
+  // Serial.printf("Response: serverID=%d, FC=%d, Token=%08X, length=%d:\n", response.getServerID(), response.getFunctionCode(), token, response.size());
+  for (auto &byte : response)
+  {
+    //  Serial.printf("%02X ", byte);
+  }
+  // debugln("");
+
+  switch (response.getServerID())
+  {
+  case 1:
+    // Statement(s)
+
+    //  debugln("*****");
+    response.get(3, DS3_Pow_L1);
+    // debug("Watt L1 : ");
+    // debugln(DS3_Pow_L1 / 10);
+    //  debugln("*****");
+    Voltaik_Surplus_L1 = (DS3_Pow_L1 / 10) - Basic_load_L1;
+    // debug("Surplus gerechnet L1 : ");
+    // debugln(Voltaik_Surplus_L1);
+
+    break;
+
+  case 2:
+    // debugln("*****");
+    response.get(3, DS3_Pow_L2);
+    // debug("Watt L2 : ");
+    // debugln(DS3_Pow_L2 / 10);
+    // debugln("*****");
+    Voltaik_Surplus_L2 = (DS3_Pow_L2 / 10) - Basic_load_L2;
+    // debug("Surplus gerechnet L2 : ");
+    // debugln(Voltaik_Surplus_L2);
+    break;
+
+  case 3:
+    // debugln("*****");
+    response.get(3, DS3_Pow_L3);
+    // debug("Watt L3 : ");
+    // debugln(DS3_Pow_L3 / 10);
+    // debugln("*****");
+    Voltaik_Surplus_L3 = (DS3_Pow_L3 / 10) - Basic_load_L3;
+    // debug("Surplus gerechnet L3 : ");
+    // debugln(Voltaik_Surplus_L3);
+  }
+
+  DS3_Pow_tot = (DS3_Pow_L1 + DS3_Pow_L2 + DS3_Pow_L3) / 10;
+
+  // debugln();
+  // debug("Watt_tot : ");
+  // debugln(DS3_Pow_tot);
+  // debugln();
+
+  DS3_Pow_L1_L2 = (DS3_Pow_L1 + DS3_Pow_L2) / 10;
+  // debugln();
+  // debug("Watt_L1_L2 : ");
+  // debugln(DS3_Pow_L1_L2);
+  // debugln();
+
+  DS3_Pow_L2_L3 = (DS3_Pow_L2 + DS3_Pow_L3) / 10;
+  // debugln();
+  // debug("Watt_L2_L3 : ");
+  // debugln(DS3_Pow_L2_L3);
+  // debugln();
+
+  DS3_Pow_L1_L3 = (DS3_Pow_L1 + DS3_Pow_L3) / 10;
+  // // debugln();
+  // debug("Watt_L1_L3 : ");
+  // debugln(DS3_Pow_L1_L3);
+  // debugln();
+}
+
+// Define an onError handler function to receive error responses
+// Arguments are the error code returned and a user-supplied token to identify the causing request
+void handleError(Error error, uint32_t token)
+{
+  // ModbusError wraps the error code and provides a readable error message for it
+  ModbusError me(error);
+  Serial.printf("Error response: %02X - %s token: %d\n", (int)me, (const char *)me, token);
+}
+
+// Setup() - initialization happens here
+
+void subscriptions()
+{
+  MQTT_Client.subscribe(Subscription_1);
+  MQTT_Client.subscribe(Subscription_2);
+  // MQTT_Client.subscribe(Subscription_3);
+  // MQTT_Client.subscribe(Subscription_4);
+  // MQTT_Client.subscribe(Subscription_5);
+}
+
+void mqtt_reconnect()
+{ // Loop until reconnected
+  while (!MQTT_Client.connected())
+  {
+    debug("Attempting MQTT connection...");
+    if (MQTT_Client.connect(MQTT_CLIENT_ID))
+    { // Attempt to connect
+      debugln("connected");
+      MQTT_Client.publish(MQTT_OUT_TOPIC, "connected");
+      // MQTT_Client.subscribe(MQTT_IN_TOPIC);         // ... and resubscribe
+
+      subscriptions();
+    }
+    else
+    {
+      debugln("failed, rc=" + String(MQTT_Client.state()) +
+              " try again in 5 seconds");
+      delay(5000); // Wait 5 seconds before retrying
+    }
+  }
+}
+
+void mqtt_callback(char *topic, byte *payload, unsigned int length)
+{
+
+  debug("Message arrived in topic: ");
+  debugln(topic);
+
+  debug("Subscribe JSON payload:");
+  for (int i = 0; i < length; i++)
+  {
+    debug((char)payload[i]);
+  }
+
+  debugln();
+  debugln("-----------------------");
+
+  deserializeJson(doc, (byte *)payload, length); // parse MQTT message
+  // deserializeJson(doc,str); //can use string instead of payload
+
+  var_Bezug_tot = doc["act_pwr_imported_p_plus_value"];
+
+  // debug("Bezug tot var : ");
+  // debugln(var_Bezug_tot)*10000;
+  if ((var_Bezug_tot) != 0)
+  {
+    val_Bezug_tot = var_Bezug_tot;
+  }
+  msg = 1; // message flag = 1 when new subscribe message received
+
+  var_Einsp_tot = doc["act_pwr_exported_p_minus_value"];
+  // debug("Einspeis tot var : ");
+  // debugln(var_Einsp_tot)*10000;
+
+  if ((var_Einsp_tot) != 0)
+  {
+    val_Einsp_tot = var_Einsp_tot;
+  }
+  msg = 2;
+  /*
+   var_Einsp_L1 = doc["smarty-JMV/act_pwr_exp_p_minus_l1"];
+   //if ((var_Einsp_L1) != 0)
+   //{
+
+     val_Einsp_L1 = var_Einsp_L1;
+   //}
+   msg_L1 = 1;
+   var_Einsp_L2 = doc["smarty-JMV/act_pwr_exp_p_minus_l2"];
+   if ((var_Einsp_L2) != 0)
+   {
+     val_Einsp_L2 = var_Einsp_L2;
+   }
+   msg_L2 = 1;
+   var_Einsp_L3 = doc["smarty-JMV/act_pwr_exp_p_minus_l3"];
+   if ((var_Einsp_L3) != 0)
+   {
+     val_Einsp_L3 = var_Einsp_L3;
+   }
+   msg_L3 = 1;
+   */
+}
+
+void printDirectory(File dir, int numTabs = 3);
+
+void printDirectory(File dir, int numTabs)
+{
+  while (true)
+  {
+
+    File entry = dir.openNextFile();
+    if (!entry)
+    {
+      // no more files
+      break;
+    }
+    for (uint8_t i = 0; i < numTabs; i++)
+    {
+      debug('\t');
+    }
+    debug(entry.name());
+    if (entry.isDirectory())
+    {
+      debugln("/");
+      printDirectory(entry, numTabs + 1);
+    }
+    else
+    {
+      // files have sizes, directories do not
+      Serial.print("\t\t");
+      Serial.println(entry.size(), DEC);
+    }
+    entry.close();
+  }
+}
+
+void setup()
+{
+  // Init Serial monitor
+  Serial.begin(115200);
+  while (!Serial)
+  {
+  }
+  debugln("__ OK __");
+
+  // Connect to WiFi
+  WiFi.begin(ssid, pass);
+  delay(200);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    debug(". ");
+    delay(1000);
+  }
+
+  // Initialize LITTLEFS
+
+  /*   if (!LITTLEFS.begin(true))
+     {
+       debugln("An Error has occurred while mounting SPIFFS");
+       return;
+     }
+
+     */
+
+  Serial.begin(115200);
+
+  delay(500);
+
+  debugln(F("Inizializing FS..."));
+  if (LITTLEFS.begin())
+  {
+    debugln(F("done."));
+  }
+  else
+  {
+    debugln(F("fail."));
+  }
+  debugln("File sistem info.");
+
+  debug("Total space:      ");
+  debug(totalBytes);
+  debugln("byte");
+
+  debug("Total space used: ");
+  debug(usedBytes);
+  debugln("byte");
+
+  Serial.print("Total space free: ");
+
+  debugln("byte");
+
+  debugln();
+
+  // Open dir folder
+  File dir = LITTLEFS.open("/");
+
+  // Cycle all the content
+  printDirectory(dir);
+
+  // init_wifi();
+  MQTT_Client.setServer(MQTT_SERVER, MQTT_PORT);
+  MQTT_Client.setCallback(mqtt_callback);
+
+  ////////////
+  // Send web page with input fields to client
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+           { request->send(LITTLEFS, "/index.html", "text/html", false); });
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(LITTLEFS, "/index.html", "text/html", processor); });
+
+  // Send a GET request to <ESP_IP>/get?inputString=<inputMessage>
+  server.on("/get", HTTP_GET, [](AsyncWebServerRequest *request)
+            {
+    String inputMessage;
+    // GET inputString value on <ESP_IP>/get?inputString=<inputMessage>
+    if (request->hasParam(PARAM_STRING)) {
+      inputMessage = request->getParam(PARAM_STRING)->value();
+      writeFile(LITTLEFS, "/inputString.txt", inputMessage.c_str());
+    }
+    // GET inputInt value on <ESP_IP>/get?inputInt=<inputMessage>
+    else if (request->hasParam(PARAM_INT)) {
+      inputMessage = request->getParam(PARAM_INT)->value();
+      writeFile(LITTLEFS, "/inputInt.txt", inputMessage.c_str());
+    }
+    // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
+    else if (request->hasParam(PARAM_FLOAT)) {
+      inputMessage = request->getParam(PARAM_FLOAT)->value();
+      writeFile(LITTLEFS, "/inputFloat.txt", inputMessage.c_str());
+    }
+    // GET inputInt value on <ESP_IP>/get?inputInt_1=<inputMessage>
+    else if (request->hasParam(PARAM_INT_1)) {
+      inputMessage = request->getParam(PARAM_INT_1)->value();
+      writeFile(LITTLEFS, "/inputInt_1.txt", inputMessage.c_str());
+    }
+    // GET inputInt value on <ESP_IP>/get?inputInt_2=<inputMessage>
+    else if (request->hasParam(PARAM_INT_2)) {
+      inputMessage = request->getParam(PARAM_INT_2)->value();
+      writeFile(LITTLEFS, "/inputInt_2.txt", inputMessage.c_str());
+    }
+    // GET inputInt value on <ESP_IP>/get?inputInt_3=<inputMessage>
+    else if (request->hasParam(PARAM_INT_3)) {
+      inputMessage = request->getParam(PARAM_INT_3)->value();
+      writeFile(LITTLEFS, "/inputInt_3.txt", inputMessage.c_str());
+    }
+    // GET inputInt value on <ESP_IP>/get?inputInt_4=<inputMessage>
+    else if (request->hasParam(PARAM_INT_4)) {
+      inputMessage = request->getParam(PARAM_INT_4)->value();
+      writeFile(LITTLEFS, "/inputInt_4.txt", inputMessage.c_str());
+    }
+    // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
+    else if (request->hasParam(PARAM_Setpoint_1)) {
+      inputMessage = request->getParam(PARAM_Setpoint_1)->value();
+      writeFile(LITTLEFS, "/Setpoint_1.txt", inputMessage.c_str());
+    }
+    // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
+    else if (request->hasParam(PARAM_Kp)) {
+      inputMessage = request->getParam(PARAM_Kp)->value();
+      writeFile(LITTLEFS, "/Kp.txt", inputMessage.c_str());
+    }
+    
+    // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
+    else if (request->hasParam(PARAM_Ki)) {
+      inputMessage = request->getParam(PARAM_Ki)->value();
+      writeFile(LITTLEFS, "/Ki.txt", inputMessage.c_str());
+    }
+   // GET inputFloat value on <ESP_IP>/get?inputFloat=<inputMessage>
+    else if (request->hasParam(PARAM_Kd)) {
+      inputMessage = request->getParam(PARAM_Kd)->value();
+     writeFile(LITTLEFS, "/Kd.txt", inputMessage.c_str());
+    }
+
+     else {
+      inputMessage = "No message sent";
+    }
+    debugln(inputMessage);
+    request->send(200, "text/text", inputMessage); });
+  server.onNotFound(notFound);
+  server.begin();
+
+  ///////////////
+
+  IPAddress wIP = WiFi.localIP();
+  Serial.printf("WIFi IP address: %u.%u.%u.%u\n", wIP[0], wIP[1], wIP[2], wIP[3]);
+
+  // Set up ModbusTCP client.
+  // - provide onData handler function
+  MB.onDataHandler(&handleData);
+  // - provide onError handler function
+  MB.onErrorHandler(&handleError);
+  // Set message timeout to 2000ms and interval between requests to the same host to 200ms
+  MB.setTimeout(2000);
+  // Start ModbusTCP background task
+  MB.setIdleTimeout(10000);
+  MB.setMaxInflightRequests(maxInflightRequests);
+}
+
+// loop() - nothing done here today!
+void loop()
+{
+  static unsigned long lastMillis = 0;
+  if (millis() - lastMillis > 5000)
+  {
+    lastMillis = millis();
+
+    // Create request for
+    // (Fill in your data here!)
+    // - serverID = 1
+    // - function code = 0x03 (read holding register)
+    // - start address to read = word 40084
+    // - number of words to read = 1
+    // - token to match the response with the request. We take the current millis() value for it.
+    //
+    // If something is missing or wrong with the call parameters, we will immediately get an error code
+    // and the request will not be issued
+    Serial.printf("sending request with token %d\n", (uint32_t)lastMillis);
+    Error error;
+    error = MB.addRequest((uint32_t)lastMillis, 1, READ_HOLD_REGISTER, 40084, 1);
+    error = MB.addRequest((uint32_t)lastMillis + 1, 2, READ_HOLD_REGISTER, 40084, 1);
+    error = MB.addRequest((uint32_t)lastMillis + 2, 3, READ_HOLD_REGISTER, 40084, 1);
+    if (error != SUCCESS)
+    {
+      ModbusError e(error);
+      Serial.printf("Error creating request: %02X - %s\n", (int)e, (const char *)e);
+    }
+
+    // Else the request is processed in the background task and the onData/onError handler functions will get the result.
+    //
+    // The output on the Serial Monitor will be (depending on your WiFi and Modbus the data will be different):
+    //     __ OK __
+    //     . WIFi IP address: 192.168.178.74
+    //     Response: serverID=20, FC=3, Token=0000056C, length=11:
+    //     14 03 04 01 F6 FF FF FF 00 C0 A8
+  }
+  if (!MQTT_Client.connected())
+  {
+    mqtt_reconnect();
+  }
+
+  MQTT_Client.loop();
+
+  if (msg == 2)
+  { // check if new callback message
+
+    debug("Msg : ");
+    debugln(msg);
+
+    val_Surplus = (val_Einsp_tot - val_Bezug_tot) * 1000;
+    msg = 0; // reset message flag
+
+    debug("Bezug tot  : ");
+    debugln(val_Bezug_tot);
+
+    debug("Einspeis tot  : ");
+    debugln(val_Einsp_tot);
+
+    debug("Surplus  : ");
+    debugln(val_Surplus);
+
+    if (msg_L1 == 1)
+    {
+      debug("Einspeis L1  : ");
+      debugln(val_Einsp_L1);
+      debug("msg L1  : ");
+      debugln(msg_L1);
+      msg_L1 = 0;
+    }
+    if (msg_L2 == 1)
+    {
+      debug("Einspeis L2  : ");
+      debugln(val_Einsp_L2);
+      msg_L2 = 0;
+    }
+
+    if (msg_L3 == 1)
+    {
+      debug("Einspeis L3  : ");
+      debugln(val_Einsp_L3);
+      msg_L3 = 0;
+    }
+
+    debug("Msg : ");
+    debugln(msg);
+  }
+  // PID or range output.
+
+  if (DAC_1_method == 0)
+  {
+
+    // range 1
+
+    if (val_Surplus >= min_range1)
+    {
+
+      val_DAC_1 = map(val_Surplus, min_range1, max_range1, 0, 255);
+    }
+
+    if (val_Surplus < min_range1)
+    {
+      val_DAC_1 = 0;
+    }
+  }
+  else
+  {
+
+    // PID 1
+
+    float gap = abs(Setpoint_1 - Input_1); // distance away from setpoint
+    if (gap < 10)
+    { // we're close to setpoint, use conservative tuning parameters
+      myPID_1.SetTunings(consKp_1, consKi_1, consKd_1);
+    }
+    else
+    {
+      // we're far from setpoint, use aggressive tuning parameters
+      myPID_1.SetTunings(aggKp_1, aggKi_1, aggKd_1);
+    }
+    myPID_1.Compute();
+    val_DAC_1 = Output_1;
+  }
+
+  if (DAC_2_method == 0)
+  {
+    // range 2
+
+    if (val_inverter >= min_range2)
+    {
+
+      val_DAC_2 = map(val_Surplus, min_range2, max_range2, 0, 255);
+    }
+    if (val_Surplus < min_range2)
+    {
+      val_DAC_2 = 0;
+    }
+  }
+  else
+  {
+
+    // PID 2
+
+    float gap = abs(Setpoint_2 - Input_2); // distance away from setpoint
+    if (gap < 10)
+    { // we're close to setpoint, use conservative tuning parameters
+      myPID_2.SetTunings(consKp_2, consKi_2, consKd_2);
+    }
+    else
+    {
+      // we're far from setpoint, use aggressive tuning parameters
+      myPID_1.SetTunings(aggKp_1, aggKi_1, aggKd_1);
+    }
+    myPID_1.Compute();
+    val_DAC_2 = Output_2;
+  }
+
+  // debug("DAC_1 Wert: ");
+  // debugln(val_DAC_1);
+
+  int yourInputInt1 = readFile(LITTLEFS, "/inputInt_1.txt").toInt();
+  // debug("*** DAC 1 min: ");
+  // debugln(yourInputInt1);
+  min_range1 = yourInputInt1;
+  // debug("min range 1: ");
+  // debugln(min_range1);
+
+  int yourInputInt2 = readFile(LITTLEFS, "/inputInt_2.txt").toInt();
+  // debug("*** DAC 1 max: ");
+  // debugln(yourInputInt2);
+  max_range1 = yourInputInt2;
+  // debug("max range 1: ");
+  // debugln(max_range1);
+
+  int yourInputInt3 = readFile(LITTLEFS, "/inputInt_3.txt").toInt();
+  // debug("*** DAC 2 min: ");
+  // debugln(yourInputInt3);
+  min_range2 = yourInputInt3;
+  // debug("min range 2: ");
+  // debugln(min_range2);
+
+  int yourInputInt4 = readFile(LITTLEFS, "/inputInt_4.txt").toInt();
+  // debug("*** DAC 2 max: ");
+  // debugln(yourInputInt4);
+  max_range2 = yourInputInt4;
+  // debug("max range 2: ");
+  // debugln(max_range2);
+
+  int oldvalue_1;
+  if (select_Input_1 != oldvalue_1)
+  {
+    switch (select_Input_1)
+    {
+
+    case 0:
+      debugln("input_1 case 0 ");
+      break;
+
+    case 1:
+      debugln("input_1 case 1 ");
+      break;
+
+    case 2:
+      debugln("input_1 case 2 ");
+      break;
+
+    case 3:
+      debugln("input_1 case 3 ");
+      break;
+
+    case 4:
+      debugln("input_1 case 4 ");
+      break;
+
+    case 5:
+      debugln("input_1 case 5 ");
+      break;
+
+    case 6:
+      debugln("input_1 case 6 ");
+      break;
+
+    case 7:
+      debugln("input_1 case 7 ");
+      break;
+
+    case 8:
+      debugln("input_1 case 8 ");
+      break;
+
+    case 9:
+      debugln("input_1 case 9 ");
+      break;
+
+    case 10:
+      debugln("input_1 case 10 ");
+      break;
+
+    case 11:
+      debugln("input_1 case 11 ");
+      break;
+    }
+
+    oldvalue_1 = select_Input_1;
+    debug("oldvalue_1 :");
+    debugln(oldvalue_1);
+    delay(2000);
+  }
+} // end loop

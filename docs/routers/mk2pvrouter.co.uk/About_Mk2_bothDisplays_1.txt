@@ -1,0 +1,20 @@
+Detail for my Mk2_bothDisplays_1.ino sketch
+
+This is the original sketch for use with by PCB-based hardware. 
+It supports two current sensors.  CT1 is for monitoring the flow of 
+energy at the supply point.  CT2 is available for monitoring the flow 
+of current to the dump-load.  
+
+The display can be driven in either of two ways.  A #define statement 
+near the top of the sketch can be either included or commented out to 
+achieve this selection.  If no display is in use, it doesn't matter 
+which way the display code is configured; the driver logic will just 
+rattle away in the background, un-noticed by the rest of the world.
+
+If a complete system is purchased from me, this is the sketch that will
+be pre-loaded into its processor.  Only the powerCal value(s) will have
+been changed to match the associated hardware.
+
+The two powerCal variables provides a convenient means of calibrating 
+hardware for use with a Mk2 Router.  CT1 and CT2 each have separate 
+powerCal variables, with the suffices _grid and _diverted respectively. 

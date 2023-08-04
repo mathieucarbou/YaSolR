@@ -1,0 +1,120 @@
+Results file: RSTresults_V_and_I2.txt
+Sketch:       RawSamplesTool_2chan.ino
+Date:         21-Feb-2014
+
+This set of results was taken using a rev 1.1 PCB for my
+Mk2 PV Router project.  The voltage sensor is built into the 
+hardware. The mains supply is 240V AC, 50 Hz.
+
+A standard YHDC SCT-13 CT was attached to the CT2 port, and 
+the current taken by a 3 kW resistive load was being measured. 
+Nothing was connected to the CT1 port.
+
+The burden resistor for each of the CT ports is 150R, and there 
+is an on-board 3.3V DC power supply for the Atmega 328 processor.
+ 
+
+Robin Emley
+www.Mk2PVrouter.co.uk
+
+printout as copied from the Serial Monitor window:
+ 
+-------------------------------------
+Sketch ID:      RawSamplesTool_2chan.ino
+
+>>free RAM = 712
+millis() now = 5039
+recordingMayStartAt 10039
+4
+3
+2
+1
+0
+No of cycles recorded = 1
+cycleCount 252,  samplesRecorded 53
+|                               2      1.v                                      |
+|                       2              1.     v                                 |
+|                 2                    1.          v                            |
+|             2                        1.               v                       |
+|        2                             1.                   v                   |
+|      2                               1.                      v                |
+|       2                              1.                       v               |
+|        2                             1.                        v              |
+|          2                           1.                        v              |
+|                2                     1.                     v                 |
+|                       2              1.                v                      |
+|                              2       1.          v                            |
+|                                     21.    v                                  |
+|                                      1.    2                                  |
+|                                v     1.            2                          |
+|                           v          1.                  2                    |
+|                       v              1.                       2               |
+|                   v                  1.                           2           |
+|               v                      1.                              2        |
+|             v                        1.                              2        |
+|             v                        1.                             2         |
+|             v                        1.                           2           |
+|              v                       1.                      2                |
+|                   v                  1.               2                       |
+|                         v            1.        2                              |
+|                               v      1. 2                                     |
+|                                  2  v1.                                       |
+min_V 181,  max_V 835
+min_I1 507,  max_I1 508
+min_I2 99,  max_I2 918
+
+Raw data from stored cycle: <Vsample>, <I1sample>, <I2sample>[cr]
+53, <<< No of sample sets
+526, 507, 411
+566, 507, 357
+600, 507, 313
+633, 508, 273
+661, 507, 239
+690, 508, 206
+717, 507, 180
+743, 508, 150
+773, 507, 126
+796, 507, 108
+810, 507, 100
+821, 507, 99
+829, 507, 106
+832, 507, 113
+834, 507, 122
+835, 507, 132
+834, 507, 144
+830, 507, 178
+797, 507, 221
+765, 507, 264
+729, 508, 308
+696, 507, 352
+657, 508, 401
+616, 507, 444
+580, 507, 487
+542, 507, 538
+500, 507, 588
+465, 507, 636
+431, 508, 683
+398, 507, 724
+368, 507, 761
+339, 507, 795
+310, 507, 823
+287, 507, 851
+257, 507, 879
+230, 508, 900
+210, 507, 912
+199, 507, 918
+190, 507, 913
+185, 507, 906
+183, 507, 897
+181, 507, 888
+181, 507, 877
+181, 507, 857
+204, 507, 814
+234, 508, 772
+267, 508, 728
+303, 507, 683
+341, 508, 636
+381, 507, 590
+419, 507, 548
+455, 507, 500
+494, 507, 450

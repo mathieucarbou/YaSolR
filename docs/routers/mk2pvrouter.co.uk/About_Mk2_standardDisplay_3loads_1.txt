@@ -1,0 +1,40 @@
+/* Mk2_standardDisplay_3loads_1   
+ *
+ * This sketch is for diverting suplus PV power using multiple hard-wired loads.  It is intended 
+ * for use with my PCB-based hardware for the Mk2 PV Router. 
+ * 
+ * This sketch is only for use when the hardware is in its standard configuration with 14 wire links 
+ * rather than including ICs 3 and 4.  The control mode setting is hard-coded prior to compilation, 
+ * options being NORMAL and ANTI_FLICKER.
+ *
+ * The integral voltage sensor is fed from one of the secondary coils of the transformer. 
+ * Current is measured via Current Transformers at the CT1 and CT2 ports.  
+ * CT1 is for 'grid' current, to be measured at the grid supply point.
+ * CT2 is for the 'diverted' current, so that energy which is diverted via any of the dump-loads 
+ * can be recorded and displayed locally.
+ *
+ * Up to three loads can be supported, the port allocation section has details of where the control signals
+ * can be accessed. 
+ *
+ * (earlier history can be found in my multiLoad_wired sketches)
+ *
+ * February 2016: updated to Mk2_multiLoad_wired_7, with these changes:
+ * - improvements to the start-up logic.  The start of normal operation is now 
+ *    synchronised with the start of a new mains cycle.
+ * - reduce the amount of feedback in the Low Pass Filter for removing the DC content
+ *     from the Vsample stream. This resolves an anomaly which has been present since 
+ *     the start of this project.  Although the amount of feedback has previously been 
+ *     excessive, this anomaly has had minimal effect on the system's overall behaviour.
+ * - tidying of the "confirmPolarity" logic to make its behaviour more clear
+ *   
+ * February 2020: updated to Mk2_multiLoad_wired_7a with these changes:
+ * - removal of some redundant code in the logic for determining the next load state.
+ * 
+ * April 2020: updated to Mk2_standardDisplay_3loads_1 with these changes:
+ * - change the display configuration to standard (i.e. 14 wire links, not pin-saving hardware)
+ * - provide 3 loads at ports D4, D3 and D15 (aka A1) 
+ * - control mode is hard-coded to NORMAL, but ANTI_FLICKER mode is still available
+ *
+ *      Robin Emley
+ *      www.Mk2PVrouter.co.uk
+ */

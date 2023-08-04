@@ -1,0 +1,17 @@
+Detail for my Mk2_withRemoteLoad_1.ino sketch
+
+This is an upgraded version of the original Mk2 sketch for use with my
+PCB-based hardware.  It still supports two current sensors, CT1 and CT2.  
+CT1 is for monitoring the flow of energy at the supply point; CT2 is 
+available for monitoring the flow of current to the primary dump-load.  
+
+With this version, a secondary dump-load is supported, it being controlled 
+by the on-board RF facility.  By using the pin-saving hardware option, 
+the 4-digit display is still available for use.
+
+The primary (wired) load is still controlled from the "trigger" port.  In 
+this sketch, the "mode" port is now used for priority selection.  If the 
+associated switch is open, the local (wired) load has priority.  If the
+switch is closed, thereby shorting these pins together, the secondary 
+(RF-controlled)load has priority.
+

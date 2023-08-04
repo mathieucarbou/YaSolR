@@ -1,0 +1,14 @@
+Note re. JeeLib and the RFM69CW 
+
+If you are using the newer RFM69CW radio module, be sure to change the sketch to suit.
+A little way below the initial block of comments, find the 2 lines:
+
+#define RF69_COMPAT 0 // for the RFM12B
+// #define RF69_COMPAT 1 // for the RF69
+
+Comment out the first line and un-comment the second, so that it reads:
+
+// #define RF69_COMPAT 0 // for the RFM12B
+#define RF69_COMPAT 1 // for the RF69
+
+

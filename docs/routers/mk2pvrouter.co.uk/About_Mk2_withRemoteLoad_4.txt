@@ -1,0 +1,49 @@
+Detail for my Mk2_withRemoteLoad_4.ino sketch
+
+This is an upgraded version of the original Mk2 sketch for use with my
+PCB-based hardware.  It still supports two current sensors, CT1 and CT2.  
+CT1 is for monitoring the flow of energy at the supply point; CT2 is 
+available for monitoring the flow of current to the primary dump-load.  
+
+With this version, a secondary dump-load is supported, it being controlled 
+by the on-board RF facility.  By using the pin-saving hardware option, 
+the 4-digit display is still available for use.
+
+The primary (wired) load is still controlled from the "trigger" port.  In 
+this sketch, the "mode" port is now used for priority selection.  If the 
+associated switch is open, the local (wired) load has priority.  If the
+switch is closed, thereby shorting these pins together, the secondary 
+(RF-controlled)load has priority.
+
+The _2 release includes various changes since the _1 version:
+
+- a REQUIRED_EXPORT_IN_WATTS facility has been added.  This acts like a 
+  leak in the energy bucket, therefore reducing the amount of surplus power 
+  that can be diverted.  When a negative value is entered, this facility
+  acts like a PV Simulator, which can be very helful for test purposes.
+
+- The state of the energy bucket is displayed at the Serial Monitor every 
+  second in Joules.
+
+- The RFM12B is no longer sent to sleep between RF trnsmissions, it remains
+  awake throughout.  The library call rf12_sendStart() has been replaced by
+  rf12_sendNow().  These changes are intended to minimise any disruption
+  to the continuous sampling process when RF transmissions are sent.
+
+Changes for version _3:
+
+- The 'long' variable, cycleCount, which counted mains cycles since start-up, has
+  been removed.  This variable would have eventually overflowed which could have
+  caused unpredictable effects.  The related functionality has been re-implemented
+  using individual 'int' counters.
+
+Changes for version _4:
+
+- a persistence check for the zero-crossing detection has been added.  This 
+is to remove any false detections of zero-crossings.  This effect is seen more 
+with some types of transformer than others. 
+
+- a mechanism has been added to monitor and display the minimum number
+of sample sets that occur each mains cycle.  With a 125us timebase, and three
+ADC samples per set, the expected number of sample sets per 20ms mains cycle 
+is  20 / (3 * 0.125) = 53.33.   Any value less than 53 would indicate a loss of data.   

@@ -1,0 +1,23 @@
+Detail for my Mk2_3phase_RFdatalog_1.ino sketch
+
+This sketch is intended to run on my "Mk2 3phase" PCB.  Voltage and current are 
+repeatedly sampled for each phase in turn.  Every mains cycle, the average powers 
+for the three separate phases are combined and used to update an "energy bucket".
+This "energy bucket" represents the overall energy state of the premises. 
+
+Any surplus energy is made available to dump-loads.  This sketch supports 
+three dump-loads which can be on any phase.  The loads are activated in order 
+of priority.  An external switch can be used to select between two pre-set 
+priority sequences.
+
+Datalogging is supported.  This records the average power and Vrms voltage on 
+each phase every few seconds.  This data is always available at the Serial 
+interface.  If the RF facility is enabled, this data is also transmitted by RF. 
+RF is enabled by including the literal definition for RF_PRESENT near the top
+of the program.  If this line is commented out, RF is disabled.
+
+To minimise the rate at which the loads are cycled on and off, this sketch operates
+with a single-threshold anti-flicker algorithm.  The optimal rate of cycling is 
+determined by the supply meter so may need to be adjusted by the user.  The rate at 
+which the loads are cycled on and off can be adjusted using the parameter 
+postMidPointCrossingDelayForAF_cycles.  

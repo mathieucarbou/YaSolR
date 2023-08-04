@@ -1,0 +1,30 @@
+Detail for my remote_Mk2_receiver_1a.ino sketch
+
+This sketch is for use as the receiver part of a Mk2 PV Router system 
+that is operated via an RF link rather than via a control cable. It is 
+intended for use with my PCB-based hardware.
+ 
+One current sensor is supported at the CT2 port.  This can be used for
+monitoring the power that is diverted by the receiver unit. The 
+diverted energy total in kWh is available at the 4-digit display connector.  
+The display returns to its idle state after a period of 10 hours during 
+which the control signal has never been in the 'on' state.
+
+The CT1 port has been re-allocated for driving a pair of LEDs to show 
+the status of the RF control link. The circuit for this feature is shown
+in the header of the sketch.
+
+The output signal for controlling the load, as instructed by the 
+associated transmitter, is available at the "mode" port (D3) in active-high 
+format and at the "trigger" port (D4) in active-low format.
+
+The corresponding transmitter sketch is: Mk2_withRemoteLoad_n.ino 
+
+Changes for version _1a:
+- A minor change has been made to the function timerIsr() so as to resolve
+a timing anomaly that has previously existed.  With the new arrangement, a 
+complete set of data samples is made available by the ISR for use by the
+main code.  There is no longer any possibility of these values being 
+overwritten before they are processed.
+
+- the display timeout period has been reduced to 8 hours instead of 10.

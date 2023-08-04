@@ -1,0 +1,3 @@
+Notes re. the original circuit diagram for my 3-phase PCB @ rev 2
+
+There are no known problems with this diagram.
