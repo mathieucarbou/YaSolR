@@ -1,0 +1,673 @@
+substitutions:
+  device_name: "esp176-esp32-routeur-1r"
+  friendly_name: esp176
+  adress_ip: "192.168.0.176"
+  time_timezone: "Europe/Paris"
+
+esphome:
+  name: ${device_name}
+  platform: ESP32
+  board: esp32dev
+  project:
+    name: "rem81.esp176-esp32-routeur"
+    version: "1.2.1"
+  on_boot:
+    priority: 800
+    # Force mode auto et temperature ok au demarrage
+    then:
+      - switch.turn_on: modeauto
+      - binary_sensor.template.publish:
+          id: temperatureok
+          state: ON
+
+wifi:
+  networks:
+    - ssid: !secret wifi
+      password: !secret mdpwifi
+  reboot_timeout: 5min
+
+  manual_ip:
+    static_ip: ${adress_ip}
+    gateway: 192.168.0.254
+    subnet: 255.255.255.0
+
+# Enable logging
+logger:
+  baud_rate: 0
+  level: DEBUG
+  # level: INFO
+
+api:
+
+ota:
+
+web_server:
+  port: 80
+
+# Protocole afficheur
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+  scan: True
+  id: bus_a
+
+# Protocole du JSK
+uart:
+  id: mod_bus
+  tx_pin: 17
+  rx_pin: 16
+  baud_rate: 38400
+  stop_bits: 1
+#  debug:
+#    direction: BOTH
+#    dummy_receiver: false
+#    after:
+#      timeout: 150ms
+#    sequence:
+#      - lambda: |-
+#          UARTDebug::log_string(direction, bytes);
+
+modbus:
+  #flow_control_pin: 5
+  #send_wait_time: 200ms
+  id: modbus1
+
+modbus_controller:
+  - id: jsymk
+    ## the Modbus device addr
+    address: 0x1
+    modbus_id: modbus1
+    update_interval: 0.75s
+    command_throttle: 50ms
+
+    # setup_priority: -10
+
+globals:
+  - id: increment
+    type: float
+    restore_value: no
+    initial_value: "0"
+  - id: striac
+    type: float
+    restore_value: yes
+
+# Sonde Temperature Dallas
+dallas:
+  - pin: GPIO27 #
+    update_interval: 60s
+
+# Informations supplementaires sur le WIFI
+#text_sensor:
+#  - platform: wifi_info
+#    ip_address:
+#      name: ${friendly_name}_ESP IP Address
+#    ssid:
+#      name: ${friendly_name}_ESP Connected SSID
+#    bssid:
+#      name: ${friendly_name}_ESP Connected BSSID
+#    mac_address:
+#      name: ${friendly_name}_ESP Mac Wifi Address
+#    scan_results:
+#      name: ${friendly_name}_ESP Latest Scan Results
+
+binary_sensor:
+  #Etat de la connection
+  - platform: status
+    name: "${friendly_name}_Status"
+
+  # Temperature triac OK
+  - platform: template
+    name: "${friendly_name} Temp Ok"
+    id: temperatureok
+
+  # Validation du routeur à déclarer dans HA
+  - platform: homeassistant
+    name: "Validation Routeur"
+    entity_id: "input_boolean.inter_validation_routeur"
+    publish_initial_state: true
+    id: val_routeur
+
+# Input Number
+number:
+  # Seuil Max sortie triac
+  - platform: template
+    name: "${friendly_name} P Max"
+    id: pmax
+    optimistic: true
+    restore_value: true
+    mode: box
+    min_value: 50
+    max_value: 100
+    unit_of_measurement: "%"
+    step: 1
+
+  # Seuil MAX temperature
+  - platform: template
+    name: "${friendly_name} T Max"
+    id: tmax
+    optimistic: true
+    restore_value: true
+    mode: box
+    min_value: 0
+    max_value: 75
+    unit_of_measurement: "C°"
+    step: 0.1
+
+  # Coeff Réactivité
+  - platform: template
+    name: "${friendly_name} Coeff R"
+    id: coeff_r
+    optimistic: true
+    restore_value: true
+    mode: box
+    min_value: 0
+    max_value: 10
+    unit_of_measurement: ""
+    step: 0.1
+
+sensor:
+  # tension de l'alimentation
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: Tension
+    #name: "${friendly_name} Tension JSYMK"
+    address: 0x0048
+    unit_of_measurement: "V"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Intensité traversant le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: Itore
+    name: "${friendly_name} I_ECS JSYMK"
+    address: 0x0049
+    unit_of_measurement: "A"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Puissance traversant le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: puecs
+    name: "${friendly_name} P_ECS JSYMK"
+    address: 0x004A
+    unit_of_measurement: "W"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Energie lue dans le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: energietore
+    name: "${friendly_name} Energie ECS JSYMK"
+    address: 0x004B
+    unit_of_measurement: "kWh"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # FP lue dans le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: fptore
+    #name: "${friendly_name} FP Tore JSYMK"
+    address: 0x004C
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Energie NEG lue dans le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: energietoren
+    name: "${friendly_name} Energie ECS Neg JSYMK"
+    address: 0x004D
+    unit_of_measurement: "kWh"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+  # Sens du courant dans la pince
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: senspince
+    #name: "${friendly_name} Sens_Pince JSYMK"
+    address: 0x004E
+    register_type: holding
+    value_type: U_DWORD
+    bitmask: 0X00010000
+    filters:
+      - multiply: 1
+    register_count: 1
+    response_size: 4
+  # Sens du courant dans le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: senstor
+    #name: "${friendly_name} Sens_Tore JSYMK"
+    address: 0x004E
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 0
+    bitmask: 0X01000000
+    filters:
+      - multiply: 1
+    register_count: 1
+    response_size: 4
+
+  # Fréquence de l'alimentation
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: frequence
+    #name: "${friendly_name} Frequence JSYMK"
+    address: 0x004F
+    unit_of_measurement: "hz"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.01
+    register_count: 1
+    response_size: 4
+
+  # tension de l'alimentation
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: Tension2
+    #name: "${friendly_name} U_Reseau JSYMK"
+    address: 0x0050
+    unit_of_measurement: "V"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Intensité lue dans la pince
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: Ireseau
+    #name: "${friendly_name} I_Reseau JSYMK"
+    address: 0x0051
+    unit_of_measurement: "A"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # puissance lue dans la pince
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: pureseau
+    #name: "${friendly_name} P_Reseau JSYMK"
+    address: 0x0052
+    unit_of_measurement: "W"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+    on_value:
+      then:
+        - lambda: |-
+            if ( id(senspince).state == 1 ) {
+              id(pureseau1).publish_state( id(pureseau).state *-1);
+            } else {
+              id(pureseau1).publish_state( id(pureseau).state );
+            }
+
+  # Energie lue dans la pince
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: energiepince
+    #name: "${friendly_name} Energie Reseau JSYMK"
+    address: 0x0053
+    unit_of_measurement: "kWh"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Energie lue dans le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: fppince
+    #name: "${friendly_name} FP Pince JSYMK"
+    address: 0x0054
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Energie NEG lue dans le tore
+  - platform: modbus_controller
+    modbus_controller_id: jsymk
+    id: energienegpince
+    #name: "${friendly_name} Energie ECS Neg JSYMK"
+    address: 0x0055
+    unit_of_measurement: "kWh"
+    register_type: holding
+    value_type: U_DWORD
+    accuracy_decimals: 1
+    filters:
+      - multiply: 0.0001
+    register_count: 1
+    response_size: 4
+
+  # Informations WI_FI
+  - platform: wifi_signal # Affiche le signal WiFi strength/RSSI en dB
+    name: "${friendly_name} WiFi Signal dB"
+    id: wifi_signal_db
+    update_interval: 60s
+    entity_category: "diagnostic"
+
+  - platform: copy # Affiche le signal WiFi strength en %
+    source_id: wifi_signal_db
+    name: "${friendly_name} WiFi Signal Percent"
+    filters:
+      - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+    unit_of_measurement: "Signal %"
+    entity_category: "diagnostic"
+
+  ############### TEMPLATE  ######################"
+  # Affichage dans HA et sur l'afficheur
+  - platform: template
+    name: "${friendly_name} Pu Reseau"
+    id: pureseau1
+    unit_of_measurement: "W"
+    state_class: "measurement"
+
+  - platform: template
+    name: "${friendly_name} Increment"
+    id: afincrement
+    unit_of_measurement: ""
+    accuracy_decimals: 2
+    state_class: "measurement"
+
+  - platform: template
+    name: "${friendly_name} Sortie Triac"
+    id: afstriac
+    unit_of_measurement: "%"
+    state_class: "measurement"
+    accuracy_decimals: 2
+
+  # Sonde Temperature radiateur
+  - platform: dallas
+    address: 0xeb012112e461b128
+    name: "${friendly_name} Temp triac"
+    id: temp_triac
+    filters:
+      - filter_out: NAN
+
+switch:
+  - platform: gpio
+    name: "${friendly_name} Relais"
+    pin: GPIO5
+    id: relais
+
+  - platform: template
+    name: "${friendly_name} Mode Auto"
+    id: modeauto
+    optimistic: true
+    restore_mode: always_on
+
+  - platform: restart
+    name: "${friendly_name} Restart"
+
+output:
+  #LEDS --------------------------------------
+  - id: led_conso
+    platform: gpio
+    pin: GPIO32
+
+  - id: led_injec
+    platform: gpio
+    pin: GPIO25
+  # Pilotage du Dimmer ------------------------
+  - platform: ac_dimmer
+    id: ecs
+    gate_pin: GPIO33
+    method: leading
+    zero_cross_pin:
+      number: GPIO34
+      mode:
+        input: true
+      inverted: yes
+    min_power: 5%
+
+light:
+  - platform: monochromatic
+    name: "${friendly_name}+STriac"
+    output: ecs
+    id: gradateur
+    default_transition_length: 50ms
+
+# Affichage
+display:
+  - platform: lcd_pcf8574
+    dimensions: 20x4
+    address: 0x27
+    update_interval: 2s
+    lambda: |-
+      it.printf(0,0,"Pr=%0.0fW",id(pureseau1).state);
+      it.printf(10,0,"Pe=%0.0fW ",id(puecs).state);
+      it.printf(0,1,"Tr=%0.1f%%",id(striac));
+      it.printf(10,1,"Val:%s", id(val_routeur).state ? "OK" : "NOK");
+      it.printf(0,2,"Tp=%0.1fc", id(temp_triac).state);
+      it.printf(10,2,"Etat=%s", id(temperatureok).state ? "OK" : "NOK");
+      it.printf(0,3,"Mode=%s", id(modeauto).state ? "Auto" : "Manu");
+      it.printf(10,3,"Inc=%0.1f ",id(increment));
+
+interval:
+  - interval: 1s
+    then:
+      - script.execute: calcul_injection
+
+  - interval: 2s
+    then:
+      - script.execute: etat_production
+
+  # Script activation relais si le triac est au max pendant x sec
+  - interval: 60s
+    then:
+      - script.execute: calcul_relais_surprod
+
+# ------------------------  Scripts
+script:
+  #
+  # ------------------------ Calcul puissance injection
+  - id: calcul_injection
+    mode: single
+    then:
+      - if:
+          condition:
+            lambda: "return id(temp_triac).state < (id(tmax).state-2);"
+          # Si Temp Triac inferieur au seuil-2° alors OK
+          then:
+            - binary_sensor.template.publish:
+                id: temperatureok
+                state: ON
+        # Dévalidation du seuil de température
+      - if:
+          condition:
+            lambda: "return id(temp_triac).state >= id(tmax).state;"
+          # Si Temp Triac supérieur ou égale au seuil alors NOK
+          then:
+            - binary_sensor.template.publish:
+                id: temperatureok
+                state: OFF
+      # Validation du seuil de temperature triac
+      - lambda: |-
+          id(increment) = id(pureseau1).state*id(coeff_r).state/1000*-1;
+
+      - lambda: |-
+          id(striac) = id(striac)+id(increment);            
+                
+           if (!isnan(id(striac))) {
+             id(striac) = id(striac)+id(increment);
+           }else{
+             id(striac)=0;
+             }
+
+           if (id(striac) <= 0){
+             id(striac) = 0;
+           } else if(id(striac)>=id(pmax).state){
+             id(striac) = id(pmax).state;
+           }
+      - logger.log:
+          format: "Log S Triac %f - Increment %f"
+          args: ["id(striac)", "id(increment)"]
+          level: "info"
+
+      # Si Routeur Validé et mode auto et temperature ok alors on active le triac
+      - if:
+          condition:
+            and:
+              - binary_sensor.is_on: val_routeur
+              - switch.is_on: modeauto
+              - binary_sensor.is_on: temperatureok
+
+          then:
+            - light.turn_on:
+                id: gradateur
+                brightness: !lambda |-
+                  return id(striac)/100 ;
+            - logger.log:
+                format: "Log Auto OK STriac %f - Increment %f"
+                args: ["id(striac)", "id(increment)"]
+                level: "info"
+
+      # Si mode routeur devalidé ou temp NOK alors on désactive le triac
+      - if:
+          condition:
+            and:
+              - switch.is_on: modeauto
+              - or:
+                  - binary_sensor.is_off: val_routeur
+                  - binary_sensor.is_off: temperatureok
+
+          then:
+            - lambda: |-
+                id(striac) = 0;
+                id(increment) = 0;
+            - light.turn_off: gradateur
+            - logger.log:
+                format: "Log Auto NOk STriac %f - Increment %f"
+                args: ["id(striac)", "id(increment)"]
+                level: "info"
+
+      # Si mode routeur manu
+      - if:
+          condition:
+            and:
+              - switch.is_off: modeauto
+          then:
+            - lambda: |-
+                id(striac) = 0;
+                id(increment) = 0;
+            - logger.log:
+                format: "Log Manu STriac %f - Increment %f"
+                args: ["id(striac)", "id(increment)"]
+                level: "info"
+      # Affichage STriac et Increment
+      - lambda: |-
+          id(afstriac).publish_state( id(striac) );
+          id(afincrement).publish_state( id(increment) );
+
+      - logger.log:
+          format: "Log Fin STriac %f - Increment %f"
+          args: ["id(striac)", "id(increment)"]
+          level: "info"
+
+  # -------------------------------------------  Pilotage led
+  - id: etat_production
+    mode: single
+    then:
+      - if:
+          condition:
+            sensor.in_range:
+              id: pureseau1
+              below: 50
+              above: -50
+          then:
+            - output.turn_on: led_conso
+            - output.turn_on: led_injec
+
+      - if:
+          condition:
+            sensor.in_range:
+              id: pureseau1
+              above: 50
+          then:
+            - output.turn_off: led_injec
+            - output.turn_on: led_conso
+
+      - if:
+          condition:
+            sensor.in_range:
+              id: pureseau1
+              below: -50
+          then:
+            - output.turn_off: led_conso
+            - output.turn_on: led_injec
+
+  # Calcul du relais de surproduction
+  - id: calcul_relais_surprod
+    mode: single
+    then:
+      # Si sortie triac > pmax-5%, ce qui signifie que le triac est au max sans effet, pendant plus de 30s
+      # alors on active le relais
+      # si triac <= 0 alors on desactive le relais
+      - if:
+          condition:
+            - lambda: "return id(striac)>=id(pmax).state-5;"
+          then:
+            - delay: 30s
+            - switch.turn_on: relais
+            - logger.log: "Relais Activé"
+      - if:
+          condition:
+            - lambda: "return id(striac)<=0;"
+          then:
+            - switch.turn_off: relais
+            - logger.log: "Relais Désactivé"

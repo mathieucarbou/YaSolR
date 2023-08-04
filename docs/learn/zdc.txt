@@ -1,0 +1,4 @@
+- https://www.bristolwatch.com/ele2/zcnew.htm
+- https://www.electronics-lab.com/project/ac-voltage-zero-cross-detector/
+- https://dextrel.net/dextrel-start-page/design-ideas-2/mains-zero-crossing-detector
+- https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html

@@ -1,0 +1,24 @@
+[submodule "docs/routers/FredM67-PVRouter-1-phase"]
+	path = docs/routers/FredM67-PVRouter-1-phase
+	url = git@github.com:mathieucarbou/FredM67-PVRouter-1-phase.git
+[submodule "docs/routers/FlaredM67-PVRouter-3-phase"]
+	path = docs/routers/FredM67-PVRouter-3-phase
+	url = git@github.com:mathieucarbou/FredM67-PVRouter-3-phase.git
+[submodule "docs/routers/xlyric-pv-router-esp32"]
+	path = docs/routers/xlyric-pv-router-esp32
+	url = git@github.com:mathieucarbou/xlyric-pv-router-esp32.git
+[submodule "docs/routers/xlyric-PV-discharge-Dimmer-AC-Dimmer-KIT-Robotdyn"]
+	path = docs/routers/xlyric-PV-discharge-Dimmer-AC-Dimmer-KIT-Robotdyn
+	url = git@github.com:mathieucarbou/xlyric-PV-discharge-Dimmer-AC-Dimmer-KIT-Robotdyn.git
+[submodule "docs/routers/routeur_le_professolaire"]
+	path = docs/routers/routeur_le_professolaire
+	url = git@github.com:mathieucarbou/routeur_le_professolaire.git
+[submodule "docs/routers/Jetblack31-MaxPV"]
+	path = docs/routers/Jetblack31-MaxPV
+	url = git@github.com:mathieucarbou/Jetblack31-MaxPV.git
+[submodule "docs/routers/FredM67-PVRouter-3-phase"]
+	path = docs/routers/FredM67-PVRouter-3-phase
+	url = git@github.com:mathieucarbou/FredM67-PVRouter-3-phase.git
+[submodule "docs/routers/routeur_solaire"]
+	path = docs/routers/routeur_solaire
+	url = https://github.com/mathieucarbou/SeByDocKy-routeur_solaire

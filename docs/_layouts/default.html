@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: " en-US" }}">
+
+<head>
+  <meta charset="UTF-8">
+
+  {% seo %}
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="preload" href="https://fonts.googleapis.com/css?family=Open+Sans:400,700&display=swap" as="style"
+    type="text/css" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+  {% include head-custom.html %}
+</head>
+
+<body>
+  <a id="skip-to-content" href="#content">Skip to the content.</a>
+
+  <header class="page-header" role="banner">
+    <div id="google_translate_element"></div>
+    <h1 class="project-name">
+      <div>
+        <a href="/">
+          <img src="/assets/img/logo.png" alt="{{ site.title }}" title="{{ site.title }}"></img>
+        </a>
+      </div>
+    </h1>
+    <p class="page-description">{{ site.description }}</p>
+    <div class="project-tagline">
+      <a class="btn btn-small {% if page.title == 'Home' %}active{% endif %}" href="/">Home</a>
+      <a class="btn btn-small {% if page.title == 'Overview' %}active{% endif %}" href="/overview">Overview</a>
+      <a class="btn btn-small {% if page.title == 'Build' %}active{% endif %}" href="/build">Build</a>
+      <a class="btn btn-small {% if page.title == 'Manual' %}active{% endif %}" href="/manual">Manual</a>
+      <a class="btn btn-small {% if page.title == 'REST API' %}active{% endif %}" href="/rest">REST</a>
+      <a class="btn btn-small {% if page.title == 'MQTT API' %}active{% endif %}" href="/mqtt">MQTT</a>
+      <a class="btn btn-small {% if page.title == 'Download' %}active{% endif %}" href="/download">Download</a>
+      <a class="btn btn-small {% if page.title == 'Buy' %}active{% endif %}" href="/buy">Buy</a>
+      <a class="btn btn-small {% if page.title == 'Blog' %}active{% endif %}" href="/blog">Blog</a>
+    </div>
+  </header>
+
+  <main id="content" class="main-content" role="main">
+    {{ content }}
+
+    <footer class="site-footer">
+      <span class="site-footer-comments">
+        <script src="https://giscus.app/client.js" data-repo="mathieucarbou/YaSolR-OSS" data-repo-id="R_kgDOKubA2w"
+          data-category="Website comments" data-category-id="DIC_kwDOKubA284Cbr4P" data-mapping="pathname"
+          data-strict="1" data-reactions-enabled="0" data-emit-metadata="0" data-input-position="top" data-theme="light"
+          data-lang="en" crossorigin="anonymous" async>
+          </script>
+      </span>
+      <span class="site-footer site-footer-owner">
+        <strong>🚧: </strong>In Progress<br>
+        <strong>Last update: </strong>{{ site.time }}<br>
+        <strong>Help and Support:</strong>
+        <a href="https://www.facebook.com/groups/yasolr">Facebook Group</a> |
+        <a href="https://github.com/mathieucarbou/YaSolR-OSS/discussions">GitHub Discussions</a> |
+        <a href="https://github.com/mathieucarbou/YaSolR-OSS/issues">GitHub Issues</a> |
+        <a href="https://yasolr.carbou.me/buy">Buy</a> or <a
+          href="https://yasolr.carbou.me/buy#sponsoring">Sponsor</a><br>
+        <strong>Copyright</strong> © {{ site.time | date: '%Y' }} <a href="{{ site.github.owner_url }}">Mathieu
+          Carbou</a>, creator and maintainer of <a href="https://github.com/mathieucarbou/YaSolR-OSS">YaSolR.</a>
+      </span>
+
+      <span class="site-footer site-footer-owner">
+        <div style="text-align: center;"><strong>Disclaimer</strong></div>
+
+        <p>This website is provided for informational purposes only.
+          By accessing this site and using the information contained herein, you accept the terms set forth in this
+          disclaimer.</p>
+
+        <p><strong>Accuracy of Information</strong>: We strive to provide accurate and up-to-date information on this
+          site, but we
+          cannot guarantee the completeness or accuracy of this information.
+          The information provided is subject to change without notice.</p>
+
+        <p><strong>Use of Information</strong>: Use of the information provided on this site is at your own risk.
+          \*We decline all responsibility for the consequences arising from the use of this information.
+          It is recommended that you consult a competent professional for advice specific to your situation.</p>
+
+        <p><strong>External Links</strong>: This site may contain links to external websites which are provided for your
+          reference and
+          convenience. We have no control over the content of these external sites and we accept no responsibility for
+          their content
+          and their use.</p>
+
+        <p><strong>Limitation of Liability</strong>: To the fullest extent permitted by applicable law, we disclaim all
+          liability for
+          any direct, indirect, incidental, consequential or special damages arising out of the use of, or inability to
+          use, this website, even if we have been advised of the possibility of such damage.</p>
+
+        <p>By using this site, you agree to hold harmless the owners, administrators and authors of this site from any
+          claims arising from your use of this website.
+          <strong>If you do not agree to these terms, please do not use this site.</strong>
+        </p>
+
+      </span>
+    </footer>
+  </main>
+
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en' },
+        'google_translate_element'
+      );
+    }
+  </script>
+  <script type="text/javascript"
+    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+    </script>
+</body>
+
+</html>

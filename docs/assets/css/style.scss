@@ -1,0 +1,117 @@
+---
+---
+
+// https://github.com/pages-themes/cayman
+
+// Breakpoints
+$large-breakpoint: 64em !default;
+$medium-breakpoint: 42em !default;
+
+// Headers
+$header-heading-color: #f0f0f0 !default;
+$header-bg-color: #fce23b !default;
+$header-bg-color-secondary: #155799 !default;
+$header-menu-bg-color: #f8c149 !default;
+
+// Text
+$section-headings-color: #159957 !default;
+$body-text-color: #3d3d3e !default;
+$body-link-color: #1e6bb8 !default;
+$blockquote-text-color: #819198 !default;
+
+// Code
+$code-bg-color: #f3f6fa !default;
+$code-text-color: #567482 !default;
+
+// Borders
+$border-color: #dce6f0 !default;
+$table-border-color: #e9ebec !default;
+$hr-border-color: #eff0f1 !default;
+
+@import "{{ site.theme }}";
+
+.page-header {
+  padding: 1rem;
+  font-weight: bolder;
+  color: $header-heading-color;
+
+  .page-description {
+    font-style: italic;
+    font-size: larger;
+  }
+
+  .project-tagline {
+    font-weight: inherit;
+    margin-bottom: 0;
+    font-size: 15px;
+
+    .btn {
+      color: $header-heading-color;
+      background-color: darken($header-menu-bg-color, 20%);
+      border-color: $header-bg-color-secondary;
+    }
+  
+    .btn:hover {
+      box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    }
+  
+    .btn-small {
+      padding: 5px 10px 5px 10px;
+      color: $header-heading-color;
+      background-color: darken($header-menu-bg-color, 20%);
+      border-color: $header-bg-color-secondary;
+    }
+  
+    .btn-small + .btn-small {
+      //margin-left: 0.5rem;
+      margin-left: 0;
+    }
+  
+    .btn-small:hover {
+      box-shadow: 0 12px 16px 0 rgba(0, 0, 0, 0.24), 0 17px 50px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .btn-small.active {
+      background-color: darken($header-bg-color, 20%);
+    }
+  }
+}
+
+#google_translate_element {
+  position: absolute;
+  right: 1rem;
+}
+
+.project-name {
+  margin: 0;
+  font-size: inherit;
+
+  div {
+    margin-left: auto;
+    margin-right: auto;
+    width: fit-content;
+    background-color: #15579980;
+    padding: 10px;
+    border-radius: 15px;
+  }
+}
+
+input.task-list-item-checkbox {
+  margin-right: 7px;
+}
+
+.site-footer-owner {
+  font-weight: normal;
+}
+
+@media screen and (max-width: 730px) {
+  .project-name {
+    div {
+      margin-top: 60px;
+    }
+  }
+}
+
+.main-content {
+  font-size: medium;
+}
