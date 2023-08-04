@@ -1,0 +1,13 @@
+.DS_Store
+.lh
+/.pio
+/.vscode/*
+!/.vscode/settings.json
+/logs
+/platformio_override.ini
+/platformio_override.ini
+/platformio-device-monitor*.log
+/site/_site
+/site/.jekyll-cache
+/site/.sass-cache
+/data/*.gz
