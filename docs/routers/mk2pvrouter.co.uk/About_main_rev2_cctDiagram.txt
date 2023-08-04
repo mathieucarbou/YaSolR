@@ -1,0 +1,7 @@
+Notes re. my main_rev2_circuit_2 diagram
+
+This diagram is for the later (green) PCB @ rev 2.1
+
+The diagram was updated in October 2015 to show the value of R1 
+being increased from 10K to 47K.  This change is in-line with 
+the published specification for the Atmega 328P processor. 

@@ -1,0 +1,8 @@
+.DS_Store
+.lh
+/.pio
+/.vscode
+
+/logs
+/platformio-device-monitor*.log
+/data/*.gz

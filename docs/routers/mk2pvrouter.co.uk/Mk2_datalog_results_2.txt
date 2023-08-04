@@ -1,0 +1,141 @@
+Mk2_datalog_results_2.txt
+
+Initial results for a revised version of my
+Mk2 PV Router sketch which includes datalogging.
+
+Sketch ID: Mk2_RFdatalog_1.ino
+
+This sketch was run on one of the PCBs that I can supply from www.mk2pvrouter.co.uk.  Data was transmitted and received via 
+a pair of 433 MHz RFM12B modules and displayed via the 
+Serial Monitor at the receiver board.  All data fields are 
+integers, the payload structure is:
+
+typedef struct { 
+ int msgNumber;
+ int powerAtSupplyPoint;
+ int divertedEnergyTotal;
+} Tx_struct;    
+Tx_struct tx_data;
+
+Messages are transmitted and received every 2 seconds.  This 
+data has been captured from a 'live' installation when approx
+500 Watts of surplus power was available for diversion.  The 
+data below shows how the PV Router is constantly adjusting the 
+overall consumption to match generation.  The net flow of 
+current, as shown in the second column, is therefore zero.
+
+The sequence below was as follows:
+
+At T=225, when datalogging was started, approx 500W of surplus power was flowing out to the grid.  The total amount of energy that had been already sent to my 3 kW kettle during this session was 74 Wh (i.e. 0.074 kWh).
+
+At T=240, I turned my 3 kW kettle 'on'.  With the router's energy bucket already being full to maximum, there was an inrush of power (904 Watts, averaged over 2 seconds), after which the system settled down into its 'normal' operating mode.  During the next 40 seconds (20 counts), the accumulated total slowly increased, but the average energy flow at the supply point was tightly constrained to be close to zero.  This is a nice demonstration of the router's "normal" mode.
+
+At T=259, I turned the kettle 'off'.  By this time, surplus power had dropped to 400 Watts.  The total amount of diverted energy was then 80 Wh.
+
+At T=267, I turned the kettle back on again with the router having been switched into its anti-flicker mode.  As the router's energy bucket was again full to maximum, there was another inrush of power (920 Watts, averaged over 2 seconds), after which the system settled down into its 'anti-flicker' operating mode. 
+
+During the next 50 seconds (25 counts), the accumulated total continued to increase, and the average energy flow at the supply point was again held close to zero.  Because the on and off periods in "anti-flicker" mode are much longer, the individual power values are the supply point are correspondingly greater.  Over any reasonable timescale, I am confident that they will average out to zero. During this phase, another 5 WattHours worth of energy was added to the total.
+
+At T=292, the kettle was finally turned off.  By this time, the amount of surplus PV was dropping rapidly as our panels become more shaded. 
+
+Because these data values are all transmitted as integers, they are directly suitable for processing by emonCMS for further analysis and storage
+
+The "corrupt message" events may have been due to my poor aerials.  These were just two lengths of wire, one of which was resting in the hole on the PCB, not even soldered in place.  The transmitter and receiver were on opposite sides of an external brick wall.
+
+Robin Emley
+mk2PVrouter.co.uk
+
+18/04/2014
+
+
+
+225,  516,  74
+226,  515,  74
+227,  512,  74
+228,  509,  74
+229,  506,  74
+230,  503,  74
+231,  499,  74
+232,  497,  74
+233,  495,  74
+234,  491,  74
+235,  488,  74
+Corrupt message!
+236,  481,  74
+237,  481,  74
+238,  476,  74
+239,  476,  74
+240,  -904,  75
+241,  9,  75
+242,  3,  76
+243,  4,  76
+244,  -3,  76
+245,  0,  76
+Corrupt message!
+246,  -3,  77
+247,  -5,  77
+248,  8,  77
+249,  8,  77
+250,  -16,  78
+251,  5,  78
+Corrupt message!
+252,  3,  78
+253,  0,  78
+254,  -5,  79
+255,  -9,  79
+Message numbering error!
+256,  -11,  79
+Corrupt message!
+257,  3,  79
+258,  8,  80
+259,  344,  80
+260,  413,  80
+261,  410,  80
+262,  407,  80
+263,  404,  80
+264,  401,  80
+265,  398,  80
+266,  394,  80
+267,  -920,  81
+268,  -69,  81
+269,  -73,  81
+270,  171,  81
+271,  170,  81
+272,  -79,  82
+273,  -84,  82
+274,  -92,  82
+275,  -91,  82
+276,  363,  82
+277,  -96,  83
+Corrupt message!
+278,  -100,  83
+279,  -103,  83
+280,  50,  83
+281,  224,  83
+282,  -113,  84
+283,  -118,  84
+284,  -99,  84
+285,  329,  84
+286,  -104,  84
+287,  -103,  85
+288,  -105,  85
+289,  320,  85
+290,  -111,  85
+291,  312,  85
+Corrupt message!
+292,  308,  85
+293,  306,  85
+294,  302,  85
+Corrupt message!
+295,  299,  85
+296,  297,  85
+297,  293,  85
+Corrupt message!
+298,  289,  85
+299,  286,  85
+300,  281,  85
+301,  277,  85
+302,  277,  85
+303,  272,  85
+304,  269,  85
+305,  267,  85

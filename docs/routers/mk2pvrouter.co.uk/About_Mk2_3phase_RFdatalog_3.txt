@@ -1,0 +1,40 @@
+Detail for my Mk2_3phase_RFdatalog_3.ino sketch
+
+This sketch is intended to run on my "Mk2 3phase" PCB.  Voltage and current are 
+repeatedly sampled for each phase in turn.  Every mains cycle, the average powers 
+for the three separate phases are combined and used to update an "energy bucket".
+This "energy bucket" represents the overall energy state of the premises. 
+
+Any surplus energy is made available to dump-loads.  This sketch supports 
+three dump-loads which can be on any phase.  The loads are activated in order 
+of priority.  An external switch can be used to select between two pre-set 
+priority sequences.
+
+Datalogging is supported.  This records the average power and Vrms voltage on 
+each phase every few seconds.   If the RF facility is enabled, this data is 
+transmitted by RF. RF is enabled by including the literal definition for  
+RF_PRESENT near the top of the sketch.  If this line is commented out, RF is disabled.
+
+The same data can be sent to the Serial interface, but this could potentially disturb
+the underlying sampling sequence.   
+
+Changes for version _2:
+
+- a twin-threshold algorithm for energy state management has been adopted
+- improved mechanism for controlling multiple loads (faster and more accurate);
+- ISR upgraded to prevent a possible timing anomaly
+- a performance checking feature has been added to detect any loss of data
+- the RF69 RF module is now supported
+- the control signals are now active-high to suit the latest 3-phase PCB.
+- SWEETZONE_IN_JOULES has been replaced by WORKING_RANGE_IN_JOULES.
+
+Changes for version _3:
+ - improvements to the start-up logic.  The start of normal operation is now 
+    synchronised with the start of a new mains cycle.
+ - reduce the amount of feedback in the Low Pass Filter for removing the DC content
+     from the Vsample stream. This resolves an anomaly which has been present since 
+     the start of this project.  Although the amount of feedback has previously been 
+     excessive, this anomaly has had minimal effect on the system's overall behaviour.
+ - The reported power at each of the phases has been inverted. These values are now in 
+     line with the Open Energy Monitor convention, whereby import is positive and 
+     export is negative.

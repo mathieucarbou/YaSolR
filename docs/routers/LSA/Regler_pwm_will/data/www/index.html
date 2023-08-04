@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+  <title>Regler Werte Eingabe </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    function submitMessage() {
+      alert("Saved value to ESP LITTLEFS");
+      setTimeout(function () { document.location.reload(false); }, 500);
+    }
+  </script>
+</head>
+
+<body>
+
+
+  //******************************* SSR-1 ***************************************//
+  <br>
+
+  <form action="/get" target="hidden-form">
+    SSR_1 Modus (current value %SSR_1_mode%): <input type="number" name="SSR_1_mode">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    SSR_1 Auswahl Messeingang (current value %select_Input_SSR_1%): <input type="number" step="1" name="select_Input_SSR_1">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    PWM Frequenz  1000 - 3000 Hz (current value %PWM_Freq%): <input type="number" step="100" name="PWM_Freq">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    PWM Auflösung  4 - 16 bit (current value %PWM_Resolution%): <input type="number" step="1" name="PWM_Resolution">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    SSR_1 Einschalt Schwelle (current value %SSR_1_on%): <input type="number" step="1" name="SSR_1_on">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    SSR_1 Ausschalt Schwelle (current value %SSR_1 off%): <input type="number" step="1" name="SSR_1_off">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    Sollwert (current value %Setpoint%): <input type="number" step="1" name="Setpoint">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    Distanz zum Sollwert, Regelverhalten umschalten Aggresiv - Normal   (current value %SSR_1_setpoint_distance%): <input type="number" step="1" name="SSR_1_setpoint_distance">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+
+  <form action="/get" target="hidden-form">
+    Kp (current value %Kp%): <input type="number" step="0.001" name="Kp">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    Ki (current value %Ki%): <input type="number" step="0.001" name="Ki">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    Kd (current value %Kd%): <input type="number" step="0.001" name="Kd">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    aggressiv Kp (current value %aggKp%): <input type="number" step="0.001" name="aggKp">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    aggressiv Ki (current value %aggKi%): <input type="number" step="0.001" name="aggKi">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    aggressiv Kd (current value %aggKd%): <input type="number" step="0.001" name="aggKd">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+
+  //******************************* SSR-2 ***************************************//
+  <br><br>
+
+  <form action="/get" target="hidden-form">
+    SSR_2 Auswahl Messeingang (current value % select_Input_SSR_2%): <input type="number" step="1" name="select_Input_SSR_2">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    SSR_2 Modus (current value %SSR_2_mode%): <input type="number" step="1" name="SSR_2_mode">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    SSR_2 Einschalt Schwelle (current value %SSR_2_on%): <input type="number" step="1" name="SSR_2_on">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+  <form action="/get" target="hidden-form">
+    SSR_2 Ausschalt Schwelle (current value %SSR_2 off%): <input type="number" step="1"name="SSR_2_off">
+    <input type="submit"  value="Submit" onclick="submitMessage()">
+  </form><br>
+
+ 
+  //******************************* Einschalten  Boiler, Heizung ***************************//
+  <br><br>
+  <form action="/get" target="hidden-form">
+    Einschalten 1 (current value %activate_1% ): <input type="number" step="1" name="activate_1">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+ 
+  <form action="/get" target="hidden-form">
+    Einschalten 2 (current value %activate_2% ): <input type="number" step="1" name="activate_2">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+
+  <form action="/get" target="hidden-form">
+    Allgemein 1 (current value %gp_1% ): <input type="number" step="1" name="gp_1">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+ 
+  <form action="/get" target="hidden-form">
+    Allgemein 2 (current value %gp_2% ): <input type="number" step="1" name="gp_2">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  //******************************* Testwerte ***************************//
+  <br><br>
+
+  <form action="/get" target="hidden-form">
+   Testwert 1 (current value %test_val_1%): <input type="number" step="0.1" name="test_val_1">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <form action="/get" target="hidden-form">
+    Testwert 2 (current value %test_val_2%): <input type="number" step="0.1" name="test_val_2">
+    <input type="submit" value="Submit" onclick="submitMessage()">
+  </form><br>
+
+  <iframe style="display:none" name="hidden-form"></iframe>
+</body>
+
+</html>
