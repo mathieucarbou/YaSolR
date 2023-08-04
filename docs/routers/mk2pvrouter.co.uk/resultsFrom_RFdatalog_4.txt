@@ -1,0 +1,117 @@
+Some results taken with the sketch Mk2_RFdatalog_4.ino
+
+Software: This sketch is exactly as posted, except that the persistence value for 
+zero-crossing detection is set to 1 rather than 2).
+
+Hardware: A new (green) PCB with dual supplies such that the processor is running at
+5V with the RFM12B at 3.3V.  
+
+A datalog message is transmitted every 5 seconds of the form:
+typedef struct { 
+  int powerAtSupplyPoint_Watts; // import = +ve, to match OEM convention
+  int divertedEnergyTotal_Wh; // always positive
+  int Vrms_times100;
+  int temperature_times100;
+} Tx_struct; 
+
+These values are displayed below along with two additional values which show that the 
+underlying sampling process is not being disturbed by any of the slower activities 
+such as Serial, RF or temperature sensing.
+
+Test sequence:
+Stage 1: For the first 20 seconds, no power was flowing at CT1:
+- grid power = 0 (Watts)
+- diverted energy = 0 WattHours
+- Vrms = 222, this value being uncalibrated because voltageCal is just set to 1
+- temperature = 13.25 (yes, it's rather chilly here at this time of year!)
+- minSampleSets/MC = 64, because 20000us / (104us * 3) = 64.1
+- #ofSampleSets ~16K because 5000000us / (104us * 3) = 16025
+
+Stage 2: For the next 35 seconds, a 750 Watt heater was used to simulate surplus PV:
+- grid power = ~780 (Watts)
+- diverted energy = 0 Wh because no dumpload was available
+- (not sure why the Vrms value has increased slightly here.  Maybe the mains voltage changed ...)
+
+Stage 3: For the next 25 seconds, a 2000 Watt heater was added as a dumpload:
+- grid power = variable, as the system maintained the balance between import and export (AF mode)
+- diverted energy slowly increased to 5 Wh as "surplus" energy was diverted to the dumpload
+- Vrms is reduced as more power is taken from the (very weak) mains supply
+
+Stage 4: For the next 20 seconds, the dumpload was removed:
+- grid power = ~780 (Watts)
+- diverted energy remained unchanged because no dumpload was available
+
+Stage 5: For the remainder of this test, the source of "PV" was removed:
+- grid power returned to 0 (Watts)
+- diverted energy remained unchanged because no dumpload was available
+- Vrms returned to its normal value
+- temperature value increased due to hand-warning of sensor.
+
+Apart from separating this printout to show the different stages of this test sequence,
+these results are exactly as obtained from the serial monitor.  For ease of comprehension,
+the Vrms and temperature values are displayed by the sketch at x1 scale rather than x100 .
+
+Robin Emley
+11th December 2014
+
+-------------------------------------
+Sketch ID:   Mk2_RFdatalog_4.ino
+
+ADC mode:       free-running
+Output mode:    anti-flicker
+  offsetOfEnergyThresholds  = 0.10
+powerCal_CT1, for grid consumption =      0.0720
+powerCal_CT2, for diverted power  =      0.0730
+voltageCal, for Vrms  =      1.0000
+Anti-creep limit (Joules / mains cycle) = 5
+Export rate (Watts) = 0
+zero-crossing persistence (sample sets) = 1
+>>free RAM = 784
+  capacityOfEnergyBucket_long = 2500000
+  lowerEnergyThreshold_long   = 1000000
+  upperEnergyThreshold_long   = 1500000
+>>free RAM = 770
+----
+
+Stage 1:
+-------
+datalog event: grid power 0, diverted energy (Wh) 0, Vrms 281.13, temperature 13.25,  (minSampleSets/MC 0,  #ofSampleSets 16032)
+datalog event: grid power 0, diverted energy (Wh) 0, Vrms 222.75, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16032)
+datalog event: grid power 0, diverted energy (Wh) 0, Vrms 222.46, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16034)
+datalog event: grid power 0, diverted energy (Wh) 0, Vrms 222.55, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16037)
+
+Stage 2:
+-------
+datalog event: grid power 180, diverted energy (Wh) 0, Vrms 222.25, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16038)
+datalog event: grid power 785, diverted energy (Wh) 0, Vrms 224.43, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16036)
+datalog event: grid power 785, diverted energy (Wh) 0, Vrms 224.72, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16036)
+datalog event: grid power 784, diverted energy (Wh) 0, Vrms 224.61, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16038)
+datalog event: grid power 784, diverted energy (Wh) 0, Vrms 224.59, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16039)
+datalog event: grid power 784, diverted energy (Wh) 0, Vrms 224.60, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16038)
+datalog event: grid power 784, diverted energy (Wh) 0, Vrms 224.64, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16037)
+
+Stage 3:
+-------
+datalog event: grid power -19, diverted energy (Wh) 1, Vrms 222.05, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16035)
+datalog event: grid power -71, diverted energy (Wh) 2, Vrms 219.82, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16035)
+datalog event: grid power 132, diverted energy (Wh) 3, Vrms 220.02, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16034)
+datalog event: grid power -67, diverted energy (Wh) 4, Vrms 220.19, temperature 13.18,  (minSampleSets/MC 63,  #ofSampleSets 16035)
+datalog event: grid power -31, diverted energy (Wh) 5, Vrms 220.17, temperature 13.25,  (minSampleSets/MC 63,  #ofSampleSets 16034)
+
+Stage 4:
+-------
+datalog event: grid power 728, diverted energy (Wh) 5, Vrms 223.50, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16032)
+datalog event: grid power 783, diverted energy (Wh) 5, Vrms 224.50, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16034)
+datalog event: grid power 783, diverted energy (Wh) 5, Vrms 224.47, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16034)
+datalog event: grid power 781, diverted energy (Wh) 5, Vrms 224.19, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16036)
+
+Stage 5:
+-------
+datalog event: grid power 214, diverted energy (Wh) 5, Vrms 224.95, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16034)
+datalog event: grid power 0, diverted energy (Wh) 5, Vrms 225.25, temperature 13.25,  (minSampleSets/MC 64,  #ofSampleSets 16034)
+datalog event: grid power 0, diverted energy (Wh) 5, Vrms 225.47, temperature 14.25,  (minSampleSets/MC 64,  #ofSampleSets 16033)
+datalog event: grid power 0, diverted energy (Wh) 5, Vrms 225.43, temperature 20.62,  (minSampleSets/MC 64,  #ofSampleSets 16031)
+datalog event: grid power 0, diverted energy (Wh) 5, Vrms 225.40, temperature 23.18,  (minSampleSets/MC 64,  #ofSampleSets 16032)
+datalog event: grid power 0, diverted energy (Wh) 5, Vrms 225.44, temperature 24.56,  (minSampleSets/MC 64,  #ofSampleSets 16035)
+datalog event: grid power 0, diverted energy (Wh) 5, Vrms 225.51, temperature 25.43,  (minSampleSets/MC 64,  #ofSampleSets 16036)
+datalog event: grid power 0, diverted energy (Wh) 5, Vrms 225.35, temperature 26.06,  (minSampleSets/MC 64,  #ofSampleSets 16037)

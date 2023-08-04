@@ -1,0 +1,9 @@
+Detail for my demo_bothDisplays.ino sketch
+
+This sketch comprises just the display section of my Mk2 PV Router code.  
+Its intended purpose was to provide an easy way of checking the operation 
+of the 4-digit display, but the later sketch segCheck_bothDisplays.ino 
+is more suitable for this task.  
+
+This original version is mentioned in the Build Guide so can remain here 
+for completeness.

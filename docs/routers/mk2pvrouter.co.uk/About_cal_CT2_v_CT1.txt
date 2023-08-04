@@ -1,0 +1,23 @@
+Detail for my cal_CT2_v_CT1.ino sketch
+
+/* cal_CT2_v_CT1.ino 
+ *
+ * February 2018
+ * This calibration sketch is based on Mk2_bothDisplays_4.ino. Its purpose is to
+ * mimic the behaviour of a dual channel electricity meter. The sensitivity of the 
+ * CT2 channel can then be adjusted to match that of the CT1 channel.  Before using
+ * this sketch, the CT1 channel would normally have been calibrated against the
+ * user's electricity meter.
+ *
+ * CT1 and CT2 should be fitted around the same current-carrying conductor. If 
+ * CT2 has been built into a completed system, the bypass switch can be used to force 
+ * power down that path. 
+ *
+ * The energy flow on each channel is noted and a short pulse is generated whenever a 
+ * pre-set amount of energy has been recorded (normally 3600J). The two streams of 
+ * pulses can then be compared. The pulse rate for the CT2 channel can be varied by
+ * adjusting the value of powerCal_diverted.  When the two streams of pulses are in 
+ * synch, correct calibration of the CT2 channel has been achieved.
+ *
+ * The two pulse streams can be synchronised at any time by earthing R11 which is
+ * tracked to port A0 (aka D14).

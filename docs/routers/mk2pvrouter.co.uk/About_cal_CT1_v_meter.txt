@@ -1,0 +1,17 @@
+Detail for my cal_CT1_v_meter.ino sketch
+
+/* cal_CT1_v_meter.ino 
+ *
+ * February 2018
+ * This calibration sketch is based on Mk2_bothDisplays_4.ino. Its purpose is to
+ * mimic the behaviour of a digital electricity meter.  
+ *
+ * CT1 should be clipped around one of the live cables that pass through the 
+ * meter. The energy flow measured by CT1 is noted and a short pulse is generated 
+ * whenever a pre-set amount of energy has been recorded (normally 3600J).  
+ *
+ * This stream of pulses can then be compared against optical pulses from a standard 
+ * electrical utility meter. The pulse rate can be varied by adjusting the value
+ * of powerCal_grid.  When the two streams of pulses are in synch, correct calibration 
+ * of the CT1 channel has been achieved.
+

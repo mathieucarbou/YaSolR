@@ -1,0 +1,22 @@
+Detail for my Mk2_multiLoad_CAT5_2.ino sketch
+
+This is an upgraded version of the original Mk2 sketch for use with my
+PCB-based hardware.  It still supports two current sensors, CT1 and CT2.  
+CT1 is for monitoring the flow of energy at the supply point; CT2 is 
+available for monitoring the flow of current to the primary dump-load.  
+
+With this version, multiple dump-loads are supported, each being 
+controlled by its own dedicated IO pin.  To generate sufficient spare
+IO pins for this purpose, the RF facility has been removed from this code.
+By using the pin-saving hardware option, the 4-digit display is still 
+available for use.
+
+The primary load (Load 0) is still controlled from the "trigger" port.  The 
+five IO drivers that have been freed up by not using the RF module have been 
+re-allocated to control five additional loads.  These signals can be 
+conveniently accessed at the left-hand side of the J1-5 connector on the PCB.  
+The uppermost pin is for Load 1, the lowermost one is for Load 6.  
+
+For compatibility with previous versions, all loads are driven using 
+active-low logic. 
+
