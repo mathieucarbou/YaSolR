@@ -1,0 +1,44 @@
+; ***  PlatformIO Project Configuration Override File   ***
+; ***  Changes done here override settings in platformio.ini    ***
+;
+; Place your personal settings like monitor_port and upload_port here
+; instead of editing platformio.ini
+; to avoid annoying merge conflicts when you pull updates into your
+; personal clone of the repository
+;
+; Please visit documentation for the options and examples
+; http://docs.platformio.org/en/stable/projectconf.html
+
+[platformio]
+; default_envs = pro-esp32-debug, oss-esp32-debug, trial-esp32-debug
+; default_envs = pro-esp32-debug
+; default_envs = oss-esp32-debug
+; default_envs = trial-esp32-debug
+; default_envs = pro-wt32_eth01-debug
+; default_envs = pro-lilygo_eth_lite_s3-debug
+
+[env]
+
+; ---------------------------------
+; SERIAL MONITOR: CHOOSE ONE OPTION
+; ---------------------------------
+
+; monitor_port = /dev/cu.usbserial-0001
+; monitor_port = socket://arduino-playground.local:4444
+
+; -------------------------
+; UPLOAD: CHOOSE ONE OPTION
+; -------------------------
+
+; upload_protocol = esptool
+; upload_port = /dev/cu.usbserial-0001
+
+; upload_protocol = espota
+; upload_port = 192.168.125.123
+
+; upload_protocol = custom
+; extra_scripts =
+;     pre:pio/data.py
+;     pre:pio/version.py
+;     post:pio/factory.py
+; upload_url = http://arduino.local/update
