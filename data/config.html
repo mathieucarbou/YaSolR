@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>YaSolR Configuration</title>
+</head>
+
+<body>
+  <img src="/logo">
+  <h1>YaSolR Configuration</h1>
+  <table border="1" cellpadding="5px">
+    <tr>
+      <td>
+        <form id="restart-form">
+          <button type="submit">Restart</button>
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <form id="backup-form" method="get" action="/api/config/backup" target="_blank">
+          <button type="submit">Backup</button>
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <form id="restore-form">
+          <input id="restore-form-file" type="file" accept=".txt" />
+          <button type="submit">Restore</button>
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <form id="reset-form">
+          <button type="submit">Reset</button>
+        </form>
+      </td>
+    </tr>
+  </table>
+
+  <table id="config-table" border="1" cellpadding="5px">
+    <tr>
+      <th>Name</th>
+      <th>Value</th>
+      <th>Description</th>
+    </tr>
+  </table>
+</body>
+
+<style>
+  table#config-table td:nth-child(2) {
+    text-align: center;
+  }
+
+  table#config-table th:nth-child(2) {
+    text-align: center;
+  }
+</style>
+
+<script>
+  const supportedConfig = {
+    Management: "TITLE",
+    debug_enable: ["Debug mode enabled ?", "switch"],
+
+    Display: "TITLE",
+    dp_enable: ["Display enabled ?", "switch"],
+    dp_clock_pin: ["Display clock GPIO pin", "pin"],
+    dp_data_pin: ["Display Data GPIO pin", "pin"],
+    dp_type: ["Display type", "select", "SH1106,SH1107,SSD1306"],
+    dp_rotation: ["Display rotation", "select", "0,90,180,270"],
+    dp_powsave: ["Display power saving delay (in seconds)", "uint"],
+
+    Electricity: "TITLE",
+    jsy_enable: ["JSY enabled ?", "switch"],
+    jsy_rx_pin: ["GPIO pin connected to JSY RX (Serial TX)", "pin"],
+    jsy_tx_pin: ["GPIO pin connected to JSY TX (Serial RX)", "pin"],
+    zcd_enable: ["Zero-cross detection enabled ?", "switch"],
+    zcd_pin: ["GPIO pin connected to zero-cross detection", "pin"],
+    grid_freq: ["Grid frequency", "select", "50,60"],
+    grid_pow_mqtt: ["Grid power MQTT topic", "string"],
+    grid_volt: ["Grid voltage", "select", "230,110"],
+    grid_volt_mqtt: ["Grid voltage MQTT topic", "string"],
+    out1_pz_enable: ["Output 1 PZEM", "switch"],
+    out2_pz_enable: ["Output 2 PZEM", "switch"],
+    pzem_rx_pin: ["GPIO pin connected to PZEM RX (Serial TX)", "pin"],
+    pzem_tx_pin: ["GPIO pin connected to PZEM TX (Serial RX)", "pin"],
+
+    MQTT: "TITLE",
+    mqtt_enable: ["MQTT enabled ?", "switch"],
+    mqtt_secure: ["MQTT secure connection ?", "switch"],
+    mqtt_server: ["MQTT server address", "string"],
+    mqtt_port: ["MQTT server port", "uint"],
+    mqtt_user: ["MQTT username", "string"],
+    mqtt_pwd: ["MQTT password", "string"],
+    mqtt_topic: ["MQTT topic", "string"],
+    mqtt_pub_itvl: ["MQTT publish interval (in seconds)", "uint"],
+    ha_disco_enable: ["Home Assistant Discovery enabled ?", "switch"],
+    ha_disco_topic: ["Home Assistant Discovery topic", "string"],
+
+    Network: "TITLE",
+    hostname: ["Hostname", "string"],
+    admin_pwd: ["Admin password", "password"],
+    wifi_ssid: ["WiFi SSID", "string"],
+    wifi_pwd: ["WiFi password", "password"],
+    wifi_timeout: [
+      "WiFi connection timeout in seconds (before starting Captive Portal)",
+      "uint",
+    ],
+    portal_timeout: [
+      "Captive Portal timeout in seconds (before restarting)",
+      "uint",
+    ],
+    ntp_server: ["NTP server address", "string"],
+    ntp_timezone: ["NTP timezone", "tz"],
+    ap_mode_enable: ["Access Point mode enabled ?", "switch"],
+
+    "Output 1": "TITLE",
+    out1_dim_enable: ["Output 1 dimmer enabled ?", "switch"],
+    out1_dim_pin: ["Output 1 dimmer GPIO pin", "pin"],
+    out1_dim_type: [
+      "Output 1 dimmer type",
+      "select",
+      "TRIAC,SSR RANDOM,SSR ZC",
+    ],
+    out1_dim_auto: ["Output 1 dimmer auto mode", "switch"],
+    out1_dim_limit: ["Output 1 dimmer limit", "percent"],
+    out1_tmp_enable: ["Output 1 temperature sensor enabled ?", "switch"],
+    out1_tmp_pin: ["Output 1 temperature sensor GPIO pin", "pin"],
+    out1_bp_enable: ["Output 1 bypass relay enabled ?", "switch"],
+    out1_bp_pin: ["Output 1 bypass relay GPIO pin", "pin"],
+    out1_bp_type: ["Output 1 bypass relay type", "select", "NO,NC"],
+    out1_aut_enable: ["Output 1 bypass auto mode", "switch"],
+    out1_wdays: ["Output 1 auto bypass weekdays", "string"],
+    out1_start_time: ["Output 1 auto bypass start time", "time"],
+    out1_end_time: ["Output 1 auto bypass end time", "time"],
+    out1_tmp_low: ["Output 1 auto bypass start temperature", "uint"],
+    out1_tmp_high: ["Output 1 auto bypass stop temperature", "uint"],
+
+    "Output 2": "TITLE",
+    out2_dim_enable: ["Output 2 dimmer enabled ?", "switch"],
+    out2_dim_pin: ["Output 2 dimmer GPIO pin", "pin"],
+    out2_dim_type: [
+      "Output 2 dimmer type",
+      "select",
+      "TRIAC,SSR RANDOM,SSR ZC",
+    ],
+    out2_dim_auto: ["Output 2 dimmer auto mode", "switch"],
+    out2_dim_limit: ["Output 2 dimmer limit", "percent"],
+    out2_tmp_enable: ["Output 2 temperature sensor enabled ?", "switch"],
+    out2_tmp_pin: ["Output 2 temperature sensor GPIO pin", "pin"],
+    out2_bp_enable: ["Output 2 bypass relay enabled ?", "switch"],
+    out2_bp_pin: ["Output 2 bypass relay GPIO pin", "pin"],
+    out2_bp_type: ["Output 2 bypass relay type", "select", "NO,NC"],
+    out2_aut_enable: ["Output 2 bypass auto mode", "switch"],
+    out2_wdays: ["Output 2 auto bypass weekdays", "string"],
+    out2_start_time: ["Output 2 auto bypass start time", "time"],
+    out2_end_time: ["Output 2 auto bypass end time", "time"],
+    out2_tmp_low: ["Output 2 auto bypass start temperature", "uint"],
+    out2_tmp_high: ["Output 2 auto bypass stop temperature", "uint"],
+
+    "Relay 1": "TITLE",
+    relay1_enable: ["Relay 1 enabled ?", "switch"],
+    relay1_pin: ["Relay 1 GPIO pin", "pin"],
+    relay1_type: ["Relay 1 type", "select", "NO,NC"],
+    relay1_power: ["Relay 1 power threshold", "uint"],
+
+    "Relay 2": "TITLE",
+    relay2_enable: ["Relay 2 enabled ?", "switch"],
+    relay2_pin: ["Relay 2 GPIO pin", "pin"],
+    relay2_type: ["Relay 2 type", "select", "NO,NC"],
+    relay2_power: ["Relay 2 power threshold", "uint"],
+
+    System: "TITLE",
+    sys_tmp_enable: ["System temperature sensor enabled ?", "switch"],
+    sys_tmp_pin: ["System temperature sensor GPIO pin", "pin"],
+    buzzer_enable: ["Buzzer enabled ?", "switch"],
+    buzzer_pin: ["Buzzer GPIO pin", "pin"],
+    lights_enable: ["LEDs enabled ?", "switch"],
+    lights_g_pin: ["LED green GPIO pin", "pin"],
+    lights_r_pin: ["LED red GPIO pin", "pin"],
+    lights_y_pin: ["LED yellow GPIO pin", "pin"],
+    button_enable: ["Push Button enabled ?", "switch"],
+    button_pin: ["Push Button GPIO pin", "pin"],
+    button_action: [
+      "Action to perform when button is pressed",
+      "select",
+      "restart,bypass",
+    ],
+  };
+
+  async function onInputChange(event) {
+    console.log(event);
+    const key = event.target.getAttribute("id");
+    const formData = new FormData();
+    formData.append(key, event.target.type === "checkbox" ? event.target.checked : event.target.value);
+    await fetch("/api/config", {
+      method: "POST",
+      body: formData,
+    });
+  }
+
+  function addInputNumber(cell, key, value, min, max) {
+    const input = document.createElement("input");
+    input.setAttribute("id", key);
+    input.setAttribute("type", "number");
+    input.setAttribute("autocomplete", "off");
+    input.setAttribute("min", "" + min);
+    input.setAttribute("max", "" + max);
+    input.setAttribute("step", "1");
+    input.setAttribute("value", value);
+    cell.appendChild(input);
+    input.addEventListener("change", onInputChange);
+  }
+
+  const typeHandlers = {
+    switch: function (cell, key, value, options) {
+      const input = document.createElement("input");
+      input.setAttribute("id", key);
+      input.setAttribute("type", "checkbox");
+      if (value === "true") {
+        input.setAttribute("checked", "checked");
+      }
+      cell.appendChild(input);
+      input.addEventListener("change", onInputChange);
+    },
+    pin: function (cell, key, value, options) {
+      addInputNumber(cell, key, value, 0, 255);
+    },
+    uint: function (cell, key, value, options) {
+      addInputNumber(cell, key, value, 0, 9999);
+    },
+    percent: function (cell, key, value, options) {
+      addInputNumber(cell, key, value, 0, 100);
+    },
+    string: function (cell, key, value, options) {
+      const input = document.createElement("input");
+      input.setAttribute("id", key);
+      input.setAttribute("type", "text");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("value", value);
+      cell.appendChild(input);
+      input.addEventListener("change", onInputChange);
+    },
+    password: function (cell, key, value, options) {
+      const input = document.createElement("input");
+      input.setAttribute("id", key);
+      input.setAttribute("type", "password");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("value", value);
+      cell.appendChild(input);
+      input.addEventListener("change", onInputChange);
+    },
+    time: function (cell, key, value, options) {
+      const input = document.createElement("input");
+      input.setAttribute("id", key);
+      input.setAttribute("type", "time");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("value", value);
+      cell.appendChild(input);
+      input.addEventListener("change", onInputChange);
+    },
+    tz: function (cell, key, value, options, timezones) {
+      const select = document.createElement("select");
+      select.setAttribute("id", key);
+      timezones.forEach((t) => {
+        const option = document.createElement("option");
+        option.setAttribute("value", t);
+        option.innerHTML = t;
+        if (t === value)
+          option.setAttribute("selected", "selected");
+        select.appendChild(option);
+      });
+      cell.appendChild(select);
+      select.addEventListener("change", onInputChange);
+    },
+    select: function (cell, key, value, options) {
+      const select = document.createElement("select");
+      select.setAttribute("id", key);
+      options.split(',').map((v) => {
+        const option = document.createElement("option");
+        option.setAttribute("value", v);
+        option.innerHTML = v;
+        if (v === value)
+          option.setAttribute("selected", "selected");
+        select.appendChild(option);
+      });
+      cell.appendChild(select);
+      select.addEventListener("change", onInputChange);
+    },
+  };
+
+  async function init() {
+    document
+      .getElementById("restore-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        const input = document.getElementById("restore-form-file");
+        if (input.files && input.files.length == 1) {
+          const formData = new FormData();
+          formData.append("file", input.files[0]);
+          fetch("/api/config/restore", {
+            method: "POST",
+            body: formData,
+          }).then((res) => {
+            setTimeout(function () {
+              window.location.reload();
+            }, 2000);
+          });
+        }
+      });
+
+    document
+      .getElementById("restart-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        fetch("/api/system/restart", { method: "POST" }).then((res) => {
+          setTimeout(function () {
+            window.location.reload();
+          }, 2000);
+        });
+      });
+
+    document
+      .getElementById("reset-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        fetch("/api/system/reset", { method: "POST" }).then((res) => {
+          setTimeout(function () {
+            window.location.reload();
+          }, 2000);
+        });
+      });
+
+    Promise.all(
+      ["/api/config", "/api/ntp/timezones"].map((u) =>
+        fetch(u).then((resp) => resp.json())
+      )
+    )
+      .then((json) => {
+        console.log(json);
+        const config = json[0];
+        const timezones = json[1];
+        const table = document.getElementById("config-table");
+        for (const k in config) {
+          if(supportedConfig[k] == undefined) {
+            console.error("Unsupported config key", k);
+          }
+        }
+        for (const k in supportedConfig) {
+          const row = table.insertRow(-1);
+          if (supportedConfig[k] === "TITLE") {
+            const cell = row.insertCell(0);
+            cell.innerHTML = "<strong>" + k + "</strong>";
+            cell.setAttribute("colspan", "3");
+          } else {
+            row.insertCell(0).innerHTML = k;
+            if (config[k] == undefined) {
+              row.insertCell(1).innerHTML = "<strong>DEPRECATED</strong>";
+            } else if (typeHandlers[supportedConfig[k][1]]) {
+              typeHandlers[supportedConfig[k][1]](
+                row.insertCell(1),
+                k,
+                config[k],
+                supportedConfig[k][2],
+                timezones
+              );
+            } else {
+              row.insertCell(1).innerHTML = config[k];
+            }
+            row.insertCell(2).innerHTML = supportedConfig[k][0];
+          }
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
+  window.addEventListener("DOMContentLoaded", init, false);
+</script>
+
+</html>
