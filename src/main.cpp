@@ -1,0 +1,203 @@
+// SPDX-License-Identifier: GPL-3.0-or-later
+/*
+ * Copyright (C) 2023-2024 Mathieu Carbou and others
+ */
+#include <YaSolR.h>
+
+#include <HardwareSerial.h>
+
+#define TAG "YASOLR"
+
+AsyncWebServer webServer(80);
+ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);
+
+Mycila::Dimmer output1Dimmer(NAME_OUTPUT1);
+Mycila::Dimmer output2Dimmer(NAME_OUTPUT2);
+
+Mycila::Relay relay1(NAME_RELAY1);
+Mycila::Relay relay2(NAME_RELAY2);
+Mycila::Relay output1BypassRelay(NAME_OUTPUT1);
+Mycila::Relay output2BypassRelay(NAME_OUTPUT2);
+
+Mycila::TemperatureSensor output1TemperatureSensor(NAME_OUTPUT1);
+Mycila::TemperatureSensor output2TemperatureSensor(NAME_OUTPUT2);
+Mycila::TemperatureSensor systemTemperatureSensor(NAME_SYSTEM);
+
+Mycila::RouterOutput output1(NAME_OUTPUT1, &output1Dimmer, &output1TemperatureSensor, &output1BypassRelay);
+Mycila::RouterOutput output2(NAME_OUTPUT2, &output2Dimmer, &output2TemperatureSensor, &output2BypassRelay);
+
+void loop() {
+  // TODO: Task Manager: auto yield, task.managedBy(&tm), profiler with json output, status json output of task status (enable / disabled / last time / last elapsed, etc.)
+  if (autoRelayTask.tryRun())
+    yield();
+  if (buttonTask.tryRun())
+    yield();
+  if (configureButtonTask.tryRun())
+    yield();
+  if (configureBuzzerTask.tryRun())
+    yield();
+  if (configureDisplayTask.tryRun())
+    yield();
+  if (configureGridTask.tryRun())
+    yield();
+  if (configureJSYTask.tryRun())
+    yield();
+  if (configureLightsTask.tryRun())
+    yield();
+  if (configureMQTTTask.tryRun())
+    yield();
+  if (configureNetworkTask.tryRun())
+    yield();
+  if (configureNTPTask.tryRun())
+    yield();
+  if (configureOutput1BypassRelayTask.tryRun())
+    yield();
+  if (configureOutput1DimmerTask.tryRun())
+    yield();
+  if (configureOutput1TemperatureSensorTask.tryRun())
+    yield();
+  if (configureOutput2BypassRelayTask.tryRun())
+    yield();
+  if (configureOutput2DimmerTask.tryRun())
+    yield();
+  if (configureOutput2TemperatureSensorTask.tryRun())
+    yield();
+  if (configureRelay1Task.tryRun())
+    yield();
+  if (configureRelay2Task.tryRun())
+    yield();
+  if (configureSystemTemperatureSensorTask.tryRun())
+    yield();
+  if (configureTaskMonitorTask.tryRun())
+    yield();
+  if (configureZCDTask.tryRun())
+    yield();
+  if (displayTask.tryRun())
+    yield();
+  if (espConnectTask.tryRun())
+    yield();
+  if (lightsTask.tryRun())
+    yield();
+  if (mqttTask.tryRun())
+    yield();
+  if (otaPrepareTask.tryRun())
+    yield();
+  if (output1AutoBypassTask.tryRun())
+    yield();
+  if (output1DimmerLimitTask.tryRun())
+    yield();
+  if (output1TemperatureTask.tryRun())
+    yield();
+  if (output2AutoBypassTask.tryRun())
+    yield();
+  if (output2DimmerLimitTask.tryRun())
+    yield();
+  if (output2TemperatureTask.tryRun())
+    yield();
+  if (resetTask.tryRun())
+    yield();
+  if (restartTask.tryRun())
+    yield();
+  if (stackMonitorTask.tryRun())
+    yield();
+  if (startNetworkServicesTask.tryRun())
+    yield();
+  if (stopNetworkServicesTask.tryRun())
+    yield();
+  if (systemTemperatureTask.tryRun())
+    yield();
+  if (websiteTask.tryRun())
+    yield();
+
+#ifdef APP_VERSION_TRIAL
+  if (trialTask.tryRun())
+    yield();
+#endif
+}
+
+// I/O loop
+
+void ioTask(void* params) {
+  while (!restartTask.isEnabled() && !resetTask.isEnabled()) {
+    if (haDiscoTask.tryRun())
+      yield();
+    if (publisherTask.tryRun())
+      yield();
+  }
+  vTaskDelete(NULL);
+}
+
+// setup
+
+void setup() {
+  Serial.begin(YASOLR_SERIAL_BAUDRATE);
+#if ARDUINO_USB_CDC_ON_BOOT
+  Serial.setTxTimeoutMs(0);
+  delay(100);
+#else
+  while (!Serial)
+    yield();
+#endif
+
+  // logger
+  Mycila::Logger.getOutputs().reserve(2);
+  Mycila::Logger.forwardTo(&Serial);
+  Mycila::Logger.info(TAG, "Booting %s %s %s...", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str());
+
+  // system
+  Mycila::System.begin();
+
+  // trial
+#ifdef APP_VERSION_TRIAL
+  Mycila::Trial.begin();
+#endif
+
+  // load config
+  YaSolR::YaSolR.begin();
+
+  // router
+  Mycila::Router.setOutputs({&output1, &output2});
+
+  // relay manager
+  Mycila::RelayManager.setRelays({&relay1, &relay2});
+
+  // start logging
+#ifdef APP_VERSION_PRO
+  WebSerial.begin(&webServer, "/console", YASOLR_ADMIN_USERNAME, Mycila::Config.get(KEY_ADMIN_PASSWORD));
+  Mycila::Logger.forwardTo(&WebSerial);
+#endif
+
+  Mycila::Logger.info(TAG, "Starting %s %s %s...", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str());
+
+  // order must be respected below
+
+  configureLightsTask.forceRun();
+  Mycila::Lights.set(Mycila::LightState::ON, Mycila::LightState::OFF, Mycila::LightState::ON);
+  configureZCDTask.forceRun();
+  configureOutput1DimmerTask.forceRun();
+  configureOutput2DimmerTask.forceRun();
+  configureJSYTask.forceRun();
+
+  // any order below
+
+  configureButtonTask.forceRun();
+  configureBuzzerTask.forceRun();
+  configureDisplayTask.forceRun();
+  configureGridTask.forceRun();
+  configureNTPTask.forceRun();
+  configureOutput1BypassRelayTask.forceRun();
+  configureOutput1TemperatureSensorTask.forceRun();
+  configureOutput2BypassRelayTask.forceRun();
+  configureOutput2TemperatureSensorTask.forceRun();
+  configureRelay1Task.forceRun();
+  configureRelay2Task.forceRun();
+  configureSystemTemperatureSensorTask.forceRun();
+  configureTaskMonitorTask.forceRun();
+
+  configureNetworkTask.forceRun();
+
+  // STARTUP READY!
+  Mycila::Logger.info(TAG, "Started %s %s %s", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str());
+
+  assert(xTaskCreateUniversal(ioTask, "ioTask", 256 * 18, nullptr, 1, nullptr, xPortGetCoreID()) == pdPASS);
+}
