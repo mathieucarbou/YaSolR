@@ -1,0 +1,10 @@
+Notes re. the original circuit diagram for my 3-phase PCB @ rev 1
+
+The original circuit diagram shows R1 = 10K which is outside the 
+specified range for the Atmega 328P processor. In a later version 
+of the diagram, this value has been increased to 47K.
+
+In the original circuit diagram, resistors R2 - R4 are shown as 10K.
+When operating the processor at 5V, this setup does not make best use 
+of the available range of the ADC.  In a later version of the diagram,
+these resistors have been increased to 18K.

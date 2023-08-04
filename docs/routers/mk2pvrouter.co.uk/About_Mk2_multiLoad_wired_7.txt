@@ -1,0 +1,90 @@
+Detail for my Mk2_multiLoad_wired_7.ino sketch
+
+This is an upgraded version of the original Mk2 sketch for use with my
+PCB-based hardware.  It still supports two current sensors, CT1 and CT2.  
+CT1 is for monitoring the flow of energy at the supply point; CT2 is 
+available for monitoring the flow of current to the primary dump-load.  
+
+With this version, multiple dump-loads are supported, each being 
+controlled by its own dedicated IO pin.  To generate sufficient spare
+IO pins for this purpose, the RF facility has been removed from this code.
+By using the pin-saving hardware option, the 4-digit display is still 
+available for use.
+
+The primary load (Load 0) is still controlled from the "trigger" port.  The 
+five IO drivers that have been freed up by not using the RF module have been 
+re-allocated to control five additional loads.  These signals can be accessed 
+at the left-hand side of the J1-5 connector on the PCB.  The uppermost pin is 
+for Load 1; the lowermost one is for Load 6.  
+
+For versions 1 to 3, all loads are driven using active-low logic. 
+For version 4, the additional loads (Nos 1 - 5) use active-high logic.  When 
+using my green PCBs, each of these points can be accessed alongside a 0V pin.
+The main PCB page at www.mk2pvrouter.co.uk has details for the access points 
+for each of the IO ports.
+
+Changes for version _3:
+
+- The 'long' variable, cycleCount, which counted mains cycles since start-up, has
+  been removed.  This variable would have eventually overflowed which could have
+  caused unpredictable effects.  The related functionality has been re-implemented
+  using individual 'int' counters.
+
+Changes for version _4:
+
+- a persistence check for the zero-crossing detection has been added.  This 
+is to remove any false detections of zero-crossings.  This effect is seen more 
+with some types of transformer than others.
+
+- a mechanism has been added to monitor and display the minimum number
+of sample sets that occur each mains cycle.  With a 125us timebase, and three
+ADC samples per set, the expected number of sample sets per 20ms mains cycle 
+is  20 / (3 * 0.125) = 53.33.   Any value less than 53 would indicate a loss of data.   
+
+- The 5 additional loads are now driven active-high rather than active-low.
+
+Changes for version _5: (not to be used)
+
+- change of name from Mk2_multiLoad_CAT5_n to Mk2_multiLoad_wired_n
+- the original twin-threshold algorithm for energy state management has been reinstated;
+- improved mechanism for controlling multiple loads (faster and more accurate);
+- the phaseCal mechanism has been reinstated;
+- SWEETZONE_IN_JOULES has been replaced by WORKING_RANGE_IN_JOULES.
+
+Changes for version _5a: (not to be used)
+
+- a minor bug-fix in allGeneralProcessing() re. the way that the energy thresholds are
+    adjusted in the period immediatetly after a change of load state has occurred.
+
+Changes for version _6:
+
+- Minimum and maximum limits for the energy bucket's level have been reinstated.  This 
+  section of code had become lost during the upgrade from version 4 to version 5.  
+  Without this code in place, neither of the version 5 relesases will operate as
+  intended, so should not be used.  Version 6 is believed to be a correct implementation 
+  of the improved mechanism for controlling multiple loads.
+ 
+Changes for version _6a:
+
+- A minor change has been made to the function timerIsr() so as to resolve
+a timing anomaly that has previously existed.  With the new arrangement, a 
+complete set of data samples is made available by the ISR for use by the
+main code.  There is no longer any possibility of these values being 
+overwritten before they are processed.
+
+- the display timeout period has been reduced to 8 hours instead of 10.
+
+Changes for version _6b:
+- The variables to store ADC data are now declared as "volatile" to remove 
+any possibility of incorrect operation due to optimisation by the compiler.
+
+Changes for version _7:
+ * - improvements to the start-up logic.  The start of normal operation is now 
+ *    synchronised with the start of a new mains cycle.
+ * - reduce the amount of feedback in the Low Pass Filter for removing the DC content
+ *     from the Vsample stream. This resolves an anomaly which has been present since 
+ *     the start of this project.  Although the amount of feedback has previously been 
+ *     excessive, this anomaly has had minimal effect on the system's overall behaviour.
+ * - tidying of the "confirmPolarity" logic to make its behaviour more clear
+
+

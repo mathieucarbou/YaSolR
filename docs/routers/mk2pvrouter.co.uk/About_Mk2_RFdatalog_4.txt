@@ -1,0 +1,59 @@
+Detail for my Mk2_RFdatalog_4.ino sketch
+
+This is an upgraded version of the original Mk2 sketch for use with my
+PCB-based hardware.  It supports two current sensors, CT1 and CT2.  
+CT1 is for monitoring the flow of energy at the supply point; CT2 is 
+available for monitoring the flow of current to the dump-load.  
+
+Datalog messages are routinely transmitted by the on-board RF facility.  
+By using the pin-saving hardware option, the 4-digit display is still 
+available for use.
+
+The _2 release includes various changes since the _1 version:
+
+- The transmitted data now only has two integer fields (no message ID):
+  . the power at the supply point in Joules (import is +ve, export is -ve)
+  . the diverted energy total for today, in kWh
+  (note the change in energy sense to match the OEM convention)
+
+- a REQUIRED_EXPORT_IN_WATTS facility has been added.  This acts like a 
+  leak in the energy bucket, therefore reducing the amount of surplus power 
+  that can be diverted.  When a negative value is entered, this facility
+  acts like a PV Simulator, which can be very helful for test purposes.
+
+- The state of the energy bucket is displayed at the Serial Monitor every 
+  second in Joules.
+
+- The RFM12B is no longer sent to sleep between RF transmissions, it remains
+  awake throughout.  The library call rf12_sendStart() has been replaced by
+  rf12_sendNow().  These changes are intended to minimise any disruption
+  to the continuous sampling process when RF transmissions are sent.
+
+Changes for version _3:
+
+- For compatibility with other versions of the Mk2 code, the variable cycleCount 
+  has been removed.  This variable would have eventually overflowed which 
+  could have caused unpredictable effects with other versions of the Mk2 code.
+
+Changes for version _4:
+
+- Code restructured so that all of the main activities are performed within the 
+  Interrupt Service Routine.  This includes all of the sampling and power diversion
+  functions.  Only the slower activities are dealt with by the main code, in loop().
+
+- A checker mechanism records the minimum number of sample sets per mains cycle.  
+  For 50 Hz, this should always be 63 or 64.   {20000us / (104us * 3) = 64.1}
+  For 60 Hz, I presume it should always be 53.   {16666us / (104us * 3) = 53.4}
+
+- temperature sensing is now supported using a Dallas OneWire sensor at the "mode" port.
+- the output mode is now fixed at compile time (unless the "mode" port switch is available)
+- the ADC is now free-running rather than being controlled by a fixed rate timer
+- a persistence check had been added for the zero-crossing detector
+- the payload + check data are displayed to the screen whenever a datalog message is sent 
+ (for more details, please consult the code)
+
+- In version_2, an inversion was introduced so that the reported power at the 
+  supply point would be in line with the Open Energy Monitor convention (whereby
+  consumption is positive).  Unfortunately, this modification has been lost during 
+  the version_3 to version_4 upgrade.  This change can be easily reinstated by 
+  adding after Line #525:  tx_data.powerAtSupplyPoint *= -1;

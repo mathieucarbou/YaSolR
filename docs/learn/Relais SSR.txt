@@ -1,0 +1,2 @@
+C'est le type de MOC qui définit le Random ou pas. Les 3021, 3023 (400 Volt), 3053 (600 Volt), 3052, 3073 (800V) sont "non zéro crossing".
+Donc changement obligatoire s'ils sont équipés d'un MOC 3083, 3063, ... qui sont "zéro crossing"

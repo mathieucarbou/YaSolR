@@ -1,0 +1,48 @@
+Detail for my cal_bothDisplays_3.ino sketch
+
+/* cal_bothDisplays_3.ino
+ *
+ * This sketch provides an easy way of calibrating the current sensors that are 
+ * facilitated via the CT1 and CT2 ports.  Channel selection is provided by a 
+ * switch at the "mode" connector (digital IO port D3) on the control board.  
+ * The default selection is CT1; CT2 is selected when the switch is closed.  
+ * The measured value is shown on the 4-digit display, and also at the Serial Monitor.
+ * 
+ * CT1 normally monitors the power at the grid supply point.
+ * CT2 normaly monitors power that is sent to the dump load(s).
+ *
+ * For this test, the selected CT should be clipped around a lead through which a known
+ * amount of power is flowing.  This can be compared against the displayed value 
+ * which is proportional to the powerCal setting.  Once the optimal powerCal values 
+ * have been obtained for each channel, these values can be transferred into the 
+ * main Mk2 PV Router sketch.  
+ * 
+ * Depending on which way around the CT is connected, the measured value may be
+ * positive or negative.  If it is negative, the display will either flash or 
+ * display a negative symbol.  Its behaviour will depend on the way that the display
+ * has been configured.
+ *
+ * The 4-digit display can be driven in two different ways, one with an extra pair
+ * of logic chips, and one without.  The appropriate version of the sketch must be 
+ * selected by including or commenting out the "#define PIN_SAVING_HARDWARE" 
+ * statement near the top of the code.
+ *
+ * With the pin-saving logic, the display is not able to show a '-' symbol.  But 
+ * in the alternative mode, it is. 
+ *
+ * December 2017, upgraded to cal_bothDisplays_2:  
+ * In the original version, the mains cycle counter cycled through the values 0 to 
+ * CYCLES_PER_SECOND inclusive so data was only processed every (CYCLES_PER_SECOND + 1) 
+ * mains cycles. Because the accumulated energy data was divided by CYCLES_PER_SECOND, 
+ * there was an error of approx 2% in the displayed power value.  In version 2, 
+ * the logic has been corrected to avoid this error.
+ * 
+ * June 2022, upgraded to cal_bothDisplays_3:
+ * The 4-digit display still shows the power that is measured on the selected CT channel. The
+ * Serial monitor however now shows the average power at both CT channels.  Previously, the value
+ * for the selected channel was shown twice.
+ * 
+ *      Robin Emley
+ *      www.Mk2PVrouter.co.uk
+ *      June 2022
+ */

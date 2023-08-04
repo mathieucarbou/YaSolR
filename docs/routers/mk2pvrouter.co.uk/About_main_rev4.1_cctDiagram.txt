@@ -1,0 +1,5 @@
+Notes re. my main_rev4.1_circuit diagram
+
+This diagram is for the latest (black) 1-phase control board @ rev 4.1
+
+There are no known problems with this board or its circuit digram

@@ -1,0 +1,4 @@
+Notes re. the original circuit diagram for my (orange) 'main' PCB @ rev 1.1
+
+The original circuit diagram has R1 = 10K which is outside the 
+specified range for the Atmega 328P processor. 

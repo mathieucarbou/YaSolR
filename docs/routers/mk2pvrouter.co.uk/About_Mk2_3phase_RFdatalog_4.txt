@@ -1,0 +1,44 @@
+Detail for my Mk2_3phase_RFdatalog_4.ino sketch
+
+/* Mk2_3phase_RFdatalog_4.ino
+ *
+ * Issue 1 was released in January 2015.
+ *
+ * This sketch provides continuous monitoring of real power on three phases. 
+ * Surplus power is diverted to multiple loads in sequential order.  A suitable
+ * output-stage is required for each load; this can be either triac-based, or a 
+ * Solid State Relay.  
+ *
+ * Datalogging of real power and Vrms is provided for each phase.
+ * The presence or absence of the RFM12B needs to be set at compile time
+ *
+ * January 2016, renamed as Mk2_3phase_RFdatalog_2 with these changes:
+ * - Improved control of multiple loads has been imported from the 
+ *     equivalent 1-phase sketch, Mk2_multiLoad_wired_6.ino
+ * - the ISR has been upgraded to fix a possible timing anomaly
+ * - variables to store ADC samples are now declared as "volatile"
+ * - for RF69 RF module is now supported
+ * - a performance check has been added with the result being sent to the Serial port 
+ * - control signals for loads are now active-high to suit the latest 3-phase PCB
+ *
+ * February 2016, renamed as Mk2_3phase_RFdatalog_3 with these changes:
+ * - improvements to the start-up logic.  The start of normal operation is now 
+ *    synchronised with the start of a new mains cycle.
+ * - reduce the amount of feedback in the Low Pass Filter for removing the DC content
+ *     from the Vsample stream. This resolves an anomaly which has been present since 
+ *     the start of this project.  Although the amount of feedback has previously been 
+ *     excessive, this anomaly has had minimal effect on the system's overall behaviour.
+ * - The reported power at each of the phases has been inverted. These values are now in 
+ *     line with the Open Energy Monitor convention, whereby import is positive and 
+ *     export is negative.
+ *   
+ * February 2020: updated to Mk2_3phase_RFdatalog_3a with these changes:
+ * - removal of some redundant code in the logic for determining the next load state.
+ * 
+ * July  2022: updated to Mk2_3phase_RFdatalog_4, with this change:
+ * - the datalogging accumulator for Vsquared has been rescaled to 1/16 of its previous value 
+ * to avoid the risk of overflowing during a 20-second datalogging period.   
+ *
+ *      Robin Emley
+ *      www.Mk2PVrouter.co.uk
+ */

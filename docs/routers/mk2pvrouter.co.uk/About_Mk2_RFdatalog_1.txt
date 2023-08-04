@@ -1,0 +1,15 @@
+Detail for my Mk2_RFdatalog_1.ino sketch
+
+This is an upgraded version of the original Mk2 sketch for use with my
+PCB-based hardware.  It supports two current sensors, CT1 and CT2.  
+CT1 is for monitoring the flow of energy at the supply point; CT2 is 
+available for monitoring the flow of current to the primary dump-load.  
+
+With this version, datalog messages are routinely transmitted by the
+on-board RF facility.  By using the pin-saving hardware option, the 
+4-digit display is still available for use.
+
+The payload of the transmitted data has three integer fields:
+- the message number, which increases by one every time;
+- the power at the supply point in Joules (import is -ve, export is +ve)
+- the diverted energy total for today, in kWh

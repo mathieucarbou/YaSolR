@@ -1,0 +1,30 @@
+Detail for my Mk2_RFdatalog_2.ino sketch
+
+This is an upgraded version of the original Mk2 sketch for use with my
+PCB-based hardware.  It supports two current sensors, CT1 and CT2.  
+CT1 is for monitoring the flow of energy at the supply point; CT2 is 
+available for monitoring the flow of current to the primary dump-load.  
+
+Datalog messages are routinely transmitted by the on-board RF facility.  
+By using the pin-saving hardware option, the 4-digit display is still 
+available for use.
+
+The _2 release includes various changes since the _1 version:
+
+- The transmitted data now only has two integer fields (no message ID):
+  . the power at the supply point in Joules (import is +ve, export is -ve)
+  . the diverted energy total for today, in kWh
+  (note the change in energy sense to match the OEM convention)
+
+- a REQUIRED_EXPORT_IN_WATTS facility has been added.  This acts like a 
+  leak in the energy bucket, therefore reducing the amount of surplus power 
+  that can be diverted.  When a negative value is entered, this facility
+  acts like a PV Simulator, which can be very helful for test purposes.
+
+- The state of the energy bucket is displayed at the Serial Monitor every 
+  second in Joules.
+
+- The RFM12B is no longer sent to sleep between RF trnsmissions, it remains
+  awake throughout.  The library call rf12_sendStart() has been replaced by
+  rf12_sendNow().  These changes are intended to minimise any disruption
+  to the continuous sampling process when RF transmissions are sent.

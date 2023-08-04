@@ -1,0 +1,52 @@
+Detail for my sketch remoteUnit_fasterControl_1.ino
+
+/* remoteUnit_fasterControl_1.ino
+ *
+ * This sketch is to control a remote load for a Mk2 PV Router at the receiver end
+ * of an RF link.  If RF transmission is lost, the load is turned off.  A repeater
+ * signal is available at the 'mode' connector.  This is intended to drive an LED
+ * with an appropriate series resistor, e.g. 120R. 
+ *
+ * The ability to measure and display the amount of energy which has been diverted 
+ * via the remote load is included.  For this to happen, one of the live cores
+ * needs to pass through a CT which connects to the 'CT2' connector.  
+ *
+ * The 'CT1' connector has been re-used in this sketch to provide a 2-colour 
+ * indication of the state of the RF link.  A schematic for this circuit may be 
+ * found immediately below this header.
+ *
+ * A persistence-based 4-digit display is supported. When the RFM12B module is 
+ * in use, the display can only be used in conjunction with an extra pair of 
+ * logic chips.  These are ICs 3 and 4, which reduce the number of processor pins 
+ * that are needed to drive the display.
+ *
+ * This sketch is similar in function to RF_for_Mk2_rx.ino, as posted on the 
+ * OpenEnergyMonitor forum.  That version, and other related material, can be
+ * found on my Summary Page at www.openenergymonitor.org/emon/node/1757
+ *
+ * January 2016: renamed as remote_Mk2_receiver_1a, with a minor change in the ISR to 
+ * remove a timing uncertainty.  Support for the RF69 RF module has also been included.
+ *
+ * January 2016: updated to remote_Mk2_receiver_1b:
+ *   The variables to store the ADC results are now declared as "volatile" to remove 
+ *   any possibility of incorrect operation due to optimisation by the compiler.
+ *
+ * February 2016: updated to remote_Mk2_receiver_2, with these changes:
+ * - improvements to the start-up logic.  The start of normal operation is now 
+ *    synchronised with the start of a new mains cycle.
+ * - reduce the amount of feedback in the Low Pass Filter for removing the DC content
+ *     from the Vsample stream. This resolves an anomaly which has been present since 
+ *     the start of this project.  Although the amount of feedback has previously been 
+ *     excessive, this anomaly has had minimal effect on the system's overall behaviour.
+ * - change all instances of "triac" to "load"
+ *
+ * September 2022: updated to remoteUnit_fasterConrol_1, with this change:
+ * - RF payload reduced to just one integer for the load state. For use with the transmitter
+ *   sketch, Mk2_fasterControl_withRemoteLoad_n
+ * - the hardware timer that controls the ADC has been increased from 200 to 250 us (just to  
+ *   reduce the workload).
+ * 
+ *       Robin Emley
+ *      www.Mk2PVrouter.co.uk
+ */
+ 
