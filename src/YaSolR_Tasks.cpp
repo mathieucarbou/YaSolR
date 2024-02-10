@@ -107,7 +107,6 @@ Mycila::Task stopNetworkServicesTask = Mycila::Task("stopNetworkServicesTask", [
 Mycila::Task otaPrepareTask = Mycila::Task("otaPrepareTask", [](void* params) {
   Mycila::Logger.info(TAG, "Preparing OTA update...");
   lightsTask.pause();
-  trialTask.pause();
   mqttTask.pause();
   publisherTask.pause();
   output1Dimmer.end();
@@ -121,6 +120,7 @@ Mycila::Task otaPrepareTask = Mycila::Task("otaPrepareTask", [](void* params) {
   Mycila::ZCD.end();
   Mycila::MQTT.end();
 #ifdef APP_VERSION_TRIAL
+  trialTask.pause();
   Mycila::Trial.end();
 #endif
 }, Mycila::TaskType::ONCE).debugIf([]() { return Mycila::Logger.isDebugEnabled(); });
