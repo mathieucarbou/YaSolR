@@ -35,7 +35,7 @@ Please look at the website and manual for more information about how to flash.
 2. Build the file system and the firmware:
 
 ```bash
-./build.sh
+pio run -t build
 ```
 
 ## Flashing
@@ -57,5 +57,6 @@ esptool.py --port /dev/ttyUSB0 \
 Next time, just upload the partition you modify
 
 ```bash
-./upload.sh
+pio run -t upload
+pio run -t monitor
 ```
