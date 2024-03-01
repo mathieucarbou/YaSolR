@@ -354,7 +354,7 @@ void YaSolR::WebsiteClass::_status(Card* card, const char* key, bool enabled, bo
   if (!configEnabled)
     card->update("Disabled", DASH_STATUS_IDLE);
   else if (!enabled)
-    card->update("Unable to start", DASH_STATUS_DANGER);
+    card->update("Failed to start", DASH_STATUS_DANGER);
   else if (!active)
     card->update(err, DASH_STATUS_WARNING);
   else

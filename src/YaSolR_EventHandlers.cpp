@@ -109,7 +109,7 @@ void YaSolR::YaSolRClass::_initEventHandlers() {
     if (key == KEY_MQTT_ENABLE || key == KEY_HA_DISCOVERY_ENABLE)
       configureMQTTTask.resume();
     else if (key == KEY_AP_MODE_ENABLE && (ESPConnect.getState() == ESPConnectState::AP_STARTED || ESPConnect.getState() == ESPConnectState::NETWORK_CONNECTING || ESPConnect.getState() == ESPConnectState::NETWORK_CONNECTED || ESPConnect.getState() == ESPConnectState::NETWORK_TIMEOUT || ESPConnect.getState() == ESPConnectState::NETWORK_DISCONNECTED || ESPConnect.getState() == ESPConnectState::NETWORK_RECONNECTING))
-      configureNetworkTask.resume();
+      restartTask.resume();
     else if (key == KEY_BUTTON_ENABLE)
       configureButtonTask.resume();
     else if (key == KEY_BUZZER_ENABLE)

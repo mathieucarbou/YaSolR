@@ -87,8 +87,6 @@ Mycila::Task resetTask("resetTask", [](void* params) {
 });
 
 Mycila::Task startNetworkServicesTask("startNetworkServicesTask", [](void* params) {
-  Mycila::Logger.info(TAG, "Starting network services...");
-
   Mycila::Logger.info(TAG, "Enable Web Server...");
   webServer.onNotFound([](AsyncWebServerRequest* request) {
     request->send(404);
@@ -96,17 +94,22 @@ Mycila::Task startNetworkServicesTask("startNetworkServicesTask", [](void* param
   webServer.begin();
   MDNS.addService("http", "tcp", 80);
 
-  if (!Mycila::Config.getBool(KEY_AP_MODE_ENABLE) && Mycila::Config.getBool(KEY_MQTT_ENABLE))
+  if (!Mycila::Config.getBool(KEY_AP_MODE_ENABLE) && Mycila::Config.getBool(KEY_MQTT_ENABLE)) {
+    Mycila::Logger.info(TAG, "Enable MQTT...");
     Mycila::MQTT.begin(YaSolR::YaSolR.getMQTTConfig());
-  else
+  } else
     Mycila::Logger.warn(TAG, "MQTT not enabled");
-  if (!Mycila::Config.getBool(KEY_AP_MODE_ENABLE))
+
+  if (!Mycila::Config.getBool(KEY_AP_MODE_ENABLE)) {
+    Mycila::Logger.info(TAG, "NTP Sync...");
     Mycila::NTP.sync(Mycila::Config.get(KEY_NTP_SERVER));
+  }
+
   Mycila::Buzzer.beep();
 });
 
 Mycila::Task stopNetworkServicesTask("stopNetworkServicesTask", [](void* params) {
-  Mycila::Logger.info(TAG, "Stopping network services...");
+  Mycila::Logger.info(TAG, "Disable MQTT...");
   Mycila::MQTT.end();
 
   Mycila::Logger.info(TAG, "Disable Web Server...");
@@ -675,10 +678,10 @@ void YaSolR::YaSolRClass::_initTasks() {
   otaPrepareTask.setDebugWhen(DEBUG_ENABLED);
   output1TemperatureTask.setDebugWhen(DEBUG_ENABLED);
   output2TemperatureTask.setDebugWhen(DEBUG_ENABLED);
-  profilerTask.setDebugWhen(DEBUG_ENABLED);
+  // profilerTask.setDebugWhen(DEBUG_ENABLED);
   resetTask.setDebugWhen(DEBUG_ENABLED);
   restartTask.setDebugWhen(DEBUG_ENABLED);
-  stackMonitorTask.setDebugWhen(DEBUG_ENABLED);
+  // stackMonitorTask.setDebugWhen(DEBUG_ENABLED);
   startNetworkServicesTask.setDebugWhen(DEBUG_ENABLED);
   stopNetworkServicesTask.setDebugWhen(DEBUG_ENABLED);
   systemTemperatureTask.setDebugWhen(DEBUG_ENABLED);

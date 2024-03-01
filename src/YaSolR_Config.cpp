@@ -11,7 +11,7 @@
 void YaSolR::YaSolRClass::_initConfig() {
   Mycila::Logger.info(TAG, "Initializing Config System...");
 
-  Mycila::Config.begin(84);
+  Mycila::Config.begin(90);
 
   String mqttName = String(Mycila::AppInfo.name + "_" + Mycila::AppInfo.id);
   mqttName.toLowerCase();

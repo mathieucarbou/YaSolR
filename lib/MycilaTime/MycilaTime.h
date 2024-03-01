@@ -4,8 +4,6 @@
  */
 #pragma once
 
-#include <MycilaNTP.h>
-
 #include <WString.h>
 #include <time.h>
 
@@ -33,7 +31,7 @@ namespace Mycila {
       static time_t getUnixTime() {
         time_t now;
         struct tm timeinfo;
-        if (!NTP.isSynced() || !getLocalTime(&timeinfo, 5))
+        if (!getLocalTime(&timeinfo, 5))
           return 0;
         time(&now);
         return now;

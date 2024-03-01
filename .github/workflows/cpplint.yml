@@ -43,7 +43,6 @@ jobs:
             --exclude=lib/ElegantOTAPro \
             --exclude=lib/ESPDASH \
             --exclude=lib/ESPDASHPro \
-            --exclude=lib/WebSerialLite \
             lib \
             include \
             src

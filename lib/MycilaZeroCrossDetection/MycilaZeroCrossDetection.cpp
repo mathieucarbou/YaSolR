@@ -33,6 +33,7 @@ void Mycila::ZeroCrossDetectionClass::begin(const uint8_t pin, const uint8_t fre
   Thyristor::setFrequency(frequency);
   Thyristor::frequencyMonitorAlwaysOn(true);
   Thyristor::setSyncPin(_pin);
+  Thyristor::setSyncDir(RISING);
   Thyristor::begin();
 
   _enabled = true;
