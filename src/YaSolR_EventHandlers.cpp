@@ -88,6 +88,7 @@ void YaSolR::YaSolRClass::_initEventHandlers() {
           Mycila::Config.set(KEY_WIFI_SSID, ESPConnect.getConfiguredWiFiSSID());
           Mycila::Config.set(KEY_WIFI_PASSWORD, ESPConnect.getConfiguredWiFiPassword());
         }
+        restartTask.resume();
         break;
       }
       case ESPConnectState::PORTAL_TIMEOUT:
