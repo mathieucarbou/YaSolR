@@ -53,6 +53,9 @@ namespace YaSolR {
 
       Statistic _gridVoltStat = Statistic(&dashboard, "Grid Voltage");
       Statistic _gridFreqStat = Statistic(&dashboard, "Grid Frequency");
+      Statistic _gridPowerFactorStat = Statistic(&dashboard, "Grid Power Factor");
+      Statistic _gridEnergyStat = Statistic(&dashboard, "Grid Energy");
+      Statistic _gridEnergyReturnedStat = Statistic(&dashboard, "Grid Energy Returned");
 
       Statistic _output1SwitchCountStat = Statistic(&dashboard, "Output 1 Switch Count");
       Statistic _output2SwitchCountStat = Statistic(&dashboard, "Output 2 Switch Count");

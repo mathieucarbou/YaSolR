@@ -27,6 +27,9 @@ namespace Mycila {
 
       float getFrequency() const;
       float getActivePower() const;
+      float getActiveEnergy() const;
+      float getActiveEnergyReturned() const;
+      float getPowerFactor() const;
       float getVoltage() const;
 
       bool isConnected() const { return getVoltage() > 0; }

@@ -35,8 +35,12 @@ void YaSolR::YaSolRClass::publishMQTT() {
 
     // grid
     {
-      Mycila::MQTT.publish(baseTopic + "/grid/power", String(Mycila::Grid.getActivePower()));
+      Mycila::MQTT.publish(baseTopic + "/grid/power", String(Mycila::Grid.getActivePower(), 3));
+      Mycila::MQTT.publish(baseTopic + "/grid/energy", String(Mycila::Grid.getActiveEnergy(), 3));
+      Mycila::MQTT.publish(baseTopic + "/grid/energy_returned", String(Mycila::Grid.getActiveEnergyReturned(), 3));
+      Mycila::MQTT.publish(baseTopic + "/grid/power_factor", String(Mycila::Grid.getPowerFactor(), 3));
       Mycila::MQTT.publish(baseTopic + "/grid/online", YASOLR_BOOL(Mycila::Grid.isConnected()));
+      Mycila::MQTT.publish(baseTopic + "/grid/voltage", String(Mycila::Grid.getVoltage(), 3));
     }
     yield();
 
@@ -78,11 +82,11 @@ void YaSolR::YaSolRClass::publishMQTT() {
 
     // router
     {
-      Mycila::MQTT.publish(baseTopic + "/router/energy", String(Mycila::Router.getTotalRoutedEnergy()));
-      Mycila::MQTT.publish(baseTopic + "/router/power_factor", String(Mycila::Router.getTotalPowerFactor()));
-      Mycila::MQTT.publish(baseTopic + "/router/power", String(Mycila::Router.getTotalRoutedPower()));
-      Mycila::MQTT.publish(baseTopic + "/router/thdi", String(Mycila::Router.getTotalTHDi()));
-      Mycila::MQTT.publish(baseTopic + "/router/virtual_grid_power", String(Mycila::Router.getVirtualGridPower()));
+      Mycila::MQTT.publish(baseTopic + "/router/energy", String(Mycila::Router.getTotalRoutedEnergy(), 3));
+      Mycila::MQTT.publish(baseTopic + "/router/power_factor", String(Mycila::Router.getTotalPowerFactor(), 3));
+      Mycila::MQTT.publish(baseTopic + "/router/power", String(Mycila::Router.getTotalRoutedPower(), 3));
+      Mycila::MQTT.publish(baseTopic + "/router/thdi", String(Mycila::Router.getTotalTHDi(), 3));
+      Mycila::MQTT.publish(baseTopic + "/router/virtual_grid_power", String(Mycila::Router.getVirtualGridPower(), 3));
     }
     yield();
 

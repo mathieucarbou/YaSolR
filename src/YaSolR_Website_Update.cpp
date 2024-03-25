@@ -21,6 +21,9 @@ void YaSolR::WebsiteClass::_update(bool skipWebSocketPush) {
   _ethMACStat.set(ESPConnect.getMACAddress(ESPConnectMode::ETH).c_str());
   _gridFreqStat.set((String(Mycila::Grid.getFrequency()) + " Hz").c_str());
   _gridVoltStat.set((String(Mycila::Grid.getVoltage()) + " V").c_str());
+  _gridPowerFactorStat.set(String(Mycila::Grid.getPowerFactor()).c_str());
+  _gridEnergyStat.set((String(Mycila::Grid.getActiveEnergy(), 3) + " kWh").c_str());
+  _gridEnergyReturnedStat.set((String(Mycila::Grid.getActiveEnergyReturned(), 3) + " kWh").c_str());
   _heapMemoryUsageStat.set((String(memory.usage) + " %").c_str());
   _heapMemoryUsedStat.set((String(memory.used) + " bytes").c_str());
   _netModeStat.set(mode == ESPConnectMode::AP ? "AP" : (mode == ESPConnectMode::STA ? "WiFi" : (mode == ESPConnectMode::ETH ? "Ethernet" : "")));

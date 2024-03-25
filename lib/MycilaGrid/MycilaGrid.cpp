@@ -74,6 +74,18 @@ float Mycila::GridClass::getActivePower() const {
   return 0;
 }
 
+float Mycila::GridClass::getActiveEnergy() const {
+  return _jsy != nullptr ? _jsy->getEnergy2() : 0;
+}
+
+float Mycila::GridClass::getActiveEnergyReturned() const {
+  return _jsy != nullptr ? _jsy->getEnergyReturned2() : 0;
+}
+
+float Mycila::GridClass::getPowerFactor() const {
+  return _jsy != nullptr ? _jsy->getPowerFactor2() : 0;
+}
+
 float Mycila::GridClass::getVoltage() const {
   // 1. MQTT
   if (!_mqttGridVoltageTopic.isEmpty() && !isMQTTGridDataExpired())
@@ -87,9 +99,12 @@ float Mycila::GridClass::getVoltage() const {
 }
 
 void Mycila::GridClass::toJson(const JsonObject& root) const {
+  root["energy_returned"] = getActiveEnergyReturned();
+  root["energy"] = getActiveEnergy();
   root["frequency"] = getFrequency();
   root["online"] = isConnected();
   root["power"] = getActivePower();
+  root["power_factor"] = getPowerFactor();
   root["voltage"] = getVoltage();
   if (_jsy != nullptr)
     _jsy->toJson(root["jsy"].to<JsonObject>());
