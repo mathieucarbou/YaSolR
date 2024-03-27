@@ -100,13 +100,13 @@ void YaSolR::YaSolRClass::publishHADiscovery() {
   // SENSORS
 
   Mycila::HADiscovery.publish(Mycila::HAState("grid", "Grid Electricity", "/grid/online", YASOLR_TRUE, YASOLR_FALSE, "connectivity"));
-  Mycila::HADiscovery.publish(Mycila::HAGauge("grid_energy", "Grid Energy", "/grid/energy", "energy", nullptr, "kWh"));
-  Mycila::HADiscovery.publish(Mycila::HAGauge("grid_energy_returned", "Grid Energy Returned", "/grid/energy_returned", "energy", nullptr, "kWh"));
+  Mycila::HADiscovery.publish(Mycila::HACounter("grid_energy", "Grid Energy", "/grid/energy", "energy", nullptr, "kWh"));
+  Mycila::HADiscovery.publish(Mycila::HACounter("grid_energy_returned", "Grid Energy Returned", "/grid/energy_returned", "energy", nullptr, "kWh"));
   Mycila::HADiscovery.publish(Mycila::HAGauge("grid_power", "Grid Power", "/grid/power", "power", nullptr, "W"));
   Mycila::HADiscovery.publish(Mycila::HAGauge("grid_power_factor", "Grid Power Factor", "/grid/power_factor", "power_factor"));
   Mycila::HADiscovery.publish(Mycila::HAGauge("grid_voltage", "Grid Voltage", "/grid/voltage", "voltage"));
 
-  Mycila::HADiscovery.publish(Mycila::HAGauge("router_energy", "Routed Energy", "/router/energy", "energy", nullptr, "kWh"));
+  Mycila::HADiscovery.publish(Mycila::HACounter("router_energy", "Routed Energy", "/router/energy", "energy", nullptr, "kWh"));
   Mycila::HADiscovery.publish(Mycila::HAGauge("router_power", "Total Routed Power", "/router/power", "power", nullptr, "W"));
   Mycila::HADiscovery.publish(Mycila::HAGauge("router_power_factor", "Router Power Factor", "/router/power_factor", "power_factor"));
   Mycila::HADiscovery.publish(Mycila::HAGauge("router_thdi", "Router THDi", "/router/thdi"));
