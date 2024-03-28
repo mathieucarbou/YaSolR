@@ -471,7 +471,7 @@ void YaSolR::YaSolRClass::_initTasks() {
   websiteTask.setType(Mycila::TaskType::FOREVER);
   websiteTask.setManager(&loopTaskManager);
   websiteTask.setEnabledWhen([]() { return ESPConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
-  websiteTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
+  websiteTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
 
   stackMonitorTask.setType(Mycila::TaskType::FOREVER);
   stackMonitorTask.setManager(&loopTaskManager);
@@ -548,14 +548,17 @@ void YaSolR::YaSolRClass::_initTasks() {
   jsyTask.setType(Mycila::TaskType::FOREVER);
   jsyTask.setManager(&routerTaskManager);
   jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
+  // jsyTask.setInterval(100 * Mycila::TaskDuration::MILLISECONDS);
 
   output1PZEMTask.setType(Mycila::TaskType::FOREVER);
   output1PZEMTask.setManager(&meterTaskManager);
   output1PZEMTask.setEnabledWhen([]() { return output1PZEM.isEnabled() && !assignOutput1PZEMTask.isRunning() && !assignOutput2PZEMTask.isRunning(); });
+  // output1PZEMTask.setInterval(100 * Mycila::TaskDuration::MILLISECONDS);
 
   output2PZEMTask.setType(Mycila::TaskType::FOREVER);
   output2PZEMTask.setManager(&meterTaskManager);
   output2PZEMTask.setEnabledWhen([]() { return output2PZEM.isEnabled() && !assignOutput1PZEMTask.isRunning() && !assignOutput2PZEMTask.isRunning(); });
+  // output2PZEMTask.setInterval(100 * Mycila::TaskDuration::MILLISECONDS);
 
   haDiscoTask.setType(Mycila::TaskType::ONCE);
   haDiscoTask.setManager(&loopTaskManager);
