@@ -202,8 +202,8 @@ namespace YaSolR {
 
       // Electricity meter configuration
       Card _jsy = Card(&dashboard, BUTTON_CARD, "JSY");
-      Card _jsyRXPin = Card(&dashboard, TEXT_INPUT_CARD, "JSY RX Pin (Serial TX)");
-      Card _jsyTXPin = Card(&dashboard, TEXT_INPUT_CARD, "JSY TX Pin (Serial RX)");
+      Card _jsyRXPin = Card(&dashboard, TEXT_INPUT_CARD, "JSY TX Pin (Serial RX)");
+      Card _jsyTXPin = Card(&dashboard, TEXT_INPUT_CARD, "JSY RX Pin (Serial TX)");
       Card _jsyReset = Card(&dashboard, PUSH_BUTTON_CARD, "JSY Reset Energy");
       Card _zcd = Card(&dashboard, BUTTON_CARD, "ZCD");
       Card _zcdPin = Card(&dashboard, TEXT_INPUT_CARD, "ZCD Sync Pin");
@@ -256,8 +256,8 @@ namespace YaSolR {
       Card _output1AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Auto Stop Time");
 
       Card _output1PZEM = Card(&dashboard, BUTTON_CARD, "PZEM-004T v3");
-      Card _output1PZEMRXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM RX Pin (Serial TX)");
-      Card _output1PZEMTXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM TX Pin (Serial RX)");
+      Card _output1PZEMRXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM TX Pin (Serial RX)");
+      Card _output1PZEMTXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM RX Pin (Serial TX)");
       Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "PZEM Pairing");
       Card _output1PZEMReset = Card(&dashboard, PUSH_BUTTON_CARD, "PZEM Reset Energy");
 
@@ -283,8 +283,8 @@ namespace YaSolR {
       Card _output2AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Auto Stop Time");
 
       Card _output2PZEM = Card(&dashboard, BUTTON_CARD, "PZEM-004T v3");
-      Card _output2PZEMRXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM RX Pin (Serial TX)");
-      Card _output2PZEMTXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM TX Pin (Serial RX)");
+      Card _output2PZEMRXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM TX Pin (Serial RX)");
+      Card _output2PZEMTXPin = Card(&dashboard, TEXT_INPUT_CARD, "PZEM RX Pin (Serial TX)");
       Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "PZEM Pairing");
       Card _output2PZEMReset = Card(&dashboard, PUSH_BUTTON_CARD, "PZEM Reset Energy");
 

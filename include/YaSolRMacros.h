@@ -441,11 +441,11 @@
 #endif
 
 #ifndef YASOLR_JSY_RX_PIN
-#define YASOLR_JSY_RX_PIN 17
+#define YASOLR_JSY_RX_PIN 16
 #endif
 
 #ifndef YASOLR_JSY_TX_PIN
-#define YASOLR_JSY_TX_PIN 16
+#define YASOLR_JSY_TX_PIN 17
 #endif
 
 #ifndef YASOLR_JSY_SERIAL
@@ -453,11 +453,11 @@
 #endif
 
 #ifndef YASOLR_PZEM_RX_PIN
-#define YASOLR_PZEM_RX_PIN 27
+#define YASOLR_PZEM_RX_PIN 14
 #endif
 
 #ifndef YASOLR_PZEM_TX_PIN
-#define YASOLR_PZEM_TX_PIN 14
+#define YASOLR_PZEM_TX_PIN 27
 #endif
 
 #ifndef YASOLR_PZEM_SERIAL
