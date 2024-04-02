@@ -77,7 +77,7 @@ extern Mycila::TemperatureSensor output2TemperatureSensor;
 extern Mycila::TemperatureSensor systemTemperatureSensor;
 
 extern Mycila::TaskManager loopTaskManager;
-extern Mycila::TaskManager meterTaskManager;
+// extern Mycila::TaskManager meterTaskManager;
 extern Mycila::TaskManager routerTaskManager;
 
 extern Mycila::Task assignOutput1PZEMTask;

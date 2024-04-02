@@ -12,8 +12,8 @@
 #define TAG "YASOLR"
 
 Mycila::TaskManager loopTaskManager("loopTask", 49);
-Mycila::TaskManager meterTaskManager("meterTask", 2);
-Mycila::TaskManager routerTaskManager("routerTask", 1);
+// Mycila::TaskManager meterTaskManager("meterTask", 2);
+Mycila::TaskManager routerTaskManager("routerTask", 3);
 
 // TODO: switch to PsychicHttp (when WS perf will be better)
 AsyncWebServer webServer(80);
@@ -121,7 +121,7 @@ void setup() {
   configureNetworkTask.forceRun();
 
   assert(routerTaskManager.asyncStart(YASOLR_ROUTER_TASK_STACK, YASOLR_ROUTER_TASK_PRIORITY, YASOLR_ROUTER_TASK_CORE));
-  assert(meterTaskManager.asyncStart(YASOLR_METER_TASK_STACK, YASOLR_METER_TASK_PRIORITY, YASOLR_METER_TASK_CORE));
+  // assert(meterTaskManager.asyncStart(YASOLR_METER_TASK_STACK, YASOLR_METER_TASK_PRIORITY, YASOLR_METER_TASK_CORE));
 
   // STARTUP READY!
   Mycila::Logger.info(TAG, "Started %s %s %s", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str());

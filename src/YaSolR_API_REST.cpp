@@ -227,7 +227,7 @@ void YaSolR::YaSolRClass::_initREST() {
     Mycila::Lights.toJson(root["lights"].to<JsonObject>());
     Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
     loopTaskManager.toJson(root["task_managers"][0].to<JsonObject>());
-    meterTaskManager.toJson(root["task_managers"][1].to<JsonObject>());
+    // meterTaskManager.toJson(root["task_managers"][1].to<JsonObject>());
     routerTaskManager.toJson(root["task_managers"][2].to<JsonObject>());
     systemTemperatureSensor.toJson(root["temp_sensor"].to<JsonObject>());
     response->setLength();

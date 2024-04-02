@@ -12,7 +12,7 @@ static const Mycila::TaskPredicate DEBUG_ENABLED = []() {
   return Mycila::Logger.isDebugEnabled();
 };
 static const Mycila::TaskDoneCallback LOG_EXEC_TIME = [](const Mycila::Task& me, const uint32_t elapsed) {
-  Mycila::Logger.debug(TAG, "%s in %u ms", me.getName(), elapsed / Mycila::TaskDuration::MILLISECONDS);
+  Mycila::Logger.debug(TAG, "%s in %u us", me.getName(), elapsed);
 };
 
 // Core tasks
@@ -23,7 +23,7 @@ Mycila::Task lightsTask("Lights", [](void* params) { Mycila::Lights.setYellow(re
 Mycila::Task stackMonitorTask("TaskMonitor.log()", [](void* params) { Mycila::TaskMonitor.log(); });
 Mycila::Task profilerTask("TaskManager.log()", [](void* params) {
   loopTaskManager.log();
-  meterTaskManager.log();
+  // meterTaskManager.log();
   routerTaskManager.log();
 });
 Mycila::Task systemTemperatureTask("systemTemperatureSensor.read()", [](void* params) {
@@ -425,7 +425,7 @@ Mycila::Task configureTaskMonitorTask("configureTaskMonitorTask", [](void* param
   Mycila::TaskMonitor.begin(5);
   Mycila::TaskMonitor.addTask("async_tcp");  // ESPAsyncTCP
   Mycila::TaskMonitor.addTask("loopTask");   // Arduino
-  Mycila::TaskMonitor.addTask("meterTask");  // YaSolR
+  // Mycila::TaskMonitor.addTask("meterTask");  // YaSolR
   Mycila::TaskMonitor.addTask("mqtt_task");  // NycilaMQTT
   Mycila::TaskMonitor.addTask("routerTask"); // YaSolR
 });
@@ -455,7 +455,7 @@ Mycila::Task configureDebugTask("configureDebugTask", [](void* params) {
   } else {
     Mycila::Logger.info(TAG, "Disable profiling for all tasks");
     loopTaskManager.disableProfiling();
-    meterTaskManager.disableProfiling();
+    // meterTaskManager.disableProfiling();
     routerTaskManager.disableProfiling();
   }
 });
@@ -551,12 +551,14 @@ void YaSolR::YaSolRClass::_initTasks() {
   // jsyTask.setInterval(100 * Mycila::TaskDuration::MILLISECONDS);
 
   output1PZEMTask.setType(Mycila::TaskType::FOREVER);
-  output1PZEMTask.setManager(&meterTaskManager);
+  // output1PZEMTask.setManager(&meterTaskManager);
+  output1PZEMTask.setManager(&routerTaskManager);
   output1PZEMTask.setEnabledWhen([]() { return output1PZEM.isEnabled() && !assignOutput1PZEMTask.isRunning() && !assignOutput2PZEMTask.isRunning(); });
   // output1PZEMTask.setInterval(100 * Mycila::TaskDuration::MILLISECONDS);
 
   output2PZEMTask.setType(Mycila::TaskType::FOREVER);
-  output2PZEMTask.setManager(&meterTaskManager);
+  // output2PZEMTask.setManager(&meterTaskManager);
+  output2PZEMTask.setManager(&routerTaskManager);
   output2PZEMTask.setEnabledWhen([]() { return output2PZEM.isEnabled() && !assignOutput1PZEMTask.isRunning() && !assignOutput2PZEMTask.isRunning(); });
   // output2PZEMTask.setInterval(100 * Mycila::TaskDuration::MILLISECONDS);
 
