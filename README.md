@@ -10,7 +10,7 @@
 
 # Documentation
 
-Please look at the website and manual for more information about how to flash.
+Please look at the manual in the website to know which firmware to download and flash.
 
 👉 Website: [https://yasolr.carbou.me/](https://yasolr.carbou.me/)
 
@@ -19,64 +19,3 @@ Please look at the website and manual for more information about how to flash.
 **Please make sure to download the firmware matching your board from these locations:**
 
 - [`latest`](https://github.com/mathieucarbou/YaSolR-OSS/releases/tag/latest) (latest development version)
-
-Firmware files are named as follow:
-
-- `YaSolR-<VERSION>-oss--<BOARD>.bin`: for the firmware used to update
-- `YaSolR-<VERSION>-oss-<BOARD>.factory.bin`: for the firmware used to flash for the first time or to do a factory reset
-
-Where:
-
-- `VERSION`: YaS☀️lR version, or `main` for the latest development build
-- `BOARD`: the board name, from the list of [Compatible ESP32 boards](https://yasolr.carbou.me/build#compatible-esp32-boards)
-
-**Images ending with `-debug` are for development purpose or to troubleshoot issues: they are not optimized and output a lot of debug logs.**
-
-# Developer guide
-
-## Project structure
-
-- `.github`: CI/CD workflows
-- `data`: Build components added to the firmware
-- `include`: Firmware include code
-- `lib`: Firmware libraries
-- `pio`: pio scripts
-- `src`: Firmware source code
-- `test`: Firmware tests
-- `tools`: Some random tools
-- `partitions.csv`: ESP32 custom partition table
-- `platformio_override.ini.template` (to copy to `platformio_override.ini`): PlatformIO configuration override
-- `platformio.ini`: PlatformIO configuration
-
-## Building the firmware
-
-1. Configure `platformio_override.ini` to your needs (you can copy the template file `platformio_override.ini.template` to `platformio_override.ini` for that)
-
-2. Build the file system and the firmware:
-
-```bash
-pio run -t build
-```
-
-## Flashing
-
-First time, flash the entire firmware which includes the partition table and all partitions:
-
-```bash
-esptool.py --port /dev/ttyUSB0 \
-  --chip esp32 \
-  --before default_reset \
-  --after hard_reset \
-  write_flash \
-  --flash_mode dout \
-  --flash_freq 40m \
-  --flash_size detect \
-  0x0 YaSolR-VERSION-MODEL-CHIP.factory.bin
-```
-
-Next time, just upload the partition you modify
-
-```bash
-pio run -t upload
-pio run -t monitor
-```
