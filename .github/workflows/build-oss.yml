@@ -96,8 +96,8 @@ jobs:
           ref="${ref//\//}"
           ref="${ref//-/}"
           ref="${ref//_/}"
-          mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}.bin
-          mv .pio/build/${{ matrix.environment }}/firmware.factory.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}.factory.bin
+          mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}.UPDATE.bin
+          mv .pio/build/${{ matrix.environment }}/firmware.factory.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}.FACTORY.bin
 
       - name: Upload
         uses: actions/upload-artifact@v4
