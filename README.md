@@ -13,9 +13,3 @@
 Please look at the manual in the website to know which firmware to download and flash.
 
 👉 Website: [https://yasolr.carbou.me/](https://yasolr.carbou.me/)
-
-# Downloads
-
-**Please make sure to download the firmware matching your board from these locations:**
-
-- [`latest`](https://github.com/mathieucarbou/YaSolR-OSS/releases/tag/latest) (latest development version)
