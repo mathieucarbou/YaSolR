@@ -4,26 +4,6 @@
  */
 #include <YaSolR.h>
 
-/*
-| **LINE** | **CONTENT**                 |
-| -------: | :-------------------------- |
-|        1 | `YaSolR Pro v1.2.3   17:30` |
-|        1 | `YaSolR Pro v1.2.3   ??:??` |
-|        2 | `192.168.100.100   12.10 C` |
-|        2 | `YaSolR-XXXX       12.10 C` |
-|        2 | `Disconnected!     12.10 C` |
-|        2 | `Connecting...     12.10 C` |
-|        2 | `Reconnecting...   12.10 C` |
-|        3 | `O1: 1000 W        12.10 C` |
-|        3 | `O1: 1000 W        ??.?? C` |
-|        3 | `O1: RELAY OFF     12.10 C` |
-|        4 | `O1: 12:22-12:23   12-20 C` |
-|        4 | `O1: AUTO OFF`              |
-|        5 | `O2: 1000 W        12.10 C` |
-|        6 | `O2: 12:22-12:23   12-20 C` |
-|      ALT | `RELAY1:  ON   RELAY2:  ON` |
-|      ALT | `RELAY1: OFF   RELAY2: OFF` |
-*/
 void YaSolR::YaSolRClass::updateDisplay() {
   if (Mycila::EasyDisplay.isEnabled()) {
     char lines[MYCILA_DISPLAY_LINE_COUNT][MYCILA_DISPLAY_LINE_LENGTH];
