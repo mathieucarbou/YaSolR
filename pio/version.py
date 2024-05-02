@@ -28,7 +28,7 @@ def get_build_flag():
     branch = branch.replace("_", "")
 
     # is_tag ?
-    is_tag = branch.startswith("v") and branch.len() == 6
+    is_tag = branch.startswith("v") and len(branch) == 6
 
     # local modifications ?
     has_local_modifications = False
