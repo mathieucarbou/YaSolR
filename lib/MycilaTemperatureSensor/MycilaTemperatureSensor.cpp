@@ -64,6 +64,7 @@ float Mycila::TemperatureSensor::read() {
   return _temperature;
 }
 
+// TODO: remove
 String Mycila::TemperatureSensor::getTemperatureAsString() const {
   if (!_enabled || !isValid())
     return "??.??";

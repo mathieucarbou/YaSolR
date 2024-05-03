@@ -4,7 +4,7 @@
  */
 #include <YaSolRWebsite.h>
 
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
 #include <ElegantOTAPro.h>
 #else
 #include <ElegantOTA.h>
@@ -21,7 +21,7 @@ extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_
 
 void YaSolR::WebsiteClass::init() {
 // pro mode
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   dashboard.setTitle((Mycila::AppInfo.name + " " + Mycila::AppInfo.model).c_str());
 
   // dropdowns
@@ -278,7 +278,7 @@ void YaSolR::WebsiteClass::init() {
 
   // ota
 
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   ElegantOTA.setID(Mycila::AppInfo.firmware.c_str());
   ElegantOTA.setTitle((Mycila::AppInfo.name + " Web Updater").c_str());
   ElegantOTA.setFWVersion(Mycila::AppInfo.version.c_str());
@@ -321,7 +321,7 @@ void YaSolR::WebsiteClass::init() {
   _relaySwitch(&_relay1Switch, NAME_RELAY1);
   _relaySwitch(&_relay2Switch, NAME_RELAY2);
 
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   // management
 
   _boolConfig(&_debugMode, KEY_DEBUG_ENABLE);
@@ -488,7 +488,7 @@ void YaSolR::WebsiteClass::_sliderConfig(Card* card, const char* key) {
 }
 
 void YaSolR::WebsiteClass::_numConfig(Card* card, const char* key) {
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   card->attachCallback([key](const char* value) {
     if (strlen(value) == 0) {
       Mycila::Config.unset(key);
@@ -508,13 +508,13 @@ void YaSolR::WebsiteClass::_boolConfig(Card* card, const char* key) {
 }
 
 void YaSolR::WebsiteClass::_textConfig(Card* card, const char* key) {
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   card->attachCallback([key](const char* value) { Mycila::Config.set(key, value); });
 #endif
 }
 
 void YaSolR::WebsiteClass::_daysConfig(Card* card, const char* key) {
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   card->attachCallback([key, card, this](const char* value) {
     card->update(value);
     dashboard.refreshCard(card);
@@ -524,7 +524,7 @@ void YaSolR::WebsiteClass::_daysConfig(Card* card, const char* key) {
 }
 
 void YaSolR::WebsiteClass::_passwordConfig(Card* card, const char* key) {
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   card->attachCallback([key, card, this](const char* value) {
     if (strlen(value) == 0) {
       Mycila::Config.unset(key);

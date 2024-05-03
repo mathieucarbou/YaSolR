@@ -32,7 +32,7 @@ Mycila::Task systemTemperatureTask("systemTemperatureSensor.read()", [](void* pa
 });
 Mycila::Task websiteTask("YaSolR.updateWebsite()", [](void* params) { YaSolR::YaSolR.updateWebsite(); });
 
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
 Mycila::Task trialTask("Trial.validate()", [](void* params) { Mycila::Trial.validate(); });
 #endif
 
@@ -131,7 +131,7 @@ Mycila::Task otaPrepareTask("otaPrepareTask", [](void* params) {
   jsy.end();
   Mycila::ZCD.end();
   Mycila::MQTT.end();
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
   trialTask.pause();
   Mycila::Trial.end();
 #endif
@@ -492,7 +492,7 @@ void YaSolR::YaSolRClass::_initTasks() {
   lightsTask.setManager(&loopTaskManager);
   lightsTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
 
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
   trialTask.setType(Mycila::TaskType::FOREVER);
   trialTask.setManager(&loopTaskManager);
   trialTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
@@ -690,7 +690,7 @@ void YaSolR::YaSolRClass::_initTasks() {
   startNetworkServicesTask.setDebugWhen(DEBUG_ENABLED);
   stopNetworkServicesTask.setDebugWhen(DEBUG_ENABLED);
   systemTemperatureTask.setDebugWhen(DEBUG_ENABLED);
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
   trialTask.setDebugWhen(DEBUG_ENABLED);
 #endif
 #endif

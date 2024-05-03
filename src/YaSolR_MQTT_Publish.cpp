@@ -6,6 +6,7 @@
 
 #define TAG "MQTT"
 
+// TODO: simplify
 void YaSolR::YaSolRClass::publishMQTT() {
   if (Mycila::MQTT.isConnected()) {
     const String baseTopic = Mycila::Config.get(KEY_MQTT_TOPIC);

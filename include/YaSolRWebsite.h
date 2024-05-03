@@ -8,7 +8,7 @@
 
 #include <map>
 
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
 #define PUSH_BUTTON_CARD_CB ()
 #else
 #define ENERGY_CARD GENERIC_CARD
@@ -16,6 +16,7 @@
 #define PUSH_BUTTON_CARD_CB (int32_t value)
 #endif
 
+// TODO: simplify
 namespace YaSolR {
   class WebsiteClass {
     public:
@@ -64,7 +65,7 @@ namespace YaSolR {
 
       Statistic _timeStat = Statistic(&dashboard, "Time");
       Statistic _uptimeStat = Statistic(&dashboard, "Uptime");
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
       Statistic _trialRemainingStat = Statistic(&dashboard, "Remaining Trial Time");
 #endif
 
@@ -110,7 +111,7 @@ namespace YaSolR {
       Card _output2Current = Card(&dashboard, ENERGY_CARD, "Output 2 Current", "A");
       Card _output2Resistance = Card(&dashboard, ENERGY_CARD, "Output 2 Resistance", "Ω");
 
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
       // health
       Card _stateBuzzer = Card(&dashboard, STATUS_CARD, "Buzzer", DASH_STATUS_IDLE);
       Card _stateDisplay = Card(&dashboard, STATUS_CARD, "Display", DASH_STATUS_IDLE);

@@ -6,6 +6,7 @@
 
 #define TAG "HA-DISCO"
 
+// TODO: simplify
 void YaSolR::YaSolRClass::publishHADiscovery() {
   if (!Mycila::Config.getBool(KEY_HA_DISCOVERY_ENABLE))
     return;

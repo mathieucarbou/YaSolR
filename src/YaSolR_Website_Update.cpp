@@ -38,7 +38,7 @@ void YaSolR::WebsiteClass::_update(bool skipWebSocketPush) {
   _wifiRSSIStat.set((String(ESPConnect.getWiFiRSSI()) + " dBm").c_str());
   _wifiSignalStat.set((String(ESPConnect.getWiFiSignalQuality()) + " %").c_str());
   _wifiSSIDStat.set(ESPConnect.getWiFiSSID().c_str());
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
   _trialRemainingStat.set((String(Mycila::Trial.getRemaining()) + " s").c_str());
 #endif
 
@@ -114,7 +114,7 @@ void YaSolR::WebsiteClass::_update(bool skipWebSocketPush) {
   _output2THDi.update(output2.getTHDi() * 100);
   _output2Energy.update(output2.getEnergy());
 
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
   // management tab
 
   _debugMode.update(Mycila::Config.getBool(KEY_DEBUG_ENABLE));

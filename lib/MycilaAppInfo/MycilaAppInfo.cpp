@@ -7,54 +7,40 @@
 #include <Esp.h>
 
 #ifndef APP_NAME
-#define APP_NAME "YaSolR"
+#define APP_NAME "Beelance"
 #endif
 
 #ifndef APP_MANUFACTURER
 #define APP_MANUFACTURER "Mathieu Carbou"
 #endif
 
-#ifdef APP_VERSION_PRO
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_PRO
+#ifdef APP_MODEL_TRIAL
 #define APP_MODEL "Trial"
 #else
 #define APP_MODEL "Pro"
 #endif
 #endif
 
-#ifdef APP_VERSION_OSS
+#ifdef APP_MODEL_OSS
 #define APP_MODEL "OSS"
 #endif
 
-#ifndef APP_VERSION
-#define APP_VERSION ""
-#endif
-
-#ifndef BUILD_HASH
-#define BUILD_HASH ""
-#endif
-
-#ifndef BUILD_BRANCH
-#define BUILD_BRANCH ""
-#endif
-
-#ifndef BUILD_TIMESAMP
-#define BUILD_TIMESAMP ""
-#endif
-
-#ifndef BUILD_NAME
-#define BUILD_NAME ""
-#endif
+extern const char* __COMPILED_APP_VERSION__;
+extern const char* __COMPILED_BUILD_BRANCH__;
+extern const char* __COMPILED_BUILD_HASH__;
+extern const char* __COMPILED_BUILD_NAME__;
+extern const char* __COMPILED_BUILD_TIMESTAMP__;
 
 Mycila::AppInfoClass::AppInfoClass() : id(_getEspId()),
                                        name(APP_NAME),
-                                       version(APP_VERSION),
+                                       version(__COMPILED_APP_VERSION__),
                                        model(APP_MODEL),
                                        manufacturer(APP_MANUFACTURER),
-                                       firmware(String(APP_NAME) + "-" + (version.indexOf("_") >= 0 ? version.substring(0, version.indexOf("_")) : version) + "-" + BUILD_NAME + ".bin"),
-                                       buildBranch(BUILD_BRANCH),
-                                       buildHash(BUILD_HASH),
-                                       buildDate(strlen(BUILD_TIMESAMP) == 0 ? __DATE__ " " __TIME__ : BUILD_TIMESAMP),
+                                       firmware(String(APP_NAME) + "-" + (version.indexOf("_") >= 0 ? version.substring(0, version.indexOf("_")) : version) + "-" + __COMPILED_BUILD_NAME__ + ".bin"),
+                                       buildBranch(__COMPILED_BUILD_BRANCH__),
+                                       buildHash(__COMPILED_BUILD_HASH__),
+                                       buildDate(strlen(__COMPILED_BUILD_TIMESTAMP__) == 0 ? __DATE__ " " __TIME__ : __COMPILED_BUILD_TIMESTAMP__),
                                        debug(firmware.indexOf("debug") >= 0),
                                        trial(firmware.indexOf("trial") >= 0) {}
 

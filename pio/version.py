@@ -2,8 +2,10 @@ import subprocess
 import os
 from datetime import datetime, timezone
 
+Import("env")
 
-def get_build_flag():
+
+def do_main():
     # hash
     ret = subprocess.run(
         ["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE, text=True, check=False
@@ -48,27 +50,35 @@ def get_build_flag():
     if has_local_modifications:
         version += "_modified"
 
-    return (
-        '-D APP_VERSION=\\"'
-        + version
-        + '\\" '
-        + '-D BUILD_BRANCH=\\"'
-        + branch
-        + '\\" '
-        + '-D BUILD_HASH=\\"'
-        + short_hash
-        + '\\" '
-        + '-D BUILD_TIMESAMP=\\"'
-        + datetime.now(timezone.utc).isoformat()
-        + '\\"'
-    )
+    constantFile = os.path.join(env.subst("$BUILD_DIR"), "__compiled_constants.c")
+    with open(constantFile, "w") as f:
+        f.write(
+            f'const char* __COMPILED_APP_VERSION__ = "{version}";\n'
+            f'const char* __COMPILED_BUILD_BRANCH__ = "{branch}";\n'
+            f'const char* __COMPILED_BUILD_HASH__ = "{short_hash}";\n'
+            f'const char* __COMPILED_BUILD_NAME__ = "{env["PIOENV"]}";\n'
+            f'const char* __COMPILED_BUILD_TIMESTAMP__ = "{datetime.now(timezone.utc).isoformat()}";\n'
+        )
+
+    env.AppendUnique(PIOBUILDFILES=[constantFile])
+
+    # buildFlags = (
+    #     '-D APP_VERSION=\\"'
+    #     + version
+    #     + '\\" '
+    #     + '-D BUILD_BRANCH=\\"'
+    #     + branch
+    #     + '\\" '
+    #     + '-D BUILD_HASH=\\"'
+    #     + short_hash
+    #     + '\\" '
+    #     + '-D BUILD_TIMESTAMP=\\"'
+    #     + datetime.now(timezone.utc).isoformat()
+    #     + '\\"'
+    # )
+
+    # print("Build flags: " + buildFlags)
+    # env.Append(BUILD_FLAGS=[buildFlags])
 
 
-build_flags = get_build_flag()
-
-if "SCons.Script" == __name__:
-    print("Firmware Revision: " + build_flags)
-    Import("env")
-    env.Append(BUILD_FLAGS=[get_build_flag()])
-elif "__main__" == __name__:
-    print(build_flags)
+do_main()

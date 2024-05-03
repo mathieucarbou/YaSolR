@@ -67,7 +67,7 @@ void setup() {
   Mycila::System.begin();
 
   // trial
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
   Mycila::Trial.begin();
 #endif
 

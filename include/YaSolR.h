@@ -43,11 +43,11 @@
 #include <ESPAsyncWebServer.h>
 #include <WebSerialLite.h>
 
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
 #include <MycilaTrial.h>
 #endif
 
-#ifdef APP_VERSION_PRO
+#ifdef APP_MODEL_PRO
 #include <ESPDashPro.h>
 #else
 #include <ESPDash.h>
@@ -133,6 +133,6 @@ extern Mycila::Task configureSystemTemperatureSensorTask;
 extern Mycila::Task configureTaskMonitorTask;
 extern Mycila::Task configureZCDTask;
 
-#ifdef APP_VERSION_TRIAL
+#ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
 #endif
