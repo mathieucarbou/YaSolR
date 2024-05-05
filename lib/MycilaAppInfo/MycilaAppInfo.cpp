@@ -7,7 +7,7 @@
 #include <Esp.h>
 
 #ifndef APP_NAME
-#define APP_NAME "Beelance"
+#define APP_NAME "YaSolR"
 #endif
 
 #ifndef APP_MANUFACTURER

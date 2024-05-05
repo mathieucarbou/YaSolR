@@ -25,13 +25,12 @@ namespace Mycila {
 
       void listen(TemperatureChangeCallback callback) { _callback = callback; }
 
-      float getTemperature() const { return _temperature; }
+      float getTemperature() const { return isValid() ? _temperature : 0; }
       bool isEnabled() const { return _enabled; }
       bool isValid() const { return _expirationDelay == 0 ? _enabled : (millis() - _lastUpdate < _expirationDelay * 1000); }
       uint32_t getLastUpdate() const { return _lastUpdate; }
       uint32_t getExpirationDelay() const { return _expirationDelay; }
 
-      String getTemperatureAsString() const;
       gpio_num_t getPin() const { return _pin; };
 
       void toJson(const JsonObject& root) const;

@@ -73,7 +73,7 @@ namespace Mycila {
       // bypass
 
       void autoBypass();
-      bool isBypassRelayOn() const { return _relay->isEnabled() ? _relay->isOn() : _dimmer->isOnAtFullPower(); }
+      bool isBypassRelayOn() const { return _relay->isEnabled() ? _relay->isOn() : _bypassEnabled; }
       bool isBypassRelayEnabled() const { return _relay->isEnabled() || _dimmer->isEnabled(); }
       inline bool tryBypassRelayToggle() { return tryBypassRelayState(!isBypassRelayOn()); }
       bool tryBypassRelayState(bool state);
@@ -110,6 +110,7 @@ namespace Mycila {
       Relay* _relay;
       PZEM* _pzem;
       bool _autoBypassEnabled = false;
+      bool _bypassEnabled = false;
       RouterOutputStateCallback _callback = nullptr;
 
     private:
@@ -119,7 +120,7 @@ namespace Mycila {
       float _inputVoltage = 0;
 
     private:
-      void _setBypassRelay(bool state);
+      void _setBypassRelay(bool state, uint8_t dimmerLevelWhenRelayOff = 0);
   };
 
   extern RouterOutputConfigClass RouterOutputConfig;

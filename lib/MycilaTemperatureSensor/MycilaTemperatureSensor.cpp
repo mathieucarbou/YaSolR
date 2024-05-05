@@ -64,15 +64,6 @@ float Mycila::TemperatureSensor::read() {
   return _temperature;
 }
 
-// TODO: remove
-String Mycila::TemperatureSensor::getTemperatureAsString() const {
-  if (!_enabled || !isValid())
-    return "??.??";
-  char buffer[6];
-  snprintf(buffer, sizeof(buffer), "%5.2f", _temperature);
-  return buffer;
-}
-
 void Mycila::TemperatureSensor::toJson(const JsonObject& root) const {
   root["enabled"] = _enabled;
   root["temperature"] = _temperature;

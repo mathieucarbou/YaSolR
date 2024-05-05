@@ -28,6 +28,8 @@ void Mycila::RouterOutput::applyDimmerLimit() {
     return;
   if (_dimmer->isOff())
     return;
+  if (_bypassEnabled)
+    return;
   uint8_t limit = RouterOutputConfig.getDimmerLevelLimit(_name);
   if (_dimmer->getLevel() > limit) {
     Logger.warn(TAG, "Dimmer '%s' reached its limit at %u", _name, limit);
@@ -65,8 +67,7 @@ bool Mycila::RouterOutput::tryDimmerLevel(uint8_t level) {
   }
 
   Logger.debug(TAG, "Setting Dimmer '%s' level to %u...", _name, level);
-  _relay->off();
-  _dimmer->setLevel(level);
+  _setBypassRelay(false, level);
   return true;
 }
 
@@ -222,16 +223,20 @@ void Mycila::RouterOutput::autoBypass() {
   _setBypassRelay(true);
 }
 
-void Mycila::RouterOutput::_setBypassRelay(bool state) {
+void Mycila::RouterOutput::_setBypassRelay(bool state, uint8_t dimmerLevelWhenRelayOff) {
   if (_relay->isEnabled()) {
-    Logger.debug(TAG, "Turning %s Bypass Relay '%s'...", state ? "on" : "off", _name);
     if (state)
       _dimmer->off();
-    _relay->setState(state);
-
+    if (state ^ _relay->isOn()) {
+      Logger.debug(TAG, "Turning %s Bypass Relay '%s'...", state ? "on" : "off", _name);
+      _relay->setState(state);
+    }
+    if (!state)
+      _dimmer->setLevel(dimmerLevelWhenRelayOff);
   } else {
     Logger.debug(TAG, "Turning %s Dimmer '%s'...", state ? "on" : "off", _name);
-    _dimmer->setLevel(state ? 100 : 0);
+    _dimmer->setLevel(state ? 100 : dimmerLevelWhenRelayOff);
+    _bypassEnabled = state;
   }
 }
 

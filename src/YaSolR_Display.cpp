@@ -43,7 +43,7 @@ void YaSolR::YaSolRClass::updateDisplay() {
         networkState = "Starting...";
         break;
     }
-    snprintf(lines[next], MYCILA_DISPLAY_LINE_LENGTH, "%-17.17s %-5.5s C", networkState.c_str(), systemTemperatureSensor.getTemperatureAsString().c_str());
+    snprintf(lines[next], MYCILA_DISPLAY_LINE_LENGTH, "%-17.17s %5.2f C", networkState.c_str(), systemTemperatureSensor.getTemperature());
     next++;
 
     snprintf(lines[next], MYCILA_DISPLAY_LINE_LENGTH, "G: %5d W      R: %4d W", static_cast<int>(round(Mycila::Grid.getActivePower())), static_cast<int>(round(Mycila::Router.getTotalRoutedPower())));
@@ -51,7 +51,7 @@ void YaSolR::YaSolRClass::updateDisplay() {
 
     const Mycila::RouterOutput outputs[2] = {output1, output2};
     for (size_t i = 0; i < 2; i++) {
-      snprintf(lines[next], MYCILA_DISPLAY_LINE_LENGTH, "O%u: %-13.13s %-5.5s C", (i + 1), outputs[i].getStateString(), outputs[i].getTemperatureSensor()->getTemperatureAsString().c_str());
+      snprintf(lines[next], MYCILA_DISPLAY_LINE_LENGTH, "O%u: %-13.13s %5.2f C", (i + 1), outputs[i].getStateString(), outputs[i].getTemperatureSensor()->getTemperature());
       next++;
     }
 
