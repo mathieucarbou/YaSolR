@@ -4,21 +4,20 @@
  */
 #pragma once
 
+#include <ESPAsyncWebServer.h>
 #include <HardwareSerial.h>
+#include <LittleFS.h>
+#include <WebSerialLite.h>
 
 #include <MycilaAppInfo.h>
-#include <MycilaButton.h>
-#include <MycilaBuzzer.h>
 #include <MycilaConfig.h>
+#include <MycilaDS18.h>
 #include <MycilaDimmer.h>
-#include <MycilaEasyDisplay.h>
 #include <MycilaESPConnect.h>
+#include <MycilaEasyDisplay.h>
 #include <MycilaGrid.h>
 #include <MycilaHADiscovery.h>
-#include <MycilaHTTPd.h>
 #include <MycilaJSY.h>
-#include <MycilaJSY.h>
-#include <MycilaLights.h>
 #include <MycilaLogger.h>
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
@@ -27,21 +26,12 @@
 #include <MycilaRelayManager.h>
 #include <MycilaRouter.h>
 #include <MycilaRouterOutput.h>
-#include <MycilaRouterOutput.h>
 #include <MycilaSystem.h>
 #include <MycilaTaskManager.h>
-#include <MycilaTaskManager.h>
 #include <MycilaTaskMonitor.h>
-#include <MycilaTemperatureSensor.h>
-#include <MycilaTemperatureSensor.h>
 #include <MycilaTime.h>
+#include <MycilaTrafficLight.h>
 #include <MycilaZeroCrossDetection.h>
-
-#include <YaSolRClass.h>
-#include <YaSolRMacros.h>
-
-#include <ESPAsyncWebServer.h>
-#include <WebSerialLite.h>
 
 #ifdef APP_MODEL_TRIAL
 #include <MycilaTrial.h>
@@ -49,90 +39,82 @@
 
 #ifdef APP_MODEL_PRO
 #include <ESPDashPro.h>
+#include <ElegantOTAPro.h>
 #else
 #include <ESPDash.h>
+#include <ElegantOTA.h>
 #endif
+
+#include <YaSolRDefines.h>
 
 extern AsyncWebServer webServer;
 extern ESPDash dashboard;
 
+extern Mycila::Config config;
+extern Mycila::Dimmer dimmerO1;
+extern Mycila::Dimmer dimmerO2;
+extern Mycila::DS18 ds18O1;
+extern Mycila::DS18 ds18O2;
+extern Mycila::DS18 ds18Sys;
+extern Mycila::EasyDisplay display;
+extern Mycila::HADiscovery haDiscovery;
 extern Mycila::JSY jsy;
-
-extern Mycila::Dimmer output1Dimmer;
-extern Mycila::Dimmer output2Dimmer;
-
-extern Mycila::PZEM output1PZEM;
-extern Mycila::PZEM output2PZEM;
-
+extern Mycila::Logger logger;
+extern Mycila::MQTT mqtt;
+extern Mycila::PZEM pzemO1;
+extern Mycila::PZEM pzemO2;
+extern Mycila::Relay bypassRelayO1;
+extern Mycila::Relay bypassRelayO2;
 extern Mycila::Relay relay1;
 extern Mycila::Relay relay2;
-extern Mycila::Relay output1BypassRelay;
-extern Mycila::Relay output2BypassRelay;
-
 extern Mycila::RouterOutput output1;
 extern Mycila::RouterOutput output2;
+extern Mycila::TrafficLight lights;
 
-extern Mycila::TemperatureSensor output1TemperatureSensor;
-extern Mycila::TemperatureSensor output2TemperatureSensor;
-extern Mycila::TemperatureSensor systemTemperatureSensor;
+extern Mycila::TaskManager ioTaskManager;
+extern Mycila::Task haDiscoveryTask;
+extern Mycila::Task mqttPublishTask;
+extern Mycila::Task mqttPublishStaticTask;
+extern Mycila::Task mqttPublishConfigTask;
+
+extern Mycila::TaskManager jsyTaskManager;
+extern Mycila::Task jsyTask;
 
 extern Mycila::TaskManager loopTaskManager;
-// extern Mycila::TaskManager meterTaskManager;
-extern Mycila::TaskManager routerTaskManager;
-
-extern Mycila::Task assignOutput1PZEMTask;
-extern Mycila::Task assignOutput2PZEMTask;
-extern Mycila::Task autoRelayTask;
 extern Mycila::Task displayTask;
-extern Mycila::Task espConnectTask;
-extern Mycila::Task haDiscoTask;
-extern Mycila::Task jsyTask;
+extern Mycila::Task carouselTask;
+extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
-extern Mycila::Task otaPrepareTask;
-extern Mycila::Task output1AutoBypassTask;
-extern Mycila::Task output1DimmerLimitTask;
-extern Mycila::Task output1UpdateStats;
-extern Mycila::Task output1PZEMTask;
-extern Mycila::Task output1TemperatureTask;
-extern Mycila::Task output2AutoBypassTask;
-extern Mycila::Task output2DimmerLimitTask;
-extern Mycila::Task output2UpdateStats;
-extern Mycila::Task output2PZEMTask;
-extern Mycila::Task output2TemperatureTask;
-extern Mycila::Task profileTask;
-extern Mycila::Task publisherTask;
+extern Mycila::Task networkManagerTask;
+extern Mycila::Task networkServiceTask;
+extern Mycila::Task otaTask;
+extern Mycila::Task profilerTask;
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
-extern Mycila::Task stackMonitorTask;
-extern Mycila::Task startNetworkServicesTask;
-extern Mycila::Task stopNetworkServicesTask;
-extern Mycila::Task systemTemperatureTask;
-extern Mycila::Task websiteTask;
-
-extern Mycila::Task configureButtonTask;
-extern Mycila::Task configureBuzzerTask;
-extern Mycila::Task configureDebugTask;
-extern Mycila::Task configureDisplayTask;
-extern Mycila::Task configureGridTask;
-extern Mycila::Task configureJSYTask;
-extern Mycila::Task configureLightsTask;
-extern Mycila::Task configureMQTTTask;
-extern Mycila::Task configureNetworkTask;
-extern Mycila::Task configureNTPTask;
-extern Mycila::Task configureOutput1BypassRelayTask;
-extern Mycila::Task configureOutput1DimmerTask;
-extern Mycila::Task configureOutput1PZEMTask;
-extern Mycila::Task configureOutput1TemperatureSensorTask;
-extern Mycila::Task configureOutput2BypassRelayTask;
-extern Mycila::Task configureOutput2DimmerTask;
-extern Mycila::Task configureOutput2PZEMTask;
-extern Mycila::Task configureOutput2TemperatureSensorTask;
-extern Mycila::Task configureRelay1Task;
-extern Mycila::Task configureRelay2Task;
-extern Mycila::Task configureSystemTemperatureSensorTask;
-extern Mycila::Task configureTaskMonitorTask;
-extern Mycila::Task configureZCDTask;
-
+extern Mycila::Task dashboardTask;
 #ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
 #endif
+
+extern Mycila::TaskManager pzemO1TaskManager;
+extern Mycila::Task pzemO1PairingTask;
+extern Mycila::Task pzemO1Task;
+
+extern Mycila::TaskManager pzemO2TaskManager;
+extern Mycila::Task pzemO2PairingTask;
+extern Mycila::Task pzemO2Task;
+
+extern Mycila::TaskManager routerTaskManager;
+extern Mycila::Task relaysTask;
+extern Mycila::Task routerTask;
+
+// Tasks alone without a manager
+extern Mycila::Task bootTask;
+extern Mycila::Task initConfigTask;
+extern Mycila::Task initCoreTask;
+extern Mycila::Task initDashboardTask;
+extern Mycila::Task initEventsTask;
+extern Mycila::Task initLoggingTask;
+extern Mycila::Task initMqttSubscribersTask;
+extern Mycila::Task initRestApiTask;
+extern Mycila::Task initWebTask;

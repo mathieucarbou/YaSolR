@@ -35,10 +35,6 @@
 #define MYCILA_DIMMER_MAX_LEVEL 100
 
 namespace Mycila {
-  enum class DimmerType { TRIAC = 0,
-                          SSR_RANDOM,
-                          SSR_ZC };
-
   enum class DimmerLevel { OFF,
                            FULL,
                            DIM };
@@ -49,7 +45,7 @@ namespace Mycila {
     public:
       ~Dimmer() { end(); }
 
-      void begin(const uint32_t pin, const DimmerType type);
+      void begin(const int8_t pin);
       void end();
 
       void listen(DimmerLevelCallback callback) { _callback = callback; }
@@ -86,12 +82,11 @@ namespace Mycila {
       // This is a theoretical value. In reality, the real Vrms value will be more or less depending on the hardware and software speed.
       float computeDimmedVoltage(float inputVrms) const;
 
-      static void generateLUT(Print* out);
+      static void generateLUT(Print& out); // NOLINT
 
     private:
       bool _enabled = false;
       uint8_t _level = 0;
-      DimmerType _type = DimmerType::TRIAC;
       gpio_num_t _pin = GPIO_NUM_NC;
       DimmerLevelCallback _callback = nullptr;
       Thyristor* _dimmer = nullptr;

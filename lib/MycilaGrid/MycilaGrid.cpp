@@ -10,21 +10,23 @@
 
 #define TAG "POWER"
 
+extern Mycila::Logger logger;
+
 void Mycila::GridClass::setMQTTGridPowerTopic(const String& gridPowerMQTTTopic) {
   if (_mqttGridPowerTopic != gridPowerMQTTTopic) {
     if (!_mqttGridPowerTopic.isEmpty()) {
-      Mycila::Logger.info(TAG, "Unsubscribing from MQTT topic: %s", _mqttGridPowerTopic.c_str());
-      MQTT.unsubscribe(_mqttGridPowerTopic);
+      logger.info(TAG, "Unsubscribing from MQTT topic: %s", _mqttGridPowerTopic.c_str());
+      _mqtt->unsubscribe(_mqttGridPowerTopic);
     }
     _mqttGridPower = 0;
     _mqttGridDataUpdateTime = 0;
     _mqttGridPowerTopic = gridPowerMQTTTopic;
     if (!_mqttGridPowerTopic.isEmpty()) {
-      Mycila::Logger.info(TAG, "Subscribing to MQTT topic: %s", _mqttGridPowerTopic.c_str());
-      MQTT.subscribe(_mqttGridPowerTopic, [this](const String& topic, const String& payload) {
+      logger.info(TAG, "Subscribing to MQTT topic: %s", _mqttGridPowerTopic.c_str());
+      _mqtt->subscribe(_mqttGridPowerTopic, [this](const String& topic, const String& payload) {
         _mqttGridPower = payload.toFloat();
         _mqttGridDataUpdateTime = millis();
-        Mycila::Logger.debug(TAG, "MQTT Grid Power: %f", _mqttGridPower);
+        logger.debug(TAG, "MQTT Grid Power: %f", _mqttGridPower);
       });
     }
   }
@@ -33,17 +35,17 @@ void Mycila::GridClass::setMQTTGridPowerTopic(const String& gridPowerMQTTTopic) 
 void Mycila::GridClass::setMQTTGridVoltageTopic(const String& gridVoltageMQTTTopic) {
   if (_mqttGridVoltageTopic != gridVoltageMQTTTopic) {
     if (!_mqttGridVoltageTopic.isEmpty()) {
-      Mycila::Logger.info(TAG, "Unsubscribing from MQTT topic: %s", _mqttGridVoltageTopic.c_str());
-      MQTT.unsubscribe(_mqttGridVoltageTopic);
+      logger.info(TAG, "Unsubscribing from MQTT topic: %s", _mqttGridVoltageTopic.c_str());
+      _mqtt->unsubscribe(_mqttGridVoltageTopic);
     }
     _mqttGridVoltage = 0;
     _mqttGridVoltageTopic = gridVoltageMQTTTopic;
     if (!_mqttGridVoltageTopic.isEmpty()) {
-      Mycila::Logger.info(TAG, "Subscribing to MQTT topic: %s", _mqttGridVoltageTopic.c_str());
-      MQTT.subscribe(_mqttGridVoltageTopic, [this](const String& topic, const String& payload) {
+      logger.info(TAG, "Subscribing to MQTT topic: %s", _mqttGridVoltageTopic.c_str());
+      _mqtt->subscribe(_mqttGridVoltageTopic, [this](const String& topic, const String& payload) {
         _mqttGridVoltage = payload.toFloat();
         _mqttGridDataUpdateTime = millis();
-        Mycila::Logger.debug(TAG, "MQTT Grid Voltage: %f", _mqttGridVoltage);
+        logger.debug(TAG, "MQTT Grid Voltage: %f", _mqttGridVoltage);
       });
     }
   }
@@ -98,6 +100,16 @@ float Mycila::GridClass::getVoltage() const {
   return volt > 0 ? volt : _voltage;
 }
 
+bool Mycila::GridClass::isConnected() const {
+  if (ZCD.getFrequency() > 0)
+    return true;
+
+  if (_jsy && _jsy->getFrequency() > 0)
+    return true;
+
+  return false;
+}
+
 void Mycila::GridClass::toJson(const JsonObject& root) const {
   root["energy_returned"] = getActiveEnergyReturned();
   root["energy"] = getActiveEnergy();
@@ -106,9 +118,6 @@ void Mycila::GridClass::toJson(const JsonObject& root) const {
   root["power"] = getActivePower();
   root["power_factor"] = getPowerFactor();
   root["voltage"] = getVoltage();
-  if (_jsy != nullptr)
-    _jsy->toJson(root["jsy"].to<JsonObject>());
-  Mycila::ZCD.toJson(root["zcd"].to<JsonObject>());
 }
 
 namespace Mycila {

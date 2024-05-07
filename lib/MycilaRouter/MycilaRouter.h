@@ -13,10 +13,10 @@
 namespace Mycila {
   class RouterClass {
     public:
-      void setJSY(const JSY* jsy) { _jsy = jsy; }
-      void addOutput(const RouterOutput* output) {
+      void setJSY(const JSY& jsy) { _jsy = &jsy; }
+      void addOutput(const RouterOutput& output) {
         _outputs.reserve(_outputs.size() + 1);
-        _outputs.push_back(output);
+        _outputs.push_back(&output);
       }
 
       void toJson(const JsonObject& root) const;

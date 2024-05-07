@@ -34,13 +34,18 @@ extern const char* __COMPILED_BUILD_TIMESTAMP__;
 
 Mycila::AppInfoClass::AppInfoClass() : id(_getEspId()),
                                        name(APP_NAME),
-                                       version(__COMPILED_APP_VERSION__),
                                        model(APP_MODEL),
+                                       version(__COMPILED_APP_VERSION__),
+                                       nameModel(name + " " + model),
+                                       nameModelVersion(name + " " + model + " " + version),
                                        manufacturer(APP_MANUFACTURER),
-                                       firmware(String(APP_NAME) + "-" + (version.indexOf("_") >= 0 ? version.substring(0, version.indexOf("_")) : version) + "-" + __COMPILED_BUILD_NAME__ + ".bin"),
+                                       firmware(String(APP_NAME) + (isdigit(version.charAt(0)) ? "-v" : "-") + (version.indexOf("_") >= 0 ? version.substring(0, version.indexOf("_")) : version) + "-" + __COMPILED_BUILD_NAME__ + ".bin"),
                                        buildBranch(__COMPILED_BUILD_BRANCH__),
                                        buildHash(__COMPILED_BUILD_HASH__),
-                                       buildDate(strlen(__COMPILED_BUILD_TIMESTAMP__) == 0 ? __DATE__ " " __TIME__ : __COMPILED_BUILD_TIMESTAMP__),
+                                       buildDate(__COMPILED_BUILD_TIMESTAMP__),
+                                       defaultHostname(_lower(name + "-" + id)),
+                                       defaultMqttClientId(_lower(name + "_" + id)),
+                                       defaultSSID(name + "-" + id),
                                        debug(firmware.indexOf("debug") >= 0),
                                        trial(firmware.indexOf("trial") >= 0) {}
 
@@ -57,7 +62,7 @@ void Mycila::AppInfoClass::toJson(const JsonObject& root) const {
   root["version"] = version;
 }
 
-String Mycila::AppInfoClass::_getEspId() const {
+String Mycila::AppInfoClass::_getEspId() {
   uint32_t chipId = 0;
   for (int i = 0; i < 17; i += 8) {
     chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
@@ -65,6 +70,12 @@ String Mycila::AppInfoClass::_getEspId() const {
   String espId = String(chipId, HEX);
   espId.toUpperCase();
   return espId;
+}
+
+String Mycila::AppInfoClass::_lower(const String& s) {
+  String lower = s;
+  lower.toLowerCase();
+  return lower;
 }
 
 namespace Mycila {

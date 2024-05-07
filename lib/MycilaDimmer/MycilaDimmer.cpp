@@ -29,31 +29,25 @@
 #define FOUR_PI          12.56637061435917295385
 #define SQRT_2           1.4142135623730950488
 
-static const char* DimmerTypeNames[] = {
-  "Robodyn / TRIAC-based",
-  "Random SSR",
-  "Zero-Cross SSR"};
+extern Mycila::Logger logger;
 
-void Mycila::Dimmer::begin(const uint32_t pin, const DimmerType type) {
+void Mycila::Dimmer::begin(const int8_t pin) {
   if (_enabled)
     return;
-
-  _type = type;
 
   if (GPIO_IS_VALID_OUTPUT_GPIO(pin)) {
     _pin = (gpio_num_t)pin;
   } else {
-    Logger.error(TAG, "Disable Dimmer: Invalid pin: %u", _pin);
+    logger.error(TAG, "Disable Dimmer: Invalid pin: %" PRId8, pin);
     _pin = GPIO_NUM_NC;
     return;
   }
 
-  Logger.info(TAG, "Enable Dimmer %s on pin %u...", DimmerTypeNames[static_cast<int>(_type)], _pin);
+  logger.info(TAG, "Enable Dimmer on pin %" PRId8 "...", _pin);
 
   pinMode(_pin, OUTPUT);
   digitalWrite(_pin, LOW);
 
-  // TODO: Bust mode (cf circuitar)
   _dimmer = new Thyristor(_pin);
   _level = 0;
   _enabled = true;
@@ -61,7 +55,7 @@ void Mycila::Dimmer::begin(const uint32_t pin, const DimmerType type) {
 
 void Mycila::Dimmer::end() {
   if (_enabled) {
-    Logger.info(TAG, "Disable Dimmer %s on pin %u", DimmerTypeNames[static_cast<int>(_type)], _pin);
+    logger.info(TAG, "Disable Dimmer on pin %" PRId8, _pin);
     _enabled = false;
     _level = 0;
     _dimmer->turnOff();
@@ -110,19 +104,19 @@ float Mycila::Dimmer::computeDimmedVoltage(float inputVrms) const {
   return _level == 0 ? 0 : (_level == MYCILA_DIMMER_MAX_LEVEL ? inputVrms : inputVrms * _lookupVrmsFactor(_level, Thyristor::getFrequency()));
 }
 
-void Mycila::Dimmer::generateLUT(Print* out) {
-  out->print("static const uint16_t delay50HzLUT[] PROGMEM = {");
+void Mycila::Dimmer::generateLUT(Print& out) {
+  out.print("static const uint16_t delay50HzLUT[] PROGMEM = {");
   for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out->printf("%u%s", _lookupFiringDelay(i, 50), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
-  out->print("static const uint16_t delay60HzLUT[] PROGMEM = {");
+    out.printf("%" PRIu16 "%s", _lookupFiringDelay(i, 50), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+  out.print("static const uint16_t delay60HzLUT[] PROGMEM = {");
   for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out->printf("%u%s", _lookupFiringDelay(i, 60), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
-  out->print("static const float vrms50HzLUT[] PROGMEM = {");
+    out.printf("%" PRIu16 "%s", _lookupFiringDelay(i, 60), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+  out.print("static const float vrms50HzLUT[] PROGMEM = {");
   for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out->printf("%f%s", _lookupVrmsFactor(i, 50), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
-  out->print("static const float vrms60HzLUT[] PROGMEM = {");
+    out.printf("%f%s", _lookupVrmsFactor(i, 50), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+  out.print("static const float vrms60HzLUT[] PROGMEM = {");
   for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out->printf("%f%s", _lookupVrmsFactor(i, 60), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+    out.printf("%f%s", _lookupVrmsFactor(i, 60), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
 }
 
 float Mycila::Dimmer::_delayToPhaseAngle(uint16_t delay, float frequency) {

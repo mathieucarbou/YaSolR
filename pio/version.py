@@ -1,5 +1,6 @@
 import subprocess
 import os
+import re
 from datetime import datetime, timezone
 
 Import("env")
@@ -50,10 +51,12 @@ def do_main():
     if has_local_modifications:
         version += "_modified"
 
+    # version = "v2.40.2_rc1"
+    tagPattern = re.compile("^v[0-9]+.[0-9]+.[0-9]+([_-][a-zA-Z0-9]+)?$")
     constantFile = os.path.join(env.subst("$BUILD_DIR"), "__compiled_constants.c")
     with open(constantFile, "w") as f:
         f.write(
-            f'const char* __COMPILED_APP_VERSION__ = "{version}";\n'
+            f'const char* __COMPILED_APP_VERSION__ = "{version[1:] if tagPattern.match(version)  else version}";\n'
             f'const char* __COMPILED_BUILD_BRANCH__ = "{branch}";\n'
             f'const char* __COMPILED_BUILD_HASH__ = "{short_hash}";\n'
             f'const char* __COMPILED_BUILD_NAME__ = "{env["PIOENV"]}";\n'
@@ -61,24 +64,5 @@ def do_main():
         )
 
     env.AppendUnique(PIOBUILDFILES=[constantFile])
-
-    # buildFlags = (
-    #     '-D APP_VERSION=\\"'
-    #     + version
-    #     + '\\" '
-    #     + '-D BUILD_BRANCH=\\"'
-    #     + branch
-    #     + '\\" '
-    #     + '-D BUILD_HASH=\\"'
-    #     + short_hash
-    #     + '\\" '
-    #     + '-D BUILD_TIMESTAMP=\\"'
-    #     + datetime.now(timezone.utc).isoformat()
-    #     + '\\"'
-    # )
-
-    # print("Build flags: " + buildFlags)
-    # env.Append(BUILD_FLAGS=[buildFlags])
-
 
 do_main()

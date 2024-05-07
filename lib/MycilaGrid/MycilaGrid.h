@@ -8,6 +8,7 @@
 #include <WString.h>
 
 #include <MycilaJSY.h>
+#include <MycilaMQTT.h>
 
 #ifndef YASOLR_MQTT_GRID_POWER_EXPIRATION
 #define YASOLR_MQTT_GRID_POWER_EXPIRATION 60
@@ -16,7 +17,8 @@
 namespace Mycila {
   class GridClass {
     public:
-      void setJSY(const JSY* jsy) { _jsy = jsy; }
+      void setJSY(JSY& jsy) { _jsy = &jsy; }
+      void setMQTT(MQTT& mqtt) { _mqtt = &mqtt; }
 
       void setFrequency(uint8_t frequency) { _frequency = frequency; }
       void setVoltage(uint8_t voltage) { _voltage = voltage; }
@@ -32,11 +34,12 @@ namespace Mycila {
       float getPowerFactor() const;
       float getVoltage() const;
 
-      bool isConnected() const { return getVoltage() > 0; }
+      bool isConnected() const;
       bool isMQTTGridDataExpired() const { return millis() - _mqttGridDataUpdateTime >= YASOLR_MQTT_GRID_POWER_EXPIRATION * 1000; }
 
     private:
-      const JSY* _jsy;
+      JSY* _jsy;
+      MQTT* _mqtt;
       uint8_t _frequency = 0;
       uint8_t _voltage = 0;
       uint32_t _mqttGridDataUpdateTime = 0;

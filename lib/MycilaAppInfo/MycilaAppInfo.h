@@ -17,18 +17,24 @@ namespace Mycila {
     public:
       const String id;
       const String name;
-      const String version;
       const String model;
+      const String version;
+      const String nameModel;
+      const String nameModelVersion;
       const String manufacturer;
       const String firmware;
       const String buildBranch;
       const String buildHash;
       const String buildDate;
+      const String defaultHostname;
+      const String defaultMqttClientId;
+      const String defaultSSID;
       const bool debug;
       const bool trial;
 
     private:
-      String _getEspId() const;
+      static String _getEspId();
+      static String _lower(const String& s);
   };
 
   extern AppInfoClass AppInfo;
