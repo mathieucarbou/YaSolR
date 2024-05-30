@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-name: Build Open-Source Firmwares
+name: Build YaSolR-OSS
 
 on:
   workflow_dispatch:
@@ -47,7 +47,8 @@ jobs:
         run: |
           rm -f platformio_override.ini
           echo "pio_name=$(pio project config --json-output | jq -cr '.[0][1][0][1]')" >> $GITHUB_OUTPUT
-          echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-") and (contains("-debug")|not)) | .[4:] ]')" >> $GITHUB_OUTPUT
+          // echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-") and (contains("-debug")|not)) | .[4:] ]')" >> $GITHUB_OUTPUT
+          echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-")) | .[4:] ]')" >> $GITHUB_OUTPUT
 
     outputs:
       pio_name: ${{ steps.envs.outputs.pio_name }}
