@@ -41,7 +41,6 @@ jobs:
             --recursive \
             --filter=-whitespace/line_length,-whitespace/braces,-whitespace/comments,-runtime/indentation_namespace,-whitespace/indent,-readability/braces,-whitespace/newline,-readability/todo,-build/c++11,-runtime/references \
             --exclude=lib/ElegantOTAPro \
-            --exclude=lib/ESPDASH \
             --exclude=lib/ESPDASHPro \
             lib \
             include \
