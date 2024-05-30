@@ -72,10 +72,10 @@ namespace YaSolR {
 #endif
 
       // home
+      Card _routerEnergy = Card(&dashboard, ENERGY_CARD, "Total Routed Energy", "kWh");
       Card _routerPower = Card(&dashboard, ENERGY_CARD, "Total Routed Power", "W");
       Card _routerPowerFactor = Card(&dashboard, ENERGY_CARD, "Router Power Factor");
       Card _routerTHDi = Card(&dashboard, ENERGY_CARD, "Router THDi", "%");
-      Card _routerEnergy = Card(&dashboard, ENERGY_CARD, "Total Routed Energy", "kWh");
       Card _gridPower = Card(&dashboard, ENERGY_CARD, "Grid Power", "W");
       Card _ds18Sys = Card(&dashboard, TEMPERATURE_CARD, "System Temperature", "°C");
 
@@ -87,8 +87,8 @@ namespace YaSolR {
       Tab _output1Tab = Tab(&dashboard, "\u2600 Output 1");
       Card _output1State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
       Card _output1DS18 = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
-      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output1Bypass = Card(&dashboard, BUTTON_CARD, "Bypass");
+      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
       Card _output1Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
       Card _output1ApparentPower = Card(&dashboard, ENERGY_CARD, "Apparent Power", "VA");
       Card _output1PowerFactor = Card(&dashboard, ENERGY_CARD, "Power Factor");
@@ -97,9 +97,9 @@ namespace YaSolR {
       Card _output1Current = Card(&dashboard, ENERGY_CARD, "Current", "A");
       Card _output1Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output1Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
-      Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, "Automatic Routing");
+      Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
       Card _output1DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output1AutoBypass = Card(&dashboard, BUTTON_CARD, "Automatic Bypass");
+      Card _output1AutoBypass = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
       Card _output1AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
       Card _output1AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
       Card _output1AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
@@ -109,8 +109,8 @@ namespace YaSolR {
       Tab _output2Tab = Tab(&dashboard, "\u2600 Output 2");
       Card _output2State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
       Card _output2DS18 = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
-      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output2Bypass = Card(&dashboard, BUTTON_CARD, "Bypass");
+      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
       Card _output2Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
       Card _output2ApparentPower = Card(&dashboard, ENERGY_CARD, "Apparent Power", "VA");
       Card _output2PowerFactor = Card(&dashboard, ENERGY_CARD, "Power Factor");
@@ -119,9 +119,9 @@ namespace YaSolR {
       Card _output2Current = Card(&dashboard, ENERGY_CARD, "Current", "A");
       Card _output2Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
-      Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, "Automatic Routing");
+      Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
       Card _output2DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output2AutoBypass = Card(&dashboard, BUTTON_CARD, "Automatic Bypass");
+      Card _output2AutoBypass = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
       Card _output2AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
       Card _output2AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
       Card _output2AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
@@ -129,10 +129,10 @@ namespace YaSolR {
       Card _output2AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Temperature");
 
       Tab _relaysTab = Tab(&dashboard, "\u2600 Relays");
-      Card _relay1Switch = Card(&dashboard, BUTTON_CARD, "Relay 1");
-      Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Connected Load (Watts)");
-      Card _relay2Switch = Card(&dashboard, BUTTON_CARD, "Relay 2");
-      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Connected Load (Watts)");
+      Card _relay1Switch = Card(&dashboard, BUTTON_CARD, "Relay 1 Manual Control");
+      Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Automatic Control: Connected Load (Watts)");
+      Card _relay2Switch = Card(&dashboard, BUTTON_CARD, "Relay 2  Manual Control");
+      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Automatic Control: Connected Load (Watts)");
 
       Tab _managementTab = Tab(&dashboard, "\u2764 Management");
       Card _configBackup = Card(&dashboard, LINK_CARD, "Configuration Backup");
@@ -267,17 +267,17 @@ namespace YaSolR {
       Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, "Base Topic");
       Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Discovery");
       Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Discovery Topic");
-      Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage Topic");
-      Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power Topic");
+      Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
+      Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
 
       Tab _networkConfigTab = Tab(&dashboard, "\u2728 Network");
       Card _adminPwd = Card(&dashboard, PASSWORD_CARD, "Admin Password");
-      Card _apMode = Card(&dashboard, BUTTON_CARD, "AP Mode");
-      Card _wifiSSID = Card(&dashboard, TEXT_INPUT_CARD, "WiFi SSID");
-      Card _wifiPwd = Card(&dashboard, PASSWORD_CARD, "WiFi Password");
       Card _ntpServer = Card(&dashboard, TEXT_INPUT_CARD, "NTP Server");
       Card _ntpTimezone = Card(&dashboard, ASYNC_DROPDOWN_CARD, "Timezone");
       Card _ntpSync = Card(&dashboard, TIME_SYNC_CARD, "Sync time with browser");
+      Card _wifiSSID = Card(&dashboard, TEXT_INPUT_CARD, "WiFi SSID");
+      Card _wifiPwd = Card(&dashboard, PASSWORD_CARD, "WiFi Password");
+      Card _apMode = Card(&dashboard, BUTTON_CARD, "Stay in AP Mode");
 #endif
 
     private:

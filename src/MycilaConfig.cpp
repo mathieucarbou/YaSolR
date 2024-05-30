@@ -70,5 +70,5 @@ String Mycila::RouterOutputConfigClass::getWeekDays(const char* name) const {
     return config.get(KEY_OUTPUT1_DAYS);
   if (strcmp(name, "output2") == 0)
     return config.get(KEY_OUTPUT2_DAYS);
-  return "sun,mon,tue,wed,thu,fri,sat";
+  return YASOLR_WEEK_DAYS;
 }

@@ -604,16 +604,16 @@ void YaSolR::WebsiteClass::updateCards() {
 
   // Hardware (status)
   const bool gridOnline = Mycila::Grid.isConnected();
-  _status(_stateJSY, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No grid electricity");
+  _status(_stateJSY, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No electricity");
   _status(_stateMQTT, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : "Disconnected");
-  _status(_stateOutput1Dimmer, KEY_ENABLE_OUTPUT1, dimmerO1.isEnabled(), gridOnline, "No grid electricity");
-  _status(_stateOutput1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), "Disconnected");
+  _status(_stateOutput1Dimmer, KEY_ENABLE_OUTPUT1, dimmerO1.isEnabled(), gridOnline, "No electricity");
+  _status(_stateOutput1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), "No electricity");
   _status(_stateOutput1Ds18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, "Read error");
-  _status(_stateOutput2Dimmer, KEY_ENABLE_OUTPUT2, dimmerO2.isEnabled(), gridOnline, "No grid electricity");
-  _status(_stateOutput2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), "Disconnected");
+  _status(_stateOutput2Dimmer, KEY_ENABLE_OUTPUT2, dimmerO2.isEnabled(), gridOnline, "No electricity");
+  _status(_stateOutput2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), "No electricity");
   _status(_stateOutput2Ds18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, "Read error");
   _status(_stateRouterTemp, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, "Read error");
-  _status(_stateZCD, KEY_ENABLE_ZCD, Mycila::ZCD.isEnabled(), Mycila::ZCD.isConnected(), "No grid electricity");
+  _status(_stateZCD, KEY_ENABLE_ZCD, Mycila::ZCD.isEnabled(), Mycila::ZCD.isConnected(), "No electricity");
 #endif
 }
 

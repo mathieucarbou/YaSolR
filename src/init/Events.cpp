@@ -177,4 +177,17 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     logger.debug(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
     // mqttPublishTask.requestEarlyRun();
   });
+
+  jsy.setCallback([](const Mycila::JSYEventType eventType) {
+    // TODO: update routing
+    // Serial.println("JSY event");
+  });
+  pzemO1.setCallback([](const Mycila::PZEMEventType eventType) {
+    // TODO: update routing
+    // Serial.println("PZEM 1 event");
+  });
+  pzemO2.setCallback([](const Mycila::PZEMEventType eventType) {
+    // TODO: update routing
+    // Serial.println("PZEM 2 event");
+  });
 });
