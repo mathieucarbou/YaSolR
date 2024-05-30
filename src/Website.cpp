@@ -8,14 +8,6 @@
 #define HIDDEN_PWD "********"
 
 void YaSolR::WebsiteClass::initLayout() {
-  // home callbacks
-  _outputBypassSwitch(_output1Bypass, output1);
-  _outputBypassSwitch(_output2Bypass, output2);
-  _outputDimmerSlider(_output1DimmerSlider, output1);
-  _outputDimmerSlider(_output2DimmerSlider, output2);
-  _relaySwitch(_relay1Switch, "relay1");
-  _relaySwitch(_relay2Switch, "relay2");
-
 #ifdef APP_MODEL_PRO
   // output 1 (status)
   _output1State.setTab(&_output1Tab);
@@ -67,6 +59,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _sliderConfig(_output1DimmerLimiter, KEY_OUTPUT1_DIMMER_LIMITER);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
+  _outputBypassSwitch(_output1Bypass, output1);
+  _outputDimmerSlider(_output1DimmerSlider, output1);
 
   // output 2 (control)
   _output2AutoBypass.setTab(&_output2Tab);
@@ -86,12 +80,17 @@ void YaSolR::WebsiteClass::initLayout() {
   _sliderConfig(_output2DimmerLimiter, KEY_OUTPUT2_DIMMER_LIMITER);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
+  _outputBypassSwitch(_output2Bypass, output2);
+  _outputDimmerSlider(_output2DimmerSlider, output2);
 
   // relays (control)
   _relay1Load.setTab(&_relaysTab);
   _relay1Switch.setTab(&_relaysTab);
   _relay2Load.setTab(&_relaysTab);
   _relay2Switch.setTab(&_relaysTab);
+
+  _relaySwitch(_relay1Switch, "relay1");
+  _relaySwitch(_relay2Switch, "relay2");
 
   // management
   _configBackup.setTab(&_managementTab);
