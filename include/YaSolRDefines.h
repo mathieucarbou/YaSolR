@@ -27,13 +27,13 @@
 #define KEY_ENABLE_MQTT                "mqtt_enable"
 #define KEY_ENABLE_OUTPUT1_AUTO_BYPASS "o1_ab_enable"
 #define KEY_ENABLE_OUTPUT1_AUTO_DIMMER "o1_ad_enable"
-#define KEY_ENABLE_OUTPUT1             "o1_enable"
+#define KEY_ENABLE_OUTPUT1_DIMMER      "o1_dim_enable"
 #define KEY_ENABLE_OUTPUT1_DS18        "o1_ds18_enable"
 #define KEY_ENABLE_OUTPUT1_PZEM        "o1_pzem_enable"
 #define KEY_ENABLE_OUTPUT1_RELAY       "o1_relay_enable"
 #define KEY_ENABLE_OUTPUT2_AUTO_BYPASS "o2_ab_enable"
 #define KEY_ENABLE_OUTPUT2_AUTO_DIMMER "o2_ad_enable"
-#define KEY_ENABLE_OUTPUT2             "o2_enable"
+#define KEY_ENABLE_OUTPUT2_DIMMER      "o2_dim_enable"
 #define KEY_ENABLE_OUTPUT2_DS18        "o2_ds18_enable"
 #define KEY_ENABLE_OUTPUT2_PZEM        "o2_pzem_enable"
 #define KEY_ENABLE_OUTPUT2_RELAY       "o2_relay_enable"
@@ -112,10 +112,10 @@
 #define YASOLR_MQTT_WILL_TOPIC      "/status"
 #define YASOLR_PZEM_ADDRESS_OUTPUT1 0x01
 #define YASOLR_PZEM_ADDRESS_OUTPUT2 0x02
-#define YASOLR_RELAY_TYPE_NC "NC"
-#define YASOLR_RELAY_TYPE_NO "NO"
+#define YASOLR_RELAY_TYPE_NC        "NC"
+#define YASOLR_RELAY_TYPE_NO        "NO"
 #define YASOLR_SERIAL_BAUDRATE      115200
-#define YASOLR_WEEK_DAYS           "sun,mon,tue,wed,thu,fri,sat"
+#define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
 
 // pinout
 

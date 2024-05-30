@@ -53,13 +53,13 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_ENABLE_OUTPUT1_DS18, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT1_PZEM, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT1_RELAY, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_OUTPUT1, YASOLR_FALSE);
+  config.configure(KEY_ENABLE_OUTPUT1_DIMMER, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_TRUE);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_TRUE);
   config.configure(KEY_ENABLE_OUTPUT2_DS18, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT2_PZEM, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT2_RELAY, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_OUTPUT2, YASOLR_FALSE);
+  config.configure(KEY_ENABLE_OUTPUT2_DIMMER, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY1, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY2, YASOLR_FALSE);
   config.configure(KEY_ENABLE_ZCD, YASOLR_FALSE);

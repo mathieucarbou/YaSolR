@@ -87,8 +87,10 @@ namespace YaSolR {
       Tab _output1Tab = Tab(&dashboard, "\u2600 Output 1");
       Card _output1State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
       Card _output1DS18 = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
-      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
+      Card _output1BypassRO = Card(&dashboard, STATUS_CARD, "Bypass");
       Card _output1Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
       Card _output1ApparentPower = Card(&dashboard, ENERGY_CARD, "Apparent Power", "VA");
       Card _output1PowerFactor = Card(&dashboard, ENERGY_CARD, "Power Factor");
@@ -109,8 +111,10 @@ namespace YaSolR {
       Tab _output2Tab = Tab(&dashboard, "\u2600 Output 2");
       Card _output2State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
       Card _output2DS18 = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
-      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
+      Card _output2BypassRO = Card(&dashboard, STATUS_CARD, "Bypass");
       Card _output2Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
       Card _output2ApparentPower = Card(&dashboard, ENERGY_CARD, "Apparent Power", "VA");
       Card _output2PowerFactor = Card(&dashboard, ENERGY_CARD, "Power Factor");
@@ -129,18 +133,20 @@ namespace YaSolR {
       Card _output2AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Temperature");
 
       Tab _relaysTab = Tab(&dashboard, "\u2600 Relays");
-      Card _relay1Switch = Card(&dashboard, BUTTON_CARD, "Relay 1 Manual Control");
       Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Automatic Control: Connected Load (Watts)");
-      Card _relay2Switch = Card(&dashboard, BUTTON_CARD, "Relay 2  Manual Control");
+      Card _relay1Switch = Card(&dashboard, BUTTON_CARD, "Relay 1 Manual Control");
+      Card _relay1SwitchRO = Card(&dashboard, STATUS_CARD, "Relay 1");
       Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Automatic Control: Connected Load (Watts)");
+      Card _relay2Switch = Card(&dashboard, BUTTON_CARD, "Relay 2  Manual Control");
+      Card _relay2SwitchRO = Card(&dashboard, STATUS_CARD, "Relay 2");
 
       Tab _managementTab = Tab(&dashboard, "\u2764 Management");
       Card _configBackup = Card(&dashboard, LINK_CARD, "Configuration Backup");
       Card _configRestore = Card(&dashboard, FILE_UPLOAD_CARD, "Configuration Restore", ".txt");
       Card _otaLink = Card(&dashboard, LINK_CARD, "OTA Firmware Update");
       Card _restart = Card(&dashboard, PUSH_BUTTON_CARD, "Restart");
-      Card _output1Reset = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset (only Output 1)");
-      Card _output2Reset = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset (only Output 2)");
+      Card _energyResetO1 = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset (only Output 1)");
+      Card _energyResetO2 = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset (only Output 2)");
       Card _energyReset = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset");
       Card _reset = Card(&dashboard, PUSH_BUTTON_CARD, "Factory Reset");
       Card _debugMode = Card(&dashboard, BUTTON_CARD, "Debug");
@@ -246,15 +252,15 @@ namespace YaSolR {
       Card _zcd = Card(&dashboard, BUTTON_CARD, "Zero-Cross Detection");
 
       Tab _hardwareConfigTab = Tab(&dashboard, "\u2699 Hardware (config)");
-      Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 1 Bypass Relay Type");
-      Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 1 PZEM Pairing");
-      Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 2 Bypass Relay Type");
-      Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 2 PZEM Pairing");
-      Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, "Relay 1 Type");
-      Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, "Relay 2 Type");
       Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency");
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");
+      Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, "Relay 1 Type");
+      Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 1 Bypass Relay Type");
+      Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 1 PZEM Pairing");
+      Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, "Relay 2 Type");
+      Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 2 Bypass Relay Type");
+      Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 2 PZEM Pairing");
 
       Tab _mqttConfigTab = Tab(&dashboard, "\u2728 MQTT");
       Card _mqttServer = Card(&dashboard, TEXT_INPUT_CARD, "Server");

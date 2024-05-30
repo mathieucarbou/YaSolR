@@ -70,9 +70,9 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Electricity: Dimmers
   if (Mycila::ZCD.isEnabled()) {
-    if (config.getBool(KEY_ENABLE_OUTPUT1))
+    if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
       dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
-    if (config.getBool(KEY_ENABLE_OUTPUT2))
+    if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
       dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
   } else {
     logger.error(TAG, "Dimmers cannot be enabled because ZCD is not enabled");

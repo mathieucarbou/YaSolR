@@ -74,7 +74,7 @@ bool Mycila::RouterOutput::tryDimmerLevel(uint8_t level) {
 }
 
 Mycila::RouterOutputState Mycila::RouterOutput::getState() const {
-  if (!_dimmer->isEnabled())
+  if (!_dimmer->isEnabled() && !_relay->isEnabled())
     return RouterOutputState::OUTPUT_DISABLED;
   if (_dimmer->getLevel() > 0)
     return RouterOutputState::OUTPUT_ROUTING;

@@ -25,14 +25,14 @@ Mycila::Task carouselTask("Carousel", [](void* params) {
         displayTask.setData(reinterpret_cast<void*>(DisplayKind::DISPLAY_ROUTER));
         break;
       case DisplayKind::DISPLAY_ROUTER:
-        if (config.getBool(KEY_ENABLE_OUTPUT1)) {
+        if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
           displayTask.setData(reinterpret_cast<void*>(DisplayKind::DISPLAY_OUTPUT1));
           break;
         } else {
           [[fallthrough]];
         }
       case DisplayKind::DISPLAY_OUTPUT1:
-        if (config.getBool(KEY_ENABLE_OUTPUT2)) {
+        if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
           displayTask.setData(reinterpret_cast<void*>(DisplayKind::DISPLAY_OUTPUT2));
           break;
         } else {
