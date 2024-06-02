@@ -126,8 +126,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   }
 
   // WebSerial
-  WebSerial.begin(webServer, "/console", YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
-  logger.forwardTo(&WebSerial);
+  WebSerialLite.begin(webServer, "/console", YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+  logger.forwardTo(&WebSerialLite);
 
   // ElegantOTA
 #ifdef APP_MODEL_PRO
