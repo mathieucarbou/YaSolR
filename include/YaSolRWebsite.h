@@ -136,7 +136,7 @@ namespace YaSolR {
       Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Automatic Control: Connected Load (Watts)");
       Card _relay1Switch = Card(&dashboard, BUTTON_CARD, "Relay 1 Manual Control");
       Card _relay1SwitchRO = Card(&dashboard, STATUS_CARD, "Relay 1");
-      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Automatic Control: Connected Load (Watts)");
+      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 2 Automatic Control: Connected Load (Watts)");
       Card _relay2Switch = Card(&dashboard, BUTTON_CARD, "Relay 2  Manual Control");
       Card _relay2SwitchRO = Card(&dashboard, STATUS_CARD, "Relay 2");
 
@@ -155,8 +155,8 @@ namespace YaSolR {
       Tab _pinLiveTab = Tab(&dashboard, "\u21C6 GPIO (status)");
       Card _pinDimmerO1Live = Card(&dashboard, STATUS_CARD, "Dimmer for Output 1", DASH_STATUS_IDLE);
       Card _pinDimmerO2Live = Card(&dashboard, STATUS_CARD, "Dimmer for Output 2", DASH_STATUS_IDLE);
-      Card _pinDisplayClockLive = Card(&dashboard, STATUS_CARD, "Display Clock", DASH_STATUS_IDLE);
-      Card _pinDisplayDataLive = Card(&dashboard, STATUS_CARD, "Display Data", DASH_STATUS_IDLE);
+      Card _pinDisplayClockLive = Card(&dashboard, STATUS_CARD, "Display SCL (CLOCK)", DASH_STATUS_IDLE);
+      Card _pinDisplayDataLive = Card(&dashboard, STATUS_CARD, "Display SDA (DATA)", DASH_STATUS_IDLE);
       Card _pinDS18O1Live = Card(&dashboard, STATUS_CARD, "DS18 for Output 1", DASH_STATUS_IDLE);
       Card _pinDS18O2Live = Card(&dashboard, STATUS_CARD, "DS18 for Output 2", DASH_STATUS_IDLE);
       Card _pinDS18RouterLive = Card(&dashboard, STATUS_CARD, "DS18 for Router", DASH_STATUS_IDLE);
@@ -176,8 +176,8 @@ namespace YaSolR {
       Tab _pinConfigTab = Tab(&dashboard, "\u21C6 GPIO (config)");
       Card _pinDimmerO1 = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer for Output 1");
       Card _pinDimmerO2 = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer for Output 2");
-      Card _pinDisplayClock = Card(&dashboard, TEXT_INPUT_CARD, "Display Clock");
-      Card _pinDisplayData = Card(&dashboard, TEXT_INPUT_CARD, "Display Data");
+      Card _pinDisplayClock = Card(&dashboard, TEXT_INPUT_CARD, "Display SCL (CLOCK)");
+      Card _pinDisplayData = Card(&dashboard, TEXT_INPUT_CARD, "Display SDA (DATA)");
       Card _pinDS18O1 = Card(&dashboard, TEXT_INPUT_CARD, "DS18 for Output 1");
       Card _pinDS18O2 = Card(&dashboard, TEXT_INPUT_CARD, "DS18 for Output 2");
       Card _pinDS18Router = Card(&dashboard, TEXT_INPUT_CARD, "DS18 for Router");
@@ -197,8 +197,8 @@ namespace YaSolR {
       Tab _pinViewTab = Tab(&dashboard, "\u21C6 GPIO (validation)");
       Card _pinDimmerO1View = Card(&dashboard, STATUS_CARD, "Dimmer for Output 1", DASH_STATUS_IDLE);
       Card _pinDimmerO2View = Card(&dashboard, STATUS_CARD, "Dimmer for Output 2", DASH_STATUS_IDLE);
-      Card _pinDisplayClockView = Card(&dashboard, STATUS_CARD, "Display Clock", DASH_STATUS_IDLE);
-      Card _pinDisplayDataView = Card(&dashboard, STATUS_CARD, "Display Data", DASH_STATUS_IDLE);
+      Card _pinDisplayClockView = Card(&dashboard, STATUS_CARD, "Display SCL (CLOCK)", DASH_STATUS_IDLE);
+      Card _pinDisplayDataView = Card(&dashboard, STATUS_CARD, "Display SDA (DATA)", DASH_STATUS_IDLE);
       Card _pinDS18O1View = Card(&dashboard, STATUS_CARD, "DS18 for Output 1", DASH_STATUS_IDLE);
       Card _pinDS18O2View = Card(&dashboard, STATUS_CARD, "DS18 for Output 2", DASH_STATUS_IDLE);
       Card _pinDS18RouterView = Card(&dashboard, STATUS_CARD, "DS18 for Router", DASH_STATUS_IDLE);
@@ -248,19 +248,20 @@ namespace YaSolR {
       Card _output2Relay = Card(&dashboard, BUTTON_CARD, "Output 2 Relay (Bypass)");
       Card _relay1 = Card(&dashboard, BUTTON_CARD, "Relay 1");
       Card _relay2 = Card(&dashboard, BUTTON_CARD, "Relay 2");
-      Card _systemTemp = Card(&dashboard, BUTTON_CARD, "System Temperature Sensor");
+      Card _systemTemp = Card(&dashboard, BUTTON_CARD, "Router DS18");
       Card _zcd = Card(&dashboard, BUTTON_CARD, "Zero-Cross Detection");
 
       Tab _hardwareConfigTab = Tab(&dashboard, "\u2699 Hardware (config)");
-      Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency");
+      Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, "Relay 1 Type");
+      Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, "Relay 2 Type");
+      Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 1 Bypass Relay Type");
+      Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 2 Bypass Relay Type");
+      Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 1 PZEM Pairing");
+      Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 2 PZEM Pairing");
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");
-      Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, "Relay 1 Type");
-      Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 1 Bypass Relay Type");
-      Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 1 PZEM Pairing");
-      Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, "Relay 2 Type");
-      Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 2 Bypass Relay Type");
-      Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 2 PZEM Pairing");
+      Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency (default)");
+      Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Grid Voltage (default)");
 
       Tab _mqttConfigTab = Tab(&dashboard, "\u2728 MQTT");
       Card _mqttServer = Card(&dashboard, TEXT_INPUT_CARD, "Server");
@@ -271,8 +272,8 @@ namespace YaSolR {
       Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, "Server Certificate", ".pem,crt,der");
       Card _mqttPublishInterval = Card(&dashboard, SLIDER_CARD, "Publish Interval", "s", 5, 30, 1);
       Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, "Base Topic");
-      Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Discovery");
-      Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Discovery Topic");
+      Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Integration");
+      Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Home Assistant Discovery Topic");
       Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
       Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
 

@@ -264,6 +264,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _displayRotation.setTab(&_hardwareConfigTab);
   _displayType.setTab(&_hardwareConfigTab);
   _gridFreq.setTab(&_hardwareConfigTab);
+  _gridVolt.setTab(&_hardwareConfigTab);
   _output1PZEMSync.setTab(&_hardwareConfigTab);
   _output1RelayType.setTab(&_hardwareConfigTab);
   _output2PZEMSync.setTab(&_hardwareConfigTab);
@@ -273,6 +274,7 @@ void YaSolR::WebsiteClass::initLayout() {
 
   _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
   _numConfig(_gridFreq, KEY_GRID_FREQUENCY);
+  _numConfig(_gridVolt, KEY_GRID_VOLTAGE);
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
@@ -509,6 +511,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   // Hardware (config)
   _gridFreq.update(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? "60 Hz" : "50 Hz", "50 Hz,60 Hz");
+  _gridVolt.update(config.get(KEY_GRID_VOLTAGE).toInt() == 110 ? "110 V" : "220 V", "110 V,220 V");
   _output1RelayType.update(config.get(KEY_OUTPUT1_RELAY_TYPE), "NO,NC");
   _output2RelayType.update(config.get(KEY_OUTPUT2_RELAY_TYPE), "NO,NC");
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
