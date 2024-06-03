@@ -127,12 +127,12 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // WebSerial
 #ifdef APP_MODEL_PRO
-  WebSerialLite.setID(Mycila::AppInfo.firmware.c_str());
-  WebSerialLite.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
+  WebSerial.setID(Mycila::AppInfo.firmware.c_str());
+  WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
 #endif
-  WebSerialLite.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD).c_str());
-  WebSerialLite.begin(&webServer, "/console");
-  logger.forwardTo(&WebSerialLite);
+  WebSerial.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD).c_str());
+  WebSerial.begin(&webServer, "/console");
+  logger.forwardTo(&WebSerial);
 
   // ElegantOTA
 #ifdef APP_MODEL_PRO
