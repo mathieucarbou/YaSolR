@@ -126,7 +126,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   }
 
   // WebSerial
-#ifdef APP_MODEL_PRO  
+#ifdef APP_MODEL_PRO
   WebSerialLite.setID(Mycila::AppInfo.firmware.c_str());
   WebSerialLite.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
 #endif
