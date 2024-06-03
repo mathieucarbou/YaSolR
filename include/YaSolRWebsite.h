@@ -252,16 +252,16 @@ namespace YaSolR {
       Card _zcd = Card(&dashboard, BUTTON_CARD, "Zero-Cross Detection");
 
       Tab _hardwareConfigTab = Tab(&dashboard, "\u2699 Hardware (config)");
+      Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency (default)");
+      Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Grid Voltage (default)");
+      Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
+      Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");
       Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, "Relay 1 Type");
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, "Relay 2 Type");
       Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 1 Bypass Relay Type");
       Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 2 Bypass Relay Type");
       Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 1 PZEM Pairing");
       Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 2 PZEM Pairing");
-      Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
-      Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");
-      Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency (default)");
-      Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Grid Voltage (default)");
 
       Tab _mqttConfigTab = Tab(&dashboard, "\u2728 MQTT");
       Card _mqttServer = Card(&dashboard, TEXT_INPUT_CARD, "Server");
