@@ -7,7 +7,6 @@
 #include <ESPAsyncWebServer.h>
 #include <HardwareSerial.h>
 #include <LittleFS.h>
-#include <WebSerial.h>
 
 #include <MycilaAppInfo.h>
 #include <MycilaConfig.h>
@@ -40,9 +39,11 @@
 #ifdef APP_MODEL_PRO
 #include <ESPDashPro.h>
 #include <ElegantOTAPro.h>
+#include <WebSerialPro.h>
 #else
 #include <ESPDash.h>
 #include <ElegantOTA.h>
+#include <WebSerial.h>
 #endif
 
 #include <YaSolRDefines.h>
