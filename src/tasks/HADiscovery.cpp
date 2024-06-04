@@ -13,6 +13,7 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
   haDiscovery.publish(Mycila::HACounter("device_boots", "Device: Boot Count", "/system/device/boots", nullptr, nullptr, nullptr, Mycila::HACategory::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HACounter("device_uptime", "Device: Uptime", "/system/device/uptime", "duration", nullptr, "s", Mycila::HACategory::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HAGauge("device_heap_usage", "Device: Heap Usage", "/system/device/heap/usage", nullptr, "mdi:memory", "%", Mycila::HACategory::DIAGNOSTIC));
+  haDiscovery.publish(Mycila::HAGauge("device_heap_used", "Device: Heap Used", "/system/device/heap/used", "data_size", "mdi:memory", "B", Mycila::HACategory::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HAGauge("network_wifi_quality", "Net: WiFi Signal", "/system/network/wifi/quality", nullptr, "mdi:signal", "%", Mycila::HACategory::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HAGauge("network_wifi_rssi", "Net: WiFi RSSI", "/system/network/wifi/rssi", "signal_strength", "mdi:signal", "dBm", Mycila::HACategory::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HAText("device_id", "Device: ID", "/system/device/id", nullptr, "mdi:identifier", Mycila::HACategory::DIAGNOSTIC));
