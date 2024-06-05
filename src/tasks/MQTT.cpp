@@ -8,9 +8,6 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
   logger.info("YASOLR", "Publishing static data to MQTT...");
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
 
-  esp_chip_info_t chip_info;
-  esp_chip_info(&chip_info);
-
   mqtt.publish(baseTopic + "/system/app/name", Mycila::AppInfo.name, true);
   mqtt.publish(baseTopic + "/system/app/model", Mycila::AppInfo.model, true);
   mqtt.publish(baseTopic + "/system/app/version", Mycila::AppInfo.version, true);
@@ -19,7 +16,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 
   mqtt.publish(baseTopic + "/system/device/id", Mycila::AppInfo.id, true);
   mqtt.publish(baseTopic + "/system/device/model", ESP.getChipModel(), true);
-  mqtt.publish(baseTopic + "/system/device/cores", String(chip_info.cores), true);
+  mqtt.publish(baseTopic + "/system/device/cores", String(ESP.getChipCores()), true);
   mqtt.publish(baseTopic + "/system/device/cpu_freq", String(ESP.getCpuFreqMHz()), true);
   mqtt.publish(baseTopic + "/system/device/boots", String(Mycila::System.getBootCount()), true);
   mqtt.publish(baseTopic + "/system/device/heap/total", String(ESP.getHeapSize()), true);

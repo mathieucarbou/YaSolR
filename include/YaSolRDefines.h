@@ -4,6 +4,16 @@
  */
 #pragma once
 
+#ifndef GPIO_IS_VALID_OUTPUT_GPIO
+#define GPIO_IS_VALID_OUTPUT_GPIO(gpio_num) ((gpio_num >= 0) && \
+                                             (((1ULL << (gpio_num)) & SOC_GPIO_VALID_OUTPUT_GPIO_MASK) != 0))
+#endif
+
+#ifndef GPIO_IS_VALID_GPIO
+#define GPIO_IS_VALID_GPIO(gpio_num) ((gpio_num >= 0) && \
+                                      (((1ULL << (gpio_num)) & SOC_GPIO_VALID_GPIO_MASK) != 0))
+#endif
+
 #define YASOLR_TRUE     "true"
 #define YASOLR_FALSE    "false"
 #define YASOLR_ON       "on"

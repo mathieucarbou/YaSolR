@@ -163,8 +163,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject root = response->getRoot();
 
       Mycila::SystemMemory memory = Mycila::System.getMemory();
-      esp_chip_info_t chip_info;
-      esp_chip_info(&chip_info);
 
       root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
       root["app"]["model"] = Mycila::AppInfo.model;
@@ -173,14 +171,14 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["app"]["version"] = Mycila::AppInfo.version;
 
       root["device"]["boots"] = Mycila::System.getBootCount();
-      root["device"]["cores"] = chip_info.cores;
+      root["device"]["cores"] = ESP.getChipCores();
       root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
       root["device"]["heap"]["total"] = memory.total;
       root["device"]["heap"]["usage"] = memory.usage;
       root["device"]["heap"]["used"] = memory.used;
       root["device"]["id"] = Mycila::AppInfo.id;
       root["device"]["model"] = ESP.getChipModel();
-      root["device"]["revision"] = chip_info.revision;
+      root["device"]["revision"] = ESP.getChipRevision();
       root["device"]["uptime"] = Mycila::System.getUptime();
 
       root["firmware"]["build"]["branch"] = Mycila::AppInfo.buildBranch;
