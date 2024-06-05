@@ -541,6 +541,7 @@ void YaSolR::WebsiteClass::initCards() {
   _mqttServerCert.update("/api/config/mqttServerCertificate");
   _mqttTopic.update(config.get(KEY_MQTT_TOPIC));
   _mqttUser.update(config.get(KEY_MQTT_USERNAME));
+  _mqttConfigTab.setDisplay(config.getBool(KEY_ENABLE_MQTT));
 
   // network (config)
   _adminPwd.update(config.get(KEY_ADMIN_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);

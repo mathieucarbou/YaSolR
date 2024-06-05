@@ -9,11 +9,11 @@
 #include <map>
 
 #ifdef APP_MODEL_PRO
-#define PUSH_BUTTON_CARD_CB ()
+  #define PUSH_BUTTON_CARD_CB ()
 #else
-#define ENERGY_CARD         GENERIC_CARD
-#define PUSH_BUTTON_CARD    BUTTON_CARD
-#define PUSH_BUTTON_CARD_CB (int32_t value)
+  #define ENERGY_CARD         GENERIC_CARD
+  #define PUSH_BUTTON_CARD    BUTTON_CARD
+  #define PUSH_BUTTON_CARD_CB (int32_t value)
 #endif
 
 namespace YaSolR {
@@ -152,6 +152,29 @@ namespace YaSolR {
       Card _debugMode = Card(&dashboard, BUTTON_CARD, "Debug");
       Card _consoleLink = Card(&dashboard, LINK_CARD, "Console");
 
+      Tab _networkConfigTab = Tab(&dashboard, "\u2728 Network");
+      Card _adminPwd = Card(&dashboard, PASSWORD_CARD, "Admin Password");
+      Card _ntpServer = Card(&dashboard, TEXT_INPUT_CARD, "NTP Server");
+      Card _ntpTimezone = Card(&dashboard, ASYNC_DROPDOWN_CARD, "Timezone");
+      Card _ntpSync = Card(&dashboard, TIME_SYNC_CARD, "Sync time with browser");
+      Card _wifiSSID = Card(&dashboard, TEXT_INPUT_CARD, "WiFi SSID");
+      Card _wifiPwd = Card(&dashboard, PASSWORD_CARD, "WiFi Password");
+      Card _apMode = Card(&dashboard, BUTTON_CARD, "Stay in AP Mode");
+
+      Tab _mqttConfigTab = Tab(&dashboard, "\u2728 MQTT");
+      Card _mqttServer = Card(&dashboard, TEXT_INPUT_CARD, "Server");
+      Card _mqttPort = Card(&dashboard, TEXT_INPUT_CARD, "Port");
+      Card _mqttUser = Card(&dashboard, TEXT_INPUT_CARD, "Username");
+      Card _mqttPwd = Card(&dashboard, PASSWORD_CARD, "Password");
+      Card _mqttSecured = Card(&dashboard, BUTTON_CARD, "SSL / TLS");
+      Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, "Server Certificate", ".pem,crt,der");
+      Card _mqttPublishInterval = Card(&dashboard, SLIDER_CARD, "Publish Interval", "s", 5, 30, 1);
+      Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, "Base Topic");
+      Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Integration");
+      Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Home Assistant Discovery Topic");
+      Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
+      Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
+
       Tab _pinLiveTab = Tab(&dashboard, "\u21C6 GPIO (status)");
       Card _pinDimmerO1Live = Card(&dashboard, STATUS_CARD, "Dimmer for Output 1", DASH_STATUS_IDLE);
       Card _pinDimmerO2Live = Card(&dashboard, STATUS_CARD, "Dimmer for Output 2", DASH_STATUS_IDLE);
@@ -262,29 +285,6 @@ namespace YaSolR {
       Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 2 Bypass Relay Type");
       Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 1 PZEM Pairing");
       Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 2 PZEM Pairing");
-
-      Tab _mqttConfigTab = Tab(&dashboard, "\u2728 MQTT");
-      Card _mqttServer = Card(&dashboard, TEXT_INPUT_CARD, "Server");
-      Card _mqttPort = Card(&dashboard, TEXT_INPUT_CARD, "Port");
-      Card _mqttUser = Card(&dashboard, TEXT_INPUT_CARD, "Username");
-      Card _mqttPwd = Card(&dashboard, PASSWORD_CARD, "Password");
-      Card _mqttSecured = Card(&dashboard, BUTTON_CARD, "SSL / TLS");
-      Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, "Server Certificate", ".pem,crt,der");
-      Card _mqttPublishInterval = Card(&dashboard, SLIDER_CARD, "Publish Interval", "s", 5, 30, 1);
-      Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, "Base Topic");
-      Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Integration");
-      Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Home Assistant Discovery Topic");
-      Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
-      Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
-
-      Tab _networkConfigTab = Tab(&dashboard, "\u2728 Network");
-      Card _adminPwd = Card(&dashboard, PASSWORD_CARD, "Admin Password");
-      Card _ntpServer = Card(&dashboard, TEXT_INPUT_CARD, "NTP Server");
-      Card _ntpTimezone = Card(&dashboard, ASYNC_DROPDOWN_CARD, "Timezone");
-      Card _ntpSync = Card(&dashboard, TIME_SYNC_CARD, "Sync time with browser");
-      Card _wifiSSID = Card(&dashboard, TEXT_INPUT_CARD, "WiFi SSID");
-      Card _wifiPwd = Card(&dashboard, PASSWORD_CARD, "WiFi Password");
-      Card _apMode = Card(&dashboard, BUTTON_CARD, "Stay in AP Mode");
 #endif
 
     private:
