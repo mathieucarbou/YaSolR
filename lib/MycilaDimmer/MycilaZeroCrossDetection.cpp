@@ -10,6 +10,12 @@
 
 #define TAG "ZCD"
 
+#ifndef GPIO_IS_VALID_GPIO
+#define GPIO_IS_VALID_GPIO(gpio_num) ((gpio_num >= 0) && \
+                                      (((1ULL << (gpio_num)) & SOC_GPIO_VALID_GPIO_MASK) != 0))
+#endif
+
+
 extern Mycila::Logger logger;
 
 void Mycila::ZeroCrossDetectionClass::begin(const int8_t pin, const uint8_t frequency) {

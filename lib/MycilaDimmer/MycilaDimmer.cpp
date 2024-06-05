@@ -29,6 +29,16 @@
 #define FOUR_PI          12.56637061435917295385
 #define SQRT_2           1.4142135623730950488
 
+#ifndef GPIO_IS_VALID_OUTPUT_GPIO
+#define GPIO_IS_VALID_OUTPUT_GPIO(gpio_num) ((gpio_num >= 0) && \
+                                             (((1ULL << (gpio_num)) & SOC_GPIO_VALID_OUTPUT_GPIO_MASK) != 0))
+#endif
+
+#ifndef GPIO_IS_VALID_GPIO
+#define GPIO_IS_VALID_GPIO(gpio_num) ((gpio_num >= 0) && \
+                                      (((1ULL << (gpio_num)) & SOC_GPIO_VALID_GPIO_MASK) != 0))
+#endif
+
 extern Mycila::Logger logger;
 
 void Mycila::Dimmer::begin(const int8_t pin) {
