@@ -6,5 +6,14 @@
   "cSpell.words": [
     "YASOLR"
   ],
-  "scm.defaultViewMode": "tree"
+  "scm.defaultViewMode": "tree",
+  "files.associations": {
+    "*.cps": "javascript",
+    "*.config": "cpp",
+    "functional": "cpp",
+    "type_traits": "cpp",
+    "cmath": "cpp",
+    "limits": "cpp",
+    "soc_caps.h": "c"
+  }
 }
