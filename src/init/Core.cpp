@@ -18,20 +18,20 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // jsyTaskManager
   jsyTask.setManager(jsyTaskManager);
 
-  // loopTaskManager
-  carouselTask.setManager(loopTaskManager);
-  displayTask.setManager(loopTaskManager);
-  ds18Task.setManager(loopTaskManager);
-  lightsTask.setManager(loopTaskManager);
-  networkManagerTask.setManager(loopTaskManager);
-  networkServiceTask.setManager(loopTaskManager);
-  otaTask.setManager(loopTaskManager);
-  profilerTask.setManager(loopTaskManager);
-  resetTask.setManager(loopTaskManager);
-  restartTask.setManager(loopTaskManager);
-  dashboardTask.setManager(loopTaskManager);
+  // coreTaskManager
+  carouselTask.setManager(coreTaskManager);
+  displayTask.setManager(coreTaskManager);
+  ds18Task.setManager(coreTaskManager);
+  lightsTask.setManager(coreTaskManager);
+  networkManagerTask.setManager(coreTaskManager);
+  networkServiceTask.setManager(coreTaskManager);
+  otaTask.setManager(coreTaskManager);
+  profilerTask.setManager(coreTaskManager);
+  resetTask.setManager(coreTaskManager);
+  restartTask.setManager(coreTaskManager);
+  dashboardTask.setManager(coreTaskManager);
 #ifdef APP_MODEL_TRIAL
-  trialTask.setManager(loopTaskManager);
+  trialTask.setManager(coreTaskManager);
 #endif
 
   // pzemO1TaskManager

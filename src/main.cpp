@@ -27,7 +27,7 @@ Mycila::TrafficLight lights;
 
 Mycila::TaskManager ioTaskManager("I/O");
 Mycila::TaskManager jsyTaskManager("JSY");
-Mycila::TaskManager loopTaskManager("loopTask");
+Mycila::TaskManager coreTaskManager("Core");
 Mycila::TaskManager pzemO1TaskManager("PZEM Output 1");
 Mycila::TaskManager pzemO2TaskManager("PZEM Output 2");
 Mycila::TaskManager routerTaskManager("Router");
@@ -64,5 +64,5 @@ void setup() {
 }
 
 void loop() {
-  loopTaskManager.loop();
+  coreTaskManager.loop();
 }

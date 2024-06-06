@@ -81,7 +81,7 @@ extern Mycila::Task mqttPublishConfigTask;
 extern Mycila::TaskManager jsyTaskManager;
 extern Mycila::Task jsyTask;
 
-extern Mycila::TaskManager loopTaskManager;
+extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task displayTask;
 extern Mycila::Task carouselTask;
 extern Mycila::Task ds18Task;

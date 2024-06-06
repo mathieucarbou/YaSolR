@@ -103,11 +103,12 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Task Monitor
   Mycila::TaskMonitor.begin();
+  Mycila::TaskMonitor.addTask("loopTask");                 // Arduino
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
   Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
-  Mycila::TaskMonitor.addTask(loopTaskManager.getName());   // Arduino
+  Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(pzemO1TaskManager.getName()); // YaSolR
   Mycila::TaskMonitor.addTask(pzemO2TaskManager.getName()); // YaSolR
   Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
