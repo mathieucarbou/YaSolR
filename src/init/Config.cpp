@@ -103,7 +103,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Task Monitor
   Mycila::TaskMonitor.begin();
-  Mycila::TaskMonitor.addTask("loopTask");                 // Arduino
+  // Mycila::TaskMonitor.addTask("loopTask");                 // Arduino
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
   Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR

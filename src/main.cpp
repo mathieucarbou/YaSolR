@@ -49,11 +49,12 @@ void setup() {
   initMqttSubscribersTask.forceRun();
   initDashboardTask.forceRun();
 
-  assert(ioTaskManager.asyncStart(1024 * 5, uxTaskPriorityGet(NULL), xPortGetCoreID()));
-  assert(jsyTaskManager.asyncStart(1024 * 3, uxTaskPriorityGet(NULL), 0));
-  assert(pzemO1TaskManager.asyncStart(1024 * 3, uxTaskPriorityGet(NULL), 0));
-  assert(pzemO2TaskManager.asyncStart(1024 * 3, uxTaskPriorityGet(NULL), 0));
-  assert(routerTaskManager.asyncStart(1024 * 3, uxTaskPriorityGet(NULL), xPortGetCoreID()));
+  assert(  coreTaskManager.asyncStart(1024 * 4, 0, 1, 100, true)); // NOLINT
+  assert(    ioTaskManager.asyncStart(1024 * 5, 0, 1, 100, true)); // NOLINT
+  assert(   jsyTaskManager.asyncStart(1024 * 3, 0, 0, 100, true)); // NOLINT
+  assert(pzemO1TaskManager.asyncStart(1024 * 3, 0, 0, 100, true)); // NOLINT
+  assert(pzemO2TaskManager.asyncStart(1024 * 3, 0, 0, 100, true)); // NOLINT
+  assert(routerTaskManager.asyncStart(1024 * 3, 0, 1, 100, true)); // NOLINT
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
@@ -63,6 +64,5 @@ void setup() {
 #endif
 }
 
-void loop() {
-  coreTaskManager.loop();
-}
+// Destroy default Arduino async task
+void loop() { vTaskDelete(NULL); }

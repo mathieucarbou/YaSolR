@@ -9,6 +9,9 @@
 Mycila::Task initCoreTask("Init Core", [](void* params) {
   logger.warn(TAG, "Initializing %s...", Mycila::AppInfo.nameModelVersion.c_str());
 
+  // WDT
+  Mycila::TaskManager::configureWDT();
+
   // ioTaskManager
   haDiscoveryTask.setManager(ioTaskManager);
   mqttPublishTask.setManager(ioTaskManager);

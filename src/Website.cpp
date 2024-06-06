@@ -752,6 +752,8 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
     if (output.isBypassRelayEnabled()) {
       output.tryBypassRelayState(value);
     }
+    card.update(output.isBypassOn());
+    dashboard.refreshCard(&card);
     dashboardTask.requestEarlyRun();
   });
 }
@@ -761,6 +763,8 @@ void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput&
     if (output.dimmer().isEnabled()) {
       output.tryDimmerLevel(value);
     }
+    card.update(static_cast<int>(output.dimmer().getLevel()));
+    dashboard.refreshCard(&card);
     dashboardTask.requestEarlyRun();
   });
 }
