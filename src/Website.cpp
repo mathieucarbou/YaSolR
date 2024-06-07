@@ -166,25 +166,25 @@ void YaSolR::WebsiteClass::initLayout() {
   _pinRelayO2.setTab(&_pinConfigTab);
   _pinZCD.setTab(&_pinConfigTab);
 
-  _numConfig(_pinDimmerO1, KEY_PIN_OUTPUT1_DIMMER);
-  _numConfig(_pinDimmerO2, KEY_PIN_OUTPUT2_DIMMER);
-  _numConfig(_pinDisplayClock, KEY_PIN_DISPLAY_SCL);
-  _numConfig(_pinDisplayData, KEY_PIN_DISPLAY_SDA);
-  _numConfig(_pinDS18O1, KEY_PIN_OUTPUT1_DS18);
-  _numConfig(_pinDS18O2, KEY_PIN_OUTPUT2_DS18);
-  _numConfig(_pinDS18Router, KEY_PIN_ROUTER_DS18);
-  _numConfig(_pinJsyRX, KEY_PIN_JSY_RX);
-  _numConfig(_pinJsyTX, KEY_PIN_JSY_RT);
-  _numConfig(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN);
-  _numConfig(_pinLEDRed, KEY_PIN_LIGHTS_RED);
-  _numConfig(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW);
-  _numConfig(_pinPZEMRX, KEY_PIN_PZEM_RX);
-  _numConfig(_pinPZEMTX, KEY_PIN_PZEM_TX);
-  _numConfig(_pinRelay1, KEY_PIN_RELAY1);
-  _numConfig(_pinRelay2, KEY_PIN_RELAY2);
-  _numConfig(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY);
-  _numConfig(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY);
-  _numConfig(_pinZCD, KEY_PIN_ZCD);
+  _pinConfig(_pinDimmerO1, KEY_PIN_OUTPUT1_DIMMER);
+  _pinConfig(_pinDimmerO2, KEY_PIN_OUTPUT2_DIMMER);
+  _pinConfig(_pinDisplayClock, KEY_PIN_DISPLAY_SCL);
+  _pinConfig(_pinDisplayData, KEY_PIN_DISPLAY_SDA);
+  _pinConfig(_pinDS18O1, KEY_PIN_OUTPUT1_DS18);
+  _pinConfig(_pinDS18O2, KEY_PIN_OUTPUT2_DS18);
+  _pinConfig(_pinDS18Router, KEY_PIN_ROUTER_DS18);
+  _pinConfig(_pinJsyRX, KEY_PIN_JSY_RX);
+  _pinConfig(_pinJsyTX, KEY_PIN_JSY_RT);
+  _pinConfig(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN);
+  _pinConfig(_pinLEDRed, KEY_PIN_LIGHTS_RED);
+  _pinConfig(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW);
+  _pinConfig(_pinPZEMRX, KEY_PIN_PZEM_RX);
+  _pinConfig(_pinPZEMTX, KEY_PIN_PZEM_TX);
+  _pinConfig(_pinRelay1, KEY_PIN_RELAY1);
+  _pinConfig(_pinRelay2, KEY_PIN_RELAY2);
+  _pinConfig(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY);
+  _pinConfig(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY);
+  _pinConfig(_pinZCD, KEY_PIN_ZCD);
 
   // GPIO (validation)
   _pinDimmerO1View.setTab(&_pinViewTab);
@@ -421,25 +421,25 @@ void YaSolR::WebsiteClass::initCards() {
 
   // GPIO (status)
   std::map<int32_t, Card*> pinout = {};
-  _pinout(_pinDimmerO1Live, dimmerO1.getPin(), &pinout);
-  _pinout(_pinDimmerO2Live, dimmerO2.getPin(), &pinout);
-  _pinout(_pinDisplayClockLive, display.getClockPin(), &pinout);
-  _pinout(_pinDisplayDataLive, display.getDataPin(), &pinout);
-  _pinout(_pinDS18O1Live, ds18O1.getPin(), &pinout);
-  _pinout(_pinDS18O2Live, ds18O2.getPin(), &pinout);
-  _pinout(_pinDS18RouterLive, ds18Sys.getPin(), &pinout);
-  _pinout(_pinJsyRXLive, jsy.getRXPin(), &pinout);
-  _pinout(_pinJsyTXLive, jsy.getTXPin(), &pinout);
-  _pinout(_pinLEDGreenLive, lights.getGreenPin(), &pinout);
-  _pinout(_pinLEDRedLive, lights.getRedPin(), &pinout);
-  _pinout(_pinLEDYellowLive, lights.getYellowPin(), &pinout);
-  _pinout(_pinPZEMRXLive, pzemO1.getRXPin(), &pinout);
-  _pinout(_pinPZEMTXLive, pzemO1.getTXPin(), &pinout);
-  _pinout(_pinRelay1Live, relay1.getPin(), &pinout);
-  _pinout(_pinRelay2Live, relay2.getPin(), &pinout);
-  _pinout(_pinRelayO1Live, bypassRelayO1.getPin(), &pinout);
-  _pinout(_pinRelayO2Live, bypassRelayO2.getPin(), &pinout);
-  _pinout(_pinZCDLive, Mycila::ZCD.getPin(), &pinout);
+  _pinout(_pinDimmerO1Live, dimmerO1.getPin(), pinout);
+  _pinout(_pinDimmerO2Live, dimmerO2.getPin(), pinout);
+  _pinout(_pinDisplayClockLive, display.getClockPin(), pinout);
+  _pinout(_pinDisplayDataLive, display.getDataPin(), pinout);
+  _pinout(_pinDS18O1Live, ds18O1.getPin(), pinout);
+  _pinout(_pinDS18O2Live, ds18O2.getPin(), pinout);
+  _pinout(_pinDS18RouterLive, ds18Sys.getPin(), pinout);
+  _pinout(_pinJsyRXLive, jsy.getRXPin(), pinout);
+  _pinout(_pinJsyTXLive, jsy.getTXPin(), pinout);
+  _pinout(_pinLEDGreenLive, lights.getGreenPin(), pinout);
+  _pinout(_pinLEDRedLive, lights.getRedPin(), pinout);
+  _pinout(_pinLEDYellowLive, lights.getYellowPin(), pinout);
+  _pinout(_pinPZEMRXLive, pzemO1.getRXPin(), pinout);
+  _pinout(_pinPZEMTXLive, pzemO1.getTXPin(), pinout);
+  _pinout(_pinRelay1Live, relay1.getPin(), pinout);
+  _pinout(_pinRelay2Live, relay2.getPin(), pinout);
+  _pinout(_pinRelayO1Live, bypassRelayO1.getPin(), pinout);
+  _pinout(_pinRelayO2Live, bypassRelayO2.getPin(), pinout);
+  _pinout(_pinZCDLive, Mycila::ZCD.getPin(), pinout);
   pinout.clear();
 
   // GPIO (config)
@@ -464,25 +464,25 @@ void YaSolR::WebsiteClass::initCards() {
   _pinZCD.update(config.get(KEY_PIN_ZCD));
 
   // GPIO (validation)
-  _pinout(_pinDimmerO1View, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), &pinout);
-  _pinout(_pinDimmerO2View, config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), &pinout);
-  _pinout(_pinDisplayClockView, config.get(KEY_PIN_DISPLAY_SCL).toInt(), &pinout);
-  _pinout(_pinDisplayDataView, config.get(KEY_PIN_DISPLAY_SDA).toInt(), &pinout);
-  _pinout(_pinDS18O1View, config.get(KEY_PIN_OUTPUT1_DS18).toInt(), &pinout);
-  _pinout(_pinDS18O2View, config.get(KEY_PIN_OUTPUT2_DS18).toInt(), &pinout);
-  _pinout(_pinDS18RouterView, config.get(KEY_PIN_ROUTER_DS18).toInt(), &pinout);
-  _pinout(_pinJsyRXView, config.get(KEY_PIN_JSY_RX).toInt(), &pinout);
-  _pinout(_pinJsyTXView, config.get(KEY_PIN_JSY_RT).toInt(), &pinout);
-  _pinout(_pinLEDGreenView, config.get(KEY_PIN_LIGHTS_GREEN).toInt(), &pinout);
-  _pinout(_pinLEDRedView, config.get(KEY_PIN_LIGHTS_RED).toInt(), &pinout);
-  _pinout(_pinLEDYellowView, config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), &pinout);
-  _pinout(_pinPZEMRXView, config.get(KEY_PIN_PZEM_RX).toInt(), &pinout);
-  _pinout(_pinPZEMTXView, config.get(KEY_PIN_PZEM_TX).toInt(), &pinout);
-  _pinout(_pinRelay1View, config.get(KEY_PIN_RELAY1).toInt(), &pinout);
-  _pinout(_pinRelay2View, config.get(KEY_PIN_RELAY2).toInt(), &pinout);
-  _pinout(_pinRelayO1View, config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), &pinout);
-  _pinout(_pinRelayO2View, config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), &pinout);
-  _pinout(_pinZCDView, config.get(KEY_PIN_ZCD).toInt(), &pinout);
+  _pinout(_pinDimmerO1View, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), pinout);
+  _pinout(_pinDimmerO2View, config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), pinout);
+  _pinout(_pinDisplayClockView, config.get(KEY_PIN_DISPLAY_SCL).toInt(), pinout);
+  _pinout(_pinDisplayDataView, config.get(KEY_PIN_DISPLAY_SDA).toInt(), pinout);
+  _pinout(_pinDS18O1View, config.get(KEY_PIN_OUTPUT1_DS18).toInt(), pinout);
+  _pinout(_pinDS18O2View, config.get(KEY_PIN_OUTPUT2_DS18).toInt(), pinout);
+  _pinout(_pinDS18RouterView, config.get(KEY_PIN_ROUTER_DS18).toInt(), pinout);
+  _pinout(_pinJsyRXView, config.get(KEY_PIN_JSY_RX).toInt(), pinout);
+  _pinout(_pinJsyTXView, config.get(KEY_PIN_JSY_RT).toInt(), pinout);
+  _pinout(_pinLEDGreenView, config.get(KEY_PIN_LIGHTS_GREEN).toInt(), pinout);
+  _pinout(_pinLEDRedView, config.get(KEY_PIN_LIGHTS_RED).toInt(), pinout);
+  _pinout(_pinLEDYellowView, config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), pinout);
+  _pinout(_pinPZEMRXView, config.get(KEY_PIN_PZEM_RX).toInt(), pinout);
+  _pinout(_pinPZEMTXView, config.get(KEY_PIN_PZEM_TX).toInt(), pinout);
+  _pinout(_pinRelay1View, config.get(KEY_PIN_RELAY1).toInt(), pinout);
+  _pinout(_pinRelay2View, config.get(KEY_PIN_RELAY2).toInt(), pinout);
+  _pinout(_pinRelayO1View, config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), pinout);
+  _pinout(_pinRelayO2View, config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), pinout);
+  _pinout(_pinZCDView, config.get(KEY_PIN_ZCD).toInt(), pinout);
   pinout.clear();
 
   // Hardware (status)
@@ -697,6 +697,20 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
 #endif
 }
 
+void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
+#ifdef APP_MODEL_PRO
+  card.attachCallback([key, &card](const char* value) {
+    if (strlen(value) == 0) {
+      config.unset(key);
+    } else {
+      config.set(key, String(strtol(value, nullptr, 10)));
+    }
+    card.update(static_cast<int>(config.get(key).toInt()));
+    dashboard.refreshCard(&card);
+  });
+#endif
+}
+
 void YaSolR::WebsiteClass::_boolConfig(Card& card, const char* key) {
   card.attachCallback([key, &card, this](int value) {
     config.setBool(key, value);
@@ -794,21 +808,21 @@ void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bo
     card.update("Enabled", DASH_STATUS_SUCCESS);
 }
 
-void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::map<int32_t, Card*>* pinout) {
+void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout) {
   if (pin == GPIO_NUM_NC) {
     card.update("Disabled", DASH_STATUS_IDLE);
-  } else if (pinout->find(pin) != pinout->end()) {
+  } else if (pinout.find(pin) != pinout.end()) {
     String v = String(pin) + " (Duplicate)";
-    pinout->at(pin)->update(v, DASH_STATUS_DANGER);
+    pinout[pin]->update(v, DASH_STATUS_DANGER);
     card.update(v, DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_GPIO(pin)) {
-    pinout->insert(std::pair<int32_t, Card*>(pin, &card));
+    pinout[pin] = &card;
     card.update(String(pin) + " (Invalid)", DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_OUTPUT_GPIO(pin)) {
-    pinout->insert(std::pair<int32_t, Card*>(pin, &card));
+    pinout[pin] = &card;
     card.update(String(pin) + " (Input Only)", DASH_STATUS_WARNING);
   } else {
-    pinout->insert(std::pair<int32_t, Card*>(pin, &card));
+    pinout[pin] = &card;
     card.update(String(pin) + " (I/O)", DASH_STATUS_SUCCESS);
   }
 }

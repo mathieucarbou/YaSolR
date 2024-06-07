@@ -292,6 +292,7 @@ namespace YaSolR {
       void _boolConfig(Card& card, const char* key);
       void _daysConfig(Card& card, const char* key);
       void _numConfig(Card& card, const char* key);
+      void _pinConfig(Card& card, const char* key);
       void _passwordConfig(Card& card, const char* key);
       void _sliderConfig(Card& card, const char* key);
       void _textConfig(Card& card, const char* key);
@@ -300,7 +301,7 @@ namespace YaSolR {
       void _outputBypassSwitch(Card& card, Mycila::RouterOutput& output);
       void _relaySwitch(Card& card, const char* relayName);
 
-      void _pinout(Card& card, int32_t pin, std::map<int32_t, Card*>* pinout);
+      void _pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout);
       void _status(Card& card, const char* key, bool enabled, bool state = true, const char* err = "");
       void _temperature(Card& card, Mycila::DS18& sensor);
   };
