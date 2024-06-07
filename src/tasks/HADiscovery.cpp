@@ -6,6 +6,7 @@
 
 Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* params) {
   logger.info("YASOLR", "Publishing Home Assistant Discovery configuration...");
+  haDiscovery.begin();
 
   // DIAGNOSTIC
 
@@ -77,4 +78,6 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
   haDiscovery.publish(Mycila::HACounter("output2_relay_switch_count", "Output 2 Bypass Relay Switch Count", "/router/output2/relay/switch_count", nullptr, "mdi:counter"));
   haDiscovery.publish(Mycila::HAOutlet("output2_relay", "Output 2 Bypass", "/router/output2/bypass/state/set", "/router/output2/bypass/state", YASOLR_ON, YASOLR_OFF));
   haDiscovery.publish(Mycila::HAGauge("output2_temperature", "Output 2 Temperature", "/router/output2/temperature", "temperature", "mdi:thermometer", "°C"));
+
+  haDiscovery.end();
 });

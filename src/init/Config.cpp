@@ -42,6 +42,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
   haDiscovery.setBaseTopic(config.get(KEY_MQTT_TOPIC));
   haDiscovery.setWillTopic(config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC);
+  haDiscovery.setBufferSise(512);
   haDiscovery.setDevice({
     .id = Mycila::AppInfo.defaultMqttClientId,
     .name = Mycila::AppInfo.defaultSSID,
