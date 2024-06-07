@@ -443,25 +443,26 @@ void YaSolR::WebsiteClass::initCards() {
   pinout.clear();
 
   // GPIO (config)
-  _pinDimmerO1.update(config.get(KEY_PIN_OUTPUT1_DIMMER));
-  _pinDimmerO2.update(config.get(KEY_PIN_OUTPUT2_DIMMER));
-  _pinDisplayClock.update(config.get(KEY_PIN_DISPLAY_SCL));
-  _pinDisplayData.update(config.get(KEY_PIN_DISPLAY_SDA));
-  _pinDS18O1.update(config.get(KEY_PIN_OUTPUT1_DS18));
-  _pinDS18O2.update(config.get(KEY_PIN_OUTPUT2_DS18));
-  _pinDS18Router.update(config.get(KEY_PIN_ROUTER_DS18));
-  _pinJsyRX.update(config.get(KEY_PIN_JSY_RX));
-  _pinJsyTX.update(config.get(KEY_PIN_JSY_RT));
-  _pinLEDGreen.update(config.get(KEY_PIN_LIGHTS_GREEN));
-  _pinLEDRed.update(config.get(KEY_PIN_LIGHTS_RED));
-  _pinLEDYellow.update(config.get(KEY_PIN_LIGHTS_YELLOW));
-  _pinPZEMRX.update(config.get(KEY_PIN_PZEM_RX));
-  _pinPZEMTX.update(config.get(KEY_PIN_PZEM_TX));
-  _pinRelay1.update(config.get(KEY_PIN_RELAY1));
-  _pinRelay2.update(config.get(KEY_PIN_RELAY2));
-  _pinRelayO1.update(config.get(KEY_PIN_OUTPUT1_RELAY));
-  _pinRelayO2.update(config.get(KEY_PIN_OUTPUT2_RELAY));
-  _pinZCD.update(config.get(KEY_PIN_ZCD));
+  _pinout(_pinDimmerO1, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), pinout);
+  _pinout(_pinDimmerO2, config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), pinout);
+  _pinout(_pinDisplayClock, config.get(KEY_PIN_DISPLAY_SCL).toInt(), pinout);
+  _pinout(_pinDisplayData, config.get(KEY_PIN_DISPLAY_SDA).toInt(), pinout);
+  _pinout(_pinDS18O1, config.get(KEY_PIN_OUTPUT1_DS18).toInt(), pinout);
+  _pinout(_pinDS18O2, config.get(KEY_PIN_OUTPUT2_DS18).toInt(), pinout);
+  _pinout(_pinDS18Router, config.get(KEY_PIN_ROUTER_DS18).toInt(), pinout);
+  _pinout(_pinJsyRX, config.get(KEY_PIN_JSY_RX).toInt(), pinout);
+  _pinout(_pinJsyTX, config.get(KEY_PIN_JSY_RT).toInt(), pinout);
+  _pinout(_pinLEDGreen, config.get(KEY_PIN_LIGHTS_GREEN).toInt(), pinout);
+  _pinout(_pinLEDRed, config.get(KEY_PIN_LIGHTS_RED).toInt(), pinout);
+  _pinout(_pinLEDYellow, config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), pinout);
+  _pinout(_pinPZEMRX, config.get(KEY_PIN_PZEM_RX).toInt(), pinout);
+  _pinout(_pinPZEMTX, config.get(KEY_PIN_PZEM_TX).toInt(), pinout);
+  _pinout(_pinRelay1, config.get(KEY_PIN_RELAY1).toInt(), pinout);
+  _pinout(_pinRelay2, config.get(KEY_PIN_RELAY2).toInt(), pinout);
+  _pinout(_pinRelayO1, config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), pinout);
+  _pinout(_pinRelayO2, config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), pinout);
+  _pinout(_pinZCD, config.get(KEY_PIN_ZCD).toInt(), pinout);
+  pinout.clear();
 
   // GPIO (validation)
   _pinout(_pinDimmerO1View, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), pinout);
@@ -699,13 +700,13 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
 
 void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
-  card.attachCallback([key, &card](const char* value) {
+  card.attachCallback([key, &card, this](const char* value) {
     if (strlen(value) == 0) {
       config.unset(key);
     } else {
       config.set(key, String(strtol(value, nullptr, 10)));
     }
-    card.update(static_cast<int>(config.get(key).toInt()));
+    initCards();
     dashboard.refreshCard(&card);
   });
 #endif
