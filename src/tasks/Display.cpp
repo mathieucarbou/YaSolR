@@ -53,7 +53,7 @@ Mycila::Task displayTask("Display", [](void* params) {
   DisplayKind kind = data == nullptr ? DisplayKind::DISPLAY_HOME : (DisplayKind) reinterpret_cast<int>(data);
 
   display.home.clear();
-  display.home.printf("%-6.6s %-3.3s %-6.6s %d/5\n", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str(), kind);
+  display.home.printf("%-6.6s %-3.3s %-7.7s #%d\n", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str(), kind);
 
   switch (kind) {
     case DisplayKind::DISPLAY_NETWORK: {

@@ -11,7 +11,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Tasks configuration
   carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
-  carouselTask.setInterval(8 * Mycila::TaskDuration::SECONDS);
+  carouselTask.setIntervalSupplier([]() { return config.get(KEY_DISPLAY_SPEED).toInt() * Mycila::TaskDuration::SECONDS; });
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(293 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });

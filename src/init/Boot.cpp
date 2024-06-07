@@ -39,6 +39,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.begin(79);
   config.configure(KEY_ADMIN_PASSWORD);
   config.configure(KEY_DISPLAY_ROTATION, "0");
+  config.configure(KEY_DISPLAY_SPEED, "5");
   config.configure(KEY_DISPLAY_TYPE, "SH1106");
   config.configure(KEY_ENABLE_AP_MODE, YASOLR_FALSE);
   config.configure(KEY_ENABLE_DEBUG, YASOLR_FALSE);

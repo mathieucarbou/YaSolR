@@ -278,6 +278,7 @@ namespace YaSolR {
       Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency (default)");
       Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Grid Voltage (default)");
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
+      Card _displaySpeed = Card(&dashboard, SLIDER_CARD, "Display Speed", "s", 1, 10, 1);
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");
       Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, "Relay 1 Type");
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, "Relay 2 Type");

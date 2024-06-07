@@ -263,6 +263,7 @@ void YaSolR::WebsiteClass::initLayout() {
   // Hardware (config)
   _displayRotation.setTab(&_hardwareConfigTab);
   _displayType.setTab(&_hardwareConfigTab);
+  _displaySpeed.setTab(&_hardwareConfigTab);
   _gridFreq.setTab(&_hardwareConfigTab);
   _gridVolt.setTab(&_hardwareConfigTab);
   _output1PZEMSync.setTab(&_hardwareConfigTab);
@@ -282,6 +283,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_output2RelayType, KEY_OUTPUT2_RELAY_TYPE);
   _textConfig(_relay1Type, KEY_RELAY1_TYPE);
   _textConfig(_relay2Type, KEY_RELAY2_TYPE);
+  _sliderConfig(_displaySpeed, KEY_DISPLAY_SPEED);
 
   _output1PZEMSync.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO1PairingTask.resume(); });
   _output2PZEMSync.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO2PairingTask.resume(); });
@@ -517,6 +519,7 @@ void YaSolR::WebsiteClass::initCards() {
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
   _relay2Type.update(config.get(KEY_RELAY2_TYPE), "NO,NC");
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
+  _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
   _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
 
   _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));

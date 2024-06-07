@@ -54,6 +54,7 @@
 // configuration keys
 
 #define KEY_DISPLAY_ROTATION          "disp_angle"
+#define KEY_DISPLAY_SPEED             "disp_speed"
 #define KEY_DISPLAY_TYPE              "disp_type"
 #define KEY_GRID_FREQUENCY            "grid_freq"
 #define KEY_GRID_POWER_MQTT_TOPIC     "grid_pow_mqtt"
