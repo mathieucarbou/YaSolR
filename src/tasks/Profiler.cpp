@@ -9,7 +9,6 @@ Mycila::Task profilerTask("Profiler", [](void* params) {
   ioTaskManager.log();
   jsyTaskManager.log();
   coreTaskManager.log();
-  pzemO1TaskManager.log();
-  pzemO2TaskManager.log();
+  pzemTaskManager.log();
   routerTaskManager.log();
 });

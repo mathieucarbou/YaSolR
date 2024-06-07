@@ -24,22 +24,20 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
 
   if (debug) {
     // Enable profiling for some FOREVER tasks
-    displayTask.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    ds18Task.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    jsyTask.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    mqttPublishTask.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    pzemO1Task.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    pzemO2Task.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    profilerTask.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    routerTask.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
-    dashboardTask.enableProfiling(8, Mycila::TaskTimeUnit::MILLISECONDS);
+    displayTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    ds18Task.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    jsyTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    mqttPublishTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    pzemTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    profilerTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    routerTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    dashboardTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   } else {
     displayTask.disableProfiling();
     ds18Task.disableProfiling();
     jsyTask.disableProfiling();
     mqttPublishTask.disableProfiling();
-    pzemO1Task.disableProfiling();
-    pzemO2Task.disableProfiling();
+    pzemTask.disableProfiling();
     profilerTask.disableProfiling();
     routerTask.disableProfiling();
     dashboardTask.disableProfiling();

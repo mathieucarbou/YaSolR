@@ -97,13 +97,10 @@ extern Mycila::Task dashboardTask;
 extern Mycila::Task trialTask;
 #endif
 
-extern Mycila::TaskManager pzemO1TaskManager;
+extern Mycila::TaskManager pzemTaskManager;
 extern Mycila::Task pzemO1PairingTask;
-extern Mycila::Task pzemO1Task;
-
-extern Mycila::TaskManager pzemO2TaskManager;
 extern Mycila::Task pzemO2PairingTask;
-extern Mycila::Task pzemO2Task;
+extern Mycila::Task pzemTask;
 
 extern Mycila::TaskManager routerTaskManager;
 extern Mycila::Task relaysTask;

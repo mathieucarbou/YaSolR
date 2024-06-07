@@ -20,8 +20,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setInterval(config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS);
   profilerTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
-  pzemO1Task.setEnabledWhen([]() { return pzemO1.isEnabled() && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused() && Mycila::Grid.isConnected(); });
-  pzemO2Task.setEnabledWhen([]() { return pzemO2.isEnabled() && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused() && Mycila::Grid.isConnected(); });
+  pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused() && Mycila::Grid.isConnected(); });
   relaysTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
@@ -103,14 +102,12 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Task Monitor
   Mycila::TaskMonitor.begin();
-  // Mycila::TaskMonitor.addTask("loopTask");                 // Arduino
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
   Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
-  Mycila::TaskMonitor.addTask(pzemO1TaskManager.getName()); // YaSolR
-  Mycila::TaskMonitor.addTask(pzemO2TaskManager.getName()); // YaSolR
+  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
 
   // Display

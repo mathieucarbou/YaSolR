@@ -28,8 +28,7 @@ Mycila::TrafficLight lights;
 Mycila::TaskManager ioTaskManager("I/O");
 Mycila::TaskManager jsyTaskManager("JSY");
 Mycila::TaskManager coreTaskManager("Core");
-Mycila::TaskManager pzemO1TaskManager("PZEM Output 1");
-Mycila::TaskManager pzemO2TaskManager("PZEM Output 2");
+Mycila::TaskManager pzemTaskManager("PZEM");
 Mycila::TaskManager routerTaskManager("Router");
 
 Mycila::RouterOutput output1("output1", dimmerO1, ds18O1, bypassRelayO1, pzemO1);
@@ -52,8 +51,7 @@ void setup() {
   assert(  coreTaskManager.asyncStart(1024 * 4, 0, 1, 100, true)); // NOLINT
   assert(    ioTaskManager.asyncStart(1024 * 5, 0, 1, 100, true)); // NOLINT
   assert(   jsyTaskManager.asyncStart(1024 * 3, 0, 0, 100, true)); // NOLINT
-  assert(pzemO1TaskManager.asyncStart(1024 * 3, 0, 0, 100, true)); // NOLINT
-  assert(pzemO2TaskManager.asyncStart(1024 * 3, 0, 0, 100, true)); // NOLINT
+  assert(  pzemTaskManager.asyncStart(1024 * 3, 0, 0, 100, true)); // NOLINT
   assert(routerTaskManager.asyncStart(1024 * 3, 0, 1, 100, true)); // NOLINT
 
   // STARTUP READY!

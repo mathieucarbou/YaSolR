@@ -37,13 +37,10 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   trialTask.setManager(coreTaskManager);
 #endif
 
-  // pzemO1TaskManager
-  pzemO1Task.setManager(pzemO1TaskManager);
-  pzemO1PairingTask.setManager(pzemO1TaskManager);
-
-  // pzemO2TaskManager
-  pzemO2Task.setManager(pzemO2TaskManager);
-  pzemO2PairingTask.setManager(pzemO2TaskManager);
+  // pzemTaskManager
+  pzemTask.setManager(pzemTaskManager);
+  pzemO1PairingTask.setManager(pzemTaskManager);
+  pzemO2PairingTask.setManager(pzemTaskManager);
 
   // routerTaskManager
   relaysTask.setManager(routerTaskManager);

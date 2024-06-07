@@ -6,10 +6,13 @@
 
 #define TAG "YASOLR"
 
-Mycila::Task pzemO1Task("PZEM 0x01", [](void* params) { pzemO1.read(); });
-Mycila::Task pzemO2Task("PZEM 0x02", [](void* params) { pzemO2.read(); });
+Mycila::Task pzemTask("PZEM", [](void* params) {
+  // PZEM are on the same serial so cannot be read concurrently
+  pzemO1.read();
+  pzemO2.read();
+});
 
-Mycila::Task pzemO1PairingTask("PZEM 0x01 Pairing", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task pzemO1PairingTask("PZEM Pairing 0x01", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Pairing connected PZEM to Output 1...");
   pzemO1.end();
   pzemO2.end();
@@ -39,7 +42,7 @@ Mycila::Task pzemO1PairingTask("PZEM 0x01 Pairing", Mycila::TaskType::ONCE, [](v
   }
 });
 
-Mycila::Task pzemO2PairingTask("PZEM 0x02 Pairing", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task pzemO2PairingTask("PZEM Pairing 0x02", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Pairing connected PZEM to Output 2...");
   pzemO1.end();
   pzemO2.end();
