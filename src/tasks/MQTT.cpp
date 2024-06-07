@@ -13,6 +13,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
   mqtt.publish(baseTopic + "/system/app/version", Mycila::AppInfo.version, true);
   mqtt.publish(baseTopic + "/system/app/manufacturer", Mycila::AppInfo.manufacturer, true);
   mqtt.publish(baseTopic + "/system/app/trial", YASOLR_BOOL(Mycila::AppInfo.trial), true);
+  yield();
 
   mqtt.publish(baseTopic + "/system/device/id", Mycila::AppInfo.id, true);
   mqtt.publish(baseTopic + "/system/device/model", ESP.getChipModel(), true);
@@ -20,25 +21,30 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
   mqtt.publish(baseTopic + "/system/device/cpu_freq", String(ESP.getCpuFreqMHz()), true);
   mqtt.publish(baseTopic + "/system/device/boots", String(Mycila::System.getBootCount()), true);
   mqtt.publish(baseTopic + "/system/device/heap/total", String(ESP.getHeapSize()), true);
+  yield();
 
   mqtt.publish(baseTopic + "/system/firmware/filename", Mycila::AppInfo.firmware, true);
   mqtt.publish(baseTopic + "/system/firmware/build/hash", Mycila::AppInfo.buildHash, true);
   mqtt.publish(baseTopic + "/system/firmware/build/branch", Mycila::AppInfo.buildBranch, true);
   mqtt.publish(baseTopic + "/system/firmware/build/timestamp", Mycila::AppInfo.buildDate, true);
   mqtt.publish(baseTopic + "/system/firmware/debug", YASOLR_BOOL(Mycila::AppInfo.debug), true);
+  yield();
 
   mqtt.publish(baseTopic + "/system/network/hostname", ESPConnect.getHostname(), true);
   mqtt.publish(baseTopic + "/system/network/eth/mac_address", ESPConnect.getMACAddress(ESPConnectMode::ETH), true);
   mqtt.publish(baseTopic + "/system/network/wifi/mac_address", ESPConnect.getMACAddress(ESPConnectMode::STA), true);
+  yield();
 
   if (!relay1.isEnabled()) {
     mqtt.publish(baseTopic + "/router/relay1/state", YASOLR_STATE(relay1.isOn()), true);
     mqtt.publish(baseTopic + "/router/relay1/switch_count", String(relay1.getSwitchCount()), true);
+    yield();
   }
 
   if (!relay2.isEnabled()) {
     mqtt.publish(baseTopic + "/router/relay2/state", YASOLR_STATE(relay2.isOn()), true);
     mqtt.publish(baseTopic + "/router/relay2/switch_count", String(relay2.getSwitchCount()), true);
+    yield();
   }
 
   if (!output1.isEnabled()) {
@@ -48,6 +54,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
     mqtt.publish(baseTopic + "/router/output1/relay/state", YASOLR_STATE(bypassRelayO1.isOn()), true);
     mqtt.publish(baseTopic + "/router/output1/relay/switch_count", String(bypassRelayO1.getSwitchCount()), true);
     mqtt.publish(baseTopic + "/router/output1/temperature", String(ds18O1.getLastTemperature()), true);
+    yield();
   }
 
   if (!output2.isEnabled()) {
@@ -57,6 +64,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
     mqtt.publish(baseTopic + "/router/output2/relay/state", YASOLR_STATE(bypassRelayO2.isOn()), true);
     mqtt.publish(baseTopic + "/router/output2/relay/switch_count", String(bypassRelayO2.getSwitchCount()), true);
     mqtt.publish(baseTopic + "/router/output2/temperature", String(ds18O2.getLastTemperature()), true);
+    yield();
   }
 });
 
@@ -79,6 +87,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/system/device/heap/usage", String(memory.usage));
   mqtt.publish(baseTopic + "/system/device/heap/used", String(memory.used));
   mqtt.publish(baseTopic + "/system/device/uptime", String(Mycila::System.getUptime()));
+  yield();
 
   mqtt.publish(baseTopic + "/system/network/eth/ip_address", ESPConnect.getIPAddress(ESPConnectMode::ETH).toString());
   mqtt.publish(baseTopic + "/system/network/ip_address", ESPConnect.getIPAddress().toString());
@@ -89,6 +98,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/system/network/wifi/quality", String(ESPConnect.getWiFiSignalQuality()));
   mqtt.publish(baseTopic + "/system/network/wifi/rssi", String(ESPConnect.getWiFiRSSI()));
   mqtt.publish(baseTopic + "/system/network/wifi/ssid", ESPConnect.getWiFiSSID());
+  yield();
 
   switch (ESPConnect.getMode()) {
     case ESPConnectMode::ETH:
@@ -111,6 +121,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/grid/power_factor", String(Mycila::Grid.getPowerFactor(), 3));
   mqtt.publish(baseTopic + "/grid/power", String(Mycila::Grid.getActivePower(), 3));
   mqtt.publish(baseTopic + "/grid/voltage", String(Mycila::Grid.getVoltage(), 3));
+  yield();
 
   mqtt.publish(baseTopic + "/router/lights", lights.toString());
   mqtt.publish(baseTopic + "/router/temperature", String(ds18Sys.getLastTemperature()));
@@ -119,15 +130,18 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/router/power", String(Mycila::Router.getTotalRoutedPower(), 3));
   mqtt.publish(baseTopic + "/router/thdi", String(Mycila::Router.getTotalTHDi(), 3));
   mqtt.publish(baseTopic + "/router/virtual_grid_power", String(Mycila::Router.getVirtualGridPower(), 3));
+  yield();
 
   if (relay1.isEnabled()) {
     mqtt.publish(baseTopic + "/router/relay1/state", YASOLR_STATE(relay1.isOn()));
     mqtt.publish(baseTopic + "/router/relay1/switch_count", String(relay1.getSwitchCount()));
+    yield();
   }
 
   if (relay2.isEnabled()) {
     mqtt.publish(baseTopic + "/router/relay2/state", YASOLR_STATE(relay2.isOn()));
     mqtt.publish(baseTopic + "/router/relay2/switch_count", String(relay2.getSwitchCount()));
+    yield();
   }
 
   if (output1.isEnabled()) {
@@ -137,6 +151,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
     mqtt.publish(baseTopic + "/router/output1/relay/state", YASOLR_STATE(bypassRelayO1.isOn()));
     mqtt.publish(baseTopic + "/router/output1/relay/switch_count", String(bypassRelayO1.getSwitchCount()));
     mqtt.publish(baseTopic + "/router/output1/temperature", String(ds18O1.getLastTemperature()));
+    yield();
   }
 
   if (output2.isEnabled()) {
@@ -146,5 +161,6 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
     mqtt.publish(baseTopic + "/router/output2/relay/state", YASOLR_STATE(bypassRelayO2.isOn()));
     mqtt.publish(baseTopic + "/router/output2/relay/switch_count", String(bypassRelayO2.getSwitchCount()));
     mqtt.publish(baseTopic + "/router/output2/temperature", String(ds18O2.getLastTemperature()));
+    yield();
   }
 });

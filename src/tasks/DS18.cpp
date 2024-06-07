@@ -6,6 +6,9 @@
 
 Mycila::Task ds18Task("DS18", [](void* params) {
   ds18Sys.read();
+  yield();
   ds18O1.read();
+  yield();
   ds18O2.read();
+  yield();
 });
