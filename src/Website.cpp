@@ -401,6 +401,7 @@ void YaSolR::WebsiteClass::initCards() {
   _relay1Type.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
   _relay2Type.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
+  _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displayRotation.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _output1PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
   _output2PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
