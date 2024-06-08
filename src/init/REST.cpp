@@ -326,14 +326,14 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["relay2"]["state"] = YASOLR_STATE(relay2.isOn());
       root["relay2"]["switch_count"] = relay2.getSwitchCount();
 
-      root["output1"]["bypass"]["state"] = YASOLR_STATE(output1.isBypassOn());
+      root["output1"]["bypass"] = YASOLR_STATE(output1.isBypassOn());
       root["output1"]["dimmer"]["level"] = dimmerO1.getLevel();
       root["output1"]["dimmer"]["state"] = YASOLR_STATE(dimmerO1.isOn());
       root["output1"]["relay"]["state"] = YASOLR_STATE(bypassRelayO1.isOn());
       root["output1"]["relay"]["switch_count"] = bypassRelayO1.getSwitchCount();
       root["output1"]["temperature"] = ds18O1.getLastTemperature();
 
-      root["output2"]["bypass"]["state"] = YASOLR_STATE(output2.isBypassOn());
+      root["output2"]["bypass"] = YASOLR_STATE(output2.isBypassOn());
       root["output2"]["dimmer"]["level"] = dimmerO2.getLevel();
       root["output2"]["dimmer"]["state"] = YASOLR_STATE(dimmerO2.isOn());
       root["output2"]["relay"]["state"] = YASOLR_STATE(bypassRelayO2.isOn());

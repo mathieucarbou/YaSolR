@@ -57,7 +57,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     output2.tryDimmerLevel(payload.toInt());
   });
 
-  mqtt.subscribe(baseTopic + "/router/output1/bypass/state/set", [](const String& topic, const String& payload) {
+  mqtt.subscribe(baseTopic + "/router/output1/bypass/set", [](const String& topic, const String& payload) {
     if (output1.isBypassRelayEnabled()) {
       if (payload == YASOLR_ON)
         output1.tryBypassRelayState(true);
@@ -66,7 +66,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     }
   });
 
-  mqtt.subscribe(baseTopic + "/router/output2/bypass/state/set", [](const String& topic, const String& payload) {
+  mqtt.subscribe(baseTopic + "/router/output2/bypass/set", [](const String& topic, const String& payload) {
     if (output2.isBypassRelayEnabled()) {
       if (payload == YASOLR_ON)
         output2.tryBypassRelayState(true);
