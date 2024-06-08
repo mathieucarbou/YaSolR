@@ -19,6 +19,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setInterval(config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS);
+  mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
+  mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   profilerTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused() && Mycila::Grid.isConnected(); });
   relaysTask.setInterval(5 * Mycila::TaskDuration::SECONDS);
