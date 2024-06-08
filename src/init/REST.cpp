@@ -186,6 +186,9 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["firmware"]["debug"] = Mycila::AppInfo.debug;
       root["firmware"]["filename"] = Mycila::AppInfo.firmware;
 
+      root["network"]["eth"]["ip_address"] = ESPConnect.getIPAddress(ESPConnectMode::ETH).toString();
+      root["network"]["eth"]["mac_address"] = ESPConnect.getMACAddress(ESPConnectMode::ETH);
+
       root["network"]["hostname"] = ESPConnect.getHostname();
       root["network"]["ip_address"] = ESPConnect.getIPAddress().toString();
       root["network"]["mac_address"] = ESPConnect.getMACAddress();
@@ -203,10 +206,8 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           root["network"]["mode"] = "";
           break;
       }
-      root["network"]["ntp"] = YASOLR_STATE(Mycila::NTP.isSynced());
 
-      root["network"]["eth"]["ip_address"] = ESPConnect.getIPAddress(ESPConnectMode::ETH).toString();
-      root["network"]["eth"]["mac_address"] = ESPConnect.getMACAddress(ESPConnectMode::ETH);
+      root["network"]["ntp"] = YASOLR_STATE(Mycila::NTP.isSynced());
 
       root["network"]["wifi"]["bssid"] = ESPConnect.getWiFiBSSID();
       root["network"]["wifi"]["ip_address"] = ESPConnect.getIPAddress(ESPConnectMode::STA).toString();
