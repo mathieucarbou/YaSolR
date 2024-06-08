@@ -361,6 +361,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["grid"] = base + "/grid";
       root["router"] = base + "/router";
       root["system"] = base + "/system";
+      root["system/reset"] = base + "/system/reset";
       root["system/restart"] = base + "/system/restart";
 
       response->setLength();
