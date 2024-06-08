@@ -13,7 +13,7 @@ void YaSolR::WebsiteClass::initLayout() {
 #ifdef APP_MODEL_PRO
   // output 1 (status)
   _output1State.setTab(&_output1Tab);
-  _output1DS18.setTab(&_output1Tab);
+  _output1DS18State.setTab(&_output1Tab);
   _output1DimmerSlider.setTab(&_output1Tab);
   _output1DimmerSliderRO.setTab(&_output1Tab);
   _output1Bypass.setTab(&_output1Tab);
@@ -31,7 +31,7 @@ void YaSolR::WebsiteClass::initLayout() {
 
   // output 2 (status)
   _output2State.setTab(&_output2Tab);
-  _output2DS18.setTab(&_output2Tab);
+  _output2DS18State.setTab(&_output2Tab);
   _output2DimmerSlider.setTab(&_output2Tab);
   _output2DimmerSliderRO.setTab(&_output2Tab);
   _output2Bypass.setTab(&_output2Tab);
@@ -165,25 +165,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _pinConfig(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY);
   _pinConfig(_pinZCD, KEY_PIN_ZCD);
 
-  // Hardware (status)
-  _stateDisplay.setTab(&_stateTab);
-  _stateJSY.setTab(&_stateTab);
-  _stateLEDs.setTab(&_stateTab);
-  _stateMQTT.setTab(&_stateTab);
-  _stateOutput1Dimmer.setTab(&_stateTab);
-  _stateOutput1PZEM.setTab(&_stateTab);
-  _stateOutput1Relay.setTab(&_stateTab);
-  _stateOutput1Ds18.setTab(&_stateTab);
-  _stateOutput2Dimmer.setTab(&_stateTab);
-  _stateOutput2PZEM.setTab(&_stateTab);
-  _stateOutput2Relay.setTab(&_stateTab);
-  _stateOutput2Ds18.setTab(&_stateTab);
-  _stateRelay1.setTab(&_stateTab);
-  _stateRelay2.setTab(&_stateTab);
-  _stateRouterTemp.setTab(&_stateTab);
-  _stateZCD.setTab(&_stateTab);
-
-  // Hardware (activation)
+  // Hardware
   _display.setTab(&_hardwareEnableTab);
   _jsy.setTab(&_hardwareEnableTab);
   _led.setTab(&_hardwareEnableTab);
@@ -191,14 +173,14 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1Dimmer.setTab(&_hardwareEnableTab);
   _output1PZEM.setTab(&_hardwareEnableTab);
   _output1Relay.setTab(&_hardwareEnableTab);
-  _output1Ds18.setTab(&_hardwareEnableTab);
+  _output1DS18.setTab(&_hardwareEnableTab);
   _output2Dimmer.setTab(&_hardwareEnableTab);
   _output2PZEM.setTab(&_hardwareEnableTab);
   _output2Relay.setTab(&_hardwareEnableTab);
-  _output2Ds18.setTab(&_hardwareEnableTab);
+  _output2DS18.setTab(&_hardwareEnableTab);
   _relay1.setTab(&_hardwareEnableTab);
   _relay2.setTab(&_hardwareEnableTab);
-  _systemTemp.setTab(&_hardwareEnableTab);
+  _routerDS18.setTab(&_hardwareEnableTab);
   _zcd.setTab(&_hardwareEnableTab);
 
   _boolConfig(_display, KEY_ENABLE_DISPLAY);
@@ -206,16 +188,16 @@ void YaSolR::WebsiteClass::initLayout() {
   _boolConfig(_led, KEY_ENABLE_LIGHTS);
   _boolConfig(_mqtt, KEY_ENABLE_MQTT);
   _boolConfig(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER);
-  _boolConfig(_output1Ds18, KEY_ENABLE_OUTPUT1_DS18);
+  _boolConfig(_output1DS18, KEY_ENABLE_OUTPUT1_DS18);
   _boolConfig(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM);
   _boolConfig(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY);
   _boolConfig(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER);
-  _boolConfig(_output2Ds18, KEY_ENABLE_OUTPUT2_DS18);
+  _boolConfig(_output2DS18, KEY_ENABLE_OUTPUT2_DS18);
   _boolConfig(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM);
   _boolConfig(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY);
   _boolConfig(_relay1, KEY_ENABLE_RELAY1);
   _boolConfig(_relay2, KEY_ENABLE_RELAY2);
-  _boolConfig(_systemTemp, KEY_ENABLE_DS18_SYSTEM);
+  _boolConfig(_routerDS18, KEY_ENABLE_DS18_SYSTEM);
   _boolConfig(_zcd, KEY_ENABLE_ZCD);
 
   // Hardware (config)
@@ -401,31 +383,13 @@ void YaSolR::WebsiteClass::initCards() {
   _pinout(_pinZCD, config.get(KEY_PIN_ZCD).toInt(), pinout);
   pinout.clear();
 
-  // Hardware (status)
-  _status(_stateDisplay, KEY_ENABLE_DISPLAY, display.isEnabled());
-  _status(_stateLEDs, KEY_ENABLE_LIGHTS, lights.isEnabled());
-  _status(_stateOutput1Relay, KEY_ENABLE_OUTPUT1_RELAY, bypassRelayO1.isEnabled());
-  _status(_stateOutput2Relay, KEY_ENABLE_OUTPUT2_RELAY, bypassRelayO2.isEnabled());
-  _status(_stateRelay1, KEY_ENABLE_RELAY1, relay1.isEnabled());
-  _status(_stateRelay2, KEY_ENABLE_RELAY2, relay2.isEnabled());
-
-  // Hardware (activation)
-  _display.update(config.getBool(KEY_ENABLE_DISPLAY));
-  _jsy.update(config.getBool(KEY_ENABLE_JSY));
-  _led.update(config.getBool(KEY_ENABLE_LIGHTS));
-  _mqtt.update(config.getBool(KEY_ENABLE_MQTT));
-  _output1Dimmer.update(config.getBool(KEY_ENABLE_OUTPUT1_DIMMER));
-  _output1Ds18.update(config.getBool(KEY_ENABLE_OUTPUT1_DS18));
-  _output1PZEM.update(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
-  _output1Relay.update(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
-  _output2Dimmer.update(config.getBool(KEY_ENABLE_OUTPUT2_DIMMER));
-  _output2Ds18.update(config.getBool(KEY_ENABLE_OUTPUT2_DS18));
-  _output2PZEM.update(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
-  _output2Relay.update(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
-  _relay1.update(config.getBool(KEY_ENABLE_RELAY1));
-  _relay2.update(config.getBool(KEY_ENABLE_RELAY2));
-  _systemTemp.update(config.getBool(KEY_ENABLE_DS18_SYSTEM));
-  _zcd.update(config.getBool(KEY_ENABLE_ZCD));
+  // Hardware
+  _status(_display, KEY_ENABLE_DISPLAY, display.isEnabled());
+  _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
+  _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, bypassRelayO1.isEnabled());
+  _status(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY, bypassRelayO2.isEnabled());
+  _status(_relay1, KEY_ENABLE_RELAY1, relay1.isEnabled());
+  _status(_relay2, KEY_ENABLE_RELAY2, relay2.isEnabled());
 
   // Hardware (config)
   _gridFreq.update(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? "60 Hz" : "50 Hz", "50 Hz,60 Hz");
@@ -505,7 +469,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _routerTHDi.update(Mycila::Router.getTotalTHDi() * 100);
   _routerEnergy.update(Mycila::Router.getTotalRoutedEnergy());
   _gridPower.update(Mycila::Grid.getActivePower());
-  _temperature(_ds18Sys, ds18Sys);
+  _temperature(_routerDS18State, ds18Sys);
 
 #ifdef APP_MODEL_PRO
   // Output 1 (status)
@@ -525,7 +489,7 @@ void YaSolR::WebsiteClass::updateCards() {
       _output1State.update("Unknown", DASH_STATUS_DANGER);
       break;
   }
-  _temperature(_output1DS18, ds18O1);
+  _temperature(_output1DS18State, ds18O1);
   _output1DimmerSlider.update(static_cast<int>(dimmerO1.getLevel()));
   _output1DimmerSliderRO.update(static_cast<int>(dimmerO1.getLevel()));
   _output1Bypass.update(output1.isBypassOn());
@@ -556,7 +520,7 @@ void YaSolR::WebsiteClass::updateCards() {
       _output2State.update("Unknown", DASH_STATUS_DANGER);
       break;
   }
-  _temperature(_output2DS18, ds18O2);
+  _temperature(_output2DS18State, ds18O2);
   _output2DimmerSlider.update(static_cast<int>(dimmerO2.getLevel()));
   _output2DimmerSliderRO.update(static_cast<int>(dimmerO2.getLevel()));
   _output2Bypass.update(output2.isBypassOn());
@@ -578,16 +542,16 @@ void YaSolR::WebsiteClass::updateCards() {
 
   // Hardware (status)
   const bool gridOnline = Mycila::Grid.isConnected();
-  _status(_stateJSY, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No electricity");
-  _status(_stateMQTT, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : "Disconnected");
-  _status(_stateOutput1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), gridOnline, "No electricity");
-  _status(_stateOutput1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), "No electricity");
-  _status(_stateOutput1Ds18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, "Read error");
-  _status(_stateOutput2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), gridOnline, "No electricity");
-  _status(_stateOutput2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), "No electricity");
-  _status(_stateOutput2Ds18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, "Read error");
-  _status(_stateRouterTemp, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, "Read error");
-  _status(_stateZCD, KEY_ENABLE_ZCD, Mycila::ZCD.isEnabled(), Mycila::ZCD.isConnected(), "No electricity");
+  _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No electricity");
+  _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : "Disconnected");
+  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), gridOnline, "No electricity");
+  _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, "Read error");
+  _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), "No electricity");
+  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), gridOnline, "No electricity");
+  _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, "Read error");
+  _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), "No electricity");
+  _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, "Read error");
+  _status(_zcd, KEY_ENABLE_ZCD, Mycila::ZCD.isEnabled(), Mycila::ZCD.isConnected(), "No electricity");
 #endif
 }
 
@@ -715,13 +679,13 @@ void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
 void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bool active, const char* err) {
   const bool configEnabled = config.getBool(key);
   if (!configEnabled)
-    card.update("Disabled", DASH_STATUS_IDLE);
+    card.update(config.getBool(key), DASH_STATUS_IDLE ",Disabled");
   else if (!enabled)
-    card.update("Failed to start", DASH_STATUS_DANGER);
+    card.update(config.getBool(key), DASH_STATUS_DANGER ",Failed to start");
   else if (!active)
-    card.update(err, DASH_STATUS_WARNING);
+    card.update(config.getBool(key), (String(DASH_STATUS_WARNING) + "," + err).c_str());
   else
-    card.update("Enabled", DASH_STATUS_SUCCESS);
+    card.update(config.getBool(key), DASH_STATUS_SUCCESS ",Enabled");
 }
 
 void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout) {

@@ -77,7 +77,7 @@ namespace YaSolR {
       Card _routerPowerFactor = Card(&dashboard, ENERGY_CARD, "Router Power Factor");
       Card _routerTHDi = Card(&dashboard, ENERGY_CARD, "Router THDi", "%");
       Card _gridPower = Card(&dashboard, ENERGY_CARD, "Grid Power", "W");
-      Card _ds18Sys = Card(&dashboard, TEMPERATURE_CARD, "System Temperature", "°C");
+      Card _routerDS18State = Card(&dashboard, TEMPERATURE_CARD, "System Temperature", "°C");
 
 #ifdef APP_MODEL_PRO
       // tabs icons:
@@ -86,7 +86,7 @@ namespace YaSolR {
 
       Tab _output1Tab = Tab(&dashboard, "\u2600 Output 1");
       Card _output1State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
-      Card _output1DS18 = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
+      Card _output1DS18State = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
       Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
@@ -110,7 +110,7 @@ namespace YaSolR {
 
       Tab _output2Tab = Tab(&dashboard, "\u2600 Output 2");
       Card _output2State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
-      Card _output2DS18 = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
+      Card _output2DS18State = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
       Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
@@ -196,43 +196,25 @@ namespace YaSolR {
       Card _pinRelayO2 = Card(&dashboard, TEXT_INPUT_CARD, "Relay for Output 2 Bypass");
       Card _pinZCD = Card(&dashboard, TEXT_INPUT_CARD, "Zero-Cross Detection");
 
-      Tab _stateTab = Tab(&dashboard, "\u2699 Hardware (status)");
-      Card _stateDisplay = Card(&dashboard, STATUS_CARD, "Display", DASH_STATUS_IDLE);
-      Card _stateJSY = Card(&dashboard, STATUS_CARD, "JSY", DASH_STATUS_IDLE);
-      Card _stateLEDs = Card(&dashboard, STATUS_CARD, "LEDs", DASH_STATUS_IDLE);
-      Card _stateMQTT = Card(&dashboard, STATUS_CARD, "MQTT", DASH_STATUS_IDLE);
-      Card _stateOutput1Dimmer = Card(&dashboard, STATUS_CARD, "Output 1 Dimmer", DASH_STATUS_IDLE);
-      Card _stateOutput1Ds18 = Card(&dashboard, STATUS_CARD, "Output 1 DS18", DASH_STATUS_IDLE);
-      Card _stateOutput1PZEM = Card(&dashboard, STATUS_CARD, "Output 1 PZEM", DASH_STATUS_IDLE);
-      Card _stateOutput1Relay = Card(&dashboard, STATUS_CARD, "Output 1 Relay (Bypass)", DASH_STATUS_IDLE);
-      Card _stateOutput2Dimmer = Card(&dashboard, STATUS_CARD, "Output 2 Dimmer", DASH_STATUS_IDLE);
-      Card _stateOutput2Ds18 = Card(&dashboard, STATUS_CARD, "Output 2 DS18", DASH_STATUS_IDLE);
-      Card _stateOutput2PZEM = Card(&dashboard, STATUS_CARD, "Output 2 PZEM", DASH_STATUS_IDLE);
-      Card _stateOutput2Relay = Card(&dashboard, STATUS_CARD, "Output 2 Relay (Bypass)", DASH_STATUS_IDLE);
-      Card _stateRelay1 = Card(&dashboard, STATUS_CARD, "Relay 1", DASH_STATUS_IDLE);
-      Card _stateRelay2 = Card(&dashboard, STATUS_CARD, "Relay 2", DASH_STATUS_IDLE);
-      Card _stateRouterTemp = Card(&dashboard, STATUS_CARD, "Router DS18", DASH_STATUS_IDLE);
-      Card _stateZCD = Card(&dashboard, STATUS_CARD, "Zero-Cross Detection", DASH_STATUS_IDLE);
-
-      Tab _hardwareEnableTab = Tab(&dashboard, "\u2699 Hardware (activation)");
+      Tab _hardwareEnableTab = Tab(&dashboard, "\u2699 Hardware");
       Card _display = Card(&dashboard, BUTTON_CARD, "Display");
       Card _jsy = Card(&dashboard, BUTTON_CARD, "JSY");
       Card _led = Card(&dashboard, BUTTON_CARD, "LEDs");
       Card _mqtt = Card(&dashboard, BUTTON_CARD, "MQTT");
       Card _output1Dimmer = Card(&dashboard, BUTTON_CARD, "Output 1 Dimmer");
-      Card _output1Ds18 = Card(&dashboard, BUTTON_CARD, "Output 1 DS18");
+      Card _output1DS18 = Card(&dashboard, BUTTON_CARD, "Output 1 DS18");
       Card _output1PZEM = Card(&dashboard, BUTTON_CARD, "Output 1 PZEM");
       Card _output1Relay = Card(&dashboard, BUTTON_CARD, "Output 1 Relay (Bypass)");
       Card _output2Dimmer = Card(&dashboard, BUTTON_CARD, "Output 2 Dimmer");
-      Card _output2Ds18 = Card(&dashboard, BUTTON_CARD, "Output 2 DS18");
+      Card _output2DS18 = Card(&dashboard, BUTTON_CARD, "Output 2 DS18");
       Card _output2PZEM = Card(&dashboard, BUTTON_CARD, "Output 2 PZEM");
       Card _output2Relay = Card(&dashboard, BUTTON_CARD, "Output 2 Relay (Bypass)");
       Card _relay1 = Card(&dashboard, BUTTON_CARD, "Relay 1");
       Card _relay2 = Card(&dashboard, BUTTON_CARD, "Relay 2");
-      Card _systemTemp = Card(&dashboard, BUTTON_CARD, "Router DS18");
+      Card _routerDS18 = Card(&dashboard, BUTTON_CARD, "Router DS18");
       Card _zcd = Card(&dashboard, BUTTON_CARD, "Zero-Cross Detection");
 
-      Tab _hardwareConfigTab = Tab(&dashboard, "\u2699 Hardware (config)");
+      Tab _hardwareConfigTab = Tab(&dashboard, "\u2699 Hardware Config");
       Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency (default)");
       Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Grid Voltage (default)");
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
