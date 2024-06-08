@@ -21,7 +21,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   mqttPublishTask.setInterval(config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS);
   profilerTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused() && Mycila::Grid.isConnected(); });
-  relaysTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
+  relaysTask.setInterval(5 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
   dashboardTask.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
@@ -30,8 +30,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Grid
-  Mycila::Grid.setFrequency(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
-  Mycila::Grid.setVoltage(config.get(KEY_GRID_VOLTAGE).toInt());
+  Mycila::Grid.setDefaultFrequency(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
+  Mycila::Grid.setDefaultVoltage(config.get(KEY_GRID_VOLTAGE).toInt());
   Mycila::Grid.setMQTTGridPowerTopic(config.get(KEY_GRID_POWER_MQTT_TOPIC));
   Mycila::Grid.setMQTTGridVoltageTopic(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
 

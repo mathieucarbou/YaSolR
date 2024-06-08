@@ -14,6 +14,7 @@
     "type_traits": "cpp",
     "cmath": "cpp",
     "limits": "cpp",
-    "soc_caps.h": "c"
+    "soc_caps.h": "c",
+    "string": "cpp"
   }
 }

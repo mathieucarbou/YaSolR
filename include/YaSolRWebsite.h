@@ -145,12 +145,10 @@ namespace YaSolR {
       Card _configRestore = Card(&dashboard, FILE_UPLOAD_CARD, "Configuration Restore", ".txt");
       Card _otaLink = Card(&dashboard, LINK_CARD, "OTA Firmware Update");
       Card _restart = Card(&dashboard, PUSH_BUTTON_CARD, "Restart");
-      Card _energyResetO1 = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset (only Output 1)");
-      Card _energyResetO2 = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset (only Output 2)");
-      Card _energyReset = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset");
-      Card _reset = Card(&dashboard, PUSH_BUTTON_CARD, "Factory Reset");
       Card _debugMode = Card(&dashboard, BUTTON_CARD, "Debug");
       Card _consoleLink = Card(&dashboard, LINK_CARD, "Console");
+      Card _energyReset = Card(&dashboard, PUSH_BUTTON_CARD, "Energy Reset");
+      Card _reset = Card(&dashboard, PUSH_BUTTON_CARD, "Factory Reset");
 
       Tab _networkConfigTab = Tab(&dashboard, "\u2728 Network");
       Card _adminPwd = Card(&dashboard, PASSWORD_CARD, "Admin Password");
@@ -170,10 +168,10 @@ namespace YaSolR {
       Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, "Server Certificate", ".pem,crt,der");
       Card _mqttPublishInterval = Card(&dashboard, SLIDER_CARD, "Publish Interval", "s", 5, 30, 1);
       Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, "Base Topic");
-      Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Integration");
-      Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Home Assistant Discovery Topic");
       Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
       Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
+      Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Integration");
+      Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Home Assistant Discovery Topic");
 
       Tab _pinConfigTab = Tab(&dashboard, "\u21C6 GPIO");
       Card _pinDimmerO1 = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer for Output 1");
@@ -215,8 +213,8 @@ namespace YaSolR {
       Card _zcd = Card(&dashboard, BUTTON_CARD, "Zero-Cross Detection");
 
       Tab _hardwareConfigTab = Tab(&dashboard, "\u2699 Hardware Config");
-      Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Grid Frequency (default)");
-      Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Grid Voltage (default)");
+      Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Nominal Grid Frequency");
+      Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Nominal Grid Voltage");
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
       Card _displaySpeed = Card(&dashboard, SLIDER_CARD, "Display Speed", "s", 1, 10, 1);
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");

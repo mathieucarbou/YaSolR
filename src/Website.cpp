@@ -108,8 +108,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _otaLink.setTab(&_managementTab);
   _reset.setTab(&_managementTab);
   _restart.setTab(&_managementTab);
-  _energyResetO1.setTab(&_managementTab);
-  _energyResetO2.setTab(&_managementTab);
   _energyReset.setTab(&_managementTab);
 
   _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
@@ -119,8 +117,6 @@ void YaSolR::WebsiteClass::initLayout() {
     pzemO1.resetEnergy();
     pzemO2.resetEnergy();
   });
-  _energyResetO1.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO1.resetEnergy(); });
-  _energyResetO2.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO2.resetEnergy(); });
   _reset.attachCallback([] PUSH_BUTTON_CARD_CB { resetTask.resume(); });
   _restart.attachCallback([] PUSH_BUTTON_CARD_CB { restartTask.resume(); });
 
@@ -356,8 +352,6 @@ void YaSolR::WebsiteClass::initCards() {
   _debugMode.update(config.getBool(KEY_ENABLE_DEBUG));
   _otaLink.update("/update");
   _energyReset.setDisplay(config.getBool(KEY_ENABLE_JSY) || config.getBool(KEY_ENABLE_OUTPUT1_PZEM) || config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
-  _energyResetO1.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
-  _energyResetO2.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
 
   // GPIO
 

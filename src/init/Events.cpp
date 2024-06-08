@@ -28,12 +28,6 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     if (key == KEY_ENABLE_DEBUG) {
       initLoggingTask.forceRun();
-
-    } else if (key == KEY_GRID_POWER_MQTT_TOPIC) {
-      Mycila::Grid.setMQTTGridPowerTopic(config.get(KEY_GRID_POWER_MQTT_TOPIC));
-
-    } else if (key == KEY_GRID_VOLTAGE_MQTT_TOPIC) {
-      Mycila::Grid.setMQTTGridVoltageTopic(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
     }
 
     YaSolR::Website.initCards();
