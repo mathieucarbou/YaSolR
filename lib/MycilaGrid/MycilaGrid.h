@@ -16,8 +16,8 @@ namespace Mycila {
       void setJSY(JSY& jsy) { _jsy = &jsy; }
       void setMQTT(MQTT& mqtt) { _mqtt = &mqtt; }
 
-      void setDefaultFrequency(uint8_t frequency) { _frequency = frequency; }
-      void setDefaultVoltage(uint8_t voltage) { _voltage = voltage; }
+      void setNominalFrequency(uint8_t frequency) { _frequency = frequency; }
+      void setNominalVoltage(uint8_t voltage) { _voltage = voltage; }
 
       void setMQTTGridPowerTopic(const String& gridPowerMQTTTopic);
       void setMQTTGridVoltageTopic(const String& gridVoltageMQTTTopic);

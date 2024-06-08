@@ -32,8 +32,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Grid
-  Mycila::Grid.setDefaultFrequency(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
-  Mycila::Grid.setDefaultVoltage(config.get(KEY_GRID_VOLTAGE).toInt());
+  Mycila::Grid.setNominalFrequency(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
+  Mycila::Grid.setNominalVoltage(config.get(KEY_GRID_VOLTAGE).toInt());
   Mycila::Grid.setMQTTGridPowerTopic(config.get(KEY_GRID_POWER_MQTT_TOPIC));
   Mycila::Grid.setMQTTGridVoltageTopic(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
 
