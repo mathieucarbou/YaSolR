@@ -175,28 +175,7 @@ namespace YaSolR {
       Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
       Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
 
-      Tab _pinLiveTab = Tab(&dashboard, "\u21C6 GPIO (status)");
-      Card _pinDimmerO1Live = Card(&dashboard, STATUS_CARD, "Dimmer for Output 1", DASH_STATUS_IDLE);
-      Card _pinDimmerO2Live = Card(&dashboard, STATUS_CARD, "Dimmer for Output 2", DASH_STATUS_IDLE);
-      Card _pinDisplayClockLive = Card(&dashboard, STATUS_CARD, "Display SCL (CLOCK)", DASH_STATUS_IDLE);
-      Card _pinDisplayDataLive = Card(&dashboard, STATUS_CARD, "Display SDA (DATA)", DASH_STATUS_IDLE);
-      Card _pinDS18O1Live = Card(&dashboard, STATUS_CARD, "DS18 for Output 1", DASH_STATUS_IDLE);
-      Card _pinDS18O2Live = Card(&dashboard, STATUS_CARD, "DS18 for Output 2", DASH_STATUS_IDLE);
-      Card _pinDS18RouterLive = Card(&dashboard, STATUS_CARD, "DS18 for Router", DASH_STATUS_IDLE);
-      Card _pinJsyRXLive = Card(&dashboard, STATUS_CARD, "Serial RX for JSY TX", DASH_STATUS_IDLE);
-      Card _pinJsyTXLive = Card(&dashboard, STATUS_CARD, "Serial TX for JSY RX", DASH_STATUS_IDLE);
-      Card _pinLEDGreenLive = Card(&dashboard, STATUS_CARD, "LED Green", DASH_STATUS_IDLE);
-      Card _pinLEDRedLive = Card(&dashboard, STATUS_CARD, "LED Red", DASH_STATUS_IDLE);
-      Card _pinLEDYellowLive = Card(&dashboard, STATUS_CARD, "LED Yellow", DASH_STATUS_IDLE);
-      Card _pinPZEMRXLive = Card(&dashboard, STATUS_CARD, "Serial RX for PZEM TX", DASH_STATUS_IDLE);
-      Card _pinPZEMTXLive = Card(&dashboard, STATUS_CARD, "Serial TX for PZEM RX", DASH_STATUS_IDLE);
-      Card _pinRelay1Live = Card(&dashboard, STATUS_CARD, "Relay 1", DASH_STATUS_IDLE);
-      Card _pinRelay2Live = Card(&dashboard, STATUS_CARD, "Relay 2", DASH_STATUS_IDLE);
-      Card _pinRelayO1Live = Card(&dashboard, STATUS_CARD, "Relay for Output 1 Bypass", DASH_STATUS_IDLE);
-      Card _pinRelayO2Live = Card(&dashboard, STATUS_CARD, "Relay for Output 2 Bypass", DASH_STATUS_IDLE);
-      Card _pinZCDLive = Card(&dashboard, STATUS_CARD, "Zero-Cross Detection", DASH_STATUS_IDLE);
-
-      Tab _pinConfigTab = Tab(&dashboard, "\u21C6 GPIO (config)");
+      Tab _pinConfigTab = Tab(&dashboard, "\u21C6 GPIO");
       Card _pinDimmerO1 = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer for Output 1");
       Card _pinDimmerO2 = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer for Output 2");
       Card _pinDisplayClock = Card(&dashboard, TEXT_INPUT_CARD, "Display SCL (CLOCK)");
@@ -216,27 +195,6 @@ namespace YaSolR {
       Card _pinRelayO1 = Card(&dashboard, TEXT_INPUT_CARD, "Relay for Output 1 Bypass");
       Card _pinRelayO2 = Card(&dashboard, TEXT_INPUT_CARD, "Relay for Output 2 Bypass");
       Card _pinZCD = Card(&dashboard, TEXT_INPUT_CARD, "Zero-Cross Detection");
-
-      Tab _pinViewTab = Tab(&dashboard, "\u21C6 GPIO (validation)");
-      Card _pinDimmerO1View = Card(&dashboard, STATUS_CARD, "Dimmer for Output 1", DASH_STATUS_IDLE);
-      Card _pinDimmerO2View = Card(&dashboard, STATUS_CARD, "Dimmer for Output 2", DASH_STATUS_IDLE);
-      Card _pinDisplayClockView = Card(&dashboard, STATUS_CARD, "Display SCL (CLOCK)", DASH_STATUS_IDLE);
-      Card _pinDisplayDataView = Card(&dashboard, STATUS_CARD, "Display SDA (DATA)", DASH_STATUS_IDLE);
-      Card _pinDS18O1View = Card(&dashboard, STATUS_CARD, "DS18 for Output 1", DASH_STATUS_IDLE);
-      Card _pinDS18O2View = Card(&dashboard, STATUS_CARD, "DS18 for Output 2", DASH_STATUS_IDLE);
-      Card _pinDS18RouterView = Card(&dashboard, STATUS_CARD, "DS18 for Router", DASH_STATUS_IDLE);
-      Card _pinJsyRXView = Card(&dashboard, STATUS_CARD, "Serial RX for JSY TX", DASH_STATUS_IDLE);
-      Card _pinJsyTXView = Card(&dashboard, STATUS_CARD, "Serial TX for JSY RX", DASH_STATUS_IDLE);
-      Card _pinLEDGreenView = Card(&dashboard, STATUS_CARD, "LED Green", DASH_STATUS_IDLE);
-      Card _pinLEDRedView = Card(&dashboard, STATUS_CARD, "LED Red", DASH_STATUS_IDLE);
-      Card _pinLEDYellowView = Card(&dashboard, STATUS_CARD, "LED Yellow", DASH_STATUS_IDLE);
-      Card _pinPZEMRXView = Card(&dashboard, STATUS_CARD, "Serial RX for PZEM TX", DASH_STATUS_IDLE);
-      Card _pinPZEMTXView = Card(&dashboard, STATUS_CARD, "Serial TX for PZEM RX", DASH_STATUS_IDLE);
-      Card _pinRelay1View = Card(&dashboard, STATUS_CARD, "Relay 1", DASH_STATUS_IDLE);
-      Card _pinRelay2View = Card(&dashboard, STATUS_CARD, "Relay 2", DASH_STATUS_IDLE);
-      Card _pinRelayO1View = Card(&dashboard, STATUS_CARD, "Relay for Output 1 Bypass", DASH_STATUS_IDLE);
-      Card _pinRelayO2View = Card(&dashboard, STATUS_CARD, "Relay for Output 2 Bypass", DASH_STATUS_IDLE);
-      Card _pinZCDView = Card(&dashboard, STATUS_CARD, "Zero-Cross Detection", DASH_STATUS_IDLE);
 
       Tab _stateTab = Tab(&dashboard, "\u2699 Hardware (status)");
       Card _stateDisplay = Card(&dashboard, STATUS_CARD, "Display", DASH_STATUS_IDLE);

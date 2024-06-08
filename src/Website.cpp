@@ -124,27 +124,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _reset.attachCallback([] PUSH_BUTTON_CARD_CB { resetTask.resume(); });
   _restart.attachCallback([] PUSH_BUTTON_CARD_CB { restartTask.resume(); });
 
-  // GPIO (runtime)
-  _pinDimmerO1Live.setTab(&_pinLiveTab);
-  _pinDimmerO2Live.setTab(&_pinLiveTab);
-  _pinDisplayClockLive.setTab(&_pinLiveTab);
-  _pinDisplayDataLive.setTab(&_pinLiveTab);
-  _pinDS18O1Live.setTab(&_pinLiveTab);
-  _pinDS18O2Live.setTab(&_pinLiveTab);
-  _pinDS18RouterLive.setTab(&_pinLiveTab);
-  _pinJsyRXLive.setTab(&_pinLiveTab);
-  _pinJsyTXLive.setTab(&_pinLiveTab);
-  _pinLEDGreenLive.setTab(&_pinLiveTab);
-  _pinLEDRedLive.setTab(&_pinLiveTab);
-  _pinLEDYellowLive.setTab(&_pinLiveTab);
-  _pinPZEMRXLive.setTab(&_pinLiveTab);
-  _pinPZEMTXLive.setTab(&_pinLiveTab);
-  _pinRelay1Live.setTab(&_pinLiveTab);
-  _pinRelay2Live.setTab(&_pinLiveTab);
-  _pinRelayO1Live.setTab(&_pinLiveTab);
-  _pinRelayO2Live.setTab(&_pinLiveTab);
-  _pinZCDLive.setTab(&_pinLiveTab);
-
   // GPIO (configuration)
   _pinDimmerO1.setTab(&_pinConfigTab);
   _pinDimmerO2.setTab(&_pinConfigTab);
@@ -185,27 +164,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _pinConfig(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY);
   _pinConfig(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY);
   _pinConfig(_pinZCD, KEY_PIN_ZCD);
-
-  // GPIO (validation)
-  _pinDimmerO1View.setTab(&_pinViewTab);
-  _pinDimmerO2View.setTab(&_pinViewTab);
-  _pinDisplayClockView.setTab(&_pinViewTab);
-  _pinDisplayDataView.setTab(&_pinViewTab);
-  _pinDS18O1View.setTab(&_pinViewTab);
-  _pinDS18O2View.setTab(&_pinViewTab);
-  _pinDS18RouterView.setTab(&_pinViewTab);
-  _pinJsyRXView.setTab(&_pinViewTab);
-  _pinJsyTXView.setTab(&_pinViewTab);
-  _pinLEDGreenView.setTab(&_pinViewTab);
-  _pinLEDRedView.setTab(&_pinViewTab);
-  _pinLEDYellowView.setTab(&_pinViewTab);
-  _pinPZEMRXView.setTab(&_pinViewTab);
-  _pinPZEMTXView.setTab(&_pinViewTab);
-  _pinRelay1View.setTab(&_pinViewTab);
-  _pinRelay2View.setTab(&_pinViewTab);
-  _pinRelayO1View.setTab(&_pinViewTab);
-  _pinRelayO2View.setTab(&_pinViewTab);
-  _pinZCDView.setTab(&_pinViewTab);
 
   // Hardware (status)
   _stateDisplay.setTab(&_stateTab);
@@ -419,30 +377,9 @@ void YaSolR::WebsiteClass::initCards() {
   _energyResetO1.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
   _energyResetO2.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
 
-  // GPIO (status)
-  std::map<int32_t, Card*> pinout = {};
-  _pinout(_pinDimmerO1Live, dimmerO1.getPin(), pinout);
-  _pinout(_pinDimmerO2Live, dimmerO2.getPin(), pinout);
-  _pinout(_pinDisplayClockLive, display.getClockPin(), pinout);
-  _pinout(_pinDisplayDataLive, display.getDataPin(), pinout);
-  _pinout(_pinDS18O1Live, ds18O1.getPin(), pinout);
-  _pinout(_pinDS18O2Live, ds18O2.getPin(), pinout);
-  _pinout(_pinDS18RouterLive, ds18Sys.getPin(), pinout);
-  _pinout(_pinJsyRXLive, jsy.getRXPin(), pinout);
-  _pinout(_pinJsyTXLive, jsy.getTXPin(), pinout);
-  _pinout(_pinLEDGreenLive, lights.getGreenPin(), pinout);
-  _pinout(_pinLEDRedLive, lights.getRedPin(), pinout);
-  _pinout(_pinLEDYellowLive, lights.getYellowPin(), pinout);
-  _pinout(_pinPZEMRXLive, pzemO1.getRXPin(), pinout);
-  _pinout(_pinPZEMTXLive, pzemO1.getTXPin(), pinout);
-  _pinout(_pinRelay1Live, relay1.getPin(), pinout);
-  _pinout(_pinRelay2Live, relay2.getPin(), pinout);
-  _pinout(_pinRelayO1Live, bypassRelayO1.getPin(), pinout);
-  _pinout(_pinRelayO2Live, bypassRelayO2.getPin(), pinout);
-  _pinout(_pinZCDLive, Mycila::ZCD.getPin(), pinout);
-  pinout.clear();
+  // GPIO
 
-  // GPIO (config)
+  std::map<int32_t, Card*> pinout = {};
   _pinout(_pinDimmerO1, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), pinout);
   _pinout(_pinDimmerO2, config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), pinout);
   _pinout(_pinDisplayClock, config.get(KEY_PIN_DISPLAY_SCL).toInt(), pinout);
@@ -462,28 +399,6 @@ void YaSolR::WebsiteClass::initCards() {
   _pinout(_pinRelayO1, config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), pinout);
   _pinout(_pinRelayO2, config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), pinout);
   _pinout(_pinZCD, config.get(KEY_PIN_ZCD).toInt(), pinout);
-  pinout.clear();
-
-  // GPIO (validation)
-  _pinout(_pinDimmerO1View, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), pinout);
-  _pinout(_pinDimmerO2View, config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), pinout);
-  _pinout(_pinDisplayClockView, config.get(KEY_PIN_DISPLAY_SCL).toInt(), pinout);
-  _pinout(_pinDisplayDataView, config.get(KEY_PIN_DISPLAY_SDA).toInt(), pinout);
-  _pinout(_pinDS18O1View, config.get(KEY_PIN_OUTPUT1_DS18).toInt(), pinout);
-  _pinout(_pinDS18O2View, config.get(KEY_PIN_OUTPUT2_DS18).toInt(), pinout);
-  _pinout(_pinDS18RouterView, config.get(KEY_PIN_ROUTER_DS18).toInt(), pinout);
-  _pinout(_pinJsyRXView, config.get(KEY_PIN_JSY_RX).toInt(), pinout);
-  _pinout(_pinJsyTXView, config.get(KEY_PIN_JSY_RT).toInt(), pinout);
-  _pinout(_pinLEDGreenView, config.get(KEY_PIN_LIGHTS_GREEN).toInt(), pinout);
-  _pinout(_pinLEDRedView, config.get(KEY_PIN_LIGHTS_RED).toInt(), pinout);
-  _pinout(_pinLEDYellowView, config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), pinout);
-  _pinout(_pinPZEMRXView, config.get(KEY_PIN_PZEM_RX).toInt(), pinout);
-  _pinout(_pinPZEMTXView, config.get(KEY_PIN_PZEM_TX).toInt(), pinout);
-  _pinout(_pinRelay1View, config.get(KEY_PIN_RELAY1).toInt(), pinout);
-  _pinout(_pinRelay2View, config.get(KEY_PIN_RELAY2).toInt(), pinout);
-  _pinout(_pinRelayO1View, config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), pinout);
-  _pinout(_pinRelayO2View, config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), pinout);
-  _pinout(_pinZCDView, config.get(KEY_PIN_ZCD).toInt(), pinout);
   pinout.clear();
 
   // Hardware (status)
