@@ -236,7 +236,7 @@ namespace YaSolR {
 
       void _outputDimmerSlider(Card& card, Mycila::RouterOutput& output);
       void _outputBypassSwitch(Card& card, Mycila::RouterOutput& output);
-      void _relaySwitch(Card& card, const char* relayName);
+      void _relaySwitch(Card& card, Mycila::RouterRelay& relay);
 
       void _pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout);
       void _status(Card& card, const char* key, bool enabled, bool state = true, const char* err = "");

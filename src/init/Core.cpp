@@ -43,17 +43,13 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   pzemO2PairingTask.setManager(pzemTaskManager);
 
   // routerTaskManager
-  relaysTask.setManager(routerTaskManager);
+  relayTask.setManager(routerTaskManager);
   routerTask.setManager(routerTaskManager);
-
-  // Relay manager
-  Mycila::RelayManager.addRelay("relay1", relay1);
-  Mycila::RelayManager.addRelay("relay2", relay2);
+  routingTask.setManager(routerTaskManager);
 
   // Router
-  Mycila::Router.setJSY(jsy);
-  Mycila::Router.addOutput(output1);
-  Mycila::Router.addOutput(output2);
+  router.addOutput(output1);
+  router.addOutput(output2);
 
   // HA
   haDiscovery.setPublisher([](const String& topic, const String& payload) {

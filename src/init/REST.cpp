@@ -20,33 +20,35 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject root = response->getRoot();
 
       grid.toJson(root["grid"].to<JsonObject>());
-
       Mycila::ZCD.toJson(root["zcd"].to<JsonObject>());
-
       jsy.toJson(root["jsy"].to<JsonObject>());
 
-      pzemO1.toJson(root["pzem"]["output1"].to<JsonObject>());
-      pzemO2.toJson(root["pzem"]["output2"].to<JsonObject>());
+      router.toJson(root["router"].to<JsonObject>());
 
-      dimmerO1.toJson(root["dimmer"]["output1"].to<JsonObject>());
-      dimmerO2.toJson(root["dimmer"]["output2"].to<JsonObject>());
+      output1.toJson(root["router"]["output1"].to<JsonObject>());
+      dimmerO1.toJson(root["router"]["output1"]["dimmer"].to<JsonObject>());
+      pzemO1.toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
+      bypassRelayO1.toJson(root["router"]["output1"]["relay"].to<JsonObject>());
+      ds18O1.toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
 
-      relay1.toJson(root["relay"]["relay1"].to<JsonObject>());
-      relay2.toJson(root["relay"]["relay2"].to<JsonObject>());
-      bypassRelayO1.toJson(root["relay"]["output1"].to<JsonObject>());
-      bypassRelayO2.toJson(root["relay"]["output2"].to<JsonObject>());
+      output2.toJson(root["router"]["output2"].to<JsonObject>());
+      dimmerO2.toJson(root["router"]["output2"]["dimmer"].to<JsonObject>());
+      pzemO2.toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
+      bypassRelayO2.toJson(root["router"]["output2"]["relay"].to<JsonObject>());
+      ds18O2.toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
+
+      relay1.toJson(root["router"]["relay1"].to<JsonObject>());
+      relay2.toJson(root["router"]["relay2"].to<JsonObject>());
 
       ds18Sys.toJson(root["ds18"]["router"].to<JsonObject>());
-      ds18O1.toJson(root["ds18"]["output1"].to<JsonObject>());
-      ds18O2.toJson(root["ds18"]["output2"].to<JsonObject>());
 
       Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
 
-      ioTaskManager.toJson(root["ioTaskManager"].to<JsonObject>());
-      jsyTaskManager.toJson(root["jsyTaskManager"].to<JsonObject>());
       coreTaskManager.toJson(root["coreTaskManager"].to<JsonObject>());
-      pzemTaskManager.toJson(root["pzemTaskManager"].to<JsonObject>());
       routerTaskManager.toJson(root["routerTaskManager"].to<JsonObject>());
+      jsyTaskManager.toJson(root["jsyTaskManager"].to<JsonObject>());
+      pzemTaskManager.toJson(root["pzemTaskManager"].to<JsonObject>());
+      ioTaskManager.toJson(root["ioTaskManager"].to<JsonObject>());
 
       response->setLength();
       request->send(response);
@@ -240,9 +242,9 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         String state = request->getParam("state", true)->value();
         uint32_t duration = request->hasParam("duration", true) ? request->getParam("duration", true)->value().toInt() : 0;
         if (state == YASOLR_ON)
-          Mycila::RelayManager.tryRelayState("relay1", true, duration);
+          routerRelay1.tryRelayState(true, duration);
         else if (state == YASOLR_OFF)
-          Mycila::RelayManager.tryRelayState("relay1", false, duration);
+          routerRelay1.tryRelayState(false, duration);
       }
       request->send(200);
     })
@@ -254,9 +256,9 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         String state = request->getParam("state", true)->value();
         uint32_t duration = request->hasParam("duration", true) ? request->getParam("duration", true)->value().toInt() : 0;
         if (state == YASOLR_ON)
-          Mycila::RelayManager.tryRelayState("relay2", true, duration);
+          routerRelay2.tryRelayState(true, duration);
         else if (state == YASOLR_OFF)
-          Mycila::RelayManager.tryRelayState("relay2", false, duration);
+          routerRelay2.tryRelayState(false, duration);
       }
       request->send(200);
     })
@@ -284,12 +286,12 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/router/output1/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output1.isBypassRelayEnabled() && request->hasParam("state", true)) {
+      if (output1.isBypassEnabled() && request->hasParam("state", true)) {
         String state = request->getParam("state", true)->value();
         if (state == YASOLR_ON)
-          output1.tryBypassRelayState(true);
+          output1.tryBypassState(true);
         else if (state == YASOLR_OFF)
-          output1.tryBypassRelayState(false);
+          output1.tryBypassState(false);
       }
       request->send(200);
     })
@@ -297,12 +299,12 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/router/output2/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output2.isBypassRelayEnabled() && request->hasParam("state", true)) {
+      if (output2.isBypassEnabled() && request->hasParam("state", true)) {
         String state = request->getParam("state", true)->value();
         if (state == YASOLR_ON)
-          output2.tryBypassRelayState(true);
+          output2.tryBypassState(true);
         else if (state == YASOLR_OFF)
-          output2.tryBypassRelayState(false);
+          output2.tryBypassState(false);
       }
       request->send(200);
     })
@@ -315,11 +317,11 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       root["lights"] = lights.toString();
       root["temperature"] = ds18Sys.getLastTemperature();
-      root["energy"] = Mycila::Router.getTotalRoutedEnergy();
-      root["power"] = Mycila::Router.getTotalRoutedPower();
-      root["power_factor"] = Mycila::Router.getTotalPowerFactor();
-      root["thdi"] = Mycila::Router.getTotalTHDi();
-      root["virtual_grid_power"] = Mycila::Router.getVirtualGridPower();
+      root["energy"] = router.getEnergy();
+      root["power"] = router.getActivePower();
+      root["power_factor"] = router.getPowerFactor();
+      root["thdi"] = router.getTHDi();
+      root["virtual_grid_power"] = grid.getActivePower() - router.getActivePower();
 
       root["relay1"]["state"] = YASOLR_STATE(relay1.isOn());
       root["relay1"]["switch_count"] = relay1.getSwitchCount();

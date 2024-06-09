@@ -50,7 +50,7 @@ namespace Mycila {
 
       void listen(DimmerLevelCallback callback) { _callback = callback; }
 
-      inline void off() { setLevel(0); }
+      void off() { setLevel(0); }
       bool isOff() const { return _level == 0; }
       bool isOn() const { return _level > 0; }
       bool isOnAtFullPower() const { return _level >= MYCILA_DIMMER_MAX_LEVEL; }
@@ -80,7 +80,7 @@ namespace Mycila {
 
       // Returns the dimmed RMS voltage based on the current phase angle.
       // This is a theoretical value. In reality, the real Vrms value will be more or less depending on the hardware and software speed.
-      float computeDimmedVoltage(float inputVrms) const;
+      float getDimmedVoltage(float inputVrms) const;
 
       static void generateLUT(Print& out); // NOLINT
 

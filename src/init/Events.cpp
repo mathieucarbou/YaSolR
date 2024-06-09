@@ -28,6 +28,60 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     if (key == KEY_ENABLE_DEBUG) {
       initLoggingTask.forceRun();
+
+    } else if (key == KEY_RELAY1_LOAD) {
+      routerRelay1.setLoad(config.get(KEY_RELAY1_LOAD).toInt());
+
+    } else if (key == KEY_RELAY2_LOAD) {
+      routerRelay2.setLoad(config.get(KEY_RELAY2_LOAD).toInt());
+
+    } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
+      output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
+
+    } else if (key == KEY_OUTPUT1_DIMMER_LIMITER) {
+      output1.config.dimmerLimit = config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt();
+
+    } else if (key == KEY_ENABLE_OUTPUT1_AUTO_BYPASS) {
+      output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
+
+    } else if (key == KEY_OUTPUT1_TEMPERATURE_START) {
+      output1.config.autoStartTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_START).toInt();
+
+    } else if (key == KEY_OUTPUT1_TEMPERATURE_STOP) {
+      output1.config.autoStopTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_STOP).toInt();
+
+    } else if (key == KEY_OUTPUT1_TIME_START) {
+      output1.config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
+
+    } else if (key == KEY_OUTPUT1_TIME_STOP) {
+      output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
+
+    } else if (key == KEY_OUTPUT1_DAYS) {
+      output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
+
+    } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
+      output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
+
+    } else if (key == KEY_OUTPUT2_DIMMER_LIMITER) {
+      output2.config.dimmerLimit = config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt();
+
+    } else if (key == KEY_ENABLE_OUTPUT2_AUTO_BYPASS) {
+      output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
+
+    } else if (key == KEY_OUTPUT2_TEMPERATURE_START) {
+      output2.config.autoStartTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_START).toInt();
+
+    } else if (key == KEY_OUTPUT2_TEMPERATURE_STOP) {
+      output2.config.autoStopTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_STOP).toInt();
+
+    } else if (key == KEY_OUTPUT2_TIME_START) {
+      output2.config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
+
+    } else if (key == KEY_OUTPUT2_TIME_STOP) {
+      output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
+
+    } else if (key == KEY_OUTPUT2_DAYS) {
+      output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
     }
 
     YaSolR::Website.initCards();
@@ -175,26 +229,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   const bool jsyPow = config.get(KEY_GRID_POWER_MQTT_TOPIC).isEmpty();
   jsy.setCallback([jsyPow](const Mycila::JSYEventType eventType) {
     if (eventType == Mycila::JSYEventType::EVT_READ) {
-      // update the voltage in any case (JSY jas priority over MQTT)
-      grid.updateVoltage(jsy.getVoltage2());
-      // update the power only if not read from MQTT since JSY could be used only on 1-channel for the router outputs and not for the grid
-      if (jsyPow) {
-        grid.update(jsy.getCurrent2(),
-                    jsy.getEnergy2(),
-                    jsy.getEnergyReturned2(),
-                    jsy.getFrequency(),
-                    jsy.getPower2(),
-                    jsy.getPowerFactor2());
-        Mycila::Router.adjustRouting();
-      }
+      routingTask.resume();
     }
-  });
-  pzemO1.setCallback([](const Mycila::PZEMEventType eventType) {
-    // TODO: update routing
-    // Serial.println("PZEM 1 event");
-  });
-  pzemO2.setCallback([](const Mycila::PZEMEventType eventType) {
-    // TODO: update routing
-    // Serial.println("PZEM 2 event");
   });
 });

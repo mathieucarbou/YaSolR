@@ -37,9 +37,9 @@ namespace Mycila {
         return now;
       }
 
-      inline static String getISO8601Str() { return toISO8601Str(getUnixTime()); }
+      static String getISO8601Str() { return toISO8601Str(getUnixTime()); }
 
-      inline static String getLocalStr() { return toLocalStr(getUnixTime()); }
+      static String getLocalStr() { return toLocalStr(getUnixTime()); }
 
       static int toMinutes(const String& time, char sep = ':') {
         int i = time.indexOf(sep);

@@ -30,9 +30,9 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
       String state = start >= 0 ? payload.substring(0, start) : payload;
       uint32_t duration = start >= 0 ? payload.substring(start + 1).toInt() : 0;
       if (state == YASOLR_ON)
-        Mycila::RelayManager.tryRelayState("relay1", true, duration);
+        routerRelay1.tryRelayState(true, duration);
       else if (state == YASOLR_OFF)
-        Mycila::RelayManager.tryRelayState("relay1", false, duration);
+        routerRelay1.tryRelayState(false, duration);
     }
   });
   mqtt.subscribe(baseTopic + "/router/relay2/state/set", [](const String& topic, const String& payload) {
@@ -41,9 +41,9 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
       String state = start >= 0 ? payload.substring(0, start) : payload;
       uint32_t duration = start >= 0 ? payload.substring(start + 1).toInt() : 0;
       if (state == YASOLR_ON)
-        Mycila::RelayManager.tryRelayState("relay2", true, duration);
+        routerRelay2.tryRelayState(true, duration);
       else if (state == YASOLR_OFF)
-        Mycila::RelayManager.tryRelayState("relay2", false, duration);
+        routerRelay2.tryRelayState(false, duration);
     }
   });
 
@@ -58,20 +58,20 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   });
 
   mqtt.subscribe(baseTopic + "/router/output1/bypass/set", [](const String& topic, const String& payload) {
-    if (output1.isBypassRelayEnabled()) {
+    if (output1.isBypassEnabled()) {
       if (payload == YASOLR_ON)
-        output1.tryBypassRelayState(true);
+        output1.tryBypassState(true);
       else if (payload == YASOLR_OFF)
-        output1.tryBypassRelayState(false);
+        output1.tryBypassState(false);
     }
   });
 
   mqtt.subscribe(baseTopic + "/router/output2/bypass/set", [](const String& topic, const String& payload) {
-    if (output2.isBypassRelayEnabled()) {
+    if (output2.isBypassEnabled()) {
       if (payload == YASOLR_ON)
-        output2.tryBypassRelayState(true);
+        output2.tryBypassState(true);
       else if (payload == YASOLR_OFF)
-        output2.tryBypassRelayState(false);
+        output2.tryBypassState(false);
     }
   });
 
@@ -87,9 +87,9 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     logger.info(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic.c_str());
     mqtt.subscribe(gridPowerMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float p = payload.toFloat();
-      logger.debug(TAG, "MQTT Grid Power: %f", p);
-      grid.updatePower(p);
-      Mycila::Router.adjustRouting();
+      logger.info(TAG, "Grid Power from MQTT: %f", p);
+      grid.setMQTTGridPower(p);
+      routingTask.resume();
     });
   }
 
@@ -99,8 +99,8 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     logger.info(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic.c_str());
     mqtt.subscribe(gridVoltageMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float v = payload.toFloat();
-      logger.debug(TAG, "MQTT Grid Voltage: %f", v);
-      grid.updateVoltage(v);
+      logger.info(TAG, "Grid Voltage from MQTT: %f", v);
+      grid.setMQTTGridVoltage(v);
     });
   }
 });

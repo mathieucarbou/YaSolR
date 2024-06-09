@@ -18,13 +18,15 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
-  mqttPublishTask.setInterval(config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS);
+  mqttPublishTask.setIntervalSupplier([]() { return config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS; });
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   profilerTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
-  relaysTask.setInterval(5 * Mycila::TaskDuration::SECONDS);
+  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
+  relayTask.setEnabledWhen([]() { return routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled(); });
   routerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
+  routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
   dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
   dashboardTask.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
 #ifdef APP_MODEL_TRIAL
@@ -32,7 +34,31 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Grid
-  grid.setExpiration(45);
+  grid.setMQTTExpiration(45);
+
+  // Relays
+  routerRelay1.setLoad(config.get(KEY_RELAY1_LOAD).toInt());
+  routerRelay2.setLoad(config.get(KEY_RELAY2_LOAD).toInt());
+
+  // output1
+  output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
+  output1.config.dimmerLimit = config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt();
+  output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
+  output1.config.autoStartTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_START).toInt();
+  output1.config.autoStopTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_STOP).toInt();
+  output1.config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
+  output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
+  output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
+
+  // output2
+  output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
+  output2.config.dimmerLimit = config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt();
+  output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
+  output2.config.autoStartTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_START).toInt();
+  output2.config.autoStopTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_STOP).toInt();
+  output2.config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
+  output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
+  output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
 
   // NTP
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));

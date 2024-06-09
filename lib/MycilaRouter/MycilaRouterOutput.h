@@ -9,7 +9,9 @@
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
 
-#include <ArduinoJson.h>
+#ifdef MYCILA_JSON_SUPPORT
+  #include <ArduinoJson.h>
+#endif
 
 namespace Mycila {
   enum class RouterOutputState {
@@ -27,20 +29,19 @@ namespace Mycila {
 
   typedef std::function<void()> RouterOutputStateCallback;
 
-  class RouterOutputConfigClass {
-    public:
-      bool isAutoDimmerEnabled(const char* name) const;
-      uint8_t getDimmerLevelLimit(const char* name) const;
-      bool isAutoBypassEnabled(const char* name) const;
-      uint8_t getAutoStartTemperature(const char* name) const;
-      uint8_t getAutoStopTemperature(const char* name) const;
-      String getAutoStartTime(const char* name) const;
-      String getAutoStopTime(const char* name) const;
-      String getWeekDays(const char* name) const;
-  };
-
   class RouterOutput {
     public:
+      typedef struct {
+          bool autoDimmer;
+          uint8_t dimmerLimit;
+          bool autoBypass;
+          uint8_t autoStartTemperature;
+          uint8_t autoStopTemperature;
+          String autoStartTime;
+          String autoStopTime;
+          String weekDays;
+      } Config;
+
       RouterOutput(const char* name, Dimmer& dimmer, DS18& temperatureSensor, Relay& relay, PZEM& pzem) : _name(name),
                                                                                                           _dimmer(&dimmer),
                                                                                                           _temperatureSensor(&temperatureSensor),
@@ -48,61 +49,87 @@ namespace Mycila {
                                                                                                           _pzem(&pzem) {}
       // output
 
-      const char* getName() const { return _name; }
-      RouterOutputState getState() const;
-      const char* getStateString() const;
+      RouterOutputState getState() const {
+        if (!_dimmer->isEnabled() && !_relay->isEnabled())
+          return RouterOutputState::OUTPUT_DISABLED;
+        if (_dimmer->getLevel() > 0)
+          return RouterOutputState::OUTPUT_ROUTING;
+        // dimmer level is 0
+        if (_autoBypassEnabled)
+          return RouterOutputState::OUTPUT_BYPASS_AUTO;
+        if (_relay->isOn())
+          return RouterOutputState::OUTPUT_BYPASS_MANUAL;
+        return RouterOutputState::OUTPUT_IDLE;
+      }
+      const char* getStateName() const;
+
       bool isEnabled() const { return _dimmer->isEnabled(); }
-
-      void toJson(const JsonObject& root) const;
-
       void listen(RouterOutputStateCallback callback) { _callback = callback; }
 
-      // components
-
-      const Dimmer& dimmer() const { return *static_cast<const Dimmer*>(_dimmer); }
-      const Mycila::DS18& ds18() const { return *static_cast<const DS18*>(_temperatureSensor); }
-      const Relay& bypassRelay() const { return *static_cast<const Relay*>(_relay); }
+#ifdef MYCILA_JSON_SUPPORT
+      void toJson(const JsonObject& root) const {
+        root["apparent_power"] = getApparentPower();
+        root["current"] = getCurrent();
+        root["enabled"] = _dimmer->isEnabled();
+        root["energy"] = getEnergy();
+        root["power_factor"] = getPowerFactor();
+        root["power"] = getActivePower();
+        root["resistance"] = getResistance();
+        root["state"] = getStateName();
+        root["thdi"] = getTHDi();
+        root["voltage_dimmed"] = getDimmedVoltage();
+        root["voltage"] = getVoltage();
+      }
+#endif
 
       // dimmer
 
-      // level: 0-100 (%)
+      bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
+      bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer; }
+      uint8_t getDimmerLevel() const { return _dimmer->getLevel(); }
       bool tryDimmerLevel(uint8_t level);
       void applyDimmerLimit();
 
       // bypass
 
-      void autoBypass();
+      bool isBypassEnabled() const { return _relay->isEnabled() || _dimmer->isEnabled(); }
+      bool isAutoBypassEnabled() const { return isBypassEnabled() && config.autoBypass; }
       bool isBypassOn() const { return _relay->isEnabled() ? _relay->isOn() : _bypassEnabled; }
-      bool isBypassRelayEnabled() const { return _relay->isEnabled() || _dimmer->isEnabled(); }
-      inline bool tryBypassRelayToggle() { return tryBypassRelayState(!isBypassOn()); }
-      bool tryBypassRelayState(bool state);
+      bool tryBypassState(bool state);
+      void applyAutoBypass();
 
-      // electricity (if available through PZEM)
+      // electricity settings
 
-      void updateElectricityStatistics();
+      bool hasMetrics() const { return _pzem->isConnected(); }
+      float getDimmedVoltage() const { return _dimmer->getDimmedVoltage(getVoltage()); }
+      float getResistance() const {
+        // R = U / I
+        float i = getCurrent();
+        return i == 0 ? 0 : getDimmedVoltage() / i;
+      }
 
-      // Ohm : Resistance == Dimmed Voltage / Current (U = R * I)
-      float getResistance() const { return _current == 0 ? 0 : _outputVoltage / _current; }
+      // metrics
 
-      // kWh : Energy measured by PZEM
-      float getEnergy() const { return _energy; }
-      // A : Current measured by PZEM
-      float getCurrent() const { return _current; }
-      // V : Input Voltage at Dimmer entrance (measured with PZEM, JSY, MQTT or configured default value)
-      float getInputVoltage() const { return _inputVoltage; }
-      // V : Dimmed Voltage at Dimmer output, calculated based on phase angle and trigger delay
-      float getOutputVoltage() const { return _outputVoltage; }
-      // VA : Apparent Power == Input Voltage * Current
-      float getApparentPower() const { return _inputVoltage * _current; }
-      // W : Active Power == Dimmed Voltage * Current (power consumed by the resistive load)
-      float getActivePower() const { return _outputVoltage * _current; }
-      // PF : Power Factor == Active Power / Apparent Power
-      float getPowerFactor() const { return _outputVoltage / _inputVoltage; }
-      // THDi : Total Harmonic Distortion of current
-      // https://fr.electrical-installation.org/frwiki/Indicateur_de_distorsion_harmonique_:_facteur_de_puissance
-      // https://www.salicru.com/files/pagina/72/278/jn004a01_whitepaper-armonics_(1).pdf
-      // For a resistive load, phi = 0 (no displacement between voltage and current)
-      float getTHDi() const { return _outputVoltage == 0 ? 0 : sqrt(1 / pow(_outputVoltage / _inputVoltage, 2) - 1); }
+      float getEnergy() const { return _pzem->getEnergy(); }
+      float getVoltage() const { return _pzem->getVoltage(); }
+      float getCurrent() const { return _pzem->getCurrent(); }
+      float getActivePower() const { return _pzem->getPower(); }
+      // float getActivePower() const { return getDimmedVoltage() * getCurrent(); }
+      float getApparentPower() const { return _pzem->getApparentPower(); }
+      // float getApparentPower() const { return getVoltage() * getCurrent(); }
+      float getPowerFactor() const { return _pzem->getPowerFactor(); }
+      // float getPowerFactor() const { return getActivePower() / getApparentPower(); }
+      float getTHDi() const { return _pzem->getTHDi(0); }
+      // float getTHDi() const {
+      //   // https://fr.electrical-installation.org/frwiki/Indicateur_de_distorsion_harmonique_:_facteur_de_puissance
+      //   // https://www.salicru.com/files/pagina/72/278/jn004a01_whitepaper-armonics_(1).pdf
+      //   // For a resistive load, phi = 0 (no displacement between voltage and current)
+      //   float pf = getPowerFactor();
+      //   return pf == 0 ? 0 : sqrt(1 / pow(pf, 2) - 1);
+      // }
+
+    public:
+      Config config;
 
     private:
       const char* _name;
@@ -115,14 +142,6 @@ namespace Mycila {
       RouterOutputStateCallback _callback = nullptr;
 
     private:
-      float _energy = 0;
-      float _current = 0;
-      float _outputVoltage = 0;
-      float _inputVoltage = 0;
-
-    private:
-      void _setBypassRelay(bool state, uint8_t dimmerLevelWhenRelayOff = 0);
+      void _setBypass(bool state, uint8_t dimmerLevelWhenRelayOff = 0);
   };
-
-  extern RouterOutputConfigClass RouterOutputConfig;
 } // namespace Mycila

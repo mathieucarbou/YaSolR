@@ -110,7 +110,7 @@ void Mycila::Dimmer::setLevel(uint8_t newLevel) {
 
 float Mycila::Dimmer::getPhaseAngle() const { return _delayToPhaseAngle(_dimmer->getDelay(), Thyristor::getFrequency()); }
 
-float Mycila::Dimmer::computeDimmedVoltage(float inputVrms) const {
+float Mycila::Dimmer::getDimmedVoltage(float inputVrms) const {
   return _level == 0 ? 0 : (_level == MYCILA_DIMMER_MAX_LEVEL ? inputVrms : inputVrms * _lookupVrmsFactor(_level, Thyristor::getFrequency()));
 }
 

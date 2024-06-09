@@ -13,7 +13,6 @@ Mycila::DS18 ds18O1;
 Mycila::DS18 ds18O2;
 Mycila::DS18 ds18Sys;
 Mycila::EasyDisplay display(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
-Mycila::Grid grid;
 Mycila::HADiscovery haDiscovery;
 Mycila::JSY jsy;
 Mycila::Logger logger;
@@ -34,6 +33,12 @@ Mycila::TaskManager routerTaskManager("Router");
 
 Mycila::RouterOutput output1("output1", dimmerO1, ds18O1, bypassRelayO1, pzemO1);
 Mycila::RouterOutput output2("output2", dimmerO2, ds18O2, bypassRelayO2, pzemO2);
+
+Mycila::RouterRelay routerRelay1(relay1);
+Mycila::RouterRelay routerRelay2(relay2);
+
+Mycila::Grid grid(jsy);
+Mycila::Router router(jsy);
 
 AsyncWebServer webServer(80);
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);

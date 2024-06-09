@@ -126,11 +126,11 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
 
   mqtt.publish(baseTopic + "/router/lights", lights.toString());
   mqtt.publish(baseTopic + "/router/temperature", String(ds18Sys.getLastTemperature()));
-  mqtt.publish(baseTopic + "/router/energy", String(Mycila::Router.getTotalRoutedEnergy(), 3));
-  mqtt.publish(baseTopic + "/router/power_factor", String(Mycila::Router.getTotalPowerFactor(), 3));
-  mqtt.publish(baseTopic + "/router/power", String(Mycila::Router.getTotalRoutedPower(), 3));
-  mqtt.publish(baseTopic + "/router/thdi", String(Mycila::Router.getTotalTHDi(), 3));
-  mqtt.publish(baseTopic + "/router/virtual_grid_power", String(Mycila::Router.getVirtualGridPower(), 3));
+  mqtt.publish(baseTopic + "/router/energy", String(router.getEnergy(), 3));
+  mqtt.publish(baseTopic + "/router/power_factor", String(router.getPowerFactor(), 3));
+  mqtt.publish(baseTopic + "/router/power", String(router.getActivePower(), 3));
+  mqtt.publish(baseTopic + "/router/thdi", String(router.getTHDi(), 3));
+  mqtt.publish(baseTopic + "/router/virtual_grid_power", String(grid.getActivePower() - router.getActivePower(), 3));
   yield();
 
   if (relay1.isEnabled()) {

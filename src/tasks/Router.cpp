@@ -4,18 +4,27 @@
  */
 #include <YaSolR.h>
 
-Mycila::Task relaysTask("Relays", [](void* params) {
-  Mycila::RelayManager.autoCommute();
+Mycila::Task routerTask("Router", [](void* params) {
+  grid.applyExpiration();
+
+  output1.applyDimmerLimit();
+  output2.applyDimmerLimit();
+
+  output1.applyAutoBypass();
+  output2.applyAutoBypass();
 });
 
-Mycila::Task routerTask("Router", [](void* params) {
-  grid.invalidate();
+Mycila::Task relayTask("Relay", [](void* params) {
+  float virtualGridPower = grid.getActivePower() - router.getActivePower();
+  if (routerRelay1.tryRelayStateAuto(true, virtualGridPower))
+    return;
+  if (routerRelay2.tryRelayStateAuto(true, virtualGridPower))
+    return;
+  if (routerRelay2.tryRelayStateAuto(false, virtualGridPower))
+    return;
+  if (routerRelay1.tryRelayStateAuto(false, virtualGridPower))
+    return;
+});
 
-  output1.updateElectricityStatistics();
-  output1.applyDimmerLimit();
-  output1.autoBypass();
-
-  output2.updateElectricityStatistics();
-  output2.applyDimmerLimit();
-  output2.autoBypass();
+Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
 });

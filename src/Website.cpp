@@ -97,8 +97,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _relay2Switch.setTab(&_relaysTab);
   _relay1SwitchRO.setTab(&_relaysTab);
 
-  _relaySwitch(_relay1Switch, "relay1");
-  _relaySwitch(_relay2Switch, "relay2");
+  _relaySwitch(_relay1Switch, routerRelay1);
+  _relaySwitch(_relay2Switch, routerRelay2);
 
   // management
   _configBackup.setTab(&_managementTab);
@@ -456,10 +456,10 @@ void YaSolR::WebsiteClass::updateCards() {
 #endif
 
   // home
-  _routerPower.update(Mycila::Router.getTotalRoutedPower());
-  _routerPowerFactor.update(Mycila::Router.getTotalPowerFactor());
-  _routerTHDi.update(Mycila::Router.getTotalTHDi() * 100);
-  _routerEnergy.update(Mycila::Router.getTotalRoutedEnergy());
+  _routerPower.update(router.getActivePower());
+  _routerPowerFactor.update(router.getPowerFactor());
+  _routerTHDi.update(router.getTHDi() * 100);
+  _routerEnergy.update(router.getEnergy());
   _gridPower.update(grid.getActivePower());
   _temperature(_routerDS18State, ds18Sys);
 
@@ -468,14 +468,14 @@ void YaSolR::WebsiteClass::updateCards() {
   switch (output1.getState()) {
     case Mycila::RouterOutputState::OUTPUT_DISABLED:
     case Mycila::RouterOutputState::OUTPUT_IDLE:
-      _output1State.update(output1.getStateString(), DASH_STATUS_IDLE);
+      _output1State.update(output1.getStateName(), DASH_STATUS_IDLE);
       break;
     case Mycila::RouterOutputState::OUTPUT_BYPASS_AUTO:
     case Mycila::RouterOutputState::OUTPUT_BYPASS_MANUAL:
-      _output1State.update(output1.getStateString(), DASH_STATUS_WARNING);
+      _output1State.update(output1.getStateName(), DASH_STATUS_WARNING);
       break;
     case Mycila::RouterOutputState::OUTPUT_ROUTING:
-      _output1State.update(output1.getStateString(), DASH_STATUS_SUCCESS);
+      _output1State.update(output1.getStateName(), DASH_STATUS_SUCCESS);
       break;
     default:
       _output1State.update("Unknown", DASH_STATUS_DANGER);
@@ -490,7 +490,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _output1ApparentPower.update(output1.getApparentPower());
   _output1PowerFactor.update(output1.getPowerFactor());
   _output1THDi.update(output1.getTHDi() * 100);
-  _output1Voltage.update(output1.getOutputVoltage());
+  _output1Voltage.update(output1.getDimmedVoltage());
   _output1Current.update(output1.getCurrent());
   _output1Resistance.update(output1.getResistance());
   _output1Energy.update(output1.getEnergy());
@@ -499,14 +499,14 @@ void YaSolR::WebsiteClass::updateCards() {
   switch (output2.getState()) {
     case Mycila::RouterOutputState::OUTPUT_DISABLED:
     case Mycila::RouterOutputState::OUTPUT_IDLE:
-      _output2State.update(output2.getStateString(), DASH_STATUS_IDLE);
+      _output2State.update(output2.getStateName(), DASH_STATUS_IDLE);
       break;
     case Mycila::RouterOutputState::OUTPUT_BYPASS_AUTO:
     case Mycila::RouterOutputState::OUTPUT_BYPASS_MANUAL:
-      _output2State.update(output2.getStateString(), DASH_STATUS_WARNING);
+      _output2State.update(output2.getStateName(), DASH_STATUS_WARNING);
       break;
     case Mycila::RouterOutputState::OUTPUT_ROUTING:
-      _output2State.update(output2.getStateString(), DASH_STATUS_SUCCESS);
+      _output2State.update(output2.getStateName(), DASH_STATUS_SUCCESS);
       break;
     default:
       _output2State.update("Unknown", DASH_STATUS_DANGER);
@@ -521,7 +521,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _output2ApparentPower.update(output2.getApparentPower());
   _output2PowerFactor.update(output2.getPowerFactor());
   _output2THDi.update(output2.getTHDi() * 100);
-  _output2Voltage.update(output2.getOutputVoltage());
+  _output2Voltage.update(output2.getDimmedVoltage());
   _output2Current.update(output2.getCurrent());
   _output2Resistance.update(output2.getResistance());
   _output2Energy.update(output2.getEnergy());
@@ -625,12 +625,9 @@ void YaSolR::WebsiteClass::_passwordConfig(Card& card, const char* key) {
 #endif
 }
 
-void YaSolR::WebsiteClass::_relaySwitch(Card& card, const char* relayName) {
-  card.attachCallback([&card, relayName, this](int value) {
-    const Mycila::Relay& relay = Mycila::RelayManager.relay(relayName);
-    if (relay.isEnabled()) {
-      Mycila::RelayManager.tryRelayState(relayName, value);
-    }
+void YaSolR::WebsiteClass::_relaySwitch(Card& card, Mycila::RouterRelay& relay) {
+  card.attachCallback([&card, &relay, this](int value) {
+    relay.tryRelayState(value);
     card.update(relay.isOn());
     dashboard.refreshCard(&card);
   });
@@ -638,8 +635,8 @@ void YaSolR::WebsiteClass::_relaySwitch(Card& card, const char* relayName) {
 
 void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput& output) {
   card.attachCallback([&card, &output, this](int value) {
-    if (output.isBypassRelayEnabled()) {
-      output.tryBypassRelayState(value);
+    if (output.isBypassEnabled()) {
+      output.tryBypassState(value);
     }
     card.update(output.isBypassOn());
     dashboard.refreshCard(&card);
@@ -649,10 +646,10 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
 
 void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput& output) {
   card.attachCallback([&card, &output, this](int value) { // 0-100
-    if (output.dimmer().isEnabled()) {
+    if (output.isDimmerEnabled()) {
       output.tryDimmerLevel(value);
     }
-    card.update(static_cast<int>(output.dimmer().getLevel()));
+    card.update(static_cast<int>(output.getDimmerLevel()));
     dashboard.refreshCard(&card);
     dashboardTask.requestEarlyRun();
   });

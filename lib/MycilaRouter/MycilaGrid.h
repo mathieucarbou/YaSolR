@@ -4,78 +4,81 @@
  */
 #pragma once
 
-#include <MycilaEnergySource.h>
+#include <MycilaJSY.h>
+#include <thyristor.h>
+
+#ifdef MYCILA_JSON_SUPPORT
+  #include <ArduinoJson.h>
+#endif
 
 namespace Mycila {
-  class Grid : public EnergySource {
+  class Grid {
     public:
-      void setExpiration(uint32_t seconds) { _delay = seconds * 1000; }
+      explicit Grid(JSY& jsy) : _jsy(&jsy) {}
 
-      void updateVoltage(float voltage) {
-        _voltage = voltage;
-        _lastUpdate = millis();
+      // MQTT support
+      void setMQTTExpiration(uint32_t seconds) { _expiration = seconds * 1000; }
+      void setMQTTGridVoltage(float voltage) {
+        _mqttVoltage = voltage;
+        _mqttVoltageTime = millis();
       }
-      void updatePower(float power) {
-        _power = power;
-        _lastUpdate = millis();
-      }
-      void update(float current,
-                  float energy,
-                  float energyReturned,
-                  float frequency,
-                  float power,
-                  float powerFactor) {
-        _current = current;
-        _energy = energy;
-        _energyReturned = energyReturned;
-        _frequency = frequency;
-        _power = power;
-        _powerFactor = powerFactor;
-        _lastUpdate = millis();
+      void setMQTTGridPower(float power) {
+        _mqttPower = power;
+        _mqttPowerTime = millis();
       }
 
-      bool isExpired() const { return _delay > 0 && millis() - _lastUpdate > _delay; }
-      void invalidate() {
-        if (isExpired()) {
-          _current = 0;
-          _energy = 0;
-          _energyReturned = 0;
-          _frequency = 0;
-          _power = 0;
-          _powerFactor = 0;
-          _voltage = 0;
+      void applyExpiration() {
+        if (_mqttVoltageTime > 0 && millis() - _mqttVoltageTime >= _expiration) {
+          _mqttVoltage = 0;
+          _mqttVoltageTime = 0;
+        }
+        if (_mqttPowerTime > 0 && millis() - _mqttPowerTime >= _expiration) {
+          _mqttPower = 0;
+          _mqttPowerTime = 0;
         }
       }
 
-      // implement EnergySource
-      inline bool isConnected() const override { return getVoltage() > 0; }
-      float getFrequency() const override;
-      float getEnergy() const override { return _energy; }
-      float getEnergyReturned() const override { return _energyReturned; }
-      // returns the measured voltage or the nominal voltage if not connected
-      float getVoltage() const override { return _voltage; }
-      float getCurrent() const override { return _current; }
-      float getActivePower() const override { return _power; }
-      inline float getApparentPower() const override { return _powerFactor == 0 ? 0 : _power / _powerFactor; }
-      float getPowerFactor() const override { return _powerFactor; }
-      float getTHDi() const override {
-        // requires to know the Displacement Power Factor, cosφ,
-        // due to the phase shift between voltage and current
-        return 0;
+      bool isConnected() const { return getVoltage() > 0; }
+      float getEnergy() const { return _jsy->getEnergy2(); }
+      float getEnergyReturned() const { return _jsy->getEnergyReturned2(); }
+      float getCurrent() const { return _jsy->getCurrent2(); }
+      float getApparentPower() const { return _jsy->getApparentPower2(); }
+      float getPowerFactor() const { return _jsy->getPowerFactor2(); }
+      float getVoltage() const { return _mqttVoltageTime ? _mqttVoltage : _jsy->getVoltage2(); }
+      float getActivePower() const { return _mqttPowerTime ? _mqttPower : _jsy->getPower2(); }
+      float getFrequency() const {
+        // try first JSY
+        float f = _jsy->getFrequency();
+        // otherwise ZCD
+        return f > 0 ? f : Thyristor::getDetectedFrequency();
       }
 
-    private:
-      // metrics
-      volatile float _current = 0;
-      volatile float _energy = 0;
-      volatile float _energyReturned = 0;
-      volatile float _frequency = 0;
-      volatile float _power = 0;
-      volatile float _powerFactor = 0;
-      volatile float _voltage = 0;
+#ifdef MYCILA_JSON_SUPPORT
+      void toJson(const JsonObject& root) const {
+        root["apparent_power"] = getApparentPower();
+        root["current"] = getCurrent();
+        root["energy_returned"] = getEnergyReturned();
+        root["energy"] = getEnergy();
+        root["frequency"] = getFrequency();
+        root["jsy_grid_power"] = _jsy->getPower2();
+        root["jsy_grid_voltage"] = _jsy->getVoltage2();
+        root["mqtt_grid_power"] = _mqttPower;
+        root["mqtt_grid_voltage"] = _mqttVoltage;
+        root["online"] = isConnected();
+        root["power_factor"] = getPowerFactor();
+        root["power"] = getActivePower();
+        root["voltage"] = getVoltage();
+      }
+#endif
 
-      // expiration
-      uint32_t _delay = 0;
-      volatile uint32_t _lastUpdate = 0;
+    private:
+      JSY* _jsy;
+
+      // mqtt
+      volatile float _mqttPower = 0;
+      volatile float _mqttVoltage = 0;
+      volatile uint32_t _mqttPowerTime = 0;
+      volatile uint32_t _mqttVoltageTime = 0;
+      uint32_t _expiration = 0;
   };
 } // namespace Mycila

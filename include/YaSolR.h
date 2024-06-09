@@ -22,9 +22,9 @@
 #include <MycilaNTP.h>
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
-#include <MycilaRelayManager.h>
 #include <MycilaRouter.h>
 #include <MycilaRouterOutput.h>
+#include <MycilaRouterRelay.h>
 #include <MycilaSystem.h>
 #include <MycilaTaskManager.h>
 #include <MycilaTaskMonitor.h>
@@ -69,8 +69,11 @@ extern Mycila::Relay bypassRelayO1;
 extern Mycila::Relay bypassRelayO2;
 extern Mycila::Relay relay1;
 extern Mycila::Relay relay2;
+extern Mycila::Router router;
 extern Mycila::RouterOutput output1;
 extern Mycila::RouterOutput output2;
+extern Mycila::RouterRelay routerRelay1;
+extern Mycila::RouterRelay routerRelay2;
 extern Mycila::TrafficLight lights;
 
 extern Mycila::TaskManager ioTaskManager;
@@ -104,8 +107,9 @@ extern Mycila::Task pzemO2PairingTask;
 extern Mycila::Task pzemTask;
 
 extern Mycila::TaskManager routerTaskManager;
-extern Mycila::Task relaysTask;
+extern Mycila::Task relayTask;
 extern Mycila::Task routerTask;
+extern Mycila::Task routingTask;
 
 // Tasks alone without a manager
 extern Mycila::Task bootTask;
