@@ -352,8 +352,8 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject root = response->getRoot();
 
       String base = "http://";
-      base += ESPConnect.getIPAddress().toString();
-      base += "/api";
+      base.concat(ESPConnect.getIPAddress().toString());
+      base.concat("/api");
 
       root["config"] = base + "/config";
       root["config/backup"] = base + "/config/backup";
