@@ -19,7 +19,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      Mycila::Grid.toJson(root["grid"].to<JsonObject>());
+      grid.toJson(root["grid"].to<JsonObject>());
 
       Mycila::ZCD.toJson(root["zcd"].to<JsonObject>());
 
@@ -226,7 +226,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   webServer
     .on("/api/grid", HTTP_GET, [](AsyncWebServerRequest* request) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
-      Mycila::Grid.toJson(response->getRoot());
+      grid.toJson(response->getRoot());
       response->setLength();
       request->send(response);
     })

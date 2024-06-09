@@ -50,10 +50,6 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   Mycila::RelayManager.addRelay("relay1", relay1);
   Mycila::RelayManager.addRelay("relay2", relay2);
 
-  // Grid
-  Mycila::Grid.setJSY(jsy);
-  Mycila::Grid.setMQTT(mqtt);
-
   // Router
   Mycila::Router.setJSY(jsy);
   Mycila::Router.addOutput(output1);

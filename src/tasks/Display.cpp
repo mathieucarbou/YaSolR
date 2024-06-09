@@ -102,8 +102,8 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_ROUTER: {
-      display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(Mycila::Grid.getActivePower())));
-      if (Mycila::Grid.isConnected())
+      display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(grid.getActivePower())));
+      if (grid.isConnected())
         display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(Mycila::Router.getTotalRoutedPower())));
       else
         display.home.printf("Routed Power:   ERROR\n");
@@ -119,7 +119,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT1: {
-      if (Mycila::Grid.isConnected())
+      if (grid.isConnected())
         display.home.printf("Output 1: %11.11s\n", output1.getStateString());
       else
         display.home.printf("Output 1:  GRID ERROR\n");
@@ -135,7 +135,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT2: {
-      if (Mycila::Grid.isConnected())
+      if (grid.isConnected())
         display.home.printf("Output 2: %11.11s\n", output2.getStateString());
       else
         display.home.printf("Output 2:  GRID ERROR\n");

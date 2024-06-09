@@ -15,14 +15,14 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(293 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
-  jsyTask.setEnabledWhen([]() { return jsy.isEnabled() && Mycila::Grid.isConnected(); });
+  jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setInterval(config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS);
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   profilerTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
-  pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused() && Mycila::Grid.isConnected(); });
+  pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
   relaysTask.setInterval(5 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
@@ -32,10 +32,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Grid
-  Mycila::Grid.setNominalFrequency(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
-  Mycila::Grid.setNominalVoltage(config.get(KEY_GRID_VOLTAGE).toInt());
-  Mycila::Grid.setMQTTGridPowerTopic(config.get(KEY_GRID_POWER_MQTT_TOPIC));
-  Mycila::Grid.setMQTTGridVoltageTopic(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
+  grid.setExpiration(45);
 
   // NTP
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));

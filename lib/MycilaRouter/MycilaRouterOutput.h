@@ -81,6 +81,9 @@ namespace Mycila {
 
       void updateElectricityStatistics();
 
+      // Ohm : Resistance == Dimmed Voltage / Current (U = R * I)
+      float getResistance() const { return _current == 0 ? 0 : _outputVoltage / _current; }
+
       // kWh : Energy measured by PZEM
       float getEnergy() const { return _energy; }
       // A : Current measured by PZEM
@@ -91,14 +94,13 @@ namespace Mycila {
       float getOutputVoltage() const { return _outputVoltage; }
       // VA : Apparent Power == Input Voltage * Current
       float getApparentPower() const { return _inputVoltage * _current; }
-      // Ohm : Resistance == Dimmed Voltage / Current (U = R * I)
-      float getResistance() const { return _current == 0 ? 0 : _outputVoltage / _current; }
       // W : Active Power == Dimmed Voltage * Current (power consumed by the resistive load)
       float getActivePower() const { return _outputVoltage * _current; }
       // PF : Power Factor == Active Power / Apparent Power
       float getPowerFactor() const { return _outputVoltage / _inputVoltage; }
       // THDi : Total Harmonic Distortion of current
       // https://fr.electrical-installation.org/frwiki/Indicateur_de_distorsion_harmonique_:_facteur_de_puissance
+      // https://www.salicru.com/files/pagina/72/278/jn004a01_whitepaper-armonics_(1).pdf
       // For a resistive load, phi = 0 (no displacement between voltage and current)
       float getTHDi() const { return _outputVoltage == 0 ? 0 : sqrt(1 / pow(_outputVoltage / _inputVoltage, 2) - 1); }
 

@@ -115,13 +115,13 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
       break;
   }
 
-  mqtt.publish(baseTopic + "/grid/energy", String(Mycila::Grid.getActiveEnergy(), 3));
-  mqtt.publish(baseTopic + "/grid/energy_returned", String(Mycila::Grid.getActiveEnergyReturned(), 3));
-  mqtt.publish(baseTopic + "/grid/frequency", String(Mycila::Grid.getFrequency(), 3));
-  mqtt.publish(baseTopic + "/grid/online", YASOLR_BOOL(Mycila::Grid.isConnected()));
-  mqtt.publish(baseTopic + "/grid/power", String(Mycila::Grid.getActivePower(), 3));
-  mqtt.publish(baseTopic + "/grid/power_factor", String(Mycila::Grid.getPowerFactor(), 3));
-  mqtt.publish(baseTopic + "/grid/voltage", String(Mycila::Grid.getVoltage(), 3));
+  mqtt.publish(baseTopic + "/grid/energy", String(grid.getEnergy(), 3));
+  mqtt.publish(baseTopic + "/grid/energy_returned", String(grid.getEnergyReturned(), 3));
+  mqtt.publish(baseTopic + "/grid/frequency", String(grid.getFrequency(), 3));
+  mqtt.publish(baseTopic + "/grid/online", YASOLR_BOOL(grid.isConnected()));
+  mqtt.publish(baseTopic + "/grid/power", String(grid.getActivePower(), 3));
+  mqtt.publish(baseTopic + "/grid/power_factor", String(grid.getPowerFactor(), 3));
+  mqtt.publish(baseTopic + "/grid/voltage", String(grid.getVoltage(), 3));
   yield();
 
   mqtt.publish(baseTopic + "/router/lights", lights.toString());

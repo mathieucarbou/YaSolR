@@ -12,6 +12,7 @@
 #define TAG "OUTPUT"
 
 extern Mycila::Logger logger;
+extern Mycila::Grid grid;
 
 static const char* RouterOutputStateNames[] = {
   "Disabled",
@@ -243,7 +244,7 @@ void Mycila::RouterOutput::updateElectricityStatistics() {
   _current = _pzem->getCurrent();
   _inputVoltage = _pzem->getVoltage();
   if (_inputVoltage == 0)
-    _inputVoltage = Grid.getVoltage();
+    _inputVoltage = grid.getVoltage();
   _outputVoltage = _dimmer->computeDimmedVoltage(_inputVoltage);
 }
 

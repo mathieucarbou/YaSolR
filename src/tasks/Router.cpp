@@ -9,6 +9,8 @@ Mycila::Task relaysTask("Relays", [](void* params) {
 });
 
 Mycila::Task routerTask("Router", [](void* params) {
+  grid.invalidate();
+
   output1.updateElectricityStatistics();
   output1.applyDimmerLimit();
   output1.autoBypass();

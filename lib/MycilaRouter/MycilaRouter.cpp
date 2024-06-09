@@ -9,19 +9,10 @@
 
 #define TAG "ROUTER"
 
-void Mycila::RouterClass::toJson(const JsonObject& root) const {
-  root["energy"] = getTotalRoutedEnergy();
-  root["power_factor"] = getTotalPowerFactor();
-  root["power"] = getTotalRoutedPower();
-  root["thdi"] = getTotalTHDi();
-  root["virtual_grid_power"] = getVirtualGridPower();
-  for (const auto& output : _outputs) {
-    output->toJson(root[output->getName()].to<JsonObject>());
-  }
-}
+extern Mycila::Grid grid;
 
 float Mycila::RouterClass::getVirtualGridPower() const {
-  return Grid.getActivePower() - getTotalRoutedPower();
+  return grid.getActivePower() - getTotalRoutedPower();
 }
 
 float Mycila::RouterClass::getTotalRoutedPower() const {
@@ -90,6 +81,10 @@ bool Mycila::RouterClass::isRouting() const {
     }
   }
   return false;
+}
+
+void Mycila::RouterClass::adjustRouting() {
+  // TODO: implement routing
 }
 
 namespace Mycila {

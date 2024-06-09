@@ -24,7 +24,7 @@ Mycila::Task lightsTask("Lights", [](void* params) {
 
   lights.setYellow(relay1.isOn() || relay2.isOn() || bypassRelayO1.isOn() || bypassRelayO2.isOn() || dimmerO1.isOn() || dimmerO2.isOn());
 
-  if (!Mycila::Grid.isConnected()) {
+  if (!grid.isConnected()) {
     lights.setRed(true);
     return;
   }

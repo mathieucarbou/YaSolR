@@ -36,7 +36,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
 #endif
 
   // setup config system
-  config.begin(79);
+  config.begin(80);
   config.configure(KEY_ADMIN_PASSWORD);
   config.configure(KEY_DISPLAY_ROTATION, "0");
   config.configure(KEY_DISPLAY_SPEED, "5");
@@ -67,7 +67,6 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_GRID_FREQUENCY, "50");
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
   config.configure(KEY_GRID_VOLTAGE_MQTT_TOPIC);
-  config.configure(KEY_GRID_VOLTAGE, "230");
   config.configure(KEY_HA_DISCOVERY_TOPIC, MYCILA_HA_DISCOVERY_TOPIC);
   config.configure(KEY_MQTT_PASSWORD);
   config.configure(KEY_MQTT_PORT, "1883");

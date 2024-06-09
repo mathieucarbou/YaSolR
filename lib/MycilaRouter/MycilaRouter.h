@@ -7,7 +7,6 @@
 #include <MycilaJSY.h>
 #include <MycilaRouterOutput.h>
 
-#include <ArduinoJson.h>
 #include <vector>
 
 namespace Mycila {
@@ -19,8 +18,6 @@ namespace Mycila {
         _outputs.push_back(&output);
       }
 
-      void toJson(const JsonObject& root) const;
-
       float getVirtualGridPower() const;
       float getTotalRoutedPower() const;
       float getTotalPowerFactor() const;
@@ -28,6 +25,8 @@ namespace Mycila {
       float getTotalRoutedEnergy() const;
 
       bool isRouting() const;
+
+      void adjustRouting();
 
     private:
       const JSY* _jsy = nullptr;

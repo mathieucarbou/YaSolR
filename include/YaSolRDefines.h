@@ -58,7 +58,6 @@
 #define KEY_DISPLAY_TYPE              "disp_type"
 #define KEY_GRID_FREQUENCY            "grid_freq"
 #define KEY_GRID_POWER_MQTT_TOPIC     "grid_pow_mqtt"
-#define KEY_GRID_VOLTAGE              "grid_volt"
 #define KEY_GRID_VOLTAGE_MQTT_TOPIC   "grid_volt_mqtt"
 #define KEY_HA_DISCOVERY_TOPIC        "ha_disco_topic"
 #define KEY_MQTT_PASSWORD             "mqtt_pwd"

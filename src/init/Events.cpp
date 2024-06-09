@@ -172,9 +172,22 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     // mqttPublishTask.requestEarlyRun();
   });
 
-  jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    // TODO: update routing
-    // Serial.println("JSY event");
+  const bool jsyPow = config.get(KEY_GRID_POWER_MQTT_TOPIC).isEmpty();
+  jsy.setCallback([jsyPow](const Mycila::JSYEventType eventType) {
+    if (eventType == Mycila::JSYEventType::EVT_READ) {
+      // update the voltage in any case (JSY jas priority over MQTT)
+      grid.updateVoltage(jsy.getVoltage2());
+      // update the power only if not read from MQTT since JSY could be used only on 1-channel for the router outputs and not for the grid
+      if (jsyPow) {
+        grid.update(jsy.getCurrent2(),
+                    jsy.getEnergy2(),
+                    jsy.getEnergyReturned2(),
+                    jsy.getFrequency(),
+                    jsy.getPower2(),
+                    jsy.getPowerFactor2());
+        Mycila::Router.adjustRouting();
+      }
+    }
   });
   pzemO1.setCallback([](const Mycila::PZEMEventType eventType) {
     // TODO: update routing

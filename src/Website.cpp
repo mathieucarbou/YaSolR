@@ -201,7 +201,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _displayType.setTab(&_hardwareConfigTab);
   _displaySpeed.setTab(&_hardwareConfigTab);
   _gridFreq.setTab(&_hardwareConfigTab);
-  _gridVolt.setTab(&_hardwareConfigTab);
   _output1PZEMSync.setTab(&_hardwareConfigTab);
   _output1RelayType.setTab(&_hardwareConfigTab);
   _output2PZEMSync.setTab(&_hardwareConfigTab);
@@ -211,7 +210,6 @@ void YaSolR::WebsiteClass::initLayout() {
 
   _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
   _numConfig(_gridFreq, KEY_GRID_FREQUENCY);
-  _numConfig(_gridVolt, KEY_GRID_VOLTAGE);
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
@@ -387,7 +385,6 @@ void YaSolR::WebsiteClass::initCards() {
 
   // Hardware (config)
   _gridFreq.update(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? "60 Hz" : "50 Hz", "50 Hz,60 Hz");
-  _gridVolt.update(config.get(KEY_GRID_VOLTAGE).toInt() == 110 ? "110 V" : "220 V", "110 V,220 V");
   _output1RelayType.update(config.get(KEY_OUTPUT1_RELAY_TYPE), "NO,NC");
   _output2RelayType.update(config.get(KEY_OUTPUT2_RELAY_TYPE), "NO,NC");
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
@@ -439,10 +436,10 @@ void YaSolR::WebsiteClass::updateCards() {
   _output2RelaySwitchCount.set(String(bypassRelayO2.getSwitchCount()).c_str());
   _deviceHeapUsage.set((String(memory.usage) + " %").c_str());
   _deviceHeapUsed.set((String(memory.used) + " bytes").c_str());
-  _gridEnergy.set((String(Mycila::Grid.getActiveEnergy(), 3) + " kWh").c_str());
-  _gridEnergyReturned.set((String(Mycila::Grid.getActiveEnergyReturned(), 3) + " kWh").c_str());
-  _gridFrequency.set((String(Mycila::Grid.getFrequency()) + " Hz").c_str());
-  _gridVoltage.set((String(Mycila::Grid.getVoltage()) + " V").c_str());
+  _gridEnergy.set((String(grid.getEnergy(), 3) + " kWh").c_str());
+  _gridEnergyReturned.set((String(grid.getEnergyReturned(), 3) + " kWh").c_str());
+  _gridFrequency.set((String(grid.getFrequency()) + " Hz").c_str());
+  _gridVoltage.set((String(grid.getVoltage()) + " V").c_str());
   _networkAPIP.set(ESPConnect.getIPAddress(ESPConnectMode::AP).toString().c_str());
   _networkEthIP.set(ESPConnect.getIPAddress(ESPConnectMode::ETH).toString().c_str());
   _networkInterface.set(mode == ESPConnectMode::AP ? "AP" : (mode == ESPConnectMode::STA ? "WiFi" : (mode == ESPConnectMode::ETH ? "Ethernet" : "")));
@@ -463,7 +460,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _routerPowerFactor.update(Mycila::Router.getTotalPowerFactor());
   _routerTHDi.update(Mycila::Router.getTotalTHDi() * 100);
   _routerEnergy.update(Mycila::Router.getTotalRoutedEnergy());
-  _gridPower.update(Mycila::Grid.getActivePower());
+  _gridPower.update(grid.getActivePower());
   _temperature(_routerDS18State, ds18Sys);
 
 #ifdef APP_MODEL_PRO
@@ -536,7 +533,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _relay2SwitchRO.update(YASOLR_STATE(relay2.isOn()), relay2.isOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
 
   // Hardware (status)
-  const bool gridOnline = Mycila::Grid.isConnected();
+  const bool gridOnline = grid.isConnected();
   _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No electricity");
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : "Disconnected");
   _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), gridOnline, "No electricity");

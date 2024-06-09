@@ -168,10 +168,10 @@ namespace YaSolR {
       Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, "Server Certificate", ".pem,crt,der");
       Card _mqttPublishInterval = Card(&dashboard, SLIDER_CARD, "Publish Interval", "s", 5, 30, 1);
       Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, "Base Topic");
-      Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
-      Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
       Card _haDiscovery = Card(&dashboard, BUTTON_CARD, "Home Assistant Integration");
       Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, "Home Assistant Discovery Topic");
+      Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, "Grid Voltage from MQTT Topic");
+      Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, "Grid Power from MQTT Topic");
 
       Tab _pinConfigTab = Tab(&dashboard, "\u21C6 GPIO");
       Card _pinDimmerO1 = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer for Output 1");
@@ -214,7 +214,6 @@ namespace YaSolR {
 
       Tab _hardwareConfigTab = Tab(&dashboard, "\u2699 Hardware Config");
       Card _gridFreq = Card(&dashboard, DROPDOWN_CARD, "Nominal Grid Frequency");
-      Card _gridVolt = Card(&dashboard, DROPDOWN_CARD, "Nominal Grid Voltage");
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
       Card _displaySpeed = Card(&dashboard, SLIDER_CARD, "Display Speed", "s", 1, 10, 1);
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");

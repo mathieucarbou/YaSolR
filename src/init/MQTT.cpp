@@ -80,4 +80,27 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   mqtt.subscribe(baseTopic + "/system/device/restart", [](const String& topic, const String& payload) {
     restartTask.resume();
   });
+
+  // grid power
+  String gridPowerMQTTTopic = config.get(KEY_GRID_POWER_MQTT_TOPIC);
+  if (!gridPowerMQTTTopic.isEmpty()) {
+    logger.info(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic.c_str());
+    mqtt.subscribe(gridPowerMQTTTopic.c_str(), [](const String& topic, const String& payload) {
+      float p = payload.toFloat();
+      logger.debug(TAG, "MQTT Grid Power: %f", p);
+      grid.updatePower(p);
+      Mycila::Router.adjustRouting();
+    });
+  }
+
+  // grid voltage
+  String gridVoltageMQTTTopic = config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC);
+  if (!gridVoltageMQTTTopic.isEmpty()) {
+    logger.info(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic.c_str());
+    mqtt.subscribe(gridVoltageMQTTTopic.c_str(), [](const String& topic, const String& payload) {
+      float v = payload.toFloat();
+      logger.debug(TAG, "MQTT Grid Voltage: %f", v);
+      grid.updateVoltage(v);
+    });
+  }
 });
