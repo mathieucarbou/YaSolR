@@ -49,7 +49,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 
   if (!output1.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output1/bypass", YASOLR_STATE(output1.isBypassOn()), true);
-    mqtt.publish(baseTopic + "/router/output1/dimmer/level", String(dimmerO1.getLevel(), 10), true);
+    mqtt.publish(baseTopic + "/router/output1/dimmer/level", String(dimmerO1.getLevel()), true);
     mqtt.publish(baseTopic + "/router/output1/dimmer/state", YASOLR_STATE(dimmerO1.isOn()), true);
     mqtt.publish(baseTopic + "/router/output1/relay/state", YASOLR_STATE(bypassRelayO1.isOn()), true);
     mqtt.publish(baseTopic + "/router/output1/relay/switch_count", String(bypassRelayO1.getSwitchCount()), true);
@@ -59,7 +59,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 
   if (!output2.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output2/bypass", YASOLR_STATE(output2.isBypassOn()), true);
-    mqtt.publish(baseTopic + "/router/output2/dimmer/level", String(dimmerO2.getLevel(), 10), true);
+    mqtt.publish(baseTopic + "/router/output2/dimmer/level", String(dimmerO2.getLevel()), true);
     mqtt.publish(baseTopic + "/router/output2/dimmer/state", YASOLR_STATE(dimmerO2.isOn()), true);
     mqtt.publish(baseTopic + "/router/output2/relay/state", YASOLR_STATE(bypassRelayO2.isOn()), true);
     mqtt.publish(baseTopic + "/router/output2/relay/switch_count", String(bypassRelayO2.getSwitchCount()), true);
@@ -147,7 +147,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
 
   if (output1.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output1/bypass", YASOLR_STATE(output1.isBypassOn()));
-    mqtt.publish(baseTopic + "/router/output1/dimmer/level", String(dimmerO1.getLevel(), 2));
+    mqtt.publish(baseTopic + "/router/output1/dimmer/level", String(dimmerO1.getLevel()));
     mqtt.publish(baseTopic + "/router/output1/dimmer/state", YASOLR_STATE(dimmerO1.isOn()));
     mqtt.publish(baseTopic + "/router/output1/relay/state", YASOLR_STATE(bypassRelayO1.isOn()));
     mqtt.publish(baseTopic + "/router/output1/relay/switch_count", String(bypassRelayO1.getSwitchCount()));
@@ -157,7 +157,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
 
   if (output2.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output2/bypass", YASOLR_STATE(output2.isBypassOn()));
-    mqtt.publish(baseTopic + "/router/output2/dimmer/level", String(dimmerO2.getLevel(), 2));
+    mqtt.publish(baseTopic + "/router/output2/dimmer/level", String(dimmerO2.getLevel()));
     mqtt.publish(baseTopic + "/router/output2/dimmer/state", YASOLR_STATE(dimmerO2.isOn()));
     mqtt.publish(baseTopic + "/router/output2/relay/state", YASOLR_STATE(bypassRelayO2.isOn()));
     mqtt.publish(baseTopic + "/router/output2/relay/switch_count", String(bypassRelayO2.getSwitchCount()));
