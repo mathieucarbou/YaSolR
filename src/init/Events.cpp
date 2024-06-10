@@ -161,7 +161,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   dimmerO1.listen([](Mycila::DimmerLevel event) {
-    // mqttPublishTask.requestEarlyRun();
+    mqttPublishTask.requestEarlyRun();
     switch (event) {
       case Mycila::DimmerLevel::OFF:
         logger.debug(TAG, "Output 1 Dimmer: turned off");
@@ -179,7 +179,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   dimmerO2.listen([](Mycila::DimmerLevel event) {
-    // mqttPublishTask.requestEarlyRun();
+    mqttPublishTask.requestEarlyRun();
     switch (event) {
       case Mycila::DimmerLevel::OFF:
         logger.debug(TAG, "Output 2 dimmer: turned off");
@@ -215,15 +215,15 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   ds18Sys.listen([](float temperature) {
     logger.debug(TAG, "Router Temperature changed to %.02f °C", temperature);
-    // mqttPublishTask.requestEarlyRun();
+    mqttPublishTask.requestEarlyRun();
   });
   ds18O1.listen([](float temperature) {
     logger.debug(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
-    // mqttPublishTask.requestEarlyRun();
+    mqttPublishTask.requestEarlyRun();
   });
   ds18O2.listen([](float temperature) {
     logger.debug(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
-    // mqttPublishTask.requestEarlyRun();
+    mqttPublishTask.requestEarlyRun();
   });
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
