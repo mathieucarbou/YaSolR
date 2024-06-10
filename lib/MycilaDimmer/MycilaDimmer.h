@@ -32,7 +32,8 @@
 
 #include <functional>
 
-#define MYCILA_DIMMER_MAX_LEVEL 100
+// Dimmer goes from 0 to 10000
+#define MYCILA_DIMMER_MAX_LEVEL 10000
 
 namespace Mycila {
   enum class DimmerLevel { OFF,
@@ -61,12 +62,12 @@ namespace Mycila {
       void toJson(const JsonObject& root) const;
 
       // Returns the dimmer level: 0 - MYCILA_DIMMER_MAX_LEVEL
-      uint8_t getLevel() const { return _level; }
+      uint16_t getLevel() const { return _level; }
 
       // Set dimmer level: 0 - MYCILA_DIMMER_MAX_LEVEL
       // Depending on the implementation, this can be a linear or non-linear dimming curve
       // Example: Whether 50% means 50% power or 50% of the firing delay is implementation dependent
-      void setLevel(uint8_t level);
+      void setLevel(uint16_t level);
 
       // Returns the current dimmer firing delay in microseconds
       // At 0% power, the firing delay is equal to the semi-period (i.e. 10000 us for 50Hz, 8333 us for 60Hz)
@@ -82,11 +83,11 @@ namespace Mycila {
       // This is a theoretical value. In reality, the real Vrms value will be more or less depending on the hardware and software speed.
       float getDimmedVoltage(float inputVrms) const;
 
-      static void generateLUT(Print& out); // NOLINT
+      static void generateLUT(Print& out, size_t lutSize); // NOLINT
 
     private:
       bool _enabled = false;
-      uint8_t _level = 0;
+      uint16_t _level = 0;
       gpio_num_t _pin = GPIO_NUM_NC;
       DimmerLevelCallback _callback = nullptr;
       Thyristor* _dimmer = nullptr;

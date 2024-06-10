@@ -95,7 +95,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _relay1SwitchRO.setTab(&_relaysTab);
   _relay2Load.setTab(&_relaysTab);
   _relay2Switch.setTab(&_relaysTab);
-  _relay1SwitchRO.setTab(&_relaysTab);
+  _relay2SwitchRO.setTab(&_relaysTab);
 
   _relaySwitch(_relay1Switch, routerRelay1);
   _relaySwitch(_relay2Switch, routerRelay2);
@@ -307,11 +307,17 @@ void YaSolR::WebsiteClass::initCards() {
   _output1AutoStartTime.update(config.get(KEY_OUTPUT1_TIME_START));
   _output1AutoStoptTemp.update(config.get(KEY_OUTPUT1_TEMPERATURE_STOP));
   _output1AutoStoptTime.update(config.get(KEY_OUTPUT1_TIME_STOP));
+
   _output1Tab.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) || config.getBool(KEY_ENABLE_OUTPUT1_RELAY) || config.getBool(KEY_ENABLE_OUTPUT1_DS18));
   _output1DimmerSlider.setDisplay(!autoDimmerO1Activated);
   _output1DimmerSliderRO.setDisplay(autoDimmerO1Activated);
   _output1Bypass.setDisplay(!autoBypassActivated);
   _output1BypassRO.setDisplay(autoBypassActivated);
+  _output1AutoStartWDays.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS));
+  _output1AutoStartTemp.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS));
+  _output1AutoStartTime.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS));
+  _output1AutoStoptTemp.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS));
+  _output1AutoStoptTime.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS));
 
   // output 2 (control)
   bool autoDimmerO2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
@@ -324,11 +330,17 @@ void YaSolR::WebsiteClass::initCards() {
   _output2AutoStartTime.update(config.get(KEY_OUTPUT2_TIME_START));
   _output2AutoStoptTemp.update(config.get(KEY_OUTPUT2_TEMPERATURE_STOP));
   _output2AutoStoptTime.update(config.get(KEY_OUTPUT2_TIME_STOP));
+
   _output2Tab.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) || config.getBool(KEY_ENABLE_OUTPUT2_RELAY) || config.getBool(KEY_ENABLE_OUTPUT2_DS18));
   _output2DimmerSlider.setDisplay(!autoDimmerO2Activated);
   _output2DimmerSliderRO.setDisplay(autoDimmerO2Activated);
   _output2Bypass.setDisplay(!autoBypassO2Activated);
   _output2BypassRO.setDisplay(autoBypassO2Activated);
+  _output2AutoStartWDays.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS));
+  _output2AutoStartTemp.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS));
+  _output2AutoStartTime.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS));
+  _output2AutoStoptTemp.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS));
+  _output2AutoStoptTime.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS));
 
   // relays (control)
   int32_t load1 = config.get(KEY_RELAY1_LOAD).toInt();
@@ -482,8 +494,8 @@ void YaSolR::WebsiteClass::updateCards() {
       break;
   }
   _temperature(_output1DS18State, ds18O1);
-  _output1DimmerSlider.update(static_cast<int>(dimmerO1.getLevel()));
-  _output1DimmerSliderRO.update(static_cast<int>(dimmerO1.getLevel()));
+  _output1DimmerSlider.update(dimmerO1.getLevel());
+  _output1DimmerSliderRO.update(dimmerO1.getLevel());
   _output1Bypass.update(output1.isBypassOn());
   _output1BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
   _output1Power.update(output1.getActivePower());
@@ -513,8 +525,8 @@ void YaSolR::WebsiteClass::updateCards() {
       break;
   }
   _temperature(_output2DS18State, ds18O2);
-  _output2DimmerSlider.update(static_cast<int>(dimmerO2.getLevel()));
-  _output2DimmerSliderRO.update(static_cast<int>(dimmerO2.getLevel()));
+  _output2DimmerSlider.update(dimmerO2.getLevel());
+  _output2DimmerSliderRO.update(dimmerO2.getLevel());
   _output2Bypass.update(output2.isBypassOn());
   _output2BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
   _output2Power.update(output2.getActivePower());
@@ -549,7 +561,7 @@ void YaSolR::WebsiteClass::updateCards() {
 
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
-    config.set(key, String(MAX(0, value)));
+    config.set(key, String(value));
     card.update(static_cast<int>(config.get(key).toInt()));
     dashboard.refreshCard(&card);
   });
@@ -645,11 +657,11 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
 }
 
 void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput& output) {
-  card.attachCallback([&card, &output, this](int value) { // 0-100
+  card.attachCallback([&card, &output, this](int value) {
     if (output.isDimmerEnabled()) {
       output.tryDimmerLevel(value);
     }
-    card.update(static_cast<int>(output.getDimmerLevel()));
+    card.update(output.getDimmerLevel());
     dashboard.refreshCard(&card);
     dashboardTask.requestEarlyRun();
   });

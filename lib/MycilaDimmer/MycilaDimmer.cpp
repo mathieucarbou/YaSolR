@@ -6,22 +6,14 @@
 #include <MycilaLogger.h>
 
 // #include "MycilaDimmerV1.h"
-// #include "MycilaDimmerV2.h"
-// #include "MycilaDimmerV3.h"
-
-#ifndef MYCILA_DIMMER_NOT_LUT
-#if MYCILA_DIMMER_MAX_LEVEL == 100
 // #include "MycilaDimmerV1_100_LUT.h"
-// #include "MycilaDimmerV2_100_LUT.h"
-#include "MycilaDimmerV3_100_LUT.h"
-#elif MYCILA_DIMMER_MAX_LEVEL == 255
 // #include "MycilaDimmerV1_255_LUT.h"
+// #include "MycilaDimmerV2.h"
+// #include "MycilaDimmerV2_100_LUT.h"
 // #include "MycilaDimmerV2_255_LUT.h"
-#include "MycilaDimmerV3_255_LUT.h"
-#else
-#error "Invalid MYCILA_DIMMER_MAX_LEVEL"
-#endif
-#endif
+// #include "MycilaDimmerV3.h"
+#include "MycilaDimmerV3_100_LUT.h"
+// #include "MycilaDimmerV3_255_LUT.h"
 
 #define TAG "DIMMER"
 
@@ -89,7 +81,7 @@ void Mycila::Dimmer::toJson(const JsonObject& root) const {
   root["vrms_230V"] = vrmsF * 230;
 }
 
-void Mycila::Dimmer::setLevel(uint8_t newLevel) {
+void Mycila::Dimmer::setLevel(uint16_t newLevel) {
   if (!_enabled)
     return;
 
@@ -99,10 +91,11 @@ void Mycila::Dimmer::setLevel(uint8_t newLevel) {
   if (_level == newLevel)
     return;
 
-  const uint8_t oldLevel = _level;
+  const uint16_t oldLevel = _level;
   _level = newLevel;
 
-  _dimmer->setDelay(_lookupFiringDelay(_level, Thyristor::getFrequency()));
+  uint16_t lutLevel = map(newLevel, 0, MYCILA_DIMMER_MAX_LEVEL, 0, MYCILA_DIMMER_LUT_SIZE);
+  _dimmer->setDelay(_lookupFiringDelay(lutLevel, Thyristor::getFrequency()));
 
   if (_callback && (oldLevel == 0 || oldLevel == MYCILA_DIMMER_MAX_LEVEL || newLevel == 0 || newLevel == MYCILA_DIMMER_MAX_LEVEL))
     _callback(newLevel == 0 ? DimmerLevel::OFF : (newLevel == MYCILA_DIMMER_MAX_LEVEL ? DimmerLevel::FULL : DimmerLevel::DIM));
@@ -114,19 +107,19 @@ float Mycila::Dimmer::getDimmedVoltage(float inputVrms) const {
   return _level == 0 ? 0 : (_level == MYCILA_DIMMER_MAX_LEVEL ? inputVrms : inputVrms * _lookupVrmsFactor(_level, Thyristor::getFrequency()));
 }
 
-void Mycila::Dimmer::generateLUT(Print& out) {
+void Mycila::Dimmer::generateLUT(Print& out, size_t lutSize) {
   out.print("static const uint16_t delay50HzLUT[] PROGMEM = {");
-  for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out.printf("%" PRIu16 "%s", _lookupFiringDelay(i, 50), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+  for (size_t i = 0; i <= lutSize; i++)
+    out.printf("%" PRIu16 "%s", _lookupFiringDelay(i, 50), i < lutSize ? "," : "};\n");
   out.print("static const uint16_t delay60HzLUT[] PROGMEM = {");
-  for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out.printf("%" PRIu16 "%s", _lookupFiringDelay(i, 60), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+  for (size_t i = 0; i <= lutSize; i++)
+    out.printf("%" PRIu16 "%s", _lookupFiringDelay(i, 60), i < lutSize ? "," : "};\n");
   out.print("static const float vrms50HzLUT[] PROGMEM = {");
-  for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out.printf("%f%s", _lookupVrmsFactor(i, 50), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+  for (size_t i = 0; i <= lutSize; i++)
+    out.printf("%f%s", _lookupVrmsFactor(i, 50), i < lutSize ? "," : "};\n");
   out.print("static const float vrms60HzLUT[] PROGMEM = {");
-  for (size_t i = 0; i <= MYCILA_DIMMER_MAX_LEVEL; i++)
-    out.printf("%f%s", _lookupVrmsFactor(i, 60), i < MYCILA_DIMMER_MAX_LEVEL ? "," : "};\n");
+  for (size_t i = 0; i <= lutSize; i++)
+    out.printf("%f%s", _lookupVrmsFactor(i, 60), i < lutSize ? "," : "};\n");
 }
 
 float Mycila::Dimmer::_delayToPhaseAngle(uint16_t delay, float frequency) {

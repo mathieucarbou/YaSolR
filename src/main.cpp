@@ -64,7 +64,7 @@ void setup() {
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 
 #ifdef YASOLR_DEBUG
-  Mycila::Dimmer::generateLUT(Serial);
+  Mycila::Dimmer::generateLUT(Serial, 100);
 #endif
 }
 

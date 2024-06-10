@@ -63,7 +63,7 @@
   const supportedConfig = {
     
     "Output 1 Control": "TITLE",
-    o1_dim_limit: ["Dimmer Limiter (limit dimmer level 0-100)", "percent"],
+    o1_dim_limit: ["Dimmer Limiter (limit dimmer level 0-10000)", "uint"],
     o1_ad_enable: ["Dimmer Automatic Control", "switch"],
     o1_ab_enable: ["Bypass Automatic Control", "switch"],
     o1_days: ["Bypass Week Days", "string"],
@@ -73,7 +73,7 @@
     o1_temp_stop: ["Bypass Stop Temperature (C)", "uint"],
 
     "Output 2 Control": "TITLE",
-    o2_dim_limit: ["Dimmer Limiter (limit dimmer level 0-100)", "percent"],
+    o2_dim_limit: ["Dimmer Limiter (limit dimmer level 0-10000)", "uint"],
     o2_ad_enable: ["Dimmer Automatic Control", "switch"],
     o2_ab_enable: ["Bypass Automatic Control", "switch"],
     o2_days: ["Bypass Week Days", "string"],
@@ -204,7 +204,7 @@
       addInputNumber(cell, key, value, 0, 255);
     },
     uint: function (cell, key, value, options) {
-      addInputNumber(cell, key, value, 0, 9999);
+      addInputNumber(cell, key, value, 0, 999999);
     },
     percent: function (cell, key, value, options) {
       addInputNumber(cell, key, value, 0, 100);

@@ -7,6 +7,8 @@
 #include "MycilaDimmer.h"
 #include <Arduino.h>
 
+#define MYCILA_DIMMER_LUT_SIZE 255
+
 namespace Mycila {
   namespace DimmerInternal {
     static const uint16_t delay50HzLUT[] PROGMEM = {10000, 9837, 9695, 9557, 9425, 9297, 9173, 9054, 8939, 8827, 8720, 8617, 8517, 8421, 8329, 8240, 8154, 8071, 7992, 7915, 7841, 7770, 7702, 7636, 7573, 7512, 7454, 7397, 7343, 7291, 7241, 7193, 7147, 7102, 7060, 7018, 6979, 6941, 6904, 6869, 6834, 6802, 6770, 6739, 6710, 6681, 6654, 6627, 6601, 6576, 6552, 6529, 6506, 6484, 6462, 6441, 6420, 6400, 6380, 6361, 6342, 6323, 6305, 6287, 6269, 6251, 6234, 6216, 6199, 6182, 6165, 6148, 6131, 6114, 6097, 6080, 6063, 6046, 6029, 6012, 5995, 5977, 5960, 5942, 5925, 5907, 5889, 5870, 5852, 5834, 5815, 5796, 5777, 5758, 5738, 5719, 5699, 5679, 5659, 5639, 5618, 5597, 5576, 5555, 5534, 5513, 5491, 5469, 5447, 5425, 5403, 5381, 5358, 5336, 5313, 5290, 5267, 5244, 5221, 5198, 5175, 5151, 5128, 5104, 5081, 5057, 5034, 5010, 4987, 4963, 4940, 4916, 4893, 4869, 4846, 4822, 4799, 4776, 4753, 4730, 4707, 4684, 4661, 4638, 4616, 4594, 4571, 4549, 4527, 4506, 4484, 4463, 4441, 4420, 4399, 4379, 4358, 4338, 4318, 4298, 4278, 4258, 4239, 4219, 4200, 4181, 4163, 4144, 4126, 4108, 4090, 4072, 4054, 4036, 4019, 4001, 3984, 3967, 3950, 3933, 3916, 3899, 3882, 3865, 3848, 3831, 3814, 3796, 3779, 3762, 3744, 3726, 3709, 3690, 3672, 3653, 3634, 3615, 3595, 3575, 3554, 3533, 3511, 3489, 3466, 3442, 3418, 3393, 3367, 3341, 3313, 3284, 3255, 3224, 3193, 3160, 3126, 3090, 3053, 3015, 2975, 2934, 2891, 2847, 2800, 2752, 2702, 2650, 2596, 2540, 2481, 2420, 2357, 2291, 2223, 2152, 2078, 2001, 1921, 1839, 1753, 1664, 1571, 1475, 1375, 1272, 1165, 1053, 938, 819, 695, 567, 434, 297, 154, 0};
@@ -20,7 +22,7 @@ uint16_t Mycila::Dimmer::_lookupFiringDelay(uint8_t level, float frequency) {
   if (level == 0)
     return 500000 / frequency; // semi-period in microseconds
 
-  if (level == MYCILA_DIMMER_MAX_LEVEL)
+  if (level >= MYCILA_DIMMER_LUT_SIZE)
     return 0;
 
   return frequency == 60 ? (uint16_t)pgm_read_word(&Mycila::DimmerInternal::delay60HzLUT[level]) : (uint16_t)pgm_read_word(&Mycila::DimmerInternal::delay50HzLUT[level]);
@@ -30,7 +32,7 @@ float Mycila::Dimmer::_lookupVrmsFactor(uint8_t level, float frequency) {
   if (level == 0)
     return 0;
 
-  if (level == MYCILA_DIMMER_MAX_LEVEL)
+  if (level >= MYCILA_DIMMER_LUT_SIZE)
     return 1;
 
   return frequency == 60 ? static_cast<float>(pgm_read_float(&Mycila::DimmerInternal::vrms60HzLUT[level])) : static_cast<float>(pgm_read_float(&Mycila::DimmerInternal::vrms50HzLUT[level]));

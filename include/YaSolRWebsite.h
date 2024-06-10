@@ -89,7 +89,7 @@ namespace YaSolR {
       Card _output1DS18State = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
       Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output1Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
+      Card _output1Bypass = Card(&dashboard, BUTTON_CARD, "Bypass");
       Card _output1BypassRO = Card(&dashboard, STATUS_CARD, "Bypass");
       Card _output1Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
       Card _output1ApparentPower = Card(&dashboard, ENERGY_CARD, "Apparent Power", "VA");
@@ -113,7 +113,7 @@ namespace YaSolR {
       Card _output2DS18State = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
       Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output2Bypass = Card(&dashboard, BUTTON_CARD, "Bypass Manual Control");
+      Card _output2Bypass = Card(&dashboard, BUTTON_CARD, "Bypass");
       Card _output2BypassRO = Card(&dashboard, STATUS_CARD, "Bypass");
       Card _output2Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
       Card _output2ApparentPower = Card(&dashboard, ENERGY_CARD, "Apparent Power", "VA");

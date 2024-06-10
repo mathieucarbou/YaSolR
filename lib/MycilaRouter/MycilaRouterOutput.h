@@ -33,7 +33,7 @@ namespace Mycila {
     public:
       typedef struct {
           bool autoDimmer;
-          uint8_t dimmerLimit;
+          uint16_t dimmerLimit;
           bool autoBypass;
           uint8_t autoStartTemperature;
           uint8_t autoStopTemperature;
@@ -86,8 +86,8 @@ namespace Mycila {
 
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer; }
-      uint8_t getDimmerLevel() const { return _dimmer->getLevel(); }
-      bool tryDimmerLevel(uint8_t level);
+      uint16_t getDimmerLevel() const { return _dimmer->getLevel(); }
+      bool tryDimmerLevel(uint16_t level);
       void applyDimmerLimit();
 
       // bypass
@@ -142,6 +142,6 @@ namespace Mycila {
       RouterOutputStateCallback _callback = nullptr;
 
     private:
-      void _setBypass(bool state, uint8_t dimmerLevelWhenRelayOff = 0);
+      void _setBypass(bool state, uint16_t dimmerLevelWhenRelayOff = 0);
   };
 } // namespace Mycila

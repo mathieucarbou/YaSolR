@@ -7,7 +7,7 @@
 #include "MycilaDimmer.h"
 #include <Arduino.h>
 
-#define MYCILA_DIMMER_NOT_LUT
+#define MYCILA_DIMMER_LUT_SIZE MYCILA_DIMMER_MAX_LEVEL
 
 namespace Mycila {
   namespace DimmerInternal {
