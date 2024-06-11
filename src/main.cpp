@@ -31,14 +31,14 @@ Mycila::TaskManager coreTaskManager("Core");
 Mycila::TaskManager pzemTaskManager("PZEM");
 Mycila::TaskManager routerTaskManager("Router");
 
-Mycila::RouterOutput output1("output1", dimmerO1, ds18O1, bypassRelayO1, pzemO1);
-Mycila::RouterOutput output2("output2", dimmerO2, ds18O2, bypassRelayO2, pzemO2);
+Mycila::Grid grid(jsy);
+Mycila::Router router(jsy);
+
+Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1, ds18O1, grid, pzemO1);
+Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, ds18O2, grid, pzemO2);
 
 Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);
-
-Mycila::Grid grid(jsy);
-Mycila::Router router(jsy);
 
 AsyncWebServer webServer(80);
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);
@@ -54,17 +54,17 @@ void setup() {
   initMqttSubscribersTask.forceRun();
   initDashboardTask.forceRun();
 
-  assert(  coreTaskManager.asyncStart(1024 * 4, 1, 1, 100, true)); // NOLINT
-  assert(    ioTaskManager.asyncStart(1024 * 5, 1, 1, 100, true)); // NOLINT
-  assert(   jsyTaskManager.asyncStart(1024 * 3, 5, 0, 100, true)); // NOLINT
-  assert(  pzemTaskManager.asyncStart(1024 * 3, 5, 0, 100, true)); // NOLINT
+  assert(coreTaskManager.asyncStart(1024 * 4, 1, 1, 100, true));   // NOLINT
+  assert(ioTaskManager.asyncStart(1024 * 5, 1, 1, 100, true));     // NOLINT
+  assert(jsyTaskManager.asyncStart(1024 * 3, 5, 0, 100, true));    // NOLINT
+  assert(pzemTaskManager.asyncStart(1024 * 3, 5, 0, 100, true));   // NOLINT
   assert(routerTaskManager.asyncStart(1024 * 3, 5, 1, 100, true)); // NOLINT
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 
 #ifdef YASOLR_DEBUG
-  Mycila::Dimmer::generateLUT(Serial, 100);
+  Mycila::Dimmer::generateLUT(Serial, 255);
 #endif
 }
 

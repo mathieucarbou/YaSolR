@@ -12,6 +12,18 @@
 #endif
 
 namespace Mycila {
+  typedef struct {
+      bool connected = false;
+      float apparentPower = 0;
+      float current = 0;
+      float energy = 0;
+      float energyReturned = 0;
+      float frequency = 0;
+      float power = 0;
+      float powerFactor = 0;
+      float voltage = 0;
+  } GridMetrics;
+
   class Grid {
     public:
       explicit Grid(JSY& jsy) : _jsy(&jsy) {}
@@ -38,36 +50,37 @@ namespace Mycila {
         }
       }
 
-      bool isConnected() const { return getVoltage() > 0; }
-      float getEnergy() const { return _jsy->getEnergy2(); }
-      float getEnergyReturned() const { return _jsy->getEnergyReturned2(); }
-      float getCurrent() const { return _jsy->getCurrent2(); }
-      float getApparentPower() const { return _jsy->getApparentPower2(); }
-      float getPowerFactor() const { return _jsy->getPowerFactor2(); }
-      float getVoltage() const { return _mqttVoltageTime ? _mqttVoltage : _jsy->getVoltage2(); }
-      float getActivePower() const { return _mqttPowerTime ? _mqttPower : _jsy->getPower2(); }
-      float getFrequency() const {
-        // try first JSY
-        float f = _jsy->getFrequency();
-        // otherwise ZCD
-        return f > 0 ? f : Thyristor::getDetectedFrequency();
+      bool isConnected() const { return (_jsy->isConnected() && _jsy->getVoltage2()) > 0 || (_mqttVoltageTime > 0 && _mqttVoltage > 0); }
+
+      float getPower() const { return _mqttPowerTime ? _mqttPower : _jsy->getPower2(); }
+
+      void getMetrics(GridMetrics& metrics) const {
+        metrics.voltage = _jsy->isConnected() ? _jsy->getVoltage2() : (_mqttVoltageTime && _mqttVoltage ? _mqttVoltage : 0);
+        metrics.apparentPower = _jsy->getApparentPower2();
+        metrics.connected = metrics.voltage > 0;
+        metrics.current = _jsy->getCurrent2();
+        metrics.energy = _jsy->getEnergy2();
+        metrics.energyReturned = _jsy->getEnergyReturned2();
+        metrics.frequency = _jsy->isConnected() ? _jsy->getFrequency() : Thyristor::getDetectedFrequency();
+        metrics.power = _mqttPowerTime ? _mqttPower : _jsy->getPower2();
+        metrics.powerFactor = _jsy->getPowerFactor2();
       }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
-        root["apparent_power"] = getApparentPower();
-        root["current"] = getCurrent();
-        root["energy_returned"] = getEnergyReturned();
-        root["energy"] = getEnergy();
-        root["frequency"] = getFrequency();
-        root["jsy_grid_power"] = _jsy->getPower2();
-        root["jsy_grid_voltage"] = _jsy->getVoltage2();
-        root["mqtt_grid_power"] = _mqttPower;
-        root["mqtt_grid_voltage"] = _mqttVoltage;
-        root["online"] = isConnected();
-        root["power_factor"] = getPowerFactor();
-        root["power"] = getActivePower();
-        root["voltage"] = getVoltage();
+        GridMetrics metrics;
+        getMetrics(metrics);
+        root["online"] = metrics.connected;
+        root["metrics"]["apparent_power"] = metrics.apparentPower;
+        root["metrics"]["current"] = metrics.current;
+        root["metrics"]["energy"] = metrics.energy;
+        root["metrics"]["energy_returned"] = metrics.energyReturned;
+        root["metrics"]["frequency"] = metrics.frequency;
+        root["metrics"]["power"] = metrics.power;
+        root["metrics"]["power_factor"] = metrics.powerFactor;
+        root["metrics"]["voltage"] = metrics.voltage;
+        root["mqtt"]["power"] = _mqttPower;
+        root["mqtt"]["voltage"] = _mqttVoltage;
       }
 #endif
 

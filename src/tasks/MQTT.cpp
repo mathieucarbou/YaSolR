@@ -115,22 +115,26 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
       break;
   }
 
-  mqtt.publish(baseTopic + "/grid/energy", String(grid.getEnergy(), 3));
-  mqtt.publish(baseTopic + "/grid/energy_returned", String(grid.getEnergyReturned(), 3));
-  mqtt.publish(baseTopic + "/grid/frequency", String(grid.getFrequency(), 3));
-  mqtt.publish(baseTopic + "/grid/online", YASOLR_BOOL(grid.isConnected()));
-  mqtt.publish(baseTopic + "/grid/power", String(grid.getActivePower(), 3));
-  mqtt.publish(baseTopic + "/grid/power_factor", String(grid.getPowerFactor(), 3));
-  mqtt.publish(baseTopic + "/grid/voltage", String(grid.getVoltage(), 3));
+  Mycila::GridMetrics gridMetrics;
+  grid.getMetrics(gridMetrics);
+  mqtt.publish(baseTopic + "/grid/energy", String(gridMetrics.energy, 3));
+  mqtt.publish(baseTopic + "/grid/energy_returned", String(gridMetrics.energyReturned, 3));
+  mqtt.publish(baseTopic + "/grid/frequency", String(gridMetrics.frequency, 3));
+  mqtt.publish(baseTopic + "/grid/online", YASOLR_BOOL(gridMetrics.connected));
+  mqtt.publish(baseTopic + "/grid/power", String(gridMetrics.power, 3));
+  mqtt.publish(baseTopic + "/grid/power_factor", String(gridMetrics.powerFactor, 3));
+  mqtt.publish(baseTopic + "/grid/voltage", String(gridMetrics.voltage, 3));
   yield();
 
+  Mycila::RouterMetrics routerMetrics;
+  router.getMetrics(routerMetrics);
   mqtt.publish(baseTopic + "/router/lights", lights.toString());
   mqtt.publish(baseTopic + "/router/temperature", String(ds18Sys.getLastTemperature()));
-  mqtt.publish(baseTopic + "/router/energy", String(router.getEnergy(), 3));
-  mqtt.publish(baseTopic + "/router/power_factor", String(router.getPowerFactor(), 3));
-  mqtt.publish(baseTopic + "/router/power", String(router.getActivePower(), 3));
-  mqtt.publish(baseTopic + "/router/thdi", String(router.getTHDi(), 3));
-  mqtt.publish(baseTopic + "/router/virtual_grid_power", String(grid.getActivePower() - router.getActivePower(), 3));
+  mqtt.publish(baseTopic + "/router/energy", String(routerMetrics.energy, 3));
+  mqtt.publish(baseTopic + "/router/power_factor", String(routerMetrics.powerFactor, 3));
+  mqtt.publish(baseTopic + "/router/power", String(routerMetrics.power, 3));
+  mqtt.publish(baseTopic + "/router/thdi", String(routerMetrics.thdi, 3));
+  mqtt.publish(baseTopic + "/router/virtual_grid_power", String(gridMetrics.power - routerMetrics.power, 3));
   yield();
 
   if (relay1.isEnabled()) {

@@ -102,9 +102,13 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_ROUTER: {
-      display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(grid.getActivePower())));
-      if (grid.isConnected())
-        display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(router.getActivePower())));
+      Mycila::GridMetrics gridMetrics;
+      grid.getMetrics(gridMetrics);
+      Mycila::RouterMetrics routerMetrics;
+      router.getMetrics(routerMetrics);
+      display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(gridMetrics.power)));
+      if (gridMetrics.connected)
+        display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
       else
         display.home.printf("Routed Power:   ERROR\n");
       if (config.get(KEY_RELAY1_LOAD).toInt())
@@ -119,12 +123,14 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT1: {
-      if (grid.isConnected())
+      Mycila::RouterOutputMetrics outputMetrics;
+      output1.getMetrics(outputMetrics);
+      if (outputMetrics.connected)
         display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       else
         display.home.printf("Output 1:  GRID ERROR\n");
-      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output1.getResistance())));
-      display.home.printf("Dimmer: %5d %5d W\n", dimmerO1.getLevel(), static_cast<int>(round(output1.getActivePower())));
+      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
+      display.home.printf("Dimmer: %5d %5d W\n", dimmerO1.getLevel(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O1.isEnabled())
         display.home.printf("Temperature:   %4.1f", ds18O1.getLastTemperature());
       else
@@ -135,12 +141,14 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT2: {
-      if (grid.isConnected())
+      Mycila::RouterOutputMetrics outputMetrics;
+      output2.getMetrics(outputMetrics);
+      if (outputMetrics.connected)
         display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       else
         display.home.printf("Output 2:  GRID ERROR\n");
-      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output2.getResistance())));
-      display.home.printf("Dimmer: %5d %5d W\n", dimmerO2.getLevel(), static_cast<int>(round(output2.getActivePower())));
+      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
+      display.home.printf("Dimmer: %5d %5d W\n", dimmerO2.getLevel(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O2.isEnabled())
         display.home.printf("Temperature:   %4.1f", ds18O2.getLastTemperature());
       else

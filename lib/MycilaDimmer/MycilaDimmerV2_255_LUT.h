@@ -7,7 +7,7 @@
 #include "MycilaDimmer.h"
 #include <Arduino.h>
 
-#define MYCILA_DIMMER_LUT_SIZE 255
+#define MYCILA_DIMMER_LUT_MAX_LEVEL 255
 
 namespace Mycila {
   namespace DimmerInternal {
@@ -28,7 +28,7 @@ uint16_t Mycila::Dimmer::_lookupFiringDelay(uint8_t level, float frequency) {
   return frequency == 60 ? (uint16_t)pgm_read_word(&Mycila::DimmerInternal::delay60HzLUT[level]) : (uint16_t)pgm_read_word(&Mycila::DimmerInternal::delay50HzLUT[level]);
 }
 
-float Mycila::Dimmer::_lookupVrmsFactor(uint8_t level, float frequency) {
+float Mycila::Dimmer::_lookupVrms(uint8_t level, float frequency) {
   if (level == 0)
     return 0;
 

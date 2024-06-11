@@ -86,6 +86,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     YaSolR::Website.initCards();
     mqttPublishConfigTask.resume();
+    mqttPublishTask.requestEarlyRun();
   });
 
   dashboard.onBeforeUpdate([](bool changes_only) {

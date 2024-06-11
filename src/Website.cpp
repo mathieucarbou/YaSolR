@@ -441,6 +441,18 @@ void YaSolR::WebsiteClass::initCards() {
 }
 
 void YaSolR::WebsiteClass::updateCards() {
+  Mycila::GridMetrics gridMetrics;
+  grid.getMetrics(gridMetrics);
+
+  Mycila::RouterOutputMetrics output1Metrics;
+  output1.getMetrics(output1Metrics);
+
+  Mycila::RouterOutputMetrics output2Metrics;
+  output2.getMetrics(output2Metrics);
+
+  Mycila::RouterMetrics routerMetrics;
+  router.getMetrics(routerMetrics);
+
   // stats
   Mycila::SystemMemory memory = Mycila::System.getMemory();
   ESPConnectMode mode = ESPConnect.getMode();
@@ -448,10 +460,10 @@ void YaSolR::WebsiteClass::updateCards() {
   _output2RelaySwitchCount.set(String(bypassRelayO2.getSwitchCount()).c_str());
   _deviceHeapUsage.set((String(memory.usage) + " %").c_str());
   _deviceHeapUsed.set((String(memory.used) + " bytes").c_str());
-  _gridEnergy.set((String(grid.getEnergy(), 3) + " kWh").c_str());
-  _gridEnergyReturned.set((String(grid.getEnergyReturned(), 3) + " kWh").c_str());
-  _gridFrequency.set((String(grid.getFrequency()) + " Hz").c_str());
-  _gridVoltage.set((String(grid.getVoltage()) + " V").c_str());
+  _gridEnergy.set((String(gridMetrics.energy, 3) + " kWh").c_str());
+  _gridEnergyReturned.set((String(gridMetrics.energyReturned, 3) + " kWh").c_str());
+  _gridFrequency.set((String(gridMetrics.frequency) + " Hz").c_str());
+  _gridVoltage.set((String(gridMetrics.voltage) + " V").c_str());
   _networkAPIP.set(ESPConnect.getIPAddress(ESPConnectMode::AP).toString().c_str());
   _networkEthIP.set(ESPConnect.getIPAddress(ESPConnectMode::ETH).toString().c_str());
   _networkInterface.set(mode == ESPConnectMode::AP ? "AP" : (mode == ESPConnectMode::STA ? "WiFi" : (mode == ESPConnectMode::ETH ? "Ethernet" : "")));
@@ -468,11 +480,11 @@ void YaSolR::WebsiteClass::updateCards() {
 #endif
 
   // home
-  _routerPower.update(router.getActivePower());
-  _routerPowerFactor.update(router.getPowerFactor());
-  _routerTHDi.update(router.getTHDi() * 100);
-  _routerEnergy.update(router.getEnergy());
-  _gridPower.update(grid.getActivePower());
+  _routerPower.update(routerMetrics.power);
+  _routerPowerFactor.update(routerMetrics.powerFactor);
+  _routerTHDi.update(routerMetrics.thdi * 100);
+  _routerEnergy.update(routerMetrics.energy);
+  _gridPower.update(gridMetrics.power);
   _temperature(_routerDS18State, ds18Sys);
 
 #ifdef APP_MODEL_PRO
@@ -498,14 +510,14 @@ void YaSolR::WebsiteClass::updateCards() {
   _output1DimmerSliderRO.update(dimmerO1.getLevel());
   _output1Bypass.update(output1.isBypassOn());
   _output1BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _output1Power.update(output1.getActivePower());
-  _output1ApparentPower.update(output1.getApparentPower());
-  _output1PowerFactor.update(output1.getPowerFactor());
-  _output1THDi.update(output1.getTHDi() * 100);
-  _output1Voltage.update(output1.getDimmedVoltage());
-  _output1Current.update(output1.getCurrent());
-  _output1Resistance.update(output1.getResistance());
-  _output1Energy.update(output1.getEnergy());
+  _output1Power.update(output1Metrics.power);
+  _output1ApparentPower.update(output1Metrics.apparentPower);
+  _output1PowerFactor.update(output1Metrics.powerFactor);
+  _output1THDi.update(output1Metrics.thdi * 100);
+  _output1Voltage.update(output1Metrics.dimmedVoltage);
+  _output1Current.update(output1Metrics.current);
+  _output1Resistance.update(output1Metrics.resistance);
+  _output1Energy.update(output1Metrics.energy);
 
   // output 2
   switch (output2.getState()) {
@@ -529,14 +541,14 @@ void YaSolR::WebsiteClass::updateCards() {
   _output2DimmerSliderRO.update(dimmerO2.getLevel());
   _output2Bypass.update(output2.isBypassOn());
   _output2BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _output2Power.update(output2.getActivePower());
-  _output2ApparentPower.update(output2.getApparentPower());
-  _output2PowerFactor.update(output2.getPowerFactor());
-  _output2THDi.update(output2.getTHDi() * 100);
-  _output2Voltage.update(output2.getDimmedVoltage());
-  _output2Current.update(output2.getCurrent());
-  _output2Resistance.update(output2.getResistance());
-  _output2Energy.update(output2.getEnergy());
+  _output2Power.update(output2Metrics.power);
+  _output2ApparentPower.update(output2Metrics.apparentPower);
+  _output2PowerFactor.update(output2Metrics.powerFactor);
+  _output2THDi.update(output2Metrics.thdi * 100);
+  _output2Voltage.update(output2Metrics.dimmedVoltage);
+  _output2Current.update(output2Metrics.current);
+  _output2Resistance.update(output2Metrics.resistance);
+  _output2Energy.update(output2Metrics.energy);
 
   // relays
   _relay1Switch.update(relay1.isOn());
@@ -545,13 +557,12 @@ void YaSolR::WebsiteClass::updateCards() {
   _relay2SwitchRO.update(YASOLR_STATE(relay2.isOn()), relay2.isOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
 
   // Hardware (status)
-  const bool gridOnline = grid.isConnected();
   _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No electricity");
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : "Disconnected");
-  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), gridOnline, "No electricity");
+  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), output1Metrics.connected, "No electricity");
   _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, "Read error");
   _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), "No electricity");
-  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), gridOnline, "No electricity");
+  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), output2Metrics.connected, "No electricity");
   _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, "Read error");
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), "No electricity");
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, "Read error");

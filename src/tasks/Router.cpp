@@ -15,7 +15,7 @@ Mycila::Task routerTask("Router", [](void* params) {
 });
 
 Mycila::Task relayTask("Relay", [](void* params) {
-  float virtualGridPower = grid.getActivePower() - router.getActivePower();
+  float virtualGridPower = grid.getPower() - router.getPower();
   if (routerRelay1.tryRelayStateAuto(true, virtualGridPower))
     return;
   if (routerRelay2.tryRelayStateAuto(true, virtualGridPower))

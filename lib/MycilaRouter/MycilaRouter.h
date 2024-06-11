@@ -14,6 +14,16 @@
 #endif
 
 namespace Mycila {
+
+  typedef struct {
+      float apparentPower = 0;
+      float current = 0;
+      float energy = 0;
+      float power = 0;
+      float powerFactor = 0;
+      float thdi = 0;
+  } RouterMetrics;
+
   class Router {
     public:
       explicit Router(JSY& jsy) : _jsy(&jsy) {}
@@ -29,89 +39,69 @@ namespace Mycila {
         return false;
       }
 
-      float getEnergy() const {
-        bool aggregate = false;
-        float total = 0;
-        for (auto& output : _outputs) {
-          total += output->getEnergy();
-          aggregate |= output->hasMetrics();
-        }
-        return aggregate ? total : _jsy->getEnergy1() + _jsy->getEnergyReturned1();
-      }
-      float getCurrent() const {
-        if (!isRouting())
-          return 0;
-        bool aggregate = false;
-        float total = 0;
-        for (auto& output : _outputs) {
-          total += output->getCurrent();
-          aggregate |= output->hasMetrics();
-        }
-        return aggregate ? total : _jsy->getCurrent1();
-      }
-      float getApparentPower() const {
-        if (!isRouting())
-          return 0;
-        bool aggregate = false;
-        float total = 0;
-        for (auto& output : _outputs) {
-          total += output->getApparentPower();
-          aggregate |= output->hasMetrics();
-        }
-        return aggregate ? total : _jsy->getApparentPower1();
-      }
-      float getPowerFactor() const {
-        if (!isRouting())
-          return 0;
-        bool aggregate = false;
-        float va = 0;
+      float getPower() const {
         float power = 0;
-        for (auto& output : _outputs) {
-          va += output->getApparentPower();
-          power += output->getActivePower();
-          aggregate |= output->hasMetrics();
+        bool routing = false;
+
+        for (const auto& output : _outputs) {
+          if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
+            power += output->getPower();
+            routing = true;
+          }
         }
-        return aggregate ? (va == 0 ? 0 : power / va) : _jsy->getPowerFactor1();
+
+        if (routing && power == 0)
+          power = _jsy->getPower1();
+
+        return power;
       }
-      float getVoltage() const {
-        float v = _jsy->getVoltage1();
-        if (v > 0)
-          return v;
-        for (auto& output : _outputs) {
-          v = output->getVoltage();
-          if (v > 0)
-            return v;
+
+      void getMetrics(RouterMetrics& metrics) const {
+        bool routing = false;
+
+        for (const auto& output : _outputs) {
+          if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
+            routing = true;
+            Mycila::RouterOutputMetrics outputMetrics;
+            output->getMetrics(outputMetrics);
+            metrics.apparentPower += outputMetrics.apparentPower;
+            metrics.current += outputMetrics.current;
+            metrics.energy += outputMetrics.energy;
+            metrics.power += outputMetrics.power;
+          }
         }
-        return 0;
-      }
-      float getActivePower() const {
-        if (!isRouting())
-          return 0;
-        bool aggregate = false;
-        float total = 0;
-        for (auto& output : _outputs) {
-          total += output->getActivePower();
-          aggregate |= output->hasMetrics();
+
+        if (routing) {
+          if (metrics.apparentPower == 0)
+            metrics.apparentPower = _jsy->getApparentPower1();
+
+          if (metrics.current == 0)
+            metrics.current = _jsy->getCurrent1();
+
+          if (metrics.power == 0)
+            metrics.power = _jsy->getPower1();
+
+          metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
+          if (metrics.powerFactor == 0)
+            metrics.powerFactor = _jsy->getPowerFactor1();
+
+          metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
         }
-        return aggregate ? total : abs(_jsy->getPower1());
-      }
-      float getTHDi() const {
-        // https://fr.electrical-installation.org/frwiki/Indicateur_de_distorsion_harmonique_:_facteur_de_puissance
-        // https://www.salicru.com/files/pagina/72/278/jn004a01_whitepaper-armonics_(1).pdf
-        // For a resistive load, phi = 0 (no displacement between voltage and current)
-        float pf = getPowerFactor();
-        return pf == 0 ? 0 : sqrt(1 / pow(pf, 2) - 1);
+
+        if (metrics.energy == 0)
+          metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
       }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
-        root["apparent_power"] = getApparentPower();
-        root["current"] = getCurrent();
-        root["energy"] = getEnergy();
-        root["power_factor"] = getPowerFactor();
-        root["power"] = getActivePower();
-        root["thdi"] = getTHDi();
-        root["voltage"] = getVoltage();
+        RouterMetrics metrics;
+        getMetrics(metrics);
+        root["metrics"]["apparent_power"] = metrics.apparentPower;
+        root["metrics"]["current"] = metrics.current;
+        root["metrics"]["energy"] = metrics.energy;
+        root["metrics"]["power"] = metrics.power;
+        root["metrics"]["power_factor"] = metrics.powerFactor;
+        root["metrics"]["thdi"] = metrics.thdi;
       }
 #endif
 

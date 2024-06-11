@@ -10,7 +10,7 @@
 namespace Mycila {
   class ZeroCrossDetectionClass {
     public:
-      void begin(const int8_t pin, const uint8_t frequency = 50);
+      void begin(const int8_t pin, const uint8_t frequency);
       void end();
 
       bool isEnabled() const { return _enabled; }

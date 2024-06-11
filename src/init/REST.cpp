@@ -315,13 +315,19 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
+      Mycila::GridMetrics gridMetrics;
+      grid.getMetrics(gridMetrics);
+
+      Mycila::RouterMetrics routerMetrics;
+      router.getMetrics(routerMetrics);
+
       root["lights"] = lights.toString();
       root["temperature"] = ds18Sys.getLastTemperature();
-      root["energy"] = router.getEnergy();
-      root["power"] = router.getActivePower();
-      root["power_factor"] = router.getPowerFactor();
-      root["thdi"] = router.getTHDi();
-      root["virtual_grid_power"] = grid.getActivePower() - router.getActivePower();
+      root["energy"] = routerMetrics.energy;
+      root["power"] = routerMetrics.power;
+      root["power_factor"] = routerMetrics.powerFactor;
+      root["thdi"] = routerMetrics.thdi;
+      root["virtual_grid_power"] = gridMetrics.power - routerMetrics.power;
 
       root["relay1"]["state"] = YASOLR_STATE(relay1.isOn());
       root["relay1"]["switch_count"] = relay1.getSwitchCount();

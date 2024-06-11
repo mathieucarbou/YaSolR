@@ -12,7 +12,7 @@
   * Some LUT Graphs and stats:
     - https://docs.google.com/spreadsheets/d/1dCpAydu3WHekbXEdUZt53acCa6aSjtCBxW6lvv89Ku0/edit?usp=sharing
     - https://www.desmos.com/calculator/llwqitrjck
-  
+
   * LUT Generation can be done using the `generateLUT` method
 
   References:
@@ -46,7 +46,7 @@ namespace Mycila {
     public:
       ~Dimmer() { end(); }
 
-      void begin(const int8_t pin);
+      void begin(const int8_t pin, const uint8_t frequency);
       void end();
 
       void listen(DimmerLevelCallback callback) { _callback = callback; }
@@ -77,20 +77,21 @@ namespace Mycila {
       // Returns the dimmer phase angle in radians from 0 - PI.
       // At 0% power, the phase angle is equal to PI
       // At 100% power, the phase angle is equal to 0
-      float getPhaseAngle() const;
+      float getPhaseAngle() const { return _delayToPhaseAngle(_dimmer->getDelay(), _frequency); }
 
-      // Returns the dimmed RMS voltage based on the current phase angle.
-      // This is a theoretical value. In reality, the real Vrms value will be more or less depending on the hardware and software speed.
-      float getDimmedVoltage(float inputVrms) const;
+      // Returns the dimmed RMS voltage based on the current phase angle bewteen 0 and 1 to be multiplied with the voltage
+      float getVrms() const { return _vrms; }
 
       static void generateLUT(Print& out, size_t lutSize); // NOLINT
 
     private:
-      bool _enabled = false;
-      uint16_t _level = 0;
       gpio_num_t _pin = GPIO_NUM_NC;
+      uint8_t _frequency;
+      bool _enabled = false;
       DimmerLevelCallback _callback = nullptr;
       Thyristor* _dimmer = nullptr;
+      uint16_t _level = 0;
+      float _vrms = 0;
 
     private:
       static float _delayToPhaseAngle(uint16_t delay, float frequency);
@@ -101,6 +102,6 @@ namespace Mycila {
       // Can be implemented using algorithm or LUT table
       static uint16_t _lookupFiringDelay(uint8_t level, float frequency);
       // Can be implemented using algorithm or LUT table
-      static float _lookupVrmsFactor(uint8_t level, float frequency);
+      static float _lookupVrms(uint8_t level, float frequency);
   };
 } // namespace Mycila

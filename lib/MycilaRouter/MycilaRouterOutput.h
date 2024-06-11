@@ -6,6 +6,7 @@
 
 #include <MycilaDS18.h>
 #include <MycilaDimmer.h>
+#include <MycilaGrid.h>
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
 
@@ -27,6 +28,19 @@ namespace Mycila {
     OUTPUT_BYPASS_AUTO
   };
 
+  typedef struct {
+      bool connected = false;
+      float apparentPower = 0;
+      float current = 0;
+      float dimmedVoltage = 0;
+      float energy = 0;
+      float power = 0;
+      float powerFactor = 0;
+      float resistance = 0;
+      float thdi = 0;
+      float voltage = 0;
+  } RouterOutputMetrics;
+
   typedef std::function<void()> RouterOutputStateCallback;
 
   class RouterOutput {
@@ -42,23 +56,28 @@ namespace Mycila {
           String weekDays;
       } Config;
 
-      RouterOutput(const char* name, Dimmer& dimmer, DS18& temperatureSensor, Relay& relay, PZEM& pzem) : _name(name),
-                                                                                                          _dimmer(&dimmer),
-                                                                                                          _temperatureSensor(&temperatureSensor),
-                                                                                                          _relay(&relay),
-                                                                                                          _pzem(&pzem) {}
+      RouterOutput(const char* name,
+                   Dimmer& dimmer,
+                   Relay& relay,
+                   DS18& temperatureSensor,
+                   Grid& grid,
+                   PZEM& pzem) : _name(name),
+                                 _dimmer(&dimmer),
+                                 _relay(&relay),
+                                 _temperatureSensor(&temperatureSensor),
+                                 _grid(&grid),
+                                 _pzem(&pzem) {}
       // output
 
       RouterOutputState getState() const {
         if (!_dimmer->isEnabled() && !_relay->isEnabled())
           return RouterOutputState::OUTPUT_DISABLED;
-        if (_dimmer->getLevel() > 0)
-          return RouterOutputState::OUTPUT_ROUTING;
-        // dimmer level is 0
         if (_autoBypassEnabled)
           return RouterOutputState::OUTPUT_BYPASS_AUTO;
-        if (_relay->isOn())
+        if (_bypassEnabled)
           return RouterOutputState::OUTPUT_BYPASS_MANUAL;
+        if (_dimmer->getLevel() > 0)
+          return RouterOutputState::OUTPUT_ROUTING;
         return RouterOutputState::OUTPUT_IDLE;
       }
       const char* getStateName() const;
@@ -68,17 +87,20 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
-        root["apparent_power"] = getApparentPower();
-        root["current"] = getCurrent();
-        root["enabled"] = _dimmer->isEnabled();
-        root["energy"] = getEnergy();
-        root["power_factor"] = getPowerFactor();
-        root["power"] = getActivePower();
-        root["resistance"] = getResistance();
+        RouterOutputMetrics metrics;
+        getMetrics(metrics);
+        root["enabled"] = isEnabled();
+        root["online"] = metrics.connected;
         root["state"] = getStateName();
-        root["thdi"] = getTHDi();
-        root["voltage_dimmed"] = getDimmedVoltage();
-        root["voltage"] = getVoltage();
+        root["metrics"]["apparent_power"] = metrics.apparentPower;
+        root["metrics"]["current"] = metrics.current;
+        root["metrics"]["energy"] = metrics.energy;
+        root["metrics"]["power"] = metrics.power;
+        root["metrics"]["power_factor"] = metrics.powerFactor;
+        root["metrics"]["resistance"] = metrics.resistance;
+        root["metrics"]["thdi"] = metrics.thdi;
+        root["metrics"]["voltage"] = metrics.voltage;
+        root["metrics"]["voltage_dimmed"] = metrics.dimmedVoltage;
       }
 #endif
 
@@ -98,35 +120,54 @@ namespace Mycila {
       bool tryBypassState(bool state);
       void applyAutoBypass();
 
-      // electricity settings
-
-      bool hasMetrics() const { return _pzem->isConnected(); }
-      float getDimmedVoltage() const { return _dimmer->getDimmedVoltage(getVoltage()); }
-      float getResistance() const {
-        // R = U / I
-        float i = getCurrent();
-        return i == 0 ? 0 : getDimmedVoltage() / i;
-      }
-
       // metrics
 
-      float getEnergy() const { return _pzem->getEnergy(); }
-      float getVoltage() const { return _pzem->getVoltage(); }
-      float getCurrent() const { return _pzem->getCurrent(); }
-      float getActivePower() const { return _pzem->getPower(); }
-      // float getActivePower() const { return getDimmedVoltage() * getCurrent(); }
-      float getApparentPower() const { return _pzem->getApparentPower(); }
-      // float getApparentPower() const { return getVoltage() * getCurrent(); }
-      float getPowerFactor() const { return _pzem->getPowerFactor(); }
-      // float getPowerFactor() const { return getActivePower() / getApparentPower(); }
-      float getTHDi() const { return _pzem->getTHDi(0); }
-      // float getTHDi() const {
-      //   // https://fr.electrical-installation.org/frwiki/Indicateur_de_distorsion_harmonique_:_facteur_de_puissance
-      //   // https://www.salicru.com/files/pagina/72/278/jn004a01_whitepaper-armonics_(1).pdf
-      //   // For a resistive load, phi = 0 (no displacement between voltage and current)
-      //   float pf = getPowerFactor();
-      //   return pf == 0 ? 0 : sqrt(1 / pow(pf, 2) - 1);
-      // }
+      float getPower() const {
+        if (getState() != RouterOutputState::OUTPUT_ROUTING)
+          return 0;
+
+        if (_pzem->isConnected())
+          return _pzem->getPower();
+
+        GridMetrics gridMetrics;
+        _grid->getMetrics(gridMetrics);
+        float dimmedVoltage = gridMetrics.voltage * _dimmer->getVrms();
+        float resistance = 0; // TODO: calibrate R
+        return resistance == 0 ? 0 : dimmedVoltage * dimmedVoltage / resistance;
+      }
+
+      void getMetrics(RouterOutputMetrics& metrics) const {
+        if (_pzem->isConnected()) {
+          metrics.connected = _pzem->isConnected();
+          metrics.voltage = _pzem->getVoltage();
+          metrics.energy = _pzem->getEnergy();
+          if (getState() == RouterOutputState::OUTPUT_ROUTING) {
+            metrics.dimmedVoltage = metrics.voltage * _dimmer->getVrms();
+            metrics.current = _pzem->getCurrent();
+            metrics.resistance = metrics.current == 0 ? 0 : metrics.dimmedVoltage / metrics.current;
+            metrics.apparentPower = _pzem->getApparentPower();
+            metrics.power = _pzem->getPower();
+            metrics.powerFactor = _pzem->getPowerFactor();
+            metrics.thdi = _pzem->getTHDi(0);
+          }
+
+        } else {
+          GridMetrics gridMetrics;
+          _grid->getMetrics(gridMetrics);
+          metrics.connected = gridMetrics.connected;
+          metrics.voltage = gridMetrics.voltage;
+          metrics.resistance = 0;              // TODO: calibrate R
+          metrics.energy = _pzem->getEnergy(); // just in case we have it...
+          if (getState() == RouterOutputState::OUTPUT_ROUTING) {
+            metrics.dimmedVoltage = metrics.voltage * _dimmer->getVrms();
+            metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
+            metrics.power = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage * metrics.dimmedVoltage / metrics.resistance;
+            metrics.apparentPower = metrics.voltage * metrics.current;
+            metrics.powerFactor = metrics.voltage == 0 ? 0 : metrics.dimmedVoltage / metrics.voltage;
+            metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
+          }
+        }
+      }
 
     public:
       Config config;
@@ -134,8 +175,9 @@ namespace Mycila {
     private:
       const char* _name;
       Dimmer* _dimmer;
-      Mycila::DS18* _temperatureSensor;
       Relay* _relay;
+      Mycila::DS18* _temperatureSensor;
+      Grid* _grid;
       PZEM* _pzem;
       bool _autoBypassEnabled = false;
       bool _bypassEnabled = false;
