@@ -24,6 +24,7 @@ Mycila::Relay bypassRelayO2;
 Mycila::Relay relay1;
 Mycila::Relay relay2;
 Mycila::TrafficLight lights;
+Mycila::ZCD zcd;
 
 Mycila::TaskManager ioTaskManager("I/O");
 Mycila::TaskManager jsyTaskManager("JSY");
@@ -62,10 +63,6 @@ void setup() {
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
-
-#ifdef YASOLR_DEBUG
-  Mycila::Dimmer::generateLUT(Serial, 255);
-#endif
 }
 
 // Destroy default Arduino async task

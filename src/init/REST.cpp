@@ -19,28 +19,16 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      grid.toJson(root["grid"].to<JsonObject>());
-      Mycila::ZCD.toJson(root["zcd"].to<JsonObject>());
+      zcd.toJson(root["zcd"].to<JsonObject>());
       jsy.toJson(root["jsy"].to<JsonObject>());
-
+      pzemO1.toJson(root["pzem1"].to<JsonObject>());
+      pzemO2.toJson(root["pzem2"].to<JsonObject>());
+      ds18Sys.toJson(root["ds18Sys"].to<JsonObject>());
+      lights.toJson(root["leds"].to<JsonObject>());
+      grid.toJson(root["grid"].to<JsonObject>());
       router.toJson(root["router"].to<JsonObject>());
-
-      output1.toJson(root["router"]["output1"].to<JsonObject>());
-      dimmerO1.toJson(root["router"]["output1"]["dimmer"].to<JsonObject>());
-      pzemO1.toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
-      bypassRelayO1.toJson(root["router"]["output1"]["relay"].to<JsonObject>());
-      ds18O1.toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
-
-      output2.toJson(root["router"]["output2"].to<JsonObject>());
-      dimmerO2.toJson(root["router"]["output2"]["dimmer"].to<JsonObject>());
-      pzemO2.toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
-      bypassRelayO2.toJson(root["router"]["output2"]["relay"].to<JsonObject>());
-      ds18O2.toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
-
-      relay1.toJson(root["router"]["relay1"].to<JsonObject>());
-      relay2.toJson(root["router"]["relay2"].to<JsonObject>());
-
-      ds18Sys.toJson(root["ds18"]["router"].to<JsonObject>());
+      relay1.toJson(root["relay1"].to<JsonObject>());
+      relay2.toJson(root["relay2"].to<JsonObject>());
 
       Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
 
@@ -228,7 +216,18 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   webServer
     .on("/api/grid", HTTP_GET, [](AsyncWebServerRequest* request) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
-      grid.toJson(response->getRoot());
+      JsonObject root = response->getRoot();
+      Mycila::GridMetrics metrics;
+      grid.getMetrics(metrics);
+      root["apparent_power"] = metrics.apparentPower;
+      root["current"] = metrics.current;
+      root["energy"] = metrics.energy;
+      root["energy_returned"] = metrics.energyReturned;
+      root["frequency"] = metrics.frequency;
+      root["online"] = metrics.connected;
+      root["power"] = metrics.power;
+      root["power_factor"] = metrics.powerFactor;
+      root["voltage"] = metrics.voltage;
       response->setLength();
       request->send(response);
     })
@@ -268,16 +267,20 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/router/output1/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (request->hasParam("level", true))
-        output1.tryDimmerLevel(request->getParam("level", true)->value().toInt());
+      if (request->hasParam("duty", true))
+        output1.tryDimmerDuty(request->getParam("level", true)->value().toInt());
+      else if (request->hasParam("duty_cycle", true))
+        output1.tryDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
       request->send(200);
     })
     .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
 
   webServer
     .on("/api/router/output2/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (request->hasParam("level", true))
-        output2.tryDimmerLevel(request->getParam("level", true)->value().toInt());
+      if (request->hasParam("duty", true))
+        output2.tryDimmerDuty(request->getParam("level", true)->value().toInt());
+      else if (request->hasParam("duty_cycle", true))
+        output2.tryDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
       request->send(200);
     })
     .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
@@ -315,39 +318,51 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
+      root["lights"] = lights.toString();
+      root["virtual_grid_power"] = grid.getPower() - root["metrics"]["power"].as<float>();
+
       Mycila::GridMetrics gridMetrics;
       grid.getMetrics(gridMetrics);
 
       Mycila::RouterMetrics routerMetrics;
       router.getMetrics(routerMetrics);
 
-      root["lights"] = lights.toString();
-      root["temperature"] = ds18Sys.getLastTemperature();
       root["energy"] = routerMetrics.energy;
+      root["lights"] = lights.toString();
       root["power"] = routerMetrics.power;
       root["power_factor"] = routerMetrics.powerFactor;
-      root["thdi"] = routerMetrics.thdi;
+      root["temperature"] = ds18Sys.getLastTemperature();
       root["virtual_grid_power"] = gridMetrics.power - routerMetrics.power;
+
+      for (const auto& output : router.getOutputs()) {
+        JsonObject json = root[output->getName()].to<JsonObject>();
+        json["bypass"] = YASOLR_STATE(output->isBypassOn());
+        json["state"] = output->getStateName();
+        json["temperature"] = ds18O1.getLastTemperature();
+
+        json["dimmer"]["duty"] = dimmerO1.getPowerDuty();
+        json["dimmer"]["duty_cycle"] = dimmerO1.getPowerDutyCycle() * 100;
+        json["dimmer"]["state"] = YASOLR_STATE(dimmerO1.isOn());
+
+        Mycila::RouterOutputMetrics metrics;
+        output->getMetrics(metrics);
+        json["metrics"]["apparent_power"] = metrics.apparentPower;
+        json["metrics"]["current"] = metrics.current;
+        json["metrics"]["energy"] = metrics.energy;
+        json["metrics"]["power"] = metrics.power;
+        json["metrics"]["power_factor"] = metrics.powerFactor;
+        json["metrics"]["resistance"] = metrics.resistance;
+        json["metrics"]["voltage_dimmed"] = metrics.dimmedVoltage;
+
+        json["relay"]["state"] = YASOLR_STATE(bypassRelayO1.isOn());
+        json["relay"]["switch_count"] = bypassRelayO1.getSwitchCount();
+      }
 
       root["relay1"]["state"] = YASOLR_STATE(relay1.isOn());
       root["relay1"]["switch_count"] = relay1.getSwitchCount();
 
       root["relay2"]["state"] = YASOLR_STATE(relay2.isOn());
       root["relay2"]["switch_count"] = relay2.getSwitchCount();
-
-      root["output1"]["bypass"] = YASOLR_STATE(output1.isBypassOn());
-      root["output1"]["temperature"] = ds18O1.getLastTemperature();
-      root["output1"]["dimmer"]["level"] = dimmerO1.getLevel();
-      root["output1"]["dimmer"]["state"] = YASOLR_STATE(dimmerO1.isOn());
-      root["output1"]["relay"]["state"] = YASOLR_STATE(bypassRelayO1.isOn());
-      root["output1"]["relay"]["switch_count"] = bypassRelayO1.getSwitchCount();
-
-      root["output2"]["bypass"] = YASOLR_STATE(output2.isBypassOn());
-      root["output2"]["temperature"] = ds18O2.getLastTemperature();
-      root["output2"]["dimmer"]["level"] = dimmerO2.getLevel();
-      root["output2"]["dimmer"]["state"] = YASOLR_STATE(dimmerO2.isOn());
-      root["output2"]["relay"]["state"] = YASOLR_STATE(bypassRelayO2.isOn());
-      root["output2"]["relay"]["switch_count"] = bypassRelayO2.getSwitchCount();
 
       response->setLength();
       request->send(response);

@@ -68,14 +68,16 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
   haDiscovery.publish(Mycila::HACounter("relay2_switch_count", "Relay 2 Switch Count", "/router/relay2/switch_count", nullptr, "mdi:counter"));
   haDiscovery.publish(Mycila::HAOutlet("relay2", "Relay 2", "/router/relay2/state/set", "/router/relay2/state", YASOLR_ON, YASOLR_OFF));
 
+  haDiscovery.publish(Mycila::HAText("output1_state", "Output 1", "/router/output1/state"));
   haDiscovery.publish(Mycila::HAState("output1_bypass", "Output 1 Bypass", "/router/output1/bypass", YASOLR_ON, YASOLR_OFF, "running"));
-  haDiscovery.publish(Mycila::HANumber("output1_dimmer_level", "Output 1 Dimmer Level", "/router/output1/dimmer/level/set", "/router/output1/dimmer/level", Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:water-boiler"));
+  haDiscovery.publish(Mycila::HANumber("output1_dimmer_duty", "Output 1 Dimmer Duty", "/router/output1/dimmer/duty/set", "/router/output1/dimmer/duty", Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:water-boiler"));
   haDiscovery.publish(Mycila::HACounter("output1_relay_switch_count", "Output 1 Bypass Relay Switch Count", "/router/output1/relay/switch_count", nullptr, "mdi:counter"));
   haDiscovery.publish(Mycila::HAOutlet("output1_relay", "Output 1 Bypass", "/router/output1/bypass/set", "/router/output1/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery.publish(Mycila::HAGauge("output1_temperature", "Output 1 Temperature", "/router/output1/temperature", "temperature", "mdi:thermometer", "°C"));
 
+  haDiscovery.publish(Mycila::HAText("output2_state", "Output 2", "/router/output2/state"));
   haDiscovery.publish(Mycila::HAState("output2_bypass", "Output 2 Bypass", "/router/output2/bypass", YASOLR_ON, YASOLR_OFF, "running"));
-  haDiscovery.publish(Mycila::HANumber("output2_dimmer_level", "Output 2 Dimmer Level", "/router/output2/dimmer/level/set", "/router/output2/dimmer/level", Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:water-boiler"));
+  haDiscovery.publish(Mycila::HANumber("output2_dimmer_duty", "Output 2 Dimmer Duty", "/router/output2/dimmer/duty/set", "/router/output2/dimmer/duty", Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:water-boiler"));
   haDiscovery.publish(Mycila::HACounter("output2_relay_switch_count", "Output 2 Bypass Relay Switch Count", "/router/output2/relay/switch_count", nullptr, "mdi:counter"));
   haDiscovery.publish(Mycila::HAOutlet("output2_relay", "Output 2 Bypass", "/router/output2/bypass/set", "/router/output2/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery.publish(Mycila::HAGauge("output2_temperature", "Output 2 Temperature", "/router/output2/temperature", "temperature", "mdi:thermometer", "°C"));

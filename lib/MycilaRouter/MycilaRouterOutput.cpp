@@ -28,7 +28,7 @@ static const char* RouterOutputStateNames[] = {
   "Idle",
   "Routing",
   "Bypass",
-  "Bypass Auto",
+  "Auto Bypass",
 };
 
 static const char* DaysOfWeek[] = {"sun", "mon", "tue", "wed", "thu", "fri", "sat"};
@@ -37,7 +37,7 @@ const char* Mycila::RouterOutput::getStateName() const { return RouterOutputStat
 
 // dimmer
 
-bool Mycila::RouterOutput::tryDimmerLevel(uint16_t level) {
+bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
   if (!_dimmer->isEnabled())
     return false;
 
@@ -51,12 +51,12 @@ bool Mycila::RouterOutput::tryDimmerLevel(uint16_t level) {
     return false;
   }
 
-  if (level > config.dimmerLimit) {
-    level = config.dimmerLimit;
+  if (duty > config.dimmerLimit) {
+    duty = config.dimmerLimit;
   }
 
-  LOGD(TAG, "Setting Dimmer '%s' level to %" PRIu16 "...", _name, level);
-  _setBypass(false, level);
+  LOGD(TAG, "Setting Dimmer '%s' duty to %" PRIu16 "...", _name, duty);
+  _setBypass(false, duty);
   return true;
 }
 
@@ -69,9 +69,9 @@ void Mycila::RouterOutput::applyDimmerLimit() {
     return;
   if (_dimmer->isOff())
     return;
-  if (_dimmer->getLevel() > config.dimmerLimit) {
+  if (_dimmer->getPowerDuty() > config.dimmerLimit) {
     LOGW(TAG, "Dimmer '%s' reached its limit at %" PRIu16, _name, config.dimmerLimit);
-    _dimmer->setLevel(config.dimmerLimit);
+    _dimmer->setPowerDuty(config.dimmerLimit);
   }
 }
 
@@ -203,7 +203,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
   _setBypass(true);
 }
 
-void Mycila::RouterOutput::_setBypass(bool state, uint16_t dimmerLevelWhenRelayOff) {
+void Mycila::RouterOutput::_setBypass(bool state, uint16_t dimmerDutyWhenRelayOff) {
   if (_relay->isEnabled()) {
     if (state)
       _dimmer->off();
@@ -212,10 +212,10 @@ void Mycila::RouterOutput::_setBypass(bool state, uint16_t dimmerLevelWhenRelayO
       _relay->setState(state);
     }
     if (!state)
-      _dimmer->setLevel(dimmerLevelWhenRelayOff);
+      _dimmer->setPowerDuty(dimmerDutyWhenRelayOff);
   } else {
     LOGD(TAG, "Turning %s Dimmer '%s'...", state ? "on" : "off", _name);
-    _dimmer->setLevel(state ? MYCILA_DIMMER_MAX_LEVEL : dimmerLevelWhenRelayOff);
-    _bypassEnabled = state;
+    _dimmer->setPowerDuty(state ? MYCILA_DIMMER_MAX_LEVEL : dimmerDutyWhenRelayOff);
   }
+  _bypassEnabled = state;
 }

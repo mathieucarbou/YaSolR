@@ -4,27 +4,6 @@
  */
 #pragma once
 
-/*
-  Dimmer library for ESP32, based on Dimmable Light library (https://github.com/fabianoriccardi/dimmable-light/).
-
-  This library supports multiple implementations and LUT table to speed up the computation of phase angle, firing delay and RMS voltage.
-
-  * Some LUT Graphs and stats:
-    - https://docs.google.com/spreadsheets/d/1dCpAydu3WHekbXEdUZt53acCa6aSjtCBxW6lvv89Ku0/edit?usp=sharing
-    - https://www.desmos.com/calculator/llwqitrjck
-
-  * LUT Generation can be done using the `generateLUT` method
-
-  References:
-  * https://electronics.stackexchange.com/questions/414370/calculate-angle-for-triac-phase-control
-  * https://www.quora.com/How-do-you-calculate-the-phase-angle-from-time-delay
-  * https://www.physicsforums.com/threads/how-to-calculate-rms-voltage-from-triac-phase-angle.572668/
-  * https://github.com/fabianoriccardi/dimmable-light/blob/main/src/dimmable_light.h
-  * https://github.com/fabianoriccardi/dimmable-light/blob/main/src/dimmable_light_linearized.h
-  * https://www.quora.com/How-can-I-calculate-this-question-A-10-ohm-load-is-connected-through-a-half-wave-S-C-R-circuit-to-220v-50Hz-single-phase-source-calculate-power-delivered-to-the-load-for-firing-angle-of-60-and-the-power-of-input/answer/Arivayutham-Periasamy
-  * https://electronics.stackexchange.com/questions/225875/triac-firing-angle-vs-power-delivered-to-load-how-calculate
-*/
-
 #include <ArduinoJson.h>
 #include <WString.h>
 #include <esp32-hal-gpio.h>
@@ -32,15 +11,15 @@
 
 #include <functional>
 
-// Dimmer goes from 0 to 10000
-#define MYCILA_DIMMER_MAX_LEVEL 10000
+#define MYCILA_DIMMER_RESOLUTION 12   // bits
+#define MYCILA_DIMMER_MAX_LEVEL  4095 // ((1 << MYCILA_DIMMER_RESOLUTION) - 1)
 
 namespace Mycila {
-  enum class DimmerLevel { OFF,
+  enum class DimmerState { OFF,
                            FULL,
                            DIM };
 
-  typedef std::function<void(DimmerLevel event)> DimmerLevelCallback;
+  typedef std::function<void(DimmerState event)> DimmerStateCallback;
 
   class Dimmer {
     public:
@@ -49,59 +28,57 @@ namespace Mycila {
       void begin(const int8_t pin, const uint8_t frequency);
       void end();
 
-      void listen(DimmerLevelCallback callback) { _callback = callback; }
+      void listen(DimmerStateCallback callback) { _callback = callback; }
 
-      void off() { setLevel(0); }
-      bool isOff() const { return _level == 0; }
-      bool isOn() const { return _level > 0; }
-      bool isOnAtFullPower() const { return _level >= MYCILA_DIMMER_MAX_LEVEL; }
+      void off() { setPowerDuty(0); }
+      bool isOff() const { return _duty == 0; }
+      bool isOn() const { return _duty > 0; }
+      bool isOnAtFullPower() const { return _duty >= MYCILA_DIMMER_MAX_LEVEL; }
 
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
 
-      void toJson(const JsonObject& root) const;
+      void toJson(const JsonObject& root) const {
+        const float angle = getPhaseAngle();
+        root["angle"] = angle;
+        root["angle_d"] = angle * RAD_TO_DEG;
+        root["delay"] = getFiringDelay();
+        root["duty"] = _duty;
+        root["duty_cycle"] = getPowerDutyCycle();
+        root["enabled"] = _enabled;
+        root["state"] = _duty > 0 ? "on" : "off";
+      }
 
-      // Returns the dimmer level: 0 - MYCILA_DIMMER_MAX_LEVEL
-      uint16_t getLevel() const { return _level; }
+      // Power Duty Cycle [0, MYCILA_DIMMER_MAX_LEVEL]
+      void setPowerDuty(uint16_t duty);
+      uint16_t getPowerDuty() const { return _duty; }
 
-      // Set dimmer level: 0 - MYCILA_DIMMER_MAX_LEVEL
-      // Depending on the implementation, this can be a linear or non-linear dimming curve
-      // Example: Whether 50% means 50% power or 50% of the firing delay is implementation dependent
-      void setLevel(uint16_t level);
+      // Power Duty Cycle [0, 1]
+      // At 0% power, duty == 0
+      // At 100% power, duty == 1
+      void setPowerDutyCycle(float dutyCycle) { setPowerDuty(dutyCycle * MYCILA_DIMMER_MAX_LEVEL); }
+      float getPowerDutyCycle() const { return static_cast<float>(_duty) / MYCILA_DIMMER_MAX_LEVEL; }
 
-      // Returns the current dimmer firing delay in microseconds
-      // At 0% power, the firing delay is equal to the semi-period (i.e. 10000 us for 50Hz, 8333 us for 60Hz)
-      // At 100% power, the firing delay is 0 us
+      // Delay [0, semi-period] us
+      // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
+      // At 0% power, delay is equal to the semi-period
+      // At 100% power, the delay is 0 us
       uint16_t getFiringDelay() const { return _dimmer->getDelay(); }
 
-      // Returns the dimmer phase angle in radians from 0 - PI.
+      // Phase angle [0, PI] rad
       // At 0% power, the phase angle is equal to PI
       // At 100% power, the phase angle is equal to 0
-      float getPhaseAngle() const { return _delayToPhaseAngle(_dimmer->getDelay(), _frequency); }
-
-      // Returns the dimmed RMS voltage based on the current phase angle bewteen 0 and 1 to be multiplied with the voltage
-      float getVrms() const { return _vrms; }
-
-      static void generateLUT(Print& out, size_t lutSize); // NOLINT
+      float getPhaseAngle() const {
+        // angle_rad = PI * delay_s / period_s
+        return getFiringDelay() * _frequency * TWO_PI / 1000000;
+      }
 
     private:
       gpio_num_t _pin = GPIO_NUM_NC;
-      uint8_t _frequency;
+      float _frequency;
       bool _enabled = false;
-      DimmerLevelCallback _callback = nullptr;
+      DimmerStateCallback _callback = nullptr;
       Thyristor* _dimmer = nullptr;
-      uint16_t _level = 0;
-      float _vrms = 0;
-
-    private:
-      static float _delayToPhaseAngle(uint16_t delay, float frequency);
-      static uint16_t _phaseAngleToDelay(float angle, float frequency);
-      static float _vrmsFactor(float angle);
-
-    private:
-      // Can be implemented using algorithm or LUT table
-      static uint16_t _lookupFiringDelay(uint8_t level, float frequency);
-      // Can be implemented using algorithm or LUT table
-      static float _lookupVrms(uint8_t level, float frequency);
+      uint16_t _duty = 0;
   };
 } // namespace Mycila

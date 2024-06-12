@@ -92,10 +92,10 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // Electricity: ZCD
   const uint8_t frequency = config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50;
   if (config.getBool(KEY_ENABLE_ZCD))
-    Mycila::ZCD.begin(config.get(KEY_PIN_ZCD).toInt(), frequency);
+    zcd.begin(config.get(KEY_PIN_ZCD).toInt(), frequency);
 
   // Electricity: Dimmers
-  if (Mycila::ZCD.isEnabled()) {
+  if (zcd.isEnabled()) {
     if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
       dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), frequency);
     if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))

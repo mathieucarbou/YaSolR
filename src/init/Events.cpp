@@ -161,16 +161,16 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     restartTask.resume();
   });
 
-  dimmerO1.listen([](Mycila::DimmerLevel event) {
+  dimmerO1.listen([](Mycila::DimmerState event) {
     mqttPublishTask.requestEarlyRun();
     switch (event) {
-      case Mycila::DimmerLevel::OFF:
+      case Mycila::DimmerState::OFF:
         logger.debug(TAG, "Output 1 Dimmer: turned off");
         break;
-      case Mycila::DimmerLevel::FULL:
+      case Mycila::DimmerState::FULL:
         logger.debug(TAG, "Output 1 Dimmer: at full power");
         break;
-      case Mycila::DimmerLevel::DIM:
+      case Mycila::DimmerState::DIM:
         logger.debug(TAG, "Output 1 Dimmer: dimming");
         break;
       default:
@@ -179,16 +179,16 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
   });
 
-  dimmerO2.listen([](Mycila::DimmerLevel event) {
+  dimmerO2.listen([](Mycila::DimmerState event) {
     mqttPublishTask.requestEarlyRun();
     switch (event) {
-      case Mycila::DimmerLevel::OFF:
+      case Mycila::DimmerState::OFF:
         logger.debug(TAG, "Output 2 dimmer: turned off");
         break;
-      case Mycila::DimmerLevel::FULL:
+      case Mycila::DimmerState::FULL:
         logger.debug(TAG, "Output 2 dimmer: at full power");
         break;
-      case Mycila::DimmerLevel::DIM:
+      case Mycila::DimmerState::DIM:
         logger.debug(TAG, "Output 2 dimmer: dimming");
         break;
       default:

@@ -76,11 +76,12 @@ namespace Mycila {
           return RouterOutputState::OUTPUT_BYPASS_AUTO;
         if (_bypassEnabled)
           return RouterOutputState::OUTPUT_BYPASS_MANUAL;
-        if (_dimmer->getLevel() > 0)
+        if (_dimmer->getPowerDuty() > 0)
           return RouterOutputState::OUTPUT_ROUTING;
         return RouterOutputState::OUTPUT_IDLE;
       }
       const char* getStateName() const;
+      const char* getName() const { return _name; }
 
       bool isEnabled() const { return _dimmer->isEnabled(); }
       void listen(RouterOutputStateCallback callback) { _callback = callback; }
@@ -90,17 +91,44 @@ namespace Mycila {
         RouterOutputMetrics metrics;
         getMetrics(metrics);
         root["enabled"] = isEnabled();
-        root["online"] = metrics.connected;
         root["state"] = getStateName();
-        root["metrics"]["apparent_power"] = metrics.apparentPower;
-        root["metrics"]["current"] = metrics.current;
-        root["metrics"]["energy"] = metrics.energy;
-        root["metrics"]["power"] = metrics.power;
-        root["metrics"]["power_factor"] = metrics.powerFactor;
-        root["metrics"]["resistance"] = metrics.resistance;
-        root["metrics"]["thdi"] = metrics.thdi;
-        root["metrics"]["voltage"] = metrics.voltage;
-        root["metrics"]["voltage_dimmed"] = metrics.dimmedVoltage;
+        root["bypass"] = isBypassOn() ? "on" : "off";
+        root["online"] = metrics.connected;
+        _dimmer->toJson(root["dimmer"].to<JsonObject>());
+        _temperatureSensor->toJson(root["ds18"].to<JsonObject>());
+        JsonObject jsonMetrics = root["metrics"].to<JsonObject>();
+        jsonMetrics["apparent_power"] = metrics.apparentPower;
+        jsonMetrics["current"] = metrics.current;
+        jsonMetrics["energy"] = metrics.energy;
+        jsonMetrics["power"] = metrics.power;
+        jsonMetrics["power_factor"] = metrics.powerFactor;
+        jsonMetrics["resistance"] = metrics.resistance;
+        jsonMetrics["thdi"] = metrics.thdi;
+        jsonMetrics["voltage"] = metrics.voltage;
+        jsonMetrics["voltage_dimmed"] = metrics.dimmedVoltage;
+        RouterOutputMetrics metricsPZEM;
+        _getMetricsFromPZEM(metricsPZEM);
+        jsonMetrics["pzem"]["apparent_power"] = metricsPZEM.apparentPower;
+        jsonMetrics["pzem"]["current"] = metricsPZEM.current;
+        jsonMetrics["pzem"]["energy"] = metricsPZEM.energy;
+        jsonMetrics["pzem"]["power"] = metricsPZEM.power;
+        jsonMetrics["pzem"]["power_factor"] = metricsPZEM.powerFactor;
+        jsonMetrics["pzem"]["resistance"] = metricsPZEM.resistance;
+        jsonMetrics["pzem"]["thdi"] = metricsPZEM.thdi;
+        jsonMetrics["pzem"]["voltage"] = metricsPZEM.voltage;
+        jsonMetrics["pzem"]["voltage_dimmed"] = metricsPZEM.dimmedVoltage;
+        RouterOutputMetrics metricsDuty;
+        _getMetricsFromDuty(metricsDuty);
+        jsonMetrics["duty"]["apparent_power"] = metricsDuty.apparentPower;
+        jsonMetrics["duty"]["current"] = metricsDuty.current;
+        jsonMetrics["duty"]["energy"] = metricsDuty.energy;
+        jsonMetrics["duty"]["power"] = metricsDuty.power;
+        jsonMetrics["duty"]["power_factor"] = metricsDuty.powerFactor;
+        jsonMetrics["duty"]["resistance"] = metricsDuty.resistance;
+        jsonMetrics["duty"]["thdi"] = metricsDuty.thdi;
+        jsonMetrics["duty"]["voltage"] = metricsDuty.voltage;
+        jsonMetrics["duty"]["voltage_dimmed"] = metricsDuty.dimmedVoltage;
+        _relay->toJson(root["relay"].to<JsonObject>());
       }
 #endif
 
@@ -108,15 +136,20 @@ namespace Mycila {
 
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer; }
-      uint16_t getDimmerLevel() const { return _dimmer->getLevel(); }
-      bool tryDimmerLevel(uint16_t level);
+      uint16_t getDimmerDuty() const { return _dimmer->getPowerDuty(); }
+      // Power Duty Cycle [0, MYCILA_DIMMER_MAX_LEVEL]
+      bool tryDimmerDuty(uint16_t duty);
+      // Power Duty Cycle [0, 1]
+      // At 0% power, duty == 0
+      // At 100% power, duty == 1
+      void tryDimmerDutyCycle(float dutyCycle) { tryDimmerDuty(dutyCycle * MYCILA_DIMMER_MAX_LEVEL); }
       void applyDimmerLimit();
 
       // bypass
 
       bool isBypassEnabled() const { return _relay->isEnabled() || _dimmer->isEnabled(); }
       bool isAutoBypassEnabled() const { return isBypassEnabled() && config.autoBypass; }
-      bool isBypassOn() const { return _relay->isEnabled() ? _relay->isOn() : _bypassEnabled; }
+      bool isBypassOn() const { return _bypassEnabled; }
       bool tryBypassState(bool state);
       void applyAutoBypass();
 
@@ -129,44 +162,20 @@ namespace Mycila {
         if (_pzem->isConnected())
           return _pzem->getPower();
 
-        GridMetrics gridMetrics;
-        _grid->getMetrics(gridMetrics);
-        float dimmedVoltage = gridMetrics.voltage * _dimmer->getVrms();
-        float resistance = 0; // TODO: calibrate R
-        return resistance == 0 ? 0 : dimmedVoltage * dimmedVoltage / resistance;
+        // TODO: calibrate R
+        // float resistance = 0;
+        float resistance = _pzem->getCurrent() == 0 ? 0 : sqrt(_dimmer->getPowerDutyCycle()) * _grid->getVoltage() / _pzem->getCurrent();
+        float voltage = _grid->getVoltage();
+        float nominalPower = voltage * voltage / resistance;
+        float dutyCycle = _dimmer->getPowerDutyCycle();
+        return dutyCycle * nominalPower;
       }
 
       void getMetrics(RouterOutputMetrics& metrics) const {
-        if (_pzem->isConnected()) {
-          metrics.connected = _pzem->isConnected();
-          metrics.voltage = _pzem->getVoltage();
-          metrics.energy = _pzem->getEnergy();
-          if (getState() == RouterOutputState::OUTPUT_ROUTING) {
-            metrics.dimmedVoltage = metrics.voltage * _dimmer->getVrms();
-            metrics.current = _pzem->getCurrent();
-            metrics.resistance = metrics.current == 0 ? 0 : metrics.dimmedVoltage / metrics.current;
-            metrics.apparentPower = _pzem->getApparentPower();
-            metrics.power = _pzem->getPower();
-            metrics.powerFactor = _pzem->getPowerFactor();
-            metrics.thdi = _pzem->getTHDi(0);
-          }
-
-        } else {
-          GridMetrics gridMetrics;
-          _grid->getMetrics(gridMetrics);
-          metrics.connected = gridMetrics.connected;
-          metrics.voltage = gridMetrics.voltage;
-          metrics.resistance = 0;              // TODO: calibrate R
-          metrics.energy = _pzem->getEnergy(); // just in case we have it...
-          if (getState() == RouterOutputState::OUTPUT_ROUTING) {
-            metrics.dimmedVoltage = metrics.voltage * _dimmer->getVrms();
-            metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
-            metrics.power = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage * metrics.dimmedVoltage / metrics.resistance;
-            metrics.apparentPower = metrics.voltage * metrics.current;
-            metrics.powerFactor = metrics.voltage == 0 ? 0 : metrics.dimmedVoltage / metrics.voltage;
-            metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
-          }
-        }
+        if (_pzem->isConnected())
+          _getMetricsFromPZEM(metrics);
+        else
+          _getMetricsFromDuty(metrics);
       }
 
     public:
@@ -183,7 +192,41 @@ namespace Mycila {
       bool _bypassEnabled = false;
       RouterOutputStateCallback _callback = nullptr;
 
+      void _getMetricsFromPZEM(RouterOutputMetrics& metrics) const {
+        metrics.connected = _pzem->isConnected();
+        metrics.voltage = _pzem->getVoltage();
+        metrics.energy = _pzem->getEnergy();
+        if (getState() == RouterOutputState::OUTPUT_ROUTING) {
+          metrics.apparentPower = _pzem->getApparentPower();
+          metrics.current = _pzem->getCurrent();
+          metrics.power = _pzem->getPower();
+          metrics.powerFactor = _pzem->getPowerFactor();
+          metrics.thdi = _pzem->getTHDi(0);
+          metrics.dimmedVoltage = metrics.power / metrics.current;
+          metrics.resistance = metrics.current == 0 ? 0 : metrics.dimmedVoltage / metrics.current;
+        }
+      }
+
+      void _getMetricsFromDuty(RouterOutputMetrics& metrics) const {
+        metrics.connected = true;
+        metrics.voltage = _grid->getVoltage();
+        metrics.energy = _pzem->getEnergy();
+        // TODO: calibrate R
+        // metrics.resistance = 0;
+        metrics.resistance = _pzem->getCurrent() == 0 ? 0 : sqrt(_dimmer->getPowerDutyCycle()) * _grid->getVoltage() / _pzem->getCurrent();
+        if (getState() == RouterOutputState::OUTPUT_ROUTING) {
+          float dutyCycle = _dimmer->getPowerDutyCycle();
+          float nominalPower = metrics.voltage * metrics.voltage / metrics.resistance;
+          metrics.powerFactor = sqrt(dutyCycle);
+          metrics.power = dutyCycle * nominalPower;
+          metrics.apparentPower = metrics.powerFactor * nominalPower;
+          metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
+          metrics.current = metrics.dimmedVoltage / metrics.resistance;
+          metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
+        }
+      }
+
     private:
-      void _setBypass(bool state, uint16_t dimmerLevelWhenRelayOff = 0);
+      void _setBypass(bool state, uint16_t dimmerDutyWhenRelayOff = 0);
   };
 } // namespace Mycila

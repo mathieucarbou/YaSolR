@@ -5,7 +5,6 @@
 #pragma once
 
 #include <MycilaJSY.h>
-#include <thyristor.h>
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
@@ -54,16 +53,20 @@ namespace Mycila {
 
       float getPower() const { return _mqttPowerTime ? _mqttPower : _jsy->getPower2(); }
 
+      float getVoltage() const { return _jsy->isConnected() ? _jsy->getVoltage2() : (_mqttVoltageTime && _mqttVoltage ? _mqttVoltage : 0); }
+
       void getMetrics(GridMetrics& metrics) const {
-        metrics.voltage = _jsy->isConnected() ? _jsy->getVoltage2() : (_mqttVoltageTime && _mqttVoltage ? _mqttVoltage : 0);
+        metrics.voltage = getVoltage();
+        metrics.power = getPower();
+
         metrics.apparentPower = _jsy->getApparentPower2();
-        metrics.connected = metrics.voltage > 0;
         metrics.current = _jsy->getCurrent2();
         metrics.energy = _jsy->getEnergy2();
         metrics.energyReturned = _jsy->getEnergyReturned2();
-        metrics.frequency = _jsy->isConnected() ? _jsy->getFrequency() : Thyristor::getDetectedFrequency();
-        metrics.power = _mqttPowerTime ? _mqttPower : _jsy->getPower2();
+        metrics.frequency = _jsy->getFrequency();
         metrics.powerFactor = _jsy->getPowerFactor2();
+
+        metrics.connected = metrics.voltage > 0;
       }
 
 #ifdef MYCILA_JSON_SUPPORT

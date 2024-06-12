@@ -8,23 +8,24 @@
 #include <esp32-hal-gpio.h>
 
 namespace Mycila {
-  class ZeroCrossDetectionClass {
+  class ZCD {
     public:
       void begin(const int8_t pin, const uint8_t frequency);
       void end();
 
       bool isEnabled() const { return _enabled; }
       gpio_num_t getPin() const { return _pin; }
-      // if activated, the monitored frequency based on zero-cross detection. Can be close to 50 or 60 Hz or more depending on the ZCD module.
-      float getFrequency() const;
-      bool isConnected() const { return getFrequency() > 0; }
 
-      void toJson(const JsonObject& root);
+      bool isConnected() const { return readFrequency() > 0; }
+      float readFrequency() const;
+
+      void toJson(const JsonObject& root) const {
+        root["enabled"] = _enabled;
+        root["frequency"] = readFrequency();
+      }
 
     private:
       bool _enabled = false;
       gpio_num_t _pin = GPIO_NUM_NC;
   };
-
-  extern ZeroCrossDetectionClass ZCD;
 } // namespace Mycila

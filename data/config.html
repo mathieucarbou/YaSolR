@@ -63,7 +63,7 @@
   const supportedConfig = {
     
     "Output 1 Control": "TITLE",
-    o1_dim_limit: ["Dimmer Limiter (limit dimmer level 0-10000)", "uint"],
+    o1_dim_limit: ["Dimmer Limiter (limit dimmer duty 0-4095)", "uint"],
     o1_ad_enable: ["Dimmer Automatic Control", "switch"],
     o1_ab_enable: ["Bypass Automatic Control", "switch"],
     o1_days: ["Bypass Week Days", "string"],
@@ -73,7 +73,7 @@
     o1_temp_stop: ["Bypass Stop Temperature (C)", "uint"],
 
     "Output 2 Control": "TITLE",
-    o2_dim_limit: ["Dimmer Limiter (limit dimmer level 0-10000)", "uint"],
+    o2_dim_limit: ["Dimmer Limiter (limit dimmer duty 0-4095)", "uint"],
     o2_ad_enable: ["Dimmer Automatic Control", "switch"],
     o2_ab_enable: ["Bypass Automatic Control", "switch"],
     o2_days: ["Bypass Week Days", "string"],
@@ -118,11 +118,11 @@
     o1_dim_enable: ["Output 1 Dimmer", "switch"],
     o1_ds18_enable: ["Output 1 DS18", "switch"],
     o1_pzem_enable: ["Output 1 PZEM", "switch"],
-    o1_relay_enable: ["Output 1 Relay (Bypass)", "switch"],
+    o1_relay_enable: ["Output 1 Relay", "switch"],
     o2_dim_enable: ["Output 2 Dimmer", "switch"],
     o2_ds18_enable: ["Output 2 DS18", "switch"],
     o2_pzem_enable: ["Output 2 PZEM", "switch"],
-    o2_relay_enable: ["Output 2 Relay (Bypass)", "switch"],
+    o2_relay_enable: ["Output 2 Relay", "switch"],
     relay1_enable: ["Enable Relay 1", "switch"],
     relay2_enable: ["Enable Relay 2", "switch"],
     ds18_sys_enable: ["Router DS18", "switch"],

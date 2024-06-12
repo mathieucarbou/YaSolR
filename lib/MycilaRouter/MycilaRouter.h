@@ -29,6 +29,7 @@ namespace Mycila {
       explicit Router(JSY& jsy) : _jsy(&jsy) {}
 
       void addOutput(RouterOutput& output) { _outputs.push_back(&output); }
+      const std::vector<RouterOutput*>& getOutputs() const { return _outputs; }
 
       bool isRouting() const {
         for (const auto& output : _outputs) {
@@ -102,6 +103,8 @@ namespace Mycila {
         root["metrics"]["power"] = metrics.power;
         root["metrics"]["power_factor"] = metrics.powerFactor;
         root["metrics"]["thdi"] = metrics.thdi;
+        for (const auto& output : _outputs)
+          output->toJson(root[output->getName()].to<JsonObject>());
       }
 #endif
 

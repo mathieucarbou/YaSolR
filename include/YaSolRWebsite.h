@@ -87,8 +87,8 @@ namespace YaSolR {
       Tab _output1Tab = Tab(&dashboard, "\u2600 Output 1");
       Card _output1State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
       Card _output1DS18State = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
-      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Duty Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Duty", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1Bypass = Card(&dashboard, BUTTON_CARD, "Bypass");
       Card _output1BypassRO = Card(&dashboard, STATUS_CARD, "Bypass");
       Card _output1Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
@@ -101,7 +101,7 @@ namespace YaSolR {
       Card _output1Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
       Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
       Card _output1DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output1AutoBypass = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
+      Card _output1BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
       Card _output1AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
       Card _output1AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
       Card _output1AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
@@ -111,8 +111,8 @@ namespace YaSolR {
       Tab _output2Tab = Tab(&dashboard, "\u2600 Output 2");
       Card _output2State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
       Card _output2DS18State = Card(&dashboard, TEMPERATURE_CARD, "Temperature", "°C");
-      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Level Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Level", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, "Dimmer Duty Manual Control", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, "Dimmer Duty", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2Bypass = Card(&dashboard, BUTTON_CARD, "Bypass");
       Card _output2BypassRO = Card(&dashboard, STATUS_CARD, "Bypass");
       Card _output2Power = Card(&dashboard, ENERGY_CARD, "Power", "W");
@@ -125,7 +125,7 @@ namespace YaSolR {
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
       Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
       Card _output2DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output2AutoBypass = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
+      Card _output2BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
       Card _output2AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
       Card _output2AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
       Card _output2AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
@@ -202,11 +202,11 @@ namespace YaSolR {
       Card _output1Dimmer = Card(&dashboard, BUTTON_CARD, "Output 1 Dimmer");
       Card _output1DS18 = Card(&dashboard, BUTTON_CARD, "Output 1 DS18");
       Card _output1PZEM = Card(&dashboard, BUTTON_CARD, "Output 1 PZEM");
-      Card _output1Relay = Card(&dashboard, BUTTON_CARD, "Output 1 Relay (Bypass)");
+      Card _output1Relay = Card(&dashboard, BUTTON_CARD, "Output 1 Relay");
       Card _output2Dimmer = Card(&dashboard, BUTTON_CARD, "Output 2 Dimmer");
       Card _output2DS18 = Card(&dashboard, BUTTON_CARD, "Output 2 DS18");
       Card _output2PZEM = Card(&dashboard, BUTTON_CARD, "Output 2 PZEM");
-      Card _output2Relay = Card(&dashboard, BUTTON_CARD, "Output 2 Relay (Bypass)");
+      Card _output2Relay = Card(&dashboard, BUTTON_CARD, "Output 2 Relay");
       Card _relay1 = Card(&dashboard, BUTTON_CARD, "Relay 1");
       Card _relay2 = Card(&dashboard, BUTTON_CARD, "Relay 2");
       Card _routerDS18 = Card(&dashboard, BUTTON_CARD, "Router DS18");
