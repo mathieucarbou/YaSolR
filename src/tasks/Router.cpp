@@ -15,7 +15,14 @@ Mycila::Task routerTask("Router", [](void* params) {
 });
 
 Mycila::Task relayTask("Relay", [](void* params) {
-  float virtualGridPower = grid.getPower() - router.getPower();
+  Mycila::GridMetrics gridMetrics;
+  grid.getMetrics(gridMetrics);
+
+  Mycila::RouterMetrics routerMetrics;
+  router.getMetrics(routerMetrics);
+
+  float virtualGridPower = gridMetrics.power - routerMetrics.power;
+
   if (routerRelay1.tryRelayStateAuto(true, virtualGridPower))
     return;
   if (routerRelay2.tryRelayStateAuto(true, virtualGridPower))
@@ -27,4 +34,18 @@ Mycila::Task relayTask("Relay", [](void* params) {
 });
 
 Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
+  Mycila::GridMetrics gridMetrics;
+  grid.getMetrics(gridMetrics);
+
+  Mycila::RouterMetrics routerMetrics;
+  router.getMetrics(routerMetrics);
+
+  float virtualGridPower = gridMetrics.power - routerMetrics.power;
+
+  // if (virtualGridPower < 0) {
+  //   if (output1.isAutoDimmerEnabled() && dimmerO1.getPowerDuty() < output1.config.dimmerLimit) {
+  //   }
+  //   if (output2.isAutoDimmerEnabled() && dimmerO2.getPowerDuty() < output2.config.dimmerLimit) {
+  //   }
+  // }
 });

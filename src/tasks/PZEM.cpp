@@ -4,8 +4,6 @@
  */
 #include <YaSolR.h>
 
-#define TAG "YASOLR"
-
 Mycila::Task pzemTask("PZEM", [](void* params) {
   // PZEM are on the same serial so cannot be read concurrently
   pzemO1.read();

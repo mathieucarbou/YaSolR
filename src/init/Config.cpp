@@ -4,31 +4,30 @@
  */
 #include <YaSolR.h>
 
-#define TAG "YASOLR"
-
 Mycila::Task initConfigTask("Init Config", [](void* params) {
   logger.warn(TAG, "Configuring %s...", Mycila::AppInfo.nameModelVersion.c_str());
 
   // Tasks configuration
   carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
   carouselTask.setIntervalSupplier([]() { return config.get(KEY_DISPLAY_SPEED).toInt() * Mycila::TaskDuration::SECONDS; });
+  dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardTask.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(293 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
   jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
-  mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
-  mqttPublishTask.setIntervalSupplier([]() { return config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS; });
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
+  mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
+  mqttPublishTask.setIntervalSupplier([]() { return config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS; });
   profilerTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
-  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   relayTask.setEnabledWhen([]() { return routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled(); });
+  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
+  routerDebugTask.setInterval(3 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
-  dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardTask.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
 #ifdef APP_MODEL_TRIAL
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif
@@ -41,6 +40,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   routerRelay2.setLoad(config.get(KEY_RELAY2_LOAD).toInt());
 
   // output1
+  output1.config.resistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
   output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   output1.config.dimmerLimit = config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt();
   output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
@@ -51,6 +51,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
 
   // output2
+  output2.config.resistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
   output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   output2.config.dimmerLimit = config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt();
   output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -131,11 +132,11 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   Mycila::TaskMonitor.begin();
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
-  Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
-  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
-  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
+  Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
+  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
+  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
 
   // Display
   if (config.getBool(KEY_ENABLE_DISPLAY)) {

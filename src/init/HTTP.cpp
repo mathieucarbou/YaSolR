@@ -6,8 +6,6 @@
 
 #include <AsyncJson.h>
 
-#define TAG "YASOLR"
-
 extern const uint8_t logo_png_gz_start[] asm("_binary__pio_data_logo_png_gz_start");
 extern const uint8_t logo_png_gz_end[] asm("_binary__pio_data_logo_png_gz_end");
 extern const uint8_t logo_icon_png_gz_start[] asm("_binary__pio_data_logo_icon_png_gz_start");

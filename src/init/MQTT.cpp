@@ -4,8 +4,6 @@
  */
 #include <YaSolR.h>
 
-#define TAG "YASOLR"
-
 Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   logger.info(TAG, "Initializing MQTT Subscribers...");
 
@@ -97,7 +95,8 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
       float p = payload.toFloat();
       logger.info(TAG, "Grid Power from MQTT: %f", p);
       grid.setMQTTGridPower(p);
-      routingTask.resume();
+      if (grid.getPowerSource() == Mycila::GridSource::SOURCE_MQTT)
+        routingTask.resume();
     });
   }
 

@@ -7,8 +7,6 @@
 #include <AsyncJson.h>
 #include <map>
 
-#define TAG "YASOLR"
-
 Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   logger.info(TAG, "Initializing REST API...");
 
@@ -19,16 +17,16 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      zcd.toJson(root["zcd"].to<JsonObject>());
+      ds18Sys.toJson(root["ds18Sys"].to<JsonObject>());
+      grid.toJson(root["grid"].to<JsonObject>());
       jsy.toJson(root["jsy"].to<JsonObject>());
+      lights.toJson(root["leds"].to<JsonObject>());
       pzemO1.toJson(root["pzem1"].to<JsonObject>());
       pzemO2.toJson(root["pzem2"].to<JsonObject>());
-      ds18Sys.toJson(root["ds18Sys"].to<JsonObject>());
-      lights.toJson(root["leds"].to<JsonObject>());
-      grid.toJson(root["grid"].to<JsonObject>());
-      router.toJson(root["router"].to<JsonObject>());
       relay1.toJson(root["relay1"].to<JsonObject>());
       relay2.toJson(root["relay2"].to<JsonObject>());
+      router.toJson(root["router"].to<JsonObject>());
+      zcd.toJson(root["zcd"].to<JsonObject>());
 
       Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
 
@@ -318,9 +316,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      root["lights"] = lights.toString();
-      root["virtual_grid_power"] = grid.getPower() - root["metrics"]["power"].as<float>();
-
       Mycila::GridMetrics gridMetrics;
       grid.getMetrics(gridMetrics);
 
@@ -332,11 +327,14 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["power"] = routerMetrics.power;
       root["power_factor"] = routerMetrics.powerFactor;
       root["temperature"] = ds18Sys.getLastTemperature();
+      root["thdi"] = routerMetrics.thdi;
       root["virtual_grid_power"] = gridMetrics.power - routerMetrics.power;
 
+      size_t idx = 0;
       for (const auto& output : router.getOutputs()) {
         JsonObject json = root[output->getName()].to<JsonObject>();
         json["bypass"] = YASOLR_STATE(output->isBypassOn());
+        json["resistance"] = output->config.resistance;
         json["state"] = output->getStateName();
         json["temperature"] = ds18O1.getLastTemperature();
 
@@ -344,18 +342,18 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         json["dimmer"]["duty_cycle"] = dimmerO1.getPowerDutyCycle() * 100;
         json["dimmer"]["state"] = YASOLR_STATE(dimmerO1.isOn());
 
-        Mycila::RouterOutputMetrics metrics;
-        output->getMetrics(metrics);
-        json["metrics"]["apparent_power"] = metrics.apparentPower;
-        json["metrics"]["current"] = metrics.current;
-        json["metrics"]["energy"] = metrics.energy;
-        json["metrics"]["power"] = metrics.power;
-        json["metrics"]["power_factor"] = metrics.powerFactor;
-        json["metrics"]["resistance"] = metrics.resistance;
-        json["metrics"]["voltage_dimmed"] = metrics.dimmedVoltage;
+        json["metrics"]["apparent_power"] = routerMetrics.outputs[idx].apparentPower;
+        json["metrics"]["current"] = routerMetrics.outputs[idx].current;
+        json["metrics"]["energy"] = routerMetrics.outputs[idx].energy;
+        json["metrics"]["power"] = routerMetrics.outputs[idx].power;
+        json["metrics"]["power_factor"] = routerMetrics.outputs[idx].powerFactor;
+        json["metrics"]["thdi"] = routerMetrics.outputs[idx].thdi;
+        json["metrics"]["voltage_dimmed"] = routerMetrics.outputs[idx].dimmedVoltage;
 
         json["relay"]["state"] = YASOLR_STATE(bypassRelayO1.isOn());
         json["relay"]["switch_count"] = bypassRelayO1.getSwitchCount();
+
+        idx++;
       }
 
       root["relay1"]["state"] = YASOLR_STATE(relay1.isOn());

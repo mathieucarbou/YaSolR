@@ -23,6 +23,12 @@ namespace Mycila {
       float voltage = 0;
   } GridMetrics;
 
+  typedef enum {
+    SOURCE_NONE,
+    SOURCE_JSY,
+    SOURCE_MQTT
+  } GridSource;
+
   class Grid {
     public:
       explicit Grid(JSY& jsy) : _jsy(&jsy) {}
@@ -37,7 +43,6 @@ namespace Mycila {
         _mqttPower = power;
         _mqttPowerTime = millis();
       }
-
       void applyExpiration() {
         if (_mqttVoltageTime > 0 && millis() - _mqttVoltageTime >= _expiration) {
           _mqttVoltage = 0;
@@ -49,24 +54,61 @@ namespace Mycila {
         }
       }
 
-      bool isConnected() const { return (_jsy->isConnected() && _jsy->getVoltage2()) > 0 || (_mqttVoltageTime > 0 && _mqttVoltage > 0); }
+      // grid source logic:
+      // for power: MQTT has priority
+      // for voltage: JSY has priority
+      GridSource getPowerSource() const {
+        if (_mqttPowerTime)
+          return SOURCE_MQTT;
+        if (_jsy->isConnected() && _jsy->getVoltage2() > 0)
+          return SOURCE_JSY;
+        return SOURCE_NONE;
+      }
+      GridSource getVoltageSource() const {
+        if (_jsy->isConnected() && _jsy->getVoltage2())
+          return SOURCE_JSY;
+        if (_mqttVoltageTime && _mqttVoltage)
+          return SOURCE_MQTT;
+        return SOURCE_NONE;
+      }
 
-      float getPower() const { return _mqttPowerTime ? _mqttPower : _jsy->getPower2(); }
+      bool isConnected() const { return getVoltageSource() != GridSource::SOURCE_NONE; }
 
-      float getVoltage() const { return _jsy->isConnected() ? _jsy->getVoltage2() : (_mqttVoltageTime && _mqttVoltage ? _mqttVoltage : 0); }
+      float getPower() const {
+        switch (getPowerSource()) {
+          case SOURCE_JSY:
+            return _jsy->getPower2();
+          case SOURCE_MQTT:
+            return _mqttPower;
+          default:
+            return 0;
+            break;
+        }
+      }
+
+      float getVoltage() const {
+        switch (getVoltageSource()) {
+          case SOURCE_JSY:
+            return _jsy->getVoltage2();
+          case SOURCE_MQTT:
+            return _mqttVoltage;
+          default:
+            return 0;
+            break;
+        }
+      }
 
       void getMetrics(GridMetrics& metrics) const {
         metrics.voltage = getVoltage();
         metrics.power = getPower();
-
+        metrics.connected = metrics.voltage > 0;
+        // only available if connected to JSY
         metrics.apparentPower = _jsy->getApparentPower2();
         metrics.current = _jsy->getCurrent2();
         metrics.energy = _jsy->getEnergy2();
         metrics.energyReturned = _jsy->getEnergyReturned2();
         metrics.frequency = _jsy->getFrequency();
         metrics.powerFactor = _jsy->getPowerFactor2();
-
-        metrics.connected = metrics.voltage > 0;
       }
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -84,6 +126,8 @@ namespace Mycila {
         root["metrics"]["voltage"] = metrics.voltage;
         root["mqtt"]["power"] = _mqttPower;
         root["mqtt"]["voltage"] = _mqttVoltage;
+        root["source"]["power"] = getPowerSource() == SOURCE_JSY ? "jsy" : (getPowerSource() == SOURCE_MQTT ? "mqtt" : "none");
+        root["source"]["voltage"] = getVoltageSource() == SOURCE_JSY ? "jsy" : (getVoltageSource() == SOURCE_MQTT ? "mqtt" : "none");
       }
 #endif
 

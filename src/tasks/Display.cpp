@@ -129,7 +129,7 @@ Mycila::Task displayTask("Display", [](void* params) {
         display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       else
         display.home.printf("Output 1:  GRID ERROR\n");
-      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
+      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output1.config.resistance)));
       display.home.printf("Dimmer: %5d %5d W\n", dimmerO1.getPowerDuty(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O1.isEnabled())
         display.home.printf("Temperature:   %4.1f", ds18O1.getLastTemperature());
@@ -147,7 +147,7 @@ Mycila::Task displayTask("Display", [](void* params) {
         display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       else
         display.home.printf("Output 2:  GRID ERROR\n");
-      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
+      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output2.config.resistance)));
       display.home.printf("Dimmer: %5d %5d W\n", dimmerO2.getPowerDuty(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O2.isEnabled())
         display.home.printf("Temperature:   %4.1f", ds18O2.getLastTemperature());

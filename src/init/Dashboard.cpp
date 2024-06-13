@@ -5,8 +5,6 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
-#define TAG "YASOLR"
-
 Mycila::Task initDashboardTask("Init Dashboard", [](void* params) {
   logger.info(TAG, "Initializing dashboard...");
   YaSolR::Website.initLayout();

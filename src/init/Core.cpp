@@ -4,8 +4,6 @@
  */
 #include <YaSolR.h>
 
-#define TAG "YASOLR"
-
 Mycila::Task initCoreTask("Init Core", [](void* params) {
   logger.warn(TAG, "Initializing %s...", Mycila::AppInfo.nameModelVersion.c_str());
 
@@ -23,6 +21,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
 
   // coreTaskManager
   carouselTask.setManager(coreTaskManager);
+  dashboardTask.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
   ds18Task.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
@@ -32,7 +31,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   profilerTask.setManager(coreTaskManager);
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);
-  dashboardTask.setManager(coreTaskManager);
+  routerDebugTask.setManager(coreTaskManager);
 #ifdef APP_MODEL_TRIAL
   trialTask.setManager(coreTaskManager);
 #endif

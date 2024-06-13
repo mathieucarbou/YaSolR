@@ -63,6 +63,7 @@
   const supportedConfig = {
     
     "Output 1 Control": "TITLE",
+    o1_resistance: ["Output 1 Resistance (Ohm)", "uint"],
     o1_dim_limit: ["Dimmer Limiter (limit dimmer duty 0-4095)", "uint"],
     o1_ad_enable: ["Dimmer Automatic Control", "switch"],
     o1_ab_enable: ["Bypass Automatic Control", "switch"],
@@ -73,6 +74,7 @@
     o1_temp_stop: ["Bypass Stop Temperature (C)", "uint"],
 
     "Output 2 Control": "TITLE",
+    o2_resistance: ["Output 2 Resistance (Ohm)", "uint"],
     o2_dim_limit: ["Dimmer Limiter (limit dimmer duty 0-4095)", "uint"],
     o2_ad_enable: ["Dimmer Automatic Control", "switch"],
     o2_ab_enable: ["Bypass Automatic Control", "switch"],
@@ -88,6 +90,27 @@
 
     "Management": "TITLE",
     debug_enable: ["Enable Debug Logging", "switch"],
+
+    Network: "TITLE",
+    admin_pwd: ["Admin password", "password"],
+    ntp_server: ["NTP Server", "string"],
+    ntp_timezone: ["Timezone", "tz"],
+    wifi_ssid: ["WiFi SSID", "string"],
+    wifi_pwd: ["WiFi Password", "password"],
+    ap_mode_enable: ["Stay in AP Mode", "switch"],
+    
+    MQTT: "TITLE",
+    mqtt_server: ["Server", "string"],
+    mqtt_port: ["Port", "uint"],
+    mqtt_user: ["Username", "string"],
+    mqtt_pwd: ["Password", "string"],
+    mqtt_secure: ["SSL / TLS", "switch"],
+    mqtt_pub_itvl: ["Publish Interval (s)", "uint"],
+    mqtt_topic: ["Base Topic", "string"],
+    ha_disco_enable: ["Home Assistant Integration", "switch"],
+    ha_disco_topic: ["Home Assistant Discovery Topic", "string"],
+    grid_volt_mqtt: ["Grid Voltage from MQTT Topic", "string"],
+    grid_pow_mqtt: ["Grid Power from MQTT Topic", "string"],
 
     "GPIO (config)": "TITLE",
     pin_o1_dim: ["Dimmer for Output 1", "pin"],
@@ -129,40 +152,14 @@
     zcd_enable: ["Enable Zero-Cross Detection", "switch"],
 
     "Hardware (config)": "TITLE",
-    relay1_type: ["Relay 1 Type", "select", "NO,NC"],
-    relay2_type: ["Relay 2 Type", "select", "NO,NC"],
-    o1_relay_type: ["Output 1 Bypass Relay Type", "select", "NO,NC"],
-    o2_relay_type: ["Output 2 Bypass Relay Type", "select", "NO,NC"],
+    grid_freq: ["Nominal Grid Frequency", "select", "50,60"],
+    disp_speed: ["Display Speed (s)", "select", "1,2,3,4,5,6,7,8,9,10"],
     disp_type: ["Display Type", "select", "SH1106,SH1107,SSD1306"],
     disp_angle: ["Display Rotation", "select", "0,90,180,270"],
-    disp_speed: ["Display Speed (s)", "select", "1,2,3,4,5,6,7,8,9,10"],
-    grid_freq: ["Grid frequency (default)", "select", "50,60"],
-    
-    MQTT: "TITLE",
-    mqtt_server: ["Server", "string"],
-    mqtt_port: ["Port", "uint"],
-    mqtt_user: ["Username", "string"],
-    mqtt_pwd: ["Password", "string"],
-    mqtt_secure: ["SSL / TLS", "switch"],
-    mqtt_pub_itvl: ["Publish Interval (s)", "uint"],
-    mqtt_topic: ["Base Topic", "string"],
-    grid_volt_mqtt: ["Grid Voltage from MQTT Topic", "string"],
-    grid_pow_mqtt: ["Grid Power from MQTT Topic", "string"],
-    ha_disco_enable: ["Home Assistant Integration", "switch"],
-    ha_disco_topic: ["Home Assistant Discovery Topic", "string"],
-
-    Network: "TITLE",
-    admin_pwd: ["Admin password", "password"],
-    ntp_server: ["NTP Server", "string"],
-    ntp_timezone: ["NTP Timezone", "tz"],
-    wifi_ssid: ["WiFi SSID", "string"],
-    wifi_pwd: ["WiFi Password", "password"],
-    ap_mode_enable: ["Stay in AP Mode", "switch"],
-    
-    
-    
-    
-
+    o1_relay_type: ["Output 1 Bypass Relay Type", "select", "NO,NC"],
+    o2_relay_type: ["Output 2 Bypass Relay Type", "select", "NO,NC"],
+    relay1_type: ["Relay 1 Type", "select", "NO,NC"],
+    relay2_type: ["Relay 2 Type", "select", "NO,NC"],
   };
 
   async function onInputChange(event) {

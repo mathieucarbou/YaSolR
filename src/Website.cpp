@@ -4,7 +4,6 @@
  */
 #include <YaSolRWebsite.h>
 
-#define TAG        "WEBSITE"
 #define HIDDEN_PWD "********"
 
 void YaSolR::WebsiteClass::initLayout() {
@@ -62,6 +61,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _daysConfig(_output1AutoStartWDays, KEY_OUTPUT1_DAYS);
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
+  _numConfig(_output1Resistance, KEY_OUTPUT1_RESISTANCE);
   _sliderConfig(_output1DimmerLimiter, KEY_OUTPUT1_DIMMER_LIMITER);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
@@ -83,6 +83,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _daysConfig(_output2AutoStartWDays, KEY_OUTPUT2_DAYS);
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
+  _numConfig(_output2Resistance, KEY_OUTPUT2_RESISTANCE);
   _sliderConfig(_output2DimmerLimiter, KEY_OUTPUT2_DIMMER_LIMITER);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
@@ -197,19 +198,19 @@ void YaSolR::WebsiteClass::initLayout() {
   _boolConfig(_zcd, KEY_ENABLE_ZCD);
 
   // Hardware (config)
+  _gridFreq.setTab(&_hardwareConfigTab);
   _displayRotation.setTab(&_hardwareConfigTab);
   _displayType.setTab(&_hardwareConfigTab);
   _displaySpeed.setTab(&_hardwareConfigTab);
-  _gridFreq.setTab(&_hardwareConfigTab);
   _output1PZEMSync.setTab(&_hardwareConfigTab);
-  _output1RelayType.setTab(&_hardwareConfigTab);
   _output2PZEMSync.setTab(&_hardwareConfigTab);
+  _output1RelayType.setTab(&_hardwareConfigTab);
   _output2RelayType.setTab(&_hardwareConfigTab);
   _relay1Type.setTab(&_hardwareConfigTab);
   _relay2Type.setTab(&_hardwareConfigTab);
 
-  _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
   _numConfig(_gridFreq, KEY_GRID_FREQUENCY);
+  _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
@@ -307,6 +308,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output1DimmerAuto.update(autoDimmerO1Activated);
   _output1DimmerLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt()));
   _output1BypassAuto.update(autoBypassActivated);
+  _output1Resistance.update(config.get(KEY_OUTPUT1_RESISTANCE));
   _output1AutoStartWDays.update(config.get(KEY_OUTPUT1_DAYS));
   _output1AutoStartTemp.update(config.get(KEY_OUTPUT1_TEMPERATURE_START));
   _output1AutoStartTime.update(config.get(KEY_OUTPUT1_TIME_START));
@@ -346,6 +348,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output2DimmerAuto.update(autoDimmerO2Activated);
   _output2DimmerLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt()));
   _output2BypassAuto.update(autoBypassO2Activated);
+  _output2Resistance.update(config.get(KEY_OUTPUT2_RESISTANCE));
   _output2AutoStartWDays.update(config.get(KEY_OUTPUT2_DAYS));
   _output2AutoStartTemp.update(config.get(KEY_OUTPUT2_TEMPERATURE_START));
   _output2AutoStartTime.update(config.get(KEY_OUTPUT2_TIME_START));
@@ -437,15 +440,15 @@ void YaSolR::WebsiteClass::initCards() {
   _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
   _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
 
-  _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
-  _output2RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
-  _relay1Type.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
-  _relay2Type.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displayRotation.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _output1PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
   _output2PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
+  _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
+  _output2RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
+  _relay1Type.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
+  _relay2Type.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
 
   // mqtt (config)
   _haDiscovery.update(config.getBool(KEY_ENABLE_HA_DISCOVERY));
@@ -475,12 +478,6 @@ void YaSolR::WebsiteClass::initCards() {
 void YaSolR::WebsiteClass::updateCards() {
   Mycila::GridMetrics gridMetrics;
   grid.getMetrics(gridMetrics);
-
-  Mycila::RouterOutputMetrics output1Metrics;
-  output1.getMetrics(output1Metrics);
-
-  Mycila::RouterOutputMetrics output2Metrics;
-  output2.getMetrics(output2Metrics);
 
   Mycila::RouterMetrics routerMetrics;
   router.getMetrics(routerMetrics);
@@ -542,14 +539,13 @@ void YaSolR::WebsiteClass::updateCards() {
   _output1DimmerSliderRO.update(dimmerO1.getPowerDuty());
   _output1Bypass.update(output1.isBypassOn());
   _output1BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _output1Power.update(output1Metrics.power);
-  _output1ApparentPower.update(output1Metrics.apparentPower);
-  _output1PowerFactor.update(output1Metrics.powerFactor);
-  _output1THDi.update(output1Metrics.thdi * 100);
-  _output1Voltage.update(output1Metrics.dimmedVoltage);
-  _output1Current.update(output1Metrics.current);
-  _output1Resistance.update(output1Metrics.resistance);
-  _output1Energy.update(output1Metrics.energy);
+  _output1Power.update(routerMetrics.outputs[0].power);
+  _output1ApparentPower.update(routerMetrics.outputs[0].apparentPower);
+  _output1PowerFactor.update(routerMetrics.outputs[0].powerFactor);
+  _output1THDi.update(routerMetrics.outputs[0].thdi * 100);
+  _output1Voltage.update(routerMetrics.outputs[0].dimmedVoltage);
+  _output1Current.update(routerMetrics.outputs[0].current);
+  _output1Energy.update(routerMetrics.outputs[0].energy);
 
   // output 2
   switch (output2.getState()) {
@@ -573,14 +569,13 @@ void YaSolR::WebsiteClass::updateCards() {
   _output2DimmerSliderRO.update(dimmerO2.getPowerDuty());
   _output2Bypass.update(output2.isBypassOn());
   _output2BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _output2Power.update(output2Metrics.power);
-  _output2ApparentPower.update(output2Metrics.apparentPower);
-  _output2PowerFactor.update(output2Metrics.powerFactor);
-  _output2THDi.update(output2Metrics.thdi * 100);
-  _output2Voltage.update(output2Metrics.dimmedVoltage);
-  _output2Current.update(output2Metrics.current);
-  _output2Resistance.update(output2Metrics.resistance);
-  _output2Energy.update(output2Metrics.energy);
+  _output2Power.update(routerMetrics.outputs[1].power);
+  _output2ApparentPower.update(routerMetrics.outputs[1].apparentPower);
+  _output2PowerFactor.update(routerMetrics.outputs[1].powerFactor);
+  _output2THDi.update(routerMetrics.outputs[1].thdi * 100);
+  _output2Voltage.update(routerMetrics.outputs[1].dimmedVoltage);
+  _output2Current.update(routerMetrics.outputs[1].current);
+  _output2Energy.update(routerMetrics.outputs[1].energy);
 
   // relays
   _relay1Switch.update(relay1.isOn());
@@ -591,10 +586,10 @@ void YaSolR::WebsiteClass::updateCards() {
   // Hardware (status)
   _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No electricity");
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : "Disconnected");
-  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), output1Metrics.connected, "No electricity");
+  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), routerMetrics.outputs[0].connected, "No electricity");
   _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, "Read error");
   _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), "No electricity");
-  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), output2Metrics.connected, "No electricity");
+  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), routerMetrics.outputs[1].connected, "No electricity");
   _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, "Read error");
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), "No electricity");
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, "Read error");
@@ -725,7 +720,7 @@ void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bo
   if (!configEnabled)
     card.update(config.getBool(key), DASH_STATUS_IDLE ",Disabled");
   else if (!enabled)
-    card.update(config.getBool(key), DASH_STATUS_DANGER ",Failed to start");
+    card.update(config.getBool(key), DASH_STATUS_DANGER ",Not started");
   else if (!active)
     card.update(config.getBool(key), (String(DASH_STATUS_WARNING) + "," + err).c_str());
   else

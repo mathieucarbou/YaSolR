@@ -13,6 +13,10 @@
   #include <ArduinoJson.h>
 #endif
 
+#ifndef MYCILA_ROUTER_OUTPUT_COUNT
+  #define MYCILA_ROUTER_OUTPUT_COUNT 2
+#endif
+
 namespace Mycila {
 
   typedef struct {
@@ -22,6 +26,7 @@ namespace Mycila {
       float power = 0;
       float powerFactor = 0;
       float thdi = 0;
+      RouterOutputMetrics outputs[MYCILA_ROUTER_OUTPUT_COUNT] = {};
   } RouterMetrics;
 
   class Router {
@@ -40,54 +45,24 @@ namespace Mycila {
         return false;
       }
 
-      float getPower() const {
-        float power = 0;
-        bool routing = false;
-
-        for (const auto& output : _outputs) {
-          if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
-            power += output->getPower();
-            routing = true;
-          }
-        }
-
-        if (routing && power == 0)
-          power = _jsy->getPower1();
-
-        return power;
-      }
-
       void getMetrics(RouterMetrics& metrics) const {
-        bool routing = false;
+        size_t index = 0;
 
         for (const auto& output : _outputs) {
-          if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
-            routing = true;
-            Mycila::RouterOutputMetrics outputMetrics;
-            output->getMetrics(outputMetrics);
-            metrics.apparentPower += outputMetrics.apparentPower;
-            metrics.current += outputMetrics.current;
-            metrics.energy += outputMetrics.energy;
-            metrics.power += outputMetrics.power;
-          }
+          assert(index < MYCILA_ROUTER_OUTPUT_COUNT);
+
+          output->getMetrics(metrics.outputs[index]);
+
+          metrics.apparentPower += metrics.outputs[index].apparentPower;
+          metrics.current += metrics.outputs[index].current;
+          metrics.energy += metrics.outputs[index].energy;
+          metrics.power += metrics.outputs[index].power;
+
+          index++;
         }
 
-        if (routing) {
-          if (metrics.apparentPower == 0)
-            metrics.apparentPower = _jsy->getApparentPower1();
-
-          if (metrics.current == 0)
-            metrics.current = _jsy->getCurrent1();
-
-          if (metrics.power == 0)
-            metrics.power = _jsy->getPower1();
-
-          metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
-          if (metrics.powerFactor == 0)
-            metrics.powerFactor = _jsy->getPowerFactor1();
-
-          metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
-        }
+        metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
+        metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
 
         if (metrics.energy == 0)
           metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();

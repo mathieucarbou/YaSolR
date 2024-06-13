@@ -5,8 +5,6 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
-#define TAG "YASOLR"
-
 Mycila::Task initEventsTask("Init Events", [](void* params) {
   logger.info(TAG, "Initializing Events...");
 
@@ -34,6 +32,12 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_RELAY2_LOAD) {
       routerRelay2.setLoad(config.get(KEY_RELAY2_LOAD).toInt());
+
+    } else if (key == KEY_OUTPUT1_RESISTANCE) {
+      output1.config.resistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
+
+    } else if (key == KEY_OUTPUT2_RESISTANCE) {
+      output2.config.resistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
       output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -228,13 +232,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    if (eventType == Mycila::JSYEventType::EVT_READ)
+    if (eventType == Mycila::JSYEventType::EVT_READ && grid.getPowerSource() == Mycila::GridSource::SOURCE_JSY)
       routingTask.resume();
-  });
-  pzemO1.setCallback([](const Mycila::PZEMEventType eventType) {
-    routingTask.resume();
-  });
-  pzemO2.setCallback([](const Mycila::PZEMEventType eventType) {
-    routingTask.resume();
   });
 });

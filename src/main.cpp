@@ -4,8 +4,6 @@
  */
 #include <YaSolR.h>
 
-#define TAG "YASOLR"
-
 Mycila::Config config;
 Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
@@ -26,11 +24,11 @@ Mycila::Relay relay2;
 Mycila::TrafficLight lights;
 Mycila::ZCD zcd;
 
-Mycila::TaskManager ioTaskManager("I/O");
-Mycila::TaskManager jsyTaskManager("JSY");
-Mycila::TaskManager coreTaskManager("Core");
-Mycila::TaskManager pzemTaskManager("PZEM");
-Mycila::TaskManager routerTaskManager("Router");
+Mycila::TaskManager ioTaskManager("io");
+Mycila::TaskManager jsyTaskManager("jsy");
+Mycila::TaskManager coreTaskManager("core");
+Mycila::TaskManager pzemTaskManager("pzem");
+Mycila::TaskManager routerTaskManager("router");
 
 Mycila::Grid grid(jsy);
 Mycila::Router router(jsy);

@@ -21,6 +21,8 @@
 #define YASOLR_BOOL(a)  ((a) ? YASOLR_TRUE : YASOLR_FALSE)
 #define YASOLR_STATE(a) ((a) ? YASOLR_ON : YASOLR_OFF)
 
+#define TAG "YASOLR"
+
 // password configuration keys
 
 #define KEY_ADMIN_PASSWORD "admin_pwd"
@@ -72,6 +74,7 @@
 #define KEY_OUTPUT1_DAYS              "o1_days"
 #define KEY_OUTPUT1_DIMMER_LIMITER    "o1_dim_limit"
 #define KEY_OUTPUT1_RELAY_TYPE        "o1_relay_type"
+#define KEY_OUTPUT1_RESISTANCE        "o1_resistance"
 #define KEY_OUTPUT1_TEMPERATURE_START "o1_temp_start"
 #define KEY_OUTPUT1_TEMPERATURE_STOP  "o1_temp_stop"
 #define KEY_OUTPUT1_TIME_START        "o1_time_start"
@@ -79,6 +82,7 @@
 #define KEY_OUTPUT2_DAYS              "o2_days"
 #define KEY_OUTPUT2_DIMMER_LIMITER    "o2_dim_limit"
 #define KEY_OUTPUT2_RELAY_TYPE        "o2_relay_type"
+#define KEY_OUTPUT2_RESISTANCE        "o2_resistance"
 #define KEY_OUTPUT2_TEMPERATURE_START "o2_temp_start"
 #define KEY_OUTPUT2_TEMPERATURE_STOP  "o2_temp_stop"
 #define KEY_OUTPUT2_TIME_START        "o2_time_start"

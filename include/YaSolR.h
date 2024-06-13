@@ -97,6 +97,7 @@ extern Mycila::Task otaTask;
 extern Mycila::Task profilerTask;
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
+extern Mycila::Task routerDebugTask;
 extern Mycila::Task dashboardTask;
 #ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
