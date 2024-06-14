@@ -334,7 +334,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       for (const auto& output : router.getOutputs()) {
         JsonObject json = root[output->getName()].to<JsonObject>();
         json["bypass"] = YASOLR_STATE(output->isBypassOn());
-        json["resistance"] = output->config.resistance;
         json["state"] = output->getStateName();
         json["temperature"] = ds18O1.getLastTemperature();
 
@@ -347,6 +346,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         json["metrics"]["energy"] = routerMetrics.outputs[idx].energy;
         json["metrics"]["power"] = routerMetrics.outputs[idx].power;
         json["metrics"]["power_factor"] = routerMetrics.outputs[idx].powerFactor;
+        json["metrics"]["resistance"] = routerMetrics.outputs[idx].resistance;
         json["metrics"]["thdi"] = routerMetrics.outputs[idx].thdi;
         json["metrics"]["voltage_dimmed"] = routerMetrics.outputs[idx].dimmedVoltage;
 

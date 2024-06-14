@@ -61,7 +61,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _daysConfig(_output1AutoStartWDays, KEY_OUTPUT1_DAYS);
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
-  _numConfig(_output1Resistance, KEY_OUTPUT1_RESISTANCE);
   _sliderConfig(_output1DimmerLimiter, KEY_OUTPUT1_DIMMER_LIMITER);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
@@ -83,7 +82,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _daysConfig(_output2AutoStartWDays, KEY_OUTPUT2_DAYS);
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
-  _numConfig(_output2Resistance, KEY_OUTPUT2_RESISTANCE);
   _sliderConfig(_output2DimmerLimiter, KEY_OUTPUT2_DIMMER_LIMITER);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
@@ -172,6 +170,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1Relay.setTab(&_hardwareEnableTab);
   _output1DS18.setTab(&_hardwareEnableTab);
   _output2Dimmer.setTab(&_hardwareEnableTab);
+  _output1ResistanceCal.setTab(&_hardwareConfigTab);
+  _output2ResistanceCal.setTab(&_hardwareConfigTab);
   _output2PZEM.setTab(&_hardwareEnableTab);
   _output2Relay.setTab(&_hardwareEnableTab);
   _output2DS18.setTab(&_hardwareEnableTab);
@@ -214,6 +214,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
+  _numConfig(_output1ResistanceCal, KEY_OUTPUT1_RESISTANCE);
+  _numConfig(_output2ResistanceCal, KEY_OUTPUT2_RESISTANCE);
   _textConfig(_output1RelayType, KEY_OUTPUT1_RELAY_TYPE);
   _textConfig(_output2RelayType, KEY_OUTPUT2_RELAY_TYPE);
   _textConfig(_relay1Type, KEY_RELAY1_TYPE);
@@ -308,7 +310,6 @@ void YaSolR::WebsiteClass::initCards() {
   _output1DimmerAuto.update(autoDimmerO1Activated);
   _output1DimmerLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt()));
   _output1BypassAuto.update(autoBypassActivated);
-  _output1Resistance.update(config.get(KEY_OUTPUT1_RESISTANCE));
   _output1AutoStartWDays.update(config.get(KEY_OUTPUT1_DAYS));
   _output1AutoStartTemp.update(config.get(KEY_OUTPUT1_TEMPERATURE_START));
   _output1AutoStartTime.update(config.get(KEY_OUTPUT1_TIME_START));
@@ -348,7 +349,6 @@ void YaSolR::WebsiteClass::initCards() {
   _output2DimmerAuto.update(autoDimmerO2Activated);
   _output2DimmerLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt()));
   _output2BypassAuto.update(autoBypassO2Activated);
-  _output2Resistance.update(config.get(KEY_OUTPUT2_RESISTANCE));
   _output2AutoStartWDays.update(config.get(KEY_OUTPUT2_DAYS));
   _output2AutoStartTemp.update(config.get(KEY_OUTPUT2_TEMPERATURE_START));
   _output2AutoStartTime.update(config.get(KEY_OUTPUT2_TIME_START));
@@ -439,10 +439,14 @@ void YaSolR::WebsiteClass::initCards() {
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
   _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
   _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
+  _output1ResistanceCal.update(config.get(KEY_OUTPUT1_RESISTANCE));
+  _output2ResistanceCal.update(config.get(KEY_OUTPUT2_RESISTANCE));
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displayRotation.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
+  _output1ResistanceCal.setDisplay(dimmer1Enabled);
+  _output2ResistanceCal.setDisplay(dimmer2Enabled);
   _output1PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
   _output2PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
   _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
@@ -545,6 +549,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _output1THDi.update(routerMetrics.outputs[0].thdi * 100);
   _output1Voltage.update(routerMetrics.outputs[0].dimmedVoltage);
   _output1Current.update(routerMetrics.outputs[0].current);
+  _output1Resistance.update(routerMetrics.outputs[0].resistance);
   _output1Energy.update(routerMetrics.outputs[0].energy);
 
   // output 2
@@ -575,6 +580,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _output2THDi.update(routerMetrics.outputs[1].thdi * 100);
   _output2Voltage.update(routerMetrics.outputs[1].dimmedVoltage);
   _output2Current.update(routerMetrics.outputs[1].current);
+  _output2Resistance.update(routerMetrics.outputs[1].resistance);
   _output2Energy.update(routerMetrics.outputs[1].energy);
 
   // relays

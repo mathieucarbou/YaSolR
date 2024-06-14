@@ -34,10 +34,10 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       routerRelay2.setLoad(config.get(KEY_RELAY2_LOAD).toInt());
 
     } else if (key == KEY_OUTPUT1_RESISTANCE) {
-      output1.config.resistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
+      output1.config.calibratedResistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
 
     } else if (key == KEY_OUTPUT2_RESISTANCE) {
-      output2.config.resistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
+      output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
       output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);

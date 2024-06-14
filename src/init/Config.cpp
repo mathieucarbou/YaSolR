@@ -40,7 +40,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   routerRelay2.setLoad(config.get(KEY_RELAY2_LOAD).toInt());
 
   // output1
-  output1.config.resistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
+  output1.config.calibratedResistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
   output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   output1.config.dimmerLimit = config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt();
   output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
@@ -51,7 +51,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
 
   // output2
-  output2.config.resistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
+  output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
   output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   output2.config.dimmerLimit = config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt();
   output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);

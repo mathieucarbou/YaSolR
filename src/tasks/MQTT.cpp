@@ -37,7 +37,6 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 
   if (!output1.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output1/bypass", YASOLR_STATE(output1.isBypassOn()), true);
-    mqtt.publish(baseTopic + "/router/output1/resistance", String(output1.config.resistance, 3), true);
     mqtt.publish(baseTopic + "/router/output1/state", output1.getStateName());
     mqtt.publish(baseTopic + "/router/output1/temperature", String(ds18O1.getLastTemperature(), 1), true);
     mqtt.publish(baseTopic + "/router/output1/dimmer/duty", String(dimmerO1.getPowerDuty()), true);
@@ -50,7 +49,6 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 
   if (!output2.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output2/bypass", YASOLR_STATE(output2.isBypassOn()), true);
-    mqtt.publish(baseTopic + "/router/output2/resistance", String(output2.config.resistance, 3), true);
     mqtt.publish(baseTopic + "/router/output2/state", output2.getStateName());
     mqtt.publish(baseTopic + "/router/output2/temperature", String(ds18O2.getLastTemperature(), 1), true);
     mqtt.publish(baseTopic + "/router/output2/dimmer/duty", String(dimmerO2.getPowerDuty()), true);
@@ -149,7 +147,6 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
 
   if (output1.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output1/bypass", YASOLR_STATE(output1.isBypassOn()));
-    mqtt.publish(baseTopic + "/router/output1/resistance", String(output1.config.resistance, 3), true);
     mqtt.publish(baseTopic + "/router/output1/state", output1.getStateName());
     mqtt.publish(baseTopic + "/router/output1/temperature", String(ds18O1.getLastTemperature(), 1));
     mqtt.publish(baseTopic + "/router/output1/dimmer/duty", String(dimmerO1.getPowerDuty()));
@@ -162,7 +159,6 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
 
   if (output2.isEnabled()) {
     mqtt.publish(baseTopic + "/router/output2/bypass", YASOLR_STATE(output2.isBypassOn()));
-    mqtt.publish(baseTopic + "/router/output2/resistance", String(output2.config.resistance, 3));
     mqtt.publish(baseTopic + "/router/output2/state", output2.getStateName());
     mqtt.publish(baseTopic + "/router/output2/temperature", String(ds18O2.getLastTemperature(), 1));
     mqtt.publish(baseTopic + "/router/output2/dimmer/duty", String(dimmerO2.getPowerDuty()));

@@ -97,8 +97,8 @@ namespace YaSolR {
       Card _output1THDi = Card(&dashboard, ENERGY_CARD, "THDi", "%");
       Card _output1Voltage = Card(&dashboard, ENERGY_CARD, "Voltage", "V");
       Card _output1Current = Card(&dashboard, ENERGY_CARD, "Current", "A");
+      Card _output1Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output1Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
-      Card _output1Resistance = Card(&dashboard, TEXT_INPUT_CARD, "Output 1 Resistance", "Ω");
       Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
       Card _output1DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
@@ -121,8 +121,8 @@ namespace YaSolR {
       Card _output2THDi = Card(&dashboard, ENERGY_CARD, "THDi", "%");
       Card _output2Voltage = Card(&dashboard, ENERGY_CARD, "Voltage", "V");
       Card _output2Current = Card(&dashboard, ENERGY_CARD, "Current", "A");
+      Card _output2Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
-      Card _output2Resistance = Card(&dashboard, TEXT_INPUT_CARD, "Output 2 Resistance", "Ω");
       Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
       Card _output2DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
@@ -217,6 +217,8 @@ namespace YaSolR {
       Card _displaySpeed = Card(&dashboard, SLIDER_CARD, "Display Speed", "s", 1, 10, 1);
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, "Display Type");
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, "Display Rotation");
+      Card _output1ResistanceCal = Card(&dashboard, TEXT_INPUT_CARD, "Output 1 Resistance (Ohm)", "Ω");
+      Card _output2ResistanceCal = Card(&dashboard, TEXT_INPUT_CARD, "Output 2 Resistance (Ohm)", "Ω");
       Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 1 PZEM Pairing");
       Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, "Output 2 PZEM Pairing");
       Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, "Output 1 Bypass Relay Type");
