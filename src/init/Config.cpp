@@ -15,6 +15,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(293 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
+  ds18Task.setInterval(1 * Mycila::TaskDuration::SECONDS);
   jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });

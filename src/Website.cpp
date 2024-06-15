@@ -513,11 +513,14 @@ void YaSolR::WebsiteClass::updateCards() {
 
   // home
   _routerPower.update(routerMetrics.power);
+  _routerApparentPower.update(routerMetrics.apparentPower);
   _routerPowerFactor.update(routerMetrics.powerFactor);
   _routerTHDi.update(routerMetrics.thdi * 100);
+  _routerVoltage.update(gridMetrics.voltage);
+  _routerCurrent.update(routerMetrics.current);
+  _routerResistance.update(routerMetrics.resistance);
   _routerEnergy.update(routerMetrics.energy);
   _gridPower.update(gridMetrics.power);
-  _gridVoltage.update(gridMetrics.voltage);
   _temperature(_routerDS18State, ds18Sys);
 
 #ifdef APP_MODEL_PRO

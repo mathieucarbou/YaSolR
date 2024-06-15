@@ -71,12 +71,15 @@ namespace YaSolR {
 #endif
 
       // home
-      Card _routerEnergy = Card(&dashboard, ENERGY_CARD, "Total Routed Energy", "kWh");
-      Card _routerPower = Card(&dashboard, ENERGY_CARD, "Total Routed Power", "W");
+      Card _routerPower = Card(&dashboard, ENERGY_CARD, "Routed Power", "W");
+      Card _routerApparentPower = Card(&dashboard, ENERGY_CARD, "Routed Apparent Power", "VA");
       Card _routerPowerFactor = Card(&dashboard, ENERGY_CARD, "Router Power Factor");
       Card _routerTHDi = Card(&dashboard, ENERGY_CARD, "Router THDi", "%");
+      Card _routerVoltage = Card(&dashboard, ENERGY_CARD, "Router Voltage", "V");
+      Card _routerCurrent = Card(&dashboard, ENERGY_CARD, "Routed Current", "A");
+      Card _routerResistance = Card(&dashboard, ENERGY_CARD, "Router Resistance", "Ω");
+      Card _routerEnergy = Card(&dashboard, ENERGY_CARD, "Routed Energy", "kWh");
       Card _gridPower = Card(&dashboard, ENERGY_CARD, "Grid Power", "W");
-      Card _gridVoltage = Card(&dashboard, ENERGY_CARD, "Grid Voltage", "V");
       Card _routerDS18State = Card(&dashboard, TEMPERATURE_CARD, "System Temperature", "°C");
 
 #ifdef APP_MODEL_PRO

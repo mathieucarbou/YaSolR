@@ -25,6 +25,7 @@ namespace Mycila {
       float energy = 0;
       float power = 0;
       float powerFactor = 0;
+      float resistance = 0;
       float thdi = 0;
       RouterOutputMetrics outputs[MYCILA_ROUTER_OUTPUT_COUNT] = {};
   } RouterMetrics;
@@ -47,25 +48,36 @@ namespace Mycila {
 
       void getMetrics(RouterMetrics& metrics) const {
         size_t index = 0;
+        bool routing = false;
 
         for (const auto& output : _outputs) {
           assert(index < MYCILA_ROUTER_OUTPUT_COUNT);
-
-          output->getMetrics(metrics.outputs[index]);
-
-          metrics.apparentPower += metrics.outputs[index].apparentPower;
-          metrics.current += metrics.outputs[index].current;
+          if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
+            routing = true;
+            output->getMetrics(metrics.outputs[index]);
+            metrics.apparentPower += metrics.outputs[index].apparentPower;
+            metrics.current += metrics.outputs[index].current;
+            metrics.power += metrics.outputs[index].power;
+          }
           metrics.energy += metrics.outputs[index].energy;
-          metrics.power += metrics.outputs[index].power;
-
           index++;
         }
 
-        metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
-        metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
+        if (routing && _jsy->isConnected()) {
+          if (!metrics.apparentPower)
+            metrics.apparentPower = _jsy->getApparentPower1();
+          if (!metrics.current)
+            metrics.current = _jsy->getCurrent1();
+          if (!metrics.power)
+            metrics.power = _jsy->getPower1();
+        }
 
-        if (metrics.energy == 0)
+        if (!metrics.energy)
           metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
+
+        metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
+        metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
+        metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
       }
 
 #ifdef MYCILA_JSON_SUPPORT

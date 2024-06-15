@@ -4,16 +4,7 @@
  */
 #include <YaSolR.h>
 
-#ifdef YASOLR_DISABLE_BROWNOUT_DETECTOR
-#include "soc/rtc_cntl_reg.h"
-#include "soc/soc.h"
-#endif
-
 Mycila::Task bootTask("Boot", [](void* params) {
-#ifdef YASOLR_DISABLE_BROWNOUT_DETECTOR
-  WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
-#endif
-
   Serial.begin(YASOLR_SERIAL_BAUDRATE);
 #if ARDUINO_USB_CDC_ON_BOOT
   Serial.setTxTimeoutMs(0);
