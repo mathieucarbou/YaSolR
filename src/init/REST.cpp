@@ -17,16 +17,18 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      ds18Sys.toJson(root["ds18Sys"].to<JsonObject>());
-      grid.toJson(root["grid"].to<JsonObject>());
+      zcd.toJson(root["zcd"].to<JsonObject>());
       jsy.toJson(root["jsy"].to<JsonObject>());
-      lights.toJson(root["leds"].to<JsonObject>());
       pzemO1.toJson(root["pzem1"].to<JsonObject>());
       pzemO2.toJson(root["pzem2"].to<JsonObject>());
+      grid.toJson(root["grid"].to<JsonObject>());
+      router.toJson(root["router"].to<JsonObject>());
+
       relay1.toJson(root["relay1"].to<JsonObject>());
       relay2.toJson(root["relay2"].to<JsonObject>());
-      router.toJson(root["router"].to<JsonObject>());
-      zcd.toJson(root["zcd"].to<JsonObject>());
+
+      ds18Sys.toJson(root["ds18Sys"].to<JsonObject>());
+      lights.toJson(root["leds"].to<JsonObject>());
 
       Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
 

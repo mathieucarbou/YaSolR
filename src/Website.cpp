@@ -496,7 +496,6 @@ void YaSolR::WebsiteClass::updateCards() {
   _gridEnergy.set((String(gridMetrics.energy, 3) + " kWh").c_str());
   _gridEnergyReturned.set((String(gridMetrics.energyReturned, 3) + " kWh").c_str());
   _gridFrequency.set((String(gridMetrics.frequency) + " Hz").c_str());
-  _gridVoltage.set((String(gridMetrics.voltage) + " V").c_str());
   _networkAPIP.set(ESPConnect.getIPAddress(ESPConnectMode::AP).toString().c_str());
   _networkEthIP.set(ESPConnect.getIPAddress(ESPConnectMode::ETH).toString().c_str());
   _networkInterface.set(mode == ESPConnectMode::AP ? "AP" : (mode == ESPConnectMode::STA ? "WiFi" : (mode == ESPConnectMode::ETH ? "Ethernet" : "")));
@@ -518,6 +517,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _routerTHDi.update(routerMetrics.thdi * 100);
   _routerEnergy.update(routerMetrics.energy);
   _gridPower.update(gridMetrics.power);
+  _gridVoltage.update(gridMetrics.voltage);
   _temperature(_routerDS18State, ds18Sys);
 
 #ifdef APP_MODEL_PRO

@@ -163,7 +163,7 @@ namespace Mycila {
             metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
             metrics.apparentPower = metrics.current * metrics.voltage;
             metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
-          } else {
+          } else if (_pzem->isConnected()) {
             metrics.resistance = _pzem->getResistance();
             metrics.nominalPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
             metrics.power = _pzem->getPower();

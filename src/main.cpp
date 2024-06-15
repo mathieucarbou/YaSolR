@@ -5,8 +5,6 @@
 #include <YaSolR.h>
 
 Mycila::Config config;
-Mycila::Dimmer dimmerO1;
-Mycila::Dimmer dimmerO2;
 Mycila::DS18 ds18O1;
 Mycila::DS18 ds18O2;
 Mycila::DS18 ds18Sys;
@@ -32,6 +30,9 @@ Mycila::TaskManager routerTaskManager("router");
 
 Mycila::Grid grid(jsy);
 Mycila::Router router(jsy);
+
+Mycila::Dimmer dimmerO1(zcd);
+Mycila::Dimmer dimmerO2(zcd);
 
 Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1, ds18O1, grid, pzemO1);
 Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, ds18O2, grid, pzemO2);

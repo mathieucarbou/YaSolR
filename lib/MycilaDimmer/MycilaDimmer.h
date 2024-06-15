@@ -5,6 +5,7 @@
 #pragma once
 
 #include <ArduinoJson.h>
+#include <MycilaZCD.h>
 #include <WString.h>
 #include <esp32-hal-gpio.h>
 #include <thyristor.h>
@@ -23,9 +24,10 @@ namespace Mycila {
 
   class Dimmer {
     public:
+      explicit Dimmer(ZCD& zcd) : _zcd(&zcd) {}
       ~Dimmer() { end(); }
 
-      void begin(const int8_t pin, const uint8_t frequency);
+      void begin(const int8_t pin);
       void end();
 
       void listen(DimmerStateCallback callback) { _callback = callback; }
@@ -70,12 +72,12 @@ namespace Mycila {
       // At 100% power, the phase angle is equal to 0
       float getPhaseAngle() const {
         // angle_rad = PI * delay_s / period_s
-        return getFiringDelay() * _frequency * TWO_PI / 1000000;
+        return PI * _zcd->getZCFrequency() * getFiringDelay() / 1000000;
       }
 
     private:
+      ZCD* _zcd;
       gpio_num_t _pin = GPIO_NUM_NC;
-      float _frequency;
       bool _enabled = false;
       DimmerStateCallback _callback = nullptr;
       Thyristor* _dimmer = nullptr;

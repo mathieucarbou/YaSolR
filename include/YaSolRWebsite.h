@@ -46,7 +46,6 @@ namespace YaSolR {
       Statistic _gridEnergy = Statistic(&dashboard, "Grid: Energy");
       Statistic _gridEnergyReturned = Statistic(&dashboard, "Grid: Energy Returned");
       Statistic _gridFrequency = Statistic(&dashboard, "Grid: Frequency");
-      Statistic _gridVoltage = Statistic(&dashboard, "Grid: Voltage");
 
       Statistic _networkHostname = Statistic(&dashboard, "Network: Hostname");
       Statistic _networkInterface = Statistic(&dashboard, "Network: Interface");
@@ -77,6 +76,7 @@ namespace YaSolR {
       Card _routerPowerFactor = Card(&dashboard, ENERGY_CARD, "Router Power Factor");
       Card _routerTHDi = Card(&dashboard, ENERGY_CARD, "Router THDi", "%");
       Card _gridPower = Card(&dashboard, ENERGY_CARD, "Grid Power", "W");
+      Card _gridVoltage = Card(&dashboard, ENERGY_CARD, "Grid Voltage", "V");
       Card _routerDS18State = Card(&dashboard, TEMPERATURE_CARD, "System Temperature", "°C");
 
 #ifdef APP_MODEL_PRO

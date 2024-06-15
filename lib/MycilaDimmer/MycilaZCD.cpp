@@ -2,9 +2,9 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou and others
  */
-#include <MycilaLogger.h>
 #include <MycilaZCD.h>
 
+#include <Arduino.h>
 #include <assert.h>
 #include <thyristor.h>
 
@@ -29,6 +29,8 @@ extern Mycila::Logger logger;
                                         (((1ULL << (gpio_num)) & SOC_GPIO_VALID_GPIO_MASK) != 0))
 #endif
 
+// Mycila::ZCD
+
 void Mycila::ZCD::begin(const int8_t pin, const uint8_t frequency) {
   if (_enabled)
     return;
@@ -43,15 +45,15 @@ void Mycila::ZCD::begin(const int8_t pin, const uint8_t frequency) {
 
   LOGI(TAG, "Enable Zero-Cross Detection on pin %" PRId8 " with frequency %" PRIu8 " Hz...", _pin, frequency);
 
-#if defined(ESP32) && defined(FILTER_INT_PERIOD)
   // https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue
   Thyristor::semiPeriodShrinkMargin = 400;
-#endif
   Thyristor::setFrequency(frequency);
   Thyristor::frequencyMonitorAlwaysOn(true);
   Thyristor::setSyncPin(_pin);
-  Thyristor::setSyncDir(RISING);
+  Thyristor::setSyncDir(CHANGE);
   Thyristor::begin();
+
+  // attachInterrupt(digitalPinToInterrupt(_pin), onEdge, CHANGE);
 
   _enabled = true;
 }
@@ -65,4 +67,9 @@ void Mycila::ZCD::end() {
   }
 }
 
-float Mycila::ZCD::readFrequency() const { return _enabled ? Thyristor::getDetectedFrequency() : 0; }
+uint16_t Mycila::ZCD::getSemiPeriod() const { return _enabled ? Thyristor::getSemiPeriod() : 0; }
+float Mycila::ZCD::getZCFrequency() const { return getCurrentFrequency() * 2; }
+float Mycila::ZCD::getCurrentFrequency() const { return _enabled ? Thyristor::getDetectedFrequency() : 0; }
+uint16_t Mycila::ZCD::getZCPulseWidthAvg() const { return _enabled ? Thyristor::getPulseWidth() : 0; }
+uint16_t Mycila::ZCD::getZCPulseWidthMax() const { return _enabled ? Thyristor::getMaxPulseWidth() : 0; }
+uint16_t Mycila::ZCD::getZCPulseWidthLast() const { return _enabled ? Thyristor::getLastPulseWidth() : 0; }

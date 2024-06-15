@@ -91,16 +91,15 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     ds18O2.begin(config.get(KEY_PIN_OUTPUT2_DS18).toInt());
 
   // Electricity: ZCD
-  const uint8_t frequency = config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50;
   if (config.getBool(KEY_ENABLE_ZCD))
-    zcd.begin(config.get(KEY_PIN_ZCD).toInt(), frequency);
+    zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
 
   // Electricity: Dimmers
   if (zcd.isEnabled()) {
     if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
-      dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), frequency);
+      dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
     if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
-      dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), frequency);
+      dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
   } else {
     logger.error(TAG, "Dimmers cannot be enabled because ZCD is not enabled");
   }
@@ -132,6 +131,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   Mycila::TaskMonitor.begin();
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
+  Mycila::TaskMonitor.addTask("wifi");                  // WiFI
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
