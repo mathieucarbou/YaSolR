@@ -25,7 +25,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
   relayTask.setEnabledWhen([]() { return routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled(); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
-  routerDebugTask.setInterval(3 * Mycila::TaskDuration::SECONDS);
+  routerDebugTask.setInterval(5 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
 #ifdef APP_MODEL_TRIAL
