@@ -156,7 +156,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
       root["app"]["model"] = Mycila::AppInfo.model;
       root["app"]["name"] = Mycila::AppInfo.name;
-      root["app"]["trial"] = Mycila::AppInfo.trial;
       root["app"]["version"] = Mycila::AppInfo.version;
 
       root["device"]["boots"] = Mycila::System.getBootCount();
