@@ -49,7 +49,8 @@ namespace Mycila {
       typedef struct {
           float calibratedResistance = 0;
           bool autoDimmer = false;
-          uint16_t dimmerLimit = MYCILA_DIMMER_MAX_LEVEL;
+          uint16_t dimmerDutyLimit = MYCILA_DIMMER_MAX_DUTY;
+          uint8_t dimmerTempLimit = 0;
           bool autoBypass = false;
           uint8_t autoStartTemperature = 0;
           uint8_t autoStopTemperature = 0;
@@ -129,14 +130,15 @@ namespace Mycila {
 
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer; }
+      bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperatureSensor->isEnabled() && _temperatureSensor->getLastTemperature() >= config.dimmerTempLimit; }
       uint16_t getDimmerDuty() const { return _dimmer->getPowerDuty(); }
-      // Power Duty Cycle [0, MYCILA_DIMMER_MAX_LEVEL]
+      // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
       bool tryDimmerDuty(uint16_t duty);
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
-      void tryDimmerDutyCycle(float dutyCycle) { tryDimmerDuty(dutyCycle * MYCILA_DIMMER_MAX_LEVEL); }
-      void applyDimmerLimit();
+      void tryDimmerDutyCycle(float dutyCycle) { tryDimmerDuty(dutyCycle * MYCILA_DIMMER_MAX_DUTY); }
+      void applyDimmerLimits();
 
       // bypass
 

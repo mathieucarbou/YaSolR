@@ -54,14 +54,16 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1AutoStartWDays.setTab(&_output1Tab);
   _output1AutoStoptTemp.setTab(&_output1Tab);
   _output1AutoStoptTime.setTab(&_output1Tab);
-  _output1DimmerLimiter.setTab(&_output1Tab);
+  _output1DimmerDutyLimiter.setTab(&_output1Tab);
+  _output1DimmerTempLimiter.setTab(&_output1Tab);
 
   _boolConfig(_output1BypassAuto, KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   _boolConfig(_output1DimmerAuto, KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   _daysConfig(_output1AutoStartWDays, KEY_OUTPUT1_DAYS);
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
-  _sliderConfig(_output1DimmerLimiter, KEY_OUTPUT1_DIMMER_LIMITER);
+  _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_MAX_TEMP);
+  _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_MAX_DUTY);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
   _outputBypassSwitch(_output1Bypass, output1);
@@ -75,14 +77,16 @@ void YaSolR::WebsiteClass::initLayout() {
   _output2AutoStartWDays.setTab(&_output2Tab);
   _output2AutoStoptTemp.setTab(&_output2Tab);
   _output2AutoStoptTime.setTab(&_output2Tab);
-  _output2DimmerLimiter.setTab(&_output2Tab);
+  _output2DimmerDutyLimiter.setTab(&_output2Tab);
+  _output2DimmerTempLimiter.setTab(&_output2Tab);
 
   _boolConfig(_output2BypassAuto, KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
   _boolConfig(_output2DimmerAuto, KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   _daysConfig(_output2AutoStartWDays, KEY_OUTPUT2_DAYS);
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
-  _sliderConfig(_output2DimmerLimiter, KEY_OUTPUT2_DIMMER_LIMITER);
+  _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_MAX_TEMP);
+  _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_MAX_DUTY);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
   _outputBypassSwitch(_output2Bypass, output2);
@@ -308,7 +312,8 @@ void YaSolR::WebsiteClass::initCards() {
   bool output1DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18);
 
   _output1DimmerAuto.update(autoDimmerO1Activated);
-  _output1DimmerLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt()));
+  _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt()));
+  _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP));
   _output1BypassAuto.update(autoBypassActivated);
   _output1AutoStartWDays.update(config.get(KEY_OUTPUT1_DAYS));
   _output1AutoStartTemp.update(config.get(KEY_OUTPUT1_TEMPERATURE_START));
@@ -330,7 +335,8 @@ void YaSolR::WebsiteClass::initCards() {
   _output1Resistance.setDisplay(dimmer1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled);
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
-  _output1DimmerLimiter.setDisplay(dimmer1Enabled);
+  _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
+  _output1DimmerTempLimiter.setDisplay(dimmer1Enabled && output1DS18Enabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
   _output1AutoStartWDays.setDisplay(bypass1Possible && autoBypassActivated);
   _output1AutoStartTime.setDisplay(bypass1Possible && autoBypassActivated);
@@ -347,7 +353,8 @@ void YaSolR::WebsiteClass::initCards() {
   bool output2DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18);
 
   _output2DimmerAuto.update(autoDimmerO2Activated);
-  _output2DimmerLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt()));
+  _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt()));
+  _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP));
   _output2BypassAuto.update(autoBypassO2Activated);
   _output2AutoStartWDays.update(config.get(KEY_OUTPUT2_DAYS));
   _output2AutoStartTemp.update(config.get(KEY_OUTPUT2_TEMPERATURE_START));
@@ -369,7 +376,8 @@ void YaSolR::WebsiteClass::initCards() {
   _output2Resistance.setDisplay(dimmer2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled);
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
-  _output2DimmerLimiter.setDisplay(dimmer2Enabled);
+  _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
+  _output2DimmerTempLimiter.setDisplay(dimmer2Enabled && output2DS18Enabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
   _output2AutoStartWDays.setDisplay(bypass2Possible && autoBypassO2Activated);
   _output2AutoStartTime.setDisplay(bypass2Possible && autoBypassO2Activated);

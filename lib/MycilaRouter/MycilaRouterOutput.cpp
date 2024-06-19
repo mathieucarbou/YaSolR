@@ -51,8 +51,13 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
     return false;
   }
 
-  if (duty > config.dimmerLimit) {
-    duty = config.dimmerLimit;
+  if (isDimmerTemperatureLimitReached()) {
+    LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
+    return false;
+  }
+
+  if (duty > config.dimmerDutyLimit) {
+    duty = config.dimmerDutyLimit;
   }
 
   LOGD(TAG, "Setting Dimmer '%s' duty to %" PRIu16 "...", _name, duty);
@@ -60,18 +65,27 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
   return true;
 }
 
-void Mycila::RouterOutput::applyDimmerLimit() {
+void Mycila::RouterOutput::applyDimmerLimits() {
   if (!_dimmer->isEnabled())
     return;
+
   if (_autoBypassEnabled)
     return;
+
   if (_bypassEnabled)
     return;
+
   if (_dimmer->isOff())
     return;
-  if (_dimmer->getPowerDuty() > config.dimmerLimit) {
-    LOGW(TAG, "Dimmer '%s' reached its limit at %" PRIu16, _name, config.dimmerLimit);
-    _dimmer->setPowerDuty(config.dimmerLimit);
+
+  if (_dimmer->getPowerDuty() > config.dimmerDutyLimit) {
+    LOGW(TAG, "Dimmer '%s' reached its duty limit at %" PRIu16, _name, config.dimmerDutyLimit);
+    _dimmer->setPowerDuty(config.dimmerDutyLimit);
+  }
+
+  if (isDimmerTemperatureLimitReached()) {
+    LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
+    _dimmer->off();
   }
 }
 
@@ -215,7 +229,7 @@ void Mycila::RouterOutput::_setBypass(bool state, uint16_t dimmerDutyWhenRelayOf
       _dimmer->setPowerDuty(dimmerDutyWhenRelayOff);
   } else {
     LOGD(TAG, "Turning %s Dimmer '%s'...", state ? "on" : "off", _name);
-    _dimmer->setPowerDuty(state ? MYCILA_DIMMER_MAX_LEVEL : dimmerDutyWhenRelayOff);
+    _dimmer->setPowerDuty(state ? MYCILA_DIMMER_MAX_DUTY : dimmerDutyWhenRelayOff);
   }
   _bypassEnabled = state;
 }

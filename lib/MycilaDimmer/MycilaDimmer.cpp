@@ -75,8 +75,8 @@ void Mycila::Dimmer::setPowerDuty(uint16_t newDuty) {
     return;
 
   // ensure newDuty is within bounds
-  if (newDuty > MYCILA_DIMMER_MAX_LEVEL)
-    newDuty = MYCILA_DIMMER_MAX_LEVEL;
+  if (newDuty > MYCILA_DIMMER_MAX_DUTY)
+    newDuty = MYCILA_DIMMER_MAX_DUTY;
 
   // nothing to do ?
   if (_duty == newDuty)
@@ -90,7 +90,7 @@ void Mycila::Dimmer::setPowerDuty(uint16_t newDuty) {
   if (newDuty == 0) {
     _dimmer->setDelay(semiPeriod);
 
-  } else if (newDuty == MYCILA_DIMMER_MAX_LEVEL) {
+  } else if (newDuty == MYCILA_DIMMER_MAX_DUTY) {
     _dimmer->setDelay(0);
 
   } else {
@@ -106,8 +106,8 @@ void Mycila::Dimmer::setPowerDuty(uint16_t newDuty) {
 
   _duty = newDuty;
 
-  if (_callback && (oldDuty == 0 || oldDuty == MYCILA_DIMMER_MAX_LEVEL || newDuty == 0 || newDuty == MYCILA_DIMMER_MAX_LEVEL))
-    _callback(newDuty == 0 ? DimmerState::OFF : (newDuty == MYCILA_DIMMER_MAX_LEVEL ? DimmerState::FULL : DimmerState::DIM));
+  if (_callback && (oldDuty == 0 || oldDuty == MYCILA_DIMMER_MAX_DUTY || newDuty == 0 || newDuty == MYCILA_DIMMER_MAX_DUTY))
+    _callback(newDuty == 0 ? DimmerState::OFF : (newDuty == MYCILA_DIMMER_MAX_DUTY ? DimmerState::FULL : DimmerState::DIM));
 }
 
 /*

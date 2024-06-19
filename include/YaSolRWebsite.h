@@ -103,13 +103,14 @@ namespace YaSolR {
       Card _output1Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output1Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
       Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
-      Card _output1DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Duty Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer Temperature Limiter", "°C");
       Card _output1BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
-      Card _output1AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
-      Card _output1AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
-      Card _output1AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
       Card _output1AutoStartTemp = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Temperature", "°C");
       Card _output1AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Temperature", "°C");
+      Card _output1AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
+      Card _output1AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
+      Card _output1AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
 
       Tab _output2Tab = Tab(&dashboard, "\u2600 Output 2");
       Card _output2State = Card(&dashboard, STATUS_CARD, "Status", DASH_STATUS_IDLE);
@@ -127,13 +128,14 @@ namespace YaSolR {
       Card _output2Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
       Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
-      Card _output2DimmerLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Duty Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer Temperature Limiter", "°C");
       Card _output2BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
-      Card _output2AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
-      Card _output2AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
-      Card _output2AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
       Card _output2AutoStartTemp = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Temperature");
       Card _output2AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Temperature");
+      Card _output2AutoStartTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Start Time");
+      Card _output2AutoStoptTime = Card(&dashboard, TEXT_INPUT_CARD, "Bypass Stop Time");
+      Card _output2AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, "Bypass Week Days");
 
       Tab _relaysTab = Tab(&dashboard, "\u2600 Relays");
       Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, "Relay 1 Automatic Control: Connected Load (Watts)");

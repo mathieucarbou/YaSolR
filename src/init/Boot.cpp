@@ -70,7 +70,8 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_NTP_SERVER, "pool.ntp.org");
   config.configure(KEY_NTP_TIMEZONE, "Europe/Paris");
   config.configure(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS);
-  config.configure(KEY_OUTPUT1_DIMMER_LIMITER, String(YASOLR_DIMMER_MAX_LEVEL));
+  config.configure(KEY_OUTPUT1_DIMMER_MAX_DUTY, String(YASOLR_DIMMER_MAX_LEVEL));
+  config.configure(KEY_OUTPUT1_DIMMER_MAX_TEMP, String(YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE));
   config.configure(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
   config.configure(KEY_OUTPUT1_RESISTANCE, "0");
   config.configure(KEY_OUTPUT1_TEMPERATURE_START, String(YASOLR_OUTPUT_AUTO_START_TEMPERATURE));
@@ -78,7 +79,8 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_OUTPUT1_TIME_START, "22:00");
   config.configure(KEY_OUTPUT1_TIME_STOP, "06:00");
   config.configure(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS);
-  config.configure(KEY_OUTPUT2_DIMMER_LIMITER, String(YASOLR_DIMMER_MAX_LEVEL));
+  config.configure(KEY_OUTPUT2_DIMMER_MAX_DUTY, String(YASOLR_DIMMER_MAX_LEVEL));
+  config.configure(KEY_OUTPUT2_DIMMER_MAX_TEMP, String(YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE));
   config.configure(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
   config.configure(KEY_OUTPUT2_RESISTANCE, "0");
   config.configure(KEY_OUTPUT2_TEMPERATURE_START, String(YASOLR_OUTPUT_AUTO_START_TEMPERATURE));

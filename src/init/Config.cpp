@@ -43,7 +43,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // output1
   output1.config.calibratedResistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
   output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-  output1.config.dimmerLimit = config.get(KEY_OUTPUT1_DIMMER_LIMITER).toInt();
+  output1.config.dimmerDutyLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt();
+  output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP).toInt();
   output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   output1.config.autoStartTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_START).toInt();
   output1.config.autoStopTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_STOP).toInt();
@@ -54,7 +55,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // output2
   output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
   output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-  output2.config.dimmerLimit = config.get(KEY_OUTPUT2_DIMMER_LIMITER).toInt();
+  output2.config.dimmerDutyLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt();
+  output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP).toInt();
   output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
   output2.config.autoStartTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_START).toInt();
   output2.config.autoStopTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_STOP).toInt();

@@ -23,6 +23,7 @@ namespace Mycila {
       float apparentPower = 0;
       float current = 0;
       float energy = 0;
+      float nominalPower = 0;
       float power = 0;
       float powerFactor = 0;
       float resistance = 0;
@@ -52,14 +53,15 @@ namespace Mycila {
 
         for (const auto& output : _outputs) {
           assert(index < MYCILA_ROUTER_OUTPUT_COUNT);
+          output->getMetrics(metrics.outputs[index]);
+          metrics.energy += metrics.outputs[index].energy;
           if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
             routing = true;
-            output->getMetrics(metrics.outputs[index]);
             metrics.apparentPower += metrics.outputs[index].apparentPower;
             metrics.current += metrics.outputs[index].current;
+            metrics.nominalPower += metrics.outputs[index].nominalPower;
             metrics.power += metrics.outputs[index].power;
           }
-          metrics.energy += metrics.outputs[index].energy;
           index++;
         }
 

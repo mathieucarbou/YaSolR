@@ -7,8 +7,8 @@
 Mycila::Task routerTask("Router", [](void* params) {
   grid.applyExpiration();
 
-  output1.applyDimmerLimit();
-  output2.applyDimmerLimit();
+  output1.applyDimmerLimits();
+  output2.applyDimmerLimits();
 
   output1.applyAutoBypass();
   output2.applyAutoBypass();
@@ -43,9 +43,9 @@ Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   float virtualGridPower = gridMetrics.power - routerMetrics.power;
 
   // if (virtualGridPower < 0) {
-  //   if (output1.isAutoDimmerEnabled() && dimmerO1.getPowerDuty() < output1.config.dimmerLimit) {
+  //   if (output1.isAutoDimmerEnabled() && dimmerO1.getPowerDuty() < output1.config.dimmerDutyLimit) {
   //   }
-  //   if (output2.isAutoDimmerEnabled() && dimmerO2.getPowerDuty() < output2.config.dimmerLimit) {
+  //   if (output2.isAutoDimmerEnabled() && dimmerO2.getPowerDuty() < output2.config.dimmerDutyLimit) {
   //   }
   // }
 });

@@ -72,7 +72,8 @@
 #define KEY_NTP_SERVER                "ntp_server"
 #define KEY_NTP_TIMEZONE              "ntp_timezone"
 #define KEY_OUTPUT1_DAYS              "o1_days"
-#define KEY_OUTPUT1_DIMMER_LIMITER    "o1_dim_limit"
+#define KEY_OUTPUT1_DIMMER_MAX_DUTY   "o1_dim_max_d"
+#define KEY_OUTPUT1_DIMMER_MAX_TEMP   "o1_dim_max_t"
 #define KEY_OUTPUT1_RELAY_TYPE        "o1_relay_type"
 #define KEY_OUTPUT1_RESISTANCE        "o1_resistance"
 #define KEY_OUTPUT1_TEMPERATURE_START "o1_temp_start"
@@ -80,7 +81,8 @@
 #define KEY_OUTPUT1_TIME_START        "o1_time_start"
 #define KEY_OUTPUT1_TIME_STOP         "o1_time_stop"
 #define KEY_OUTPUT2_DAYS              "o2_days"
-#define KEY_OUTPUT2_DIMMER_LIMITER    "o2_dim_limit"
+#define KEY_OUTPUT2_DIMMER_MAX_DUTY   "o2_dim_max_d"
+#define KEY_OUTPUT2_DIMMER_MAX_TEMP   "o2_dim_max_t"
 #define KEY_OUTPUT2_RELAY_TYPE        "o2_relay_type"
 #define KEY_OUTPUT2_RESISTANCE        "o2_resistance"
 #define KEY_OUTPUT2_TEMPERATURE_START "o2_temp_start"
@@ -119,7 +121,7 @@
 // default settings
 
 #define YASOLR_ADMIN_USERNAME       "admin"
-#define YASOLR_DIMMER_MAX_LEVEL     MYCILA_DIMMER_MAX_LEVEL
+#define YASOLR_DIMMER_MAX_LEVEL     MYCILA_DIMMER_MAX_DUTY
 #define YASOLR_DISPLAY_LINE_SIZE    21
 #define YASOLR_DISPLAY_LINES        5
 #define YASOLR_MQTT_KEEPALIVE       60

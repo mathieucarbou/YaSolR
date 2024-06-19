@@ -28,7 +28,7 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
 
   // CONFIG
 
-  haDiscovery.publish(Mycila::HANumber("output1_dimmer_limiter", "Output 1 Limiter", "/config/" KEY_OUTPUT1_DIMMER_LIMITER "/set", "/config/" KEY_OUTPUT1_DIMMER_LIMITER, Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:flash", Mycila::HACategory::CONFIG));
+  haDiscovery.publish(Mycila::HANumber("output1_dimmer_limiter", "Output 1 Limiter", "/config/" KEY_OUTPUT1_DIMMER_MAX_DUTY "/set", "/config/" KEY_OUTPUT1_DIMMER_MAX_DUTY, Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:flash", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output1_auto_bypass", "Output 1 Auto Bypass", "/config/" KEY_ENABLE_OUTPUT1_AUTO_BYPASS "/set", "/config/" KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output1_auto_dimmer", "Output 1 Auto Dimmer", "/config/" KEY_ENABLE_OUTPUT1_AUTO_DIMMER "/set", "/config/" KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HATextField("output1_wdays", "Output 1 Week Days", "/config/" KEY_OUTPUT1_DAYS "/set", "/config/" KEY_OUTPUT1_DAYS, nullptr, "mdi:calendar", Mycila::HACategory::CONFIG));
@@ -37,7 +37,7 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
   haDiscovery.publish(Mycila::HATextField("output1_time_start", "Output 1 Time Start", "/config/" KEY_OUTPUT1_TIME_START "/set", "/config/" KEY_OUTPUT1_TIME_START, "^\\d?\\d:\\d\\d$", "mdi:clock-time-ten", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HATextField("output1_time_stop", "Output 1 Time Stop", "/config/" KEY_OUTPUT1_TIME_STOP "/set", "/config/" KEY_OUTPUT1_TIME_STOP, "^\\d?\\d:\\d\\d$", "mdi:clock-time-six", Mycila::HACategory::CONFIG));
 
-  haDiscovery.publish(Mycila::HANumber("output2_dimmer_limiter", "Output 2 Limiter", "/config/" KEY_OUTPUT2_DIMMER_LIMITER "/set", "/config/" KEY_OUTPUT2_DIMMER_LIMITER, Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:flash", Mycila::HACategory::CONFIG));
+  haDiscovery.publish(Mycila::HANumber("output2_dimmer_limiter", "Output 2 Limiter", "/config/" KEY_OUTPUT2_DIMMER_MAX_DUTY "/set", "/config/" KEY_OUTPUT2_DIMMER_MAX_DUTY, Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:flash", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output2_auto_bypass", "Output 2 Auto Bypass", "/config/" KEY_ENABLE_OUTPUT2_AUTO_BYPASS "/set", "/config/" KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output2_auto_dimmer", "Output 2 Auto Dimmer", "/config/" KEY_ENABLE_OUTPUT2_AUTO_DIMMER "/set", "/config/" KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HATextField("output2_wdays", "Output 2 Week Days", "/config/" KEY_OUTPUT2_DAYS "/set", "/config/" KEY_OUTPUT2_DAYS, nullptr, "mdi:calendar", Mycila::HACategory::CONFIG));
