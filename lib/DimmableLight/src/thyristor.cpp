@@ -683,7 +683,7 @@ uint16_t Thyristor::getPulseWidth() {
   if(diff > semiPeriodLength) {
     pulses.reset();
   }
-  uint16_t avg = pulses.getTotal() / pulses.getCount();
+  uint16_t avg = pulses.getCount() == 0 ? 0 : pulses.getTotal() / pulses.getCount();
   interrupts();
   return avg;
 }
