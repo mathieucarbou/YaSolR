@@ -15,7 +15,7 @@ namespace Mycila {
 
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
-      bool isConnected() const { return getZCFrequency() > 0; }
+      bool isConnected() const { return getLastPulseWidth() > 0; }
 
       // in microseconds
       // 50Hz => 10000
@@ -23,22 +23,22 @@ namespace Mycila {
       uint16_t getSemiPeriod() const;
 
       // Detect the Zero-Cross pulse frequency in Hz
-      float getZCFrequency() const;
+      float getFrequency() const;
 
       // Grid frequency in Hz based on the Zero-Cross pulse frequency
       float getCurrentFrequency() const;
 
       // Detect the Zero-Cross pulse width in microseconds
-      uint16_t getZCPulseWidthAvg() const;
-      uint16_t getZCPulseWidthLast() const;
-      uint16_t getZCPulseWidthMax() const;
+      uint16_t getAvgPulseWidth() const;
+      uint16_t getLastPulseWidth() const;
+      uint16_t getMaxPulseWidth() const;
 
       void toJson(const JsonObject& root) const {
         root["enabled"] = isEnabled();
-        root["zc_pulse_freq"] = getZCFrequency();
-        root["zc_pulse_width_avg"] = getZCPulseWidthAvg();
-        root["zc_pulse_width_last"] = getZCPulseWidthLast();
-        root["zc_pulse_width_max"] = getZCPulseWidthMax();
+        root["pulse_freq"] = getFrequency();
+        root["pulse_width_avg"] = getAvgPulseWidth();
+        root["pulse_width_last"] = getLastPulseWidth();
+        root["pulse_width_max"] = getMaxPulseWidth();
         root["semi_period"] = getSemiPeriod();
       }
 

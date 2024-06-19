@@ -13,7 +13,7 @@
 #include <functional>
 
 #define MYCILA_DIMMER_RESOLUTION 12   // bits
-#define MYCILA_DIMMER_MAX_DUTY  4095 // ((1 << MYCILA_DIMMER_RESOLUTION) - 1)
+#define MYCILA_DIMMER_MAX_DUTY   4095 // ((1 << MYCILA_DIMMER_RESOLUTION) - 1)
 
 namespace Mycila {
   enum class DimmerState { OFF,
@@ -39,6 +39,7 @@ namespace Mycila {
 
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
+      bool isConnected() const { return _zcd->isConnected(); }
 
       void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
@@ -72,7 +73,7 @@ namespace Mycila {
       // At 100% power, the phase angle is equal to 0
       float getPhaseAngle() const {
         // angle_rad = PI * delay_s / period_s
-        return PI * _zcd->getZCFrequency() * getFiringDelay() / 1000000;
+        return PI * _zcd->getFrequency() * getFiringDelay() / 1000000;
       }
 
     private:

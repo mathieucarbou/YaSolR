@@ -29,7 +29,6 @@ namespace Mycila {
   };
 
   typedef struct {
-      bool connected = false;
       float apparentPower = 0;
       float current = 0;
       float dimmedVoltage = 0;
@@ -97,7 +96,7 @@ namespace Mycila {
         root["enabled"] = isEnabled();
         root["state"] = getStateName();
         root["bypass"] = isBypassOn() ? "on" : "off";
-        root["online"] = metrics.connected;
+        root["online"] = isDimmerEnabled();
 
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
         _temperatureSensor->toJson(root["ds18"].to<JsonObject>());
@@ -129,6 +128,7 @@ namespace Mycila {
       // dimmer
 
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
+      bool isDimmerConnected() const { return _dimmer->isConnected(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer; }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperatureSensor->isEnabled() && _temperatureSensor->getLastTemperature() >= config.dimmerTempLimit; }
       uint16_t getDimmerDuty() const { return _dimmer->getPowerDuty(); }
@@ -151,10 +151,11 @@ namespace Mycila {
       // metrics
 
       void getMetrics(RouterOutputMetrics& metrics) const {
-        metrics.voltage = _pzem->isConnected() ? _pzem->getVoltage() : _grid->getVoltage();
-        metrics.connected = metrics.voltage > 0;
+        const bool pzem = _pzem->isConnected();
+        const bool routing = getState() == RouterOutputState::OUTPUT_ROUTING;
+        metrics.voltage = pzem ? _pzem->getVoltage() : _grid->getVoltage();
         metrics.energy = _pzem->getEnergy();
-        if (getState() == RouterOutputState::OUTPUT_ROUTING) {
+        if (routing) {
           if (config.calibratedResistance) {
             float dutyCycle = _dimmer->getPowerDutyCycle();
             metrics.resistance = config.calibratedResistance;
@@ -165,14 +166,14 @@ namespace Mycila {
             metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
             metrics.apparentPower = metrics.current * metrics.voltage;
             metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
-          } else if (_pzem->isConnected()) {
+          } else if (pzem) {
             metrics.resistance = _pzem->getResistance();
-            metrics.nominalPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
+            metrics.nominalPower = _pzem->getNominalPower();
             metrics.power = _pzem->getPower();
             metrics.powerFactor = _pzem->getPowerFactor();
             metrics.current = _pzem->getCurrent();
             metrics.apparentPower = _pzem->getApparentPower();
-            metrics.dimmedVoltage = metrics.power / metrics.current;
+            metrics.dimmedVoltage = _pzem->getDimmedVoltage();
             metrics.thdi = _pzem->getTHDi(0);
           }
         }

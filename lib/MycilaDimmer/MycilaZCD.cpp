@@ -68,8 +68,8 @@ void Mycila::ZCD::end() {
 }
 
 uint16_t Mycila::ZCD::getSemiPeriod() const { return _enabled ? Thyristor::getSemiPeriod() : 0; }
-float Mycila::ZCD::getZCFrequency() const { return getCurrentFrequency() * 2; }
+float Mycila::ZCD::getFrequency() const { return getCurrentFrequency() * 2; }
 float Mycila::ZCD::getCurrentFrequency() const { return _enabled ? Thyristor::getDetectedFrequency() : 0; }
-uint16_t Mycila::ZCD::getZCPulseWidthAvg() const { return _enabled ? Thyristor::getPulseWidth() : 0; }
-uint16_t Mycila::ZCD::getZCPulseWidthMax() const { return _enabled ? Thyristor::getMaxPulseWidth() : 0; }
-uint16_t Mycila::ZCD::getZCPulseWidthLast() const { return _enabled ? Thyristor::getLastPulseWidth() : 0; }
+uint16_t Mycila::ZCD::getAvgPulseWidth() const { return _enabled ? Thyristor::getPulseWidth() : 0; }
+uint16_t Mycila::ZCD::getMaxPulseWidth() const { return _enabled ? Thyristor::getMaxPulseWidth() : 0; }
+uint16_t Mycila::ZCD::getLastPulseWidth() const { return _enabled ? Thyristor::getLastPulseWidth() : 0; }

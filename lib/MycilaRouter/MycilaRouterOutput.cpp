@@ -51,6 +51,11 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
     return false;
   }
 
+  if (!_dimmer->isConnected()) {
+    LOGW(TAG, "Dimmer '%s' is not connected to the grid", _name);
+    return false;
+  }
+
   if (isDimmerTemperatureLimitReached()) {
     LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
     return false;
@@ -78,14 +83,22 @@ void Mycila::RouterOutput::applyDimmerLimits() {
   if (_dimmer->isOff())
     return;
 
+  if (_dimmer->isOn() && !_dimmer->isConnected()) {
+    LOGW(TAG, "Dimmer '%s' is not connected to the grid!", _name);
+    _dimmer->off();
+    return;
+  }
+
   if (_dimmer->getPowerDuty() > config.dimmerDutyLimit) {
     LOGW(TAG, "Dimmer '%s' reached its duty limit at %" PRIu16, _name, config.dimmerDutyLimit);
     _dimmer->setPowerDuty(config.dimmerDutyLimit);
+    return;
   }
 
   if (isDimmerTemperatureLimitReached()) {
     LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
     _dimmer->off();
+    return;
   }
 }
 

@@ -679,6 +679,10 @@ void Thyristor::setFrequency(float frequency) {
 
 uint16_t Thyristor::getPulseWidth() {
   noInterrupts();
+  uint32_t diff = micros() - lastTime;
+  if(diff > semiPeriodLength) {
+    pulses.reset();
+  }
   uint16_t avg = pulses.getTotal() / pulses.getCount();
   interrupts();
   return avg;
@@ -686,6 +690,10 @@ uint16_t Thyristor::getPulseWidth() {
 
 uint16_t Thyristor::getMaxPulseWidth() {
   noInterrupts();
+  uint32_t diff = micros() - lastTime;
+  if(diff > semiPeriodLength) {
+    pulses.reset();
+  }
   uint16_t max = pulses.getMax();
   interrupts();
   return max;
@@ -693,6 +701,10 @@ uint16_t Thyristor::getMaxPulseWidth() {
 
 uint16_t Thyristor::getLastPulseWidth() {
   noInterrupts();
+  uint32_t diff = micros() - lastTime;
+  if(diff > semiPeriodLength) {
+    pulses.reset();
+  }
   uint16_t last = pulses.getLast();
   interrupts();
   return last;
