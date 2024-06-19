@@ -4,15 +4,22 @@
  */
 #pragma once
 
+// GPIO
+
 #ifndef GPIO_IS_VALID_OUTPUT_GPIO
-#define GPIO_IS_VALID_OUTPUT_GPIO(gpio_num) ((gpio_num >= 0) && \
-                                             (((1ULL << (gpio_num)) & SOC_GPIO_VALID_OUTPUT_GPIO_MASK) != 0))
+  #define GPIO_IS_VALID_OUTPUT_GPIO(gpio_num) ((gpio_num >= 0) && \
+                                               (((1ULL << (gpio_num)) & SOC_GPIO_VALID_OUTPUT_GPIO_MASK) != 0))
 #endif
 
 #ifndef GPIO_IS_VALID_GPIO
-#define GPIO_IS_VALID_GPIO(gpio_num) ((gpio_num >= 0) && \
-                                      (((1ULL << (gpio_num)) & SOC_GPIO_VALID_GPIO_MASK) != 0))
+  #define GPIO_IS_VALID_GPIO(gpio_num) ((gpio_num >= 0) && \
+                                        (((1ULL << (gpio_num)) & SOC_GPIO_VALID_GPIO_MASK) != 0))
 #endif
+
+// YASOLR
+
+#define YASOLR_LANG_EN 1
+#define YASOLR_LANG_FR 2
 
 #define YASOLR_TRUE     "true"
 #define YASOLR_FALSE    "false"
@@ -22,6 +29,16 @@
 #define YASOLR_STATE(a) ((a) ? YASOLR_ON : YASOLR_OFF)
 
 #define TAG "YASOLR"
+
+#ifndef YASOLR_LANG
+  #define YASOLR_LANG YASOLR_LANG_EN
+#endif
+
+#if YASOLR_LANG == YASOLR_LANG_FR
+  #include "i18n/fr.h"
+#else
+  #include "i18n/en.h"
+#endif
 
 // password configuration keys
 
@@ -137,71 +154,71 @@
 // pinout
 
 #ifndef YASOLR_LIGHTS_GREEN_PIN
-#define YASOLR_LIGHTS_GREEN_PIN 0
+  #define YASOLR_LIGHTS_GREEN_PIN 0
 #endif
 #ifndef YASOLR_LIGHTS_YELLOW_PIN
-#define YASOLR_LIGHTS_YELLOW_PIN 2
+  #define YASOLR_LIGHTS_YELLOW_PIN 2
 #endif
 #ifndef YASOLR_LIGHTS_RED_PIN
-#define YASOLR_LIGHTS_RED_PIN 15
+  #define YASOLR_LIGHTS_RED_PIN 15
 #endif
 #ifndef YASOLR_DISPLAY_CLOCK_PIN
-#define YASOLR_DISPLAY_CLOCK_PIN SCL
+  #define YASOLR_DISPLAY_CLOCK_PIN SCL
 #endif
 #ifndef YASOLR_DISPLAY_DATA_PIN
-#define YASOLR_DISPLAY_DATA_PIN SDA
+  #define YASOLR_DISPLAY_DATA_PIN SDA
 #endif
 #ifndef YASOLR_SYSTEM_TEMP_PIN
-#define YASOLR_SYSTEM_TEMP_PIN 4
+  #define YASOLR_SYSTEM_TEMP_PIN 4
 #endif
 #ifndef YASOLR_RELAY1_PIN
-#define YASOLR_RELAY1_PIN 13
+  #define YASOLR_RELAY1_PIN 13
 #endif
 #ifndef YASOLR_RELAY2_PIN
-#define YASOLR_RELAY2_PIN 12
+  #define YASOLR_RELAY2_PIN 12
 #endif
 #ifndef YASOLR_OUTPUT1_DIMMER_PIN
-#define YASOLR_OUTPUT1_DIMMER_PIN 25
+  #define YASOLR_OUTPUT1_DIMMER_PIN 25
 #endif
 #ifndef YASOLR_OUTPUT1_RELAY_PIN
-#define YASOLR_OUTPUT1_RELAY_PIN 32
+  #define YASOLR_OUTPUT1_RELAY_PIN 32
 #endif
 #ifndef YASOLR_OUTPUT1_TEMP_PIN
-#define YASOLR_OUTPUT1_TEMP_PIN 18
+  #define YASOLR_OUTPUT1_TEMP_PIN 18
 #endif
 #ifndef YASOLR_OUTPUT_AUTO_START_TEMPERATURE
-#define YASOLR_OUTPUT_AUTO_START_TEMPERATURE 50
+  #define YASOLR_OUTPUT_AUTO_START_TEMPERATURE 50
 #endif
 #ifndef YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE
-#define YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE 60
+  #define YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE 60
 #endif
 #ifndef YASOLR_OUTPUT2_DIMMER_PIN
-#define YASOLR_OUTPUT2_DIMMER_PIN 26
+  #define YASOLR_OUTPUT2_DIMMER_PIN 26
 #endif
 #ifndef YASOLR_OUTPUT2_RELAY_PIN
-#define YASOLR_OUTPUT2_RELAY_PIN 33
+  #define YASOLR_OUTPUT2_RELAY_PIN 33
 #endif
 #ifndef YASOLR_OUTPUT2_TEMP_PIN
-#define YASOLR_OUTPUT2_TEMP_PIN 5
+  #define YASOLR_OUTPUT2_TEMP_PIN 5
 #endif
 #ifndef YASOLR_ZCD_PIN
-#define YASOLR_ZCD_PIN 35
+  #define YASOLR_ZCD_PIN 35
 #endif
 #ifndef YASOLR_JSY_RX_PIN
-#define YASOLR_JSY_RX_PIN 16
+  #define YASOLR_JSY_RX_PIN 16
 #endif
 #ifndef YASOLR_JSY_TX_PIN
-#define YASOLR_JSY_TX_PIN 17
+  #define YASOLR_JSY_TX_PIN 17
 #endif
 #ifndef YASOLR_JSY_SERIAL
-#define YASOLR_JSY_SERIAL Serial2
+  #define YASOLR_JSY_SERIAL Serial2
 #endif
 #ifndef YASOLR_PZEM_RX_PIN
-#define YASOLR_PZEM_RX_PIN 14
+  #define YASOLR_PZEM_RX_PIN 14
 #endif
 #ifndef YASOLR_PZEM_TX_PIN
-#define YASOLR_PZEM_TX_PIN 27
+  #define YASOLR_PZEM_TX_PIN 27
 #endif
 #ifndef YASOLR_PZEM_SERIAL
-#define YASOLR_PZEM_SERIAL Serial1
+  #define YASOLR_PZEM_SERIAL Serial1
 #endif

@@ -45,6 +45,7 @@ namespace Mycila {
         const float angle = getPhaseAngle();
         root["angle"] = angle;
         root["angle_d"] = angle * RAD_TO_DEG;
+        root["connected"] = isConnected();
         root["delay"] = getFiringDelay();
         root["duty"] = _duty;
         root["duty_cycle"] = getPowerDutyCycle();

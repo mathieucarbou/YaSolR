@@ -194,6 +194,6 @@ namespace Mycila {
       RouterOutputStateCallback _callback = nullptr;
 
     private:
-      void _setBypass(bool state, uint16_t dimmerDutyWhenRelayOff = 0);
+      void _setBypass(bool state);
   };
 } // namespace Mycila

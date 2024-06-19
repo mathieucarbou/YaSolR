@@ -125,7 +125,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     case DisplayKind::DISPLAY_OUTPUT1: {
       Mycila::RouterOutputMetrics outputMetrics;
       output1.getMetrics(outputMetrics);
-      if (dimmerO1.isConnected())
+      if (output1.isDimmerConnected())
         display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       else
         display.home.printf("Output 1:  GRID ERROR\n");
@@ -143,7 +143,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     case DisplayKind::DISPLAY_OUTPUT2: {
       Mycila::RouterOutputMetrics outputMetrics;
       output2.getMetrics(outputMetrics);
-      if (dimmerO2.isConnected())
+      if (output2.isDimmerConnected())
         display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       else
         display.home.printf("Output 2:  GRID ERROR\n");

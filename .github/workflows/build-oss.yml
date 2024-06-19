@@ -92,13 +92,19 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install --upgrade platformio
-          pio run -e ${{ matrix.environment }}
           ref="${{ github.ref_name }}"
           ref="${ref//\//}"
           ref="${ref//-/}"
           ref="${ref//_/}"
-          mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}.UPDATE.bin
-          mv .pio/build/${{ matrix.environment }}/firmware.factory.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}.FACTORY.bin
+          # lang: en
+          pio run -e ${{ matrix.environment }}
+          mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-en.UPDATE.bin
+          mv .pio/build/${{ matrix.environment }}/firmware.factory.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-en.FACTORY.bin
+          # lang: fr
+          sed -i 's/YASOLR_LANG_EN/YASOLR_LANG_FR/' platformio.ini
+          pio run -e ${{ matrix.environment }}
+          mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-fr.UPDATE.bin
+          mv .pio/build/${{ matrix.environment }}/firmware.factory.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-fr.FACTORY.bin
 
       - name: Upload
         uses: actions/upload-artifact@v4

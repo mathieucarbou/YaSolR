@@ -65,8 +65,10 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
     duty = config.dimmerDutyLimit;
   }
 
+  _setBypass(false);
+
   LOGD(TAG, "Setting Dimmer '%s' duty to %" PRIu16 "...", _name, duty);
-  _setBypass(false, duty);
+  _dimmer->setPowerDuty(duty);
   return true;
 }
 
@@ -110,7 +112,7 @@ bool Mycila::RouterOutput::tryBypassState(bool switchOn) {
     return false;
   }
   _setBypass(switchOn);
-  return true;
+  return _bypassEnabled;
 }
 
 void Mycila::RouterOutput::applyAutoBypass() {
@@ -128,6 +130,15 @@ void Mycila::RouterOutput::applyAutoBypass() {
   if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Relay and dimmer disabled: stopping Auto Bypass '%s'...", _name);
+      _autoBypassEnabled = false;
+      _setBypass(false);
+    }
+    return;
+  }
+
+  if (!_relay->isEnabled() && !_dimmer->isConnected()) {
+    if (_autoBypassEnabled) {
+      LOGW(TAG, "Dimmer disconnected from grid: stopping Auto Bypass '%s'...", _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -206,11 +217,14 @@ void Mycila::RouterOutput::applyAutoBypass() {
   // time and temp OK, let's start
   if (!_autoBypassEnabled) {
     // auto bypass is not enabled, let's start it
+    if (!_relay->isEnabled() && !_dimmer->isConnected()) {
+      return;
+    }
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
     if (config.weekDays.indexOf(wday) >= 0) {
       LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C...", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, temp);
-      _autoBypassEnabled = true;
       _setBypass(true);
+      _autoBypassEnabled = _bypassEnabled;
     }
     return;
   }
@@ -230,19 +244,41 @@ void Mycila::RouterOutput::applyAutoBypass() {
   _setBypass(true);
 }
 
-void Mycila::RouterOutput::_setBypass(bool state, uint16_t dimmerDutyWhenRelayOff) {
-  if (_relay->isEnabled()) {
-    if (state)
+void Mycila::RouterOutput::_setBypass(bool state) {
+  if (state) {
+    // we want to activate bypass
+    if (_relay->isEnabled()) {
+      // we have a relay in-place: use it
       _dimmer->off();
-    if (state ^ _relay->isOn()) {
-      LOGD(TAG, "Turning %s Bypass Relay '%s'...", state ? "on" : "off", _name);
-      _relay->setState(state);
+      if (_relay->isOff()) {
+        LOGD(TAG, "Turning Bypass Relay '%s' ON...", _name);
+        _relay->setState(true);
+      }
+      _bypassEnabled = true;
+
+    } else {
+      // we don't have a relay: use the dimmer
+      if (_dimmer->isConnected()) {
+        LOGD(TAG, "Turning Dimmer '%s' ON...", _name);
+        _dimmer->setPowerDuty(MYCILA_DIMMER_MAX_DUTY);
+        _bypassEnabled = true;
+      } else {
+        LOGW(TAG, "Dimmer '%s' is not connected to the grid: unable to activate bypass", _name);
+        _bypassEnabled = false;
+      }
     }
-    if (!state)
-      _dimmer->setPowerDuty(dimmerDutyWhenRelayOff);
+
   } else {
-    LOGD(TAG, "Turning %s Dimmer '%s'...", state ? "on" : "off", _name);
-    _dimmer->setPowerDuty(state ? MYCILA_DIMMER_MAX_DUTY : dimmerDutyWhenRelayOff);
+    // we want to deactivate bypass
+    if (_relay->isEnabled()) {
+      if (_relay->isOn()) {
+        LOGD(TAG, "Turning Bypass Relay '%s' OFF...", _name);
+        _relay->setState(false);
+      }
+    } else {
+      LOGD(TAG, "Turning Dimmer '%s' OFF...", _name);
+      _dimmer->off();
+    }
+    _bypassEnabled = false;
   }
-  _bypassEnabled = state;
 }

@@ -566,7 +566,7 @@ void YaSolR::WebsiteClass::updateCards() {
       _output1State.update(output1.getStateName(), DASH_STATUS_SUCCESS);
       break;
     default:
-      _output1State.update("Unknown", DASH_STATUS_DANGER);
+      _output1State.update(YASOLR_LBL_109, DASH_STATUS_DANGER);
       break;
   }
   _temperature(_output1DS18State, ds18O1);
@@ -597,14 +597,14 @@ void YaSolR::WebsiteClass::updateCards() {
       _output2State.update(output2.getStateName(), DASH_STATUS_SUCCESS);
       break;
     default:
-      _output2State.update("Unknown", DASH_STATUS_DANGER);
+      _output2State.update(YASOLR_LBL_109, DASH_STATUS_DANGER);
       break;
   }
   _temperature(_output2DS18State, ds18O2);
   _output2DimmerSlider.update(dimmerO2.getPowerDuty());
   _output2DimmerSliderRO.update(dimmerO2.getPowerDuty());
   _output2Bypass.update(output2.isBypassOn());
-  _output2BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
+  _output2BypassRO.update(YASOLR_STATE(output2.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
   _output2Power.update(routerMetrics.outputs[1].power);
   _output2ApparentPower.update(routerMetrics.outputs[1].apparentPower);
   _output2PowerFactor.update(routerMetrics.outputs[1].powerFactor);
@@ -621,16 +621,16 @@ void YaSolR::WebsiteClass::updateCards() {
   _relay2SwitchRO.update(YASOLR_STATE(relay2.isOn()), relay2.isOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
 
   // Hardware (status)
-  _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), "No electricity");
-  _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : "Disconnected");
-  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), dimmerO1.isConnected(), "No electricity");
-  _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, "Read error");
-  _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), "No electricity");
-  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), dimmerO2.isConnected(), "No electricity");
-  _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, "Read error");
-  _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), "No electricity");
-  _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, "Read error");
-  _status(_zcd, KEY_ENABLE_ZCD, zcd.isEnabled(), zcd.isConnected(), "No electricity");
+  _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), YASOLR_LBL_110);
+  _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : YASOLR_LBL_113);
+  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), dimmerO1.isConnected(), YASOLR_LBL_110);
+  _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, YASOLR_LBL_114);
+  _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected(), YASOLR_LBL_110);
+  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), dimmerO2.isConnected(), YASOLR_LBL_110);
+  _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, YASOLR_LBL_114);
+  _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected(), YASOLR_LBL_110);
+  _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, YASOLR_LBL_114);
+  _status(_zcd, KEY_ENABLE_ZCD, zcd.isEnabled(), zcd.isConnected(), YASOLR_LBL_110);
 #endif
 }
 
@@ -744,9 +744,9 @@ void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput&
 
 void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
   if (!sensor.isEnabled()) {
-    card.update("Disabled", "");
+    card.update(YASOLR_LBL_115, "");
   } else if (sensor.getLastTime() == 0) {
-    card.update("Pending...", "");
+    card.update(YASOLR_LBL_123, "");
   } else {
     card.update(sensor.getValidTemperature(), "°C");
   }
@@ -755,31 +755,31 @@ void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
 void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bool active, const char* err) {
   const bool configEnabled = config.getBool(key);
   if (!configEnabled)
-    card.update(config.getBool(key), DASH_STATUS_IDLE ",Disabled");
+    card.update(config.getBool(key), DASH_STATUS_IDLE "," YASOLR_LBL_115);
   else if (!enabled)
-    card.update(config.getBool(key), DASH_STATUS_DANGER ",Not started");
+    card.update(config.getBool(key), DASH_STATUS_DANGER "," YASOLR_LBL_124);
   else if (!active)
     card.update(config.getBool(key), (String(DASH_STATUS_WARNING) + "," + err).c_str());
   else
-    card.update(config.getBool(key), DASH_STATUS_SUCCESS ",Enabled");
+    card.update(config.getBool(key), DASH_STATUS_SUCCESS "," YASOLR_LBL_130);
 }
 
 void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout) {
   if (pin == GPIO_NUM_NC) {
-    card.update("Disabled", DASH_STATUS_IDLE);
+    card.update(YASOLR_LBL_115, DASH_STATUS_IDLE);
   } else if (pinout.find(pin) != pinout.end()) {
-    String v = String(pin) + " (Duplicate)";
+    String v = String(pin) + " (" YASOLR_LBL_153 ")";
     pinout[pin]->update(v, DASH_STATUS_DANGER);
     card.update(v, DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_GPIO(pin)) {
     pinout[pin] = &card;
-    card.update(String(pin) + " (Invalid)", DASH_STATUS_DANGER);
+    card.update(String(pin) + " (" YASOLR_LBL_154 ")", DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_OUTPUT_GPIO(pin)) {
     pinout[pin] = &card;
-    card.update(String(pin) + " (Input Only)", DASH_STATUS_WARNING);
+    card.update(String(pin) + " (" YASOLR_LBL_155 ")", DASH_STATUS_WARNING);
   } else {
     pinout[pin] = &card;
-    card.update(String(pin) + " (I/O)", DASH_STATUS_SUCCESS);
+    card.update(String(pin) + " (" YASOLR_LBL_156 ")", DASH_STATUS_SUCCESS);
   }
 }
 

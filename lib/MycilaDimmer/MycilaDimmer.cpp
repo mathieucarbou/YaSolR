@@ -74,9 +74,6 @@ void Mycila::Dimmer::setPowerDuty(uint16_t newDuty) {
   if (!_enabled)
     return;
 
-  if (!isConnected())
-    newDuty = 0;
-
   // ensure newDuty is within bounds
   if (newDuty > MYCILA_DIMMER_MAX_DUTY)
     newDuty = MYCILA_DIMMER_MAX_DUTY;
