@@ -63,10 +63,10 @@ void Mycila::Dimmer::end() {
     _enabled = false;
     _duty = 0;
     _dimmer->turnOff();
+    digitalWrite(_pin, LOW);
     delete _dimmer;
     _dimmer = nullptr;
     _pin = GPIO_NUM_NC;
-    digitalWrite(_pin, LOW);
   }
 }
 
