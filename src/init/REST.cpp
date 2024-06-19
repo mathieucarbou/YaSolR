@@ -327,7 +327,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["lights"] = lights.toString();
       root["power"] = routerMetrics.power;
       root["power_factor"] = routerMetrics.powerFactor;
-      root["temperature"] = ds18Sys.getLastTemperature();
+      root["temperature"] = ds18Sys.getValidTemperature();
       root["thdi"] = routerMetrics.thdi;
       root["virtual_grid_power"] = gridMetrics.power - routerMetrics.power;
 
@@ -336,7 +336,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         JsonObject json = root[output->getName()].to<JsonObject>();
         json["bypass"] = YASOLR_STATE(output->isBypassOn());
         json["state"] = output->getStateName();
-        json["temperature"] = ds18O1.getLastTemperature();
+        json["temperature"] = ds18O1.getValidTemperature();
 
         json["dimmer"]["duty"] = dimmerO1.getPowerDuty();
         json["dimmer"]["duty_cycle"] = dimmerO1.getPowerDutyCycle() * 100;

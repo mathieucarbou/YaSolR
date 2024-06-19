@@ -103,6 +103,7 @@ namespace YaSolR {
       Card _output1Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output1Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
       Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
+      Card _output1DimmerRatio = Card(&dashboard, SLIDER_CARD, "Grid Excess Sharing", "%", 0, 100, 1);
       Card _output1DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Duty Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer Temperature Limiter", "°C");
       Card _output1BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");
@@ -128,6 +129,7 @@ namespace YaSolR {
       Card _output2Resistance = Card(&dashboard, ENERGY_CARD, "Resistance", "Ω");
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, "Energy", "kWh");
       Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, "Dimmer Automatic Control");
+      Card _output2DimmerRatio = Card(&dashboard, SLIDER_CARD, "Grid Excess Sharing", "%", 0, 100, 1);
       Card _output2DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, "Dimmer Duty Limiter", "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, "Dimmer Temperature Limiter", "°C");
       Card _output2BypassAuto = Card(&dashboard, BUTTON_CARD, "Bypass Automatic Control");

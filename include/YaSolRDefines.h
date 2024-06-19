@@ -71,6 +71,7 @@
 #define KEY_MQTT_USERNAME             "mqtt_user"
 #define KEY_NTP_SERVER                "ntp_server"
 #define KEY_NTP_TIMEZONE              "ntp_timezone"
+#define KEY_OUTPUT_SPLIT              "o1_o2_split"
 #define KEY_OUTPUT1_DAYS              "o1_days"
 #define KEY_OUTPUT1_DIMMER_MAX_DUTY   "o1_dim_max_d"
 #define KEY_OUTPUT1_DIMMER_MAX_TEMP   "o1_dim_max_t"

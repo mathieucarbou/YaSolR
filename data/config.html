@@ -61,7 +61,7 @@
 
 <script>
   const supportedConfig = {
-    
+
     "Output 1 Control": "TITLE",
     o1_resistance: ["Output 1 Resistance (Ohm)", "uint"],
     o1_dim_max_d: ["Dimmer Duty Limiter (limit dimmer duty 0-4095)", "uint"],
@@ -86,6 +86,9 @@
     o2_temp_start: ["Bypass Start Temperature (C)", "uint"],
     o2_temp_stop: ["Bypass Stop Temperature (C)", "uint"],
 
+    "Output 1 / Output 2 Split": "TITLE",
+    o1_o2_split: ["Grid Excess Reserved to Output 1. Output 2 will take the remaining. If 100%, Output 2 will be activated only if there is some remaining excess.", "percent"],
+
     "Relays": "TITLE",
     relay1_load: ["Relay 1 Automatic Control: Connected Load (Watts)", "uint"],
     relay2_load: ["Relay 2 Automatic Control: Connected Load (Watts)", "uint"],
@@ -100,7 +103,7 @@
     wifi_ssid: ["WiFi SSID", "string"],
     wifi_pwd: ["WiFi Password", "password"],
     ap_mode_enable: ["Stay in AP Mode", "switch"],
-    
+
     MQTT: "TITLE",
     mqtt_server: ["Server", "string"],
     mqtt_port: ["Port", "uint"],
@@ -130,7 +133,7 @@
     pin_pzem_rx: ["Serial RX for PZEM TX", "pin"],
     pin_pzem_tx: ["Serial TX for PZEM RX", "pin"],
     pin_relay1: ["Relay 1", "pin"],
-    pin_relay2: ["Relay 2", "pin"],    
+    pin_relay2: ["Relay 2", "pin"],
     pin_o1_relay: ["Relay for Output 1 Bypass", "pin"],
     pin_o2_relay: ["Relay for Output 2 Bypass", "pin"],
     pin_zcd: ["Zero-Cross Detection", "pin"],

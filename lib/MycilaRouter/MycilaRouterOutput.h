@@ -130,7 +130,7 @@ namespace Mycila {
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isDimmerConnected() const { return _dimmer->isConnected(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer; }
-      bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperatureSensor->isEnabled() && _temperatureSensor->getLastTemperature() >= config.dimmerTempLimit; }
+      bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperatureSensor->getValidTemperature() >= config.dimmerTempLimit; }
       uint16_t getDimmerDuty() const { return _dimmer->getPowerDuty(); }
       // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
       bool tryDimmerDuty(uint16_t duty);

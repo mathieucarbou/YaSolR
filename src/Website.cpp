@@ -54,6 +54,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1AutoStartWDays.setTab(&_output1Tab);
   _output1AutoStoptTemp.setTab(&_output1Tab);
   _output1AutoStoptTime.setTab(&_output1Tab);
+  _output1DimmerRatio.setTab(&_output1Tab);
   _output1DimmerDutyLimiter.setTab(&_output1Tab);
   _output1DimmerTempLimiter.setTab(&_output1Tab);
 
@@ -68,6 +69,13 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
   _outputBypassSwitch(_output1Bypass, output1);
   _outputDimmerSlider(_output1DimmerSlider, output1);
+  _output1DimmerRatio.attachCallback([this](int value) {
+    config.set(KEY_OUTPUT_SPLIT, String(value));
+    _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
+    _output2DimmerRatio.update(100 - static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
+    dashboard.refreshCard(&_output1DimmerRatio);
+    dashboard.refreshCard(&_output2DimmerRatio);
+  });
 
   // output 2 (control)
   _output2BypassAuto.setTab(&_output2Tab);
@@ -77,6 +85,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output2AutoStartWDays.setTab(&_output2Tab);
   _output2AutoStoptTemp.setTab(&_output2Tab);
   _output2AutoStoptTime.setTab(&_output2Tab);
+  _output2DimmerRatio.setTab(&_output2Tab);
   _output2DimmerDutyLimiter.setTab(&_output2Tab);
   _output2DimmerTempLimiter.setTab(&_output2Tab);
 
@@ -91,6 +100,13 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
   _outputBypassSwitch(_output2Bypass, output2);
   _outputDimmerSlider(_output2DimmerSlider, output2);
+  _output2DimmerRatio.attachCallback([this](int value) {
+    config.set(KEY_OUTPUT_SPLIT, String(100 - value));
+    _output1DimmerRatio.update(100 - static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
+    _output2DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
+    dashboard.refreshCard(&_output1DimmerRatio);
+    dashboard.refreshCard(&_output2DimmerRatio);
+  });
 
   // relays (control)
   _relay1Load.setTab(&_relaysTab);
@@ -312,6 +328,7 @@ void YaSolR::WebsiteClass::initCards() {
   bool output1DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18);
 
   _output1DimmerAuto.update(autoDimmerO1Activated);
+  _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
   _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt()));
   _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP));
   _output1BypassAuto.update(autoBypassActivated);
@@ -335,6 +352,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output1Resistance.setDisplay(dimmer1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled);
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
+  _output1DimmerRatio.setDisplay(dimmer1Enabled && autoDimmerO1Activated);
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerTempLimiter.setDisplay(dimmer1Enabled && output1DS18Enabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
@@ -353,6 +371,7 @@ void YaSolR::WebsiteClass::initCards() {
   bool output2DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18);
 
   _output2DimmerAuto.update(autoDimmerO2Activated);
+  _output2DimmerRatio.update(100 - static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
   _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt()));
   _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP));
   _output2BypassAuto.update(autoBypassO2Activated);
@@ -376,6 +395,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output2Resistance.setDisplay(dimmer2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled);
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
+  _output2DimmerRatio.setDisplay(dimmer2Enabled && autoDimmerO2Activated);
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerTempLimiter.setDisplay(dimmer2Enabled && output2DS18Enabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
@@ -728,7 +748,7 @@ void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
   } else if (sensor.getLastTime() == 0) {
     card.update("Pending...", "");
   } else {
-    card.update(sensor.getLastTemperature(), "°C");
+    card.update(sensor.getValidTemperature(), "°C");
   }
 }
 

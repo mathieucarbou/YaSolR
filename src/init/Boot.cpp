@@ -69,6 +69,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_MQTT_USERNAME, "homeassistant");
   config.configure(KEY_NTP_SERVER, "pool.ntp.org");
   config.configure(KEY_NTP_TIMEZONE, "Europe/Paris");
+  config.configure(KEY_OUTPUT_SPLIT, "100");
   config.configure(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS);
   config.configure(KEY_OUTPUT1_DIMMER_MAX_DUTY, String(YASOLR_DIMMER_MAX_LEVEL));
   config.configure(KEY_OUTPUT1_DIMMER_MAX_TEMP, String(YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE));
