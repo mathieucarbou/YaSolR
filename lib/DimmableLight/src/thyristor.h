@@ -34,7 +34,7 @@
 // Select one and ONLY one among the following alternatives:
 //#define NETWORK_FREQ_FIXED_50HZ
 //#define NETWORK_FREQ_FIXED_60HZ
-//#define NETWORK_FREQ_RUNTIME
+#define NETWORK_FREQ_RUNTIME 1
 
 // Set the default value if no option is selected
 #if !defined(NETWORK_FREQ_FIXED_50HZ) && !defined(NETWORK_FREQ_FIXED_60HZ) && !defined(NETWORK_FREQ_RUNTIME)
@@ -42,7 +42,7 @@
 #endif
 
 // If enabled, you can monitor the actual frequency of the electrical network.
-#define MONITOR_FREQUENCY
+#define MONITOR_FREQUENCY 1
 
 /**
  * This is the core class of this library, that provides the finest control on thyristors.
@@ -99,6 +99,7 @@ public:
    * Setup timer and interrupt routine.
    */
   static void begin();
+  static void end();
 
   /**
    * Return the number of instantiated thyristors.

@@ -13,6 +13,7 @@ Mycila::Task otaTask("OTA", Mycila::TaskType::ONCE, [](void* params) {
   bypassRelayO2.end();
   relay1.end();
   relay2.end();
+  zcd.end();
   // stop blocking I/O tasks
   mqtt.end();
 #ifdef APP_MODEL_TRIAL

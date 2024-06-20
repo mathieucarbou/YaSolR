@@ -63,6 +63,7 @@ void Mycila::ZCD::end() {
     LOGI(TAG, "Disable Zero-Cross Detection...");
     _enabled = false;
     Thyristor::setFrequency(0);
+    Thyristor::end();
     _pin = GPIO_NUM_NC;
   }
 }

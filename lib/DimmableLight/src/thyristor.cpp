@@ -38,7 +38,7 @@
 // Ignore zero-cross interrupts when they occurs too early w.r.t semi-period ideal length.
 // The constant *semiPeriodShrinkMargin* defines the "too early" margin.
 // This filter affects the MONITOR_FREQUENCY measurement.
-#define FILTER_INT_PERIOD
+#define FILTER_INT_PERIOD 1
 
 // FOR DEBUG PURPOSE ONLY. This option requires FILTER_INT_PERIOD enabled.
 // Print on serial port the time passed from the previous zero cross interrupt when the semi-period
@@ -652,6 +652,16 @@ void Thyristor::begin() {
 
   interruptEnabled = true;
   attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, syncDir);
+#endif
+}
+
+void Thyristor::end() {
+  detachInterrupt(digitalPinToInterrupt(syncPin));
+  pinMode(syncPin, INPUT);
+  queue.reset();
+  pulses.reset();
+#ifdef NETWORK_FREQ_RUNTIME
+  setFrequency(0);
 #endif
 }
 
