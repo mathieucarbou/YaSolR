@@ -72,3 +72,4 @@ float Mycila::ZCD::getCurrentFrequency() const { return _enabled ? Thyristor::ge
 uint16_t Mycila::ZCD::getAvgPulseWidth() const { return _enabled ? Thyristor::getPulseWidth() : 0; }
 uint16_t Mycila::ZCD::getMaxPulseWidth() const { return _enabled ? Thyristor::getMaxPulseWidth() : 0; }
 uint16_t Mycila::ZCD::getLastPulseWidth() const { return _enabled ? Thyristor::getLastPulseWidth() : 0; }
+uint16_t Mycila::ZCD::getMinPulseWidth() const { return _enabled ? Thyristor::getMinPulseWidth() : 0; }

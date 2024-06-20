@@ -28,14 +28,15 @@ static uint16_t semiPeriodLength = 0;
 
 // maximum supported pulse width in microseconds
 #define MAX_PULSE_WIDTH 4000
+#define MIN_PULSE_WIDTH 100
 
 // These margins are precautions against noise, electrical spikes and frequency skew errors.
 // Activation delays lower than *startMargin* turn the thyristor fully ON.
 // Activation delays higher than *endMargin* turn the thyristor fully OFF.
 // Tune this parameters accordingly to your setup (electrical network, MCU, and ZC circuitry).
 // Values are expressed in microseconds.
-static const uint16_t startMargin = 200;
-static const uint16_t endMargin = 500;
+static const uint16_t startMargin = 100;
+static const uint16_t endMargin = 100;
 
 // Merge Period represents the time span in which 2 (or more) very near delays are merged (the
 // higher ones are merged in the smaller one). This could be necessary for 2 main reasons:
@@ -52,8 +53,8 @@ static const uint16_t endMargin = 500;
 static const uint16_t mergePeriod = 20;
 
 // Period in microseconds before the end of the semiperiod when an interrupt is triggered to
-// turn off all gate signals. This parameter doesn't have any effect if you enable
-static const uint16_t gateTurnOffTime = 300;
+// turn off all gate signals.
+static const uint16_t gateTurnOffTime = 70;
 
 static_assert(endMargin - gateTurnOffTime > mergePeriod, "endMargin must be greater than "
                                                          "(gateTurnOffTime + mergePeriod)");
@@ -63,7 +64,8 @@ struct PinDelay {
     uint16_t delay;
 };
 
-enum class INT_TYPE { ACTIVATE_THYRISTORS,
+enum class INT_TYPE { ZC,
+                      ACTIVATE_THYRISTORS,
                       TURN_OFF_GATES };
 
 static INT_TYPE nextISR = INT_TYPE::ACTIVATE_THYRISTORS;
@@ -138,51 +140,7 @@ void ARDUINO_ISR_ATTR activate_thyristors() {
   }
 }
 
-// In microsecond
-int Thyristor::semiPeriodShrinkMargin = 50;
-int Thyristor::semiPeriodExpandMargin = 50;
-
-static uint32_t lastTime = 0;
-static Mycila::CircularBuffer<uint32_t, 5> queue;
-static Mycila::CircularBuffer<uint32_t, 5> pulses;
-
 void ARDUINO_ISR_ATTR zero_cross_int() {
-  if (!lastTime) {
-    lastTime = micros();
-
-  } else {
-    uint32_t now = micros();
-
-    // "diff" is correct even when timer rolls back, because these values are unsigned
-    uint32_t diff = now - lastTime;
-
-    if (diff < MAX_PULSE_WIDTH) {
-      pulses.add(diff);
-      // - we detected a pulse, so we must be at its falling edge
-      // - do not update the lastTime variable
-      return;
-    }
-
-    // Filters out spurious interrupts. The effectiveness of this simple
-    // filter could vary depending on noise on electrical network.
-    if (diff < semiPeriodLength - Thyristor::semiPeriodShrinkMargin) {
-      return;
-    }
-
-    // if diff is very very greater than the theoretical value, the electrical signal
-    // can be considered as lost for a while and I must reset my moving average.
-    // I decided to use "16" because is a power of 2, very fast to be computed.
-    if (semiPeriodLength && diff > semiPeriodLength * 16) {
-      queue.reset();
-      pulses.reset();
-    } else {
-      // If filtering has passed, I can update the moving average
-      queue.add(diff);
-    }
-
-    lastTime = now;
-  }
-
   // Turn OFF all the thyristors, even if always ON.
   // This is to speed up transitions between ON to OFF state:
   // If I don't turn OFF all those thyristors, I must wait
@@ -266,11 +224,73 @@ void ARDUINO_ISR_ATTR zero_cross_int() {
   }
 }
 
+// In microsecond
+int Thyristor::semiPeriodShrinkMargin = 50;
+int Thyristor::semiPeriodExpandMargin = 50;
+
+static uint32_t lastTime = 0;
+static Mycila::CircularBuffer<uint32_t, 5> queue(0, UINT32_MAX);
+static Mycila::CircularBuffer<uint32_t, 5> pulses(0, UINT32_MAX);
+
+void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
+  if (!lastTime) {
+    lastTime = micros();
+
+  } else {
+    uint32_t now = micros();
+
+    // "diff" is correct even when timer rolls back, because these values are unsigned
+    uint32_t diff = now - lastTime;
+
+    if (diff < MAX_PULSE_WIDTH && diff > MIN_PULSE_WIDTH) {
+      pulses.add(diff);
+      // - we detected a pulse, so we must be at its falling edge
+      // - do not update the lastTime variable
+      return;
+    }
+
+    // Filters out spurious interrupts. The effectiveness of this simple
+    // filter could vary depending on noise on electrical network.
+    if (diff < semiPeriodLength - Thyristor::semiPeriodShrinkMargin) {
+      return;
+    }
+
+    // if diff is very very greater than the theoretical value, the electrical signal
+    // can be considered as lost for a while and I must reset my moving average.
+    // I decided to use "16" because is a power of 2, very fast to be computed.
+    if (semiPeriodLength && diff > semiPeriodLength * 16) {
+      queue.reset(0, UINT32_MAX);
+      pulses.reset(0, UINT32_MAX);
+    } else {
+      // If filtering has passed, I can update the moving average
+      queue.add(diff);
+    }
+
+    lastTime = now;
+  }
+
+  uint32_t pulseWidth = pulses.last();
+
+  if (!pulseWidth)
+    return;
+
+  pulseWidth /= 2;
+
+  if (pulseWidth > endMargin) {
+    nextISR = INT_TYPE::ZC;
+    startTimerAndTrigger(pulseWidth - endMargin);
+  } else {
+    zero_cross_int();
+  }
+}
+
 void ARDUINO_ISR_ATTR isr_selector() {
   if (nextISR == INT_TYPE::ACTIVATE_THYRISTORS) {
     activate_thyristors();
   } else if (nextISR == INT_TYPE::TURN_OFF_GATES) {
     turn_off_gates_int();
+  } else if (nextISR == INT_TYPE::ZC) {
+    zero_cross_int();
   }
 }
 
@@ -405,14 +425,14 @@ void Thyristor::begin() {
   timerInit(isr_selector);
   // Starts immediately to sense the electricity grid
   interruptEnabled = true;
-  attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_pulse_int, CHANGE);
 }
 
 void Thyristor::end() {
   detachInterrupt(digitalPinToInterrupt(syncPin));
   pinMode(syncPin, INPUT);
-  queue.reset();
-  pulses.reset();
+  queue.reset(0, UINT32_MAX);
+  pulses.reset(0, UINT32_MAX);
   setFrequency(0);
 }
 
@@ -444,7 +464,7 @@ uint16_t Thyristor::getPulseWidth() {
   noInterrupts();
   uint32_t diff = micros() - lastTime;
   if (diff > semiPeriodLength) {
-    pulses.reset();
+    pulses.reset(0, UINT32_MAX);
   }
   uint16_t avg = pulses.avg();
   interrupts();
@@ -455,18 +475,29 @@ uint16_t Thyristor::getMaxPulseWidth() {
   noInterrupts();
   uint32_t diff = micros() - lastTime;
   if (diff > semiPeriodLength) {
-    pulses.reset();
+    pulses.reset(0, UINT32_MAX);
   }
   uint16_t max = pulses.max();
   interrupts();
   return max;
 }
 
+uint16_t Thyristor::getMinPulseWidth() {
+  noInterrupts();
+  uint32_t diff = micros() - lastTime;
+  if (diff > semiPeriodLength) {
+    pulses.reset(0, UINT32_MAX);
+  }
+  uint16_t min = pulses.min();
+  interrupts();
+  return min;
+}
+
 uint16_t Thyristor::getLastPulseWidth() {
   noInterrupts();
   uint32_t diff = micros() - lastTime;
   if (diff > semiPeriodLength) {
-    pulses.reset();
+    pulses.reset(0, UINT32_MAX);
   }
   uint16_t last = pulses.last();
   interrupts();
@@ -487,7 +518,7 @@ float Thyristor::getDetectedFrequency() {
     // can be considered as lost for a while.
     // I decided to use "16" because is a power of 2, very fast to be computed.
     if (semiPeriodLength && diff > semiPeriodLength * 16) {
-      queue.reset();
+      queue.reset(0, UINT32_MAX);
     }
 
     c = queue.count();

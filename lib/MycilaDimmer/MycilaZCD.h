@@ -32,6 +32,7 @@ namespace Mycila {
       uint16_t getAvgPulseWidth() const;
       uint16_t getLastPulseWidth() const;
       uint16_t getMaxPulseWidth() const;
+      uint16_t getMinPulseWidth() const;
 
       void toJson(const JsonObject& root) const {
         root["enabled"] = isEnabled();
@@ -39,6 +40,7 @@ namespace Mycila {
         root["pulse_width_avg"] = getAvgPulseWidth();
         root["pulse_width_last"] = getLastPulseWidth();
         root["pulse_width_max"] = getMaxPulseWidth();
+        root["pulse_width_min"] = getMinPulseWidth();
         root["semi_period"] = getSemiPeriod();
       }
 
