@@ -4,7 +4,9 @@
  */
 #include <YaSolR.h>
 
-#include <ESPmDNS.h>
+#ifndef ESPCONNECT_NO_MDNS
+  #include <ESPmDNS.h>
+#endif
 
 Mycila::Task networkManagerTask("ESPConnect", [](void* params) { ESPConnect.loop(); });
 
@@ -18,10 +20,10 @@ Mycila::Task networkServiceTask("NetworkServices", Mycila::TaskType::ONCE, [](vo
   });
 
   if (!config.getBool(KEY_ENABLE_AP_MODE)) {
-    // NTP
     Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
-    // mDNS
+#ifndef ESPCONNECT_NO_MDNS
     MDNS.addService("http", "tcp", 80);
+#endif
 
     if (config.getBool(KEY_ENABLE_MQTT)) {
       // MQTT
