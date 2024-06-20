@@ -164,7 +164,7 @@ void ARDUINO_ISR_ATTR zero_cross_int() {
     }
 
     // Filters out spurious interrupts. The effectiveness of this simple
-    // filter could vary depending on noise on electrical networ.
+    // filter could vary depending on noise on electrical network.
     if (diff < semiPeriodLength - Thyristor::semiPeriodShrinkMargin) {
       return;
     }
