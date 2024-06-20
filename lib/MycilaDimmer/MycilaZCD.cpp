@@ -48,9 +48,7 @@ void Mycila::ZCD::begin(const int8_t pin, const uint8_t frequency) {
   // https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue
   Thyristor::semiPeriodShrinkMargin = 400;
   Thyristor::setFrequency(frequency);
-  Thyristor::frequencyMonitorAlwaysOn(true);
   Thyristor::setSyncPin(_pin);
-  Thyristor::setSyncDir(CHANGE);
   Thyristor::begin();
 
   // attachInterrupt(digitalPinToInterrupt(_pin), onEdge, CHANGE);

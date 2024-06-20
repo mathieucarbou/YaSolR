@@ -16,11 +16,14 @@ namespace Mycila {
       T avg() const { return _count == 0 ? 0 : _sum / _count; }
       T last() const { return _last; }
       T sum() const { return _sum; }
+      T max() const { return _max; }
 
       T add(T value) {
         T current = _buffer[_index];
         _buffer[_index++] = value;
         _last = value;
+        if (value > _max)
+          _max = value;
         _sum += value;
         _sum -= current;
         if (_index == N)
@@ -31,10 +34,11 @@ namespace Mycila {
       };
 
       void reset() {
-        _count = 0;
-        _index = 0;
-        _last = 0;
         _sum = 0;
+        _last = 0;
+        _max = 0;
+        _index = 0;
+        _count = 0;
         for (int i = 0; i < N; i++)
           _buffer[i] = 0;
       }
@@ -43,6 +47,7 @@ namespace Mycila {
       T _buffer[N];
       T _sum;
       T _last;
+      T _max;
       size_t _index = 0;
       size_t _count = 0;
   };
