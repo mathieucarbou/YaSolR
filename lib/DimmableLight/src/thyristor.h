@@ -62,13 +62,15 @@ class Thyristor {
     /**
      * Turn on the thyristor at full power.
      */
-    void turnOn();
+    void turnOn() {
+      setDelay(0);
+    }
 
     /**
      * Turn off the thyristor.
      */
     void turnOff() {
-      setDelay(0);
+     setDelay(getSemiPeriod()); 
     }
 
     ~Thyristor();

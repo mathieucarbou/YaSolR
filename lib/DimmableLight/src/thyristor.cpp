@@ -99,7 +99,9 @@ static uint8_t alwaysOffCounter = 0;
 
 void ARDUINO_ISR_ATTR turn_off_gates_int() {
   for (int i = alwaysOnCounter; i < Thyristor::nThyristors; i++) {
-    digitalWrite(pinDelay[i].pin, LOW);
+    if (pinDelay[i].pin != 0xff) {
+      digitalWrite(pinDelay[i].pin, LOW);
+    }
   }
 }
 
@@ -118,9 +120,13 @@ void ARDUINO_ISR_ATTR activate_thyristors() {
        // Exclude the one who must remain totally off
        pinDelay[thyristorManaged].delay <= semiPeriodLength - endMargin;
        thyristorManaged++) {
+    if (pinDelay[thyristorManaged].pin != 0xff) {
+      digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
+    }
+  }
+  if (pinDelay[thyristorManaged].pin != 0xff) {
     digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
   }
-  digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
   thyristorManaged++;
 
   // This while is dedicated to all those thyristors with delay == semiPeriodLength-margin; those
@@ -146,7 +152,9 @@ void ARDUINO_ISR_ATTR zero_cross_int() {
   // If I don't turn OFF all those thyristors, I must wait
   // a semiperiod to turn off those one.
   for (int i = 0; i < Thyristor::nThyristors; i++) {
-    digitalWrite(pinDelay[i].pin, LOW);
+    if (pinDelay[i].pin != 0xff) {
+      digitalWrite(pinDelay[i].pin, LOW);
+    }
   }
 
   // Update the structures and set thresholds, if needed
@@ -182,10 +190,12 @@ void ARDUINO_ISR_ATTR zero_cross_int() {
   // if all are on and off, I can disable the zero cross interrupt
   if (_allThyristorsOnOff) {
     for (int i = 0; i < Thyristor::nThyristors; i++) {
-      if (pinDelay[i].delay == semiPeriodLength) {
-        digitalWrite(pinDelay[i].pin, LOW);
-      } else {
-        digitalWrite(pinDelay[i].pin, HIGH);
+      if (pinDelay[i].pin != 0xff) {
+        if (pinDelay[i].delay == semiPeriodLength) {
+          digitalWrite(pinDelay[i].pin, LOW);
+        } else {
+          digitalWrite(pinDelay[i].pin, HIGH);
+        }
       }
       thyristorManaged++;
     }
@@ -195,7 +205,9 @@ void ARDUINO_ISR_ATTR zero_cross_int() {
 
   // Turn on thyristors with 0 delay (always on)
   while (thyristorManaged < Thyristor::nThyristors && pinDelay[thyristorManaged].delay == 0) {
-    digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
+    if (pinDelay[thyristorManaged].pin != 0xff) {
+      digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
+    }
     thyristorManaged++;
   }
 
@@ -416,10 +428,6 @@ void Thyristor::setDelay(uint16_t newDelay) {
   }
 }
 
-void Thyristor::turnOn() {
-  setDelay(semiPeriodLength);
-}
-
 void Thyristor::begin() {
   pinMode(syncPin, syncPullup ? INPUT_PULLUP : INPUT);
   timerInit(isr_selector);
@@ -567,8 +575,23 @@ Thyristor::Thyristor(int pin) : pin(pin), delay(semiPeriodLength) {
 Thyristor::~Thyristor() {
   // Recompact the array
   updatingStruct = true;
+
+  if (nThyristors == 1) {
+    thyristors[0] = nullptr;
+    pinDelay[0].pin = 0xff;
+  } else if (nThyristors == 2) {
+    if (thyristors[0] == this) {
+      thyristors[0] = thyristors[1];
+    }
+    if (pinDelay[0].pin == pin) {
+      pinDelay[0] = pinDelay[1];
+    }
+  }
+  thyristors[1] = nullptr;
+  pinDelay[1].pin = 0xff;
+
   nThyristors--;
-  // TODO remove light from the static pinDelay array, and shrink the array
+
   updatingStruct = false;
 }
 
