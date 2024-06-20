@@ -190,8 +190,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1Relay.setTab(&_hardwareEnableTab);
   _output1DS18.setTab(&_hardwareEnableTab);
   _output2Dimmer.setTab(&_hardwareEnableTab);
-  _output1ResistanceCal.setTab(&_hardwareConfigTab);
-  _output2ResistanceCal.setTab(&_hardwareConfigTab);
+  _output1ResistanceInput.setTab(&_hardwareConfigTab);
+  _output2ResistanceInput.setTab(&_hardwareConfigTab);
   _output2PZEM.setTab(&_hardwareEnableTab);
   _output2Relay.setTab(&_hardwareEnableTab);
   _output2DS18.setTab(&_hardwareEnableTab);
@@ -234,8 +234,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
-  _numConfig(_output1ResistanceCal, KEY_OUTPUT1_RESISTANCE);
-  _numConfig(_output2ResistanceCal, KEY_OUTPUT2_RESISTANCE);
+  _numConfig(_output1ResistanceInput, KEY_OUTPUT1_RESISTANCE);
+  _numConfig(_output2ResistanceInput, KEY_OUTPUT2_RESISTANCE);
   _textConfig(_output1RelayType, KEY_OUTPUT1_RELAY_TYPE);
   _textConfig(_output2RelayType, KEY_OUTPUT2_RELAY_TYPE);
   _textConfig(_relay1Type, KEY_RELAY1_TYPE);
@@ -467,14 +467,14 @@ void YaSolR::WebsiteClass::initCards() {
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
   _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
   _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
-  _output1ResistanceCal.update(config.get(KEY_OUTPUT1_RESISTANCE));
-  _output2ResistanceCal.update(config.get(KEY_OUTPUT2_RESISTANCE));
+  _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE));
+  _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE));
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displayRotation.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
-  _output1ResistanceCal.setDisplay(dimmer1Enabled);
-  _output2ResistanceCal.setDisplay(dimmer2Enabled);
+  _output1ResistanceInput.setDisplay(dimmer1Enabled);
+  _output2ResistanceInput.setDisplay(dimmer2Enabled);
   _output1PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
   _output2PZEMSync.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
   _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));

@@ -224,8 +224,8 @@ namespace YaSolR {
       Card _displaySpeed = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_142, "s", 1, 10, 1);
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_143);
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_144);
-      Card _output1ResistanceCal = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
-      Card _output2ResistanceCal = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
+      Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
+      Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
       Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_147);
       Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_148);
       Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_149);
