@@ -54,11 +54,11 @@ void setup() {
   initMqttSubscribersTask.forceRun();
   initDashboardTask.forceRun();
 
-  assert(coreTaskManager.asyncStart(1024 * 4, 1, 1, 100, true));   // NOLINT
-  assert(ioTaskManager.asyncStart(1024 * 5, 1, 1, 100, true));     // NOLINT
-  assert(jsyTaskManager.asyncStart(1024 * 3, 5, 0, 100, true));    // NOLINT
-  assert(pzemTaskManager.asyncStart(1024 * 3, 5, 0, 100, true));   // NOLINT
-  assert(routerTaskManager.asyncStart(1024 * 3, 5, 1, 100, true)); // NOLINT
+  assert(  coreTaskManager.asyncStart(1024 * 4, 1, 1, 100, true));  // NOLINT
+  assert(    ioTaskManager.asyncStart(1024 * 5, 1, 1, 100, false)); // NOLINT
+  assert(   jsyTaskManager.asyncStart(1024 * 3, 5, 0, 100, true));  // NOLINT
+  assert(  pzemTaskManager.asyncStart(1024 * 3, 5, 0, 100, true));  // NOLINT
+  assert(routerTaskManager.asyncStart(1024 * 3, 5, 1, 100, true));  // NOLINT
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
