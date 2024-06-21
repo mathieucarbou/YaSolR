@@ -10,8 +10,10 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // Tasks configuration
   carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
   carouselTask.setIntervalSupplier([]() { return config.get(KEY_DISPLAY_SPEED).toInt() * Mycila::TaskDuration::SECONDS; });
-  dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardTask.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
+  dashboardCards.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress() && !routingTask.isRunning(); });
+  dashboardCards.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
+  dashboardCharts.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress() && !routingTask.isRunning(); });
+  dashboardCharts.setInterval(2 * Mycila::TaskDuration::SECONDS);
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(293 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
@@ -28,7 +30,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerDebugTask.setInterval(5 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(537 * Mycila::TaskDuration::MILLISECONDS);
-  routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
+  routingTask.setEnabledWhen([]() { return output1.isDimmerEnabled() || output2.isDimmerEnabled(); });
 #ifdef APP_MODEL_TRIAL
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif

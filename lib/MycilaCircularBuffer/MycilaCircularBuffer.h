@@ -5,13 +5,17 @@
 #pragma once
 
 #include <stddef.h>
+
+#include <functional>
 #include <limits>
 
 namespace Mycila {
-  template <typename T, int N>
+  template <typename T, size_t N>
   class CircularBuffer {
     public:
       CircularBuffer() { reset(); }
+
+      T const& operator[](size_t index) const { return _buffer[(_index + index) % N]; }
 
       size_t count() const { return _count; };
       T avg() const { return _count == 0 ? 0 : _sum / _count; }
@@ -36,6 +40,17 @@ namespace Mycila {
           _count++;
         return current;
       };
+
+      size_t copy(T* dest, size_t size) const { // NOLINT (build/include_what_you_use)
+        size_t i = 0;
+        size_t j = _index;
+        while (i < size && i < _count) {
+          dest[i++] = _buffer[j++];
+          if (j == N)
+            j = 0;
+        }
+        return i;
+      }
 
       void reset() {
         _sum = 0;

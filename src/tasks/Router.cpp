@@ -34,11 +34,17 @@ Mycila::Task relayTask("Relay", [](void* params) {
 });
 
 Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
+  // read metrics
   Mycila::GridMetrics gridMetrics;
   grid.getMetrics(gridMetrics);
-
   Mycila::RouterMetrics routerMetrics;
   router.getMetrics(routerMetrics);
+
+  // update charts
+  timeHistory.add(millis());
+  gridPowerHistory.add(gridMetrics.power);
+  routedPowerHistory.add(routerMetrics.power);
+  routerTHDiHistory.add(routerMetrics.thdi);
 
   float virtualGridPower = gridMetrics.power - routerMetrics.power;
 

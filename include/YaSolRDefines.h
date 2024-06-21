@@ -150,7 +150,7 @@
 #define YASOLR_RELAY_TYPE_NO        "NO"
 #define YASOLR_SERIAL_BAUDRATE      115200
 #define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
-#define YASOLR_GRAPH_POINTS         30
+#define YASOLR_GRAPH_POINTS         60
 
 // pinout
 

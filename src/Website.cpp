@@ -6,10 +6,21 @@
 
 #define HIDDEN_PWD "********"
 
+#ifdef APP_MODEL_PRO
+static const ChartSize chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
+#endif
+
 void YaSolR::WebsiteClass::initLayout() {
   logger.debug(TAG, "Initializing layout...");
 
 #ifdef APP_MODEL_PRO
+  dashboard.setChartAnimations(false);
+
+  // graphs
+  _gridPowerHistory.setSize(chartSize);
+  _routedPowerHistory.setSize(chartSize);
+  _routerTHDiHistory.setSize(chartSize);
+
   // output 1 (status)
   _output1State.setTab(&_output1Tab);
   _output1DS18State.setTab(&_output1Tab);
@@ -634,6 +645,24 @@ void YaSolR::WebsiteClass::updateCards() {
 #endif
 }
 
+void YaSolR::WebsiteClass::updateCharts() {
+  // graphs
+  for (size_t i = 0; i < YASOLR_GRAPH_POINTS; i++)
+    _historyX[i] = static_cast<int>(timeHistory[i] / 1000);
+
+  gridPowerHistory.copy(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
+  routedPowerHistory.copy(_routedPowerHistoryY, YASOLR_GRAPH_POINTS);
+  for (size_t i = 0; i < YASOLR_GRAPH_POINTS; i++)
+    _routerTHDiHistoryY[i] = routerTHDiHistory[i] * 100;
+
+  _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _gridPowerHistory.updateY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
+  _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _routedPowerHistory.updateY(_routedPowerHistoryY, YASOLR_GRAPH_POINTS);
+  _routerTHDiHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _routerTHDiHistory.updateY(_routerTHDiHistoryY, YASOLR_GRAPH_POINTS);
+}
+
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
     config.set(key, String(value));
@@ -727,7 +756,7 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
     }
     card.update(output.isBypassOn());
     dashboard.refreshCard(&card);
-    dashboardTask.requestEarlyRun();
+    dashboardCards.requestEarlyRun();
   });
 }
 
@@ -738,7 +767,7 @@ void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput&
     }
     card.update(output.getDimmerDuty());
     dashboard.refreshCard(&card);
-    dashboardTask.requestEarlyRun();
+    dashboardCards.requestEarlyRun();
   });
 }
 

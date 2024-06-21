@@ -81,6 +81,7 @@ extern Mycila::ZCD zcd;
 extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> gridPowerHistory;
 extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routedPowerHistory;
 extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routerTHDiHistory;
+extern Mycila::CircularBuffer<uint32_t, YASOLR_GRAPH_POINTS> timeHistory;
 
 extern Mycila::TaskManager ioTaskManager;
 extern Mycila::Task haDiscoveryTask;
@@ -104,7 +105,8 @@ extern Mycila::Task profilerTask;
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
 extern Mycila::Task routerDebugTask;
-extern Mycila::Task dashboardTask;
+extern Mycila::Task dashboardCards;
+extern Mycila::Task dashboardCharts;
 #ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
 #endif
@@ -123,7 +125,7 @@ extern Mycila::Task routingTask;
 extern Mycila::Task bootTask;
 extern Mycila::Task initConfigTask;
 extern Mycila::Task initCoreTask;
-extern Mycila::Task initDashboardTask;
+extern Mycila::Task initdashboardCards;
 extern Mycila::Task initEventsTask;
 extern Mycila::Task initLoggingTask;
 extern Mycila::Task initMqttSubscribersTask;

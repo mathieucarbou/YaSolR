@@ -85,7 +85,6 @@ namespace Mycila {
       const char* getStateName() const;
       const char* getName() const { return _name; }
 
-      bool isEnabled() const { return _dimmer->isEnabled(); }
       void listen(RouterOutputStateCallback callback) { _callback = callback; }
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -93,10 +92,10 @@ namespace Mycila {
         RouterOutputMetrics metrics;
         getMetrics(metrics);
 
-        root["enabled"] = isEnabled();
+        root["enabled"] = isDimmerEnabled();
         root["state"] = getStateName();
         root["bypass"] = isBypassOn() ? "on" : "off";
-        root["online"] = isDimmerEnabled();
+        root["online"] = isDimmerConnected();
 
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
         _temperatureSensor->toJson(root["ds18"].to<JsonObject>());

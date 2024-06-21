@@ -43,6 +43,7 @@ Mycila::RouterRelay routerRelay2(relay2);
 Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> gridPowerHistory;
 Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routedPowerHistory;
 Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routerTHDiHistory;
+Mycila::CircularBuffer<uint32_t, YASOLR_GRAPH_POINTS> timeHistory;
 
 AsyncWebServer webServer(80);
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);
@@ -56,7 +57,7 @@ void setup() {
   initWebTask.forceRun();
   initRestApiTask.forceRun();
   initMqttSubscribersTask.forceRun();
-  initDashboardTask.forceRun();
+  initdashboardCards.forceRun();
 
   assert(  coreTaskManager.asyncStart(1024 * 4, 1, 1, 100, true));  // NOLINT
   assert(    ioTaskManager.asyncStart(1024 * 5, 1, 1, 100, false)); // NOLINT

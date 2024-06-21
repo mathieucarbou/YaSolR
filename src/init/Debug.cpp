@@ -23,7 +23,8 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
 
   if (debug) {
     // Enable profiling for some FOREVER tasks
-    dashboardTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    dashboardCards.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    dashboardCharts.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     displayTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     jsyTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     mqttPublishTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
@@ -32,7 +33,8 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
     routerTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     routingTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   } else {
-    dashboardTask.disableProfiling();
+    dashboardCards.disableProfiling();
+    dashboardCharts.disableProfiling();
     displayTask.disableProfiling();
     jsyTask.disableProfiling();
     mqttPublishTask.disableProfiling();
