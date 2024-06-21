@@ -18,8 +18,7 @@
 
 // YASOLR
 
-#define YASOLR_LANG_EN 1
-#define YASOLR_LANG_FR 2
+#define TAG "YASOLR"
 
 #define YASOLR_TRUE     "true"
 #define YASOLR_FALSE    "false"
@@ -28,7 +27,8 @@
 #define YASOLR_BOOL(a)  ((a) ? YASOLR_TRUE : YASOLR_FALSE)
 #define YASOLR_STATE(a) ((a) ? YASOLR_ON : YASOLR_OFF)
 
-#define TAG "YASOLR"
+#define YASOLR_LANG_EN 1
+#define YASOLR_LANG_FR 2
 
 #ifndef YASOLR_LANG
   #define YASOLR_LANG YASOLR_LANG_EN
@@ -150,6 +150,7 @@
 #define YASOLR_RELAY_TYPE_NO        "NO"
 #define YASOLR_SERIAL_BAUDRATE      115200
 #define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
+#define YASOLR_GRAPH_POINTS         30
 
 // pinout
 

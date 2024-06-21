@@ -5,12 +5,13 @@
 #pragma once
 
 #include <stddef.h>
+#include <limits>
 
 namespace Mycila {
   template <typename T, int N>
   class CircularBuffer {
     public:
-      CircularBuffer(T typeMin, T typeMax) { reset(typeMin, typeMax); }
+      CircularBuffer() { reset(); }
 
       size_t count() const { return _count; };
       T avg() const { return _count == 0 ? 0 : _sum / _count; }
@@ -36,11 +37,11 @@ namespace Mycila {
         return current;
       };
 
-      void reset(T typeMin, T typeMax) {
+      void reset() {
         _sum = 0;
         _last = 0;
-        _min = typeMax;
-        _max = typeMin;
+        _min = std::numeric_limits<T>::max();
+        _max = std::numeric_limits<T>::min();
         _index = 0;
         _count = 0;
         for (int i = 0; i < N; i++)

@@ -9,6 +9,7 @@
 #include <LittleFS.h>
 
 #include <MycilaAppInfo.h>
+#include <MycilaCircularBuffer.h>
 #include <MycilaConfig.h>
 #include <MycilaDS18.h>
 #include <MycilaDimmer.h>
@@ -76,6 +77,10 @@ extern Mycila::RouterRelay routerRelay1;
 extern Mycila::RouterRelay routerRelay2;
 extern Mycila::TrafficLight lights;
 extern Mycila::ZCD zcd;
+
+extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> gridPowerHistory;
+extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routedPowerHistory;
+extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routerTHDiHistory;
 
 extern Mycila::TaskManager ioTaskManager;
 extern Mycila::Task haDiscoveryTask;

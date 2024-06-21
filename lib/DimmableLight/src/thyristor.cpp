@@ -241,8 +241,8 @@ int Thyristor::semiPeriodShrinkMargin = 50;
 int Thyristor::semiPeriodExpandMargin = 50;
 
 static uint32_t lastTime = 0;
-static Mycila::CircularBuffer<uint32_t, 5> queue(0, UINT32_MAX);
-static Mycila::CircularBuffer<uint32_t, 5> pulses(0, UINT32_MAX);
+static Mycila::CircularBuffer<uint32_t, 5> queue;
+static Mycila::CircularBuffer<uint32_t, 5> pulses;
 
 void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
   if (!lastTime) {
@@ -271,8 +271,8 @@ void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
     // can be considered as lost for a while and I must reset my moving average.
     // I decided to use "16" because is a power of 2, very fast to be computed.
     if (semiPeriodLength && diff > semiPeriodLength * 16) {
-      queue.reset(0, UINT32_MAX);
-      pulses.reset(0, UINT32_MAX);
+      queue.reset();
+      pulses.reset();
     } else {
       // If filtering has passed, I can update the moving average
       queue.add(diff);
@@ -439,8 +439,8 @@ void Thyristor::begin() {
 void Thyristor::end() {
   detachInterrupt(digitalPinToInterrupt(syncPin));
   pinMode(syncPin, INPUT);
-  queue.reset(0, UINT32_MAX);
-  pulses.reset(0, UINT32_MAX);
+  queue.reset();
+  pulses.reset();
   setFrequency(0);
 }
 
@@ -472,7 +472,7 @@ uint16_t Thyristor::getPulseWidth() {
   noInterrupts();
   uint32_t diff = micros() - lastTime;
   if (diff > semiPeriodLength) {
-    pulses.reset(0, UINT32_MAX);
+    pulses.reset();
   }
   uint16_t avg = pulses.avg();
   interrupts();
@@ -483,7 +483,7 @@ uint16_t Thyristor::getMaxPulseWidth() {
   noInterrupts();
   uint32_t diff = micros() - lastTime;
   if (diff > semiPeriodLength) {
-    pulses.reset(0, UINT32_MAX);
+    pulses.reset();
   }
   uint16_t max = pulses.max();
   interrupts();
@@ -494,7 +494,7 @@ uint16_t Thyristor::getMinPulseWidth() {
   noInterrupts();
   uint32_t diff = micros() - lastTime;
   if (diff > semiPeriodLength) {
-    pulses.reset(0, UINT32_MAX);
+    pulses.reset();
   }
   uint16_t min = pulses.min();
   interrupts();
@@ -505,7 +505,7 @@ uint16_t Thyristor::getLastPulseWidth() {
   noInterrupts();
   uint32_t diff = micros() - lastTime;
   if (diff > semiPeriodLength) {
-    pulses.reset(0, UINT32_MAX);
+    pulses.reset();
   }
   uint16_t last = pulses.last();
   interrupts();
@@ -526,7 +526,7 @@ float Thyristor::getDetectedFrequency() {
     // can be considered as lost for a while.
     // I decided to use "16" because is a power of 2, very fast to be computed.
     if (semiPeriodLength && diff > semiPeriodLength * 16) {
-      queue.reset(0, UINT32_MAX);
+      queue.reset();
     }
 
     c = queue.count();

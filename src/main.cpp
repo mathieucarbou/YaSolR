@@ -40,6 +40,10 @@ Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, ds18O2, grid, p
 Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);
 
+Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> gridPowerHistory;
+Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routedPowerHistory;
+Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routerTHDiHistory;
+
 AsyncWebServer webServer(80);
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);
 
