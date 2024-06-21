@@ -448,7 +448,7 @@ float Thyristor::getFrequency() {
   if (semiPeriodLength == 0) {
     return 0;
   }
-  return 1000000 / 2 / (float)(semiPeriodLength);
+  return 500000 / (float)(semiPeriodLength);
 }
 
 uint16_t Thyristor::getSemiPeriod() {
@@ -465,7 +465,7 @@ void Thyristor::setFrequency(float frequency) {
     return;
   }
 
-  semiPeriodLength = 1000000 / 2 / frequency;
+  semiPeriodLength = 500000 / frequency;
 }
 
 uint16_t Thyristor::getPulseWidth() {
@@ -537,7 +537,7 @@ float Thyristor::getDetectedFrequency() {
   // We need at least a sample to return a value different from 0
   // *1000000: us
   // /2: from semiperiod to full period
-  return tot > 0 ? (c * 1000000 / 2 / tot) : 0;
+  return tot > 0 ? (c * 500000 / tot) : 0;
 }
 
 Thyristor::Thyristor(int pin) : pin(pin), delay(semiPeriodLength) {
