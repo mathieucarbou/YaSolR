@@ -91,6 +91,7 @@ extern Mycila::Task displayTask;
 extern Mycila::Task carouselTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
+extern Mycila::Task mqttConfigTask;
 extern Mycila::Task networkManagerTask;
 extern Mycila::Task networkServiceTask;
 extern Mycila::Task otaTask;

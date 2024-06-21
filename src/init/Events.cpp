@@ -92,6 +92,104 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_OUTPUT2_DAYS) {
       output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
+
+    } else if (key == KEY_NTP_TIMEZONE) {
+      Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+
+    } else if (key == KEY_NTP_SERVER) {
+      if (!config.getBool(KEY_ENABLE_AP_MODE))
+        Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
+
+    } else if (key == KEY_HA_DISCOVERY_TOPIC) {
+      haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
+
+    } else if (key == KEY_ENABLE_LIGHTS) {
+      lights.end();
+      if (config.getBool(KEY_ENABLE_LIGHTS))
+        lights.begin(config.get(KEY_PIN_LIGHTS_GREEN).toInt(), config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), config.get(KEY_PIN_LIGHTS_RED).toInt());
+
+    } else if (key == KEY_ENABLE_DS18_SYSTEM) {
+      ds18Sys.end();
+      if (config.getBool(KEY_ENABLE_DS18_SYSTEM))
+        ds18Sys.begin(config.get(KEY_PIN_ROUTER_DS18).toInt());
+
+    } else if (key == KEY_ENABLE_OUTPUT1_DS18) {
+      ds18O1.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT1_DS18))
+        ds18O1.begin(config.get(KEY_PIN_OUTPUT1_DS18).toInt());
+
+    } else if (key == KEY_ENABLE_OUTPUT2_DS18) {
+      ds18O2.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT2_DS18))
+        ds18O2.begin(config.get(KEY_PIN_OUTPUT2_DS18).toInt());
+
+    } else if (key == KEY_ENABLE_ZCD) {
+      zcd.end();
+      if (config.getBool(KEY_ENABLE_ZCD))
+        zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
+
+    } else if (key == KEY_ENABLE_MQTT) {
+      mqttConfigTask.resume();
+
+    } else if (key == KEY_ENABLE_OUTPUT1_DIMMER) {
+      dimmerO1.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
+        dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
+
+    } else if (key == KEY_ENABLE_OUTPUT2_DIMMER) {
+      dimmerO2.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
+        dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
+
+    } else if (key == KEY_ENABLE_OUTPUT1_RELAY) {
+      bypassRelayO1.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY))
+        bypassRelayO1.begin(config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), config.get(KEY_OUTPUT1_RELAY_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+
+    } else if (key == KEY_ENABLE_OUTPUT2_RELAY) {
+      bypassRelayO2.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT2_RELAY))
+        bypassRelayO2.begin(config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), config.get(KEY_OUTPUT2_RELAY_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+
+    } else if (key == KEY_ENABLE_RELAY1) {
+      relay1.end();
+      if (config.getBool(KEY_ENABLE_RELAY1))
+        relay1.begin(config.get(KEY_PIN_RELAY1).toInt(), config.get(KEY_RELAY1_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+
+    } else if (key == KEY_ENABLE_RELAY2) {
+      relay2.end();
+      if (config.getBool(KEY_ENABLE_RELAY2))
+        relay2.begin(config.get(KEY_PIN_RELAY2).toInt(), config.get(KEY_RELAY2_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+
+    } else if (key == KEY_ENABLE_JSY) {
+      jsy.end();
+      jsy.begin(YASOLR_JSY_SERIAL, config.get(KEY_PIN_JSY_RX).toInt(), config.get(KEY_PIN_JSY_RT).toInt());
+      if (jsy.isEnabled() && jsy.getBaudRate() != Mycila::JSYBaudRate::BAUD_38400)
+        jsy.setBaudRate(Mycila::JSYBaudRate::BAUD_38400);
+
+    } else if (key == KEY_ENABLE_OUTPUT1_PZEM) {
+      pzemO1.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM))
+        pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT1);
+
+    } else if (key == KEY_ENABLE_OUTPUT2_PZEM) {
+      pzemO2.end();
+      if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM))
+        pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT2);
+
+    } else if (key == KEY_ENABLE_DISPLAY) {
+      display.end();
+      if (config.getBool(KEY_ENABLE_DISPLAY)) {
+        const String displayType = config.get(KEY_DISPLAY_TYPE);
+        if (displayType == "SSD1306")
+          display.begin(Mycila::EasyDisplayType::SSD1306, config.get(KEY_PIN_DISPLAY_SCL).toInt(), config.get(KEY_PIN_DISPLAY_SDA).toInt(), config.get(KEY_DISPLAY_ROTATION).toInt());
+        else if (displayType == "SH1107")
+          display.begin(Mycila::EasyDisplayType::SH1107, config.get(KEY_PIN_DISPLAY_SCL).toInt(), config.get(KEY_PIN_DISPLAY_SDA).toInt(), config.get(KEY_DISPLAY_ROTATION).toInt());
+        else if (displayType == "SH1106")
+          display.begin(Mycila::EasyDisplayType::SH1106, config.get(KEY_PIN_DISPLAY_SCL).toInt(), config.get(KEY_PIN_DISPLAY_SDA).toInt(), config.get(KEY_DISPLAY_ROTATION).toInt());
+        display.clearDisplay();
+        display.setActive(true);
+      }
     }
 
     YaSolR::Website.initCards();

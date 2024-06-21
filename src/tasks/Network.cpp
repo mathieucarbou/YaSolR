@@ -24,31 +24,36 @@ Mycila::Task networkServiceTask("NetworkServices", Mycila::TaskType::ONCE, [](vo
 #ifndef ESPCONNECT_NO_MDNS
     MDNS.addService("http", "tcp", 80);
 #endif
+    mqttConfigTask.resume();
+  }
+});
 
-    if (config.getBool(KEY_ENABLE_MQTT)) {
-      // MQTT
-      bool secured = config.getBool(KEY_MQTT_SECURED);
-      String serverCert = "";
+Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
+  mqtt.end();
+  if (!config.getBool(KEY_ENABLE_AP_MODE) && config.getBool(KEY_ENABLE_MQTT)) {
+    logger.info("YASOLR", "Enable MQTT...");
 
-      if (secured && LittleFS.exists("/mqtt-server.crt")) {
-        logger.debug("YASOLR", "Loading MQTT server certificate...");
-        File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
-        serverCert = serverCertFile.readString();
-        serverCertFile.close();
-        logger.debug("YASOLR", "Loaded MQTT server certificate:\n%s", serverCert.c_str());
-      }
+    bool secured = config.getBool(KEY_MQTT_SECURED);
+    String serverCert = "";
 
-      mqtt.begin({
-        .server = config.get(KEY_MQTT_SERVER),
-        .port = static_cast<uint16_t>(config.get(KEY_MQTT_PORT).toInt()),
-        .secured = secured,
-        .serverCert = serverCert,
-        .username = config.get(KEY_MQTT_USERNAME),
-        .password = config.get(KEY_MQTT_PASSWORD),
-        .clientId = Mycila::AppInfo.defaultMqttClientId,
-        .willTopic = config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC,
-        .keepAlive = YASOLR_MQTT_KEEPALIVE,
-      });
+    if (secured && LittleFS.exists("/mqtt-server.crt")) {
+      logger.debug("YASOLR", "Loading MQTT server certificate...");
+      File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
+      serverCert = serverCertFile.readString();
+      serverCertFile.close();
+      logger.debug("YASOLR", "Loaded MQTT server certificate:\n%s", serverCert.c_str());
     }
+
+    mqtt.begin({
+      .server = config.get(KEY_MQTT_SERVER),
+      .port = static_cast<uint16_t>(config.get(KEY_MQTT_PORT).toInt()),
+      .secured = secured,
+      .serverCert = serverCert,
+      .username = config.get(KEY_MQTT_USERNAME),
+      .password = config.get(KEY_MQTT_PASSWORD),
+      .clientId = Mycila::AppInfo.defaultMqttClientId,
+      .willTopic = config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC,
+      .keepAlive = YASOLR_MQTT_KEEPALIVE,
+    });
   }
 });

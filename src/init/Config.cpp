@@ -101,14 +101,10 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
 
   // Electricity: Dimmers
-  if (zcd.isEnabled()) {
-    if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
+  if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
       dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
     if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
       dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
-  } else {
-    logger.error(TAG, "Dimmers cannot be enabled because ZCD is not enabled");
-  }
 
   // Electricity: Relays
   if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY))
