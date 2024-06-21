@@ -12,6 +12,7 @@
   #define PUSH_BUTTON_CARD_CB ()
 #else
   #define LINE_CHART          BAR_CHART
+  @define AREA_CHART          BAR_CHART
   #define ENERGY_CARD         GENERIC_CARD
   #define PUSH_BUTTON_CARD    BUTTON_CARD
   #define PUSH_BUTTON_CARD_CB (int32_t value)
@@ -85,11 +86,11 @@ namespace YaSolR {
       Card _routerDS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_045, "°C");
 
       int _historyX[YASOLR_GRAPH_POINTS] = {0};
-      float _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
-      float _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
-      float _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
       Chart _gridPowerHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_044 " (Watts)");
-      Chart _routedPowerHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_036 " (Watts)");
+      Chart _routedPowerHistory = Chart(&dashboard, AREA_CHART, YASOLR_LBL_036 " (Watts)");
       Chart _routerTHDiHistory = Chart(&dashboard, BAR_CHART, YASOLR_LBL_039 " (%)");
 
 #ifdef APP_MODEL_PRO

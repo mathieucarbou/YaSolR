@@ -647,13 +647,13 @@ void YaSolR::WebsiteClass::updateCards() {
 
 void YaSolR::WebsiteClass::updateCharts() {
   // graphs
-  for (size_t i = 0; i < YASOLR_GRAPH_POINTS; i++)
-    _historyX[i] = static_cast<int>(timeHistory[i] / 1000);
+  for (size_t i = 0; i < YASOLR_GRAPH_POINTS; i++) {
+    _historyX[i] = timeHistory[i] / 1000;
+  }
 
-  gridPowerHistory.copy(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
-  routedPowerHistory.copy(_routedPowerHistoryY, YASOLR_GRAPH_POINTS);
-  for (size_t i = 0; i < YASOLR_GRAPH_POINTS; i++)
-    _routerTHDiHistoryY[i] = routerTHDiHistory[i] * 100;
+  gridPowerHistory.copy(_gridPowerHistoryY);
+  routedPowerHistory.copy(_routedPowerHistoryY);
+  routerTHDiHistory.copy(_routerTHDiHistoryY);
 
   _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _gridPowerHistory.updateY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);

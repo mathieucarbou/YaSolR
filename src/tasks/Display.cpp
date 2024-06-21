@@ -107,10 +107,7 @@ Mycila::Task displayTask("Display", [](void* params) {
       Mycila::RouterMetrics routerMetrics;
       router.getMetrics(routerMetrics);
       display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(gridMetrics.power)));
-      if (gridMetrics.connected)
-        display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
-      else
-        display.home.printf("Routed Power:   ERROR\n");
+      display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
       if (config.get(KEY_RELAY1_LOAD).toInt())
         display.home.printf(relay1.isOn() ? "Relay 1: on  %6ld W\n" : "Relay 1: off %6ld W\n", config.get(KEY_RELAY1_LOAD).toInt());
       else
@@ -125,10 +122,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     case DisplayKind::DISPLAY_OUTPUT1: {
       Mycila::RouterOutputMetrics outputMetrics;
       output1.getMetrics(outputMetrics);
-      if (output1.isDimmerConnected())
-        display.home.printf("Output 1: %11.11s\n", output1.getStateName());
-      else
-        display.home.printf("Output 1:  GRID ERROR\n");
+      display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
       display.home.printf("Dimmer: %5d %5d W\n", dimmerO1.getPowerDuty(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O1.isEnabled())
@@ -143,10 +137,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     case DisplayKind::DISPLAY_OUTPUT2: {
       Mycila::RouterOutputMetrics outputMetrics;
       output2.getMetrics(outputMetrics);
-      if (output2.isDimmerConnected())
-        display.home.printf("Output 2: %11.11s\n", output2.getStateName());
-      else
-        display.home.printf("Output 2:  GRID ERROR\n");
+      display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
       display.home.printf("Dimmer: %5d %5d W\n", dimmerO2.getPowerDuty(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O2.isEnabled())

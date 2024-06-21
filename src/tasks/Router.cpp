@@ -34,7 +34,7 @@ Mycila::Task relayTask("Relay", [](void* params) {
 });
 
 Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
-  // read metrics
+  // read last metrics
   Mycila::GridMetrics gridMetrics;
   grid.getMetrics(gridMetrics);
   Mycila::RouterMetrics routerMetrics;
@@ -44,7 +44,8 @@ Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   timeHistory.add(millis());
   gridPowerHistory.add(gridMetrics.power);
   routedPowerHistory.add(routerMetrics.power);
-  routerTHDiHistory.add(routerMetrics.thdi);
+  routerTHDiHistory.add(routerMetrics.thdi * 100);
+  dashboardCharts.resume();
 
   float virtualGridPower = gridMetrics.power - routerMetrics.power;
 

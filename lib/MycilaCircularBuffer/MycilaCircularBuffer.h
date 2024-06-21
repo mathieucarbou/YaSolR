@@ -41,15 +41,10 @@ namespace Mycila {
         return current;
       };
 
-      size_t copy(T* dest, size_t size) const { // NOLINT (build/include_what_you_use)
-        size_t i = 0;
-        size_t j = _index;
-        while (i < size && i < _count) {
-          dest[i++] = _buffer[j++];
-          if (j == N)
-            j = 0;
-        }
-        return i;
+      void copy(T* dest) const { // NOLINT (build/include_what_you_use)
+        const size_t start = _index;
+        for (size_t i = 0; i < N; i++)
+          dest[i] = _buffer[(start + i) % N];
       }
 
       void reset() {
@@ -61,6 +56,18 @@ namespace Mycila {
         _count = 0;
         for (int i = 0; i < N; i++)
           _buffer[i] = 0;
+      }
+
+      void dump(Print& printer) {
+        printer.print(F("CircularBuffer("));
+        printer.print(N);
+        printer.print(F(")={"));
+        for (size_t i = 0; i < N; i++) {
+          printer.print(_buffer[i]);
+          if (i < N - 1)
+            printer.print(F(","));
+        }
+        printer.print(F("}"));
       }
 
     private:

@@ -12,7 +12,6 @@
 
 namespace Mycila {
   typedef struct {
-      bool connected = false;
       float apparentPower = 0;
       float current = 0;
       float energy = 0;
@@ -101,7 +100,6 @@ namespace Mycila {
       void getMetrics(GridMetrics& metrics) const {
         metrics.voltage = getVoltage();
         metrics.power = getPower();
-        metrics.connected = metrics.voltage > 0;
         // only available if connected to JSY
         metrics.apparentPower = _jsy->getApparentPower2();
         metrics.current = _jsy->getCurrent2();
@@ -115,7 +113,7 @@ namespace Mycila {
       void toJson(const JsonObject& root) const {
         GridMetrics metrics;
         getMetrics(metrics);
-        root["online"] = metrics.connected;
+        root["online"] = isConnected();
         root["metrics"]["apparent_power"] = metrics.apparentPower;
         root["metrics"]["current"] = metrics.current;
         root["metrics"]["energy"] = metrics.energy;

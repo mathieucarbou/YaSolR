@@ -5,6 +5,8 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
+static int previousGridPower = 0;
+
 Mycila::Task initEventsTask("Init Events", [](void* params) {
   logger.info(TAG, "Initializing Events...");
 
@@ -336,7 +338,13 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    if (eventType == Mycila::JSYEventType::EVT_READ && grid.getPowerSource() == Mycila::GridSource::SOURCE_JSY)
-      routingTask.resume();
+    if (eventType == Mycila::JSYEventType::EVT_READ && grid.getPowerSource() == Mycila::GridSource::SOURCE_JSY) {
+      int power = round(jsy.getPower2());
+      // make sure to filter out noise
+      if (abs(power - previousGridPower) > 1) {
+        previousGridPower = power;
+        routingTask.resume();
+      }
+    }
   });
 });

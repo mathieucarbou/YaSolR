@@ -91,6 +91,8 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   String gridPowerMQTTTopic = config.get(KEY_GRID_POWER_MQTT_TOPIC);
   if (!gridPowerMQTTTopic.isEmpty()) {
     logger.info(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic.c_str());
+    // initialize to 0 in order to make Grid object aware that we will use MQTT and initialise the expiration
+    grid.setMQTTGridPower(0);
     mqtt.subscribe(gridPowerMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float p = payload.toFloat();
       logger.info(TAG, "Grid Power from MQTT: %f", p);
@@ -103,6 +105,8 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   // grid voltage
   String gridVoltageMQTTTopic = config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC);
   if (!gridVoltageMQTTTopic.isEmpty()) {
+    // initialize to 0 in order to make Grid object aware that we will use MQTT and initialise the expiration
+    grid.setMQTTGridVoltage(0);
     logger.info(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic.c_str());
     mqtt.subscribe(gridVoltageMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float v = payload.toFloat();

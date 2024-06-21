@@ -78,10 +78,10 @@ extern Mycila::RouterRelay routerRelay2;
 extern Mycila::TrafficLight lights;
 extern Mycila::ZCD zcd;
 
-extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> gridPowerHistory;
-extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routedPowerHistory;
-extern Mycila::CircularBuffer<float, YASOLR_GRAPH_POINTS> routerTHDiHistory;
 extern Mycila::CircularBuffer<uint32_t, YASOLR_GRAPH_POINTS> timeHistory;
+extern Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> gridPowerHistory;
+extern Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> routedPowerHistory;
+extern Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> routerTHDiHistory;
 
 extern Mycila::TaskManager ioTaskManager;
 extern Mycila::Task haDiscoveryTask;

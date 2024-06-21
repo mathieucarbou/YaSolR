@@ -223,7 +223,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       root["energy"] = metrics.energy;
       root["energy_returned"] = metrics.energyReturned;
       root["frequency"] = metrics.frequency;
-      root["online"] = metrics.connected;
+      root["online"] = grid.isConnected();
       root["power"] = metrics.power;
       root["power_factor"] = metrics.powerFactor;
       root["voltage"] = metrics.voltage;

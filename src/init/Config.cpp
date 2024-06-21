@@ -13,7 +13,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   dashboardCards.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress() && !routingTask.isRunning(); });
   dashboardCards.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
   dashboardCharts.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress() && !routingTask.isRunning(); });
-  dashboardCharts.setInterval(2 * Mycila::TaskDuration::SECONDS);
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(293 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });

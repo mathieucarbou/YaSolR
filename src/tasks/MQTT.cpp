@@ -100,7 +100,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/grid/energy", String(gridMetrics.energy, 3));
   mqtt.publish(baseTopic + "/grid/energy_returned", String(gridMetrics.energyReturned, 3));
   mqtt.publish(baseTopic + "/grid/frequency", String(gridMetrics.frequency, 3));
-  mqtt.publish(baseTopic + "/grid/online", YASOLR_BOOL(gridMetrics.connected));
+  mqtt.publish(baseTopic + "/grid/online", YASOLR_BOOL(grid.isConnected()));
   mqtt.publish(baseTopic + "/grid/power", String(gridMetrics.power, 3));
   mqtt.publish(baseTopic + "/grid/power_factor", String(gridMetrics.powerFactor, 3));
   mqtt.publish(baseTopic + "/grid/voltage", String(gridMetrics.voltage, 3));
