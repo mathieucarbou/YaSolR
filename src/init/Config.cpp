@@ -134,7 +134,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   Mycila::TaskMonitor.begin();
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
-  Mycila::TaskMonitor.addTask("wifi");                      // WiFI
+  // Mycila::TaskMonitor.addTask("wifi");                      // WiFI
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR

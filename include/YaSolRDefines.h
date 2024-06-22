@@ -40,6 +40,23 @@
   #include "i18n/en.h"
 #endif
 
+// default settings
+
+#define YASOLR_ADMIN_USERNAME        "admin"
+#define YASOLR_DIMMER_MAX_LEVEL      MYCILA_DIMMER_MAX_DUTY
+#define YASOLR_DISPLAY_LINE_SIZE     21
+#define YASOLR_DISPLAY_LINES         5
+#define YASOLR_MQTT_KEEPALIVE        60
+#define YASOLR_MQTT_WILL_TOPIC       "/status"
+#define YASOLR_PZEM_ADDRESS_OUTPUT1  0x01
+#define YASOLR_PZEM_ADDRESS_OUTPUT2  0x02
+#define YASOLR_RELAY_TYPE_NC         "NC"
+#define YASOLR_RELAY_TYPE_NO         "NO"
+#define YASOLR_SERIAL_BAUDRATE       115200
+#define YASOLR_WEEK_DAYS             "sun,mon,tue,wed,thu,fri,sat"
+#define YASOLR_GRAPH_POINTS          90
+#define YASOLR_JSY_POWER_DIFF_FILTER 2
+
 // password configuration keys
 
 #define KEY_ADMIN_PASSWORD "admin_pwd"
@@ -135,22 +152,6 @@
 #define KEY_PIN_RELAY2         "pin_relay2"
 #define KEY_PIN_ROUTER_DS18    "pin_ds18"
 #define KEY_PIN_ZCD            "pin_zcd"
-
-// default settings
-
-#define YASOLR_ADMIN_USERNAME       "admin"
-#define YASOLR_DIMMER_MAX_LEVEL     MYCILA_DIMMER_MAX_DUTY
-#define YASOLR_DISPLAY_LINE_SIZE    21
-#define YASOLR_DISPLAY_LINES        5
-#define YASOLR_MQTT_KEEPALIVE       60
-#define YASOLR_MQTT_WILL_TOPIC      "/status"
-#define YASOLR_PZEM_ADDRESS_OUTPUT1 0x01
-#define YASOLR_PZEM_ADDRESS_OUTPUT2 0x02
-#define YASOLR_RELAY_TYPE_NC        "NC"
-#define YASOLR_RELAY_TYPE_NO        "NO"
-#define YASOLR_SERIAL_BAUDRATE      115200
-#define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
-#define YASOLR_GRAPH_POINTS         90
 
 // pinout
 

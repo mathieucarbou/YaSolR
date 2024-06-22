@@ -339,9 +339,9 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
     if (eventType == Mycila::JSYEventType::EVT_READ && grid.getPowerSource() == Mycila::GridSource::SOURCE_JSY) {
-      int power = round(jsy.getPower2());
       // make sure to filter out noise
-      if (abs(power - previousGridPower) > 1) {
+      int power = round(jsy.getPower2());
+      if (abs(power - previousGridPower) > YASOLR_JSY_POWER_DIFF_FILTER) {
         previousGridPower = power;
         routingTask.resume();
       }
