@@ -16,6 +16,7 @@ Mycila::Task otaTask("OTA", Mycila::TaskType::ONCE, [](void* params) {
   zcd.end();
   // stop blocking I/O tasks
   mqtt.end();
+  udp.close();
 #ifdef APP_MODEL_TRIAL
   Mycila::Trial.end();
 #endif

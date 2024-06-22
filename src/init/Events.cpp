@@ -5,8 +5,6 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
-static int previousGridPower = 0;
-
 Mycila::Task initEventsTask("Init Events", [](void* params) {
   logger.info(TAG, "Initializing Events...");
 
@@ -217,14 +215,14 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         break;
       case ESPConnectState::AP_STARTED:
         logger.info(TAG, "Access Point %s started with IP address %s", ESPConnect.getWiFiSSID().c_str(), ESPConnect.getIPAddress().toString().c_str());
-        networkServiceTask.resume();
+        networkUpTask.resume();
         break;
       case ESPConnectState::NETWORK_CONNECTING:
         logger.info(TAG, "Connecting to network...");
         break;
       case ESPConnectState::NETWORK_CONNECTED:
         logger.info(TAG, "Connected with IP address %s", ESPConnect.getIPAddress().toString().c_str());
-        networkServiceTask.resume();
+        networkUpTask.resume();
         break;
       case ESPConnectState::NETWORK_TIMEOUT:
         logger.warn(TAG, "Unable to connect!");
@@ -338,13 +336,41 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    if (eventType == Mycila::JSYEventType::EVT_READ && grid.getPowerSource() == Mycila::GridSource::SOURCE_JSY) {
-      // make sure to filter out noise
-      int power = round(jsy.getPower2());
-      if (abs(power - previousGridPower) > YASOLR_JSY_POWER_DIFF_FILTER) {
-        previousGridPower = power;
+    if (eventType == Mycila::JSYEventType::EVT_READ) {
+      Mycila::JSYData data;
+      jsy.getData(data);
+      if (grid.updateJSYData(data)) {
         routingTask.resume();
       }
+    }
+  });
+
+  udp.onPacket([](AsyncUDPPacket packet) {
+    if (!packet.isMulticast())
+      return;
+
+    size_t len = packet.length();
+    uint8_t* data = packet.data();
+
+    if (!len)
+      return;
+
+    const uint8_t type = data[0];
+    data++;
+    len--;
+
+    switch (type) {
+      case YASOLR_UDP_MSG_TYPE_JSY_DATA:
+        if (len == sizeof(Mycila::JSYData)) {
+          Mycila::JSYData jsyData;
+          memcpy(&jsyData, data, sizeof(Mycila::JSYData));
+          if (grid.updateRemoteJSYData(jsyData)) {
+            routingTask.resume();
+          }
+        }
+        break;
+      default:
+        break;
     }
   });
 });

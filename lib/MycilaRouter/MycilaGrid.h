@@ -5,9 +5,15 @@
 #pragma once
 
 #include <MycilaJSY.h>
+#include <MycilaPZEM004Tv3.h>
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
+#endif
+
+// - filter to not trigger routing task on small power changes
+#ifndef MYCILA_GRID_POWER_DELTA_FILTER
+  #define MYCILA_GRID_POWER_DELTA_FILTER 2
 #endif
 
 namespace Mycila {
@@ -24,89 +30,192 @@ namespace Mycila {
 
   typedef enum {
     SOURCE_NONE,
-    SOURCE_JSY,
+    SOURCE_METER,
+    SOURCE_METER_REMOTE,
     SOURCE_MQTT
   } GridSource;
 
   class Grid {
     public:
-      explicit Grid(JSY& jsy) : _jsy(&jsy) {}
+      Grid(PZEM& pzem1, PZEM& pzem2) : _pzem1(&pzem1), _pzem2(&pzem2) {}
 
-      // MQTT support
-      void setMQTTExpiration(uint32_t seconds) { _expiration = seconds * 1000; }
-      void setMQTTGridVoltage(float voltage) {
-        _mqttVoltage = voltage;
-        _mqttVoltageTime = millis();
-      }
-      void setMQTTGridPower(float power) {
-        _mqttPower = power;
-        _mqttPowerTime = millis();
-      }
+      // expiration for remote data
+      void setExpiration(uint32_t seconds) { _expiration = seconds * 1000; }
+
       void applyExpiration() {
-        if (_mqttVoltageTime > 0 && millis() - _mqttVoltageTime >= _expiration) {
-          _mqttVoltage = 0;
-          _mqttVoltageTime = 0;
+        const uint32_t now = millis();
+
+        if (_meterTime > 0 && now - _meterTime >= _expiration) {
+          _meter.apparentPower = 0;
+          _meter.current = 0;
+          _meter.energy = 0;
+          _meter.energyReturned = 0;
+          _meter.frequency = 0;
+          _meter.power = 0;
+          _meter.powerFactor = 0;
+          _meter.voltage = 0;
+          _meterTime = 0;
+          _meterConnected = false;
         }
-        if (_mqttPowerTime > 0 && millis() - _mqttPowerTime >= _expiration) {
-          _mqttPower = 0;
+
+        if (_meterRemoteTime > 0 && now - _meterRemoteTime >= _expiration) {
+          _meterRemote.apparentPower = 0;
+          _meterRemote.current = 0;
+          _meterRemote.energy = 0;
+          _meterRemote.energyReturned = 0;
+          _meterRemote.frequency = 0;
+          _meterRemote.power = 0;
+          _meterRemote.powerFactor = 0;
+          _meterRemote.voltage = 0;
+          _meterRemoteTime = 0;
+          _meterRemoteConnected = false;
+        }
+
+        if (_mqttVoltageTime > 0 && now - _mqttVoltageTime >= _expiration) {
+          _mqtt.voltage = 0;
+          _mqttVoltageTime = 0;
+          _mqttConnected = false;
+        }
+
+        if (_mqttPowerTime > 0 && now - _mqttPowerTime >= _expiration) {
+          _mqtt.power = 0;
           _mqttPowerTime = 0;
         }
       }
 
-      // grid source logic:
-      // for power: MQTT has priority
-      // for voltage: JSY has priority
-      GridSource getPowerSource() const {
-        if (_mqttPowerTime)
-          return SOURCE_MQTT;
-        if (_jsy->isConnected() && _jsy->getVoltage2() > 0)
-          return SOURCE_JSY;
-        return SOURCE_NONE;
-      }
-      GridSource getVoltageSource() const {
-        if (_jsy->isConnected() && _jsy->getVoltage2())
-          return SOURCE_JSY;
-        if (_mqttVoltageTime && _mqttVoltage)
-          return SOURCE_MQTT;
-        return SOURCE_NONE;
+      // MQTT support
+      void updateMQTTGridVoltage(float voltage) {
+        _mqtt.voltage = voltage;
+        _mqttVoltageTime = millis();
+        _mqttConnected = voltage > 0;
       }
 
-      bool isConnected() const { return getVoltageSource() != GridSource::SOURCE_NONE; }
-
-      float getPower() const {
-        switch (getPowerSource()) {
-          case SOURCE_JSY:
-            return _jsy->getPower2();
-          case SOURCE_MQTT:
-            return _mqttPower;
-          default:
-            return 0;
-            break;
-        }
+      // Update grid power from MQTT and returns true if the update is significant to trigger a routing update
+      bool updateMQTTGridPower(float power) {
+        _mqtt.power = power;
+        _mqttPowerTime = millis();
+        return getGridSource() == SOURCE_MQTT;
       }
 
+      // JSY support for local wired JSY
+      // Update data and returns true if the update is significant to trigger a routing update
+      bool updateJSYData(const JSYData& data) {
+        const float prevPow = _meter.power;
+
+        _meter.apparentPower = data.powerFactor2 == 0 ? 0 : data.power2 / data.powerFactor2;
+        _meter.current = data.current2;
+        _meter.energy = data.energy2;
+        _meter.energyReturned = data.energyReturned2;
+        _meter.frequency = data.frequency;
+        _meter.power = data.power2;
+        _meter.powerFactor = data.powerFactor2;
+        _meter.voltage = data.voltage2;
+        _meterTime = millis();
+        _meterConnected = _meter.voltage > 0;
+
+        return _meterConnected &&
+               abs(_meter.power - prevPow) > MYCILA_GRID_POWER_DELTA_FILTER &&
+               getGridSource() == SOURCE_METER;
+      }
+
+      // JSY Remote support
+      // Update data and returns true if the update is significant to trigger a routing update
+      bool updateRemoteJSYData(const JSYData& data) {
+        const float prevPow = _meterRemote.power;
+
+        _meterRemote.apparentPower = data.powerFactor2 == 0 ? 0 : data.power2 / data.powerFactor2;
+        _meterRemote.current = data.current2;
+        _meterRemote.energy = data.energy2;
+        _meterRemote.energyReturned = data.energyReturned2;
+        _meterRemote.frequency = data.frequency;
+        _meterRemote.power = data.power2;
+        _meterRemote.powerFactor = data.powerFactor2;
+        _meterRemote.voltage = data.voltage2;
+        _meterRemoteTime = millis();
+        _meterRemoteConnected = _meterRemote.voltage > 0;
+
+        return _meterRemoteConnected &&
+               abs(_meterRemote.power - prevPow) > MYCILA_GRID_POWER_DELTA_FILTER &&
+               getGridSource() == SOURCE_METER_REMOTE;
+      }
+
+      bool isConnected() const { return _meterConnected ||
+                                        _meterRemoteConnected ||
+                                        _mqttConnected ||
+                                        _pzem1->getVoltage() > 0 ||
+                                        _pzem2->getVoltage() > 0; }
+
+      // get the current grid voltage
+      // - if JSY/PZEM are connected, they have priority
+      // - if JSY remote is connected, it has second priority
+      // - if MQTT is connected, it has lowest priority
       float getVoltage() const {
-        switch (getVoltageSource()) {
-          case SOURCE_JSY:
-            return _jsy->getVoltage2();
-          case SOURCE_MQTT:
-            return _mqttVoltage;
-          default:
-            return 0;
-            break;
-        }
+        if (_pzem1->getVoltage() > 0)
+          return _pzem1->getVoltage();
+        if (_pzem2->getVoltage() > 0)
+          return _pzem2->getVoltage();
+        if (_meterConnected)
+          return _meter.voltage;
+        if (_meterRemoteConnected)
+          return _meterRemote.voltage;
+        if (_mqttConnected)
+          return _mqtt.voltage;
+        return 0;
+      }
+
+      // get the current grid power
+      // - if MQTT is connected, it has priority
+      // - if JSY remote is connected, it has second priority
+      // - if JSY is connected, it has lowest priority
+      float getPower() const {
+        if (_mqttPowerTime > 0)
+          return _mqtt.power;
+        if (_meterRemoteConnected)
+          return _meterRemote.power;
+        if (_meterConnected)
+          return _meter.power;
+        return 0;
+      }
+
+      // grid source logic:
+      // - MQTT has higher priority
+      // - JSY remote has second priority
+      // - JSY local has lowest priority
+      GridSource getGridSource() const {
+        if (_mqttPowerTime > 0)
+          return SOURCE_MQTT;
+        if (_meterRemoteConnected)
+          return SOURCE_METER_REMOTE;
+        if (_meterConnected)
+          return SOURCE_METER;
+        return SOURCE_NONE;
       }
 
       void getMetrics(GridMetrics& metrics) const {
-        metrics.voltage = getVoltage();
         metrics.power = getPower();
-        // only available if connected to JSY
-        metrics.apparentPower = _jsy->getApparentPower2();
-        metrics.current = _jsy->getCurrent2();
-        metrics.energy = _jsy->getEnergy2();
-        metrics.energyReturned = _jsy->getEnergyReturned2();
-        metrics.frequency = _jsy->getFrequency();
-        metrics.powerFactor = _jsy->getPowerFactor2();
+        metrics.voltage = getVoltage();
+        switch (getGridSource()) {
+          case SOURCE_METER: {
+            metrics.apparentPower = _meter.apparentPower;
+            metrics.current = _meter.current;
+            metrics.energy = _meter.energy;
+            metrics.energyReturned = _meter.energyReturned;
+            metrics.frequency = _meter.frequency;
+            metrics.powerFactor = _meter.powerFactor;
+            break;
+          }
+          case SOURCE_METER_REMOTE: {
+            metrics.apparentPower = _meterRemote.apparentPower;
+            metrics.current = _meterRemote.current;
+            metrics.energy = _meterRemote.energy;
+            metrics.energyReturned = _meterRemote.energyReturned;
+            metrics.frequency = _meterRemote.frequency;
+            metrics.powerFactor = _meterRemote.powerFactor;
+            break;
+          }
+          default:
+            break;
+        }
       }
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -114,29 +223,48 @@ namespace Mycila {
         GridMetrics metrics;
         getMetrics(metrics);
         root["online"] = isConnected();
-        root["metrics"]["apparent_power"] = metrics.apparentPower;
-        root["metrics"]["current"] = metrics.current;
-        root["metrics"]["energy"] = metrics.energy;
-        root["metrics"]["energy_returned"] = metrics.energyReturned;
-        root["metrics"]["frequency"] = metrics.frequency;
-        root["metrics"]["power"] = metrics.power;
-        root["metrics"]["power_factor"] = metrics.powerFactor;
-        root["metrics"]["voltage"] = metrics.voltage;
-        root["mqtt"]["power"] = _mqttPower;
-        root["mqtt"]["voltage"] = _mqttVoltage;
-        root["source"]["power"] = getPowerSource() == SOURCE_JSY ? "jsy" : (getPowerSource() == SOURCE_MQTT ? "mqtt" : "none");
-        root["source"]["voltage"] = getVoltageSource() == SOURCE_JSY ? "jsy" : (getVoltageSource() == SOURCE_MQTT ? "mqtt" : "none");
+        _toJson(root["metrics"].to<JsonObject>(), metrics);
+        _toJson(root["source"]["jsy"].to<JsonObject>(), _meter);
+        _toJson(root["source"]["jsy_remote"].to<JsonObject>(), _meterRemote);
+        _toJson(root["source"]["mqtt"].to<JsonObject>(), _mqtt);
       }
 #endif
 
     private:
-      JSY* _jsy;
+      // For voltage reading
+      PZEM* _pzem1;
+      PZEM* _pzem2;
+
+      // Local JSY
+      volatile GridMetrics _meter;
+      volatile uint32_t _meterTime = 0;
+      volatile bool _meterConnected = false;
+
+      // JSY remote data
+      volatile GridMetrics _meterRemote;
+      volatile uint32_t _meterRemoteTime = 0;
+      volatile bool _meterRemoteConnected = false;
 
       // mqtt
-      volatile float _mqttPower = 0;
-      volatile float _mqttVoltage = 0;
+      volatile GridMetrics _mqtt;
       volatile uint32_t _mqttPowerTime = 0;
       volatile uint32_t _mqttVoltageTime = 0;
+      volatile bool _mqttConnected = false;
+
+      // expiration
       uint32_t _expiration = 0;
+
+#ifdef MYCILA_JSON_SUPPORT
+      static void _toJson(const JsonObject& dest, const volatile GridMetrics& metrics) {
+        dest["apparent_power"] = metrics.apparentPower;
+        dest["current"] = metrics.current;
+        dest["energy"] = metrics.energy;
+        dest["energy_returned"] = metrics.energyReturned;
+        dest["frequency"] = metrics.frequency;
+        dest["power"] = metrics.power;
+        dest["power_factor"] = metrics.powerFactor;
+        dest["voltage"] = metrics.voltage;
+      }
+#endif
   };
 } // namespace Mycila

@@ -28,7 +28,7 @@ Mycila::TaskManager coreTaskManager("core");
 Mycila::TaskManager pzemTaskManager("pzem");
 Mycila::TaskManager routerTaskManager("router");
 
-Mycila::Grid grid(jsy);
+Mycila::Grid grid(pzemO1, pzemO2);
 Mycila::Router router(jsy);
 
 Mycila::Dimmer dimmerO1(zcd);
@@ -46,6 +46,7 @@ Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> routedPowerHistory;
 Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> routerTHDiHistory;
 
 AsyncWebServer webServer(80);
+AsyncUDP udp;
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);
 
 void setup() {

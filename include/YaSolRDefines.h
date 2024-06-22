@@ -42,20 +42,25 @@
 
 // default settings
 
-#define YASOLR_ADMIN_USERNAME        "admin"
-#define YASOLR_DIMMER_MAX_LEVEL      MYCILA_DIMMER_MAX_DUTY
-#define YASOLR_DISPLAY_LINE_SIZE     21
-#define YASOLR_DISPLAY_LINES         5
-#define YASOLR_MQTT_KEEPALIVE        60
-#define YASOLR_MQTT_WILL_TOPIC       "/status"
-#define YASOLR_PZEM_ADDRESS_OUTPUT1  0x01
-#define YASOLR_PZEM_ADDRESS_OUTPUT2  0x02
-#define YASOLR_RELAY_TYPE_NC         "NC"
-#define YASOLR_RELAY_TYPE_NO         "NO"
-#define YASOLR_SERIAL_BAUDRATE       115200
-#define YASOLR_WEEK_DAYS             "sun,mon,tue,wed,thu,fri,sat"
-#define YASOLR_GRAPH_POINTS          90
-#define YASOLR_JSY_POWER_DIFF_FILTER 2
+#define YASOLR_ADMIN_USERNAME       "admin"
+#define YASOLR_DIMMER_MAX_LEVEL     MYCILA_DIMMER_MAX_DUTY
+#define YASOLR_DISPLAY_LINE_SIZE    21
+#define YASOLR_DISPLAY_LINES        5
+#define YASOLR_MQTT_KEEPALIVE       60
+#define YASOLR_MQTT_WILL_TOPIC      "/status"
+#define YASOLR_PZEM_ADDRESS_OUTPUT1 0x01
+#define YASOLR_PZEM_ADDRESS_OUTPUT2 0x02
+#define YASOLR_RELAY_TYPE_NC        "NC"
+#define YASOLR_RELAY_TYPE_NO        "NO"
+#define YASOLR_SERIAL_BAUDRATE      115200
+#define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
+#define YASOLR_GRAPH_POINTS         90
+
+// UDP communication
+
+#define YASOLR_UDP_ADDRESS           "239.3.2.1"
+#define YASOLR_UDP_PORT              54321
+#define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x01
 
 // password configuration keys
 

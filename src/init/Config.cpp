@@ -35,7 +35,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Grid
-  grid.setMQTTExpiration(45);
+  grid.setExpiration(45);
 
   // Relays
   routerRelay1.setLoad(config.get(KEY_RELAY1_LOAD).toInt());

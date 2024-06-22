@@ -28,7 +28,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   lightsTask.setManager(coreTaskManager);
   mqttConfigTask.setManager(coreTaskManager);
   networkManagerTask.setManager(coreTaskManager);
-  networkServiceTask.setManager(coreTaskManager);
+  networkUpTask.setManager(coreTaskManager);
   otaTask.setManager(coreTaskManager);
   profilerTask.setManager(coreTaskManager);
   resetTask.setManager(coreTaskManager);

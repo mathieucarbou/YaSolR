@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#include <AsyncUDP.h>
 #include <ESPAsyncWebServer.h>
 #include <HardwareSerial.h>
 #include <LittleFS.h>
@@ -50,6 +51,7 @@
 #include <YaSolRDefines.h>
 
 extern AsyncWebServer webServer;
+extern AsyncUDP udp;
 extern ESPDash dashboard;
 
 extern Mycila::Config config;
@@ -93,20 +95,20 @@ extern Mycila::TaskManager jsyTaskManager;
 extern Mycila::Task jsyTask;
 
 extern Mycila::TaskManager coreTaskManager;
-extern Mycila::Task displayTask;
 extern Mycila::Task carouselTask;
+extern Mycila::Task dashboardCards;
+extern Mycila::Task dashboardCharts;
+extern Mycila::Task displayTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
 extern Mycila::Task mqttConfigTask;
 extern Mycila::Task networkManagerTask;
-extern Mycila::Task networkServiceTask;
+extern Mycila::Task networkUpTask;
 extern Mycila::Task otaTask;
 extern Mycila::Task profilerTask;
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
 extern Mycila::Task routerDebugTask;
-extern Mycila::Task dashboardCards;
-extern Mycila::Task dashboardCharts;
 #ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
 #endif
