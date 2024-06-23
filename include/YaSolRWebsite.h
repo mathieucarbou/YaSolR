@@ -12,7 +12,7 @@
   #define PUSH_BUTTON_CARD_CB ()
 #else
   #define LINE_CHART          BAR_CHART
-  @define AREA_CHART          BAR_CHART
+  #define AREA_CHART          BAR_CHART
   #define ENERGY_CARD         GENERIC_CARD
   #define PUSH_BUTTON_CARD    BUTTON_CARD
   #define PUSH_BUTTON_CARD_CB (int32_t value)
