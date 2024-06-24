@@ -13,7 +13,7 @@
 
 // - filter to not trigger routing task on small power changes
 #ifndef MYCILA_GRID_POWER_DELTA_FILTER
-  #define MYCILA_GRID_POWER_DELTA_FILTER 2
+  #define MYCILA_GRID_POWER_DELTA_FILTER 1
 #endif
 
 namespace Mycila {
@@ -100,8 +100,6 @@ namespace Mycila {
       // JSY support for local wired JSY
       // Update data and returns true if the update is significant to trigger a routing update
       bool updateJSYData(const JSYData& data) {
-        const float prevPow = _meter.power;
-
         _meter.apparentPower = data.powerFactor2 == 0 ? 0 : data.power2 / data.powerFactor2;
         _meter.current = data.current2;
         _meter.energy = data.energy2;
@@ -113,16 +111,22 @@ namespace Mycila {
         _meterTime = millis();
         _meterConnected = _meter.voltage > 0;
 
-        return _meterConnected &&
-               abs(_meter.power - prevPow) > MYCILA_GRID_POWER_DELTA_FILTER &&
-               getGridSource() == SOURCE_METER;
+        if (!_meterConnected)
+          return false;
+
+        if (getGridSource() != SOURCE_METER)
+          return false;
+
+        bool updated = updated = abs(_meter.power - _lastPower) > MYCILA_GRID_POWER_DELTA_FILTER;
+        if (updated)
+          _lastPower = _meter.power;
+
+        return updated;
       }
 
       // JSY Remote support
       // Update data and returns true if the update is significant to trigger a routing update
       bool updateRemoteJSYData(const JSYData& data) {
-        const float prevPow = _meterRemote.power;
-
         _meterRemote.apparentPower = data.powerFactor2 == 0 ? 0 : data.power2 / data.powerFactor2;
         _meterRemote.current = data.current2;
         _meterRemote.energy = data.energy2;
@@ -134,9 +138,17 @@ namespace Mycila {
         _meterRemoteTime = millis();
         _meterRemoteConnected = _meterRemote.voltage > 0;
 
-        return _meterRemoteConnected &&
-               abs(_meterRemote.power - prevPow) > MYCILA_GRID_POWER_DELTA_FILTER &&
-               getGridSource() == SOURCE_METER_REMOTE;
+        if (!_meterRemoteConnected)
+          return false;
+
+        if (getGridSource() != SOURCE_METER_REMOTE)
+          return false;
+
+        bool updated = abs(_meterRemote.power - _lastPower) > MYCILA_GRID_POWER_DELTA_FILTER;
+        if (updated)
+          _lastPower = _meterRemote.power;
+
+        return updated;
       }
 
       bool isConnected() const { return _meterConnected ||
@@ -253,6 +265,9 @@ namespace Mycila {
 
       // expiration
       uint32_t _expiration = 0;
+
+      // last power value
+      float _lastPower = 0;
 
 #ifdef MYCILA_JSON_SUPPORT
       static void _toJson(const JsonObject& dest, const volatile GridMetrics& metrics) {
