@@ -6,6 +6,13 @@ Both devices needs to be connected to the same WiFi network and UDP packets must
 ![](https://github.com/mathieucarbou/YaSolR-OSS/assets/61346/b375bfda-6bc1-4576-afeb-26594b5c8649)
 ![](https://github.com/mathieucarbou/YaSolR-OSS/assets/61346/b1e893d1-a272-4006-9df6-ebbe091a0ce1)
 
+## How to build
+
+1. Just attach the JSY module to the ESP32 as described in the YaSolR [Build](https://yasolr.carbou.me/build#default-gpio-pinout-per-board) page.
+2. Advise is to power the ESP32 thanks to a MeanWell HDR-15-5 DIN module which is placed just after a 2A breaker.
+3. Connect L + N wires to the JSY and set teh clamp around the main phase.
+4. Ideally, put everything in an isolated box or DIN rail: YaSolR [Build](https://yasolr.carbou.me/build) page contains references to DIN mounts for ESP32 and JSY.
+
 ## Installation with Arduino IDE
 
 _I am not familiar with Arduino IDE because this is not a correct IDE for development._
@@ -57,7 +64,7 @@ pio run -t upload -e <your-board>
 Quick start is similar to YaSolR.
 The device will open an access point, you need to connect to it and choose the WiFI to join.
 
-Once the device has joined the WiFi and is connected to a JSY, you will see the JSY data on the web interface.
+Once the device has joined the WiFi and is connected to a JSY, you will see the JSY data on the dashboard of this device, but also on the YaSolR dashboard: graphs will be updated in real-time.
 
 - To look at the logs, go to: `http://<device-ip>/console`
 
