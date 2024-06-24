@@ -36,22 +36,7 @@ Mycila::Task networkUpTask("Network UP", Mycila::TaskType::ONCE, [](void* params
   }
 
   // UDP Server
-  switch (ESPConnect.getMode()) {
-    case ESPConnectMode::AP:
-      logger.info(TAG, "Enable UDP Server on AP interface...");
-      udp.listenMulticast(IPAddress(YASOLR_UDP_ADDRESS), YASOLR_UDP_PORT, 1, tcpip_adapter_if_t::TCPIP_ADAPTER_IF_AP);
-      break;
-    case ESPConnectMode::STA:
-      logger.info(TAG, "Enable UDP Server on STA interface...");
-      udp.listenMulticast(IPAddress(YASOLR_UDP_ADDRESS), YASOLR_UDP_PORT, 1, tcpip_adapter_if_t::TCPIP_ADAPTER_IF_STA);
-      break;
-    case ESPConnectMode::ETH:
-      logger.info(TAG, "Enable UDP Server on ETH interface...");
-      udp.listenMulticast(IPAddress(YASOLR_UDP_ADDRESS), YASOLR_UDP_PORT, 1, tcpip_adapter_if_t::TCPIP_ADAPTER_IF_ETH);
-      break;
-    default:
-      break;
-  }
+  udp.listen(YASOLR_UDP_PORT);
 });
 
 Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {

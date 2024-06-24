@@ -346,19 +346,13 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   udp.onPacket([](AsyncUDPPacket packet) {
-    if (!packet.isMulticast())
-      return;
-
     size_t len = packet.length();
     uint8_t* data = packet.data();
-
     if (!len)
       return;
-
     const uint8_t type = data[0];
     data++;
     len--;
-
     switch (type) {
       case YASOLR_UDP_MSG_TYPE_JSY_DATA:
         if (len == sizeof(Mycila::JSYData)) {

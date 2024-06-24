@@ -58,7 +58,6 @@
 
 // UDP communication
 
-#define YASOLR_UDP_ADDRESS           "239.3.2.1"
 #define YASOLR_UDP_PORT              54321
 #define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x01
 
