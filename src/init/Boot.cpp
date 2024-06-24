@@ -16,7 +16,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
 
   // early logging
   logger.forwardTo(&Serial);
-  logger.warn("YASOLR", "Booting %s...", Mycila::AppInfo.nameModelVersion.c_str());
+  logger.warn(TAG, "Booting %s...", Mycila::AppInfo.nameModelVersion.c_str());
 
   // system
   Mycila::System.begin();

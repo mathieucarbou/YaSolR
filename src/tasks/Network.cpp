@@ -11,10 +11,10 @@
 Mycila::Task networkManagerTask("ESPConnect", [](void* params) { ESPConnect.loop(); });
 
 Mycila::Task networkUpTask("Network UP", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info("YASOLR", "Enable Network Services...");
+  logger.info(TAG, "Enable Network Services...");
 
   // Web server
-  logger.info("YASOLR", "Enable Web Server...");
+  logger.info(TAG, "Enable Web Server...");
   webServer.begin();
   webServer.onNotFound([](AsyncWebServerRequest* request) {
     request->send(404);
@@ -22,12 +22,12 @@ Mycila::Task networkUpTask("Network UP", Mycila::TaskType::ONCE, [](void* params
 
   if (!config.getBool(KEY_ENABLE_AP_MODE)) {
     // NTP
-    logger.info("YASOLR", "Enable NTP...");
+    logger.info(TAG, "Enable NTP...");
     Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
     // mDNS
 #ifndef ESPCONNECT_NO_MDNS
-    logger.info("YASOLR", "Enable mDNS...");
+    logger.info(TAG, "Enable mDNS...");
     MDNS.addService("http", "tcp", 80);
 #endif
 
@@ -38,15 +38,15 @@ Mycila::Task networkUpTask("Network UP", Mycila::TaskType::ONCE, [](void* params
   // UDP Server
   switch (ESPConnect.getMode()) {
     case ESPConnectMode::AP:
-      logger.info("YASOLR", "Enable UDP Server on AP interface...");
+      logger.info(TAG, "Enable UDP Server on AP interface...");
       udp.listenMulticast(IPAddress(YASOLR_UDP_ADDRESS), YASOLR_UDP_PORT, 1, tcpip_adapter_if_t::TCPIP_ADAPTER_IF_AP);
       break;
     case ESPConnectMode::STA:
-      logger.info("YASOLR", "Enable UDP Server on STA interface...");
+      logger.info(TAG, "Enable UDP Server on STA interface...");
       udp.listenMulticast(IPAddress(YASOLR_UDP_ADDRESS), YASOLR_UDP_PORT, 1, tcpip_adapter_if_t::TCPIP_ADAPTER_IF_STA);
       break;
     case ESPConnectMode::ETH:
-      logger.info("YASOLR", "Enable UDP Server on ETH interface...");
+      logger.info(TAG, "Enable UDP Server on ETH interface...");
       udp.listenMulticast(IPAddress(YASOLR_UDP_ADDRESS), YASOLR_UDP_PORT, 1, tcpip_adapter_if_t::TCPIP_ADAPTER_IF_ETH);
       break;
     default:
@@ -57,17 +57,17 @@ Mycila::Task networkUpTask("Network UP", Mycila::TaskType::ONCE, [](void* params
 Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
   mqtt.end();
   if (!config.getBool(KEY_ENABLE_AP_MODE) && config.getBool(KEY_ENABLE_MQTT)) {
-    logger.info("YASOLR", "Enable MQTT...");
+    logger.info(TAG, "Enable MQTT...");
 
     bool secured = config.getBool(KEY_MQTT_SECURED);
     String serverCert = "";
 
     if (secured && LittleFS.exists("/mqtt-server.crt")) {
-      logger.debug("YASOLR", "Loading MQTT server certificate...");
+      logger.debug(TAG, "Loading MQTT server certificate...");
       File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
       serverCert = serverCertFile.readString();
       serverCertFile.close();
-      logger.debug("YASOLR", "Loaded MQTT server certificate:\n%s", serverCert.c_str());
+      logger.debug(TAG, "Loaded MQTT server certificate:\n%s", serverCert.c_str());
     }
 
     mqtt.begin({

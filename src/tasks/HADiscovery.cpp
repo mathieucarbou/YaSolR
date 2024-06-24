@@ -5,7 +5,7 @@
 #include <YaSolR.h>
 
 Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info("YASOLR", "Publishing Home Assistant Discovery configuration...");
+  logger.info(TAG, "Publishing Home Assistant Discovery configuration...");
   haDiscovery.begin();
 
   // DIAGNOSTIC

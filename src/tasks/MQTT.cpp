@@ -5,7 +5,7 @@
 #include <YaSolR.h>
 
 Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info("YASOLR", "Publishing static data to MQTT...");
+  logger.info(TAG, "Publishing static data to MQTT...");
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
 
   mqtt.publish(baseTopic + "/system/app/name", Mycila::AppInfo.name, true);
@@ -47,7 +47,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 });
 
 Mycila::Task mqttPublishConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info("YASOLR", "Publishing config to MQTT...");
+  logger.info(TAG, "Publishing config to MQTT...");
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
 
   for (auto& key : config.keys) {
