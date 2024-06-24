@@ -269,7 +269,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       if (request->hasParam("duty", true))
         output1.tryDimmerDuty(request->getParam("level", true)->value().toInt());
       else if (request->hasParam("duty_cycle", true))
-        output1.tryDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
+        output1.tryDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat());
       request->send(200);
     })
     .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
@@ -279,7 +279,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       if (request->hasParam("duty", true))
         output2.tryDimmerDuty(request->getParam("level", true)->value().toInt());
       else if (request->hasParam("duty_cycle", true))
-        output2.tryDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
+        output2.tryDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat());
       request->send(200);
     })
     .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
@@ -339,7 +339,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         json["temperature"] = ds18O1.getValidTemperature();
 
         json["dimmer"]["duty"] = dimmerO1.getPowerDuty();
-        json["dimmer"]["duty_cycle"] = dimmerO1.getPowerDutyCycle() * 100;
+        json["dimmer"]["duty_cycle"] = dimmerO1.getPowerDutyCycle();
         json["dimmer"]["state"] = YASOLR_STATE(dimmerO1.isOn());
 
         json["metrics"]["apparent_power"] = routerMetrics.outputs[idx].apparentPower;

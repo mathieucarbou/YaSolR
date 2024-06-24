@@ -123,7 +123,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/router/output1/state", output1.getStateName());
   mqtt.publish(baseTopic + "/router/output1/temperature", String(ds18O1.getValidTemperature(), 1));
   mqtt.publish(baseTopic + "/router/output1/dimmer/duty", String(dimmerO1.getPowerDuty()));
-  mqtt.publish(baseTopic + "/router/output1/dimmer/duty_cycle", String(dimmerO1.getPowerDutyCycle() * 100));
+  mqtt.publish(baseTopic + "/router/output1/dimmer/duty_cycle", String(dimmerO1.getPowerDutyCycle()));
   mqtt.publish(baseTopic + "/router/output1/dimmer/state", YASOLR_STATE(dimmerO1.isOn()));
   mqtt.publish(baseTopic + "/router/output1/relay/state", YASOLR_STATE(bypassRelayO1.isOn()));
   mqtt.publish(baseTopic + "/router/output1/relay/switch_count", String(bypassRelayO1.getSwitchCount()));
@@ -133,7 +133,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/router/output2/state", output2.getStateName());
   mqtt.publish(baseTopic + "/router/output2/temperature", String(ds18O2.getValidTemperature(), 1));
   mqtt.publish(baseTopic + "/router/output2/dimmer/duty", String(dimmerO2.getPowerDuty()));
-  mqtt.publish(baseTopic + "/router/output2/dimmer/duty_cycle", String(dimmerO2.getPowerDutyCycle() * 100));
+  mqtt.publish(baseTopic + "/router/output2/dimmer/duty_cycle", String(dimmerO2.getPowerDutyCycle()));
   mqtt.publish(baseTopic + "/router/output2/dimmer/state", YASOLR_STATE(dimmerO2.isOn()));
   mqtt.publish(baseTopic + "/router/output2/relay/state", YASOLR_STATE(bypassRelayO2.isOn()));
   mqtt.publish(baseTopic + "/router/output2/relay/switch_count", String(bypassRelayO2.getSwitchCount()));

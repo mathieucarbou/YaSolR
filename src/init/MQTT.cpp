@@ -56,11 +56,11 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   });
 
   mqtt.subscribe(baseTopic + "/router/output1/dimmer/duty_cycle/set", [](const String& topic, const String& payload) {
-    output1.tryDimmerDutyCycle(payload.toFloat() / 100);
+    output1.tryDimmerDutyCycle(payload.toFloat());
   });
 
   mqtt.subscribe(baseTopic + "/router/output2/dimmer/duty_cycle/set", [](const String& topic, const String& payload) {
-    output2.tryDimmerDutyCycle(payload.toFloat() / 100);
+    output2.tryDimmerDutyCycle(payload.toFloat());
   });
 
   mqtt.subscribe(baseTopic + "/router/output1/bypass/set", [](const String& topic, const String& payload) {

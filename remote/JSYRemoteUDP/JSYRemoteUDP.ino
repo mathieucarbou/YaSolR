@@ -1,7 +1,17 @@
 #include <Arduino.h>
-#include <ArduinoJson.h>
-#include <MycilaJSY.h>
-#include <MycilaLogger.h>
+
+#include <ArduinoJson.h>       // https://github.com/bblanchon/ArduinoJson
+#include <AsyncTCP.h>          // https://github.com/mathieucarbou/AsyncTCP
+#include <ESPAsyncWebServer.h> // https://github.com/mathieucarbou/ESPAsyncWebServer
+#include <ESPDash.h>           // https://github.com/mathieucarbou/ayushsharma82-ESP-DASH#dev
+#include <ElegantOTA.h>        // https://github.com/mathieucarbou/ayushsharma82-ElegantOTA#dev
+#include <MycilaESPConnect.h>  // https://github.com/mathieucarbou/MycilaESPConnect
+#include <MycilaJSY.h>         // https://github.com/mathieucarbou/MycilaJSY
+#include <MycilaLogger.h>      // https://github.com/mathieucarbou/MycilaLogger
+#include <MycilaSystem.h>      // https://github.com/mathieucarbou/MycilaSystem
+#include <MycilaTaskManager.h> // https://github.com/mathieucarbou/MycilaTaskMonitor
+#include <MycilaTaskMonitor.h> // https://github.com/mathieucarbou/MycilaTaskMonitor
+#include <WebSerialLite.h>     // https://github.com/mathieucarbou/WebSerialLite
 
 Mycila::JSY jsy;
 Mycila::Logger logger;
