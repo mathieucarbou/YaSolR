@@ -80,11 +80,6 @@ extern Mycila::RouterRelay routerRelay2;
 extern Mycila::TrafficLight lights;
 extern Mycila::ZCD zcd;
 
-extern Mycila::CircularBuffer<uint32_t, YASOLR_GRAPH_POINTS> timeHistory;
-extern Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> gridPowerHistory;
-extern Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> routedPowerHistory;
-extern Mycila::CircularBuffer<int, YASOLR_GRAPH_POINTS> routerTHDiHistory;
-
 extern Mycila::TaskManager ioTaskManager;
 extern Mycila::Task haDiscoveryTask;
 extern Mycila::Task mqttPublishTask;
@@ -96,8 +91,7 @@ extern Mycila::Task jsyTask;
 
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task carouselTask;
-extern Mycila::Task dashboardCards;
-extern Mycila::Task dashboardCharts;
+extern Mycila::Task dashboardTask;
 extern Mycila::Task displayTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;

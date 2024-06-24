@@ -21,8 +21,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
 
   // coreTaskManager
   carouselTask.setManager(coreTaskManager);
-  dashboardCards.setManager(coreTaskManager);
-  dashboardCharts.setManager(coreTaskManager);
+  dashboardTask.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
   ds18Task.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);

@@ -646,16 +646,27 @@ void YaSolR::WebsiteClass::updateCards() {
 }
 
 void YaSolR::WebsiteClass::updateCharts() {
-  // graphs
-  int now = static_cast<int>(millis() / 1000);
-  for (size_t i = 0; i < YASOLR_GRAPH_POINTS; i++) {
-    _historyX[i] = static_cast<int>((timeHistory[i] / 1000)) - now;
+  // read last metrics
+  Mycila::GridMetrics gridMetrics;
+  grid.getMetrics(gridMetrics);
+  Mycila::RouterMetrics routerMetrics;
+  router.getMetrics(routerMetrics);
+
+  // shift array
+  for (size_t i = 0; i < YASOLR_GRAPH_POINTS - 1; i++) {
+    _historyX[i] = _historyX[i + 1];
+    _gridPowerHistoryY[i] = _gridPowerHistoryY[i + 1];
+    _routedPowerHistoryY[i] = _routedPowerHistoryY[i + 1];
+    _routerTHDiHistoryY[i] = _routerTHDiHistoryY[i + 1];
   }
 
-  gridPowerHistory.copy(_gridPowerHistoryY);
-  routedPowerHistory.copy(_routedPowerHistoryY);
-  routerTHDiHistory.copy(_routerTHDiHistoryY);
+  // set new value
+  _historyX[YASOLR_GRAPH_POINTS - 1] = millis() / 1000;
+  _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(gridMetrics.power);
+  _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.power);
+  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.thdi * 100);
 
+  // update charts
   _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _gridPowerHistory.updateY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
   _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
@@ -757,7 +768,7 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
     }
     card.update(output.isBypassOn());
     dashboard.refreshCard(&card);
-    dashboardCards.requestEarlyRun();
+    dashboardTask.requestEarlyRun();
   });
 }
 
@@ -768,7 +779,7 @@ void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput&
     }
     card.update(output.getDimmerDuty());
     dashboard.refreshCard(&card);
-    dashboardCards.requestEarlyRun();
+    dashboardTask.requestEarlyRun();
   });
 }
 

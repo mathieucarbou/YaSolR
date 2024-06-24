@@ -54,11 +54,11 @@
 #define YASOLR_RELAY_TYPE_NO        "NO"
 #define YASOLR_SERIAL_BAUDRATE      115200
 #define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
-#define YASOLR_GRAPH_POINTS         90
+#define YASOLR_GRAPH_POINTS         120
 
 // UDP communication
 
-#define YASOLR_UDP_PORT              54321
+#define YASOLR_UDP_PORT              53964
 #define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x01
 
 // password configuration keys
@@ -132,6 +132,7 @@
 #define KEY_RELAY1_TYPE               "relay1_type"
 #define KEY_RELAY2_LOAD               "relay2_load"
 #define KEY_RELAY2_TYPE               "relay2_type"
+#define KEY_UDP_PORT                  "udp_port"
 #define KEY_WIFI_PASSWORD             "wifi_pwd"
 #define KEY_WIFI_SSID                 "wifi_ssid"
 

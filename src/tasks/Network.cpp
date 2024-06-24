@@ -36,7 +36,9 @@ Mycila::Task networkUpTask("Network UP", Mycila::TaskType::ONCE, [](void* params
   }
 
   // UDP Server
-  udp.listen(YASOLR_UDP_PORT);
+  const uint16_t udpPort = config.get(KEY_UDP_PORT).toInt();
+  logger.info(TAG, "Enable UDP Server on port %" PRIu16 "...", udpPort);
+  udp.listen(udpPort);
 });
 
 Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {

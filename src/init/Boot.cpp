@@ -111,6 +111,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NO);
   config.configure(KEY_RELAY2_LOAD, "0");
   config.configure(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NO);
+  config.configure(KEY_UDP_PORT, String(YASOLR_UDP_PORT));
   config.configure(KEY_WIFI_PASSWORD);
   config.configure(KEY_WIFI_SSID);
 

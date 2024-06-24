@@ -40,12 +40,6 @@ Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   Mycila::RouterMetrics routerMetrics;
   router.getMetrics(routerMetrics);
 
-  // update charts
-  timeHistory.add(millis());
-  gridPowerHistory.add(gridMetrics.power);
-  routedPowerHistory.add(routerMetrics.power);
-  routerTHDiHistory.add(routerMetrics.thdi * 100);
-
   float virtualGridPower = gridMetrics.power - routerMetrics.power;
 
   // if (virtualGridPower < 0) {

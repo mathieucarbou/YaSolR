@@ -5,12 +5,8 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
-Mycila::Task dashboardCards("Dashboard", [](void* params) {
+Mycila::Task dashboardTask("Dashboard", [](void* params) {
   YaSolR::Website.updateCards();
-  dashboard.sendUpdates();
-});
-
-Mycila::Task dashboardCharts("Dashboard Charts", [](void* params) {
   YaSolR::Website.updateCharts();
   dashboard.sendUpdates();
 });

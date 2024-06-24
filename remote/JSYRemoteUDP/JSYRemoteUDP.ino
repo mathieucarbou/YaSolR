@@ -1,3 +1,7 @@
+#ifndef HTTPCLIENT_NOSECURE
+  #define HTTPCLIENT_NOSECURE 1
+#endif
+
 #ifndef ARDUINO_LOOP_STACK_SIZE
   #define ARDUINO_LOOP_STACK_SIZE 4096
 #endif
@@ -65,8 +69,9 @@
 #define TAG                          "YaSolR"
 #define YASOLR_APP_NAME              "JSY Remote UDP"
 #define YASOLR_ADMIN_USERNAME        "admin"
-#define YASOLR_UDP_PORT              54321
+#define YASOLR_UDP_PORT              53964
 #define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x01
+#define YASOLR_GRAPH_POINTS          120
 
 #include <Arduino.h>
 #include <ESPmDNS.h>
@@ -93,6 +98,19 @@ Mycila::TaskManager coreTaskManager("core");
 Mycila::TaskManager ioTaskManager("io");
 Mycila::TaskManager jsyTaskManager("jsy");
 
+Statistic networkHostname = Statistic(&dashboard, "Network Hostname");
+Statistic networkInterface = Statistic(&dashboard, "Network Interface");
+Statistic networkAPIP = Statistic(&dashboard, "Network Access Point IP Address");
+Statistic networkAPMAC = Statistic(&dashboard, "Network Access Point MAC Address");
+Statistic networkEthIP = Statistic(&dashboard, "Network Ethernet IP Address");
+Statistic networkEthMAC = Statistic(&dashboard, "Network Ethernet MAC Address");
+Statistic networkWiFiIP = Statistic(&dashboard, "Network WiFi IP Address");
+Statistic networkWiFiMAC = Statistic(&dashboard, "Network WiFi MAC Address");
+Statistic networkWiFiSSID = Statistic(&dashboard, "Network WiFi SSID");
+Statistic networkWiFiRSSI = Statistic(&dashboard, "Network WiFi RSSI");
+Statistic networkWiFiSignal = Statistic(&dashboard, "Network WiFi Signal");
+Statistic uptime = Statistic(&dashboard, "Uptime");
+
 Card voltage = Card(&dashboard, GENERIC_CARD, "Voltage", "V");
 Card activePower = Card(&dashboard, GENERIC_CARD, "Active Power", "W");
 Card apparentPower = Card(&dashboard, GENERIC_CARD, "Apparent Power", "VA");
@@ -107,18 +125,9 @@ Card restart = Card(&dashboard, BUTTON_CARD, "Restart");
 Card energyReset = Card(&dashboard, BUTTON_CARD, "Reset JSY");
 Card reset = Card(&dashboard, BUTTON_CARD, "Reset Device");
 
-Statistic networkHostname = Statistic(&dashboard, "Network Hostname");
-Statistic networkInterface = Statistic(&dashboard, "Network Interface");
-Statistic networkAPIP = Statistic(&dashboard, "Network Access Point IP Address");
-Statistic networkAPMAC = Statistic(&dashboard, "Network Access Point MAC Address");
-Statistic networkEthIP = Statistic(&dashboard, "Network Ethernet IP Address");
-Statistic networkEthMAC = Statistic(&dashboard, "Network Ethernet MAC Address");
-Statistic networkWiFiIP = Statistic(&dashboard, "Network WiFi IP Address");
-Statistic networkWiFiMAC = Statistic(&dashboard, "Network WiFi MAC Address");
-Statistic networkWiFiSSID = Statistic(&dashboard, "Network WiFi SSID");
-Statistic networkWiFiRSSI = Statistic(&dashboard, "Network WiFi RSSI");
-Statistic networkWiFiSignal = Statistic(&dashboard, "Network WiFi Signal");
-Statistic uptime = Statistic(&dashboard, "Uptime");
+int historyX[YASOLR_GRAPH_POINTS] = {0};
+int gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
+Chart gridPowerHistory = Chart(&dashboard, BAR_CHART, "Gris Power (Watts)");
 
 String hostname;
 String ssid;
@@ -169,7 +178,7 @@ Mycila::Task restartTask("Restart", Mycila::TaskType::ONCE, [](void* params) {
   Mycila::System.restart(500);
 });
 
-Mycila::Task dashboardCards("Dashboard", [](void* params) {
+Mycila::Task dashboardTask("Dashboard", [](void* params) {
   ESPConnectMode mode = ESPConnect.getMode();
 
   networkAPIP.set(ESPConnect.getIPAddress(ESPConnectMode::AP).toString().c_str());
@@ -189,6 +198,20 @@ Mycila::Task dashboardCards("Dashboard", [](void* params) {
   frequency.update(jsy.getFrequency());
   powerFactor.update(jsy.getPowerFactor2());
   voltage.update(jsy.getVoltage2());
+
+  // shift array
+  for (size_t i = 0; i < YASOLR_GRAPH_POINTS - 1; i++) {
+    historyX[i] = historyX[i + 1];
+    gridPowerHistoryY[i] = gridPowerHistoryY[i + 1];
+  }
+
+  // set new value
+  historyX[YASOLR_GRAPH_POINTS - 1] = millis() / 1000;
+  gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(jsy.getPower2());
+
+  // update charts
+  gridPowerHistory.updateX(historyX, YASOLR_GRAPH_POINTS);
+  gridPowerHistory.updateY(gridPowerHistoryY, YASOLR_GRAPH_POINTS);
 
   dashboard.sendUpdates();
 });
@@ -242,9 +265,9 @@ void setup() {
   Mycila::System.begin();
 
   // tasks
-  dashboardCards.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardCards.setInterval(751 * Mycila::TaskDuration::MILLISECONDS);
-  dashboardCards.setManager(coreTaskManager);
+  dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
+  dashboardTask.setManager(coreTaskManager);
   jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
   jsyTask.setManager(jsyTaskManager);
   Mycila::TaskManager::configureWDT();
@@ -259,7 +282,7 @@ void setup() {
   senderTask.setManager(ioTaskManager);
 
   // profiling
-  dashboardCards.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+  dashboardTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   jsyTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   otaTask.setCallback(LOG_EXEC_TIME);
   profilerTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
@@ -317,7 +340,7 @@ void setup() {
   });
   dashboard.setAuthentication(YASOLR_ADMIN_USERNAME, YASOLR_ADMIN_PASSWORD);
   dashboard.refreshLayout();
-  dashboardCards.forceRun();
+  dashboardTask.forceRun();
 
   // jsy
   jsy.begin(YASOLR_JSY_SERIAL, YASOLR_JSY_RX, YASOLR_JSY_TX);
