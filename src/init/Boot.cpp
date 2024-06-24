@@ -90,7 +90,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_OUTPUT2_TIME_STOP, "06:00");
   config.configure(KEY_PIN_DISPLAY_SCL, String(YASOLR_DISPLAY_CLOCK_PIN));
   config.configure(KEY_PIN_DISPLAY_SDA, String(YASOLR_DISPLAY_DATA_PIN));
-  config.configure(KEY_PIN_JSY_RT, String(YASOLR_JSY_TX_PIN));
+  config.configure(KEY_PIN_JSY_TX, String(YASOLR_JSY_TX_PIN));
   config.configure(KEY_PIN_JSY_RX, String(YASOLR_JSY_RX_PIN));
   config.configure(KEY_PIN_LIGHTS_GREEN, String(YASOLR_LIGHTS_GREEN_PIN));
   config.configure(KEY_PIN_LIGHTS_RED, String(YASOLR_LIGHTS_RED_PIN));

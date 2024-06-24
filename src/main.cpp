@@ -58,7 +58,7 @@ void setup() {
   initWebTask.forceRun();
   initRestApiTask.forceRun();
   initMqttSubscribersTask.forceRun();
-  initdashboardCards.forceRun();
+  initDashboardCards.forceRun();
 
   assert(  coreTaskManager.asyncStart(1024 * 4, 1, 1, 100, true));  // NOLINT
   assert(    ioTaskManager.asyncStart(1024 * 5, 1, 1, 100, false)); // NOLINT

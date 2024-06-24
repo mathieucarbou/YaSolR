@@ -127,7 +127,7 @@ extern Mycila::Task routingTask;
 extern Mycila::Task bootTask;
 extern Mycila::Task initConfigTask;
 extern Mycila::Task initCoreTask;
-extern Mycila::Task initdashboardCards;
+extern Mycila::Task initDashboardCards;
 extern Mycila::Task initEventsTask;
 extern Mycila::Task initLoggingTask;
 extern Mycila::Task initMqttSubscribersTask;

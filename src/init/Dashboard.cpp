@@ -5,7 +5,7 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
-Mycila::Task initdashboardCards("Init Dashboard", [](void* params) {
+Mycila::Task initDashboardCards("Init Dashboard", [](void* params) {
   logger.info(TAG, "Initializing dashboard...");
   YaSolR::Website.initLayout();
   YaSolR::Website.initCards();

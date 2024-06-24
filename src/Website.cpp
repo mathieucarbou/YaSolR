@@ -179,7 +179,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _pinConfig(_pinDS18O2, KEY_PIN_OUTPUT2_DS18);
   _pinConfig(_pinDS18Router, KEY_PIN_ROUTER_DS18);
   _pinConfig(_pinJsyRX, KEY_PIN_JSY_RX);
-  _pinConfig(_pinJsyTX, KEY_PIN_JSY_RT);
+  _pinConfig(_pinJsyTX, KEY_PIN_JSY_TX);
   _pinConfig(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN);
   _pinConfig(_pinLEDRed, KEY_PIN_LIGHTS_RED);
   _pinConfig(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW);
@@ -448,7 +448,7 @@ void YaSolR::WebsiteClass::initCards() {
   _pinout(_pinDS18O2, config.get(KEY_PIN_OUTPUT2_DS18).toInt(), pinout);
   _pinout(_pinDS18Router, config.get(KEY_PIN_ROUTER_DS18).toInt(), pinout);
   _pinout(_pinJsyRX, config.get(KEY_PIN_JSY_RX).toInt(), pinout);
-  _pinout(_pinJsyTX, config.get(KEY_PIN_JSY_RT).toInt(), pinout);
+  _pinout(_pinJsyTX, config.get(KEY_PIN_JSY_TX).toInt(), pinout);
   _pinout(_pinLEDGreen, config.get(KEY_PIN_LIGHTS_GREEN).toInt(), pinout);
   _pinout(_pinLEDRed, config.get(KEY_PIN_LIGHTS_RED).toInt(), pinout);
   _pinout(_pinLEDYellow, config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), pinout);

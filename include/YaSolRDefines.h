@@ -140,7 +140,7 @@
 
 #define KEY_PIN_DISPLAY_SCL    "pin_disp_scl"
 #define KEY_PIN_DISPLAY_SDA    "pin_disp_sda"
-#define KEY_PIN_JSY_RT         "pin_jsy_tx"
+#define KEY_PIN_JSY_TX         "pin_jsy_tx"
 #define KEY_PIN_JSY_RX         "pin_jsy_rx"
 #define KEY_PIN_LIGHTS_GREEN   "pin_lights_g"
 #define KEY_PIN_LIGHTS_RED     "pin_lights_r"
