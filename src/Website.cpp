@@ -647,8 +647,9 @@ void YaSolR::WebsiteClass::updateCards() {
 
 void YaSolR::WebsiteClass::updateCharts() {
   // graphs
+  int now = static_cast<int>(millis() / 1000);
   for (size_t i = 0; i < YASOLR_GRAPH_POINTS; i++) {
-    _historyX[i] = timeHistory[i] / 1000;
+    _historyX[i] = static_cast<int>((timeHistory[i] / 1000)) - now;
   }
 
   gridPowerHistory.copy(_gridPowerHistoryY);

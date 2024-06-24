@@ -45,7 +45,6 @@ Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   gridPowerHistory.add(gridMetrics.power);
   routedPowerHistory.add(routerMetrics.power);
   routerTHDiHistory.add(routerMetrics.thdi * 100);
-  dashboardCharts.resume();
 
   float virtualGridPower = gridMetrics.power - routerMetrics.power;
 

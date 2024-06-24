@@ -10,7 +10,7 @@ Mycila::Task dashboardCards("Dashboard", [](void* params) {
   dashboard.sendUpdates();
 });
 
-Mycila::Task dashboardCharts("Dashboard Charts", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task dashboardCharts("Dashboard Charts", [](void* params) {
   YaSolR::Website.updateCharts();
   dashboard.sendUpdates();
 });
