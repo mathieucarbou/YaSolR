@@ -117,7 +117,7 @@ namespace Mycila {
         if (getGridSource() != SOURCE_METER)
           return false;
 
-        bool updated = updated = abs(_meter.power - _lastPower) > MYCILA_GRID_POWER_DELTA_FILTER;
+        bool updated = abs(_meter.power - _lastPower) > MYCILA_GRID_POWER_DELTA_FILTER;
         if (updated)
           _lastPower = _meter.power;
 
