@@ -89,8 +89,8 @@ namespace YaSolR {
       int _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
       int _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
       int _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
-      Chart _gridPowerHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_044 " (Watts)");
-      Chart _routedPowerHistory = Chart(&dashboard, AREA_CHART, YASOLR_LBL_036 " (Watts)");
+      Chart _gridPowerHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_044 " (W)");
+      Chart _routedPowerHistory = Chart(&dashboard, AREA_CHART, YASOLR_LBL_036 " (W)");
       Chart _routerTHDiHistory = Chart(&dashboard, BAR_CHART, YASOLR_LBL_039 " (%)");
 
 #ifdef APP_MODEL_PRO
