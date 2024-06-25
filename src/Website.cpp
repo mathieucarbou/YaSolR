@@ -14,7 +14,7 @@ void YaSolR::WebsiteClass::initLayout() {
   logger.debug(TAG, "Initializing layout...");
 
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
-    _historyX[i] = i + 1 - YASOLR_GRAPH_POINTS;
+    _historyX[i] = i - YASOLR_GRAPH_POINTS;
 
   _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
