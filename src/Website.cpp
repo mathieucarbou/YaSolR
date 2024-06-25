@@ -551,6 +551,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _networkWiFiSSID.set(ESPConnect.getWiFiSSID().c_str());
   _relay1SwitchCount.set(String(relay1.getSwitchCount()).c_str());
   _relay2SwitchCount.set(String(relay2.getSwitchCount()).c_str());
+  _jsyRemoteUdpRate.set((String(jsyRemoteUdpRate.rate()) + " msg/s").c_str());
   _time.set(Mycila::Time::getLocalStr().c_str());
   _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System.getUptime()).c_str());
 #ifdef APP_MODEL_TRIAL

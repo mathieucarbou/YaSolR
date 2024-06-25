@@ -160,7 +160,7 @@
 #define YASOLR_LBL_154 "Invalid"
 #define YASOLR_LBL_155 "Input Only"
 #define YASOLR_LBL_156 "I/O"
-#define YASOLR_LBL_157
+#define YASOLR_LBL_157 "JSY Remote UDP: Reception Rate"
 #define YASOLR_LBL_158
 #define YASOLR_LBL_159
 #define YASOLR_LBL_160

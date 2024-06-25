@@ -6,6 +6,7 @@
 
 #include <AsyncUDP.h>
 #include <ESPAsyncWebServer.h>
+#include <FastCRC32.h>
 #include <HardwareSerial.h>
 #include <LittleFS.h>
 
@@ -35,17 +36,17 @@
 #include <MycilaZCD.h>
 
 #ifdef APP_MODEL_TRIAL
-#include <MycilaTrial.h>
+  #include <MycilaTrial.h>
 #endif
 
 #ifdef APP_MODEL_PRO
-#include <ESPDashPro.h>
-#include <ElegantOTAPro.h>
-#include <WebSerialPro.h>
+  #include <ESPDashPro.h>
+  #include <ElegantOTAPro.h>
+  #include <WebSerialPro.h>
 #else
-#include <ESPDash.h>
-#include <ElegantOTA.h>
-#include <WebSerial.h>
+  #include <ESPDash.h>
+  #include <ElegantOTA.h>
+  #include <WebSerial.h>
 #endif
 
 #include <YaSolRDefines.h>
@@ -127,3 +128,5 @@ extern Mycila::Task initLoggingTask;
 extern Mycila::Task initMqttSubscribersTask;
 extern Mycila::Task initRestApiTask;
 extern Mycila::Task initWebTask;
+
+extern Mycila::CircularBuffer<float, 50> jsyRemoteUdpRate;

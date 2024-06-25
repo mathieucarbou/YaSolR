@@ -39,7 +39,7 @@ namespace Mycila {
 
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
-      bool isConnected() const { return _zcd->isConnected(); }
+      bool isConnected() const { return _enabled && _zcd->isConnected(); }
 
       void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
@@ -74,7 +74,7 @@ namespace Mycila {
       // At 100% power, the phase angle is equal to 0
       float getPhaseAngle() const {
         // angle_rad = PI * delay_s / period_s
-        return PI * _zcd->getFrequency() * getFiringDelay() / 1000000;
+        return PI * _zcd->getPulseFrequency() * getFiringDelay() / 1000000;
       }
 
     private:

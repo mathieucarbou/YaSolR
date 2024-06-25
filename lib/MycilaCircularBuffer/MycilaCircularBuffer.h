@@ -19,15 +19,19 @@ namespace Mycila {
 
       size_t count() const { return _count; };
       T avg() const { return _count == 0 ? 0 : _sum / _count; }
-      T last() const { return _last; }
+      T first() const { return _buffer[_index]; }
+      T last() const { return _buffer[_index == 0 ? N - 1 : _index - 1]; }
       T sum() const { return _sum; }
       T max() const { return _max; }
       T min() const { return _min; }
+      T rate() const {
+        T diff = last() - first();
+        return diff == 0 ? 0 : _count / diff;
+      }
 
       T add(T value) {
         T current = _buffer[_index];
         _buffer[_index++] = value;
-        _last = value;
         if (value > _max)
           _max = value;
         if (value < _min)
@@ -49,7 +53,6 @@ namespace Mycila {
 
       void reset() {
         _sum = 0;
-        _last = 0;
         _min = std::numeric_limits<T>::max();
         _max = std::numeric_limits<T>::min();
         _index = 0;
@@ -73,7 +76,6 @@ namespace Mycila {
     private:
       T _buffer[N];
       T _sum;
-      T _last;
       T _min;
       T _max;
       size_t _index = 0;

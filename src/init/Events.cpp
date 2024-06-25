@@ -346,25 +346,35 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   udp.onPacket([](AsyncUDPPacket packet) {
+    // [0] uint8_t == message type
+    // [1] sizeof(Mycila::JSYData)
+    // [sizeOfBody] uint32_t == CRC32
+    constexpr size_t sizeOfJSYData = sizeof(Mycila::JSYData);
+    constexpr size_t sizeOfBody = 1 + sizeOfJSYData;
+    constexpr size_t sizeOfCRC32 = sizeof(uint32_t);
+    constexpr size_t sizeOfUDP = sizeOfBody + sizeOfCRC32;
+
     size_t len = packet.length();
-    uint8_t* data = packet.data();
-    if (!len)
+    if (len != sizeOfUDP)
       return;
+
+    uint8_t* data = packet.data();
     const uint8_t type = data[0];
-    data++;
-    len--;
-    switch (type) {
-      case YASOLR_UDP_MSG_TYPE_JSY_DATA:
-        if (len == sizeof(Mycila::JSYData)) {
-          Mycila::JSYData jsyData;
-          memcpy(&jsyData, data, sizeof(Mycila::JSYData));
-          if (grid.updateRemoteJSYData(jsyData)) {
-            routingTask.resume();
-          }
-        }
-        break;
-      default:
-        break;
+
+    if (type != YASOLR_UDP_MSG_TYPE_JSY_DATA)
+      return;
+
+    FastCRC32 crc32;
+    crc32.add(data, sizeOfBody);
+    uint32_t crc = crc32.calc();
+    if (memcmp(&crc, data + sizeOfBody, sizeOfCRC32) != 0)
+      return;
+
+    Mycila::JSYData jsyData;
+    memcpy(&jsyData, data + 1, sizeOfJSYData);
+    jsyRemoteUdpRate.add(millis() / 1000.0f);
+    if (grid.updateRemoteJSYData(jsyData)) {
+      routingTask.resume();
     }
   });
 });
