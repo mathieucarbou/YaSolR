@@ -15,7 +15,7 @@ namespace Mycila {
 
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
-      bool isConnected() const { return getLastPulseWidth() > 0; }
+      bool isConnected() const { return getFrequency() > 0; }
 
       // in microseconds
       // 50Hz => 10000
