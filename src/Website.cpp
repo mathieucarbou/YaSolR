@@ -13,6 +13,13 @@ static const ChartSize chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl 
 void YaSolR::WebsiteClass::initLayout() {
   logger.debug(TAG, "Initializing layout...");
 
+  for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
+    _historyX[i] = i + 1 - YASOLR_GRAPH_POINTS;
+
+  _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _routerTHDiHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+
 #ifdef APP_MODEL_PRO
   dashboard.setChartAnimations(false);
 
@@ -654,24 +661,19 @@ void YaSolR::WebsiteClass::updateCharts() {
 
   // shift array
   for (size_t i = 0; i < YASOLR_GRAPH_POINTS - 1; i++) {
-    _historyX[i] = _historyX[i + 1];
     _gridPowerHistoryY[i] = _gridPowerHistoryY[i + 1];
     _routedPowerHistoryY[i] = _routedPowerHistoryY[i + 1];
     _routerTHDiHistoryY[i] = _routerTHDiHistoryY[i + 1];
   }
 
   // set new value
-  _historyX[YASOLR_GRAPH_POINTS - 1] = millis() / 1000;
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(gridMetrics.power);
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.power);
   _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.thdi * 100);
 
   // update charts
-  _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _gridPowerHistory.updateY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
-  _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routedPowerHistory.updateY(_routedPowerHistoryY, YASOLR_GRAPH_POINTS);
-  _routerTHDiHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.updateY(_routerTHDiHistoryY, YASOLR_GRAPH_POINTS);
 }
 
