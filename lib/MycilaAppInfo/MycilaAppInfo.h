@@ -31,10 +31,6 @@ namespace Mycila {
       const String defaultSSID;
       const bool debug;
       const bool trial;
-
-    private:
-      static String _getEspId();
-      static String _lower(const String& s);
   };
 
   extern AppInfoClass AppInfo;

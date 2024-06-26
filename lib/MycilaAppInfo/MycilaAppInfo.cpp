@@ -2,28 +2,29 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou and others
  */
-#include <MycilaAppInfo.h>
-
 #include <Esp.h>
+#include <MycilaAppInfo.h>
+#include <MycilaString.h>
+#include <MycilaSystem.h>
 
 #ifndef APP_NAME
-#define APP_NAME "YaSolR"
+  #define APP_NAME "YaSolR"
 #endif
 
 #ifndef APP_MANUFACTURER
-#define APP_MANUFACTURER "Mathieu Carbou"
+  #define APP_MANUFACTURER "Mathieu Carbou"
 #endif
 
 #ifdef APP_MODEL_PRO
-#ifdef APP_MODEL_TRIAL
-#define APP_MODEL "Trial"
-#else
-#define APP_MODEL "Pro"
-#endif
+  #ifdef APP_MODEL_TRIAL
+    #define APP_MODEL "Trial"
+  #else
+    #define APP_MODEL "Pro"
+  #endif
 #endif
 
 #ifdef APP_MODEL_OSS
-#define APP_MODEL "OSS"
+  #define APP_MODEL "OSS"
 #endif
 
 extern const char* __COMPILED_APP_VERSION__;
@@ -32,7 +33,7 @@ extern const char* __COMPILED_BUILD_HASH__;
 extern const char* __COMPILED_BUILD_NAME__;
 extern const char* __COMPILED_BUILD_TIMESTAMP__;
 
-Mycila::AppInfoClass::AppInfoClass() : id(_getEspId()),
+Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System.getEspID()),
                                        name(APP_NAME),
                                        model(APP_MODEL),
                                        version(__COMPILED_APP_VERSION__),
@@ -43,8 +44,8 @@ Mycila::AppInfoClass::AppInfoClass() : id(_getEspId()),
                                        buildBranch(__COMPILED_BUILD_BRANCH__),
                                        buildHash(__COMPILED_BUILD_HASH__),
                                        buildDate(__COMPILED_BUILD_TIMESTAMP__),
-                                       defaultHostname(_lower(name + "-" + id)),
-                                       defaultMqttClientId(_lower(name + "_" + id)),
+                                       defaultHostname(Mycila::Str::lowerCaseCopy(name + "-" + id)),
+                                       defaultMqttClientId(Mycila::Str::lowerCaseCopy(name + "_" + id)),
                                        defaultSSID(name + "-" + id),
                                        debug(firmware.indexOf("debug") >= 0),
                                        trial(firmware.indexOf("trial") >= 0) {}
@@ -60,22 +61,6 @@ void Mycila::AppInfoClass::toJson(const JsonObject& root) const {
   root["name"] = name;
   root["trial"] = trial;
   root["version"] = version;
-}
-
-String Mycila::AppInfoClass::_getEspId() {
-  uint32_t chipId = 0;
-  for (int i = 0; i < 17; i += 8) {
-    chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
-  }
-  String espId = String(chipId, HEX);
-  espId.toUpperCase();
-  return espId;
-}
-
-String Mycila::AppInfoClass::_lower(const String& s) {
-  String lower = s;
-  lower.toLowerCase();
-  return lower;
 }
 
 namespace Mycila {
