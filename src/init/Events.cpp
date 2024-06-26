@@ -336,7 +336,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    if (eventType == Mycila::JSYEventType::EVT_READ) {
+    if (eventType == Mycila::JSYEventType::EVT_CHANGE) {
       Mycila::JSYData data;
       jsy.getData(data);
       if (grid.updateJSYData(data)) {
