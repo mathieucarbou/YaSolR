@@ -19,7 +19,7 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
   }
 
   profilerTask.setEnabled(debug);
-  routerDebugTask.setEnabled(debug);
+  routerDebugTask.setEnabled(false);
 
   if (debug) {
     // Enable profiling for some FOREVER tasks
