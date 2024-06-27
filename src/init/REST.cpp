@@ -110,7 +110,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
     .on("/api/config", HTTP_POST, [](AsyncWebServerRequest* request) {
       std::map<const char*, String> settings;
       for (size_t i = 0, max = request->params(); i < max; i++) {
-        AsyncWebParameter* p = request->getParam(i);
+        const AsyncWebParameter* p = request->getParam(i);
         if (p->isPost() && !p->isFile()) {
           const char* keyRef = config.keyRef(p->name().c_str());
           settings[keyRef] = p->value();
