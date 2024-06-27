@@ -89,9 +89,6 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
-        RouterOutputMetrics metrics;
-        getMetrics(metrics);
-
         root["enabled"] = isDimmerEnabled();
         root["state"] = getStateName();
         root["bypass"] = isBypassOn() ? "on" : "off";
@@ -100,6 +97,8 @@ namespace Mycila {
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
         _temperatureSensor->toJson(root["ds18"].to<JsonObject>());
 
+        RouterOutputMetrics metrics;
+        getMetrics(metrics);
         JsonObject jsonMetrics = root["metrics"].to<JsonObject>();
         jsonMetrics["apparent_power"] = metrics.apparentPower;
         jsonMetrics["current"] = metrics.current;
@@ -111,14 +110,33 @@ namespace Mycila {
         jsonMetrics["voltage"] = metrics.voltage;
         jsonMetrics["voltage_dimmed"] = metrics.dimmedVoltage;
 
-        jsonMetrics["pzem"]["apparent_power"] = _pzem->getApparentPower();
-        jsonMetrics["pzem"]["current"] = _pzem->getCurrent();
-        jsonMetrics["pzem"]["power"] = _pzem->getPower();
-        jsonMetrics["pzem"]["power_factor"] = _pzem->getPowerFactor();
-        jsonMetrics["pzem"]["resistance"] = _pzem->getResistance();
-        jsonMetrics["pzem"]["thdi"] = _pzem->getTHDi(0);
-        jsonMetrics["pzem"]["voltage"] = _pzem->getVoltage();
-        jsonMetrics["pzem"]["voltage_dimmed"] = _pzem->getPower() / _pzem->getCurrent();
+        RouterOutputMetrics pzemMetrics;
+        pzemMetrics.voltage = metrics.voltage;
+        completeMetricsFromPZEM(pzemMetrics, _pzem);
+
+        JsonObject jsonPZEM = root["pzem"].to<JsonObject>();
+        jsonPZEM["apparent_power"] = pzemMetrics.apparentPower;
+        jsonPZEM["current"] = pzemMetrics.current;
+        jsonPZEM["power"] = pzemMetrics.power;
+        jsonPZEM["power_factor"] = pzemMetrics.powerFactor;
+        jsonPZEM["resistance"] = pzemMetrics.resistance;
+        jsonPZEM["thdi"] = pzemMetrics.thdi;
+        jsonPZEM["voltage"] = pzemMetrics.voltage;
+        jsonPZEM["voltage_dimmed"] = pzemMetrics.dimmedVoltage;
+
+        RouterOutputMetrics dutyMetrics;
+        dutyMetrics.voltage = metrics.voltage;
+        completeMetricsFromDuty(dutyMetrics, _dimmer->getPowerDutyCycle(), config.calibratedResistance ? config.calibratedResistance : pzemMetrics.resistance);
+
+        JsonObject jsonDuty = root["duty"].to<JsonObject>();
+        jsonDuty["apparent_power"] = dutyMetrics.apparentPower;
+        jsonDuty["current"] = dutyMetrics.current;
+        jsonDuty["power"] = dutyMetrics.power;
+        jsonDuty["power_factor"] = dutyMetrics.powerFactor;
+        jsonDuty["resistance"] = dutyMetrics.resistance;
+        jsonDuty["thdi"] = dutyMetrics.thdi;
+        jsonDuty["voltage"] = dutyMetrics.voltage;
+        jsonDuty["voltage_dimmed"] = dutyMetrics.dimmedVoltage;
 
         _relay->toJson(root["relay"].to<JsonObject>());
       }
@@ -156,24 +174,9 @@ namespace Mycila {
         metrics.energy = _pzem->getEnergy();
         if (routing) {
           if (config.calibratedResistance) {
-            float dutyCycle = _dimmer->getPowerDutyCycle();
-            metrics.resistance = config.calibratedResistance;
-            metrics.nominalPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
-            metrics.power = dutyCycle * metrics.nominalPower;
-            metrics.powerFactor = sqrt(dutyCycle);
-            metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
-            metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
-            metrics.apparentPower = metrics.current * metrics.voltage;
-            metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
+            completeMetricsFromDuty(metrics, _dimmer->getPowerDutyCycle(), config.calibratedResistance);
           } else if (pzem) {
-            metrics.resistance = _pzem->getResistance();
-            metrics.nominalPower = _pzem->getNominalPower();
-            metrics.power = _pzem->getPower();
-            metrics.powerFactor = _pzem->getPowerFactor();
-            metrics.current = _pzem->getCurrent();
-            metrics.apparentPower = _pzem->getApparentPower();
-            metrics.dimmedVoltage = _pzem->getDimmedVoltage();
-            metrics.thdi = _pzem->getTHDi(0);
+            completeMetricsFromPZEM(metrics, _pzem);
           }
         }
       }
@@ -191,6 +194,28 @@ namespace Mycila {
       bool _autoBypassEnabled = false;
       bool _bypassEnabled = false;
       RouterOutputStateCallback _callback = nullptr;
+
+      static void completeMetricsFromDuty(RouterOutputMetrics& metrics, float dutyCycle, float configuredResistance) {
+        metrics.resistance = configuredResistance;
+        metrics.nominalPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
+        metrics.power = dutyCycle * metrics.nominalPower;
+        metrics.powerFactor = sqrt(dutyCycle);
+        metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
+        metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
+        metrics.apparentPower = metrics.current * metrics.voltage;
+        metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
+      }
+
+      static void completeMetricsFromPZEM(RouterOutputMetrics& metrics, PZEM* _pzem) {
+        metrics.resistance = _pzem->getResistance();
+        metrics.nominalPower = _pzem->getNominalPower();
+        metrics.power = _pzem->getPower();
+        metrics.powerFactor = _pzem->getPowerFactor();
+        metrics.dimmedVoltage = _pzem->getDimmedVoltage();
+        metrics.current = _pzem->getCurrent();
+        metrics.apparentPower = _pzem->getApparentPower();
+        metrics.thdi = _pzem->getTHDi(0);
+      }
 
     private:
       void _setBypass(bool state);
