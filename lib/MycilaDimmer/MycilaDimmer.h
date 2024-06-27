@@ -39,13 +39,11 @@ namespace Mycila {
 
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
-      bool isConnected() const { return _enabled && _zcd->isConnected(); }
 
       void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
         root["angle"] = angle;
         root["angle_d"] = angle * RAD_TO_DEG;
-        root["connected"] = isConnected();
         root["delay"] = getFiringDelay();
         root["duty"] = _duty;
         root["duty_cycle"] = getPowerDutyCycle();

@@ -92,7 +92,6 @@ namespace Mycila {
         root["enabled"] = isDimmerEnabled();
         root["state"] = getStateName();
         root["bypass"] = isBypassOn() ? "on" : "off";
-        root["online"] = isDimmerConnected();
 
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
         _temperatureSensor->toJson(root["ds18"].to<JsonObject>());
@@ -110,25 +109,11 @@ namespace Mycila {
         jsonMetrics["voltage"] = metrics.voltage;
         jsonMetrics["voltage_dimmed"] = metrics.dimmedVoltage;
 
-        RouterOutputMetrics pzemMetrics;
-        pzemMetrics.voltage = metrics.voltage;
-        completeMetricsFromPZEM(pzemMetrics, _pzem);
-
-        JsonObject jsonPZEM = root["pzem"].to<JsonObject>();
-        jsonPZEM["apparent_power"] = pzemMetrics.apparentPower;
-        jsonPZEM["current"] = pzemMetrics.current;
-        jsonPZEM["power"] = pzemMetrics.power;
-        jsonPZEM["power_factor"] = pzemMetrics.powerFactor;
-        jsonPZEM["resistance"] = pzemMetrics.resistance;
-        jsonPZEM["thdi"] = pzemMetrics.thdi;
-        jsonPZEM["voltage"] = pzemMetrics.voltage;
-        jsonPZEM["voltage_dimmed"] = pzemMetrics.dimmedVoltage;
-
         RouterOutputMetrics dutyMetrics;
         dutyMetrics.voltage = metrics.voltage;
-        completeMetricsFromDuty(dutyMetrics, _dimmer->getPowerDutyCycle(), config.calibratedResistance ? config.calibratedResistance : pzemMetrics.resistance);
+        completeMetricsFromDuty(dutyMetrics, _dimmer->getPowerDutyCycle(), config.calibratedResistance ? config.calibratedResistance : metrics.resistance);
 
-        JsonObject jsonDuty = root["duty"].to<JsonObject>();
+        JsonObject jsonDuty = root["metrics_duty"].to<JsonObject>();
         jsonDuty["apparent_power"] = dutyMetrics.apparentPower;
         jsonDuty["current"] = dutyMetrics.current;
         jsonDuty["power"] = dutyMetrics.power;
@@ -138,6 +123,20 @@ namespace Mycila {
         jsonDuty["voltage"] = dutyMetrics.voltage;
         jsonDuty["voltage_dimmed"] = dutyMetrics.dimmedVoltage;
 
+        RouterOutputMetrics pzemMetrics;
+        pzemMetrics.voltage = metrics.voltage;
+        completeMetricsFromPZEM(pzemMetrics, _pzem);
+
+        JsonObject jsonPZEM = root["metrics_pzem"].to<JsonObject>();
+        jsonPZEM["apparent_power"] = pzemMetrics.apparentPower;
+        jsonPZEM["current"] = pzemMetrics.current;
+        jsonPZEM["power"] = pzemMetrics.power;
+        jsonPZEM["power_factor"] = pzemMetrics.powerFactor;
+        jsonPZEM["resistance"] = pzemMetrics.resistance;
+        jsonPZEM["thdi"] = pzemMetrics.thdi;
+        jsonPZEM["voltage"] = pzemMetrics.voltage;
+        jsonPZEM["voltage_dimmed"] = pzemMetrics.dimmedVoltage;
+
         _relay->toJson(root["relay"].to<JsonObject>());
       }
 #endif
@@ -145,7 +144,6 @@ namespace Mycila {
       // dimmer
 
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
-      bool isDimmerConnected() const { return _dimmer->isConnected(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer; }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperatureSensor->getValidTemperature() >= config.dimmerTempLimit; }
       uint16_t getDimmerDuty() const { return _dimmer->getPowerDuty(); }

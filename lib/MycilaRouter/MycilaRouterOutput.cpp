@@ -38,8 +38,10 @@ const char* Mycila::RouterOutput::getStateName() const { return RouterOutputStat
 // dimmer
 
 bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
-  if (!_dimmer->isEnabled())
+  if (!_dimmer->isEnabled()) {
+    LOGW(TAG, "Dimmer '%s' is disabled", _name);
     return false;
+  }
 
   if (_autoBypassEnabled) {
     LOGW(TAG, "Auto Bypass '%s' is activated: unable to change dimmer level", _name);
@@ -48,11 +50,6 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
 
   if (config.autoDimmer) {
     LOGW(TAG, "Auto Dimmer '%s' is activated: unable to change dimmer level", _name);
-    return false;
-  }
-
-  if (!_dimmer->isConnected()) {
-    LOGW(TAG, "Dimmer '%s' is not connected to the grid", _name);
     return false;
   }
 
@@ -73,9 +70,6 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
 }
 
 void Mycila::RouterOutput::applyDimmerLimits() {
-  if (!_dimmer->isEnabled())
-    return;
-
   if (_autoBypassEnabled)
     return;
 
@@ -84,12 +78,6 @@ void Mycila::RouterOutput::applyDimmerLimits() {
 
   if (_dimmer->isOff())
     return;
-
-  if (_dimmer->isOn() && !_dimmer->isConnected()) {
-    LOGW(TAG, "Dimmer '%s' is not connected to the grid!", _name);
-    _dimmer->off();
-    return;
-  }
 
   if (_dimmer->getPowerDuty() > config.dimmerDutyLimit) {
     LOGW(TAG, "Dimmer '%s' reached its duty limit at %" PRIu16, _name, config.dimmerDutyLimit);
@@ -130,15 +118,6 @@ void Mycila::RouterOutput::applyAutoBypass() {
   if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Relay and dimmer disabled: stopping Auto Bypass '%s'...", _name);
-      _autoBypassEnabled = false;
-      _setBypass(false);
-    }
-    return;
-  }
-
-  if (!_relay->isEnabled() && !_dimmer->isConnected()) {
-    if (_autoBypassEnabled) {
-      LOGW(TAG, "Dimmer disconnected from grid: stopping Auto Bypass '%s'...", _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -217,7 +196,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
   // time and temp OK, let's start
   if (!_autoBypassEnabled) {
     // auto bypass is not enabled, let's start it
-    if (!_relay->isEnabled() && !_dimmer->isConnected()) {
+    if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
       return;
     }
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
@@ -258,7 +237,7 @@ void Mycila::RouterOutput::_setBypass(bool state) {
 
     } else {
       // we don't have a relay: use the dimmer
-      if (_dimmer->isConnected()) {
+      if (_dimmer->isEnabled()) {
         LOGD(TAG, "Turning Dimmer '%s' ON...", _name);
         _dimmer->setPowerDuty(MYCILA_DIMMER_MAX_DUTY);
         _bypassEnabled = true;
