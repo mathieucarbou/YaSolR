@@ -160,7 +160,7 @@
 #define YASOLR_LBL_154 "Invalide"
 #define YASOLR_LBL_155 "Entrée uniquement"
 #define YASOLR_LBL_156 "E/S"
-#define YASOLR_LBL_157 "JSY Remote UDP: Vitesse de réception"
+#define YASOLR_LBL_157 "JSY Remote UDP: Débit"
 #define YASOLR_LBL_158
 #define YASOLR_LBL_159
 #define YASOLR_LBL_160
