@@ -43,6 +43,7 @@ jobs:
             --exclude=lib/DimmableLight \
             --exclude=lib/ElegantOTAPro \
             --exclude=lib/ESPDASHPro \
+            --exclude=lib/MycilaDimmer/doc \
             --exclude=lib/WebSerialPro \
             lib \
             include \
