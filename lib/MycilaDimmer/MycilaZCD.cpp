@@ -51,15 +51,12 @@ void Mycila::ZCD::begin(const int8_t pin, const uint8_t frequency) {
   Thyristor::setSyncPin(_pin);
   Thyristor::begin();
 
-  _frequencyUpdater.attach(1, +[](ZCD* instance) { instance->_measuredGridFrequency = Thyristor::getDetectedFrequency(); }, this);
-
   _enabled = true;
 }
 
 void Mycila::ZCD::end() {
   if (_enabled) {
     LOGI(TAG, "Disable Zero-Cross Detection...");
-    _frequencyUpdater.detach();
     _enabled = false;
     Thyristor::setFrequency(0);
     Thyristor::end();
@@ -68,6 +65,8 @@ void Mycila::ZCD::end() {
 }
 
 uint16_t Mycila::ZCD::getSemiPeriod() const { return _enabled ? Thyristor::getSemiPeriod() : 0; }
+
+float Mycila::ZCD::getPulseFrequency() const { return _enabled ? Thyristor::getPulseFrequency() : 0; }
 uint16_t Mycila::ZCD::getAvgPulseWidth() const { return _enabled ? Thyristor::getPulseWidth() : 0; }
 uint16_t Mycila::ZCD::getMaxPulseWidth() const { return _enabled ? Thyristor::getMaxPulseWidth() : 0; }
 uint16_t Mycila::ZCD::getLastPulseWidth() const { return _enabled ? Thyristor::getLastPulseWidth() : 0; }

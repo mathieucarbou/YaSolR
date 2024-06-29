@@ -272,7 +272,6 @@ void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
     // I decided to use "16" because is a power of 2, very fast to be computed.
     if (semiPeriodLength && diff > semiPeriodLength * 16) {
       queue.reset();
-      pulses.reset();
     } else {
       // If filtering has passed, I can update the moving average
       queue.add(diff);
@@ -469,75 +468,24 @@ void Thyristor::setFrequency(float frequency) {
 }
 
 uint16_t Thyristor::getPulseWidth() {
-  noInterrupts();
-  uint32_t diff = micros() - lastTime;
-  if (semiPeriodLength && diff > semiPeriodLength) {
-    pulses.reset();
-  }
-  uint16_t avg = pulses.avg();
-  interrupts();
-  return avg;
+  return pulses.avg();
 }
 
 uint16_t Thyristor::getMaxPulseWidth() {
-  noInterrupts();
-  uint32_t diff = micros() - lastTime;
-  if (semiPeriodLength && diff > semiPeriodLength) {
-    pulses.reset();
-  }
-  uint16_t max = pulses.max();
-  interrupts();
-  return max;
+  return pulses.max();
 }
 
 uint16_t Thyristor::getMinPulseWidth() {
-  noInterrupts();
-  uint32_t diff = micros() - lastTime;
-  if (semiPeriodLength && diff > semiPeriodLength) {
-    pulses.reset();
-  }
-  uint16_t min = pulses.min();
-  interrupts();
-  return min;
+  return pulses.min();
 }
 
 uint16_t Thyristor::getLastPulseWidth() {
-  noInterrupts();
-  uint32_t diff = micros() - lastTime;
-  if (semiPeriodLength && diff > semiPeriodLength) {
-    pulses.reset();
-  }
-  uint16_t last = pulses.last();
-  interrupts();
-  return last;
+  return pulses.last();
 }
 
-float Thyristor::getDetectedFrequency() {
-  float c;
-  float tot;
-  {
-    // Stop interrupt to freeze variables modified or accessed in the interrupt
-    noInterrupts();
-
-    // "diff" is correct even when rolling back, because all of them are unsigned
-    uint32_t diff = micros() - lastTime;
-
-    // if diff is very very greater than the theoretical value, the electrical signal
-    // can be considered as lost for a while.
-    // I decided to use "16" because is a power of 2, very fast to be computed.
-    if (semiPeriodLength && diff > semiPeriodLength * 16) {
-      queue.reset();
-    }
-
-    c = queue.count();
-    tot = queue.sum();
-    interrupts();
-  }
-
-  // We need at least a sample to return a value different from 0
-  // *1000000: us
-  // /2: from semiperiod to full period
-  return tot > 0 ? (c * 500000 / tot) : 0;
+float Thyristor::getPulseFrequency() {
+  uint32_t pulsePeriod = queue.avg();
+  return pulsePeriod == 0 ? 0 : 1000000 / (float)pulsePeriod;
 }
 
 Thyristor::Thyristor(int pin) : pin(pin), delay(semiPeriodLength) {

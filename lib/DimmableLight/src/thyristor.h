@@ -130,7 +130,7 @@ class Thyristor {
      *
      * NOTE: when (re)starting, it will take a while before returning a value different from 0.
      */
-    static float getDetectedFrequency();
+    static float getPulseFrequency();
 
     static const uint8_t N = 2;
 

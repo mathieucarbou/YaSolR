@@ -71,8 +71,8 @@ namespace Mycila {
       // At 0% power, the phase angle is equal to PI
       // At 100% power, the phase angle is equal to 0
       float getPhaseAngle() const {
-        // angle_rad = PI * delay_s / period_s
-        return PI * _zcd->getPulseFrequency() * getFiringDelay() / 1000000;
+        // angle_rad = PI * delay_us / period_us
+        return PI * getFiringDelay() / _zcd->getSemiPeriod();
       }
 
     private:

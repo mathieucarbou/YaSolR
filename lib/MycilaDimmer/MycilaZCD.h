@@ -5,7 +5,6 @@
 #pragma once
 
 #include <ArduinoJson.h>
-#include <Ticker.h>
 
 #include <esp32-hal-gpio.h>
 
@@ -23,11 +22,8 @@ namespace Mycila {
       // 60Hz => 8333
       uint16_t getSemiPeriod() const;
 
-      // Grid frequency in Hz based on the Zero-Cross pulse frequency
-      float getCurrentFrequency() const { return _enabled ? _measuredGridFrequency : 0; }
-
       // Zero-Cross pulse information
-      float getPulseFrequency() const { return _enabled ? _measuredGridFrequency * 2 : 0; }
+      float getPulseFrequency() const;
       uint16_t getAvgPulseWidth() const;
       uint16_t getLastPulseWidth() const;
       uint16_t getMaxPulseWidth() const;
@@ -45,8 +41,6 @@ namespace Mycila {
 
     private:
       bool _enabled = false;
-      volatile float _measuredGridFrequency = 0;
-      Ticker _frequencyUpdater;
       gpio_num_t _pin = GPIO_NUM_NC;
   };
 } // namespace Mycila
