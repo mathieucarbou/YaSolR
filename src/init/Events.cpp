@@ -346,33 +346,51 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   udp.onPacket([](AsyncUDPPacket packet) {
-    // [0] uint8_t == message type
-    // [1] sizeof(Mycila::JSYData)
-    // [sizeOfBody] uint32_t == CRC32
-    constexpr size_t sizeOfJSYData = sizeof(Mycila::JSYData);
-    constexpr size_t sizeOfBody = 1 + sizeOfJSYData;
-    constexpr size_t sizeOfCRC32 = sizeof(uint32_t);
-    constexpr size_t sizeOfUDP = sizeOfBody + sizeOfCRC32;
+    // buffer[0] == MYCILA_UDP_MSG_TYPE_JSY_DATA (1)
+    // buffer[1] == size_t (4)
+    // buffer[5] == MsgPack (?)
+    // buffer[5 + size] == CRC32 (4)
 
     size_t len = packet.length();
-    if (len != sizeOfUDP)
+    uint8_t* buffer = packet.data();
+
+    if (len < 5 || buffer[0] != YASOLR_UDP_MSG_TYPE_JSY_DATA)
       return;
 
-    uint8_t* data = packet.data();
-    const uint8_t type = data[0];
+    uint32_t size;
+    memcpy(&size, buffer + 1, 4);
 
-    if (type != YASOLR_UDP_MSG_TYPE_JSY_DATA)
+    if (len != size + 9)
       return;
 
+    // crc32
     FastCRC32 crc32;
-    crc32.add(data, sizeOfBody);
+    crc32.add(buffer, size + 5);
     uint32_t crc = crc32.calc();
-    if (memcmp(&crc, data + sizeOfBody, sizeOfCRC32) != 0)
+
+    if (memcmp(&crc, buffer + size + 5, 4) != 0)
       return;
+
+    JsonDocument doc;
+    deserializeMsgPack(doc, buffer + 5, size);
 
     Mycila::JSYData jsyData;
-    memcpy(&jsyData, data + 1, sizeOfJSYData);
-    jsyRemoteUdpRate.add(millis() / 1000.0f);
+    jsyData.current1 = doc["c1"].as<float>();
+    jsyData.current2 = doc["c2"].as<float>();
+    jsyData.energy1 = doc["e1"].as<float>();
+    jsyData.energy2 = doc["e2"].as<float>();
+    jsyData.energyReturned1 = doc["er1"].as<float>();
+    jsyData.energyReturned2 = doc["er2"].as<float>();
+    jsyData.frequency = doc["f"].as<float>();
+    jsyData.power1 = doc["p1"].as<float>();
+    jsyData.power2 = doc["p2"].as<float>();
+    jsyData.powerFactor1 = doc["pf1"].as<float>();
+    jsyData.powerFactor2 = doc["pf2"].as<float>();
+    jsyData.voltage1 = doc["v1"].as<float>();
+    jsyData.voltage2 = doc["v2"].as<float>();
+
+    udpMessageRateBuffer.add(millis() / 1000.0f);
+
     if (grid.updateRemoteJSYData(jsyData)) {
       routingTask.resume();
     }

@@ -40,7 +40,7 @@ Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, ds18O2, grid, p
 Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);
 
-Mycila::CircularBuffer<float, 50> jsyRemoteUdpRate;
+Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 
 AsyncWebServer webServer(80);
 AsyncUDP udp;

@@ -129,4 +129,4 @@ extern Mycila::Task initMqttSubscribersTask;
 extern Mycila::Task initRestApiTask;
 extern Mycila::Task initWebTask;
 
-extern Mycila::CircularBuffer<float, 50> jsyRemoteUdpRate;
+extern Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
