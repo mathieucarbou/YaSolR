@@ -19,22 +19,22 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // jsyTaskManager
   jsyTask.setManager(jsyTaskManager);
 
-  // coreTaskManager
-  carouselTask.setManager(coreTaskManager);
-  dashboardTask.setManager(coreTaskManager);
-  displayTask.setManager(coreTaskManager);
-  ds18Task.setManager(coreTaskManager);
-  lightsTask.setManager(coreTaskManager);
-  mqttConfigTask.setManager(coreTaskManager);
-  networkManagerTask.setManager(coreTaskManager);
-  networkUpTask.setManager(coreTaskManager);
-  otaTask.setManager(coreTaskManager);
-  profilerTask.setManager(coreTaskManager);
-  resetTask.setManager(coreTaskManager);
-  restartTask.setManager(coreTaskManager);
-  routerDebugTask.setManager(coreTaskManager);
+  // core0TaskManager
+  carouselTask.setManager(core0TaskManager);
+  displayTask.setManager(core0TaskManager);
+  ds18Task.setManager(core0TaskManager);
+  lightsTask.setManager(core0TaskManager);
+
+  // core1TaskManager
+  dashboardTask.setManager(core1TaskManager);
+  mqttConfigTask.setManager(core1TaskManager);
+  networkManagerTask.setManager(core1TaskManager);
+  networkUpTask.setManager(core1TaskManager);
+  otaTask.setManager(core1TaskManager);
+  resetTask.setManager(core1TaskManager);
+  restartTask.setManager(core1TaskManager);
 #ifdef APP_MODEL_TRIAL
-  trialTask.setManager(coreTaskManager);
+  trialTask.setManager(core1TaskManager);
 #endif
 
   // pzemTaskManager
@@ -50,6 +50,20 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // Router
   router.addOutput(output1);
   router.addOutput(output2);
+
+  // Task Monitor
+  Mycila::TaskMonitor.begin();
+  Mycila::TaskMonitor.addTask("arduino_events");            // Network
+  Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
+  Mycila::TaskMonitor.addTask("async_udp");                 // AsyncUDP
+  Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
+  Mycila::TaskMonitor.addTask("wifi");                      // WiFI
+  Mycila::TaskMonitor.addTask(core0TaskManager.getName());  // YaSolR
+  Mycila::TaskMonitor.addTask(core1TaskManager.getName());  // YaSolR
+  Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
+  Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
+  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
+  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
 
   // HA
   haDiscovery.setPublisher([](const String& topic, const String& payload) {

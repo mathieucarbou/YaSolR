@@ -1,0 +1,426 @@
+[0;32m[  6128][I][YASOLR][1][io] Publishing config to MQTT...[0m
+PID(-1194.88)=721.08 (pTerm=716.93, iTerm=0.00, dTerm=4.15)
+[0;36m[  6365][D][YASOLR][1][io] MQTT Config in 242785 us[0m
+PID(-1189.94)=710.01 (pTerm=713.97, iTerm=0.00, dTerm=-3.95)
+PID(-1188.74)=712.28 (pTerm=713.24, iTerm=0.00, dTerm=-0.97)
+PID(-1193.96)=720.56 (pTerm=716.38, iTerm=0.00, dTerm=4.18)
+PID(-1192.28)=714.02 (pTerm=715.37, iTerm=0.00, dTerm=-1.35)
+PID(-1187.62)=708.85 (pTerm=712.57, iTerm=0.00, dTerm=-3.73)
+PID(-1181.03)=703.34 (pTerm=708.62, iTerm=0.00, dTerm=-5.27)
+PID(-1183.26)=711.73 (pTerm=709.95, iTerm=0.00, dTerm=1.78)
+PID(-1192.33)=722.65 (pTerm=715.40, iTerm=0.00, dTerm=7.26)
+[0;36m[  8910][D][YASOLR][1][async_tcp] Dashboard refresh requested[0m
+[0;36m[  8911][D][YASOLR][1][async_tcp] Initializing cards...[0m
+PID(-1195.58)=719.96 (pTerm=717.35, iTerm=0.00, dTerm=2.61)
+PID(-1200.92)=724.82 (pTerm=720.55, iTerm=0.00, dTerm=4.27)
+PID(-1195.69)=713.23 (pTerm=717.41, iTerm=0.00, dTerm=-4.19)
+PID(-1199.45)=722.68 (pTerm=719.67, iTerm=0.00, dTerm=3.01)
+PID(-1196.80)=715.95 (pTerm=718.08, iTerm=0.00, dTerm=-2.13)
+PID(-1199.16)=721.39 (pTerm=719.50, iTerm=0.00, dTerm=1.89)
+[0;36m[ 11103][D][YASOLR][1][io] MQTT in 136302 us[0m
+PID(-1200.92)=721.96 (pTerm=720.55, iTerm=0.00, dTerm=1.41)
+[0;36m[ 11572][D][CONFIG][1][async_tcp] Set o1_ad_enable=true[0m
+[0;32m[ 11576][I][YASOLR][1][async_tcp] Set o1_ad_enable: 'false' => 'true'[0m
+[0;36m[ 11577][D][YASOLR][1][async_tcp] Initializing cards...[0m
+PID(-1199.22)=718.18 (pTerm=719.53, iTerm=0.00, dTerm=-1.35)
+Max output: 2412.015137, assigned: 718.179199, used: 718.008911
+[0;36m[ 11781][D][YASOLR][1][io] MQTT in 174450 us[0m
+[0;32m[ 11783][I][YASOLR][1][io] Publishing config to MQTT...[0m
+PID(-1195.31)=714.06 (pTerm=717.19, iTerm=0.00, dTerm=-3.13)
+Max output: 2412.015137, assigned: 715.014343, used: 714.474854
+[0;36m[ 12099][D][YASOLR][1][io] MQTT Config in 323806 us[0m
+PID(-640.12)=-60.08 (pTerm=384.07, iTerm=0.00, dTerm=-444.15)
+Max output: 2380.041748, assigned: 207.222961, used: 206.909622
+PID(-494.84)=180.68 (pTerm=296.90, iTerm=0.00, dTerm=-116.23)
+Max output: 2380.041748, assigned: 447.976776, used: 447.529236
+PID(-851.69)=796.50 (pTerm=511.02, iTerm=0.00, dTerm=285.48)
+Max output: 2380.041748, assigned: 1063.799805, used: 1063.608398
+PID(-807.41)=449.01 (pTerm=484.44, iTerm=0.00, dTerm=-35.43)
+Max output: 2380.041748, assigned: 716.311890, used: 716.046753
+PID(-447.35)=-19.63 (pTerm=268.41, iTerm=0.00, dTerm=-288.04)
+Max output: 2380.041748, assigned: 247.669464, used: 247.594086
+PID(-262.45)=9.55 (pTerm=157.47, iTerm=0.00, dTerm=-147.92)
+Max output: 2346.303955, assigned: 628.247559, used: 627.972961
+PID(-641.69)=688.41 (pTerm=385.02, iTerm=0.00, dTerm=303.39)
+Max output: 2346.303955, assigned: 1307.109375, used: 1306.940063
+PID(-476.18)=153.30 (pTerm=285.71, iTerm=0.00, dTerm=-132.41)
+Max output: 2346.303955, assigned: 772.001526, used: 771.787903
+PID(-90.37)=-254.43 (pTerm=54.22, iTerm=0.00, dTerm=-308.65)
+Max output: 2346.303955, assigned: 364.270477, used: 363.834686
+PID(-339.62)=403.17 (pTerm=203.77, iTerm=0.00, dTerm=199.40)
+Max output: 2332.481689, assigned: 1148.068848, used: 1147.729126
+PID(-734.55)=756.67 (pTerm=440.73, iTerm=0.00, dTerm=315.95)
+Max output: 2332.481689, assigned: 1501.574829, used: 1501.446167
+PID(-441.10)=29.90 (pTerm=264.66, iTerm=0.00, dTerm=-234.76)
+Max output: 2332.481689, assigned: 774.801392, used: 774.645935
+PID(76.21)=-459.58 (pTerm=-45.73, iTerm=0.00, dTerm=-413.85)
+Max output: 2306.920410, assigned: 456.720276, used: 456.313934
+PID(-4.45)=67.20 (pTerm=2.67, iTerm=0.00, dTerm=64.53)
+Max output: 2306.920410, assigned: 983.498413, used: 983.046692
+[0;36m[ 16837][D][YASOLR][1][io] MQTT in 138890 us[0m
+PID(-400.26)=556.81 (pTerm=240.16, iTerm=0.00, dTerm=316.65)
+Max output: 2306.920410, assigned: 1473.107422, used: 1472.598389
+PID(-202.50)=-36.71 (pTerm=121.50, iTerm=0.00, dTerm=-158.21)
+Max output: 2306.920410, assigned: 879.594116, used: 879.390198
+PID(110.07)=-316.11 (pTerm=-66.04, iTerm=0.00, dTerm=-250.06)
+Max output: 2303.000488, assigned: 637.395020, used: 637.191589
+PID(-186.28)=348.85 (pTerm=111.77, iTerm=0.00, dTerm=237.08)
+Max output: 2303.000488, assigned: 1302.351929, used: 1301.940552
+PID(-422.35)=442.27 (pTerm=253.41, iTerm=0.00, dTerm=188.86)
+Max output: 2303.000488, assigned: 1395.766602, used: 1395.297729
+PID(-186.86)=-76.27 (pTerm=112.12, iTerm=0.00, dTerm=-188.39)
+Max output: 2303.000488, assigned: 877.229370, used: 876.771118
+PID(153.77)=-364.77 (pTerm=-92.26, iTerm=0.00, dTerm=-272.51)
+Max output: 2293.215088, assigned: 712.125977, used: 711.764709
+PID(-27.71)=161.81 (pTerm=16.62, iTerm=0.00, dTerm=145.18)
+Max output: 2293.215088, assigned: 1238.708862, used: 1238.168213
+PID(-307.95)=408.97 (pTerm=184.77, iTerm=0.00, dTerm=224.20)
+Max output: 2293.215088, assigned: 1485.869263, used: 1485.689819
+PID(36.58)=-297.58 (pTerm=-21.95, iTerm=0.00, dTerm=-275.63)
+Max output: 2293.215088, assigned: 779.322754, used: 778.965149
+PID(156.35)=-189.62 (pTerm=-93.81, iTerm=0.00, dTerm=-95.81)
+Max output: 2289.306396, assigned: 911.876770, used: 911.809204
+PID(-267.15)=499.09 (pTerm=160.29, iTerm=0.00, dTerm=338.80)
+Max output: 2289.306396, assigned: 1600.586914, used: 1600.557861
+PID(-297.54)=202.84 (pTerm=178.52, iTerm=0.00, dTerm=24.31)
+Max output: 2289.306396, assigned: 1304.339478, used: 1304.261841
+PID(106.78)=-387.53 (pTerm=-64.07, iTerm=0.00, dTerm=-323.46)
+Max output: 2289.306396, assigned: 713.971375, used: 713.905823
+PID(234.46)=-242.82 (pTerm=-140.68, iTerm=0.00, dTerm=-102.14)
+Max output: 2285.401611, assigned: 902.779785, used: 902.440674
+PID(29.97)=145.61 (pTerm=-17.98, iTerm=0.00, dTerm=163.59)
+Max output: 2285.401611, assigned: 1291.211548, used: 1290.875244
+[0;36m[ 21852][D][YASOLR][1][io] MQTT in 124930 us[0m
+PID(-330.33)=486.43 (pTerm=198.20, iTerm=0.00, dTerm=288.24)
+Max output: 2285.401611, assigned: 1632.033203, used: 1631.871704
+PID(116.37)=-427.18 (pTerm=-69.82, iTerm=0.00, dTerm=-357.36)
+Max output: 2289.306396, assigned: 737.224487, used: 736.826843
+PID(368.00)=-422.10 (pTerm=-220.80, iTerm=0.00, dTerm=-201.30)
+Max output: 2289.306396, assigned: 742.299927, used: 741.858276
+PID(-128.19)=473.86 (pTerm=76.91, iTerm=0.00, dTerm=396.95)
+Max output: 2289.306396, assigned: 1638.263062, used: 1638.014160
+PID(-388.83)=441.81 (pTerm=233.30, iTerm=0.00, dTerm=208.51)
+Max output: 2289.306396, assigned: 1606.207275, used: 1606.148315
+PID(93.23)=-441.59 (pTerm=-55.94, iTerm=0.00, dTerm=-385.65)
+Max output: 2289.306396, assigned: 722.810181, used: 722.291565
+PID(398.11)=-482.77 (pTerm=-238.87, iTerm=0.00, dTerm=-243.90)
+Max output: 2281.500000, assigned: 744.134644, used: 743.785767
+PID(179.66)=66.96 (pTerm=-107.80, iTerm=0.00, dTerm=174.76)
+Max output: 2281.500000, assigned: 1293.864502, used: 1293.685791
+PID(-369.44)=660.94 (pTerm=221.66, iTerm=0.00, dTerm=439.28)
+Max output: 2281.500000, assigned: 1887.837402, used: 1887.599976
+PID(175.79)=-541.65 (pTerm=-105.47, iTerm=0.00, dTerm=-436.18)
+Max output: 2281.500000, assigned: 685.246521, used: 684.728577
+PID(568.18)=-654.82 (pTerm=-340.91, iTerm=0.00, dTerm=-313.91)
+Max output: 2287.353760, assigned: 521.182617, used: 521.148010
+PID(-123.47)=627.40 (pTerm=74.08, iTerm=0.00, dTerm=553.32)
+Max output: 2287.353760, assigned: 1803.403320, used: 1803.071533
+PID(-545.70)=665.21 (pTerm=327.42, iTerm=0.00, dTerm=337.78)
+Max output: 2287.353760, assigned: 1841.206665, used: 1841.054443
+PID(133.41)=-623.33 (pTerm=-80.05, iTerm=0.00, dTerm=-543.29)
+Max output: 2281.500000, assigned: 640.865234, used: 640.714294
+PID(595.77)=-727.35 (pTerm=-357.46, iTerm=0.00, dTerm=-369.89)
+Max output: 2281.500000, assigned: 536.849854, used: 536.528564
+[0;36m[ 26902][D][YASOLR][1][io] MQTT in 150470 us[0m
+PID(260.77)=111.54 (pTerm=-156.46, iTerm=0.00, dTerm=268.00)
+Max output: 2281.500000, assigned: 1375.734985, used: 1375.585815
+PID(-481.86)=883.23 (pTerm=289.12, iTerm=0.00, dTerm=594.11)
+Max output: 2281.500000, assigned: 2147.425781, used: 2147.228516
+PID(21.50)=-415.59 (pTerm=-12.90, iTerm=0.00, dTerm=-402.69)
+Max output: 2301.041748, assigned: 639.105469, used: 638.897339
+PID(640.73)=-879.82 (pTerm=-384.44, iTerm=0.00, dTerm=-495.38)
+Max output: 2301.041748, assigned: 174.878906, used: 174.755554
+PID(-161.20)=738.27 (pTerm=96.72, iTerm=0.00, dTerm=641.55)
+Max output: 2301.041748, assigned: 1792.969849, used: 1792.508789
+PID(-855.35)=1068.53 (pTerm=513.21, iTerm=0.00, dTerm=555.32)
+Max output: 2301.041748, assigned: 2123.229736, used: 2122.914795
+PID(-369.50)=-166.98 (pTerm=221.70, iTerm=0.00, dTerm=-388.68)
+Max output: 2297.126709, assigned: 919.820923, used: 919.411682
+PID(628.98)=-1176.17 (pTerm=-377.39, iTerm=0.00, dTerm=-798.78)
+Max output: 2297.126709, assigned: 0.000000, used: 0.000000
+PID(451.86)=-129.41 (pTerm=-271.11, iTerm=0.00, dTerm=141.70)
+Max output: 2297.126709, assigned: 0.000000, used: 0.000000
+PID(-495.48)=1055.16 (pTerm=297.29, iTerm=0.00, dTerm=757.87)
+Max output: 2297.126709, assigned: 1055.155273, used: 1054.602783
+PID(-1091.47)=1131.67 (pTerm=654.88, iTerm=0.00, dTerm=476.79)
+Max output: 2326.570557, assigned: 1906.570435, used: 1906.140259
+PID(-283.33)=-476.51 (pTerm=170.00, iTerm=0.00, dTerm=-646.51)
+Max output: 2326.570557, assigned: 298.393982, used: 298.278290
+PID(388.24)=-770.20 (pTerm=-232.94, iTerm=0.00, dTerm=-537.26)
+Max output: 2326.570557, assigned: 4.699158, used: 4.545193
+PID(-462.29)=957.79 (pTerm=277.37, iTerm=0.00, dTerm=680.42)
+Max output: 2326.570557, assigned: 1732.693848, used: 1732.286621
+PID(-999.52)=1029.50 (pTerm=599.71, iTerm=0.00, dTerm=429.79)
+Max output: 2318.700439, assigned: 1838.597046, used: 1838.539795
+PID(-439.59)=-184.18 (pTerm=263.76, iTerm=0.00, dTerm=-447.94)
+Max output: 2318.700439, assigned: 624.917175, used: 624.548645
+[0;36m[ 31958][D][YASOLR][1][io] MQTT in 167170 us[0m
+PID(491.53)=-1039.81 (pTerm=-294.92, iTerm=0.00, dTerm=-744.90)
+Max output: 2318.700439, assigned: 0.000000, used: 0.000000
+PID(417.10)=-190.72 (pTerm=-250.26, iTerm=0.00, dTerm=59.54)
+Max output: 2318.700439, assigned: 0.000000, used: 0.000000
+PID(-1073.85)=1837.08 (pTerm=644.31, iTerm=0.00, dTerm=1192.77)
+Max output: 2295.170410, assigned: 1837.077881, used: 1836.696777
+PID(-991.46)=528.96 (pTerm=594.88, iTerm=0.00, dTerm=-65.91)
+Max output: 2295.170410, assigned: 1648.861328, used: 1648.375122
+[0;36m[ 33037][D][YASOLR][1][core] Profiler in 208379 us[0m
+PID(256.44)=-1152.18 (pTerm=-153.86, iTerm=0.00, dTerm=-998.32)
+Max output: 2295.170410, assigned: 0.000000, used: 0.000000
+PID(529.80)=-536.57 (pTerm=-317.88, iTerm=0.00, dTerm=-218.69)
+Max output: 2308.881592, assigned: 0.000000, used: 0.000000
+PID(-259.38)=786.97 (pTerm=155.63, iTerm=0.00, dTerm=631.34)
+Max output: 2308.881592, assigned: 786.969360, used: 786.542114
+PID(-1132.33)=1377.75 (pTerm=679.40, iTerm=0.00, dTerm=698.36)
+Max output: 2308.881592, assigned: 2308.881592, used: 2308.881592
+PID(-837.89)=267.19 (pTerm=502.74, iTerm=0.00, dTerm=-235.54)
+Max output: 2308.881592, assigned: 1265.692627, used: 1265.233398
+PID(-162.42)=-442.92 (pTerm=97.45, iTerm=0.00, dTerm=-540.38)
+Max output: 2308.881592, assigned: 555.578247, used: 555.372009
+PID(147.54)=-336.50 (pTerm=-88.52, iTerm=0.00, dTerm=-247.97)
+Max output: 2314.770264, assigned: 554.502197, used: 553.962097
+PID(-430.22)=720.35 (pTerm=258.13, iTerm=0.00, dTerm=462.21)
+Max output: 2314.770264, assigned: 1611.346802, used: 1611.012329
+PID(-593.28)=486.41 (pTerm=355.97, iTerm=0.00, dTerm=130.44)
+Max output: 2314.770264, assigned: 1377.408447, used: 1376.991577
+PID(-79.00)=-364.02 (pTerm=47.40, iTerm=0.00, dTerm=-411.42)
+Max output: 2314.770264, assigned: 526.984619, used: 526.829285
+PID(262.59)=-430.83 (pTerm=-157.55, iTerm=0.00, dTerm=-273.27)
+Max output: 2304.959961, assigned: 557.373901, used: 557.243042
+PID(-188.99)=474.66 (pTerm=113.39, iTerm=0.00, dTerm=361.26)
+Max output: 2304.959961, assigned: 1462.857666, used: 1462.340942
+[0;36m[ 36962][D][YASOLR][1][io] MQTT in 109903 us[0m
+PID(-608.22)=700.32 (pTerm=364.93, iTerm=0.00, dTerm=335.38)
+Max output: 2304.959961, assigned: 1688.515381, used: 1688.052490
+PID(170.02)=-724.61 (pTerm=-102.01, iTerm=0.00, dTerm=-622.59)
+Max output: 2312.806885, assigned: 241.192383, used: 241.164474
+PID(415.24)=-445.32 (pTerm=-249.15, iTerm=0.00, dTerm=-196.18)
+Max output: 2312.806885, assigned: 520.479614, used: 520.169739
+PID(-377.87)=861.21 (pTerm=226.72, iTerm=0.00, dTerm=634.49)
+Max output: 2312.806885, assigned: 1827.005493, used: 1826.524414
+PID(-722.64)=709.41 (pTerm=433.59, iTerm=0.00, dTerm=275.82)
+Max output: 2312.806885, assigned: 1675.209473, used: 1675.161255
+PID(65.56)=-669.91 (pTerm=-39.34, iTerm=0.00, dTerm=-630.57)
+Max output: 2301.041748, assigned: 438.394226, used: 438.293671
+PID(490.88)=-634.78 (pTerm=-294.53, iTerm=0.00, dTerm=-340.25)
+Max output: 2301.041748, assigned: 473.517090, used: 473.132385
+PID(-139.79)=588.41 (pTerm=83.88, iTerm=0.00, dTerm=504.54)
+Max output: 2301.041748, assigned: 1696.715088, used: 1696.421265
+PID(-696.75)=863.62 (pTerm=418.05, iTerm=0.00, dTerm=445.57)
+Max output: 2301.041748, assigned: 1971.917480, used: 1971.759644
+PID(407.20)=-1127.48 (pTerm=-244.32, iTerm=0.00, dTerm=-883.16)
+Max output: 2306.920410, assigned: 0.000000, used: 0.000000
+PID(642.62)=-573.91 (pTerm=-385.57, iTerm=0.00, dTerm=-188.34)
+Max output: 2306.920410, assigned: 0.000000, used: 0.000000
+PID(-521.32)=1243.94 (pTerm=312.79, iTerm=0.00, dTerm=931.15)
+Max output: 2306.920410, assigned: 1243.943970, used: 1243.878052
+PID(-1130.34)=1165.42 (pTerm=678.20, iTerm=0.00, dTerm=487.21)
+Max output: 2306.920410, assigned: 2188.117188, used: 2188.053467
+PID(-419.69)=-316.71 (pTerm=251.81, iTerm=0.00, dTerm=-568.52)
+Max output: 2322.633789, assigned: 577.191956, used: 576.829956
+PID(340.57)=-812.55 (pTerm=-204.34, iTerm=0.00, dTerm=-608.21)
+Max output: 2322.633789, assigned: 81.347595, used: 81.107849
+[0;36m[ 41957][D][YASOLR][1][io] MQTT in 100536 us[0m
+PID(467.50)=-382.03 (pTerm=-280.50, iTerm=0.00, dTerm=-101.54)
+Max output: 2322.633789, assigned: 511.865295, used: 511.603333
+PID(-612.31)=1231.23 (pTerm=367.39, iTerm=0.00, dTerm=863.84)
+Max output: 2322.633789, assigned: 2125.128662, used: 2124.685303
+PID(-334.33)=-21.79 (pTerm=200.60, iTerm=0.00, dTerm=-222.38)
+Max output: 2316.735107, assigned: 925.613342, used: 925.562561
+PID(652.01)=-1180.27 (pTerm=-391.20, iTerm=0.00, dTerm=-789.07)
+Max output: 2316.735107, assigned: 0.000000, used: 0.000000
+[0;36m[ 43006][D][YASOLR][1][core] Profiler in 207240 us[0m
+PID(69.99)=423.62 (pTerm=-41.99, iTerm=0.00, dTerm=465.62)
+Max output: 2316.735107, assigned: 423.623169, used: 423.178986
+PID(-805.69)=1183.95 (pTerm=483.41, iTerm=0.00, dTerm=700.54)
+Max output: 2316.735107, assigned: 2131.353760, used: 2131.169922
+PID(-899.41)=614.62 (pTerm=539.64, iTerm=0.00, dTerm=74.97)
+Max output: 2314.770264, assigned: 1596.218872, used: 1595.750122
+PID(125.73)=-895.54 (pTerm=-75.44, iTerm=0.00, dTerm=-820.11)
+Max output: 2314.770264, assigned: 86.058289, used: 85.920654
+PID(729.45)=-920.65 (pTerm=-437.67, iTerm=0.00, dTerm=-482.98)
+Max output: 2314.770264, assigned: 60.949646, used: 60.483620
+PID(88.87)=459.14 (pTerm=-53.32, iTerm=0.00, dTerm=512.46)
+Max output: 2314.770264, assigned: 1440.741211, used: 1440.301514
+PID(-844.33)=1253.16 (pTerm=506.60, iTerm=0.00, dTerm=746.56)
+Max output: 2304.959961, assigned: 2304.959961, used: 2304.959961
+PID(134.72)=-864.07 (pTerm=-80.83, iTerm=0.00, dTerm=-783.24)
+Max output: 2304.959961, assigned: 242.827576, used: 242.597748
+PID(727.57)=-910.82 (pTerm=-436.54, iTerm=0.00, dTerm=-474.28)
+Max output: 2304.959961, assigned: 196.083801, used: 195.879379
+PID(-236.54)=913.21 (pTerm=141.93, iTerm=0.00, dTerm=771.29)
+Max output: 2303.000488, assigned: 1990.314453, used: 1990.309814
+PID(-943.84)=1132.15 (pTerm=566.31, iTerm=0.00, dTerm=565.84)
+Max output: 2303.000488, assigned: 2209.246338, used: 2209.080811
+PID(-441.52)=-136.95 (pTerm=264.91, iTerm=0.00, dTerm=-401.86)
+Max output: 2303.000488, assigned: 940.151733, used: 939.759216
+[0;36m[ 47020][D][YASOLR][1][io] MQTT in 166023 us[0m
+PID(715.38)=-1354.74 (pTerm=-429.23, iTerm=0.00, dTerm=-925.52)
+Max output: 2303.000488, assigned: 0.000000, used: 0.000000
+PID(617.30)=-291.92 (pTerm=-370.38, iTerm=0.00, dTerm=78.46)
+Max output: 2279.550293, assigned: 0.000000, used: 0.000000
+PID(-921.95)=1784.57 (pTerm=553.17, iTerm=0.00, dTerm=1231.40)
+Max output: 2279.550293, assigned: 1784.570068, used: 1784.116943
+PID(-1083.49)=779.33 (pTerm=650.09, iTerm=0.00, dTerm=129.23)
+Max output: 2279.550293, assigned: 2076.727783, used: 2076.366943
+PID(85.43)=-986.40 (pTerm=-51.26, iTerm=0.00, dTerm=-935.14)
+Max output: 2279.550293, assigned: 311.003540, used: 310.620056
+PID(700.88)=-912.89 (pTerm=-420.53, iTerm=0.00, dTerm=-492.36)
+Max output: 2322.633789, assigned: 33.211304, used: 32.896889
+PID(-298.98)=979.27 (pTerm=179.39, iTerm=0.00, dTerm=799.89)
+Max output: 2322.633789, assigned: 1925.372559, used: 1925.035156
+PID(-1030.10)=1202.96 (pTerm=618.06, iTerm=0.00, dTerm=584.90)
+Max output: 2322.633789, assigned: 2149.056641, used: 2148.507080
+PID(-533.53)=-77.14 (pTerm=320.12, iTerm=0.00, dTerm=-397.26)
+Max output: 2322.633789, assigned: 868.959595, used: 868.931641
+PID(644.47)=-1329.09 (pTerm=-386.68, iTerm=0.00, dTerm=-942.40)
+Max output: 2301.041748, assigned: 0.000000, used: 0.000000
+PID(-129.89)=697.42 (pTerm=77.93, iTerm=0.00, dTerm=619.49)
+Max output: 2301.041748, assigned: 697.422241, used: 697.336487
+PID(-929.57)=1197.48 (pTerm=557.74, iTerm=0.00, dTerm=639.74)
+Max output: 2301.041748, assigned: 2221.084473, used: 2220.687988
+PID(-638.20)=149.83 (pTerm=382.92, iTerm=0.00, dTerm=-233.09)
+Max output: 2301.041748, assigned: 1173.428467, used: 1173.278442
+PID(212.71)=-808.36 (pTerm=-127.63, iTerm=0.00, dTerm=-680.73)
+Max output: 2318.700439, assigned: 81.739868, used: 81.536720
+PID(531.59)=-574.06 (pTerm=-318.96, iTerm=0.00, dTerm=-255.10)
+Max output: 2318.700439, assigned: 316.041870, used: 315.954803
+[0;36m[ 52029][D][YASOLR][1][io] MQTT in 110277 us[0m
+PID(-391.83)=973.84 (pTerm=235.10, iTerm=0.00, dTerm=738.74)
+Max output: 2318.700439, assigned: 1863.940918, used: 1863.453735
+PID(-958.17)=1027.97 (pTerm=574.90, iTerm=0.00, dTerm=453.07)
+Max output: 2318.700439, assigned: 1918.073730, used: 1917.811646
+PID(-633.88)=120.90 (pTerm=380.33, iTerm=0.00, dTerm=-259.43)
+Max output: 2328.539795, assigned: 978.898560, used: 978.612244
+PID(582.93)=-1323.20 (pTerm=-349.76, iTerm=0.00, dTerm=-973.45)
+Max output: 2328.539795, assigned: 0.000000, used: 0.000000
+[0;36m[ 52976][D][YASOLR][1][core] Profiler in 209397 us[0m
+PID(-63.34)=555.02 (pTerm=38.01, iTerm=0.00, dTerm=517.01)
+Max output: 2328.539795, assigned: 555.019409, used: 554.982849
+PID(-874.11)=1173.08 (pTerm=524.47, iTerm=0.00, dTerm=648.62)
+Max output: 2328.539795, assigned: 2031.082886, used: 2030.577759
+PID(-769.39)=377.86 (pTerm=461.63, iTerm=0.00, dTerm=-83.78)
+Max output: 2312.806885, assigned: 1392.158447, used: 1391.637695
+PID(-22.86)=-583.51 (pTerm=13.72, iTerm=0.00, dTerm=-597.23)
+Max output: 2312.806885, assigned: 430.789734, used: 430.368469
+PID(485.17)=-697.52 (pTerm=-291.10, iTerm=0.00, dTerm=-406.42)
+Max output: 2312.806885, assigned: 316.776733, used: 316.281311
+PID(-116.82)=551.68 (pTerm=70.09, iTerm=0.00, dTerm=481.59)
+Max output: 2295.170410, assigned: 1593.682007, used: 1593.447998
+PID(-737.19)=938.61 (pTerm=442.32, iTerm=0.00, dTerm=496.30)
+Max output: 2295.170410, assigned: 1980.614136, used: 1980.180054
+PID(205.66)=-877.68 (pTerm=-123.40, iTerm=0.00, dTerm=-754.28)
+Max output: 2295.170410, assigned: 164.321838, used: 164.220993
+PID(523.87)=-568.89 (pTerm=-314.32, iTerm=0.00, dTerm=-254.57)
+Max output: 2295.170410, assigned: 473.106262, used: 473.046112
+PID(-576.43)=1226.11 (pTerm=345.86, iTerm=0.00, dTerm=880.25)
+Max output: 2295.170410, assigned: 2268.105225, used: 2267.706787
+PID(-750.36)=589.35 (pTerm=450.21, iTerm=0.00, dTerm=139.14)
+Max output: 2295.170410, assigned: 1588.754639, used: 1588.403687
+PID(130.87)=-783.51 (pTerm=-78.52, iTerm=0.00, dTerm=-704.99)
+Max output: 2295.170410, assigned: 215.891113, used: 215.785263
+[0;36m[ 57044][D][YASOLR][1][io] MQTT in 123070 us[0m
+PID(667.60)=-829.94 (pTerm=-400.56, iTerm=0.00, dTerm=-429.38)
+Max output: 2295.170410, assigned: 169.463867, used: 169.265320
+PID(-147.65)=740.79 (pTerm=88.59, iTerm=0.00, dTerm=652.20)
+Max output: 2301.041748, assigned: 1813.189575, used: 1812.737671
+PID(-761.68)=948.23 (pTerm=457.01, iTerm=0.00, dTerm=491.22)
+Max output: 2301.041748, assigned: 2020.625610, used: 2020.084229
+PID(375.49)=-1135.03 (pTerm=-225.29, iTerm=0.00, dTerm=-909.73)
+Max output: 2301.041748, assigned: 0.000000, used: 0.000000
+PID(727.84)=-718.59 (pTerm=-436.71, iTerm=0.00, dTerm=-281.88)
+Max output: 2301.041748, assigned: 0.000000, used: 0.000000
+PID(-319.45)=1029.50 (pTerm=191.67, iTerm=0.00, dTerm=837.83)
+Max output: 2304.959961, assigned: 1029.503052, used: 1029.492554
+PID(-1137.09)=1336.37 (pTerm=682.26, iTerm=0.00, dTerm=654.11)
+Max output: 2304.959961, assigned: 2304.959961, used: 2304.959961
+PID(-622.81)=-37.73 (pTerm=373.69, iTerm=0.00, dTerm=-411.42)
+Max output: 2304.959961, assigned: 1063.565552, used: 1063.264771
+PID(457.08)=-1138.16 (pTerm=-274.25, iTerm=0.00, dTerm=-863.91)
+Max output: 2304.959961, assigned: 0.000000, used: 0.000000
+PID(783.29)=-730.94 (pTerm=-469.97, iTerm=0.00, dTerm=-260.97)
+PID(-1048.45)=2094.46 (pTerm=629.07, iTerm=0.00, dTerm=1465.39)
+PID(-1178.96)=811.79 (pTerm=707.38, iTerm=0.00, dTerm=104.41)
+PID(-1187.95)=719.96 (pTerm=712.77, iTerm=0.00, dTerm=7.19)
+PID(-1185.25)=708.99 (pTerm=711.15, iTerm=0.00, dTerm=-2.16)
+PID(-1189.04)=716.46 (pTerm=713.42, iTerm=0.00, dTerm=3.03)
+PID(-1186.28)=709.56 (pTerm=711.77, iTerm=0.00, dTerm=-2.21)
+PID(-1183.82)=708.33 (pTerm=710.29, iTerm=0.00, dTerm=-1.97)
+PID(-1180.57)=705.74 (pTerm=708.34, iTerm=0.00, dTerm=-2.60)
+PID(-1188.99)=720.13 (pTerm=713.39, iTerm=0.00, dTerm=6.73)
+PID(-1183.66)=705.93 (pTerm=710.19, iTerm=0.00, dTerm=-4.27)
+PID(-1189.51)=718.38 (pTerm=713.70, iTerm=0.00, dTerm=4.68)
+[0;36m[ 65088][D][YASOLR][1][io] MQTT in 75735 us[0m
+PID(-1187.19)=710.46 (pTerm=712.31, iTerm=0.00, dTerm=-1.85)
+PID(-1184.79)=708.96 (pTerm=710.88, iTerm=0.00, dTerm=-1.92)
+PID(-1191.65)=720.47 (pTerm=714.99, iTerm=0.00, dTerm=5.48)
+PID(-1189.86)=712.48 (pTerm=713.91, iTerm=0.00, dTerm=-1.43)
+PID(-1187.37)=710.43 (pTerm=712.42, iTerm=0.00, dTerm=-1.99)
+Max output: 2400.000000, assigned: 710.428345, used: 710.329712
+[0;36m[ 67618][D][YASOLR][1][io] MQTT Config in 256531 us[0m
+PID(-591.78)=-121.40 (pTerm=355.07, iTerm=0.00, dTerm=-476.47)
+Max output: 2396.001709, assigned: 77.910828, used: 77.818863
+PID(-584.68)=345.12 (pTerm=350.81, iTerm=0.00, dTerm=-5.69)
+Max output: 2396.001709, assigned: 982.599304, used: 982.389954
+PID(-1006.61)=941.51 (pTerm=603.97, iTerm=0.00, dTerm=337.55)
+Max output: 2350.260498, assigned: 1294.213867, used: 1293.647705
+PID(-584.39)=12.85 (pTerm=350.63, iTerm=0.00, dTerm=-337.78)
+Max output: 2350.260498, assigned: 365.550842, used: 365.022156
+PID(-89.61)=-342.05 (pTerm=53.77, iTerm=0.00, dTerm=-395.82)
+Max output: 2350.260498, assigned: 10.648529, used: 10.330816
+PID(-424.59)=522.74 (pTerm=254.76, iTerm=0.00, dTerm=267.99)
+Max output: 2350.260498, assigned: 875.442749, used: 875.249634
+PID(-994.30)=1052.35 (pTerm=596.58, iTerm=0.00, dTerm=455.77)
+Max output: 2316.735107, assigned: 1671.750610, used: 1671.217529
+PID(-967.32)=558.81 (pTerm=580.39, iTerm=0.00, dTerm=-21.59)
+Max output: 2316.735107, assigned: 1178.206055, used: 1177.885864
+PID(248.76)=-1122.12 (pTerm=-149.25, iTerm=0.00, dTerm=-972.86)
+Max output: 2316.735107, assigned: 0.000000, used: 0.000000
+PID(-19.21)=225.90 (pTerm=11.52, iTerm=0.00, dTerm=214.37)
+Max output: 2316.735107, assigned: 225.895996, used: 225.733170
+PID(-788.33)=1088.29 (pTerm=473.00, iTerm=0.00, dTerm=615.30)
+Max output: 2279.550293, assigned: 2047.791504, used: 2047.420288
+PID(-974.05)=733.01 (pTerm=584.43, iTerm=0.00, dTerm=148.58)
+Max output: 2279.550293, assigned: 1692.510620, used: 1692.266968
+PID(134.60)=-967.68 (pTerm=-80.76, iTerm=0.00, dTerm=-886.92)
+Max output: 2279.550293, assigned: 0.000000, used: 0.000000
+PID(580.19)=-704.59 (pTerm=-348.11, iTerm=0.00, dTerm=-356.47)
+Max output: 2279.550293, assigned: 0.000000, used: 0.000000
+[0;36m[ 72446][D][YASOLR][1][io] MQTT in 128640 us[0m
+PID(-21.57)=494.35 (pTerm=12.94, iTerm=0.00, dTerm=481.41)
+Max output: 2279.550293, assigned: 494.347931, used: 494.320068
+PID(-1076.45)=1489.77 (pTerm=645.87, iTerm=0.00, dTerm=843.90)
+Max output: 2279.550293, assigned: 2279.550293, used: 2279.550293
+PID(-654.91)=55.72 (pTerm=392.95, iTerm=0.00, dTerm=-337.23)
+Max output: 2279.550293, assigned: 1105.815186, used: 1105.540161
+PID(519.03)=-1250.57 (pTerm=-311.42, iTerm=0.00, dTerm=-939.15)
+Max output: 2279.550293, assigned: 0.000000, used: 0.000000
+PID(163.37)=186.50 (pTerm=-98.02, iTerm=0.00, dTerm=284.52)
+Max output: 2304.959961, assigned: 186.500610, used: 186.310562
+PID(-839.72)=1306.30 (pTerm=503.83, iTerm=0.00, dTerm=802.47)
+Max output: 2304.959961, assigned: 2109.501953, used: 2109.080566
+PID(-1090.31)=854.66 (pTerm=654.19, iTerm=0.00, dTerm=200.48)
+Max output: 2304.959961, assigned: 1657.862061, used: 1657.657471
+PID(-307.19)=-442.18 (pTerm=184.32, iTerm=0.00, dTerm=-626.49)
+[0;36m[ 75087][D][YASOLR][1][io] MQTT Config in 285861 us[0m
+PID(612.76)=-1103.62 (pTerm=-367.66, iTerm=0.00, dTerm=-735.97)
+PID(417.94)=-94.91 (pTerm=-250.76, iTerm=0.00, dTerm=155.86)
+PID(427.94)=-264.76 (pTerm=-256.76, iTerm=0.00, dTerm=-8.00)
+PID(432.83)=-263.62 (pTerm=-259.70, iTerm=0.00, dTerm=-3.92)
+PID(430.46)=-256.38 (pTerm=-258.28, iTerm=0.00, dTerm=1.90)
+PID(432.21)=-260.73 (pTerm=-259.33, iTerm=0.00, dTerm=-1.40)
+PID(449.53)=-283.57 (pTerm=-269.72, iTerm=0.00, dTerm=-13.85)
+[0;36m[ 77249][D][OUTPUT][1][async_tcp] Setting Dimmer 'output1' duty to 0...[0m
+PID(432.10)=-245.31 (pTerm=-259.26, iTerm=0.00, dTerm=13.94)
+PID(264.92)=-25.21 (pTerm=-158.95, iTerm=0.00, dTerm=133.74)
+PID(-1172.51)=1853.45 (pTerm=703.50, iTerm=0.00, dTerm=1149.94)
+PID(-1184.67)=720.53 (pTerm=710.80, iTerm=0.00, dTerm=9.73)
+PID(-1182.85)=708.25 (pTerm=709.71, iTerm=0.00, dTerm=-1.45)
+PID(-1181.58)=707.94 (pTerm=708.95, iTerm=0.00, dTerm=-1.01)
+[0;36m[ 79823][D][YASOLR][1][io] MQTT in 131659 us[0m
+PID(-1175.58)=700.55 (pTerm=705.35, iTerm=0.00, dTerm=-4.80)
+PID(-1179.99)=711.52 (pTerm=708.00, iTerm=0.00, dTerm=3.53)
+PID(-1181.72)=710.41 (pTerm=709.03, iTerm=0.00, dTerm=1.38)
+PID(-1183.89)=712.07 (pTerm=710.33, iTerm=0.00, dTerm=1.73)
+PID(-1179.34)=703.96 (pTerm=707.60, iTerm=0.00, dTerm=-3.64)
+PID(-1181.67)=710.87 (pTerm=709.00, iTerm=0.00, dTerm=1.87)
+PID(-1176.53)=701.80 (pTerm=705.92, iTerm=0.00, dTerm=-4.11)

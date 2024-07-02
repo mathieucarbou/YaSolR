@@ -4,9 +4,12 @@
  */
 #pragma once
 
+#include <MycilaGrid.h>
+#include <MycilaJSY.h>
+#include <MycilaPID.h>
 #include <MycilaRouterOutput.h>
 
-#include <MycilaJSY.h>
+#include <algorithm>
 #include <vector>
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -22,18 +25,18 @@ namespace Mycila {
   typedef struct {
       float apparentPower = 0;
       float current = 0;
+      float dimmedVoltage = 0;
       float energy = 0;
-      float nominalPower = 0;
       float power = 0;
       float powerFactor = 0;
       float resistance = 0;
       float thdi = 0;
-      RouterOutputMetrics outputs[MYCILA_ROUTER_OUTPUT_COUNT] = {};
+      float voltage = 0;
   } RouterMetrics;
 
   class Router {
     public:
-      explicit Router(JSY& jsy) : _jsy(&jsy) {}
+      Router(PID& pidController, JSY& jsy) : _pidController(&pidController), _jsy(&jsy) {}
 
       void addOutput(RouterOutput& output) { _outputs.push_back(&output); }
       const std::vector<RouterOutput*>& getOutputs() const { return _outputs; }
@@ -47,57 +50,94 @@ namespace Mycila {
         return false;
       }
 
-      void getMetrics(RouterMetrics& metrics) const {
-        size_t index = 0;
-        bool routing = false;
-
-        for (const auto& output : _outputs) {
-          assert(index < MYCILA_ROUTER_OUTPUT_COUNT);
-          output->getMetrics(metrics.outputs[index]);
-          metrics.energy += metrics.outputs[index].energy;
-          if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
-            routing = true;
-            metrics.apparentPower += metrics.outputs[index].apparentPower;
-            metrics.current += metrics.outputs[index].current;
-            metrics.nominalPower += metrics.outputs[index].nominalPower;
-            metrics.power += metrics.outputs[index].power;
+      void divert(float gridVoltage, float gridPower) {
+        float newRoutedPower = _pidController->compute(gridPower);
+        for (size_t i = 0; i < MYCILA_ROUTER_OUTPUT_COUNT; i++) {
+          RouterOutput& output = *_outputs[i];
+          const float maxPower = output.config.calibratedResistance == 0 ? 0 : gridVoltage * gridVoltage / output.config.calibratedResistance;
+          const float reservedPower = constrain(newRoutedPower * output.config.reservedExcessPowerRatio, 0, maxPower * output.getDimmerDutyCycleLimit());
+          if (output.autoSetDimmerDutyCycle(reservedPower / maxPower)) {
+            newRoutedPower -= maxPower * output.getDimmerDutyCycle();
           }
-          index++;
         }
-
-        if (routing && _jsy->isConnected()) {
-          if (!metrics.apparentPower)
-            metrics.apparentPower = _jsy->getApparentPower1();
-          if (!metrics.current)
-            metrics.current = _jsy->getCurrent1();
-          if (!metrics.power)
-            metrics.power = _jsy->getPower1();
-        }
-
-        if (!metrics.energy)
-          metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
-
-        metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
-        metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
-        metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
       }
 
 #ifdef MYCILA_JSON_SUPPORT
-      void toJson(const JsonObject& root) const {
-        RouterMetrics metrics;
-        getMetrics(metrics);
-        root["metrics"]["apparent_power"] = metrics.apparentPower;
-        root["metrics"]["current"] = metrics.current;
-        root["metrics"]["energy"] = metrics.energy;
-        root["metrics"]["power"] = metrics.power;
-        root["metrics"]["power_factor"] = metrics.powerFactor;
-        root["metrics"]["thdi"] = metrics.thdi;
+      void toJson(const JsonObject& root, float voltage) const {
+        _jsy->toJson(root["jsy"].to<JsonObject>());
+
+        RouterMetrics routerMeasurements;
+        getMeasurements(routerMeasurements);
+
+        JsonObject measurements = root["measurements"].to<JsonObject>();
+        measurements["apparent_power"] = routerMeasurements.apparentPower;
+        measurements["current"] = routerMeasurements.current;
+        measurements["power"] = routerMeasurements.power;
+        measurements["power_factor"] = routerMeasurements.powerFactor;
+        measurements["resistance"] = routerMeasurements.resistance;
+        measurements["thdi"] = routerMeasurements.thdi;
+        measurements["voltage"] = routerMeasurements.voltage;
+        measurements["voltage_dimmed"] = routerMeasurements.dimmedVoltage;
+
+        RouterMetrics routerMetrics;
+        getMetrics(routerMetrics, voltage);
+
+        JsonObject metrics = root["metrics"].to<JsonObject>();
+        metrics["apparent_power"] = routerMetrics.apparentPower;
+        metrics["current"] = routerMetrics.current;
+        metrics["energy"] = routerMetrics.energy;
+        metrics["power"] = routerMetrics.power;
+        metrics["power_factor"] = routerMetrics.powerFactor;
+        metrics["thdi"] = routerMetrics.thdi;
+        metrics["voltage"] = routerMetrics.voltage;
+
         for (const auto& output : _outputs)
-          output->toJson(root[output->getName()].to<JsonObject>());
+          output->toJson(root[output->getName()].to<JsonObject>(), voltage);
+
+        _pidController->toJson(root["pid"].to<JsonObject>());
       }
 #endif
 
+      void getMetrics(RouterMetrics& metrics, float voltage) const {
+        metrics.voltage = _jsy->getVoltage1();
+
+        for (const auto& output : _outputs) {
+          RouterOutputMetrics outputMetrics;
+          output->getDimmerMetrics(outputMetrics, voltage);
+          metrics.energy += outputMetrics.energy;
+          metrics.apparentPower += outputMetrics.apparentPower;
+          metrics.current += outputMetrics.current;
+          metrics.power += outputMetrics.power;
+        }
+
+        metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
+        metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
+        metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
+        metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
+
+        if (!metrics.energy)
+          metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
+      }
+
+      void getMeasurements(RouterMetrics& metrics) const {
+        metrics.voltage = _jsy->getVoltage1();
+        metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
+        for (const auto& output : _outputs) {
+          if (output->getState() == RouterOutputState::OUTPUT_ROUTING) {
+            metrics.apparentPower = _jsy->getApparentPower1();
+            metrics.current = _jsy->getCurrent1();
+            metrics.dimmedVoltage = _jsy->getDimmedVoltage1();
+            metrics.power = _jsy->getPower1();
+            metrics.powerFactor = _jsy->getPowerFactor1();
+            metrics.resistance = _jsy->getResistance1();
+            metrics.thdi = _jsy->getTHDi1(0);
+            break;
+          }
+        }
+      }
+
     private:
+      PID* _pidController;
       JSY* _jsy;
       std::vector<RouterOutput*> _outputs;
   };

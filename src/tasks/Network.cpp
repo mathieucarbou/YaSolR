@@ -50,11 +50,11 @@ Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* para
     String serverCert = "";
 
     if (secured && LittleFS.exists("/mqtt-server.crt")) {
-      logger.debug(TAG, "Loading MQTT server certificate...");
+      logger.info(TAG, "Loading MQTT server certificate...");
       File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
       serverCert = serverCertFile.readString();
       serverCertFile.close();
-      logger.debug(TAG, "Loaded MQTT server certificate:\n%s", serverCert.c_str());
+      logger.info(TAG, "Loaded MQTT server certificate:\n%s", serverCert.c_str());
     }
 
     mqtt.begin({

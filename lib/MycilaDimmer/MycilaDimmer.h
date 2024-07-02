@@ -16,12 +16,6 @@
 #define MYCILA_DIMMER_MAX_DUTY   4095 // ((1 << MYCILA_DIMMER_RESOLUTION) - 1)
 
 namespace Mycila {
-  enum class DimmerState { OFF,
-                           FULL,
-                           DIM };
-
-  typedef std::function<void(DimmerState event)> DimmerStateCallback;
-
   class Dimmer {
     public:
       explicit Dimmer(ZCD& zcd) : _zcd(&zcd) {}
@@ -30,9 +24,7 @@ namespace Mycila {
       void begin(const int8_t pin);
       void end();
 
-      void listen(DimmerStateCallback callback) { _callback = callback; }
-
-      void off() { setPowerDuty(0); }
+      void off() { setDuty(0); }
       bool isOff() const { return _duty == 0; }
       bool isOn() const { return _duty > 0; }
       bool isOnAtFullPower() const { return _duty >= MYCILA_DIMMER_MAX_DUTY; }
@@ -46,20 +38,21 @@ namespace Mycila {
         root["angle_d"] = angle * RAD_TO_DEG;
         root["delay"] = getFiringDelay();
         root["duty"] = _duty;
-        root["duty_cycle"] = getPowerDutyCycle();
+        root["duty_cycle"] = getDutyCycle();
         root["enabled"] = _enabled;
         root["state"] = _duty > 0 ? "on" : "off";
+        _zcd->toJson(root["zcd"].to<JsonObject>());
       }
 
       // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
-      void setPowerDuty(uint16_t duty);
-      uint16_t getPowerDuty() const { return _duty; }
+      void setDuty(uint16_t duty);
+      uint16_t getDuty() const { return _duty; }
 
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
-      void setPowerDutyCycle(float dutyCycle) { setPowerDuty(dutyCycle * MYCILA_DIMMER_MAX_DUTY); }
-      float getPowerDutyCycle() const { return static_cast<float>(_duty) / MYCILA_DIMMER_MAX_DUTY; }
+      void setDutyCycle(float dutyCycle) { setDuty(dutyCycle * MYCILA_DIMMER_MAX_DUTY); }
+      float getDutyCycle() const { return static_cast<float>(_duty) / MYCILA_DIMMER_MAX_DUTY; }
 
       // Delay [0, semi-period] us
       // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
@@ -79,7 +72,6 @@ namespace Mycila {
       ZCD* _zcd;
       gpio_num_t _pin = GPIO_NUM_NC;
       bool _enabled = false;
-      DimmerStateCallback _callback = nullptr;
       Thyristor* _dimmer = nullptr;
       uint16_t _duty = 0;
   };

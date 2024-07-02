@@ -64,7 +64,7 @@
 #define YASOLR_LBL_058 "Resistance"
 #define YASOLR_LBL_059 "Energy"
 #define YASOLR_LBL_060 "Dimmer Automatic Control"
-#define YASOLR_LBL_061 "Grid Excess Sharing"
+#define YASOLR_LBL_061 "Grid Excess Reserved"
 #define YASOLR_LBL_062 "Dimmer Duty Limiter"
 #define YASOLR_LBL_063 "Dimmer Temperature Limiter"
 #define YASOLR_LBL_064 "Bypass Automatic Control"
@@ -161,7 +161,7 @@
 #define YASOLR_LBL_155 "Input Only"
 #define YASOLR_LBL_156 "I/O"
 #define YASOLR_LBL_157 "JSY Remote UDP: Message Rate"
-#define YASOLR_LBL_158
+#define YASOLR_LBL_158 "Grid Excess Remaining"
 #define YASOLR_LBL_159
 #define YASOLR_LBL_160
 #define YASOLR_LBL_161

@@ -53,6 +53,7 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
   haDiscovery.publish(Mycila::HACounter("grid_energy_returned", "Grid Energy Returned", "/grid/energy_returned", "energy", nullptr, "kWh"));
   haDiscovery.publish(Mycila::HACounter("grid_frequency", "Grid Frequency", "/grid/frequency", "frequency", nullptr, "Hz"));
   haDiscovery.publish(Mycila::HAGauge("grid_power", "Grid Power", "/grid/power", "power", nullptr, "W"));
+  haDiscovery.publish(Mycila::HAGauge("grid_power_virtual", "Grid Power Without Routing", "/router/virtual_grid_power", "power", nullptr, "W"));
   haDiscovery.publish(Mycila::HAGauge("grid_power_factor", "Grid Power Factor", "/grid/power_factor", "power_factor"));
   haDiscovery.publish(Mycila::HAGauge("grid_voltage", "Grid Voltage", "/grid/voltage", "voltage", nullptr, "V"));
 

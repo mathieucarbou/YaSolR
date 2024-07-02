@@ -11,7 +11,7 @@ static const ChartSize chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl 
 #endif
 
 void YaSolR::WebsiteClass::initLayout() {
-  logger.debug(TAG, "Initializing layout...");
+  logger.info(TAG, "Initializing layout...");
 
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
     _historyX[i] = i - YASOLR_GRAPH_POINTS;
@@ -83,17 +83,11 @@ void YaSolR::WebsiteClass::initLayout() {
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
   _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_MAX_TEMP);
   _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_MAX_DUTY);
+  _sliderConfig(_output1DimmerRatio, KEY_OUTPUT1_RESERVED_EXCESS);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
   _outputBypassSwitch(_output1Bypass, output1);
   _outputDimmerSlider(_output1DimmerSlider, output1);
-  _output1DimmerRatio.attachCallback([this](int value) {
-    config.set(KEY_OUTPUT_SPLIT, String(value));
-    _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
-    _output2DimmerRatio.update(100 - static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
-    dashboard.refreshCard(&_output1DimmerRatio);
-    dashboard.refreshCard(&_output2DimmerRatio);
-  });
 
   // output 2 (control)
   _output2BypassAuto.setTab(&_output2Tab);
@@ -114,17 +108,11 @@ void YaSolR::WebsiteClass::initLayout() {
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
   _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_MAX_TEMP);
   _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_MAX_DUTY);
+  _sliderConfig(_output2DimmerRatio, KEY_OUTPUT2_RESERVED_EXCESS);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
   _outputBypassSwitch(_output2Bypass, output2);
   _outputDimmerSlider(_output2DimmerSlider, output2);
-  _output2DimmerRatio.attachCallback([this](int value) {
-    config.set(KEY_OUTPUT_SPLIT, String(100 - value));
-    _output1DimmerRatio.update(100 - static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
-    _output2DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
-    dashboard.refreshCard(&_output1DimmerRatio);
-    dashboard.refreshCard(&_output2DimmerRatio);
-  });
 
   // relays (control)
   _relay1Load.setTab(&_relaysTab);
@@ -315,7 +303,7 @@ void YaSolR::WebsiteClass::initLayout() {
 }
 
 void YaSolR::WebsiteClass::initCards() {
-  logger.debug(TAG, "Initializing cards...");
+  logger.info(TAG, "Initializing cards...");
 
   // Statistics
   _appManufacturer.set(Mycila::AppInfo.manufacturer.c_str());
@@ -346,7 +334,7 @@ void YaSolR::WebsiteClass::initCards() {
   bool output1DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18);
 
   _output1DimmerAuto.update(autoDimmerO1Activated);
-  _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
+  _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toInt()));
   _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt()));
   _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP));
   _output1BypassAuto.update(autoBypassActivated);
@@ -389,7 +377,7 @@ void YaSolR::WebsiteClass::initCards() {
   bool output2DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18);
 
   _output2DimmerAuto.update(autoDimmerO2Activated);
-  _output2DimmerRatio.update(100 - static_cast<int>(config.get(KEY_OUTPUT_SPLIT).toInt()));
+  _output2DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toInt()));
   _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt()));
   _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP));
   _output2BypassAuto.update(autoBypassO2Activated);
@@ -527,10 +515,16 @@ void YaSolR::WebsiteClass::initCards() {
 
 void YaSolR::WebsiteClass::updateCards() {
   Mycila::GridMetrics gridMetrics;
-  grid.getMetrics(gridMetrics);
+  grid.getMeasurements(gridMetrics);
 
   Mycila::RouterMetrics routerMetrics;
-  router.getMetrics(routerMetrics);
+  router.getMeasurements(routerMetrics);
+
+  Mycila::RouterOutputMetrics output1Measurements;
+  output1.getMeasurements(output1Measurements);
+
+  Mycila::RouterOutputMetrics output2Measurements;
+  output2.getMeasurements(output2Measurements);
 
   // stats
   Mycila::SystemMemory memory = Mycila::System.getMemory();
@@ -589,18 +583,18 @@ void YaSolR::WebsiteClass::updateCards() {
       break;
   }
   _temperature(_output1DS18State, ds18O1);
-  _output1DimmerSlider.update(dimmerO1.getPowerDuty());
-  _output1DimmerSliderRO.update(dimmerO1.getPowerDuty());
+  _output1DimmerSlider.update(dimmerO1.getDuty());
+  _output1DimmerSliderRO.update(dimmerO1.getDuty());
   _output1Bypass.update(output1.isBypassOn());
   _output1BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _output1Power.update(routerMetrics.outputs[0].power);
-  _output1ApparentPower.update(routerMetrics.outputs[0].apparentPower);
-  _output1PowerFactor.update(routerMetrics.outputs[0].powerFactor);
-  _output1THDi.update(routerMetrics.outputs[0].thdi * 100);
-  _output1Voltage.update(routerMetrics.outputs[0].dimmedVoltage);
-  _output1Current.update(routerMetrics.outputs[0].current);
-  _output1Resistance.update(routerMetrics.outputs[0].resistance);
-  _output1Energy.update(routerMetrics.outputs[0].energy);
+  _output1Power.update(output1Measurements.power);
+  _output1ApparentPower.update(output1Measurements.apparentPower);
+  _output1PowerFactor.update(output1Measurements.powerFactor);
+  _output1THDi.update(output1Measurements.thdi * 100);
+  _output1Voltage.update(output1Measurements.dimmedVoltage);
+  _output1Current.update(output1Measurements.current);
+  _output1Resistance.update(output1Measurements.resistance);
+  _output1Energy.update(output1Measurements.energy);
 
   // output 2
   switch (output2.getState()) {
@@ -620,18 +614,18 @@ void YaSolR::WebsiteClass::updateCards() {
       break;
   }
   _temperature(_output2DS18State, ds18O2);
-  _output2DimmerSlider.update(dimmerO2.getPowerDuty());
-  _output2DimmerSliderRO.update(dimmerO2.getPowerDuty());
+  _output2DimmerSlider.update(dimmerO2.getDuty());
+  _output2DimmerSliderRO.update(dimmerO2.getDuty());
   _output2Bypass.update(output2.isBypassOn());
   _output2BypassRO.update(YASOLR_STATE(output2.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _output2Power.update(routerMetrics.outputs[1].power);
-  _output2ApparentPower.update(routerMetrics.outputs[1].apparentPower);
-  _output2PowerFactor.update(routerMetrics.outputs[1].powerFactor);
-  _output2THDi.update(routerMetrics.outputs[1].thdi * 100);
-  _output2Voltage.update(routerMetrics.outputs[1].dimmedVoltage);
-  _output2Current.update(routerMetrics.outputs[1].current);
-  _output2Resistance.update(routerMetrics.outputs[1].resistance);
-  _output2Energy.update(routerMetrics.outputs[1].energy);
+  _output2Power.update(output2Measurements.power);
+  _output2ApparentPower.update(output2Measurements.apparentPower);
+  _output2PowerFactor.update(output2Measurements.powerFactor);
+  _output2THDi.update(output2Measurements.thdi * 100);
+  _output2Voltage.update(output2Measurements.dimmedVoltage);
+  _output2Current.update(output2Measurements.current);
+  _output2Resistance.update(output2Measurements.resistance);
+  _output2Energy.update(output2Measurements.energy);
 
   // relays
   _relay1Switch.update(relay1.isOn());
@@ -656,9 +650,10 @@ void YaSolR::WebsiteClass::updateCards() {
 void YaSolR::WebsiteClass::updateCharts() {
   // read last metrics
   Mycila::GridMetrics gridMetrics;
-  grid.getMetrics(gridMetrics);
+  grid.getMeasurements(gridMetrics);
+
   Mycila::RouterMetrics routerMetrics;
-  router.getMetrics(routerMetrics);
+  router.getMeasurements(routerMetrics);
 
   // shift array
   for (size_t i = 0; i < YASOLR_GRAPH_POINTS - 1; i++) {

@@ -41,6 +41,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
       output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
+      dimmerO1.off();
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX_DUTY) {
       output1.config.dimmerDutyLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt();
@@ -66,8 +67,12 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     } else if (key == KEY_OUTPUT1_DAYS) {
       output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
 
+    } else if (key == KEY_OUTPUT1_RESERVED_EXCESS) {
+      output1.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat() / 100;
+
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
       output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
+      dimmerO2.off();
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX_DUTY) {
       output2.config.dimmerDutyLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt();
@@ -92,6 +97,9 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_OUTPUT2_DAYS) {
       output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
+
+    } else if (key == KEY_OUTPUT2_RESERVED_EXCESS) {
+      output2.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat() / 100;
 
     } else if (key == KEY_NTP_TIMEZONE) {
       Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
@@ -190,6 +198,15 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         display.clearDisplay();
         display.setActive(true);
       }
+
+    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_P_MODE || key == KEY_PID_D_MODE || key == KEY_PID_IC_MODE || key == KEY_PID_SETPOINT) {
+      pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.get(KEY_PID_P_MODE).toInt());
+      pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.get(KEY_PID_D_MODE).toInt());
+      pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.get(KEY_PID_IC_MODE).toInt());
+      pidController.setSetPoint(config.get(KEY_PID_SETPOINT).toFloat());
+      pidController.setTunings(config.get(KEY_PID_KP).toFloat(), config.get(KEY_PID_KI).toFloat(), config.get(KEY_PID_KD).toFloat());
+      pidController.setOutputLimits(config.get(KEY_PID_OUT_MIN).toFloat(), config.get(KEY_PID_OUT_MAX).toFloat());
+      pidController.reset();
     }
 
     YaSolR::Website.initCards();
@@ -199,7 +216,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   dashboard.onBeforeUpdate([](bool changes_only) {
     if (!changes_only) {
-      logger.debug(TAG, "Dashboard refresh requested");
+      logger.info(TAG, "Dashboard refresh requested");
       YaSolR::Website.initCards();
     }
   });
@@ -269,69 +286,33 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     restartTask.resume();
   });
 
-  dimmerO1.listen([](Mycila::DimmerState event) {
-    mqttPublishTask.requestEarlyRun();
-    switch (event) {
-      case Mycila::DimmerState::OFF:
-        logger.debug(TAG, "Output 1 Dimmer: turned off");
-        break;
-      case Mycila::DimmerState::FULL:
-        logger.debug(TAG, "Output 1 Dimmer: at full power");
-        break;
-      case Mycila::DimmerState::DIM:
-        logger.debug(TAG, "Output 1 Dimmer: dimming");
-        break;
-      default:
-        assert(false);
-        break;
-    }
-  });
-
-  dimmerO2.listen([](Mycila::DimmerState event) {
-    mqttPublishTask.requestEarlyRun();
-    switch (event) {
-      case Mycila::DimmerState::OFF:
-        logger.debug(TAG, "Output 2 dimmer: turned off");
-        break;
-      case Mycila::DimmerState::FULL:
-        logger.debug(TAG, "Output 2 dimmer: at full power");
-        break;
-      case Mycila::DimmerState::DIM:
-        logger.debug(TAG, "Output 2 dimmer: dimming");
-        break;
-      default:
-        assert(false);
-        break;
-    }
-  });
-
   bypassRelayO1.listen([](bool state) {
-    logger.debug(TAG, "Output 1 Relay changed to %s", state ? "ON" : "OFF");
+    logger.info(TAG, "Output 1 Relay changed to %s", state ? "ON" : "OFF");
     mqttPublishTask.requestEarlyRun();
   });
   bypassRelayO2.listen([](bool state) {
-    logger.debug(TAG, "Output 2 Relay changed to %s", state ? "ON" : "OFF");
+    logger.info(TAG, "Output 2 Relay changed to %s", state ? "ON" : "OFF");
     mqttPublishTask.requestEarlyRun();
   });
   relay1.listen([](bool state) {
-    logger.debug(TAG, "Relay 1 changed to %s", state ? "ON" : "OFF");
+    logger.info(TAG, "Relay 1 changed to %s", state ? "ON" : "OFF");
     mqttPublishTask.requestEarlyRun();
   });
   relay2.listen([](bool state) {
-    logger.debug(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
+    logger.info(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
     mqttPublishTask.requestEarlyRun();
   });
 
   ds18Sys.listen([](float temperature) {
-    logger.debug(TAG, "Router Temperature changed to %.02f °C", temperature);
+    logger.info(TAG, "Router Temperature changed to %.02f °C", temperature);
     mqttPublishTask.requestEarlyRun();
   });
   ds18O1.listen([](float temperature) {
-    logger.debug(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
+    logger.info(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
     mqttPublishTask.requestEarlyRun();
   });
   ds18O2.listen([](float temperature) {
-    logger.debug(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
+    logger.info(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
     mqttPublishTask.requestEarlyRun();
   });
 

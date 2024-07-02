@@ -23,6 +23,7 @@
 #include <MycilaLogger.h>
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
+#include <MycilaPID.h>
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
 #include <MycilaRouter.h>
@@ -51,8 +52,9 @@
 
 #include <YaSolRDefines.h>
 
-extern AsyncWebServer webServer;
 extern AsyncUDP udp;
+extern AsyncWebServer webServer;
+extern AsyncWebSocket wsDebugPID;
 extern ESPDash dashboard;
 
 extern Mycila::Config config;
@@ -67,6 +69,7 @@ extern Mycila::HADiscovery haDiscovery;
 extern Mycila::JSY jsy;
 extern Mycila::Logger logger;
 extern Mycila::MQTT mqtt;
+extern Mycila::PID pidController;
 extern Mycila::PZEM pzemO1;
 extern Mycila::PZEM pzemO2;
 extern Mycila::Relay bypassRelayO1;
@@ -90,20 +93,20 @@ extern Mycila::Task mqttPublishConfigTask;
 extern Mycila::TaskManager jsyTaskManager;
 extern Mycila::Task jsyTask;
 
-extern Mycila::TaskManager coreTaskManager;
+extern Mycila::TaskManager core0TaskManager;
 extern Mycila::Task carouselTask;
-extern Mycila::Task dashboardTask;
 extern Mycila::Task displayTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
+
+extern Mycila::TaskManager core1TaskManager;
+extern Mycila::Task dashboardTask;
 extern Mycila::Task mqttConfigTask;
 extern Mycila::Task networkManagerTask;
 extern Mycila::Task networkUpTask;
 extern Mycila::Task otaTask;
-extern Mycila::Task profilerTask;
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
-extern Mycila::Task routerDebugTask;
 #ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
 #endif

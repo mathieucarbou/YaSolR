@@ -103,9 +103,9 @@ Mycila::Task displayTask("Display", [](void* params) {
 
     case DisplayKind::DISPLAY_ROUTER: {
       Mycila::GridMetrics gridMetrics;
-      grid.getMetrics(gridMetrics);
+      grid.getMeasurements(gridMetrics);
       Mycila::RouterMetrics routerMetrics;
-      router.getMetrics(routerMetrics);
+      router.getMeasurements(routerMetrics);
       display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(gridMetrics.power)));
       display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
       if (config.get(KEY_RELAY1_LOAD).toInt())
@@ -121,10 +121,10 @@ Mycila::Task displayTask("Display", [](void* params) {
 
     case DisplayKind::DISPLAY_OUTPUT1: {
       Mycila::RouterOutputMetrics outputMetrics;
-      output1.getMetrics(outputMetrics);
+      output1.getMeasurements(outputMetrics);
       display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
-      display.home.printf("Dimmer: %5d %5d W\n", dimmerO1.getPowerDuty(), static_cast<int>(round(outputMetrics.power)));
+      display.home.printf("Dimmer: %5d %5d W\n", dimmerO1.getDuty(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O1.isEnabled())
         display.home.printf("Temperature:  %4.1f ", ds18O1.getValidTemperature());
       else
@@ -136,10 +136,10 @@ Mycila::Task displayTask("Display", [](void* params) {
 
     case DisplayKind::DISPLAY_OUTPUT2: {
       Mycila::RouterOutputMetrics outputMetrics;
-      output2.getMetrics(outputMetrics);
+      output2.getMeasurements(outputMetrics);
       display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
-      display.home.printf("Dimmer: %5d %5d W\n", dimmerO2.getPowerDuty(), static_cast<int>(round(outputMetrics.power)));
+      display.home.printf("Dimmer: %5d %5d W\n", dimmerO2.getDuty(), static_cast<int>(round(outputMetrics.power)));
       if (ds18O2.isEnabled())
         display.home.printf("Temperature:  %4.1f ", ds18O2.getValidTemperature());
       else

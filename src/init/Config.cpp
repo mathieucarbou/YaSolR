@@ -10,10 +10,10 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // Tasks configuration
   carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
   carouselTask.setIntervalSupplier([]() { return config.get(KEY_DISPLAY_SPEED).toInt() * Mycila::TaskDuration::SECONDS; });
-  dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress() && !routingTask.isRunning(); });
+  dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && dashboard.hasClient() && !dashboard.isAsyncAccessInProgress(); });
   dashboardTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
-  displayTask.setInterval(293 * Mycila::TaskDuration::MILLISECONDS);
+  displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
   ds18Task.setInterval(1 * Mycila::TaskDuration::SECONDS);
   jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
@@ -22,13 +22,11 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setIntervalSupplier([]() { return config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS; });
-  profilerTask.setInterval(10 * Mycila::TaskDuration::SECONDS);
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
   relayTask.setEnabledWhen([]() { return routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled(); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
-  routerDebugTask.setInterval(5 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(537 * Mycila::TaskDuration::MILLISECONDS);
-  routingTask.setEnabledWhen([]() { return output1.isDimmerEnabled() || output2.isDimmerEnabled(); });
+  routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
 #ifdef APP_MODEL_TRIAL
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif
@@ -51,6 +49,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output1.config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
   output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
+  output1.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
 
   // output2
   output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
@@ -63,6 +62,17 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output2.config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
   output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
+  output2.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
+
+  // PID Controller
+
+  pidController.setReverse(false);
+  pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.get(KEY_PID_P_MODE).toInt());
+  pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.get(KEY_PID_D_MODE).toInt());
+  pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.get(KEY_PID_IC_MODE).toInt());
+  pidController.setSetPoint(config.get(KEY_PID_SETPOINT).toFloat());
+  pidController.setTunings(config.get(KEY_PID_KP).toFloat(), config.get(KEY_PID_KI).toFloat(), config.get(KEY_PID_KD).toFloat());
+  pidController.setOutputLimits(config.get(KEY_PID_OUT_MIN).toFloat(), config.get(KEY_PID_OUT_MAX).toFloat());
 
   // NTP
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
@@ -128,19 +138,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT1);
   if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM))
     pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT2);
-
-  // Task Monitor
-  Mycila::TaskMonitor.begin();
-  Mycila::TaskMonitor.addTask("arduino_events");            // Network
-  Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
-  Mycila::TaskMonitor.addTask("async_udp");                 // AsyncUDP
-  Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
-  Mycila::TaskMonitor.addTask("wifi");                      // WiFI
-  Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
-  Mycila::TaskMonitor.addTask(ioTaskManager.getName());     // YaSolR
-  Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
-  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
-  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
 
   // Display
   if (config.getBool(KEY_ENABLE_DISPLAY)) {

@@ -70,7 +70,7 @@ void Mycila::Dimmer::end() {
   }
 }
 
-void Mycila::Dimmer::setPowerDuty(uint16_t newDuty) {
+void Mycila::Dimmer::setDuty(uint16_t newDuty) {
   if (!_enabled)
     return;
 
@@ -81,9 +81,6 @@ void Mycila::Dimmer::setPowerDuty(uint16_t newDuty) {
   // nothing to do ?
   if (_duty == newDuty)
     return;
-
-  // save old level
-  const uint16_t oldDuty = _duty;
 
   const uint16_t semiPeriod = _zcd->getSemiPeriod();
 
@@ -105,7 +102,4 @@ void Mycila::Dimmer::setPowerDuty(uint16_t newDuty) {
   }
 
   _duty = newDuty;
-
-  if (_callback && (oldDuty == 0 || oldDuty == MYCILA_DIMMER_MAX_DUTY || newDuty == 0 || newDuty == MYCILA_DIMMER_MAX_DUTY))
-    _callback(newDuty == 0 ? DimmerState::OFF : (newDuty == MYCILA_DIMMER_MAX_DUTY ? DimmerState::FULL : DimmerState::DIM));
 }

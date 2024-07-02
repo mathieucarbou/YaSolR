@@ -66,6 +66,7 @@
     o1_resistance: ["Output 1 Resistance (Ohm)", "uint"],
     o1_dim_max_d: ["Dimmer Duty Limiter (limit dimmer duty 0-4095)", "uint"],
     o1_dim_max_t: ["Dimmer Temperature Limiter (stop routing when temperature reached)", "uint"],
+    o1_excess_ratio: ["Grid Excess Reserved to Output 1. Output 2 will take the remaining. If 100%, Output 2 will be activated only if there is some remaining excess.", "percent"],
     o1_ad_enable: ["Dimmer Automatic Control", "switch"],
     o1_ab_enable: ["Bypass Automatic Control", "switch"],
     o1_days: ["Bypass Week Days", "string"],
@@ -78,6 +79,7 @@
     o2_resistance: ["Output 2 Resistance (Ohm)", "uint"],
     o2_dim_max_d: ["Dimmer Duty Limiter (limit dimmer duty 0-4095)", "uint"],
     o2_dim_max_t: ["Dimmer Temperature Limiter (stop routing when temperature reached)", "uint"],
+    o2_excess_ratio: ["Grid Excess Reserved to Output 2. Output 2 will take the remaining after output 1. If 100%, Output 2 will try to consume 100% of the remaining.", "percent"],
     o2_ad_enable: ["Dimmer Automatic Control", "switch"],
     o2_ab_enable: ["Bypass Automatic Control", "switch"],
     o2_days: ["Bypass Week Days", "string"],
@@ -85,9 +87,6 @@
     o2_time_stop: ["Bypass Stop Time (HH:mm)", "time"],
     o2_temp_start: ["Bypass Start Temperature (C)", "uint"],
     o2_temp_stop: ["Bypass Stop Temperature (C)", "uint"],
-
-    "Output 1 / Output 2 Split": "TITLE",
-    o1_o2_split: ["Grid Excess Reserved to Output 1. Output 2 will take the remaining. If 100%, Output 2 will be activated only if there is some remaining excess.", "percent"],
 
     "Relays": "TITLE",
     relay1_load: ["Relay 1 Automatic Control: Connected Load (Watts)", "uint"],
@@ -165,6 +164,17 @@
     o2_relay_type: ["Output 2 Bypass Relay Type", "select", "NO,NC"],
     relay1_type: ["Relay 1 Type", "select", "NO,NC"],
     relay2_type: ["Relay 2 Type", "select", "NO,NC"],
+
+    "PID Calibration": "TITLE",
+    pid_pmode: ["Proportional Mode (1: on Error, 2: on Input, 3: Both)", "select", "1,2,3"],
+    pid_dmode: ["Derivative Mode (1: on Error, 2: on Input)", "select", "1,2"],
+    pid_icmode: ["Integral Correction Mode (0: Off, 1: Clamp, 2: Anti-windup)", "select", "0,1,2"],
+    pid_setpoint: ["Setpoint (Target Grid Power)", "float"],
+    pid_kp: ["Kp", "float"],
+    pid_ki: ["Ki", "float"],
+    pid_kd: ["Kd", "float"],
+    pid_out_min: ["Output Min", "float"],
+    pid_out_max: ["Output Max", "float"],
   };
 
   async function onInputChange(event) {
@@ -210,6 +220,15 @@
     },
     percent: function (cell, key, value, options) {
       addInputNumber(cell, key, value, 0, 100);
+    },
+    float: function (cell, key, value, options) {
+      const input = document.createElement("input");
+      input.setAttribute("id", key);
+      input.setAttribute("type", "text");
+      input.setAttribute("autocomplete", "off");
+      input.setAttribute("value", value);
+      cell.appendChild(input);
+      input.addEventListener("change", onInputChange);
     },
     string: function (cell, key, value, options) {
       const input = document.createElement("input");

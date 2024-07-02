@@ -142,7 +142,7 @@ namespace YaSolR {
       Card _output2Resistance = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_058, "Ω");
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_059, "kWh");
       Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_060);
-      Card _output2DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_061, "%", 0, 100, 1);
+      Card _output2DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_158, "%", 0, 100, 1);
       Card _output2DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_062, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_063, "°C");
       Card _output2BypassAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_064);

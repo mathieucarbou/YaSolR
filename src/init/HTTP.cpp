@@ -60,4 +60,14 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
       request->send(response);
     })
     .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+
+  wsDebugPID.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+  wsDebugPID.onEvent([](AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
+    if (type == WS_EVT_CONNECT) {
+      logger.info(TAG, "Websocket client connected to: /ws/debug/pid");
+      wsDebugPID.cleanupClients(4);
+      client->text("pMode,dMode,icMode,rev,setpoint,kp,ki,kd,outMin,outMax,input,output,error,pTerm,iTerm,dTerm,sum");
+    }
+  });
+  webServer.addHandler(&wsDebugPID);
 });

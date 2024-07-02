@@ -64,7 +64,7 @@
 #define YASOLR_LBL_058 "Résistance"
 #define YASOLR_LBL_059 "Énergie"
 #define YASOLR_LBL_060 "Routage automatique"
-#define YASOLR_LBL_061 "Partage du surplus réseau"
+#define YASOLR_LBL_061 "Surplus réseau réservé"
 #define YASOLR_LBL_062 "Limitation du routage"
 #define YASOLR_LBL_063 "Température de consigne d'arrêt du routage"
 #define YASOLR_LBL_064 "Marche forcée automatique"
@@ -161,7 +161,7 @@
 #define YASOLR_LBL_155 "Entrée uniquement"
 #define YASOLR_LBL_156 "E/S"
 #define YASOLR_LBL_157 "JSY Remote UDP: Débit"
-#define YASOLR_LBL_158
+#define YASOLR_LBL_158 "Surplus réseau restant"
 #define YASOLR_LBL_159
 #define YASOLR_LBL_160
 #define YASOLR_LBL_161

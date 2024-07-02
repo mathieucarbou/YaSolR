@@ -65,7 +65,34 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
   _setBypass(false);
 
   LOGD(TAG, "Setting Dimmer '%s' duty to %" PRIu16 "...", _name, duty);
-  _dimmer->setPowerDuty(duty);
+  _dimmer->setDuty(duty);
+  return true;
+}
+
+bool Mycila::RouterOutput::autoSetDimmerDuty(uint16_t duty) {
+  if (!_dimmer->isEnabled()) {
+    return false;
+  }
+
+  if (_autoBypassEnabled) {
+    return false;
+  }
+
+  if (!config.autoDimmer) {
+    return false;
+  }
+
+  if (isDimmerTemperatureLimitReached()) {
+    return false;
+  }
+
+  if (duty > config.dimmerDutyLimit) {
+    duty = config.dimmerDutyLimit;
+  }
+
+  _setBypass(false, false);
+
+  _dimmer->setDuty(duty);
   return true;
 }
 
@@ -79,9 +106,9 @@ void Mycila::RouterOutput::applyDimmerLimits() {
   if (_dimmer->isOff())
     return;
 
-  if (_dimmer->getPowerDuty() > config.dimmerDutyLimit) {
+  if (_dimmer->getDuty() > config.dimmerDutyLimit) {
     LOGW(TAG, "Dimmer '%s' reached its duty limit at %" PRIu16, _name, config.dimmerDutyLimit);
-    _dimmer->setPowerDuty(config.dimmerDutyLimit);
+    _dimmer->setDuty(config.dimmerDutyLimit);
     return;
   }
 
@@ -223,14 +250,15 @@ void Mycila::RouterOutput::applyAutoBypass() {
   _setBypass(true);
 }
 
-void Mycila::RouterOutput::_setBypass(bool state) {
+void Mycila::RouterOutput::_setBypass(bool state, bool log) {
   if (state) {
     // we want to activate bypass
     if (_relay->isEnabled()) {
       // we have a relay in-place: use it
       _dimmer->off();
       if (_relay->isOff()) {
-        LOGD(TAG, "Turning Bypass Relay '%s' ON...", _name);
+        if (log)
+          LOGD(TAG, "Turning Bypass Relay '%s' ON...", _name);
         _relay->setState(true);
       }
       _bypassEnabled = true;
@@ -238,11 +266,13 @@ void Mycila::RouterOutput::_setBypass(bool state) {
     } else {
       // we don't have a relay: use the dimmer
       if (_dimmer->isEnabled()) {
-        LOGD(TAG, "Turning Dimmer '%s' ON...", _name);
-        _dimmer->setPowerDuty(MYCILA_DIMMER_MAX_DUTY);
+        if (log)
+          LOGD(TAG, "Turning Dimmer '%s' ON...", _name);
+        _dimmer->setDuty(MYCILA_DIMMER_MAX_DUTY);
         _bypassEnabled = true;
       } else {
-        LOGW(TAG, "Dimmer '%s' is not connected to the grid: unable to activate bypass", _name);
+        if (log)
+          LOGW(TAG, "Dimmer '%s' is not connected to the grid: unable to activate bypass", _name);
         _bypassEnabled = false;
       }
     }
@@ -251,11 +281,13 @@ void Mycila::RouterOutput::_setBypass(bool state) {
     // we want to deactivate bypass
     if (_relay->isEnabled()) {
       if (_relay->isOn()) {
-        LOGD(TAG, "Turning Bypass Relay '%s' OFF...", _name);
+        if (log)
+          LOGD(TAG, "Turning Bypass Relay '%s' OFF...", _name);
         _relay->setState(false);
       }
     } else {
-      LOGD(TAG, "Turning Dimmer '%s' OFF...", _name);
+      if (log)
+        LOGD(TAG, "Turning Dimmer '%s' OFF...", _name);
       _dimmer->off();
     }
     _bypassEnabled = false;

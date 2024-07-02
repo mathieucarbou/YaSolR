@@ -5,7 +5,6 @@
 #pragma once
 
 #include <MycilaJSY.h>
-#include <MycilaPZEM004Tv3.h>
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
@@ -37,8 +36,6 @@ namespace Mycila {
 
   class Grid {
     public:
-      Grid(PZEM& pzem1, PZEM& pzem2) : _pzem1(&pzem1), _pzem2(&pzem2) {}
-
       // expiration for remote data
       void setExpiration(uint32_t seconds) { _expiration = seconds * 1000; }
 
@@ -151,21 +148,13 @@ namespace Mycila {
         return updated;
       }
 
-      bool isConnected() const { return _meterConnected ||
-                                        _meterRemoteConnected ||
-                                        _mqttConnected ||
-                                        _pzem1->getVoltage() > 0 ||
-                                        _pzem2->getVoltage() > 0; }
+      bool isConnected() const { return _meterConnected || _meterRemoteConnected || _mqttConnected; }
 
       // get the current grid voltage
-      // - if JSY/PZEM are connected, they have priority
+      // - if JSY are connected, they have priority
       // - if JSY remote is connected, it has second priority
       // - if MQTT is connected, it has lowest priority
       float getVoltage() const {
-        if (_pzem1->getVoltage() > 0)
-          return _pzem1->getVoltage();
-        if (_pzem2->getVoltage() > 0)
-          return _pzem2->getVoltage();
         if (_meterConnected)
           return _meter.voltage;
         if (_meterRemoteConnected)
@@ -203,7 +192,7 @@ namespace Mycila {
         return SOURCE_NONE;
       }
 
-      void getMetrics(GridMetrics& metrics) const {
+      void getMeasurements(GridMetrics& metrics) const {
         metrics.power = getPower();
         metrics.voltage = getVoltage();
         switch (getGridSource()) {
@@ -233,7 +222,7 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         GridMetrics metrics;
-        getMetrics(metrics);
+        getMeasurements(metrics);
         root["online"] = isConnected();
         _toJson(root["metrics"].to<JsonObject>(), metrics);
         _toJson(root["source"]["jsy"].to<JsonObject>(), _meter);
@@ -243,10 +232,6 @@ namespace Mycila {
 #endif
 
     private:
-      // For voltage reading
-      PZEM* _pzem1;
-      PZEM* _pzem2;
-
       // Local JSY
       volatile GridMetrics _meter;
       volatile uint32_t _meterTime = 0;
