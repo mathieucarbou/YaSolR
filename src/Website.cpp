@@ -21,6 +21,14 @@ void YaSolR::WebsiteClass::initLayout() {
   _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
 
+#ifdef APP_MODEL_PRO
+  dashboard.setChartAnimations(false);
+
+  // overview graphs
+  _gridPowerHistory.setSize(chartSize);
+  _routedPowerHistory.setSize(chartSize);
+  _routerTHDiHistory.setSize(chartSize);
+
   // PID
   _pidInputHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _pidOutputHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
@@ -30,15 +38,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _pidDTermHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _pidSumHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
 
-#ifdef APP_MODEL_PRO
-  dashboard.setChartAnimations(false);
-
-  // overview graphs
-  _gridPowerHistory.setSize(chartSize);
-  _routedPowerHistory.setSize(chartSize);
-  _routerTHDiHistory.setSize(chartSize);
-
-  // pid graphs
   _pidInputHistory.setSize(chartSize);
   _pidOutputHistory.setSize(chartSize);
   _pidPTermHistory.setSize(chartSize);
@@ -786,6 +785,7 @@ void YaSolR::WebsiteClass::updateCharts() {
 }
 
 void YaSolR::WebsiteClass::updatePID() {
+#ifdef APP_MODEL_PRO
   // shift array
   constexpr size_t shift = sizeof(_pidInputHistoryY) - sizeof(*_pidInputHistoryY);
   memmove(&_pidInputHistoryY[0], &_pidInputHistoryY[1], shift);
@@ -813,9 +813,11 @@ void YaSolR::WebsiteClass::updatePID() {
   _pidPTermHistory.updateY(_pidPTermHistoryY, YASOLR_GRAPH_POINTS);
   _pidITermHistory.updateY(_pidITermHistoryY, YASOLR_GRAPH_POINTS);
   _pidDTermHistory.updateY(_pidDTermHistoryY, YASOLR_GRAPH_POINTS);
+#endif
 }
 
 void YaSolR::WebsiteClass::resetPID() {
+#ifdef APP_MODEL_PRO
   memset(_pidOutputHistoryY, 0, sizeof(_pidOutputHistoryY));
   memset(_pidInputHistoryY, 0, sizeof(_pidInputHistoryY));
   memset(_pidErrorHistoryY, 0, sizeof(_pidErrorHistoryY));
@@ -823,6 +825,7 @@ void YaSolR::WebsiteClass::resetPID() {
   memset(_pidPTermHistoryY, 0, sizeof(_pidPTermHistoryY));
   memset(_pidITermHistoryY, 0, sizeof(_pidITermHistoryY));
   memset(_pidDTermHistoryY, 0, sizeof(_pidDTermHistoryY));
+#endif
 }
 
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
