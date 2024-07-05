@@ -13,14 +13,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   // debug
 
   webServer
-    .on("/api/debug/pid/reset", HTTP_ANY, [](AsyncWebServerRequest* request) {
-      logger.info(TAG, "Resetting PID controller...");
-      pidController.reset();
-      request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
-
-  webServer
     .on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();

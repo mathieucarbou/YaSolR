@@ -46,7 +46,7 @@ Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 
 AsyncUDP udp;
 AsyncWebServer webServer(80);
-AsyncWebSocket wsDebugPID("/ws/debug/pid");
+AsyncWebSocket wsDebugPID("/ws/pid/csv");
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);
 
 void setup() {
