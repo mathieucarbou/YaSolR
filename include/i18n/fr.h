@@ -162,25 +162,25 @@
 #define YASOLR_LBL_156 "E/S"
 #define YASOLR_LBL_157 "JSY Remote UDP: Débit"
 #define YASOLR_LBL_158 "Surplus réseau restant"
-#define YASOLR_LBL_159
-#define YASOLR_LBL_160
-#define YASOLR_LBL_161
-#define YASOLR_LBL_162
-#define YASOLR_LBL_163
-#define YASOLR_LBL_164
-#define YASOLR_LBL_165
-#define YASOLR_LBL_166
-#define YASOLR_LBL_167
-#define YASOLR_LBL_168
-#define YASOLR_LBL_169
-#define YASOLR_LBL_170
-#define YASOLR_LBL_171
-#define YASOLR_LBL_172
-#define YASOLR_LBL_173
-#define YASOLR_LBL_174
-#define YASOLR_LBL_175
-#define YASOLR_LBL_176
-#define YASOLR_LBL_177
+#define YASOLR_LBL_159 "Contrôleur PID"
+#define YASOLR_LBL_160 "Mode proportionnel"
+#define YASOLR_LBL_161 "Mode dérivé"
+#define YASOLR_LBL_162 "Correction d'Intégrale"
+#define YASOLR_LBL_164 "Sortie Min (W)"
+#define YASOLR_LBL_165 "Sortie Max (W)"
+#define YASOLR_LBL_163 "Consigne (puissance cible du réseau en W)"
+#define YASOLR_LBL_166 "Kp"
+#define YASOLR_LBL_167 "Ki"
+#define YASOLR_LBL_168 "Kd"
+#define YASOLR_LBL_169 "Données PID temps-réel"
+#define YASOLR_LBL_170 "Entrée (Puissance réseau, W)"
+#define YASOLR_LBL_171 "Sortie (Puissance à router, W)"
+#define YASOLR_LBL_172 "Erreur (W)"
+#define YASOLR_LBL_173 "Somme (W)"
+#define YASOLR_LBL_174 "Terme P (W)"
+#define YASOLR_LBL_175 "Terme I (W)"
+#define YASOLR_LBL_176 "Terme D (W)"
+#define YASOLR_LBL_177 "Réinitialisation graphique"
 #define YASOLR_LBL_178
 #define YASOLR_LBL_179
 #define YASOLR_LBL_180

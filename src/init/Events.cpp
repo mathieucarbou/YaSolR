@@ -206,6 +206,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       pidController.setSetPoint(config.get(KEY_PID_SETPOINT).toFloat());
       pidController.setTunings(config.get(KEY_PID_KP).toFloat(), config.get(KEY_PID_KI).toFloat(), config.get(KEY_PID_KD).toFloat());
       pidController.setOutputLimits(config.get(KEY_PID_OUT_MIN).toFloat(), config.get(KEY_PID_OUT_MAX).toFloat());
+      logger.info(TAG, "PID Controller reconfigured! Resetting...");
       pidController.reset();
     }
 

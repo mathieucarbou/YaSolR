@@ -16,17 +16,36 @@ void YaSolR::WebsiteClass::initLayout() {
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
     _historyX[i] = i - YASOLR_GRAPH_POINTS;
 
+  // overview
   _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
 
+  // PID
+  _pidInputHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _pidOutputHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _pidErrorHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _pidPTermHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _pidITermHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _pidDTermHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+  _pidSumHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+
 #ifdef APP_MODEL_PRO
   dashboard.setChartAnimations(false);
 
-  // graphs
+  // overview graphs
   _gridPowerHistory.setSize(chartSize);
   _routedPowerHistory.setSize(chartSize);
   _routerTHDiHistory.setSize(chartSize);
+
+  // pid graphs
+  _pidInputHistory.setSize(chartSize);
+  _pidOutputHistory.setSize(chartSize);
+  _pidPTermHistory.setSize(chartSize);
+  _pidITermHistory.setSize(chartSize);
+  _pidDTermHistory.setSize(chartSize);
+  _pidErrorHistory.setSize(chartSize);
+  _pidSumHistory.setSize(chartSize);
 
   // output 1 (status)
   _output1State.setTab(&_output1Tab);
@@ -145,6 +164,55 @@ void YaSolR::WebsiteClass::initLayout() {
   _reset.attachCallback([] PUSH_BUTTON_CARD_CB { resetTask.resume(); });
   _restart.attachCallback([] PUSH_BUTTON_CARD_CB { restartTask.resume(); });
 
+  // network (config)
+  _adminPwd.setTab(&_networkConfigTab);
+  _apMode.setTab(&_networkConfigTab);
+  _ntpServer.setTab(&_networkConfigTab);
+  _ntpSync.setTab(&_networkConfigTab);
+  _ntpTimezone.setTab(&_networkConfigTab);
+  _wifiPwd.setTab(&_networkConfigTab);
+  _wifiSSID.setTab(&_networkConfigTab);
+
+  _boolConfig(_apMode, KEY_ENABLE_AP_MODE);
+  _passwordConfig(_adminPwd, KEY_ADMIN_PASSWORD);
+  _passwordConfig(_wifiPwd, KEY_WIFI_PASSWORD);
+  _textConfig(_ntpServer, KEY_NTP_SERVER);
+  _textConfig(_ntpTimezone, KEY_NTP_TIMEZONE);
+  _textConfig(_wifiSSID, KEY_WIFI_SSID);
+
+  _ntpSync.attachCallback([](const char* value) {
+    const String str = String(value);
+    const size_t len = str.length();
+    const timeval tv = {str.substring(0, len - 3).toInt(), str.substring(len - 3).toInt()};
+    Mycila::NTP.sync(tv);
+  });
+
+  // mqtt (config)
+  _haDiscovery.setTab(&_mqttConfigTab);
+  _haDiscoveryTopic.setTab(&_mqttConfigTab);
+  _mqttGridPower.setTab(&_mqttConfigTab);
+  _mqttGridVoltage.setTab(&_mqttConfigTab);
+  _mqttPort.setTab(&_mqttConfigTab);
+  _mqttPublishInterval.setTab(&_mqttConfigTab);
+  _mqttPwd.setTab(&_mqttConfigTab);
+  _mqttSecured.setTab(&_mqttConfigTab);
+  _mqttServer.setTab(&_mqttConfigTab);
+  _mqttServerCert.setTab(&_mqttConfigTab);
+  _mqttTopic.setTab(&_mqttConfigTab);
+  _mqttUser.setTab(&_mqttConfigTab);
+
+  _boolConfig(_haDiscovery, KEY_ENABLE_HA_DISCOVERY);
+  _boolConfig(_mqttSecured, KEY_MQTT_SECURED);
+  _numConfig(_mqttPort, KEY_MQTT_PORT);
+  _passwordConfig(_mqttPwd, KEY_MQTT_PASSWORD);
+  _sliderConfig(_mqttPublishInterval, KEY_MQTT_PUBLISH_INTERVAL);
+  _textConfig(_haDiscoveryTopic, KEY_HA_DISCOVERY_TOPIC);
+  _textConfig(_mqttGridPower, KEY_GRID_POWER_MQTT_TOPIC);
+  _textConfig(_mqttGridVoltage, KEY_GRID_VOLTAGE_MQTT_TOPIC);
+  _textConfig(_mqttServer, KEY_MQTT_SERVER);
+  _textConfig(_mqttTopic, KEY_MQTT_TOPIC);
+  _textConfig(_mqttUser, KEY_MQTT_USERNAME);
+
   // GPIO (configuration)
   _pinDimmerO1.setTab(&_pinConfigTab);
   _pinDimmerO2.setTab(&_pinConfigTab);
@@ -196,8 +264,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1Relay.setTab(&_hardwareEnableTab);
   _output1DS18.setTab(&_hardwareEnableTab);
   _output2Dimmer.setTab(&_hardwareEnableTab);
-  _output1ResistanceInput.setTab(&_hardwareConfigTab);
-  _output2ResistanceInput.setTab(&_hardwareConfigTab);
   _output2PZEM.setTab(&_hardwareEnableTab);
   _output2Relay.setTab(&_hardwareEnableTab);
   _output2DS18.setTab(&_hardwareEnableTab);
@@ -234,6 +300,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _output2RelayType.setTab(&_hardwareConfigTab);
   _relay1Type.setTab(&_hardwareConfigTab);
   _relay2Type.setTab(&_hardwareConfigTab);
+  _output1ResistanceInput.setTab(&_hardwareConfigTab);
+  _output2ResistanceInput.setTab(&_hardwareConfigTab);
 
   _numConfig(_gridFreq, KEY_GRID_FREQUENCY);
   _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
@@ -251,54 +319,42 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1PZEMSync.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO1PairingTask.resume(); });
   _output2PZEMSync.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO2PairingTask.resume(); });
 
-  // mqtt (config)
-  _haDiscovery.setTab(&_mqttConfigTab);
-  _haDiscoveryTopic.setTab(&_mqttConfigTab);
-  _mqttGridPower.setTab(&_mqttConfigTab);
-  _mqttGridVoltage.setTab(&_mqttConfigTab);
-  _mqttPort.setTab(&_mqttConfigTab);
-  _mqttPublishInterval.setTab(&_mqttConfigTab);
-  _mqttPwd.setTab(&_mqttConfigTab);
-  _mqttSecured.setTab(&_mqttConfigTab);
-  _mqttServer.setTab(&_mqttConfigTab);
-  _mqttServerCert.setTab(&_mqttConfigTab);
-  _mqttTopic.setTab(&_mqttConfigTab);
-  _mqttUser.setTab(&_mqttConfigTab);
+  // PID
+  _pidView.setTab(&_pidTab);
+  _pidPMode.setTab(&_pidTab);
+  _pidDMode.setTab(&_pidTab);
+  _pidICMode.setTab(&_pidTab);
+  _pidSetpoint.setTab(&_pidTab);
+  _pidKp.setTab(&_pidTab);
+  _pidKi.setTab(&_pidTab);
+  _pidKd.setTab(&_pidTab);
+  _pidOutMin.setTab(&_pidTab);
+  _pidOutMax.setTab(&_pidTab);
 
-  _boolConfig(_haDiscovery, KEY_ENABLE_HA_DISCOVERY);
-  _boolConfig(_mqttSecured, KEY_MQTT_SECURED);
-  _numConfig(_mqttPort, KEY_MQTT_PORT);
-  _passwordConfig(_mqttPwd, KEY_MQTT_PASSWORD);
-  _sliderConfig(_mqttPublishInterval, KEY_MQTT_PUBLISH_INTERVAL);
-  _textConfig(_haDiscoveryTopic, KEY_HA_DISCOVERY_TOPIC);
-  _textConfig(_mqttGridPower, KEY_GRID_POWER_MQTT_TOPIC);
-  _textConfig(_mqttGridVoltage, KEY_GRID_VOLTAGE_MQTT_TOPIC);
-  _textConfig(_mqttServer, KEY_MQTT_SERVER);
-  _textConfig(_mqttTopic, KEY_MQTT_TOPIC);
-  _textConfig(_mqttUser, KEY_MQTT_USERNAME);
+  _pidInputHistory.setTab(&_pidTab);
+  _pidOutputHistory.setTab(&_pidTab);
+  _pidErrorHistory.setTab(&_pidTab);
+  _pidSumHistory.setTab(&_pidTab);
+  _pidPTermHistory.setTab(&_pidTab);
+  _pidITermHistory.setTab(&_pidTab);
+  _pidDTermHistory.setTab(&_pidTab);
+  _pidReset.setTab(&_pidTab);
 
-  // network (config)
-  _adminPwd.setTab(&_networkConfigTab);
-  _apMode.setTab(&_networkConfigTab);
-  _ntpServer.setTab(&_networkConfigTab);
-  _ntpSync.setTab(&_networkConfigTab);
-  _ntpTimezone.setTab(&_networkConfigTab);
-  _wifiPwd.setTab(&_networkConfigTab);
-  _wifiSSID.setTab(&_networkConfigTab);
-
-  _boolConfig(_apMode, KEY_ENABLE_AP_MODE);
-  _passwordConfig(_adminPwd, KEY_ADMIN_PASSWORD);
-  _passwordConfig(_wifiPwd, KEY_WIFI_PASSWORD);
-  _textConfig(_ntpServer, KEY_NTP_SERVER);
-  _textConfig(_ntpTimezone, KEY_NTP_TIMEZONE);
-  _textConfig(_wifiSSID, KEY_WIFI_SSID);
-
-  _ntpSync.attachCallback([](const char* value) {
-    const String str = String(value);
-    const size_t len = str.length();
-    const timeval tv = {str.substring(0, len - 3).toInt(), str.substring(len - 3).toInt()};
-    Mycila::NTP.sync(tv);
+  _pidReset.attachCallback([this] PUSH_BUTTON_CARD_CB {
+    resetPID();
+    updatePID();
   });
+
+  _boolConfig(_pidView, KEY_ENABLE_PID_VIEW);
+  _numConfig(_pidPMode, KEY_PID_P_MODE);
+  _numConfig(_pidDMode, KEY_PID_D_MODE);
+  _numConfig(_pidICMode, KEY_PID_IC_MODE);
+  _numConfig(_pidSetpoint, KEY_PID_SETPOINT);
+  _floatConfig(_pidKp, KEY_PID_KP);
+  _floatConfig(_pidKi, KEY_PID_KI);
+  _floatConfig(_pidKd, KEY_PID_KD);
+  _numConfig(_pidOutMin, KEY_PID_OUT_MIN);
+  _numConfig(_pidOutMax, KEY_PID_OUT_MAX);
 #endif
 }
 
@@ -326,12 +382,12 @@ void YaSolR::WebsiteClass::initCards() {
 
 #ifdef APP_MODEL_PRO
   // output 1 (control)
-  bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
-  bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY);
-  bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
-  bool autoDimmerO1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-  bool autoBypassActivated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  bool output1DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18);
+  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
+  const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY);
+  const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
+  const bool autoDimmerO1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
+  const bool autoBypassActivated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
+  const bool output1DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18);
 
   _output1DimmerAuto.update(autoDimmerO1Activated);
   _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toInt()));
@@ -369,12 +425,12 @@ void YaSolR::WebsiteClass::initCards() {
   _output1AutoStoptTemp.setDisplay(bypass1Possible && autoBypassActivated && output1DS18Enabled);
 
   // output 2 (control)
-  bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
-  bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY);
-  bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
-  bool autoDimmerO2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-  bool autoBypassO2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  bool output2DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18);
+  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
+  const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY);
+  const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
+  const bool autoDimmerO2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
+  const bool autoBypassO2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
+  const bool output2DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18);
 
   _output2DimmerAuto.update(autoDimmerO2Activated);
   _output2DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toInt()));
@@ -432,6 +488,29 @@ void YaSolR::WebsiteClass::initCards() {
   _otaLink.update("/update");
   _energyReset.setDisplay(config.getBool(KEY_ENABLE_JSY) || config.getBool(KEY_ENABLE_OUTPUT1_PZEM) || config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
 
+  // network (config)
+  _adminPwd.update(config.get(KEY_ADMIN_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
+  _apMode.update(config.getBool(KEY_ENABLE_AP_MODE));
+  _ntpServer.update(config.get(KEY_NTP_SERVER));
+  _ntpTimezone.update(config.get(KEY_NTP_TIMEZONE), "/timezones");
+  _wifiPwd.update(config.get(KEY_WIFI_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
+  _wifiSSID.update(config.get(KEY_WIFI_SSID));
+
+  // mqtt (config)
+  _haDiscovery.update(config.getBool(KEY_ENABLE_HA_DISCOVERY));
+  _haDiscoveryTopic.update(config.get(KEY_HA_DISCOVERY_TOPIC));
+  _mqttGridPower.update(config.get(KEY_GRID_POWER_MQTT_TOPIC));
+  _mqttGridVoltage.update(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
+  _mqttPort.update(config.get(KEY_MQTT_PORT));
+  _mqttPublishInterval.update(config.get(KEY_MQTT_PUBLISH_INTERVAL));
+  _mqttPwd.update(config.get(KEY_MQTT_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
+  _mqttSecured.update(config.getBool(KEY_MQTT_SECURED));
+  _mqttServer.update(config.get(KEY_MQTT_SERVER));
+  _mqttServerCert.update("/api/config/mqttServerCertificate");
+  _mqttTopic.update(config.get(KEY_MQTT_TOPIC));
+  _mqttUser.update(config.get(KEY_MQTT_USERNAME));
+  _mqttConfigTab.setDisplay(config.getBool(KEY_ENABLE_MQTT));
+
   // GPIO
 
   std::map<int32_t, Card*> pinout = {};
@@ -488,28 +567,62 @@ void YaSolR::WebsiteClass::initCards() {
   _relay1Type.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
   _relay2Type.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
 
-  // mqtt (config)
-  _haDiscovery.update(config.getBool(KEY_ENABLE_HA_DISCOVERY));
-  _haDiscoveryTopic.update(config.get(KEY_HA_DISCOVERY_TOPIC));
-  _mqttGridPower.update(config.get(KEY_GRID_POWER_MQTT_TOPIC));
-  _mqttGridVoltage.update(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
-  _mqttPort.update(config.get(KEY_MQTT_PORT));
-  _mqttPublishInterval.update(config.get(KEY_MQTT_PUBLISH_INTERVAL));
-  _mqttPwd.update(config.get(KEY_MQTT_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
-  _mqttSecured.update(config.getBool(KEY_MQTT_SECURED));
-  _mqttServer.update(config.get(KEY_MQTT_SERVER));
-  _mqttServerCert.update("/api/config/mqttServerCertificate");
-  _mqttTopic.update(config.get(KEY_MQTT_TOPIC));
-  _mqttUser.update(config.get(KEY_MQTT_USERNAME));
-  _mqttConfigTab.setDisplay(config.getBool(KEY_ENABLE_MQTT));
+  // PID
+  const bool pidViewEnabled = config.getBool(KEY_ENABLE_PID_VIEW);
+  _pidView.update(pidViewEnabled);
+  switch (config.get(KEY_PID_P_MODE).toInt()) {
+    case 1:
+      _pidPMode.update(YASOLR_PID_P_MODE_1, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
+      break;
+    case 2:
+      _pidPMode.update(YASOLR_PID_P_MODE_2, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
+      break;
+    case 3:
+      _pidPMode.update(YASOLR_PID_P_MODE_3, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
+      break;
+    default:
+      _pidPMode.update("", YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
+      break;
+  }
+  switch (config.get(KEY_PID_D_MODE).toInt()) {
+    case 1:
+      _pidDMode.update(YASOLR_PID_D_MODE_1, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2);
+      break;
+    case 2:
+      _pidDMode.update(YASOLR_PID_D_MODE_2, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2);
+      break;
+    default:
+      _pidDMode.update("", YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2);
+      break;
+  }
+  switch (config.get(KEY_PID_IC_MODE).toInt()) {
+    case 0:
+      _pidICMode.update(YASOLR_PID_IC_MODE_0, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+      break;
+    case 1:
+      _pidICMode.update(YASOLR_PID_IC_MODE_1, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+      break;
+    case 2:
+      _pidICMode.update(YASOLR_PID_IC_MODE_2, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+      break;
+    default:
+      _pidICMode.update("", YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+      break;
+  }
+  _pidSetpoint.update(config.get(KEY_PID_SETPOINT));
+  _pidKp.update(config.get(KEY_PID_KP));
+  _pidKi.update(config.get(KEY_PID_KI));
+  _pidKd.update(config.get(KEY_PID_KD));
+  _pidOutMin.update(config.get(KEY_PID_OUT_MIN));
+  _pidOutMax.update(config.get(KEY_PID_OUT_MAX));
 
-  // network (config)
-  _adminPwd.update(config.get(KEY_ADMIN_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
-  _apMode.update(config.getBool(KEY_ENABLE_AP_MODE));
-  _ntpServer.update(config.get(KEY_NTP_SERVER));
-  _ntpTimezone.update(config.get(KEY_NTP_TIMEZONE), "/timezones");
-  _wifiPwd.update(config.get(KEY_WIFI_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
-  _wifiSSID.update(config.get(KEY_WIFI_SSID));
+  _pidInputHistory.setDisplay(pidViewEnabled);
+  _pidOutputHistory.setDisplay(pidViewEnabled);
+  _pidErrorHistory.setDisplay(pidViewEnabled);
+  _pidSumHistory.setDisplay(pidViewEnabled);
+  _pidPTermHistory.setDisplay(pidViewEnabled);
+  _pidITermHistory.setDisplay(pidViewEnabled);
+  _pidDTermHistory.setDisplay(pidViewEnabled);
 #endif
 }
 
@@ -656,11 +769,10 @@ void YaSolR::WebsiteClass::updateCharts() {
   router.getMeasurements(routerMetrics);
 
   // shift array
-  for (size_t i = 0; i < YASOLR_GRAPH_POINTS - 1; i++) {
-    _gridPowerHistoryY[i] = _gridPowerHistoryY[i + 1];
-    _routedPowerHistoryY[i] = _routedPowerHistoryY[i + 1];
-    _routerTHDiHistoryY[i] = _routerTHDiHistoryY[i + 1];
-  }
+  constexpr size_t shift = sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY);
+  memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], shift);
+  memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], shift);
+  memmove(&_routerTHDiHistoryY[0], &_routerTHDiHistoryY[1], shift);
 
   // set new value
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(gridMetrics.power);
@@ -673,12 +785,66 @@ void YaSolR::WebsiteClass::updateCharts() {
   _routerTHDiHistory.updateY(_routerTHDiHistoryY, YASOLR_GRAPH_POINTS);
 }
 
+void YaSolR::WebsiteClass::updatePID() {
+  // shift array
+  constexpr size_t shift = sizeof(_pidInputHistoryY) - sizeof(*_pidInputHistoryY);
+  memmove(&_pidInputHistoryY[0], &_pidInputHistoryY[1], shift);
+  memmove(&_pidOutputHistoryY[0], &_pidOutputHistoryY[1], shift);
+  memmove(&_pidErrorHistoryY[0], &_pidErrorHistoryY[1], shift);
+  memmove(&_pidSumHistoryY[0], &_pidSumHistoryY[1], shift);
+  memmove(&_pidPTermHistoryY[0], &_pidPTermHistoryY[1], shift);
+  memmove(&_pidITermHistoryY[0], &_pidITermHistoryY[1], shift);
+  memmove(&_pidDTermHistoryY[0], &_pidDTermHistoryY[1], shift);
+
+  // set new values
+  _pidInputHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getInput());
+  _pidOutputHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getOutput());
+  _pidErrorHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getError());
+  _pidSumHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getSum());
+  _pidPTermHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getPTerm());
+  _pidITermHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getITerm());
+  _pidDTermHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getDTerm());
+
+  // update charts
+  _pidInputHistory.updateY(_pidInputHistoryY, YASOLR_GRAPH_POINTS);
+  _pidOutputHistory.updateY(_pidOutputHistoryY, YASOLR_GRAPH_POINTS);
+  _pidErrorHistory.updateY(_pidErrorHistoryY, YASOLR_GRAPH_POINTS);
+  _pidSumHistory.updateY(_pidSumHistoryY, YASOLR_GRAPH_POINTS);
+  _pidPTermHistory.updateY(_pidPTermHistoryY, YASOLR_GRAPH_POINTS);
+  _pidITermHistory.updateY(_pidITermHistoryY, YASOLR_GRAPH_POINTS);
+  _pidDTermHistory.updateY(_pidDTermHistoryY, YASOLR_GRAPH_POINTS);
+}
+
+void YaSolR::WebsiteClass::resetPID() {
+  memset(_pidOutputHistoryY, 0, sizeof(_pidOutputHistoryY));
+  memset(_pidInputHistoryY, 0, sizeof(_pidInputHistoryY));
+  memset(_pidErrorHistoryY, 0, sizeof(_pidErrorHistoryY));
+  memset(_pidSumHistoryY, 0, sizeof(_pidSumHistoryY));
+  memset(_pidPTermHistoryY, 0, sizeof(_pidPTermHistoryY));
+  memset(_pidITermHistoryY, 0, sizeof(_pidITermHistoryY));
+  memset(_pidDTermHistoryY, 0, sizeof(_pidDTermHistoryY));
+}
+
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
     config.set(key, String(value));
     card.update(static_cast<int>(config.get(key).toInt()));
     dashboard.refreshCard(&card);
   });
+}
+
+void YaSolR::WebsiteClass::_floatConfig(Card& card, const char* key) {
+#ifdef APP_MODEL_PRO
+  card.attachCallback([key, &card](const char* value) {
+    if (strlen(value) == 0) {
+      config.unset(key);
+    } else {
+      config.set(key, value);
+    }
+    card.update(config.get(key));
+    dashboard.refreshCard(&card);
+  });
+#endif
 }
 
 void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {

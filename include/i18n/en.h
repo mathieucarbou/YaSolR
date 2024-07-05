@@ -162,25 +162,25 @@
 #define YASOLR_LBL_156 "I/O"
 #define YASOLR_LBL_157 "JSY Remote UDP: Message Rate"
 #define YASOLR_LBL_158 "Grid Excess Remaining"
-#define YASOLR_LBL_159
-#define YASOLR_LBL_160
-#define YASOLR_LBL_161
-#define YASOLR_LBL_162
-#define YASOLR_LBL_163
-#define YASOLR_LBL_164
-#define YASOLR_LBL_165
-#define YASOLR_LBL_166
-#define YASOLR_LBL_167
-#define YASOLR_LBL_168
-#define YASOLR_LBL_169
-#define YASOLR_LBL_170
-#define YASOLR_LBL_171
-#define YASOLR_LBL_172
-#define YASOLR_LBL_173
-#define YASOLR_LBL_174
-#define YASOLR_LBL_175
-#define YASOLR_LBL_176
-#define YASOLR_LBL_177
+#define YASOLR_LBL_159 "PID Controller"
+#define YASOLR_LBL_160 "Proportional Mode"
+#define YASOLR_LBL_161 "Derivative Mode"
+#define YASOLR_LBL_162 "Integral Correction"
+#define YASOLR_LBL_164 "Output Min (W)"
+#define YASOLR_LBL_165 "Output Max (W)"
+#define YASOLR_LBL_163 "Setpoint (Target Grid Power in W)"
+#define YASOLR_LBL_166 "Kp"
+#define YASOLR_LBL_167 "Ki"
+#define YASOLR_LBL_168 "Kd"
+#define YASOLR_LBL_169 "Real-time PID Data"
+#define YASOLR_LBL_170 "Input (Grid Power, W)"
+#define YASOLR_LBL_171 "Output (Power to route, W)"
+#define YASOLR_LBL_172 "Error (W)"
+#define YASOLR_LBL_173 "Sum (W)"
+#define YASOLR_LBL_174 "P Term (W)"
+#define YASOLR_LBL_175 "I Term (W)"
+#define YASOLR_LBL_176 "D Term (W)"
+#define YASOLR_LBL_177 "Chart Reset"
 #define YASOLR_LBL_178
 #define YASOLR_LBL_179
 #define YASOLR_LBL_180

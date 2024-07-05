@@ -66,7 +66,7 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
     if (type == WS_EVT_CONNECT) {
       logger.info(TAG, "Websocket client connected to: /ws/debug/pid");
       wsDebugPID.cleanupClients(4);
-      client->text("pMode,dMode,icMode,rev,setpoint,kp,ki,kd,outMin,outMax,input,output,error,pTerm,iTerm,dTerm,sum");
+      client->text("pMode,dMode,icMode,rev,setpoint,kp,ki,kd,outMin,outMax,input,output,error,sum,pTerm,iTerm,dTerm");
     }
   });
   webServer.addHandler(&wsDebugPID);

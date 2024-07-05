@@ -25,8 +25,12 @@ namespace YaSolR {
       void initCards();
       void updateCards();
       void updateCharts();
+      void updatePID();
+      void resetPID();
 
     private:
+      int _historyX[YASOLR_GRAPH_POINTS] = {0};
+
       // statistics
       Statistic _appName = Statistic(&dashboard, YASOLR_LBL_001);
       Statistic _appModel = Statistic(&dashboard, YASOLR_LBL_002);
@@ -87,7 +91,6 @@ namespace YaSolR {
       Card _gridPower = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_044, "W");
       Card _routerDS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_045, "°C");
 
-      int _historyX[YASOLR_GRAPH_POINTS] = {0};
       int _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
       int _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
       int _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
@@ -245,11 +248,41 @@ namespace YaSolR {
       Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_150);
       Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_151);
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_152);
+
+      Tab _pidTab = Tab(&dashboard, "\u2699 " YASOLR_LBL_159);
+      Card _pidView = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_169);
+      Card _pidPMode = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_160);
+      Card _pidDMode = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_161);
+      Card _pidICMode = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_162);
+      Card _pidSetpoint = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_163);
+      Card _pidKp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_166);
+      Card _pidKi = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_167);
+      Card _pidKd = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_168);
+      Card _pidOutMin = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_164);
+      Card _pidOutMax = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_165);
+      Card _pidReset = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_177);
+
+      // input,output,error,pTerm,iTerm,dTerm,sum
+      int _pidInputHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _pidOutputHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _pidErrorHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      int _pidSumHistoryY[YASOLR_GRAPH_POINTS] = {0};
+      Chart _pidInputHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_170);
+      Chart _pidOutputHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_171);
+      Chart _pidErrorHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_172);
+      Chart _pidSumHistory = Chart(&dashboard, BAR_CHART, YASOLR_LBL_173);
+      Chart _pidPTermHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_174);
+      Chart _pidITermHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_175);
+      Chart _pidDTermHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_176);
 #endif
 
     private:
       void _boolConfig(Card& card, const char* key);
       void _daysConfig(Card& card, const char* key);
+      void _floatConfig(Card& card, const char* key);
       void _numConfig(Card& card, const char* key);
       void _pinConfig(Card& card, const char* key);
       void _passwordConfig(Card& card, const char* key);

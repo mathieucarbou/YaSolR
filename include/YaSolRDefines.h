@@ -55,6 +55,14 @@
 #define YASOLR_SERIAL_BAUDRATE      115200
 #define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_GRAPH_POINTS         120
+#define YASOLR_PID_P_MODE_1         "1: on Error"
+#define YASOLR_PID_P_MODE_2         "2: on Input"
+#define YASOLR_PID_P_MODE_3         "3: Both"
+#define YASOLR_PID_D_MODE_1         YASOLR_PID_P_MODE_1
+#define YASOLR_PID_D_MODE_2         YASOLR_PID_P_MODE_2
+#define YASOLR_PID_IC_MODE_0        "0: Off"
+#define YASOLR_PID_IC_MODE_1        "1: Clamp"
+#define YASOLR_PID_IC_MODE_2        "2: Anti-windup"
 
 // UDP communication
 
@@ -87,6 +95,7 @@
 #define KEY_ENABLE_OUTPUT2_DS18        "o2_ds18_enable"
 #define KEY_ENABLE_OUTPUT2_PZEM        "o2_pzem_enable"
 #define KEY_ENABLE_OUTPUT2_RELAY       "o2_relay_enable"
+#define KEY_ENABLE_PID_VIEW            "pid_view_enable"
 #define KEY_ENABLE_RELAY1              "relay1_enable"
 #define KEY_ENABLE_RELAY2              "relay2_enable"
 #define KEY_ENABLE_ZCD                 "zcd_enable"
@@ -130,15 +139,15 @@
 #define KEY_OUTPUT2_TIME_START        "o2_time_start"
 #define KEY_OUTPUT2_TIME_STOP         "o2_time_stop"
 #define KEY_OUTPUT2_TIME_STOP         "o2_time_stop"
+#define KEY_PID_P_MODE                "pid_pmode"
 #define KEY_PID_D_MODE                "pid_dmode"
 #define KEY_PID_IC_MODE               "pid_icmode"
+#define KEY_PID_SETPOINT              "pid_setpoint"
 #define KEY_PID_KD                    "pid_kd"
 #define KEY_PID_KI                    "pid_ki"
 #define KEY_PID_KP                    "pid_kp"
 #define KEY_PID_OUT_MAX               "pid_out_max"
 #define KEY_PID_OUT_MIN               "pid_out_min"
-#define KEY_PID_P_MODE                "pid_pmode"
-#define KEY_PID_SETPOINT              "pid_setpoint"
 #define KEY_RELAY1_LOAD               "relay1_load"
 #define KEY_RELAY1_TYPE               "relay1_type"
 #define KEY_RELAY2_LOAD               "relay2_load"
