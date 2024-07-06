@@ -62,7 +62,7 @@
 #define YASOLR_PID_D_MODE_2         YASOLR_PID_P_MODE_2
 #define YASOLR_PID_IC_MODE_0        "0: Off"
 #define YASOLR_PID_IC_MODE_1        "1: Clamp"
-#define YASOLR_PID_IC_MODE_2        "2: Anti-windup"
+#define YASOLR_PID_IC_MODE_2        "2: Advanced"
 
 // UDP communication
 
