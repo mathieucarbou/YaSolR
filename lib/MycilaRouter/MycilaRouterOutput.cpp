@@ -69,33 +69,6 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
   return true;
 }
 
-bool Mycila::RouterOutput::autoSetDimmerDuty(uint16_t duty) {
-  if (!_dimmer->isEnabled()) {
-    return false;
-  }
-
-  if (_autoBypassEnabled) {
-    return false;
-  }
-
-  if (!config.autoDimmer) {
-    return false;
-  }
-
-  if (isDimmerTemperatureLimitReached()) {
-    return false;
-  }
-
-  if (duty > config.dimmerDutyLimit) {
-    duty = config.dimmerDutyLimit;
-  }
-
-  _setBypass(false, false);
-
-  _dimmer->setDuty(duty);
-  return true;
-}
-
 void Mycila::RouterOutput::applyDimmerLimits() {
   if (_autoBypassEnabled)
     return;

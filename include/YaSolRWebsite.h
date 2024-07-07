@@ -118,10 +118,10 @@ namespace YaSolR {
       Card _output1Current = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_057, "A");
       Card _output1Resistance = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_058, "Ω");
       Card _output1Energy = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_059, "kWh");
-      Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_060);
-      Card _output1DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_061, "%", 0, 100, 1);
       Card _output1DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_062, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_063, "°C");
+      Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_060);
+      Card _output1DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_061, "%", 0, 100, 1);
       Card _output1BypassAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_064);
       Card _output1AutoStartTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_065, "°C");
       Card _output1AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_066, "°C");
@@ -144,10 +144,10 @@ namespace YaSolR {
       Card _output2Current = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_057, "A");
       Card _output2Resistance = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_058, "Ω");
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_059, "kWh");
-      Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_060);
-      Card _output2DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_158, "%", 0, 100, 1);
       Card _output2DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_062, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output2DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_063, "°C");
+      Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_060);
+      Card _output2DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_158, "%", 0, 100, 1);
       Card _output2BypassAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_064);
       Card _output2AutoStartTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_065);
       Card _output2AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_066);
@@ -240,14 +240,14 @@ namespace YaSolR {
       Card _displaySpeed = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_142, "s", 1, 10, 1);
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_143);
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_144);
-      Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
-      Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
-      Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_147);
-      Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_148);
       Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_149);
       Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_150);
       Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_151);
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_152);
+      Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
+      Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
+      Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_147);
+      Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_148);
 
       Tab _pidTab = Tab(&dashboard, "\u2699 " YASOLR_LBL_159);
       Card _pidView = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_169);

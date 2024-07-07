@@ -544,15 +544,15 @@ void YaSolR::WebsiteClass::initCards() {
 
   // Hardware (config)
   _gridFreq.update(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? "60 Hz" : "50 Hz", "50 Hz,60 Hz");
+  _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
+  _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
+  _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
   _output1RelayType.update(config.get(KEY_OUTPUT1_RELAY_TYPE), "NO,NC");
   _output2RelayType.update(config.get(KEY_OUTPUT2_RELAY_TYPE), "NO,NC");
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
   _relay2Type.update(config.get(KEY_RELAY2_TYPE), "NO,NC");
-  _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
-  _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
-  _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
-  _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE));
-  _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE));
+  _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE), config.get(KEY_OUTPUT1_RESISTANCE).toFloat() == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
+  _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE), config.get(KEY_OUTPUT2_RESISTANCE).toFloat() == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));

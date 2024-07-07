@@ -44,7 +44,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       dimmerO1.off();
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX_DUTY) {
-      output1.config.dimmerDutyLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt();
+      output1.config.dimmerDutyLimit = constrain(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt(), 0, MYCILA_DIMMER_MAX_DUTY);
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX_TEMP) {
       output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP).toInt();
@@ -68,14 +68,14 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
 
     } else if (key == KEY_OUTPUT1_RESERVED_EXCESS) {
-      output1.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat() / 100;
+      output1.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
       output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
       dimmerO2.off();
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX_DUTY) {
-      output2.config.dimmerDutyLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt();
+      output2.config.dimmerDutyLimit = constrain(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt(), 0, MYCILA_DIMMER_MAX_DUTY);
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX_TEMP) {
       output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP).toInt();
@@ -99,7 +99,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
 
     } else if (key == KEY_OUTPUT2_RESERVED_EXCESS) {
-      output2.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat() / 100;
+      output2.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
 
     } else if (key == KEY_NTP_TIMEZONE) {
       Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));

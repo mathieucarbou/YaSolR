@@ -51,13 +51,12 @@ namespace Mycila {
       }
 
       void divert(float gridVoltage, float gridPower) {
-        float newRoutedPower = _pidController->compute(gridPower);
+        float powerToDivert = _pidController->compute(gridPower);
         for (size_t i = 0; i < MYCILA_ROUTER_OUTPUT_COUNT; i++) {
           RouterOutput& output = *_outputs[i];
-          const float maxPower = output.config.calibratedResistance == 0 ? 0 : gridVoltage * gridVoltage / output.config.calibratedResistance;
-          const float reservedPower = constrain(newRoutedPower * output.config.reservedExcessPowerRatio, 0, maxPower * output.getDimmerDutyCycleLimit());
-          if (output.autoSetDimmerDutyCycle(reservedPower / maxPower)) {
-            newRoutedPower -= maxPower * output.getDimmerDutyCycle();
+          if (output.isAutoDimmerEnabled()) {
+            const float usedPower = output.autoDivert(gridVoltage, powerToDivert);
+            powerToDivert -= usedPower;
           }
         }
       }

@@ -38,11 +38,11 @@ Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   Mycila::GridMetrics gridMetrics;
   grid.getMeasurements(gridMetrics);
   router.divert(gridMetrics.voltage, gridMetrics.power);
+
   if (config.getBool(KEY_ENABLE_PID_VIEW)) {
     // Dashboard
     YaSolR::Website.updatePID();
     dashboard.sendUpdates();
-
     // WebSocket
     AsyncWebSocketMessageBuffer* buffer = wsDebugPID.makeBuffer(256);
     snprintf((char*)buffer->get(), 256, "%d,%d,%d,%d,%d,%.3f,%.3f,%.3f,%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f", pidController.getProportionalMode(), pidController.getDerivativeMode(), pidController.getIntegralCorrectionMode(), pidController.isReversed(), static_cast<int>(pidController.getSetPoint()), pidController.getKp(), pidController.getKi(), pidController.getKd(), static_cast<int>(pidController.getOutputMin()), static_cast<int>(pidController.getOutputMax()), pidController.getInput(), pidController.getOutput(), pidController.getError(), pidController.getSum(), pidController.getPTerm(), pidController.getITerm(), pidController.getDTerm()); // NOLINT

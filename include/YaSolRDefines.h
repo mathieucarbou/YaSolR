@@ -55,8 +55,8 @@
 #define YASOLR_SERIAL_BAUDRATE      115200
 #define YASOLR_WEEK_DAYS            "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_GRAPH_POINTS         120
-#define YASOLR_PID_P_MODE_1         "1: on Error"
-#define YASOLR_PID_P_MODE_2         "2: on Input"
+#define YASOLR_PID_P_MODE_1         "1: On Error"
+#define YASOLR_PID_P_MODE_2         "2: On Input"
 #define YASOLR_PID_P_MODE_3         "3: Both"
 #define YASOLR_PID_D_MODE_1         YASOLR_PID_P_MODE_1
 #define YASOLR_PID_D_MODE_2         YASOLR_PID_P_MODE_2
