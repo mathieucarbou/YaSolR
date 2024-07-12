@@ -100,11 +100,13 @@ jobs:
           pio run -e ${{ matrix.environment }}
           mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-en.OTA.bin
           mv .pio/build/${{ matrix.environment }}/firmware.factory.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-en.FACTORY.bin
+          mv .pio/build/${{ matrix.environment }}/firmware.elf ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-en.elf
           # lang: fr
           sed -i 's/YASOLR_LANG_EN/YASOLR_LANG_FR/' platformio.ini
           pio run -e ${{ matrix.environment }}
           mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-fr.OTA.bin
           mv .pio/build/${{ matrix.environment }}/firmware.factory.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-fr.FACTORY.bin
+          mv .pio/build/${{ matrix.environment }}/firmware.elf ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-fr.elf
 
       - name: Upload
         uses: actions/upload-artifact@v4
@@ -113,6 +115,7 @@ jobs:
           if-no-files-found: error
           path: |
             *.bin
+            *.elf
 
   release:
     name: Release
@@ -134,6 +137,7 @@ jobs:
         run: |
           ls -R artifacts
           find artifacts -name '*.bin' -exec mv {} artifacts/ \;
+          find artifacts -name '*.elf' -exec mv {} artifacts/ \;
 
       - name: Pre-Release
         if: ${{ github.ref == 'refs/heads/main' }}
@@ -145,6 +149,7 @@ jobs:
           title: Pre-release Builds
           files: |
             artifacts/*.bin
+            artifacts/*.elf
 
       - name: Changelog
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
@@ -163,6 +168,8 @@ jobs:
         with:
           body: ${{steps.github_release.outputs.changelog}}
           draft: false
-          files: artifacts/*.bin
+          files: |
+            artifacts/*.bin
+            artifacts/*.elf
         env:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
