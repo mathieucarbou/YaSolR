@@ -91,6 +91,7 @@ extern Mycila::Task mqttPublishStaticTask;
 extern Mycila::Task mqttPublishConfigTask;
 
 extern Mycila::TaskManager jsyTaskManager;
+extern Mycila::Task jsyConfigTask;
 extern Mycila::Task jsyTask;
 
 extern Mycila::TaskManager core0TaskManager;

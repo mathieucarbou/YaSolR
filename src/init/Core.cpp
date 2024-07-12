@@ -17,6 +17,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   mqttPublishConfigTask.setManager(ioTaskManager);
 
   // jsyTaskManager
+  jsyConfigTask.setManager(jsyTaskManager);
   jsyTask.setManager(jsyTaskManager);
 
   // core0TaskManager

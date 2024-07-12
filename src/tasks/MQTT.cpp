@@ -4,6 +4,36 @@
  */
 #include <YaSolR.h>
 
+Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
+  mqtt.end();
+  if (!config.getBool(KEY_ENABLE_AP_MODE) && config.getBool(KEY_ENABLE_MQTT)) {
+    logger.info(TAG, "Enable MQTT...");
+
+    bool secured = config.getBool(KEY_MQTT_SECURED);
+    String serverCert = "";
+
+    if (secured && LittleFS.exists("/mqtt-server.crt")) {
+      logger.info(TAG, "Loading MQTT server certificate...");
+      File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
+      serverCert = serverCertFile.readString();
+      serverCertFile.close();
+      logger.info(TAG, "Loaded MQTT server certificate:\n%s", serverCert.c_str());
+    }
+
+    mqtt.begin({
+      .server = config.get(KEY_MQTT_SERVER),
+      .port = static_cast<uint16_t>(config.get(KEY_MQTT_PORT).toInt()),
+      .secured = secured,
+      .serverCert = serverCert,
+      .username = config.get(KEY_MQTT_USERNAME),
+      .password = config.get(KEY_MQTT_PASSWORD),
+      .clientId = Mycila::AppInfo.defaultMqttClientId,
+      .willTopic = config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC,
+      .keepAlive = YASOLR_MQTT_KEEPALIVE,
+    });
+  }
+});
+
 Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Publishing static data to MQTT...");
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
