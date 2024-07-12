@@ -64,7 +64,7 @@ void Mycila::ZCD::end() {
   }
 }
 
-uint16_t Mycila::ZCD::getSemiPeriod() const { return _enabled ? Thyristor::getSemiPeriod() : 0; }
+uint16_t Mycila::ZCD::getSemiPeriod() const { return Thyristor::getSemiPeriod(); }
 
 float Mycila::ZCD::getPulseFrequency() const { return _enabled ? Thyristor::getPulseFrequency() : 0; }
 uint16_t Mycila::ZCD::getAvgPulseWidth() const { return _enabled ? Thyristor::getPulseWidth() : 0; }

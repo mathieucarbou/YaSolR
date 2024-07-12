@@ -60,8 +60,8 @@ void setup() {
   initMqttSubscribersTask.forceRun();
   initDashboardCards.forceRun();
 
-  assert( core0TaskManager.asyncStart(512 * 6, 1, 0, 100, true));  // NOLINT
-  assert( core1TaskManager.asyncStart(512 * 6, 1, 1, 100, true));  // NOLINT
+  assert( core0TaskManager.asyncStart(512 * 7, 1, 0, 100, true));  // NOLINT
+  assert( core1TaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
   assert(    ioTaskManager.asyncStart(512 * 9, 1, 1, 100, false)); // NOLINT
   assert(   jsyTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT
   assert(  pzemTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT

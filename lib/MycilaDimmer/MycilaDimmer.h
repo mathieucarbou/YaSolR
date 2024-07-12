@@ -30,7 +30,7 @@ namespace Mycila {
       bool isOnAtFullPower() const { return _duty >= MYCILA_DIMMER_MAX_DUTY; }
 
       gpio_num_t getPin() const { return _pin; }
-      bool isEnabled() const { return _enabled; }
+      bool isEnabled() const { return _dimmer != nullptr; }
 
       void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
@@ -39,9 +39,8 @@ namespace Mycila {
         root["delay"] = getFiringDelay();
         root["duty"] = _duty;
         root["duty_cycle"] = getDutyCycle();
-        root["enabled"] = _enabled;
+        root["enabled"] = _dimmer != nullptr;
         root["state"] = _duty > 0 ? "on" : "off";
-        _zcd->toJson(root["zcd"].to<JsonObject>());
       }
 
       // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
@@ -58,20 +57,20 @@ namespace Mycila {
       // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
       // At 0% power, delay is equal to the semi-period
       // At 100% power, the delay is 0 us
-      uint16_t getFiringDelay() const { return _dimmer->getDelay(); }
+      uint16_t getFiringDelay() const { return isEnabled() ? _dimmer->getDelay() : 0; }
 
       // Phase angle [0, PI] rad
       // At 0% power, the phase angle is equal to PI
       // At 100% power, the phase angle is equal to 0
       float getPhaseAngle() const {
         // angle_rad = PI * delay_us / period_us
-        return PI * getFiringDelay() / _zcd->getSemiPeriod();
+        uint16_t semiPeriod = _zcd->getSemiPeriod();
+        return semiPeriod == 0 ? PI : PI * getFiringDelay() / semiPeriod;
       }
 
     private:
       ZCD* _zcd;
       gpio_num_t _pin = GPIO_NUM_NC;
-      bool _enabled = false;
       Thyristor* _dimmer = nullptr;
       uint16_t _duty = 0;
   };

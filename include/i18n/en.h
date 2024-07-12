@@ -182,7 +182,7 @@
 #define YASOLR_LBL_176 "D Term (W)"
 #define YASOLR_LBL_177 "Chart Reset"
 #define YASOLR_LBL_178 "Debug Information"
-#define YASOLR_LBL_179
+#define YASOLR_LBL_179 "ZCD Disabled"
 #define YASOLR_LBL_180
 #define YASOLR_LBL_181
 #define YASOLR_LBL_182

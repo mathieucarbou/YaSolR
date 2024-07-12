@@ -13,16 +13,28 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   // debug
 
   webServer
-    .on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
+    .on("/api/debug/router", HTTP_GET, [](AsyncWebServerRequest* request) {
+      AsyncJsonResponse* response = new AsyncJsonResponse();
+      JsonObject root = response->getRoot();
+
+      grid.toJson(root["grid"].to<JsonObject>());
+      relay1.toJson(root["relay1"].to<JsonObject>());
+      relay2.toJson(root["relay2"].to<JsonObject>());
+      router.toJson(root["router"].to<JsonObject>(), grid.getVoltage());
+      zcd.toJson(root["zcd"].to<JsonObject>());
+
+      response->setLength();
+      request->send(response);
+    })
+    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+
+  webServer
+    .on("/api/debug/system", HTTP_GET, [](AsyncWebServerRequest* request) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
       ds18Sys.toJson(root["ds18Sys"].to<JsonObject>());
-      grid.toJson(root["grid"].to<JsonObject>());
       lights.toJson(root["leds"].to<JsonObject>());
-      relay1.toJson(root["relay1"].to<JsonObject>());
-      relay2.toJson(root["relay2"].to<JsonObject>());
-      router.toJson(root["router"].to<JsonObject>(), grid.getVoltage());
 
       Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
       core0TaskManager.toJson(root[core0TaskManager.getName()].to<JsonObject>());
@@ -37,6 +49,22 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
     })
     .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
 
+  webServer
+    .on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
+      AsyncJsonResponse* response = new AsyncJsonResponse();
+      JsonObject root = response->getRoot();
+
+      String base = "http://";
+      base.concat(ESPConnect.getIPAddress().toString());
+      base.concat("/api/debug");
+
+      root["router"] = base + "/router";
+      root["system"] = base + "/system";
+
+      response->setLength();
+      request->send(response);
+    })
+    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
   // config
 
   webServer
