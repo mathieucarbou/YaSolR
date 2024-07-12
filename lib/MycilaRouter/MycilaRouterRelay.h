@@ -22,7 +22,7 @@ namespace Mycila {
       bool isOff() const { return _relay->isOff(); }
 
     private:
-      Mycila::Relay* _relay = nullptr;
+      Mycila::Relay* _relay;
       uint16_t _load = 0;
   };
 } // namespace Mycila
