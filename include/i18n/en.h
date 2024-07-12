@@ -181,7 +181,7 @@
 #define YASOLR_LBL_175 "I Term (W)"
 #define YASOLR_LBL_176 "D Term (W)"
 #define YASOLR_LBL_177 "Chart Reset"
-#define YASOLR_LBL_178
+#define YASOLR_LBL_178 "Debug Information"
 #define YASOLR_LBL_179
 #define YASOLR_LBL_180
 #define YASOLR_LBL_181

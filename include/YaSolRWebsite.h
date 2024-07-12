@@ -168,10 +168,11 @@ namespace YaSolR {
       Card _configRestore = Card(&dashboard, FILE_UPLOAD_CARD, YASOLR_LBL_080, ".txt");
       Card _otaLink = Card(&dashboard, LINK_CARD, YASOLR_LBL_081);
       Card _restart = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_082);
-      Card _debugMode = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_083);
-      Card _consoleLink = Card(&dashboard, LINK_CARD, YASOLR_LBL_084);
       Card _energyReset = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_085);
       Card _reset = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_086);
+      Card _debugMode = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_083);
+      Card _consoleLink = Card(&dashboard, LINK_CARD, YASOLR_LBL_084);
+      Card _debugInfo = Card(&dashboard, LINK_CARD, YASOLR_LBL_178);
 
       Tab _networkConfigTab = Tab(&dashboard, "\u2728 " YASOLR_LBL_087);
       Card _adminPwd = Card(&dashboard, PASSWORD_CARD, YASOLR_LBL_088);

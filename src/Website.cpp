@@ -147,6 +147,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _configBackup.setTab(&_managementTab);
   _configRestore.setTab(&_managementTab);
   _consoleLink.setTab(&_managementTab);
+  _debugInfo.setTab(&_managementTab);
   _debugMode.setTab(&_managementTab);
   _otaLink.setTab(&_managementTab);
   _reset.setTab(&_managementTab);
@@ -483,6 +484,7 @@ void YaSolR::WebsiteClass::initCards() {
   _configBackup.update("/api/config/backup");
   _configRestore.update("/api/config/restore");
   _consoleLink.update("/console");
+  _debugInfo.update("/api/debug");
   _debugMode.update(config.getBool(KEY_ENABLE_DEBUG));
   _otaLink.update("/update");
   _energyReset.setDisplay(config.getBool(KEY_ENABLE_JSY) || config.getBool(KEY_ENABLE_OUTPUT1_PZEM) || config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
