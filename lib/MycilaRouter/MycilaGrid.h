@@ -224,38 +224,13 @@ namespace Mycila {
         GridMetrics metrics;
         getMeasurements(metrics);
         root["online"] = isConnected();
-        _toJson(root["metrics"].to<JsonObject>(), metrics);
-        _toJson(root["source"]["jsy"].to<JsonObject>(), _meter);
-        _toJson(root["source"]["jsy_remote"].to<JsonObject>(), _meterRemote);
-        _toJson(root["source"]["mqtt"].to<JsonObject>(), _mqtt);
+        toJson(root["metrics"].to<JsonObject>(), metrics);
+        toJson(root["source"]["jsy"].to<JsonObject>(), _meter);
+        toJson(root["source"]["jsy_remote"].to<JsonObject>(), _meterRemote);
+        toJson(root["source"]["mqtt"].to<JsonObject>(), _mqtt);
       }
-#endif
 
-    private:
-      // Local JSY
-      volatile GridMetrics _meter;
-      volatile uint32_t _meterTime = 0;
-      volatile bool _meterConnected = false;
-
-      // JSY remote data
-      volatile GridMetrics _meterRemote;
-      volatile uint32_t _meterRemoteTime = 0;
-      volatile bool _meterRemoteConnected = false;
-
-      // mqtt
-      volatile GridMetrics _mqtt;
-      volatile uint32_t _mqttPowerTime = 0;
-      volatile uint32_t _mqttVoltageTime = 0;
-      volatile bool _mqttConnected = false;
-
-      // expiration
-      uint32_t _expiration = 0;
-
-      // last power value
-      float _lastPower = 0;
-
-#ifdef MYCILA_JSON_SUPPORT
-      static void _toJson(const JsonObject& dest, const volatile GridMetrics& metrics) {
+      static void toJson(const JsonObject& dest, const GridMetrics& metrics) {
         dest["apparent_power"] = metrics.apparentPower;
         dest["current"] = metrics.current;
         dest["energy"] = metrics.energy;
@@ -266,5 +241,28 @@ namespace Mycila {
         dest["voltage"] = metrics.voltage;
       }
 #endif
+
+    private:
+      // Local JSY
+      GridMetrics _meter;
+      uint32_t _meterTime = 0;
+      bool _meterConnected = false;
+
+      // JSY remote data
+      GridMetrics _meterRemote;
+      uint32_t _meterRemoteTime = 0;
+      bool _meterRemoteConnected = false;
+
+      // mqtt
+      GridMetrics _mqtt;
+      uint32_t _mqttPowerTime = 0;
+      uint32_t _mqttVoltageTime = 0;
+      bool _mqttConnected = false;
+
+      // expiration
+      uint32_t _expiration = 0;
+
+      // last power value
+      float _lastPower = 0;
   };
 } // namespace Mycila

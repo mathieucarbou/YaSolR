@@ -14,6 +14,10 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/debug/router", HTTP_GET, [](AsyncWebServerRequest* request) {
+      if (!config.getBool(KEY_ENABLE_DEBUG)) {
+        return request->send(404);
+      }
+
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
@@ -30,6 +34,10 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/debug/system", HTTP_GET, [](AsyncWebServerRequest* request) {
+      if (!config.getBool(KEY_ENABLE_DEBUG)) {
+        return request->send(404);
+      }
+
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
@@ -51,6 +59,10 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
+      if (!config.getBool(KEY_ENABLE_DEBUG)) {
+        return request->send(404);
+      }
+
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
@@ -240,15 +252,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject root = response->getRoot();
       Mycila::GridMetrics metrics;
       grid.getMeasurements(metrics);
-      root["apparent_power"] = metrics.apparentPower;
-      root["current"] = metrics.current;
-      root["energy"] = metrics.energy;
-      root["energy_returned"] = metrics.energyReturned;
-      root["frequency"] = metrics.frequency;
-      root["online"] = grid.isConnected();
-      root["power"] = metrics.power;
-      root["power_factor"] = metrics.powerFactor;
-      root["voltage"] = metrics.voltage;
+      Mycila::Grid::toJson(root, metrics);
       response->setLength();
       request->send(response);
     })
@@ -342,16 +346,14 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       Mycila::GridMetrics gridMetrics;
       grid.getMeasurements(gridMetrics);
 
-      Mycila::RouterMetrics routerMetrics;
-      router.getMeasurements(routerMetrics);
+      Mycila::RouterMetrics routerMeasurements;
+      router.getMeasurements(routerMeasurements);
 
-      root["energy"] = routerMetrics.energy;
       root["lights"] = lights.toString();
-      root["power"] = routerMetrics.power;
-      root["power_factor"] = routerMetrics.powerFactor;
       root["temperature"] = ds18Sys.getValidTemperature();
-      root["thdi"] = routerMetrics.thdi;
-      root["virtual_grid_power"] = gridMetrics.power - routerMetrics.power;
+      root["virtual_grid_power"] = gridMetrics.power - routerMeasurements.power;
+
+      Mycila::Router::toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
 
       size_t idx = 0;
       for (const auto& output : router.getOutputs()) {
@@ -364,31 +366,9 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         json["dimmer"]["duty_cycle"] = dimmerO1.getDutyCycle();
         json["dimmer"]["state"] = YASOLR_STATE(dimmerO1.isOn());
 
-        Mycila::RouterOutputMetrics dimmerMetrics;
-        output->getDimmerMetrics(dimmerMetrics, gridMetrics.voltage);
-
-        JsonObject metrics = json["metrics"].to<JsonObject>();
-        metrics["apparent_power"] = dimmerMetrics.apparentPower;
-        metrics["current"] = dimmerMetrics.current;
-        metrics["power"] = dimmerMetrics.power;
-        metrics["power_factor"] = dimmerMetrics.powerFactor;
-        metrics["resistance"] = dimmerMetrics.resistance;
-        metrics["thdi"] = dimmerMetrics.thdi;
-        metrics["voltage"] = dimmerMetrics.voltage;
-        metrics["voltage_dimmed"] = dimmerMetrics.dimmedVoltage;
-
         Mycila::RouterOutputMetrics outputMeasurements;
         output->getMeasurements(outputMeasurements);
-
-        JsonObject measurements = json["measurements"].to<JsonObject>();
-        measurements["apparent_power"] = outputMeasurements.apparentPower;
-        measurements["current"] = outputMeasurements.current;
-        measurements["power"] = outputMeasurements.power;
-        measurements["power_factor"] = outputMeasurements.powerFactor;
-        measurements["resistance"] = outputMeasurements.resistance;
-        measurements["thdi"] = outputMeasurements.thdi;
-        measurements["voltage"] = outputMeasurements.voltage;
-        measurements["voltage_dimmed"] = outputMeasurements.dimmedVoltage;
+        Mycila::RouterOutput::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
 
         json["relay"]["state"] = YASOLR_STATE(bypassRelayO1.isOn());
         json["relay"]["switch_count"] = bypassRelayO1.getSwitchCount();
@@ -418,12 +398,12 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       root["config"] = base + "/config";
       root["config/backup"] = base + "/config/backup";
-      root["debug"] = base + "/debug";
+      if (config.getBool(KEY_ENABLE_DEBUG)) {
+        root["debug"] = base + "/debug";
+      }
       root["grid"] = base + "/grid";
       root["router"] = base + "/router";
       root["system"] = base + "/system";
-      root["system/reset"] = base + "/system/reset";
-      root["system/restart"] = base + "/system/restart";
 
       response->setLength();
       request->send(response);

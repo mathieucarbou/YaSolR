@@ -67,33 +67,28 @@ namespace Mycila {
 
         RouterMetrics routerMeasurements;
         getMeasurements(routerMeasurements);
-
-        JsonObject measurements = root["measurements"].to<JsonObject>();
-        measurements["apparent_power"] = routerMeasurements.apparentPower;
-        measurements["current"] = routerMeasurements.current;
-        measurements["power"] = routerMeasurements.power;
-        measurements["power_factor"] = routerMeasurements.powerFactor;
-        measurements["resistance"] = routerMeasurements.resistance;
-        measurements["thdi"] = routerMeasurements.thdi;
-        measurements["voltage"] = routerMeasurements.voltage;
-        measurements["voltage_dimmed"] = routerMeasurements.dimmedVoltage;
+        toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
 
         RouterMetrics routerMetrics;
         getMetrics(routerMetrics, voltage);
-
-        JsonObject metrics = root["metrics"].to<JsonObject>();
-        metrics["apparent_power"] = routerMetrics.apparentPower;
-        metrics["current"] = routerMetrics.current;
-        metrics["energy"] = routerMetrics.energy;
-        metrics["power"] = routerMetrics.power;
-        metrics["power_factor"] = routerMetrics.powerFactor;
-        metrics["thdi"] = routerMetrics.thdi;
-        metrics["voltage"] = routerMetrics.voltage;
+        toJson(root["metrics"].to<JsonObject>(), routerMetrics);
 
         for (const auto& output : _outputs)
           output->toJson(root[output->getName()].to<JsonObject>(), voltage);
 
         _pidController->toJson(root["pid"].to<JsonObject>());
+      }
+
+      static void toJson(const JsonObject& dest, const RouterMetrics& metrics) {
+        dest["apparent_power"] = metrics.apparentPower;
+        dest["current"] = metrics.current;
+        dest["energy"] = metrics.energy;
+        dest["power"] = metrics.power;
+        dest["power_factor"] = metrics.powerFactor;
+        dest["resistance"] = metrics.resistance;
+        dest["thdi"] = metrics.thdi;
+        dest["voltage"] = metrics.voltage;
+        dest["voltage_dimmed"] = metrics.dimmedVoltage;
       }
 #endif
 

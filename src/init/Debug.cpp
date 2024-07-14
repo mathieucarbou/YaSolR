@@ -5,7 +5,7 @@
 #include <YaSolR.h>
 
 static const Mycila::TaskDoneCallback LOG_EXEC_TIME = [](const Mycila::Task& me, const uint32_t elapsed) {
-  logger.debug(TAG, "Task %s finished in %" PRIu32 " us", me.getName(), elapsed);
+  logger.debug(TAG, "Task '%s' finished in %" PRIu32 " us", me.getName(), elapsed);
 };
 
 Mycila::Task initLoggingTask("Init Logging", [](void* params) {
