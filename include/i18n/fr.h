@@ -183,7 +183,7 @@
 #define YASOLR_LBL_177 "Réinitialisation graphique"
 #define YASOLR_LBL_178 "Informations de debug"
 #define YASOLR_LBL_179 "ZCD Désactivé"
-#define YASOLR_LBL_180
+#define YASOLR_LBL_180 "Non associé"
 #define YASOLR_LBL_181
 #define YASOLR_LBL_182
 #define YASOLR_LBL_183
