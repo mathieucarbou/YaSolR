@@ -27,6 +27,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setInterval(537 * Mycila::TaskDuration::MILLISECONDS);
   routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
+  routingTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
 #ifdef APP_MODEL_TRIAL
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif

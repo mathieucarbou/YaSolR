@@ -315,11 +315,11 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    if (eventType == Mycila::JSYEventType::EVT_CHANGE) {
+    if (eventType == Mycila::JSYEventType::EVT_READ) {
       Mycila::JSYData data;
       jsy.getData(data);
       if (grid.updateJSYData(data)) {
-        routingTask.resume();
+        routingTask.requestEarlyRun();
       }
     }
   });
@@ -371,7 +371,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     udpMessageRateBuffer.add(millis() / 1000.0f);
 
     if (grid.updateRemoteJSYData(jsyData)) {
-      routingTask.resume();
+      routingTask.requestEarlyRun();
     }
   });
 });

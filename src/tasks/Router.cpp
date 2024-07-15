@@ -34,7 +34,7 @@ Mycila::Task relayTask("Relay", [](void* params) {
     return;
 });
 
-Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task routingTask("Routing", [](void* params) {
   Mycila::GridMetrics gridMetrics;
   grid.getMeasurements(gridMetrics);
   router.divert(gridMetrics.voltage, gridMetrics.power);
