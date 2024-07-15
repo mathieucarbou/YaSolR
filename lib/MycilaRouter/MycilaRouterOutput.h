@@ -4,7 +4,6 @@
  */
 #pragma once
 
-#include <MycilaDS18.h>
 #include <MycilaDimmer.h>
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
@@ -60,11 +59,9 @@ namespace Mycila {
       RouterOutput(const char* name,
                    Dimmer& dimmer,
                    Relay& relay,
-                   DS18& temperatureSensor,
                    PZEM& pzem) : _name(name),
                                  _dimmer(&dimmer),
                                  _relay(&relay),
-                                 _temperatureSensor(&temperatureSensor),
                                  _pzem(&pzem) {}
       // output
 
@@ -86,12 +83,12 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float gridVoltage) const {
+        root["bypass"] = isBypassOn() ? "on" : "off";
         root["enabled"] = isDimmerEnabled();
         root["state"] = getStateName();
-        root["bypass"] = isBypassOn() ? "on" : "off";
+        root["temperature"] = getValidTemperature();
 
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
-        _temperatureSensor->toJson(root["ds18"].to<JsonObject>());
 
         RouterOutputMetrics outputMeasurements;
         getMeasurements(outputMeasurements);
@@ -122,7 +119,7 @@ namespace Mycila {
 
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer && config.calibratedResistance > 0; }
-      bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperatureSensor->isEnabled() && _temperatureSensor->getValidTemperature() >= config.dimmerTempLimit; }
+      bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && isTemperatureValid() && getValidTemperature() >= config.dimmerTempLimit; }
       uint16_t getDimmerDuty() const { return _dimmer->getDuty(); }
       float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
       // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
@@ -198,6 +195,16 @@ namespace Mycila {
         }
       }
 
+      // temperature
+
+      float getValidTemperature() const { return isTemperatureValid() ? _temperature : 0; }
+      bool isTemperatureEnabled() const { return _temperatureTime > 0; }
+      bool isTemperatureValid() const { return isTemperatureEnabled() && millis() - _temperatureTime < 60000; }
+      void updateTemperature(float temperature) {
+        _temperature = temperature;
+        _temperatureTime = millis();
+      }
+
     public:
       Config config;
 
@@ -205,11 +212,12 @@ namespace Mycila {
       const char* _name;
       Dimmer* _dimmer;
       Relay* _relay;
-      Mycila::DS18* _temperatureSensor;
       PZEM* _pzem;
       bool _autoBypassEnabled = false;
       bool _bypassEnabled = false;
       RouterOutputStateCallback _callback = nullptr;
+      float _temperature = 0;
+      uint32_t _temperatureTime = 0;
 
     private:
       void _setBypass(bool state, bool log = true);

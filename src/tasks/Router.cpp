@@ -6,7 +6,7 @@
 #include <YaSolRWebsite.h>
 
 Mycila::Task routerTask("Router", [](void* params) {
-  grid.applyExpiration();
+  grid.invalidate();
 
   output1.applyDimmerLimits();
   output2.applyDimmerLimits();

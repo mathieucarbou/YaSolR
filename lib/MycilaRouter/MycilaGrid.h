@@ -39,7 +39,7 @@ namespace Mycila {
       // expiration for remote data
       void setExpiration(uint32_t seconds) { _expiration = seconds * 1000; }
 
-      void applyExpiration() {
+      void invalidate() {
         const uint32_t now = millis();
 
         if (_meterTime > 0 && now - _meterTime >= _expiration) {

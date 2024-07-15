@@ -36,8 +36,8 @@ Mycila::Router router(pidController, jsy);
 Mycila::Dimmer dimmerO1(zcd);
 Mycila::Dimmer dimmerO2(zcd);
 
-Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1, ds18O1, pzemO1);
-Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, ds18O2, pzemO2);
+Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1, pzemO1);
+Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, pzemO2);
 
 Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);

@@ -25,6 +25,8 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       relay1.toJson(root["relay1"].to<JsonObject>());
       relay2.toJson(root["relay2"].to<JsonObject>());
       router.toJson(root["router"].to<JsonObject>(), grid.getVoltage());
+      ds18O1.toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
+      ds18O2.toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
       zcd.toJson(root["zcd"].to<JsonObject>());
 
       response->setLength();
@@ -360,7 +362,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         JsonObject json = root[output->getName()].to<JsonObject>();
         json["bypass"] = YASOLR_STATE(output->isBypassOn());
         json["state"] = output->getStateName();
-        json["temperature"] = ds18O1.getValidTemperature();
+        json["temperature"] = output->getValidTemperature();
 
         json["dimmer"]["duty"] = dimmerO1.getDuty();
         json["dimmer"]["duty_cycle"] = dimmerO1.getDutyCycle();

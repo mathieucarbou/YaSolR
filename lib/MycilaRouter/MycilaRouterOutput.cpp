@@ -147,10 +147,10 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
   // temperature checks
 
-  const float temp = _temperatureSensor->getValidTemperature();
+  const float temp = getValidTemperature();
 
-  if (_temperatureSensor->isEnabled()) {
-    if (!_temperatureSensor->isValid()) {
+  if (isTemperatureEnabled()) {
+    if (!isTemperatureValid()) {
       if (_autoBypassEnabled) {
         LOGW(TAG, "Invalid temperature sensor value: stopping Auto Bypass '%s'...", _name);
         _autoBypassEnabled = false;

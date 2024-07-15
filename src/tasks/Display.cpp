@@ -125,8 +125,8 @@ Mycila::Task displayTask("Display", [](void* params) {
       display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
       display.home.printf("Dimmer: %5d %5d W\n", dimmerO1.getDuty(), static_cast<int>(round(outputMetrics.power)));
-      if (ds18O1.isEnabled())
-        display.home.printf("Temperature:  %4.1f ", ds18O1.getValidTemperature());
+      if (output1.isTemperatureValid())
+        display.home.printf("Temperature:  %4.1f ", output1.getValidTemperature());
       else
         display.home.printf("Temperature:  --.- ");
       display.home.printf("\xb0");
@@ -140,8 +140,8 @@ Mycila::Task displayTask("Display", [](void* params) {
       display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
       display.home.printf("Dimmer: %5d %5d W\n", dimmerO2.getDuty(), static_cast<int>(round(outputMetrics.power)));
-      if (ds18O2.isEnabled())
-        display.home.printf("Temperature:  %4.1f ", ds18O2.getValidTemperature());
+      if (output2.isTemperatureValid())
+        display.home.printf("Temperature:  %4.1f ", output2.getValidTemperature());
       else
         display.home.printf("Temperature:  --.- ");
       display.home.printf("\xb0");

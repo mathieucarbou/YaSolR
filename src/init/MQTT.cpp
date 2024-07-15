@@ -113,4 +113,26 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
       grid.updateMQTTGridVoltage(v);
     });
   }
+
+  // output 1 temperature
+  String output1TemperatureMQTTTopic = config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
+  if (!output1TemperatureMQTTTopic.isEmpty()) {
+    logger.info(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic.c_str());
+    mqtt.subscribe(output1TemperatureMQTTTopic.c_str(), [](const String& topic, const String& payload) {
+      float t = payload.toFloat();
+      logger.info(TAG, "Output 1 Temperature from MQTT: %f", t);
+      output1.updateTemperature(t);
+    });
+  }
+
+  // output 2 temperature
+  String output2TemperatureMQTTTopic = config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
+  if (!output2TemperatureMQTTTopic.isEmpty()) {
+    logger.info(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic.c_str());
+    mqtt.subscribe(output2TemperatureMQTTTopic.c_str(), [](const String& topic, const String& payload) {
+      float t = payload.toFloat();
+      logger.info(TAG, "Output 2 Temperature from MQTT: %f", t);
+      output2.updateTemperature(t);
+    });
+  }
 });

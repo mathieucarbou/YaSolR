@@ -200,6 +200,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _mqttServerCert.setTab(&_mqttConfigTab);
   _mqttTopic.setTab(&_mqttConfigTab);
   _mqttUser.setTab(&_mqttConfigTab);
+  _mqttTempO1.setTab(&_mqttConfigTab);
+  _mqttTempO2.setTab(&_mqttConfigTab);
 
   _boolConfig(_haDiscovery, KEY_ENABLE_HA_DISCOVERY);
   _boolConfig(_mqttSecured, KEY_MQTT_SECURED);
@@ -209,6 +211,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_haDiscoveryTopic, KEY_HA_DISCOVERY_TOPIC);
   _textConfig(_mqttGridPower, KEY_GRID_POWER_MQTT_TOPIC);
   _textConfig(_mqttGridVoltage, KEY_GRID_VOLTAGE_MQTT_TOPIC);
+  _textConfig(_mqttTempO1, KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
+  _textConfig(_mqttTempO2, KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
   _textConfig(_mqttServer, KEY_MQTT_SERVER);
   _textConfig(_mqttTopic, KEY_MQTT_TOPIC);
   _textConfig(_mqttUser, KEY_MQTT_USERNAME);
@@ -502,6 +506,8 @@ void YaSolR::WebsiteClass::initCards() {
   _haDiscoveryTopic.update(config.get(KEY_HA_DISCOVERY_TOPIC));
   _mqttGridPower.update(config.get(KEY_GRID_POWER_MQTT_TOPIC));
   _mqttGridVoltage.update(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
+  _mqttTempO1.update(config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC));
+  _mqttTempO2.update(config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
   _mqttPort.update(config.get(KEY_MQTT_PORT));
   _mqttPublishInterval.update(config.get(KEY_MQTT_PUBLISH_INTERVAL));
   _mqttPwd.update(config.get(KEY_MQTT_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
@@ -696,7 +702,7 @@ void YaSolR::WebsiteClass::updateCards() {
       _output1State.update(YASOLR_LBL_109, DASH_STATUS_DANGER);
       break;
   }
-  _temperature(_output1DS18State, ds18O1);
+  _temperature(_output1DS18State, output1);
   _output1DimmerSlider.update(dimmerO1.getDuty());
   _output1DimmerSliderRO.update(dimmerO1.getDuty());
   _output1Bypass.update(output1.isBypassOn());
@@ -727,7 +733,7 @@ void YaSolR::WebsiteClass::updateCards() {
       _output2State.update(YASOLR_LBL_109, DASH_STATUS_DANGER);
       break;
   }
-  _temperature(_output2DS18State, ds18O2);
+  _temperature(_output2DS18State, output2);
   _output2DimmerSlider.update(dimmerO2.getDuty());
   _output2DimmerSliderRO.update(dimmerO2.getDuty());
   _output2Bypass.update(output2.isBypassOn());
@@ -955,10 +961,20 @@ void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput&
 void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
   if (!sensor.isEnabled()) {
     card.update(YASOLR_LBL_115, "");
-  } else if (sensor.getLastTime() == 0) {
+  } else if (!sensor.isValid()) {
     card.update(YASOLR_LBL_123, "");
   } else {
     card.update(sensor.getValidTemperature(), "°C");
+  }
+}
+
+void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::RouterOutput& output) {
+  if (!output.isTemperatureEnabled()) {
+    card.update(YASOLR_LBL_115, "");
+  } else if (!output.isTemperatureValid()) {
+    card.update(YASOLR_LBL_123, "");
+  } else {
+    card.update(output.getValidTemperature(), "°C");
   }
 }
 

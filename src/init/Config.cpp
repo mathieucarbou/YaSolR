@@ -97,9 +97,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     lights.begin(config.get(KEY_PIN_LIGHTS_GREEN).toInt(), config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), config.get(KEY_PIN_LIGHTS_RED).toInt());
 
   // DS18
-  ds18Sys.setExpirationDelay(60);
-  ds18O1.setExpirationDelay(60);
-  ds18O2.setExpirationDelay(60);
   if (config.getBool(KEY_ENABLE_DS18_SYSTEM))
     ds18Sys.begin(config.get(KEY_PIN_ROUTER_DS18).toInt());
   if (config.getBool(KEY_ENABLE_OUTPUT1_DS18))

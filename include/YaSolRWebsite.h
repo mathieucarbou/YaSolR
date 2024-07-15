@@ -196,6 +196,8 @@ namespace YaSolR {
       Card _haDiscoveryTopic = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_105);
       Card _mqttGridVoltage = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_106);
       Card _mqttGridPower = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_107);
+      Card _mqttTempO1 = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_181);
+      Card _mqttTempO2 = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_182);
 
       Tab _pinConfigTab = Tab(&dashboard, "\u21C6 " YASOLR_LBL_108);
       Card _pinDisplayClock = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_111);
@@ -297,6 +299,7 @@ namespace YaSolR {
       void _pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout);
       void _status(Card& card, const char* key, bool enabled, bool state = true, const char* err = "");
       void _temperature(Card& card, Mycila::DS18& sensor);
+      void _temperature(Card& card, Mycila::RouterOutput& output);
   };
 
   extern WebsiteClass Website;

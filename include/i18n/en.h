@@ -184,8 +184,8 @@
 #define YASOLR_LBL_178 "Debug Information"
 #define YASOLR_LBL_179 "ZCD Disabled"
 #define YASOLR_LBL_180 "Not paired"
-#define YASOLR_LBL_181
-#define YASOLR_LBL_182
+#define YASOLR_LBL_181 "Output 1 Temperature MQTT Topic"
+#define YASOLR_LBL_182 "Output 2 Temperature MQTT Topic"
 #define YASOLR_LBL_183
 #define YASOLR_LBL_184
 #define YASOLR_LBL_185
