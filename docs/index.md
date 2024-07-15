@@ -114,7 +114,7 @@ Measuring the temperature of the water tanker is important to ve able to trigger
 
 This can also be done:
 
-- using a remote temperature sensor through MQTT (🚧)
+- using a remote temperature sensor through MQTT
 - using a remote temperature sensor through ESP-Now (🚧)
 - using one of the supported sensor:
 
