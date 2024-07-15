@@ -8,7 +8,5 @@
 Mycila::Task dashboardTask("Dashboard", [](void* params) {
   YaSolR::Website.updateCards();
   YaSolR::Website.updateCharts();
-  if (!routingTask.isEnabled() || !config.getBool(KEY_ENABLE_PID_VIEW)) {
-    dashboard.sendUpdates();
-  }
+  dashboard.sendUpdates();
 });
