@@ -346,6 +346,7 @@ For a 2100W tri-phase resistance, 3% means 21W per relay because there is 3x 700
 **The ESP32 must be restarted to apply the changes.**
 
 MQTT topics are less accurate because depend on the refresh rate of this topic, and an expiration delay of a few seconds is set in order to stop any routing if no update is received in time.
+Also, there is **1 minute expiration delay** after which the values will be considered as invalid.
 
 As a general rule, **do not use MQTT as a grid power source if you have a JSY or Remote JSY**.
 
@@ -353,7 +354,7 @@ As a general rule, **do not use MQTT as a grid power source if you have a JSY or
 
 MQTT can be used to receive temperature data instead of relying on a connected sensor.
 There is **1 minute expiration delay** after which the temperature will be considered as invalid.
-So This is important to make sure that the topic will be refreshed, otherwise features based on temperature won't work.
+So this is important to make sure that the topic will be refreshed, otherwise features based on temperature won't work.
 
 - `Output 1 Temperature MQTT Topic`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 1
 - `Output 2 Temperature MQTT Topic`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 2
