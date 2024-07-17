@@ -61,16 +61,23 @@ namespace Mycila {
         }
       }
 
+      void noDivert() {
+        for (size_t i = 0; i < MYCILA_ROUTER_OUTPUT_COUNT; i++) {
+          RouterOutput& output = *_outputs[i];
+          if (output.isAutoDimmerEnabled()) {
+            output.autoDivert(0, 0);
+          }
+        }
+      }
+
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float voltage) const {
-        _jsy->toJson(root["jsy"].to<JsonObject>());
-
         RouterMetrics routerMeasurements;
         getMeasurements(routerMeasurements);
         toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
 
         RouterMetrics routerMetrics;
-        getMetrics(routerMetrics, voltage);
+        getRouterMetrics(routerMetrics, voltage);
         toJson(root["metrics"].to<JsonObject>(), routerMetrics);
 
         for (const auto& output : _outputs)
@@ -92,8 +99,9 @@ namespace Mycila {
       }
 #endif
 
-      void getMetrics(RouterMetrics& metrics, float voltage) const {
-        metrics.voltage = _jsy->getVoltage1();
+      // get router theoretical metrics based on the dimmer states and the grid voltage
+      void getRouterMetrics(RouterMetrics& metrics, float voltage) const {
+        metrics.voltage = voltage;
 
         for (const auto& output : _outputs) {
           RouterOutputMetrics outputMetrics;

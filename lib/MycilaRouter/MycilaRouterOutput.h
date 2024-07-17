@@ -73,7 +73,7 @@ namespace Mycila {
           return RouterOutputState::OUTPUT_BYPASS_AUTO;
         if (_bypassEnabled)
           return RouterOutputState::OUTPUT_BYPASS_MANUAL;
-        if (_dimmer->getDuty() > 0)
+        if (_dimmer->isOn())
           return RouterOutputState::OUTPUT_ROUTING;
         return RouterOutputState::OUTPUT_IDLE;
       }
@@ -151,7 +151,7 @@ namespace Mycila {
         const float usedPower = constrain(reservedPowerToDivert, 0, powerLimit);
 
         // convert to a duty
-        const uint16_t duty = usedPower * MYCILA_DIMMER_MAX_DUTY / maxPower;
+        const uint16_t duty = maxPower == 0 ? 0 : usedPower * MYCILA_DIMMER_MAX_DUTY / maxPower;
 
         _dimmer->setDuty(duty);
 
@@ -168,6 +168,7 @@ namespace Mycila {
 
       // metrics
 
+      // get output theoretical metrics based on the dimmer state and the grid voltage
       void getDimmerMetrics(RouterOutputMetrics& metrics, float gridVoltage) const {
         metrics.resistance = config.calibratedResistance;
         metrics.voltage = gridVoltage;
@@ -182,7 +183,10 @@ namespace Mycila {
         metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
       }
 
-      void getMeasurements(RouterOutputMetrics& metrics) const {
+      // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
+      bool getMeasurements(RouterOutputMetrics& metrics) const {
+        if (!_pzem->isConnected())
+          return false;
         metrics.voltage = _pzem->getVoltage();
         metrics.energy = _pzem->getEnergy();
         if (getState() == RouterOutputState::OUTPUT_ROUTING) {
@@ -194,6 +198,7 @@ namespace Mycila {
           metrics.resistance = _pzem->getResistance();
           metrics.thdi = _pzem->getTHDi(0);
         }
+        return true;
       }
 
       // temperature

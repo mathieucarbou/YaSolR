@@ -6,8 +6,6 @@
 #include <YaSolRWebsite.h>
 
 Mycila::Task routerTask("Router", [](void* params) {
-  grid.invalidate();
-
   output1.applyDimmerLimits();
   output2.applyDimmerLimits();
 
@@ -35,9 +33,14 @@ Mycila::Task relayTask("Relay", [](void* params) {
 });
 
 Mycila::Task routingTask("Routing", [](void* params) {
-  Mycila::GridMetrics gridMetrics;
-  grid.getMeasurements(gridMetrics);
-  router.divert(gridMetrics.voltage, gridMetrics.power);
+  std::optional<float> voltage = grid.getVoltage();
+  std::optional<float> power = grid.getPower();
+
+  if (!voltage.has_value() || !power.has_value()) {
+    router.noDivert();
+  } else {
+    router.divert(voltage.value(), power.value());
+  }
 
   if (config.getBool(KEY_ENABLE_PID_VIEW)) {
     YaSolR::Website.updatePID();

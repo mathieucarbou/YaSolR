@@ -22,9 +22,10 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject root = response->getRoot();
 
       grid.toJson(root["grid"].to<JsonObject>());
+      jsy.toJson(root["jsy"].to<JsonObject>());
       relay1.toJson(root["relay1"].to<JsonObject>());
       relay2.toJson(root["relay2"].to<JsonObject>());
-      router.toJson(root["router"].to<JsonObject>(), grid.getVoltage());
+      router.toJson(root["router"].to<JsonObject>(), grid.getVoltage().value_or(0));
       ds18O1.toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
       ds18O2.toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
       zcd.toJson(root["zcd"].to<JsonObject>());

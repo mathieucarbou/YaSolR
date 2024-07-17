@@ -316,11 +316,31 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     mqttPublishTask.requestEarlyRun();
   });
 
+  pzemO1.setCallback([](const Mycila::PZEMEventType eventType) {
+    if (eventType == Mycila::PZEMEventType::EVT_READ) {
+      grid.pzemVoltage().update(pzemO1.getVoltage());
+    }
+  });
+
+  pzemO2.setCallback([](const Mycila::PZEMEventType eventType) {
+    if (eventType == Mycila::PZEMEventType::EVT_READ) {
+      grid.pzemVoltage().update(pzemO2.getVoltage());
+    }
+  });
+
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
     if (eventType == Mycila::JSYEventType::EVT_READ) {
-      Mycila::JSYData data;
-      jsy.getData(data);
-      if (grid.updateJSYData(data)) {
+      grid.localGridMetrics().update({
+        .apparentPower = jsy.getApparentPower2(),
+        .current = jsy.getCurrent2(),
+        .energy = jsy.getEnergy2(),
+        .energyReturned = jsy.getEnergyReturned2(),
+        .frequency = jsy.getFrequency(),
+        .power = jsy.getPower2(),
+        .powerFactor = jsy.getPowerFactor2(),
+        .voltage = jsy.getVoltage2(),
+      });
+      if (grid.isPowerUpdated()) {
         routingTask.requestEarlyRun();
       }
     }
@@ -355,24 +375,20 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     JsonDocument doc;
     deserializeMsgPack(doc, buffer + 5, size);
 
-    Mycila::JSYData jsyData;
-    jsyData.current1 = doc["c1"].as<float>();
-    jsyData.current2 = doc["c2"].as<float>();
-    jsyData.energy1 = doc["e1"].as<float>();
-    jsyData.energy2 = doc["e2"].as<float>();
-    jsyData.energyReturned1 = doc["er1"].as<float>();
-    jsyData.energyReturned2 = doc["er2"].as<float>();
-    jsyData.frequency = doc["f"].as<float>();
-    jsyData.power1 = doc["p1"].as<float>();
-    jsyData.power2 = doc["p2"].as<float>();
-    jsyData.powerFactor1 = doc["pf1"].as<float>();
-    jsyData.powerFactor2 = doc["pf2"].as<float>();
-    jsyData.voltage1 = doc["v1"].as<float>();
-    jsyData.voltage2 = doc["v2"].as<float>();
+    grid.remoteGridMetrics().update({
+      .apparentPower = doc["pf2"].as<float>() == 0 ? 0 : doc["p2"].as<float>() / doc["pf2"].as<float>(),
+      .current = doc["c2"].as<float>(),
+      .energy = doc["e2"].as<float>(),
+      .energyReturned = doc["er2"].as<float>(),
+      .frequency = doc["f"].as<float>(),
+      .power = doc["p2"].as<float>(),
+      .powerFactor = doc["pf2"].as<float>(),
+      .voltage = doc["v2"].as<float>(),
+    });
 
     udpMessageRateBuffer.add(millis() / 1000.0f);
 
-    if (grid.updateRemoteJSYData(jsyData)) {
+    if (grid.isPowerUpdated()) {
       routingTask.requestEarlyRun();
     }
   });
