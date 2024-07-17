@@ -5,6 +5,7 @@
 #pragma once
 
 #include <MycilaDimmer.h>
+#include <MycilaExpiringValue.h>
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
 
@@ -86,7 +87,7 @@ namespace Mycila {
         root["bypass"] = isBypassOn() ? "on" : "off";
         root["enabled"] = isDimmerEnabled();
         root["state"] = getStateName();
-        root["temperature"] = getValidTemperature();
+        root["temperature"] = _temperature.orElse(0);
 
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
 
@@ -119,7 +120,7 @@ namespace Mycila {
 
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer && config.calibratedResistance > 0; }
-      bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && isTemperatureValid() && getValidTemperature() >= config.dimmerTempLimit; }
+      bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
       uint16_t getDimmerDuty() const { return _dimmer->getDuty(); }
       float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
       // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
@@ -197,13 +198,7 @@ namespace Mycila {
 
       // temperature
 
-      float getValidTemperature() const { return isTemperatureValid() ? _temperature : 0; }
-      bool isTemperatureEnabled() const { return _temperatureTime > 0; }
-      bool isTemperatureValid() const { return isTemperatureEnabled() && millis() - _temperatureTime < 60000; }
-      void updateTemperature(float temperature) {
-        _temperature = temperature;
-        _temperatureTime = millis();
-      }
+      ExpiringValue<float>& temperature() { return _temperature; }
 
     public:
       Config config;
@@ -216,8 +211,7 @@ namespace Mycila {
       bool _autoBypassEnabled = false;
       bool _bypassEnabled = false;
       RouterOutputStateCallback _callback = nullptr;
-      float _temperature = 0;
-      uint32_t _temperatureTime = 0;
+      ExpiringValue<float> _temperature;
 
     private:
       void _setBypass(bool state, bool log = true);

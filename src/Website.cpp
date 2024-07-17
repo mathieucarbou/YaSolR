@@ -964,17 +964,17 @@ void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
   } else if (!sensor.isValid()) {
     card.update(YASOLR_LBL_123, "");
   } else {
-    card.update(sensor.getValidTemperature(), "°C");
+    card.update(sensor.getTemperature().value_or(0), "°C");
   }
 }
 
 void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::RouterOutput& output) {
-  if (!output.isTemperatureEnabled()) {
+  if (output.temperature().neverUpdated()) {
     card.update(YASOLR_LBL_115, "");
-  } else if (!output.isTemperatureValid()) {
+  } else if (!output.temperature()) {
     card.update(YASOLR_LBL_123, "");
   } else {
-    card.update(output.getValidTemperature(), "°C");
+    card.update(output.temperature().get(), "°C");
   }
 }
 

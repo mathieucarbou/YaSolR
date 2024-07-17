@@ -121,7 +121,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     mqtt.subscribe(output1TemperatureMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float t = payload.toFloat();
       logger.info(TAG, "Output 1 Temperature from MQTT: %f", t);
-      output1.updateTemperature(t);
+      output1.temperature().update(t);
     });
   }
 
@@ -132,7 +132,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     mqtt.subscribe(output2TemperatureMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float t = payload.toFloat();
       logger.info(TAG, "Output 2 Temperature from MQTT: %f", t);
-      output2.updateTemperature(t);
+      output2.temperature().update(t);
     });
   }
 });

@@ -134,14 +134,14 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/router/lights", lights.toString());
   mqtt.publish(baseTopic + "/router/power", String(routerMeasurements.power, 3));
   mqtt.publish(baseTopic + "/router/power_factor", String(routerMeasurements.powerFactor, 3));
-  mqtt.publish(baseTopic + "/router/temperature", String(ds18Sys.getValidTemperature()));
+  mqtt.publish(baseTopic + "/router/temperature", String(ds18Sys.getTemperature().value_or(0)));
   mqtt.publish(baseTopic + "/router/thdi", String(routerMeasurements.thdi, 3));
   mqtt.publish(baseTopic + "/router/virtual_grid_power", String(gridMetrics.power - routerMeasurements.power, 3));
   yield();
 
   mqtt.publish(baseTopic + "/router/output1/bypass", YASOLR_STATE(output1.isBypassOn()));
   mqtt.publish(baseTopic + "/router/output1/state", output1.getStateName());
-  mqtt.publish(baseTopic + "/router/output1/temperature", String(output1.getValidTemperature(), 1));
+  mqtt.publish(baseTopic + "/router/output1/temperature", String(output1.temperature().orElse(0), 1));
   mqtt.publish(baseTopic + "/router/output1/dimmer/duty", String(dimmerO1.getDuty()));
   mqtt.publish(baseTopic + "/router/output1/dimmer/duty_cycle", String(dimmerO1.getDutyCycle()));
   mqtt.publish(baseTopic + "/router/output1/dimmer/state", YASOLR_STATE(dimmerO1.isOn()));
@@ -149,7 +149,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
 
   mqtt.publish(baseTopic + "/router/output2/bypass", YASOLR_STATE(output2.isBypassOn()));
   mqtt.publish(baseTopic + "/router/output2/state", output2.getStateName());
-  mqtt.publish(baseTopic + "/router/output2/temperature", String(output2.getValidTemperature(), 1));
+  mqtt.publish(baseTopic + "/router/output2/temperature", String(output2.temperature().orElse(0), 1));
   mqtt.publish(baseTopic + "/router/output2/dimmer/duty", String(dimmerO2.getDuty()));
   mqtt.publish(baseTopic + "/router/output2/dimmer/duty_cycle", String(dimmerO2.getDutyCycle()));
   mqtt.publish(baseTopic + "/router/output2/dimmer/state", YASOLR_STATE(dimmerO2.isOn()));

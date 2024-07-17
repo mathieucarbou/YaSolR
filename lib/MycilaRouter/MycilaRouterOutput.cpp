@@ -147,10 +147,8 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
   // temperature checks
 
-  const float temp = getValidTemperature();
-
-  if (isTemperatureEnabled()) {
-    if (!isTemperatureValid()) {
+  if (!_temperature.neverUpdated()) {
+    if (!_temperature) {
       if (_autoBypassEnabled) {
         LOGW(TAG, "Invalid temperature sensor value: stopping Auto Bypass '%s'...", _name);
         _autoBypassEnabled = false;
@@ -158,6 +156,8 @@ void Mycila::RouterOutput::applyAutoBypass() {
       }
       return;
     }
+
+    const float temp = _temperature.get();
 
     if (temp >= config.autoStopTemperature) {
       if (_autoBypassEnabled) {
@@ -201,7 +201,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
     }
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
     if (config.weekDays.indexOf(wday) >= 0) {
-      LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C...", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, temp);
+      LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C...", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
       _setBypass(true);
       _autoBypassEnabled = _bypassEnabled;
     }

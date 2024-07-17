@@ -33,7 +33,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Grid
-  grid.setExpiration(45);
+  grid.setExpiration(YASOLR_VALUE_EXPIRATION);
 
   // Relays
   routerRelay1.setLoad(config.get(KEY_RELAY1_LOAD).toInt());
@@ -51,6 +51,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
   output1.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
+  output1.temperature().setExpiration(YASOLR_VALUE_EXPIRATION);
 
   // output2
   output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
@@ -64,6 +65,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
   output2.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
+  output2.temperature().setExpiration(YASOLR_VALUE_EXPIRATION);
 
   // PID Controller
 

@@ -307,12 +307,12 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
   ds18O1.listen([](float temperature) {
     logger.info(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
-    output1.updateTemperature(temperature);
+    output1.temperature().update(temperature);
     mqttPublishTask.requestEarlyRun();
   });
   ds18O2.listen([](float temperature) {
     logger.info(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
-    output2.updateTemperature(temperature);
+    output2.temperature().update(temperature);
     mqttPublishTask.requestEarlyRun();
   });
 
