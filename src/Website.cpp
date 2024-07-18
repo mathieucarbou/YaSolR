@@ -389,26 +389,26 @@ void YaSolR::WebsiteClass::initCards() {
   const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
   const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY);
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
-  const bool autoDimmerO1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-  const bool autoBypassActivated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool output1DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18);
+  const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
+  const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
+  const bool output1TempEnabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18) || !config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC).isEmpty();
 
-  _output1DimmerAuto.update(autoDimmerO1Activated);
+  _output1DimmerAuto.update(autoDimmer1Activated);
   _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toInt()));
   _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt()));
   _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP));
-  _output1BypassAuto.update(autoBypassActivated);
+  _output1BypassAuto.update(autoBypass1Activated);
   _output1AutoStartWDays.update(config.get(KEY_OUTPUT1_DAYS));
   _output1AutoStartTemp.update(config.get(KEY_OUTPUT1_TEMPERATURE_START));
   _output1AutoStartTime.update(config.get(KEY_OUTPUT1_TIME_START));
   _output1AutoStoptTemp.update(config.get(KEY_OUTPUT1_TEMPERATURE_STOP));
   _output1AutoStoptTime.update(config.get(KEY_OUTPUT1_TIME_STOP));
 
-  _output1Tab.setDisplay(dimmer1Enabled || output1DS18Enabled || output1RelayEnabled);
-  _output1DimmerSlider.setDisplay(dimmer1Enabled && !autoDimmerO1Activated);
-  _output1DimmerSliderRO.setDisplay(dimmer1Enabled && autoDimmerO1Activated);
-  _output1Bypass.setDisplay(bypass1Possible && !autoBypassActivated);
-  _output1BypassRO.setDisplay(bypass1Possible && autoBypassActivated);
+  _output1Tab.setDisplay(dimmer1Enabled || output1TempEnabled || output1RelayEnabled);
+  _output1DimmerSlider.setDisplay(dimmer1Enabled && !autoDimmer1Activated);
+  _output1DimmerSliderRO.setDisplay(dimmer1Enabled && autoDimmer1Activated);
+  _output1Bypass.setDisplay(bypass1Possible && !autoBypass1Activated);
+  _output1BypassRO.setDisplay(bypass1Possible && autoBypass1Activated);
   _output1Power.setDisplay(dimmer1Enabled);
   _output1ApparentPower.setDisplay(dimmer1Enabled);
   _output1PowerFactor.setDisplay(dimmer1Enabled);
@@ -418,40 +418,40 @@ void YaSolR::WebsiteClass::initCards() {
   _output1Resistance.setDisplay(dimmer1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled);
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
-  _output1DimmerRatio.setDisplay(dimmer1Enabled && autoDimmerO1Activated);
+  _output1DimmerRatio.setDisplay(dimmer1Enabled && autoDimmer1Activated);
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
-  _output1DimmerTempLimiter.setDisplay(dimmer1Enabled && output1DS18Enabled);
+  _output1DimmerTempLimiter.setDisplay(dimmer1Enabled && output1TempEnabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
-  _output1AutoStartWDays.setDisplay(bypass1Possible && autoBypassActivated);
-  _output1AutoStartTime.setDisplay(bypass1Possible && autoBypassActivated);
-  _output1AutoStoptTime.setDisplay(bypass1Possible && autoBypassActivated);
-  _output1AutoStartTemp.setDisplay(bypass1Possible && autoBypassActivated && output1DS18Enabled);
-  _output1AutoStoptTemp.setDisplay(bypass1Possible && autoBypassActivated && output1DS18Enabled);
+  _output1AutoStartWDays.setDisplay(bypass1Possible && autoBypass1Activated);
+  _output1AutoStartTime.setDisplay(bypass1Possible && autoBypass1Activated);
+  _output1AutoStoptTime.setDisplay(bypass1Possible && autoBypass1Activated);
+  _output1AutoStartTemp.setDisplay(bypass1Possible && autoBypass1Activated && output1TempEnabled);
+  _output1AutoStoptTemp.setDisplay(bypass1Possible && autoBypass1Activated && output1TempEnabled);
 
   // output 2 (control)
   const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
   const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY);
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
-  const bool autoDimmerO2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-  const bool autoBypassO2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  const bool output2DS18Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18);
+  const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
+  const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
+  const bool output2TempEnabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18) || !config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC).isEmpty();
 
-  _output2DimmerAuto.update(autoDimmerO2Activated);
+  _output2DimmerAuto.update(autoDimmer2Activated);
   _output2DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toInt()));
   _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt()));
   _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP));
-  _output2BypassAuto.update(autoBypassO2Activated);
+  _output2BypassAuto.update(autoBypass2Activated);
   _output2AutoStartWDays.update(config.get(KEY_OUTPUT2_DAYS));
   _output2AutoStartTemp.update(config.get(KEY_OUTPUT2_TEMPERATURE_START));
   _output2AutoStartTime.update(config.get(KEY_OUTPUT2_TIME_START));
   _output2AutoStoptTemp.update(config.get(KEY_OUTPUT2_TEMPERATURE_STOP));
   _output2AutoStoptTime.update(config.get(KEY_OUTPUT2_TIME_STOP));
 
-  _output2Tab.setDisplay(dimmer2Enabled || output2DS18Enabled || output2RelayEnabled);
-  _output2DimmerSlider.setDisplay(dimmer2Enabled && !autoDimmerO2Activated);
-  _output2DimmerSliderRO.setDisplay(dimmer2Enabled && autoDimmerO2Activated);
-  _output2Bypass.setDisplay(bypass2Possible && !autoBypassO2Activated);
-  _output2BypassRO.setDisplay(bypass2Possible && autoBypassO2Activated);
+  _output2Tab.setDisplay(dimmer2Enabled || output2TempEnabled || output2RelayEnabled);
+  _output2DimmerSlider.setDisplay(dimmer2Enabled && !autoDimmer2Activated);
+  _output2DimmerSliderRO.setDisplay(dimmer2Enabled && autoDimmer2Activated);
+  _output2Bypass.setDisplay(bypass2Possible && !autoBypass2Activated);
+  _output2BypassRO.setDisplay(bypass2Possible && autoBypass2Activated);
   _output2Power.setDisplay(dimmer2Enabled);
   _output2ApparentPower.setDisplay(dimmer2Enabled);
   _output2PowerFactor.setDisplay(dimmer2Enabled);
@@ -461,15 +461,15 @@ void YaSolR::WebsiteClass::initCards() {
   _output2Resistance.setDisplay(dimmer2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled);
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
-  _output2DimmerRatio.setDisplay(dimmer2Enabled && autoDimmerO2Activated);
+  _output2DimmerRatio.setDisplay(dimmer2Enabled && autoDimmer2Activated);
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
-  _output2DimmerTempLimiter.setDisplay(dimmer2Enabled && output2DS18Enabled);
+  _output2DimmerTempLimiter.setDisplay(dimmer2Enabled && output2TempEnabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
-  _output2AutoStartWDays.setDisplay(bypass2Possible && autoBypassO2Activated);
-  _output2AutoStartTime.setDisplay(bypass2Possible && autoBypassO2Activated);
-  _output2AutoStoptTime.setDisplay(bypass2Possible && autoBypassO2Activated);
-  _output2AutoStartTemp.setDisplay(bypass2Possible && autoBypassO2Activated && output2DS18Enabled);
-  _output2AutoStoptTemp.setDisplay(bypass2Possible && autoBypassO2Activated && output2DS18Enabled);
+  _output2AutoStartWDays.setDisplay(bypass2Possible && autoBypass2Activated);
+  _output2AutoStartTime.setDisplay(bypass2Possible && autoBypass2Activated);
+  _output2AutoStoptTime.setDisplay(bypass2Possible && autoBypass2Activated);
+  _output2AutoStartTemp.setDisplay(bypass2Possible && autoBypass2Activated && output2TempEnabled);
+  _output2AutoStoptTemp.setDisplay(bypass2Possible && autoBypass2Activated && output2TempEnabled);
 
   // relays (control)
   int32_t load1 = config.get(KEY_RELAY1_LOAD).toInt();
