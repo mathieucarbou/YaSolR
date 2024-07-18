@@ -33,11 +33,11 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Grid
-  grid.localGridMetrics().setExpiration(5000);
-  grid.remoteGridMetrics().setExpiration(5000);
-  grid.mqttPower().setExpiration(45000);
-  grid.mqttVoltage().setExpiration(45000);
-  grid.pzemVoltage().setExpiration(5000);
+  grid.localGridMetrics().setExpiration(5000);   // local is fast
+  grid.remoteGridMetrics().setExpiration(10000); // remote JEY is fast
+  grid.mqttPower().setExpiration(45000);         // through mqtt
+  grid.mqttVoltage().setExpiration(45000);       // through mqtt
+  grid.pzemVoltage().setExpiration(5000);        // local is fast
 
   // Relays
   routerRelay1.setLoad(config.get(KEY_RELAY1_LOAD).toInt());
@@ -55,7 +55,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
   output1.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
-  output1.temperature().setExpiration(20000);
+  output1.temperature().setExpiration(45000); // local or through mqtt
 
   // output2
   output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
@@ -69,7 +69,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
   output2.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
-  output2.temperature().setExpiration(20000);
+  output2.temperature().setExpiration(45000); // local or through mqtt
 
   // PID Controller
 
