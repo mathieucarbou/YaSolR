@@ -31,6 +31,7 @@ YaSolR is one of the **most optimized and powerful** Solar Router firmware avail
 - **Custom dimmer library** optimized for ESP32 (🚧)
 - **MCPWM** (Motor Control Pulse Width Modulator) for phase control (🚧)
 - **3-Phase** support
+- **Precise Zero-Cross Detection**
 
 This is a big **Open-Source** project following **best development practices**.
 YaSolR is:
@@ -146,6 +147,9 @@ Each output supports an optional measurement device to measure the power routed 
 - `Dimmer Temperature Limiter`: Set a limit to the dimmer to stop it when a temperature is reached. This temperature can be different than the temperature used in auto bypass mode.
 - `Statistics`: Harmonic information, power factor, energy, routed power, etc
 - `Automatic Resistance Calibration` (🚧): if a JSY or PZEM is installed, automatically discover and save the resistance value of the connected load.
+- `Dimmer Duty Remapping` (🚧): Remap the dimmer duty to a different range (e.g. 10-80%).
+  Some dimmers (especially voltage regulator controlled through a PWM-analog conversion), are working between 1-8V so remapping the duty is necessary.
+- `Zero-Cross Pulse Analysis` (🚧): YaSolR will try to get some pulse analysis from the Zero-Cross Detection
 
 ### Grid Power Measurement
 
@@ -209,7 +213,6 @@ The router can be completely controlled remotely through a Home Automation Syste
 - `Access Point Mode`: router can **work in AP mode without WiFi and Internet**
 - `Admin Password`: to protect the website, API and Access Point
 - `Captive Portal` a captive portal is started first time to help you connect the router
-- `DNS & mDNS`: Discover the device on the network through mDNS (Bonjour) or DNS
 - `Ethernet & Wifi`: **ESP32 boards with Ethernet and WiFi are supported**
 - `NTP` support to synchronize time and date with Internet. If not activated, it is still possible to manually sync with your browser.
 - `Offline Mode`: **The router can work without WiFi, even teh features requiring time and date.**

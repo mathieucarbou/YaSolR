@@ -11,7 +11,7 @@ description: Build
   - [The Minimalist](#the-minimalist)
   - [The Adventurer](#the-adventurer)
   - [The Elite](#the-elite)
-  - [The Professional (🚧)](#the-professional-%F0%9F%9A%A7)
+  - [The Professional](#the-professional)
   - [Possible Upgrades](#possible-upgrades)
   - [Remote JSY](#remote-jsy)
   - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter)
@@ -139,7 +139,9 @@ The _Elite_ build is for people who want to use a Random SSR instead of a Robody
 > - Bypass mode will use the SSR dimmer set at 100% power
 >   {: .block-warning }
 
-### The Professional (🚧)
+### The Professional
+
+(🚧)
 
 The _Professional_ build uses a Voltage Regulator to control the power routing.
 This is probably the best reliable and efficient solution, but it is more complex to setup and wire.

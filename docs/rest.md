@@ -27,7 +27,6 @@ curl -X GET http://<esp-ip>/api
 {
   "config": "http://192.168.125.123/api/config",
   "config/backup": "http://192.168.125.123/api/config/backup",
-  "debug": "http://192.168.125.123/api/debug",
   "grid": "http://192.168.125.123/api/grid",
   "router": "http://192.168.125.123/api/router",
   "system": "http://192.168.125.123/api/system",

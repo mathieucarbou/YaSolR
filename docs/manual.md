@@ -18,6 +18,7 @@ description: Manual
   - [`Output` sections](#output-sections)
   - [`Relays` section](#relays-section)
   - [`Management` section](#management-section)
+    - [Logging](#logging)
   - [`Network` section](#network-section)
   - [`MQTT` section](#mqtt-section)
     - [MQTT as a Grid Source](#mqtt-as-a-grid-source)
@@ -97,17 +98,18 @@ For example on Mac, it is often `/dev/cu.usbserial-0001` instead of `/dev/ttyUSB
 With [Espressif Flash Tool](https://www.espressif.com/en/support/download/other-tools) (Windows):
 
 > ##### IMPORTANT
+>
 > Be careful to not forget the `0`
-{: .block-important }
+> {: .block-important }
 
 ![Espressif Flash Tool](assets/img/screenshots/Espressif_Flash_Tool.png)
 
 ### Captive Portal (Access Point) and WiFi
 
-
 > ##### TIP
+>
 > Captive Portal and Access Point address: [http://192.168.4.1/](http://192.168.4.1/)
-{: .block-tip }
+> {: .block-tip }
 
 A captive portal (Access Point) is started for the first time to configure the WiFi network, or when the application starts and cannot join an already configured WiFi network fro 15 seconds.
 
@@ -151,6 +153,7 @@ It allows to see the raw current configuration of the router and edit it.
 [![](assets/img/screenshots/config.jpeg)](assets/img/screenshots/config.jpeg)
 
 > ##### WARNING
+>
 > This page should not normally be used, except for debugging purposes.
 
 ### `/console` page
@@ -205,8 +208,9 @@ The output sections show the state of the outputs and the possibility to control
 - `Energy`: The total accumulated energy routed by this output, stored in hardware (JSY and/or PZEM).
 
 > ##### IMPORTANT
+>
 > A PZEM is required to see the measurements of each outputs.
-{: .block-important }
+> {: .block-important }
 
 **Dimmer Control:**
 
@@ -237,8 +241,9 @@ The following settings are visible if `Bypass Automatic Control` is activated.
 - `Bypass Stop Temperature`: The temperature threshold when the auto bypass will stop: the temperature of the water tank needs to be higher than this threshold.
 
 > ##### TIP
+>
 > All these settings are applied immediately and do not require a restart
-{: .block-tip }
+> {: .block-tip }
 
 ### `Relays` section
 
@@ -247,8 +252,9 @@ Relays can also be connected to the other resistance of the water tank (tri-phas
 You must use a SSR for that, because the relay will be switched on and off frequently.
 
 > ##### NOTE
+>
 > Remember that the voltage is not dimmed: these are 2 normal relays
-{: .block-note }
+> {: .block-note }
 
 [![](assets/img/screenshots/relays.jpeg)](assets/img/screenshots/relays.jpeg)
 
@@ -259,12 +265,13 @@ You must use a SSR for that, because the relay will be switched on and off frequ
   Otherwise the relay state is displayed.
 
 > ##### WARNING
+>
 > Pay attention that there is little to no hysteresis on the relays.
 > So do not use the automatic feature to switch non-resistive loads such as pumps, electric vehicle chargers, etc.
 > If you need to switch other types of load in a more complex way with some hysteresis or other complex conditions, you can use the MQTT, REST API, Home Assistant or Jeedom to query the `Virtual Power` metric and execute an automation based on this value.
 > The automation can then control the router relays remotely. The relays need to be set in `Manual Control`.
 > Remember that these relays are not power contactors and should not be used to directly control high power loads like an Electric Vehicle charge, a pump, etc.
-{: .block-warning }
+> {: .block-warning }
 
 > ##### TIP
 >
@@ -273,7 +280,7 @@ You must use a SSR for that, because the relay will be switched on and off frequ
 > - **For an EV charge control**: see [Virtual Grid Power / Compatibility with EV box](#virtual-grid-power--compatibility-with-ev-box)
 >
 > - **For a pump**: a contactor is recommended which can be coupled with a Shelly EM to activate / deactivate the contactor remotely, and it can be automated by Home Assistant or Jeedom based on the `Virtual Power` metric of this router, but also the hours of day, days of week, depending on the weather, and of course with some hysteresis and safety mechanisms to force the pump ON or OFF depending on some rules.
-{: .block-tip }
+>   {: .block-tip }
 
 **Rules of Automatic Switching**
 
@@ -303,9 +310,24 @@ For a 2100W tri-phase resistance, 3% means 21W per relay because there is 3x 700
 - `Restart`: Restart the router.
 - `Energy Reset`: Reset the energy stored in all devices (JSY and PZEM) of the router.
 - `Factory Reset`: Reset the router to factory settings and restart it.
+
+#### Logging
+
 - `Debug`: Activate or deactivate debug logging.
-- `Console`: Go to the Web Console page.
-- `Debug Information`: Link to the API page which will output useful debug information to give to support.
+- `Debug Information`: Outputs useful debug information to give to support.
+  **Only available when `Debug` is activated.**
+- `Console`: Go to the Web Console page to see the logs
+
+If you need to record the logs during a long period of time to troubleshoot an issue, you can activate `Debug` and then stream the logs into a file using `websocat` from another computer.
+Make sure the computer won't g oto sleep!
+
+```bash
+> websocat ws://192.168.125.123/wserial > logs.txt
+```
+
+> ##### NOTE
+>
+> The special characters (like `??f??OO`) at the beginning of each line are normal.
 
 ### `Network` section
 
@@ -350,8 +372,9 @@ For a 2100W tri-phase resistance, 3% means 21W per relay because there is 3x 700
   The ID won't change except if you change the ESP board.
 
 > ##### IMPORTANT
+>
 > MQTT must be restarted to apply the changes.
-{: .block-important }
+> {: .block-important }
 
 #### MQTT as a Grid Source
 
@@ -363,8 +386,9 @@ For a 2100W tri-phase resistance, 3% means 21W per relay because there is 3x 700
   The reason is that it is impossible to know if the second channel of the JSY is really installed and used to monitor the grid power or not.
 
 > ##### IMPORTANT
+>
 > The ESP32 must be restarted to apply the changes.
-{: .block-important }
+> {: .block-important }
 
 MQTT topics are less accurate because depend on the refresh rate of this topic, and an expiration delay of a few seconds is set in order to stop any routing if no update is received in time.
 Also, there is **1 minute expiration delay** after which the values will be considered as invalid.
@@ -381,8 +405,9 @@ So this is important to make sure that the topic will be refreshed, otherwise fe
 - `Output 2 Temperature MQTT Topic`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 2
 
 > ##### IMPORTANT
+>
 > The ESP32 must be restarted to apply the changes.
-{: .block-important }
+> {: .block-important }
 
 #### Home Assistant Discovery
 
@@ -396,8 +421,9 @@ YaSolR supports Home Assistant Discovery: if configured, it will **automatically
   I strongly recommend to keep this default value and configure Home Assistant to use this topic prefix for Discovery in order to separate state topics from discovery topics.
 
 > ##### IMPORTANT
+>
 > MQTT must be restarted to apply the changes.
-{: .block-important }
+> {: .block-important }
 
 The complete reference of the published data in MQTT is available [here](mqtt).
 The published data can be explored with [MQTT Explorer](https://mqtt-explorer.com/).
@@ -447,8 +473,9 @@ data.
 It perfectly OK for a ZCD, but you cannot use a pin that can only be read for a relay, DS18 sensor, etc.
 
 > ##### IMPORTANT
+>
 > If you change one of these settings, please stop and restart the corresponding Hardware.
-{: .block-important }
+> {: .block-important }
 
 ### `Hardware` section
 
@@ -465,7 +492,7 @@ All these components are activated **live without the need to restart the router
 >
 > - `Relay 1` / `Relay 2`: these are the SSR or Electromechanical relays connected to the ESP32 and used to control external loads.
 >   Only activate if you have connected some relays to be used for external loads.
-{: .block-note }
+>   {: .block-note }
 
 ### `Hardware Config` section
 
@@ -474,8 +501,9 @@ This section allows to further configure some hardware settings and calibrate th
 [![](assets/img/screenshots/hardware_config.jpeg)](assets/img/screenshots/hardware_config.jpeg)
 
 > ##### IMPORTANT
+>
 > If you change one of these settings in the hardware section, please restart the corresponding hardware or the YaSolR device.
-{: .block-important }
+> {: .block-important }
 
 #### Grid Frequency
 
@@ -579,8 +607,9 @@ You can read more at:
 ### `PID Controller` section
 
 > ##### DANGER
+>
 > For advanced users only.
-{: .block-danger }
+> {: .block-danger }
 
 This page allows to tune the PID algorithm used to control the automatic routing.
 Use only if you know what you are doing and know how to tweak a PID controller.
@@ -588,20 +617,21 @@ Use only if you know what you are doing and know how to tweak a PID controller.
 You can change the PID settings at runtime and the effect will appear immediately.
 
 > ##### TIP
+>
 > If you find better settings, please do not hesitate to share them with the community.
-{: .block-tip }
+> {: .block-tip }
 
 [![](assets/img/screenshots/pid_tuning.jpeg)](assets/img/screenshots/pid_tuning.jpeg)
 
-- `Real-time PID Data`: can be activated to see the PID action in real time in teh graphs.
+- `Real-time Data`: can be activated to see the PID action in real time in teh graphs.
 - `Chart Reset`: click to reset the charts (has no effect on the PID controller).
 
 > ##### IMPORTANT
 >
-> - Do not leave `Real-time PID Data` option always activated because the data flow is so high that it impacts the ESP32 performance.
+> - Do not leave `Real-time Data` option always activated because the data flow is so high that it impacts the ESP32 performance.
 >
 > - you are supposed to know how to tune a PID controller. If not, please research on Google.
-{: .block-important }
+>   {: .block-important }
 
 Here are some basic links to start with, which talks about the code used under the hood:
 
@@ -615,16 +645,12 @@ Here are some basic links to start with, which talks about the code used under t
 - `Proportional Mode`: `On Input`
 - `Derivative Mode`: `On Error`
 - `Integral Correction`: `Advanced`
-- `Setpoint`: `0`
-- `Kp`: `0.3`
-- `Ki`: `0.3`
-- `Kd`: `0.1`
-- `Output Min`: `-10000`
-- `Output Max`: `10000`
+
+To reset the other values to their default value, just click on the validate / enter green button.
 
 **PID Tuning through WebSocket**
 
-When `Real-time PID Data` is activated, a WebSocket endpoint is available at `/ws/pid/csv` and will stream all the PID data in real time in a `CSV` format when automatic dimmer control is activated.
+When `Real-time Data` is activated, a WebSocket endpoint is available at `/ws/pid/csv` and will stream all the PID data in real time in a `CSV` format when automatic dimmer control is activated.
 You can quickly show then and process then in `bash` with `websocat` by typing for example:
 
 ```bash
@@ -721,9 +747,10 @@ When using a remote JSY with the router, the following rules apply:
 - The grid power will always be read first from MQTT, then from a remote JSY, then from a connected JSY.
 
 > ##### TIP
+>
 > JSY Remote app is automatically detected on the same network: you don't need to configure anything.
 > As soon as the Sender app will start sending data, YaSolR will receive it and display it.
-{: .block-tip }
+> {: .block-tip }
 
 ### LEDs
 
@@ -764,9 +791,10 @@ The Zero-Cross Detection (ZCD) module is used to detect the zero-crossing of the
 It is required, whether you use a Robodyn or SSR or any routing algorithm (phase control or burst mode).
 
 > ##### TIP
+>
 > The Robodyn includes a ZCD (its ZC pin).
 > Do not forget to activate the ZCD module in the `Hardware` section.
-{: .block-tip }
+> {: .block-tip }
 
 You can also use a dedicated ZCD module like the one suggested on this website (build menu).
 
@@ -782,7 +810,7 @@ So the router will take whatever is not used by the EV box.
 > ##### IMPORTANT
 >
 > `Virtual Grid Power` requires a PZEM or JSY in place to measure the routed power.
-{: .block-important }
+> {: .block-important }
 
 ## Help and support
 
