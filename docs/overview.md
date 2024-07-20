@@ -9,6 +9,7 @@ description: Overview
 - [What is a Solar Router ?](#what-is-a-solar-router-)
 - [How a Solar Router work ?](#how-a-solar-router-work-)
   - [Zero-Cross Detection (ZCD)](#zero-cross-detection-zcd)
+  - [The Importance of a good ZCD circuit](#the-importance-of-a-good-zcd-circuit)
   - [Robodyn and Solid State Relay (SSR)](#robodyn-and-solid-state-relay-ssr)
 - [Phase Control](#phase-control)
   - [Harmonics](#harmonics)
@@ -60,6 +61,42 @@ Here are below some examples of how a ZCD circuit works by looking at 2 differen
 When the AC voltage curve crosses the Zero point, the ZCD circuit sends a pulse (with a custom duration) to the controller board, which now knows that the voltage is at zero.
 The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or Robodyn) to activate it, based on the excess power, or if using burst fire control, to know when to let the current pass and for how many semi-periods.
 
+### The Importance of a good ZCD circuit
+
+Using a good ZCD circuit producing a reliable pulse is very important.
+
+If the pulses are not reliable, some short flickering could be caused by a mis-detection of the zero point or by the existence of spurious pulses (false-positives), and consequently cause the TRIAC to fire at the wrong time, or the calculations for the burst fire sequence to be wrong.
+These are visible if you plug an incandescent light bulb to the dimmer output: the bulb will flicker from time to time.
+The effect on a water tank resistance is even bigger: it will create some spurious spikes of power consumption, that the router will try to compensate just after by considerably reducing the dimming level.
+This creates some waves instead of keeping the import and export at a near-0 level.
+
+These phenomena are not visible with a good ZCD module coupled with a Random SSR.
+
+The Robodyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the Robodyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
+
+Here is below a YaSolR screenshot of the Grid Power graph showing the effect of a bad ZCD module on the power consumption and import.
+On the lef side, the Robodyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
+
+[![](assets/img/screenshots/robodyn-vs-zc-module-grid-power.jpeg)](assets/img/screenshots/robodyn-vs-zc-module-grid-power.jpeg)
+
+Here is another example below of th YaSolR PID Tuning view showing the input value of the PID controller.
+The dedicated ZCD module was used, then I've switched (live) to a Robodyn ZCD module.
+The update rate is high: 3 times per second.
+All the JSY measurements are captured and displayed.
+You can clearly see the flickering caused by the bad quality of the Robodyn ZCD pulses, which gets compensated just after by the PID controller.
+
+[![](assets/img/screenshots/robodyn-vs-zc-module-pid-tuning.jpeg)](assets/img/screenshots/robodyn-vs-zc-module-pid-tuning.jpeg)
+
+Lastly, here is a graph showing in Home Assistant the effect of the Robodyn ZCD on the dimmer output.
+The Robodyn ZCD was used form 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
+
+[![](assets/img/screenshots/robodyn-vs-zc-module-ha.jpeg)](assets/img/screenshots/robodyn-vs-zc-module-ha.jpeg)
+
+You can read more about these issues here also:
+
+- [About dimmer boards](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards)
+- [Notes about specific architectures](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#esp32)
+
 ### Robodyn and Solid State Relay (SSR)
 
 A Solid State Relay is a relay that does not have any moving parts and is based on a semiconductor.
@@ -96,7 +133,7 @@ Here are 3 different views from an Owon VDS6104 oscilloscope of:
 3. The control voltage of the random SSR (or Robodyn) that is sent from the ESP32 board. The TRIAC will let the current pass when the control voltage is >= 3.3V (blue)
 4. The dimmed AC current at dimmer output (pink)
 
-|                       |                                    **Dimmer Duty 10 / 4095**                                    |                                  **Dimmer Duty 2047 / 4095 (50%)**                                  |                                     **Dimmer Duty 4090 / 4095**                                     |
+|                       |                                    **Dimmer Duty 0.24%**                                    |                                  **Dimmer Duty 50%**                                  |                                     **Dimmer Duty 4090 / 4095**                                     |
 | :-------------------: | :---------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
 |      **Robodyn**      | [![](assets/img/measurements/Robodyn_duty_10.png)](assets/img/measurements/Robodyn_duty_10.png) | [![](assets/img/measurements/Robodyn_duty_2047.png)](assets/img/measurements/Robodyn_duty_2047.png) | [![](assets/img/measurements/Robodyn_duty_4090.png)](assets/img/measurements/Robodyn_duty_4090.png) |
 | **Better ZCD Module** |     [![](assets/img/measurements/ZCD_duty_10.png)](assets/img/measurements/ZCD_duty_10.png)     |     [![](assets/img/measurements/ZCD_duty_2047.png)](assets/img/measurements/ZCD_duty_2047.png)     |     [![](assets/img/measurements/ZCD_duty_4090.png)](assets/img/measurements/ZCD_duty_4090.png)     |

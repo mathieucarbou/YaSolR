@@ -11,8 +11,6 @@ description: MQTT API
 - [`/grid`](#grid)
 - [`/router`](#router)
 - [`/router/outputX`](#routeroutputx)
-- [`/router/outputX/dimmer`](#routeroutputxdimmer)
-- [`/router/relayX`](#routerrelayx)
 - [`/system/app`](#systemapp)
 - [`/system/device`](#systemdevice)
 - [`/system/device/restart`](#systemdevicerestart)
@@ -149,15 +147,28 @@ lights = 🟢 🟡 ⚫
 power = 239.4906921
 power_factor = 0.495258361
 temperature = 26.30999947
+relay1 = off
+relay2 = off
 thdi = 1.550398946
 virtual_grid_power = -503.7492371
+```
+
+**Update**
+
+```properties
+# Switch relay on or off or for a duration in milliseconds
+<prefix>/router/relayX/set = "on"
+<prefix>/router/relayX/set = "on=5000"
+<prefix>/router/relayX/set = "off"
 ```
 
 ## `/router/outputX`
 
 ```properties
-bypass = on
 state = Idle
+bypass = on
+dimmer = on
+duty_cycle = 100
 temperature = 26.3
 ```
 
@@ -167,37 +178,9 @@ temperature = 26.3
 # Switch bypass on or off
 <prefix>/router/outputX/bypass/set = "on"
 <prefix>/router/outputX/bypass/set = "off"
-```
 
-## `/router/outputX/dimmer`
-
-```properties
-duty = 1000
-duty_cycle = 100
-state = on
-```
-
-**Update**
-
-```properties
-# Update the dimmer duty / duty cycle
-<prefix>/router/outputX/dimmer/duty/set = [0, 4095]
-<prefix>/router/outputX/dimmer/duty_cycle/set = [0.0, 100.0]
-```
-
-## `/router/relayX`
-
-```properties
-state = off
-```
-
-**Update**
-
-```properties
-# Switch relay on or off or for a duration in milliseconds
-<prefix>/router/relayX/state/set = "on"
-<prefix>/router/relayX/state/set = "on=5000"
-<prefix>/router/relayX/state/set = "off"
+# Update the dimmer duty cycle
+<prefix>/router/outputX/duty_cycle/set = [0.0, 100.0]
 ```
 
 ## `/system/app`

@@ -27,7 +27,6 @@ curl -X GET http://<esp-ip>/api
 {
   "config": "http://192.168.125.123/api/config",
   "config/backup": "http://192.168.125.123/api/config/backup",
-  "debug": "http://192.168.125.123/api/debug",
   "grid": "http://192.168.125.123/api/grid",
   "router": "http://192.168.125.123/api/router",
   "system": "http://192.168.125.123/api/system",
@@ -201,76 +200,56 @@ curl -X GET http://<esp-ip>/api/router
 ```json
 {
   "lights": "🟢 ⚫ ⚫",
-  "temperature": 26.12999916,
-  "virtual_grid_power": 688.6345825,
+  "relay1": "off",
+  "relay2": "off",
+  "temperature": 24.5,
+  "virtual_grid_power": -171.6903992,
   "measurements": {
     "apparent_power": 0,
     "current": 0,
-    "energy": 0,
+    "energy": 0.810000002,
     "power": 0,
     "power_factor": 0,
     "resistance": 0,
     "thdi": 0,
-    "voltage": 237.3479004,
+    "voltage": 0,
     "voltage_dimmed": 0
   },
   "output1": {
+    "state": "IDLE",
     "bypass": "off",
-    "state": "Idle",
-    "temperature": 24.62999916,
-    "dimmer": {
-      "duty": 0,
-      "duty_cycle": 0,
-      "state": "off"
-    },
+    "dimmer": "off",
+    "duty_cycle": 0,
+    "temperature": 24.25,
     "measurements": {
       "apparent_power": 0,
       "current": 0,
-      "energy": 0.388000011,
+      "energy": 0,
       "power": 0,
       "power_factor": 0,
       "resistance": 0,
       "thdi": 0,
-      "voltage": 237.3999939,
+      "voltage": 0,
       "voltage_dimmed": 0
-    },
-    "relay": {
-      "state": "off",
-      "switch_count": 0
     }
   },
   "output2": {
+    "state": "IDLE",
     "bypass": "off",
-    "state": "Idle",
-    "temperature": 24.62999916,
-    "dimmer": {
-      "duty": 0,
-      "duty_cycle": 0,
-      "state": "off"
-    },
+    "dimmer": "off",
+    "duty_cycle": 0,
+    "temperature": 0,
     "measurements": {
       "apparent_power": 0,
       "current": 0,
-      "energy": 0.647000015,
+      "energy": 0,
       "power": 0,
       "power_factor": 0,
       "resistance": 0,
       "thdi": 0,
-      "voltage": 237.6000061,
+      "voltage": 0,
       "voltage_dimmed": 0
-    },
-    "relay": {
-      "state": "off",
-      "switch_count": 0
     }
-  },
-  "relay1": {
-    "state": "off",
-    "switch_count": 0
-  },
-  "relay2": {
-    "state": "off",
-    "switch_count": 0
   }
 }
 ```
@@ -281,13 +260,6 @@ curl -X POST \
   -F "state=on" \
   -F "duration=20000" \
   http://<esp-ip>/api/router/relay1
-```
-
-```bash
-# Set the duty of the dimmer
-curl -X POST \
-  -F "duty=4095" \
-  http://<esp-ip>/api/router/output1/dimmer
 ```
 
 ```bash

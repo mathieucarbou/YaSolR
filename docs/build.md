@@ -11,7 +11,7 @@ description: Build
   - [The Minimalist](#the-minimalist)
   - [The Adventurer](#the-adventurer)
   - [The Elite](#the-elite)
-  - [The Professional (🚧)](#the-professional-%F0%9F%9A%A7)
+  - [The Professional](#the-professional)
   - [Possible Upgrades](#possible-upgrades)
   - [Remote JSY](#remote-jsy)
   - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter)
@@ -42,7 +42,7 @@ Here are below some examples:
 - [The Minimalist](#the-minimalist): the cheapest and easiest to build
 - [The Adventurer](#the-adventurer): for people who want to mitigate the flaws of the Robodyn and do some improvements over the existing Robodyn
 - [The Elite](#the-elite): for people who want to use a Random SSR instead of a Robodyn to safely dim more power and have a better Zero-Cross Detection circuit
-- [The Professional (🚧)](#the-professional-%F0%9F%9A%A7): probably the best and safe solution out there but requires an additional power source
+- [The Professional](#the-professional): probably the best and safe solution out there but requires an additional power source
 - [Possible Upgrades](#possible-upgrades): some additional components you can add to your router
 - [Remote JSY](#remote-jsy): a standalone application to place in your electrical panel to send the JSY metrics through UDP for remote installations
 - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter): a limited Solar Diverter / Router with Shelly devices and a voltage regulator
@@ -61,7 +61,7 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 > - Supports **Phase Control** and **Burst mode**
 > - Reuse your Shelly EM or 3EM and send through MQTT grid power and voltage
 > - You can also use a SSR and ZCD module instead of the Robodyn
->   {: .block-tip }
+{: .block-tip }
 
 > ##### WARNING
 >
@@ -70,7 +70,7 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 > - Bypass mode will use the Robodyn dimmer at 100% power
 > - Not as precise as a JSY (MQTT delays)
 > - No local measurement in place to measure the routed power (statistics will be empty)
->   {: .block-warning }
+{: .block-warning }
 
 ### The Minimalist
 
@@ -84,14 +84,14 @@ The _Minimalist_ build uses inexpensive and easy to use components to start a ro
 >
 > - Robodyn includes Zero-Cross Detection circuit
 > - Supports **Phase Control** and **Burst mode**
->   {: .block-tip }
+{: .block-tip }
 
 > ##### WARNING
 >
 > - Advised load not more than 2000W
 > - Robodyn has poor quality heat sink, soldering and Zero-Cross pulse
 > - Bypass mode will use the Robodyn dimmer at 100% power
->   {: .block-warning }
+{: .block-warning }
 
 ### The Adventurer
 
@@ -107,7 +107,7 @@ See the [Robodyn](#robodyn) section for more information.
 >
 > - Robodyn includes Zero-Cross Detection circuit
 > - Supports **Phase Control** and **Burst mode**
->   {: .block-tip }
+{: .block-tip }
 
 > ##### WARNING
 >
@@ -115,7 +115,7 @@ See the [Robodyn](#robodyn) section for more information.
 > - Robodyn has poor quality heat sink, soldering and Zero-Cross pulse
 > - Bypass mode will use the Robodyn dimmer at 100% power
 > - Requires to unsolder the heat sink and triac and put a new triac on a new heat sink
->   {: .block-warning }
+{: .block-warning }
 
 ### The Elite
 
@@ -132,14 +132,16 @@ The _Elite_ build is for people who want to use a Random SSR instead of a Robody
 > - Supports **Phase Control** and **Burst mode**
 > - Other types of Heat Sink are available: the image above is just an example. Pick one according to your load.
 > - All the components can be easily attached onto a DIN rail
->   {: .block-tip }
+{: .block-tip }
 
 > ##### WARNING
 >
 > - Bypass mode will use the SSR dimmer set at 100% power
->   {: .block-warning }
+{: .block-warning }
 
-### The Professional (🚧)
+### The Professional
+
+(🚧)
 
 The _Professional_ build uses a Voltage Regulator to control the power routing.
 This is probably the best reliable and efficient solution, but it is more complex to setup and wire.
@@ -155,13 +157,13 @@ It requires an additional 12V power supply.
 > - Supports **Phase Control** and **Burst mode**
 > - Heat sink are bigger and better quality: bigger models are also available
 > - All the components can be easily attached onto a DIN rail
->   {: .block-tip }
+{: .block-tip }
 
 > ##### WARNING
 >
 > - Requires an additional 12V power supply (i.e. Mean Well HDR-15-15 12V DC)
 > - Bypass mode will use the dimmer set at 100% power
->   {: .block-warning }
+{: .block-warning }
 
 ### Possible Upgrades
 
@@ -333,7 +335,7 @@ Links are provided for reference only, you can find them on other websites.
 > 2. The heat sink must be chosen according to the SSR / Triac. Here is a good video about the theory: [Calcul du dissipateur pour le triac d'un routeur](https://www.youtube.com/watch?v=_zAx1Q2IvJ8) (from Pierre)
 >
 > 3. Make sure to [improve the Robodyn wiring/soldering](https://sites.google.com/view/le-professolaire/routeur-professolaire)
->    {: .block-important }
+{: .block-important }
 
 ### Random and Zero-Cross SSR
 
