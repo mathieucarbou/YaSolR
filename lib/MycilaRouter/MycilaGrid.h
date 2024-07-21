@@ -146,10 +146,46 @@ namespace Mycila {
         getMeasurements(measurements);
         root["online"] = isConnected();
         toJson(root["measurements"].to<JsonObject>(), measurements);
-        toJson(root["source"]["local"].to<JsonObject>(), _localGridMetrics.orElse(GridMetrics()));
-        toJson(root["source"]["remote"].to<JsonObject>(), _remoteGridMetrics.orElse(GridMetrics()));
-        root["source"]["mqtt"]["power"] = _mqttPower.orElse(0);
-        root["source"]["mqtt"]["voltage"] = _mqttVoltage.orElse(0);
+
+        JsonObject local = root["source"]["local"].to<JsonObject>();
+        if (_localGridMetrics.isPresent()) {
+          local["enabled"] = true;
+          local["expired"] = _localGridMetrics.isExpired();
+          local["time"] = _localGridMetrics.getLastUpdateTime();
+          toJson(local, _localGridMetrics.get());
+        } else {
+          local["enabled"] = false;
+        }
+
+        JsonObject remote = root["source"]["remote"].to<JsonObject>();
+        if (_remoteGridMetrics.isPresent()) {
+          remote["enabled"] = true;
+          remote["expired"] = _remoteGridMetrics.isExpired();
+          remote["time"] = _remoteGridMetrics.getLastUpdateTime();
+          toJson(remote, _remoteGridMetrics.get());
+        } else {
+          remote["enabled"] = false;
+        }
+
+        JsonObject mqttPower = root["source"]["mqtt_power"].to<JsonObject>();
+        if (_mqttPower.isPresent()) {
+          mqttPower["enabled"] = true;
+          mqttPower["expired"] = _mqttPower.isExpired();
+          mqttPower["time"] = _mqttPower.getLastUpdateTime();
+          mqttPower["value"] = _mqttPower.get();
+        } else {
+          mqttPower["enabled"] = false;
+        }
+
+        JsonObject mqttVoltage = root["source"]["mqtt_voltage"].to<JsonObject>();
+        if (_mqttVoltage.isPresent()) {
+          mqttVoltage["enabled"] = true;
+          mqttVoltage["expired"] = _mqttVoltage.isExpired();
+          mqttVoltage["time"] = _mqttVoltage.getLastUpdateTime();
+          mqttVoltage["value"] = _mqttVoltage.get();
+        } else {
+          mqttVoltage["enabled"] = false;
+        }
       }
 
       static void toJson(const JsonObject& dest, const GridMetrics& metrics) {

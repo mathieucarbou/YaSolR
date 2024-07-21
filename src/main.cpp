@@ -63,7 +63,7 @@ void setup() {
   assert( core0TaskManager.asyncStart(512 * 7, 1, 0, 100, true));  // NOLINT
   assert( core1TaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
   assert(    ioTaskManager.asyncStart(512 * 9, 1, 1, 100, false)); // NOLINT
-  assert(   jsyTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT
+  assert(   jsyTaskManager.asyncStart(512 * 5, 5, 0, 100, true));  // NOLINT
   assert(  pzemTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT
   assert(routerTaskManager.asyncStart(512 * 6, 5, 1, 100, true));  // NOLINT
 

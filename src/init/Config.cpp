@@ -25,9 +25,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
   relayTask.setEnabledWhen([]() { return routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled(); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
-  routerTask.setInterval(537 * Mycila::TaskDuration::MILLISECONDS);
+  routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
   routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
-  routingTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
 #ifdef APP_MODEL_TRIAL
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif
@@ -131,7 +130,11 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     relay2.begin(config.get(KEY_PIN_RELAY2).toInt(), config.get(KEY_RELAY2_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
   // Electricity: JSY
-  jsyConfigTask.forceRun();
+  if (config.getBool(KEY_ENABLE_JSY)) {
+    jsy.begin(YASOLR_JSY_SERIAL, config.get(KEY_PIN_JSY_RX).toInt(), config.get(KEY_PIN_JSY_TX).toInt());
+    if (jsy.isEnabled() && jsy.getBaudRate() != Mycila::JSYBaudRate::BAUD_38400)
+      jsy.setBaudRate(Mycila::JSYBaudRate::BAUD_38400);
+  }
 
   // Electricity: PZEMs
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM))

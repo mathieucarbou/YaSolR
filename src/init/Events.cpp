@@ -170,7 +170,11 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         relay2.begin(config.get(KEY_PIN_RELAY2).toInt(), config.get(KEY_RELAY2_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
     } else if (key == KEY_ENABLE_JSY) {
-      jsyConfigTask.resume();
+      Mycila::JSYBaudRate bauds = jsy.getBaudRate();
+      jsy.end();
+      if (config.getBool(KEY_ENABLE_JSY)) {
+        jsy.begin(YASOLR_JSY_SERIAL, config.get(KEY_PIN_JSY_RX).toInt(), config.get(KEY_PIN_JSY_TX).toInt(), bauds);
+      }
 
     } else if (key == KEY_ENABLE_OUTPUT1_PZEM) {
       pzemO1.end();
@@ -341,7 +345,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         .voltage = jsy.getVoltage2(),
       });
       if (grid.isPowerUpdated()) {
-        routingTask.requestEarlyRun();
+        routingTask.resume();
       }
     }
   });
@@ -389,7 +393,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     udpMessageRateBuffer.add(millis() / 1000.0f);
 
     if (grid.isPowerUpdated()) {
-      routingTask.requestEarlyRun();
+      routingTask.resume();
     }
   });
 });

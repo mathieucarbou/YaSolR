@@ -6,6 +6,12 @@
 #include <YaSolRWebsite.h>
 
 Mycila::Task routerTask("Router", [](void* params) {
+  std::optional<float> voltage = grid.getVoltage();
+  std::optional<float> power = grid.getPower();
+
+  if (!voltage.has_value() || !power.has_value())
+    router.noDivert();
+
   output1.applyDimmerLimits();
   output2.applyDimmerLimits();
 
@@ -32,20 +38,18 @@ Mycila::Task relayTask("Relay", [](void* params) {
     return;
 });
 
-Mycila::Task routingTask("Routing", [](void* params) {
+Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
   std::optional<float> power = grid.getPower();
 
-  if (!voltage.has_value() || !power.has_value()) {
-    router.noDivert();
-  } else {
+  if (voltage.has_value() && power.has_value()) {
     router.divert(voltage.value(), power.value());
-  }
 
-  if (config.getBool(KEY_ENABLE_PID_VIEW)) {
-    YaSolR::Website.updatePID();
-    AsyncWebSocketMessageBuffer* buffer = wsDebugPID.makeBuffer(256);
-    snprintf((char*)buffer->get(), 256, "%d,%d,%d,%d,%d,%.3f,%.3f,%.3f,%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f", pidController.getProportionalMode(), pidController.getDerivativeMode(), pidController.getIntegralCorrectionMode(), pidController.isReversed(), static_cast<int>(pidController.getSetPoint()), pidController.getKp(), pidController.getKi(), pidController.getKd(), static_cast<int>(pidController.getOutputMin()), static_cast<int>(pidController.getOutputMax()), pidController.getInput(), pidController.getOutput(), pidController.getError(), pidController.getSum(), pidController.getPTerm(), pidController.getITerm(), pidController.getDTerm()); // NOLINT
-    wsDebugPID.textAll(buffer);
+    if (config.getBool(KEY_ENABLE_PID_VIEW)) {
+      YaSolR::Website.updatePID();
+      AsyncWebSocketMessageBuffer* buffer = wsDebugPID.makeBuffer(256);
+      snprintf((char*)buffer->get(), 256, "%d,%d,%d,%d,%d,%.3f,%.3f,%.3f,%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f", pidController.getProportionalMode(), pidController.getDerivativeMode(), pidController.getIntegralCorrectionMode(), pidController.isReversed(), static_cast<int>(pidController.getSetPoint()), pidController.getKp(), pidController.getKi(), pidController.getKd(), static_cast<int>(pidController.getOutputMin()), static_cast<int>(pidController.getOutputMax()), pidController.getInput(), pidController.getOutput(), pidController.getError(), pidController.getSum(), pidController.getPTerm(), pidController.getITerm(), pidController.getDTerm()); // NOLINT
+      wsDebugPID.textAll(buffer);
+    }
   }
 });
