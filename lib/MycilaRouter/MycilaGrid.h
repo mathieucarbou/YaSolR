@@ -138,7 +138,6 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
-
         root["online"] = isConnected();
 
         std::optional<float> power = getPower();
