@@ -37,34 +37,46 @@ namespace Mycila {
       ExpiringValue<float>& mqttVoltage() { return _mqttVoltage; }
       ExpiringValue<float>& pzemVoltage() { return _pzemVoltage; }
 
+      void setPowerExpiration(uint32_t expiration) { _power.setExpiration(expiration); }
+
+      std::optional<float> getPower() const { return _power.opt(); }
+
+      bool isConnected() const { return getVoltage().has_value(); }
+
       bool isPowerUpdated() {
         float update = NAN;
 
         // try in order of priority
-        if (_mqttPower.isPresent())
+        // - if MQTT is connected, it has priority
+        // - if JSY remote is connected, it has second priority
+        // - if JSY is connected, it has lowest priority
+        if (_mqttPower.isPresent()) {
           update = _mqttPower.get();
-        else if (_remoteGridMetrics.isPresent())
+        } else if (_remoteGridMetrics.isPresent()) {
           update = _remoteGridMetrics.get().power;
-        else if (_localGridMetrics.isPresent())
+        } else if (_localGridMetrics.isPresent()) {
           update = _localGridMetrics.get().power;
-        else
-          update = NAN;
+        }
+
+        if (isnan(update) && _power.neverUpdated()) {
+          return false;
+        }
 
         // all became unavailable ?
-        if (isnan(update) && !isnan(_lastPower)) {
-          _lastPower = NAN;
+        if (isnan(update)) {
+          _power.reset();
           return true;
         }
 
         // one became available ?
-        if (!isnan(update) && isnan(_lastPower)) {
-          _lastPower = update;
+        if (_power.neverUpdated()) {
+          _power.update(update);
           return true;
         }
 
-        // update is significant ?
-        if (abs(update - _lastPower) > MYCILA_GRID_POWER_DELTA_FILTER) {
-          _lastPower = update;
+        // check if update is significant
+        if (abs(update - _power.get()) > MYCILA_GRID_POWER_DELTA_FILTER) {
+          _power.update(update);
           return true;
         }
 
@@ -85,22 +97,6 @@ namespace Mycila {
           return _pzemVoltage.get();
         if (_mqttVoltage.isPresent() && _mqttVoltage.get() > 0)
           return _mqttVoltage.get();
-        return std::nullopt;
-      }
-
-      bool isConnected() const { return getVoltage().has_value(); }
-
-      // get the current grid power
-      // - if MQTT is connected, it has priority
-      // - if JSY remote is connected, it has second priority
-      // - if JSY is connected, it has lowest priority
-      std::optional<float> getPower() const {
-        if (_mqttPower.isPresent())
-          return _mqttPower.get();
-        if (_remoteGridMetrics.isPresent())
-          return _remoteGridMetrics.get().power;
-        if (_localGridMetrics.isPresent())
-          return _localGridMetrics.get().power;
         return std::nullopt;
       }
 
@@ -142,9 +138,21 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
+
+        root["online"] = isConnected();
+
+        std::optional<float> power = getPower();
+        if (power.has_value()) {
+          root["power"] = power.value();
+        }
+
+        std::optional<float> voltage = getVoltage();
+        if (voltage.has_value()) {
+          root["voltage"] = voltage.value();
+        }
+
         GridMetrics measurements;
         getMeasurements(measurements);
-        root["online"] = isConnected();
         toJson(root["measurements"].to<JsonObject>(), measurements);
 
         JsonObject local = root["source"]["local"].to<JsonObject>();
@@ -206,6 +214,6 @@ namespace Mycila {
       ExpiringValue<float> _mqttPower;
       ExpiringValue<float> _mqttVoltage;
       ExpiringValue<float> _pzemVoltage;
-      float _lastPower = NAN;
+      ExpiringValue<float> _power;
   };
 } // namespace Mycila

@@ -333,7 +333,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   });
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    if (eventType == Mycila::JSYEventType::EVT_READ) {
+    if (eventType == Mycila::JSYEventType::EVT_CHANGE) {
       grid.localGridMetrics().update({
         .apparentPower = jsy.getApparentPower2(),
         .current = jsy.getCurrent2(),
