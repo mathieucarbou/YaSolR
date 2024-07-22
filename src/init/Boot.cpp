@@ -98,7 +98,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_PID_SETPOINT, "0");
   config.configure(KEY_PID_KP, "0.2");
   config.configure(KEY_PID_KI, "0.1");
-  config.configure(KEY_PID_KD, "0.05");
+  config.configure(KEY_PID_KD, "0.01");
   config.configure(KEY_PID_OUT_MIN, "-1000");
   config.configure(KEY_PID_OUT_MAX, "5000");
   config.configure(KEY_PIN_DISPLAY_SCL, String(YASOLR_DISPLAY_CLOCK_PIN));

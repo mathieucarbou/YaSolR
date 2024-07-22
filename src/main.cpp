@@ -24,12 +24,12 @@ Mycila::Relay relay2;
 Mycila::TrafficLight lights;
 Mycila::ZCD zcd;
 
-Mycila::TaskManager ioTaskManager("yasolr-io");
-Mycila::TaskManager jsyTaskManager("yasolr-jsy");
-Mycila::TaskManager core0TaskManager("yasolr-core-0");
-Mycila::TaskManager core1TaskManager("yasolr-core-1");
-Mycila::TaskManager pzemTaskManager("yasolr-pzem");
-Mycila::TaskManager routerTaskManager("yasolr-router");
+Mycila::TaskManager coreTaskManager("y-core");
+Mycila::TaskManager jsyTaskManager("y-jsy");
+Mycila::TaskManager mqttTaskManager("y-mqtt");
+Mycila::TaskManager pioTaskManager("y-pio");
+Mycila::TaskManager pzemTaskManager("y-pzem");
+Mycila::TaskManager routerTaskManager("y-router");
 
 Mycila::Router router(pidController, jsy);
 
@@ -60,12 +60,12 @@ void setup() {
   initMqttSubscribersTask.forceRun();
   initDashboardCards.forceRun();
 
-  assert( core0TaskManager.asyncStart(512 * 7, 1, 0, 100, true));  // NOLINT
-  assert( core1TaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
-  assert(    ioTaskManager.asyncStart(512 * 9, 1, 1, 100, false)); // NOLINT
-  assert(   jsyTaskManager.asyncStart(512 * 5, 5, 0, 100, true));  // NOLINT
+  assert(   jsyTaskManager.asyncStart(512 * 6, 5, 0, 100, true));  // NOLINT
+  assert(   pioTaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
+  assert(  coreTaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
+  assert(  mqttTaskManager.asyncStart(512 * 9, 1, 1, 100, false)); // NOLINT
   assert(  pzemTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT
-  assert(routerTaskManager.asyncStart(512 * 6, 5, 1, 100, true));  // NOLINT
+  assert(routerTaskManager.asyncStart(512 * 6, 5, 0, 100, true));  // NOLINT
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());

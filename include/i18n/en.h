@@ -172,7 +172,7 @@
 #define YASOLR_LBL_166 "Kp"
 #define YASOLR_LBL_167 "Ki"
 #define YASOLR_LBL_168 "Kd"
-#define YASOLR_LBL_169 "Real-time PID Data"
+#define YASOLR_LBL_169 "Real-time Data"
 #define YASOLR_LBL_170 "Input (Grid Power, W)"
 #define YASOLR_LBL_171 "Output (Power to route, W)"
 #define YASOLR_LBL_172 "Error (W)"

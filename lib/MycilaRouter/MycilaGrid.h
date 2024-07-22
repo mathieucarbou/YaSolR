@@ -51,7 +51,9 @@ namespace Mycila {
 
       bool isConnected() const { return getVoltage().has_value(); }
 
-      bool isPowerUpdated() {
+      // called after having updated the values from MQTT, JSY and JSy Remote
+      // returns true if the power has been updated and routing must be updated too
+      bool updatePower() {
         float update = NAN;
 
         // try in order of priority

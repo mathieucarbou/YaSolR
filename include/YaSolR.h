@@ -84,32 +84,33 @@ extern Mycila::RouterRelay routerRelay2;
 extern Mycila::TrafficLight lights;
 extern Mycila::ZCD zcd;
 
-extern Mycila::TaskManager ioTaskManager;
-extern Mycila::Task haDiscoveryTask;
-extern Mycila::Task mqttPublishTask;
-extern Mycila::Task mqttPublishStaticTask;
-extern Mycila::Task mqttPublishConfigTask;
-
-extern Mycila::TaskManager jsyTaskManager;
-extern Mycila::Task jsyTask;
-
-extern Mycila::TaskManager core0TaskManager;
-extern Mycila::Task carouselTask;
-extern Mycila::Task displayTask;
-extern Mycila::Task ds18Task;
-extern Mycila::Task lightsTask;
-
-extern Mycila::TaskManager core1TaskManager;
+extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task dashboardTask;
-extern Mycila::Task mqttConfigTask;
+extern Mycila::Task debugTask;
+extern Mycila::Task networkConfigTask;
 extern Mycila::Task networkManagerTask;
-extern Mycila::Task networkUpTask;
 extern Mycila::Task otaTask;
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
 #ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
 #endif
+
+extern Mycila::TaskManager jsyTaskManager;
+extern Mycila::Task jsyTask;
+
+extern Mycila::TaskManager mqttTaskManager;
+extern Mycila::Task haDiscoveryTask;
+extern Mycila::Task mqttConfigTask;
+extern Mycila::Task mqttPublishTask;
+extern Mycila::Task mqttPublishStaticTask;
+extern Mycila::Task mqttPublishConfigTask;
+
+extern Mycila::TaskManager pioTaskManager;
+extern Mycila::Task carouselTask;
+extern Mycila::Task displayTask;
+extern Mycila::Task ds18Task;
+extern Mycila::Task lightsTask;
 
 extern Mycila::TaskManager pzemTaskManager;
 extern Mycila::Task pzemO1PairingTask;

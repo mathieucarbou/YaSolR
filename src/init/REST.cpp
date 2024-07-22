@@ -92,12 +92,12 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       ds18Sys.toJson(systemJson["ds18Sys"].to<JsonObject>());
       lights.toJson(systemJson["leds"].to<JsonObject>());
       Mycila::TaskMonitor.toJson(systemJson["stack"].to<JsonObject>());
-      core0TaskManager.toJson(systemJson[core0TaskManager.getName()].to<JsonObject>());
-      core1TaskManager.toJson(systemJson[core1TaskManager.getName()].to<JsonObject>());
+      pioTaskManager.toJson(systemJson[pioTaskManager.getName()].to<JsonObject>());
+      coreTaskManager.toJson(systemJson[coreTaskManager.getName()].to<JsonObject>());
       routerTaskManager.toJson(systemJson[routerTaskManager.getName()].to<JsonObject>());
       jsyTaskManager.toJson(systemJson[jsyTaskManager.getName()].to<JsonObject>());
       pzemTaskManager.toJson(systemJson[pzemTaskManager.getName()].to<JsonObject>());
-      ioTaskManager.toJson(systemJson[ioTaskManager.getName()].to<JsonObject>());
+      mqttTaskManager.toJson(systemJson[mqttTaskManager.getName()].to<JsonObject>());
 
       config.toJson(root["config"].to<JsonObject>());
 

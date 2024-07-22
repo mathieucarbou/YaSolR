@@ -10,7 +10,7 @@
 
 Mycila::Task networkManagerTask("ESPConnect", [](void* params) { ESPConnect.loop(); });
 
-Mycila::Task networkUpTask("Network UP", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Enable Network Services...");
 
   // Web server

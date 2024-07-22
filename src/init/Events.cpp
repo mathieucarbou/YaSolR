@@ -207,8 +207,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       pidController.setSetPoint(config.get(KEY_PID_SETPOINT).toFloat());
       pidController.setTunings(config.get(KEY_PID_KP).toFloat(), config.get(KEY_PID_KI).toFloat(), config.get(KEY_PID_KD).toFloat());
       pidController.setOutputLimits(config.get(KEY_PID_OUT_MIN).toFloat(), config.get(KEY_PID_OUT_MAX).toFloat());
-      logger.info(TAG, "PID Controller reconfigured! Resetting...");
-      pidController.reset();
+      logger.info(TAG, "PID Controller reconfigured!");
     }
 
     YaSolR::Website.initCards();
@@ -234,14 +233,14 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         break;
       case ESPConnectState::AP_STARTED:
         logger.info(TAG, "Access Point %s started with IP address %s", ESPConnect.getWiFiSSID().c_str(), ESPConnect.getIPAddress().toString().c_str());
-        networkUpTask.resume();
+        networkConfigTask.resume();
         break;
       case ESPConnectState::NETWORK_CONNECTING:
         logger.info(TAG, "Connecting to network...");
         break;
       case ESPConnectState::NETWORK_CONNECTED:
         logger.info(TAG, "Connected with IP address %s", ESPConnect.getIPAddress().toString().c_str());
-        networkUpTask.resume();
+        networkConfigTask.resume();
         break;
       case ESPConnectState::NETWORK_TIMEOUT:
         logger.warn(TAG, "Unable to connect!");
@@ -350,7 +349,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         .powerFactor = jsy.getPowerFactor2(),
         .voltage = jsy.getVoltage2(),
       });
-      if (grid.isPowerUpdated()) {
+      if (grid.updatePower()) {
         routingTask.resume();
       }
     }
@@ -398,7 +397,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     udpMessageRateBuffer.add(millis() / 1000.0f);
 
-    if (grid.isPowerUpdated()) {
+    if (grid.updatePower()) {
       routingTask.resume();
     }
   });
