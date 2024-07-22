@@ -35,8 +35,8 @@ static uint16_t semiPeriodLength = 0;
 // Activation delays higher than *endMargin* turn the thyristor fully OFF.
 // Tune this parameters accordingly to your setup (electrical network, MCU, and ZC circuitry).
 // Values are expressed in microseconds.
-static const uint16_t startMargin = 100;
-static const uint16_t endMargin = 100;
+static const uint16_t startMargin = 50;
+static const uint16_t endMargin = 130;
 
 // Merge Period represents the time span in which 2 (or more) very near delays are merged (the
 // higher ones are merged in the smaller one). This could be necessary for 2 main reasons:
@@ -50,7 +50,7 @@ static const uint16_t endMargin = 100;
 // on AVR, you should set a bigger Merge Period (e.g. 100us). Moreover, you should also consider the
 // number of instantiated dimmers: ISRs will take more time as the dimmer count increases, so you
 // may need to increase Merge Period. The default value is intended to handle up to 8 dimmers.
-static const uint16_t mergePeriod = 20;
+static const uint16_t mergePeriod = 50;
 
 // Period in microseconds before the end of the semiperiod when an interrupt is triggered to
 // turn off all gate signals.
@@ -131,7 +131,7 @@ void ARDUINO_ISR_ATTR activate_thyristors() {
 
   // This while is dedicated to all those thyristors with delay == semiPeriodLength-margin; those
   // are the ones who shouldn't turn on, hence they can be skipped
-  while (thyristorManaged < Thyristor::nThyristors && pinDelay[thyristorManaged].delay == semiPeriodLength) {
+  while (thyristorManaged < Thyristor::nThyristors && pinDelay[thyristorManaged].delay >= semiPeriodLength - endMargin) {
     thyristorManaged++;
   }
 
@@ -139,10 +139,11 @@ void ARDUINO_ISR_ATTR activate_thyristors() {
     int delayAbsolute = pinDelay[thyristorManaged].delay;
     setAlarm(delayAbsolute);
   } else {
-    // If there are not more thyristors to serve, set timer to turn off gates' signal
-    uint16_t delayAbsolute = semiPeriodLength - gateTurnOffTime;
-    nextISR = INT_TYPE::TURN_OFF_GATES;
-    setAlarm(delayAbsolute);
+    // // If there are not more thyristors to serve, set timer to turn off gates' signal
+    // uint16_t delayAbsolute = semiPeriodLength - gateTurnOffTime;
+    // nextISR = INT_TYPE::TURN_OFF_GATES;
+    // // ESP_LOGW("Thyristor", "nextISR = INT_TYPE::TURN_OFF_GATES in %" PRIu16 " us", delayAbsolute);
+    // setAlarm(delayAbsolute);
   }
 }
 
@@ -238,11 +239,10 @@ void ARDUINO_ISR_ATTR zero_cross_int() {
 
 // In microsecond
 int Thyristor::semiPeriodShrinkMargin = 50;
-int Thyristor::semiPeriodExpandMargin = 50;
 
 static uint32_t lastTime = 0;
-static Mycila::CircularBuffer<uint32_t, 5> queue;
-static Mycila::CircularBuffer<uint32_t, 5> pulses;
+static Mycila::CircularBuffer<uint32_t, 100> queue;
+static Mycila::CircularBuffer<uint32_t, 100> pulses;
 
 void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
   if (!lastTime) {
@@ -263,7 +263,7 @@ void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
 
     // Filters out spurious interrupts. The effectiveness of this simple
     // filter could vary depending on noise on electrical network.
-    if (diff < semiPeriodLength - Thyristor::semiPeriodShrinkMargin) {
+    if (semiPeriodLength && diff < semiPeriodLength - Thyristor::semiPeriodShrinkMargin) {
       return;
     }
 
@@ -272,6 +272,7 @@ void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
     // I decided to use "16" because is a power of 2, very fast to be computed.
     if (semiPeriodLength && diff > semiPeriodLength * 16) {
       queue.reset();
+      // ESP_LOGW("Thyristor", "queue.reset();");
     } else {
       // If filtering has passed, I can update the moving average
       queue.add(diff);
@@ -280,19 +281,13 @@ void ARDUINO_ISR_ATTR zero_cross_pulse_int() {
     lastTime = now;
   }
 
-  uint32_t pulseWidth = pulses.last();
+  uint32_t pulseWidth = pulses.avg();
 
   if (!pulseWidth)
     return;
 
-  pulseWidth /= 2;
-
-  if (pulseWidth > endMargin) {
-    nextISR = INT_TYPE::ZC;
-    startTimerAndTrigger(pulseWidth - endMargin);
-  } else {
-    zero_cross_int();
-  }
+  nextISR = INT_TYPE::ZC;
+  startTimerAndTrigger(pulseWidth / 2 - endMargin);
 }
 
 void ARDUINO_ISR_ATTR isr_selector() {
@@ -467,7 +462,7 @@ void Thyristor::setFrequency(float frequency) {
   semiPeriodLength = 500000 / frequency;
 }
 
-uint16_t Thyristor::getPulseWidth() {
+uint16_t Thyristor::getAvgPulseWidth() {
   return pulses.avg();
 }
 

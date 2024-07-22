@@ -32,14 +32,22 @@ namespace Mycila {
   class Grid {
     public:
       ExpiringValue<GridMetrics>& localGridMetrics() { return _localGridMetrics; }
+      const ExpiringValue<GridMetrics>& localGridMetrics() const { return _localGridMetrics; }
+
       ExpiringValue<GridMetrics>& remoteGridMetrics() { return _remoteGridMetrics; }
+      const ExpiringValue<GridMetrics>& remoteGridMetrics() const { return _remoteGridMetrics; }
+
       ExpiringValue<float>& mqttPower() { return _mqttPower; }
+      const ExpiringValue<float>& mqttPower() const { return _mqttPower; }
+
       ExpiringValue<float>& mqttVoltage() { return _mqttVoltage; }
+      const ExpiringValue<float>& mqttVoltage() const { return _mqttVoltage; }
+
       ExpiringValue<float>& pzemVoltage() { return _pzemVoltage; }
+      const ExpiringValue<float>& pzemVoltage() const { return _pzemVoltage; }
 
-      void setPowerExpiration(uint32_t expiration) { _power.setExpiration(expiration); }
-
-      std::optional<float> getPower() const { return _power.opt(); }
+      ExpiringValue<float>& power() { return _power; }
+      const ExpiringValue<float>& power() const { return _power; }
 
       bool isConnected() const { return getVoltage().has_value(); }
 
@@ -140,9 +148,8 @@ namespace Mycila {
       void toJson(const JsonObject& root) const {
         root["online"] = isConnected();
 
-        std::optional<float> power = getPower();
-        if (power.has_value()) {
-          root["power"] = power.value();
+        if (_power.isPresent()) {
+          root["power"] = _power.get();
         }
 
         std::optional<float> voltage = getVoltage();

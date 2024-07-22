@@ -119,7 +119,7 @@ class Thyristor {
      */
     static void setFrequency(float frequency);
 
-    static uint16_t getPulseWidth();
+    static uint16_t getAvgPulseWidth();
     static uint16_t getMaxPulseWidth();
     static uint16_t getMinPulseWidth();
     static uint16_t getLastPulseWidth();

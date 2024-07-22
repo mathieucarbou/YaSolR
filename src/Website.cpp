@@ -972,7 +972,7 @@ void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
 void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::RouterOutput& output) {
   if (output.temperature().neverUpdated()) {
     card.update(YASOLR_LBL_115, "");
-  } else if (!output.temperature()) {
+  } else if (output.temperature().isAbsent()) {
     card.update(YASOLR_LBL_123, "");
   } else {
     card.update(output.temperature().get(), "°C");

@@ -7,9 +7,9 @@
 
 Mycila::Task routerTask("Router", [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
-  std::optional<float> power = grid.getPower();
+  const Mycila::ExpiringValue<float>& power = grid.power();
 
-  if (!voltage.has_value() || !power.has_value())
+  if (!voltage.has_value() || power.isAbsent())
     router.noDivert();
 
   output1.applyDimmerLimits();
@@ -40,10 +40,10 @@ Mycila::Task relayTask("Relay", [](void* params) {
 
 Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
-  std::optional<float> power = grid.getPower();
+  const Mycila::ExpiringValue<float>& power = grid.power();
 
-  if (voltage.has_value() && power.has_value()) {
-    router.divert(voltage.value(), power.value());
+  if (voltage.has_value() && power.isPresent()) {
+    router.divert(voltage.value(), power.get());
 
     if (config.getBool(KEY_ENABLE_PID_VIEW)) {
       YaSolR::Website.updatePID();
