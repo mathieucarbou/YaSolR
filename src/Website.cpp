@@ -492,6 +492,7 @@ void YaSolR::WebsiteClass::initCards() {
   _debugMode.update(config.getBool(KEY_ENABLE_DEBUG));
   _otaLink.update("/update");
   _energyReset.setDisplay(config.getBool(KEY_ENABLE_JSY) || config.getBool(KEY_ENABLE_OUTPUT1_PZEM) || config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
+  _debugInfo.setDisplay(config.getBool(KEY_ENABLE_DEBUG));
 
   // network (config)
   _adminPwd.update(config.get(KEY_ADMIN_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
