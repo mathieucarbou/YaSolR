@@ -65,7 +65,7 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
   wsDebugPID.onEvent([](AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
     if (type == WS_EVT_CONNECT) {
       logger.info(TAG, "Websocket client connected to: /ws/pid/csv");
-      wsDebugPID.cleanupClients(4);
+      wsDebugPID.cleanupClients();
       client->text("pMode,dMode,icMode,rev,setpoint,kp,ki,kd,outMin,outMax,input,output,error,sum,pTerm,iTerm,dTerm");
     }
   });
