@@ -55,13 +55,13 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // Task Monitor
   Mycila::TaskMonitor.begin();
   // Mycila::TaskMonitor.addTask("arduino_events");            // Network
-  Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
   // Mycila::TaskMonitor.addTask("async_udp");                 // AsyncUDP
-  Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
+  // Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
   // Mycila::TaskMonitor.addTask("wifi");                      // WiFI
-  Mycila::TaskMonitor.addTask(pioTaskManager.getName());  // YaSolR
-  Mycila::TaskMonitor.addTask(coreTaskManager.getName());  // YaSolR
-  Mycila::TaskMonitor.addTask(mqttTaskManager.getName());     // YaSolR
+  Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
+  Mycila::TaskMonitor.addTask(pioTaskManager.getName());    // YaSolR
+  Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
+  Mycila::TaskMonitor.addTask(mqttTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR

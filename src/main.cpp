@@ -65,7 +65,7 @@ void setup() {
   assert(  coreTaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
   assert(  mqttTaskManager.asyncStart(512 * 9, 1, 1, 100, false)); // NOLINT
   assert(  pzemTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT
-  assert(routerTaskManager.asyncStart(512 * 6, 5, 0, 100, true));  // NOLINT
+  assert(routerTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());

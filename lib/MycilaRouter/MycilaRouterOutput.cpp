@@ -24,11 +24,11 @@ extern Mycila::Logger logger;
 #define TAG "OUTPUT"
 
 static const char* RouterOutputStateNames[] = {
-  "Disabled",
-  "Idle",
-  "Routing",
-  "Bypass",
-  "Auto Bypass",
+  "DISABLED",
+  "IDLE",
+  "ROUTING",
+  "BYPASS_MANUAL",
+  "BYPASS_AUTO",
 };
 
 static const char* DaysOfWeek[] = {"sun", "mon", "tue", "wed", "thu", "fri", "sat"};
