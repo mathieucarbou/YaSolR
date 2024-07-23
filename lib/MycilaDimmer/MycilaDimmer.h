@@ -4,11 +4,14 @@
  */
 #pragma once
 
-#include <ArduinoJson.h>
 #include <MycilaZCD.h>
 #include <WString.h>
 #include <esp32-hal-gpio.h>
 #include <thyristor.h>
+
+#ifdef MYCILA_JSON_SUPPORT
+  #include <ArduinoJson.h>
+#endif
 
 #include <functional>
 
@@ -32,6 +35,7 @@ namespace Mycila {
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _dimmer != nullptr; }
 
+#ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
         root["angle"] = angle;
@@ -42,6 +46,7 @@ namespace Mycila {
         root["enabled"] = _dimmer != nullptr;
         root["state"] = _duty > 0 ? "on" : "off";
       }
+#endif
 
       // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
       void setDuty(uint16_t duty);

@@ -4,7 +4,9 @@
  */
 #pragma once
 
-#include <ArduinoJson.h>
+#ifdef MYCILA_JSON_SUPPORT
+  #include <ArduinoJson.h>
+#endif
 
 #include <esp32-hal-gpio.h>
 
@@ -29,6 +31,7 @@ namespace Mycila {
       uint16_t getMaxPulseWidth() const;
       uint16_t getMinPulseWidth() const;
 
+#ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         root["enabled"] = isEnabled();
         root["pulse_freq"] = getPulseFrequency();
@@ -38,6 +41,7 @@ namespace Mycila {
         root["pulse_width_min"] = getMinPulseWidth();
         root["semi_period"] = getSemiPeriod();
       }
+#endif
 
     private:
       bool _enabled = false;
