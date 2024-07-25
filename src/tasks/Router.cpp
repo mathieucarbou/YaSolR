@@ -12,8 +12,8 @@ Mycila::Task routerTask("Router", [](void* params) {
   if (!voltage.has_value() || power.isAbsent())
     router.noDivert();
 
-  output1.applyDimmerLimits();
-  output2.applyDimmerLimits();
+  output1.applyTemperatureLimit();
+  output2.applyTemperatureLimit();
 
   output1.applyAutoBypass();
   output2.applyAutoBypass();

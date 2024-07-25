@@ -27,11 +27,6 @@ namespace Mycila {
       void begin(const int8_t pin);
       void end();
 
-      void off() { setDuty(0); }
-      bool isOff() const { return _duty == 0; }
-      bool isOn() const { return _duty > 0; }
-      bool isOnAtFullPower() const { return _duty >= MYCILA_DIMMER_MAX_DUTY; }
-
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _dimmer != nullptr; }
 
@@ -48,15 +43,29 @@ namespace Mycila {
       }
 #endif
 
+      void setOn() { setDuty(MYCILA_DIMMER_MAX_DUTY); }
+      void setOff() { setDuty(0); }
+      bool isOff() const { return _duty == 0; }
+      bool isOn() const { return _duty > 0; }
+      bool isOnAtFullPower() const { return _duty >= MYCILA_DIMMER_MAX_DUTY; }
+
       // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
       void setDuty(uint16_t duty);
+
+      // set the maximum duty [0, MYCILA_DIMMER_MAX_DUTY]
+      void setDutyLimit(uint16_t limit);
+
       uint16_t getDuty() const { return _duty; }
+      uint16_t getDutyLimit() const { return _limit; }
 
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
       void setDutyCycle(float dutyCycle) { setDuty(dutyCycle * MYCILA_DIMMER_MAX_DUTY); }
+      void setDutyCycleLimit(float limit) { setDutyLimit(limit * MYCILA_DIMMER_MAX_DUTY); }
+
       float getDutyCycle() const { return static_cast<float>(_duty) / MYCILA_DIMMER_MAX_DUTY; }
+      float getDutyCycleLimit() const { return static_cast<float>(_limit) / MYCILA_DIMMER_MAX_DUTY; }
 
       // Delay [0, semi-period] us
       // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
@@ -78,5 +87,6 @@ namespace Mycila {
       gpio_num_t _pin = GPIO_NUM_NC;
       Thyristor* _dimmer = nullptr;
       uint16_t _duty = 0;
+      uint16_t _limit = MYCILA_DIMMER_MAX_DUTY;
   };
 } // namespace Mycila

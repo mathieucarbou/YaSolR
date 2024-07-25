@@ -41,10 +41,10 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
       output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-      dimmerO1.off();
+      dimmerO1.setOff();
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX_DUTY) {
-      output1.config.dimmerDutyLimit = constrain(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt(), 0, MYCILA_DIMMER_MAX_DUTY);
+      dimmerO1.setDutyLimit(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt());
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX_TEMP) {
       output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP).toInt();
@@ -72,10 +72,10 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
       output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-      dimmerO2.off();
+      dimmerO2.setOff();
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX_DUTY) {
-      output2.config.dimmerDutyLimit = constrain(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt(), 0, MYCILA_DIMMER_MAX_DUTY);
+      dimmerO2.setDutyLimit(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt());
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX_TEMP) {
       output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP).toInt();

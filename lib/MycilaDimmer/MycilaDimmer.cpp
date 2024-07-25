@@ -78,7 +78,7 @@ void Mycila::Dimmer::setDuty(uint16_t newDuty) {
     return;
 
   // ensure newDuty is within bounds
-  newDuty = constrain(newDuty, 0, MYCILA_DIMMER_MAX_DUTY);
+  newDuty = constrain(newDuty, 0, _limit);
 
   // nothing to do ?
   if (_duty == newDuty)
@@ -102,4 +102,11 @@ void Mycila::Dimmer::setDuty(uint16_t newDuty) {
   }
 
   _duty = newDuty;
+}
+
+void Mycila::Dimmer::setDutyLimit(uint16_t limit) {
+  _limit = constrain(limit, 0, MYCILA_DIMMER_MAX_DUTY);
+  LOGD(TAG, "Dimmer duty limit set to %" PRIu16, _limit);
+  if (_duty > _limit)
+    setDuty(_limit);
 }

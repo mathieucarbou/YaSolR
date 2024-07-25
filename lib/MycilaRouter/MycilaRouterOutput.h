@@ -46,7 +46,6 @@ namespace Mycila {
       typedef struct {
           float calibratedResistance = 0;
           bool autoDimmer = false;
-          uint16_t dimmerDutyLimit = MYCILA_DIMMER_MAX_DUTY;
           uint8_t dimmerTempLimit = 0;
           bool autoBypass = false;
           uint8_t autoStartTemperature = 0;
@@ -129,11 +128,11 @@ namespace Mycila {
       // At 0% power, duty == 0
       // At 100% power, duty == 1
       bool tryDimmerDutyCycle(float dutyCycle) { return tryDimmerDuty(constrain(dutyCycle, 0.0f, 1.0f) * MYCILA_DIMMER_MAX_DUTY); }
-      void applyDimmerLimits();
+      void applyTemperatureLimit();
 
       float autoDivert(float gridVoltage, float availablePowerToDivert) {
         if (!_dimmer->isEnabled() || _autoBypassEnabled || !config.autoDimmer || config.calibratedResistance <= 0 || isDimmerTemperatureLimitReached()) {
-          _dimmer->off();
+          _dimmer->setOff();
           return 0;
         }
 
@@ -141,21 +140,17 @@ namespace Mycila {
         // match duty == 4095
         const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
 
-        // maximum power that can be diverted to the load based on the dimmer duty cycle limit set by user
-        const float powerLimit = maxPower * config.dimmerDutyLimit / MYCILA_DIMMER_MAX_DUTY;
-
         // power allowed to be diverted to the load after applying the reserved excess power ratio
-        const float reservedPowerToDivert = availablePowerToDivert * config.reservedExcessPowerRatio;
-
-        // power that will be diverted to the load
-        const float usedPower = constrain(reservedPowerToDivert, 0, powerLimit);
+        const float reservedPowerToDivert = constrain(availablePowerToDivert * config.reservedExcessPowerRatio, 0, maxPower);
 
         // convert to a duty
-        const uint16_t duty = maxPower == 0 ? 0 : usedPower * MYCILA_DIMMER_MAX_DUTY / maxPower;
+        const uint16_t duty = maxPower == 0 ? 0 : reservedPowerToDivert / maxPower;
 
+        // try to apply duty
         _dimmer->setDuty(duty);
 
-        return usedPower;
+        // returns the used power as per the dimmer state
+        return maxPower * _dimmer->getDutyCycle();
       }
 
       // bypass

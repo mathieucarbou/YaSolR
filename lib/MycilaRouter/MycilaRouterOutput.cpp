@@ -58,18 +58,15 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
     return false;
   }
 
-  if (duty > config.dimmerDutyLimit) {
-    duty = config.dimmerDutyLimit;
-  }
-
   _setBypass(false);
-
-  LOGD(TAG, "Setting Dimmer '%s' duty to %" PRIu16 "...", _name, duty);
   _dimmer->setDuty(duty);
+
+  LOGD(TAG, "Set Dimmer '%s' duty to %" PRIu16 "...", _name, _dimmer->getDuty());
+
   return true;
 }
 
-void Mycila::RouterOutput::applyDimmerLimits() {
+void Mycila::RouterOutput::applyTemperatureLimit() {
   if (_autoBypassEnabled)
     return;
 
@@ -79,15 +76,9 @@ void Mycila::RouterOutput::applyDimmerLimits() {
   if (_dimmer->isOff())
     return;
 
-  if (_dimmer->getDuty() > config.dimmerDutyLimit) {
-    LOGW(TAG, "Dimmer '%s' reached its duty limit at %" PRIu16, _name, config.dimmerDutyLimit);
-    _dimmer->setDuty(config.dimmerDutyLimit);
-    return;
-  }
-
   if (isDimmerTemperatureLimitReached()) {
     LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
-    _dimmer->off();
+    _dimmer->setOff();
     return;
   }
 }
@@ -228,7 +219,7 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
     // we want to activate bypass
     if (_relay->isEnabled()) {
       // we have a relay in-place: use it
-      _dimmer->off();
+      _dimmer->setOff();
       if (_relay->isOff()) {
         if (log)
           LOGD(TAG, "Turning Bypass Relay '%s' ON...", _name);
@@ -241,7 +232,7 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
       if (_dimmer->isEnabled()) {
         if (log)
           LOGD(TAG, "Turning Dimmer '%s' ON...", _name);
-        _dimmer->setDuty(MYCILA_DIMMER_MAX_DUTY);
+        _dimmer->setOn();
         _bypassEnabled = true;
       } else {
         if (log)
@@ -261,7 +252,7 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
     } else {
       if (log)
         LOGD(TAG, "Turning Dimmer '%s' OFF...", _name);
-      _dimmer->off();
+      _dimmer->setOff();
     }
     _bypassEnabled = false;
   }
