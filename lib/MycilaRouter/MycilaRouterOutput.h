@@ -127,7 +127,7 @@ namespace Mycila {
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
-      bool tryDimmerDutyCycle(float dutyCycle) { return tryDimmerDuty(constrain(dutyCycle, 0.0f, 1.0f) * MYCILA_DIMMER_MAX_DUTY); }
+      bool tryDimmerDutyCycle(float dutyCycle) { return tryDimmerDuty(dutyCycle * MYCILA_DIMMER_MAX_DUTY); }
       void applyTemperatureLimit();
 
       float autoDivert(float gridVoltage, float availablePowerToDivert) {

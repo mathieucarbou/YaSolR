@@ -52,8 +52,8 @@ void Mycila::Dimmer::begin(const int8_t pin) {
   pinMode(_pin, OUTPUT);
   digitalWrite(_pin, LOW);
 
-  _duty = 0;
   _dimmer = new Thyristor(_pin);
+  setDuty(_dutyMin);
 }
 
 void Mycila::Dimmer::end() {
@@ -68,45 +68,58 @@ void Mycila::Dimmer::end() {
   }
 }
 
-void Mycila::Dimmer::setDuty(uint16_t newDuty) {
+void Mycila::Dimmer::setDuty(const uint16_t newDuty) {
   if (!_dimmer)
     return;
-
-  const uint16_t semiPeriod = _zcd->getSemiPeriod();
-
-  if (semiPeriod == 0)
-    return;
-
-  // ensure newDuty is within bounds
-  newDuty = constrain(newDuty, 0, _limit);
 
   // nothing to do ?
   if (_duty == newDuty)
     return;
 
-  if (newDuty == 0) {
+  const uint16_t semiPeriod = _zcd->getSemiPeriod();
+  if (semiPeriod == 0)
+    return;
+
+  // ensure newDuty is within bounds
+  _duty = constrain(newDuty, 0, _dutyLimit);
+  if (_duty == 0) {
     _dimmer->setDelay(semiPeriod);
 
-  } else if (newDuty == MYCILA_DIMMER_MAX_DUTY) {
+  } else if (_duty == MYCILA_DIMMER_MAX_DUTY) {
     _dimmer->setDelay(0);
 
   } else {
+    // duty remapping (equivalent to Shelly Dimmer remapping feature)
+    const uint16_t remappedDuty = map(_duty, 0, MYCILA_DIMMER_MAX_DUTY, _dutyMin, _dutyMax);
+
     // map new level to firing delay (LUT + linear interpolation)
-    uint32_t slot = newDuty * TABLE_PHASE_SCALE + (TABLE_PHASE_SCALE >> 1);
-    uint16_t index = slot >> 16;
-    uint32_t a = TABLE_PHASE_DELAY[index];
-    uint32_t b = TABLE_PHASE_DELAY[index + 1];
-    uint32_t delay = a - (((a - b) * (slot & 0xffff)) >> 16);
-    uint32_t period = semiPeriod;
+    const uint32_t slot = remappedDuty * TABLE_PHASE_SCALE + (TABLE_PHASE_SCALE >> 1);
+    const uint16_t index = slot >> 16;
+    const uint32_t a = TABLE_PHASE_DELAY[index];
+    const uint32_t b = TABLE_PHASE_DELAY[index + 1];
+    const uint32_t delay = a - (((a - b) * (slot & 0xffff)) >> 16);
+    const uint32_t period = semiPeriod;
     _dimmer->setDelay((delay * period) >> 16);
   }
-
-  _duty = newDuty;
 }
 
 void Mycila::Dimmer::setDutyLimit(uint16_t limit) {
-  _limit = constrain(limit, 0, MYCILA_DIMMER_MAX_DUTY);
-  LOGD(TAG, "Dimmer duty limit set to %" PRIu16, _limit);
-  if (_duty > _limit)
-    setDuty(_limit);
+  _dutyLimit = constrain(limit, 0, MYCILA_DIMMER_MAX_DUTY);
+  LOGD(TAG, "Dimmer %d duty limit set to %" PRIu16, _pin, _dutyLimit);
+  if (_duty > _dutyLimit)
+    setDuty(_dutyLimit);
+}
+
+void Mycila::Dimmer::setDutyMin(uint16_t min) {
+  _dutyMin = constrain(min, 0, _dutyMax);
+  LOGD(TAG, "Dimmer %d duty min set to %" PRIu16, _pin, _dutyMin);
+  if (_duty < _dutyMin)
+    setDuty(_dutyMin);
+}
+
+void Mycila::Dimmer::setDutyMax(uint16_t max) {
+  _dutyMax = constrain(max, _dutyMin, MYCILA_DIMMER_MAX_DUTY);
+  LOGD(TAG, "Dimmer %d duty max set to %" PRIu16, _pin, _dutyMax);
+  if (_duty > _dutyMax)
+    setDuty(_dutyMax);
 }
