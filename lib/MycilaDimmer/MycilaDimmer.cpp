@@ -72,10 +72,6 @@ void Mycila::Dimmer::setDuty(const uint16_t newDuty) {
   if (!_dimmer)
     return;
 
-  // nothing to do ?
-  if (_duty == newDuty)
-    return;
-
   const uint16_t semiPeriod = _zcd->getSemiPeriod();
   if (semiPeriod == 0)
     return;
@@ -106,6 +102,7 @@ void Mycila::Dimmer::setDuty(const uint16_t newDuty) {
 void Mycila::Dimmer::setDutyLimit(uint16_t limit) {
   _dutyLimit = constrain(limit, 0, MYCILA_DIMMER_MAX_DUTY);
   LOGD(TAG, "Dimmer %d duty limit set to %" PRIu16, _pin, _dutyLimit);
+  setDuty(_duty);
   if (_duty > _dutyLimit)
     setDuty(_dutyLimit);
 }
@@ -113,13 +110,11 @@ void Mycila::Dimmer::setDutyLimit(uint16_t limit) {
 void Mycila::Dimmer::setDutyMin(uint16_t min) {
   _dutyMin = constrain(min, 0, _dutyMax);
   LOGD(TAG, "Dimmer %d duty min set to %" PRIu16, _pin, _dutyMin);
-  if (_duty < _dutyMin)
-    setDuty(_dutyMin);
+  setDuty(_duty);
 }
 
 void Mycila::Dimmer::setDutyMax(uint16_t max) {
   _dutyMax = constrain(max, _dutyMin, MYCILA_DIMMER_MAX_DUTY);
   LOGD(TAG, "Dimmer %d duty max set to %" PRIu16, _pin, _dutyMax);
-  if (_duty > _dutyMax)
-    setDuty(_dutyMax);
+  setDuty(_duty);
 }

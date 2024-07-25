@@ -124,11 +124,17 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   if (config.getBool(KEY_ENABLE_ZCD))
     zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
 
-  // Electricity: Dimmers
-  dimmerO1.setDutyLimit(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt());
+  // Electricity: Dimmer 1
+  dimmerO1.setDutyMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toInt());
+  dimmerO1.setDutyMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toInt());
+  dimmerO1.setDutyLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toInt());
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
     dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
-  dimmerO2.setDutyLimit(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt());
+
+  // Electricity: Dimmer 2
+  dimmerO2.setDutyMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toInt());
+  dimmerO2.setDutyMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toInt());
+  dimmerO2.setDutyLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toInt());
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
     dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
 

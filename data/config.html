@@ -64,7 +64,7 @@
 
     "Output 1 Control": "TITLE",
     o1_resistance: ["Output 1 Resistance (Ohm)", "uint"],
-    o1_dim_max_d: ["Dimmer Duty Limiter (limit dimmer duty 0-4095)", "uint"],
+    o1_dim_limit: ["Dimmer Duty Limiter (limit dimmer duty 0-4095)", "uint"],
     o1_dim_max_t: ["Dimmer Temperature Limiter (stop routing when temperature reached)", "uint"],
     o1_excess_ratio: ["Grid Excess Reserved to Output 1. Output 2 will take the remaining. If 100%, Output 2 will be activated only if there is some remaining excess.", "percent"],
     o1_ad_enable: ["Dimmer Automatic Control", "switch"],
@@ -77,7 +77,7 @@
 
     "Output 2 Control": "TITLE",
     o2_resistance: ["Output 2 Resistance (Ohm)", "uint"],
-    o2_dim_max_d: ["Dimmer Duty Limiter (limit dimmer duty 0-4095)", "uint"],
+    o2_dim_limit: ["Dimmer Duty Limiter (limit dimmer duty 0-4095)", "uint"],
     o2_dim_max_t: ["Dimmer Temperature Limiter (stop routing when temperature reached)", "uint"],
     o2_excess_ratio: ["Grid Excess Reserved to Output 2. Output 2 will take the remaining after output 1. If 100%, Output 2 will try to consume 100% of the remaining.", "percent"],
     o2_ad_enable: ["Dimmer Automatic Control", "switch"],
@@ -164,6 +164,10 @@
     o2_relay_type: ["Output 2 Bypass Relay Type", "select", "NO,NC"],
     relay1_type: ["Relay 1 Type", "select", "NO,NC"],
     relay2_type: ["Relay 2 Type", "select", "NO,NC"],
+    o1_dim_min: ["Output 1 Dimmer Remap Min (0-4095)", "uint"],
+    o1_dim_max: ["Output 1 Dimmer Remap Max (0-4095)", "uint"],
+    o2_dim_min: ["Output 2 Dimmer Remap Min (0-4095)", "uint"],
+    o2_dim_max: ["Output 2 Dimmer Remap Max (0-4095)", "uint"],
 
     "PID Calibration": "TITLE",
     pid_view_enable: ["View PID Data", "switch"],
