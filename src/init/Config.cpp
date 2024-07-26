@@ -58,27 +58,27 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // output1
   output1.config.calibratedResistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
   output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-  output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP).toInt();
+  output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_STOP_TEMP).toInt();
   output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   output1.config.autoStartTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_START).toInt();
   output1.config.autoStopTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_STOP).toInt();
   output1.config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
   output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
-  output1.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
+  output1.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat() / 100;
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // output2
   output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
   output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-  output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP).toInt();
+  output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_STOP_TEMP).toInt();
   output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
   output2.config.autoStartTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_START).toInt();
   output2.config.autoStopTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_STOP).toInt();
   output2.config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
   output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
-  output2.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
+  output2.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat() / 100;
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // PID Controller
@@ -125,16 +125,16 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
 
   // Electricity: Dimmer 1
-  dimmerO1.setDutyMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toInt());
-  dimmerO1.setDutyMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toInt());
-  dimmerO1.setDutyLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toInt());
+  dimmerO1.setDutyCycleMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toFloat() / 100);
+  dimmerO1.setDutyCycleMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toFloat() / 100);
+  dimmerO1.setDutyCycleLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toFloat() / 100);
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
     dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
 
   // Electricity: Dimmer 2
-  dimmerO2.setDutyMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toInt());
-  dimmerO2.setDutyMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toInt());
-  dimmerO2.setDutyLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toInt());
+  dimmerO2.setDutyCycleMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toFloat() / 100);
+  dimmerO2.setDutyCycleMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toFloat() / 100);
+  dimmerO2.setDutyCycleLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toFloat() / 100);
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
     dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
 

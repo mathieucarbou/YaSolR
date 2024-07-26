@@ -15,9 +15,6 @@
 
 #include <functional>
 
-#define MYCILA_DIMMER_RESOLUTION 12   // bits
-#define MYCILA_DIMMER_MAX_DUTY   4095 // ((1 << MYCILA_DIMMER_RESOLUTION) - 1)
-
 namespace Mycila {
   class Dimmer {
     public:
@@ -36,52 +33,39 @@ namespace Mycila {
         root["angle_d"] = angle * RAD_TO_DEG;
         root["angle"] = angle;
         root["delay"] = getFiringDelay();
-        root["duty_cycle"] = getDutyCycle();
-        root["duty_cycle_limit"] = getDutyCycleLimit();
-        root["duty_cycle_min"] = getDutyCycleMin();
-        root["duty_cycle_max"] = getDutyCycleMax();
-        root["duty"] = _duty;
-        root["duty_limit"] = _dutyLimit;
-        root["duty_min"] = _dutyMin;
-        root["duty_max"] = _dutyMax;
+        root["duty_cycle"] = _dutyCycle;
+        root["duty_cycle_limit"] = _dutyCycleLimit;
+        root["duty_cycle_min"] = _dutyCycleMin;
+        root["duty_cycle_max"] = _dutyCycleMax;
         root["enabled"] = _dimmer != nullptr;
         root["state"] = isOn() ? "on" : "off";
       }
 #endif
 
-      void setOn() { setDuty(MYCILA_DIMMER_MAX_DUTY); }
-      void setOff() { setDuty(0); }
-      bool isOff() const { return _duty <= _dutyMin; }
-      bool isOn() const { return _duty > _dutyMin; }
-      bool isOnAtFullPower() const { return _duty >= _dutyMax; }
+      void setOn() { setDutyCycle(1); }
+      void setOff() { setDutyCycle(0); }
+      bool isOff() const { return _dutyCycle <= _dutyCycleMin; }
+      bool isOn() const { return _dutyCycle > _dutyCycleMin; }
+      bool isOnAtFullPower() const { return _dutyCycle >= _dutyCycleMax; }
 
-      // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
-      void setDuty(uint16_t duty);
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
-      void setDutyCycle(float dutyCycle) { setDuty(dutyCycle * MYCILA_DIMMER_MAX_DUTY); }
+      void setDutyCycle(float dutyCycle);
 
-      // set the maximum duty [0, MYCILA_DIMMER_MAX_DUTY]
-      void setDutyLimit(uint16_t limit);
-      void setDutyCycleLimit(float limit) { setDutyLimit(limit * MYCILA_DIMMER_MAX_DUTY); }
+      // set the maximum duty [0, 1]
+      void setDutyCycleLimit(float limit);
 
       // Duty remapping (equivalent to Shelly Dimmer remapping feature)
       // remap the duty minimum and maximum values to be a new ones
       // useful to calibrate the dimmer when using for example a PWM signal to 0-10V analog convertor connected to a voltage regulator which is only working in a specific voltage range like 1-8V
-      void setDutyMin(uint16_t min);
-      void setDutyMax(uint16_t max);
-      void setDutyCycleMin(float min) { setDutyMin(min * MYCILA_DIMMER_MAX_DUTY); }
-      void setDutyCycleMax(float max) { setDutyMax(max * MYCILA_DIMMER_MAX_DUTY); }
+      void setDutyCycleMin(float min);
+      void setDutyCycleMax(float max);
 
-      uint16_t getDuty() const { return _duty; }
-      float getDutyCycle() const { return static_cast<float>(_duty) / MYCILA_DIMMER_MAX_DUTY; }
-      uint16_t getDutyLimit() const { return _dutyLimit; }
-      float getDutyCycleLimit() const { return static_cast<float>(_dutyLimit) / MYCILA_DIMMER_MAX_DUTY; }
-      uint16_t getDutyMin() const { return _dutyMin; }
-      float getDutyCycleMin() const { return static_cast<float>(_dutyMin) / MYCILA_DIMMER_MAX_DUTY; }
-      uint16_t getDutyMax() const { return _dutyMax; }
-      float getDutyCycleMax() const { return static_cast<float>(_dutyMax) / MYCILA_DIMMER_MAX_DUTY; }
+      float getDutyCycle() const { return _dutyCycle; }
+      float getDutyCycleLimit() const { return _dutyCycleLimit; }
+      float getDutyCycleMin() const { return _dutyCycleMin; }
+      float getDutyCycleMax() const { return _dutyCycleMax; }
 
       // Delay [0, semi-period] us
       // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
@@ -102,9 +86,9 @@ namespace Mycila {
       ZCD* _zcd;
       gpio_num_t _pin = GPIO_NUM_NC;
       Thyristor* _dimmer = nullptr;
-      uint16_t _dutyMin = 0;
-      uint16_t _dutyMax = MYCILA_DIMMER_MAX_DUTY;
-      uint16_t _dutyLimit = MYCILA_DIMMER_MAX_DUTY;
-      uint16_t _duty = 0;
+      float _dutyCycleMin = 0;
+      float _dutyCycleMax = 1;
+      float _dutyCycleLimit = 1;
+      float _dutyCycle = 0;
   };
 } // namespace Mycila

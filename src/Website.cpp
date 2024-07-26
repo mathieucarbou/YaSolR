@@ -90,7 +90,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1AutoStartWDays.setTab(&_output1Tab);
   _output1AutoStoptTemp.setTab(&_output1Tab);
   _output1AutoStoptTime.setTab(&_output1Tab);
-  _output1DimmerRatio.setTab(&_output1Tab);
+  _output1DimmerReservedExcess.setTab(&_output1Tab);
   _output1DimmerDutyLimiter.setTab(&_output1Tab);
   _output1DimmerTempLimiter.setTab(&_output1Tab);
 
@@ -99,9 +99,9 @@ void YaSolR::WebsiteClass::initLayout() {
   _daysConfig(_output1AutoStartWDays, KEY_OUTPUT1_DAYS);
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
-  _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_MAX_TEMP);
-  _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_LIMIT);
-  _sliderConfig(_output1DimmerRatio, KEY_OUTPUT1_RESERVED_EXCESS);
+  _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_STOP_TEMP);
+  _percentageSlider(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_LIMIT);
+  _percentageSlider(_output1DimmerReservedExcess, KEY_OUTPUT1_RESERVED_EXCESS);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
   _outputBypassSwitch(_output1Bypass, output1);
@@ -115,7 +115,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output2AutoStartWDays.setTab(&_output2Tab);
   _output2AutoStoptTemp.setTab(&_output2Tab);
   _output2AutoStoptTime.setTab(&_output2Tab);
-  _output2DimmerRatio.setTab(&_output2Tab);
+  _output2DimmerReservedExcess.setTab(&_output2Tab);
   _output2DimmerDutyLimiter.setTab(&_output2Tab);
   _output2DimmerTempLimiter.setTab(&_output2Tab);
 
@@ -124,9 +124,9 @@ void YaSolR::WebsiteClass::initLayout() {
   _daysConfig(_output2AutoStartWDays, KEY_OUTPUT2_DAYS);
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
-  _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_MAX_TEMP);
-  _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_LIMIT);
-  _sliderConfig(_output2DimmerRatio, KEY_OUTPUT2_RESERVED_EXCESS);
+  _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_STOP_TEMP);
+  _percentageSlider(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_LIMIT);
+  _percentageSlider(_output2DimmerReservedExcess, KEY_OUTPUT2_RESERVED_EXCESS);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
   _outputBypassSwitch(_output2Bypass, output2);
@@ -414,9 +414,9 @@ void YaSolR::WebsiteClass::initCards() {
   const bool output1TempEnabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18) || !config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC).isEmpty();
 
   _output1DimmerAuto.update(autoDimmer1Activated);
-  _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toInt()));
+  _output1DimmerReservedExcess.update(static_cast<int>(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toInt()));
   _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toInt()));
-  _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP));
+  _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_STOP_TEMP));
   _output1BypassAuto.update(autoBypass1Activated);
   _output1AutoStartWDays.update(config.get(KEY_OUTPUT1_DAYS));
   _output1AutoStartTemp.update(config.get(KEY_OUTPUT1_TEMPERATURE_START));
@@ -438,7 +438,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output1Resistance.setDisplay(dimmer1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled);
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
-  _output1DimmerRatio.setDisplay(dimmer1Enabled && autoDimmer1Activated);
+  _output1DimmerReservedExcess.setDisplay(dimmer1Enabled && autoDimmer1Activated);
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerTempLimiter.setDisplay(dimmer1Enabled && output1TempEnabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
@@ -457,9 +457,9 @@ void YaSolR::WebsiteClass::initCards() {
   const bool output2TempEnabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18) || !config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC).isEmpty();
 
   _output2DimmerAuto.update(autoDimmer2Activated);
-  _output2DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toInt()));
+  _output2DimmerReservedExcess.update(static_cast<int>(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toInt()));
   _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toInt()));
-  _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP));
+  _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_STOP_TEMP));
   _output2BypassAuto.update(autoBypass2Activated);
   _output2AutoStartWDays.update(config.get(KEY_OUTPUT2_DAYS));
   _output2AutoStartTemp.update(config.get(KEY_OUTPUT2_TEMPERATURE_START));
@@ -481,7 +481,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output2Resistance.setDisplay(dimmer2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled);
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
-  _output2DimmerRatio.setDisplay(dimmer2Enabled && autoDimmer2Activated);
+  _output2DimmerReservedExcess.setDisplay(dimmer2Enabled && autoDimmer2Activated);
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerTempLimiter.setDisplay(dimmer2Enabled && output2TempEnabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
@@ -728,8 +728,8 @@ void YaSolR::WebsiteClass::updateCards() {
       break;
   }
   _temperature(_output1DS18State, output1);
-  _output1DimmerSlider.update(dimmerO1.getDuty());
-  _output1DimmerSliderRO.update(dimmerO1.getDuty());
+  _output1DimmerSlider.update(dimmerO1.getDutyCycle() * 100);
+  _output1DimmerSliderRO.update(dimmerO1.getDutyCycle() * 100);
   _output1Bypass.update(output1.isBypassOn());
   _output1BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
   _output1Power.update(output1Measurements.power);
@@ -759,8 +759,8 @@ void YaSolR::WebsiteClass::updateCards() {
       break;
   }
   _temperature(_output2DS18State, output2);
-  _output2DimmerSlider.update(dimmerO2.getDuty());
-  _output2DimmerSliderRO.update(dimmerO2.getDuty());
+  _output2DimmerSlider.update(dimmerO2.getDutyCycle() * 100);
+  _output2DimmerSliderRO.update(dimmerO2.getDutyCycle() * 100);
   _output2Bypass.update(output2.isBypassOn());
   _output2BypassRO.update(YASOLR_STATE(output2.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
   _output2Power.update(output2Measurements.power);
@@ -869,6 +869,14 @@ void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   });
 }
 
+void YaSolR::WebsiteClass::_percentageSlider(Card& card, const char* key) {
+  card.attachCallback([key, &card](int value) {
+    config.set(key, String(value));
+    card.update(value);
+    dashboard.refreshCard(&card);
+  });
+}
+
 void YaSolR::WebsiteClass::_floatConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
@@ -973,11 +981,11 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
 }
 
 void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput& output) {
-  card.attachCallback([&card, &output, this](int value) {
+  card.attachCallbackF([&card, &output, this](float value) {
     if (output.isDimmerEnabled()) {
-      output.tryDimmerDuty(value);
+      output.tryDimmerDutyCycle(value / 100);
     }
-    card.update(output.getDimmerDuty());
+    card.update(output.getDimmerDutyCycle() * 100);
     dashboard.refreshCard(&card);
     dashboardTask.requestEarlyRun();
   });

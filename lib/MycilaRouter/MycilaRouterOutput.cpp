@@ -37,7 +37,7 @@ const char* Mycila::RouterOutput::getStateName() const { return RouterOutputStat
 
 // dimmer
 
-bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
+bool Mycila::RouterOutput::tryDimmerDutyCycle(float dutyCycle) {
   if (!_dimmer->isEnabled()) {
     LOGW(TAG, "Dimmer '%s' is disabled", _name);
     return false;
@@ -59,9 +59,9 @@ bool Mycila::RouterOutput::tryDimmerDuty(uint16_t duty) {
   }
 
   _setBypass(false);
-  _dimmer->setDuty(duty);
+  _dimmer->setDutyCycle(dutyCycle);
 
-  LOGD(TAG, "Set Dimmer '%s' duty to %" PRIu16 "...", _name, _dimmer->getDuty());
+  LOGD(TAG, "Set Dimmer '%s' duty to %f...", _name, _dimmer->getDutyCycle());
 
   return true;
 }

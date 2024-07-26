@@ -28,7 +28,7 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
 
   // CONFIG
 
-  haDiscovery.publish(Mycila::HANumber("output1_dimmer_limiter", "Output 1 Limiter", "/config/" KEY_OUTPUT1_DIMMER_LIMIT "/set", "/config/" KEY_OUTPUT1_DIMMER_LIMIT, Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:flash", Mycila::HACategory::CONFIG));
+  haDiscovery.publish(Mycila::HANumber("output1_dimmer_limiter", "Output 1 Limiter", "/config/" KEY_OUTPUT1_DIMMER_LIMIT "/set", "/config/" KEY_OUTPUT1_DIMMER_LIMIT, Mycila::HANumberMode::SLIDER, 0, 100, 1, "mdi:flash", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output1_auto_bypass", "Output 1 Auto Bypass", "/config/" KEY_ENABLE_OUTPUT1_AUTO_BYPASS "/set", "/config/" KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output1_auto_dimmer", "Output 1 Auto Dimmer", "/config/" KEY_ENABLE_OUTPUT1_AUTO_DIMMER "/set", "/config/" KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HATextField("output1_wdays", "Output 1 Week Days", "/config/" KEY_OUTPUT1_DAYS "/set", "/config/" KEY_OUTPUT1_DAYS, nullptr, "mdi:calendar", Mycila::HACategory::CONFIG));
@@ -37,7 +37,7 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
   haDiscovery.publish(Mycila::HATextField("output1_time_start", "Output 1 Time Start", "/config/" KEY_OUTPUT1_TIME_START "/set", "/config/" KEY_OUTPUT1_TIME_START, "^\\d?\\d:\\d\\d$", "mdi:clock-time-ten", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HATextField("output1_time_stop", "Output 1 Time Stop", "/config/" KEY_OUTPUT1_TIME_STOP "/set", "/config/" KEY_OUTPUT1_TIME_STOP, "^\\d?\\d:\\d\\d$", "mdi:clock-time-six", Mycila::HACategory::CONFIG));
 
-  haDiscovery.publish(Mycila::HANumber("output2_dimmer_limiter", "Output 2 Limiter", "/config/" KEY_OUTPUT2_DIMMER_LIMIT "/set", "/config/" KEY_OUTPUT2_DIMMER_LIMIT, Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:flash", Mycila::HACategory::CONFIG));
+  haDiscovery.publish(Mycila::HANumber("output2_dimmer_limiter", "Output 2 Limiter", "/config/" KEY_OUTPUT2_DIMMER_LIMIT "/set", "/config/" KEY_OUTPUT2_DIMMER_LIMIT, Mycila::HANumberMode::SLIDER, 0, 100, 1, "mdi:flash", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output2_auto_bypass", "Output 2 Auto Bypass", "/config/" KEY_ENABLE_OUTPUT2_AUTO_BYPASS "/set", "/config/" KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HASwitch("output2_auto_dimmer", "Output 2 Auto Dimmer", "/config/" KEY_ENABLE_OUTPUT2_AUTO_DIMMER "/set", "/config/" KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_TRUE, YASOLR_FALSE, "mdi:water-boiler-auto", Mycila::HACategory::CONFIG));
   haDiscovery.publish(Mycila::HATextField("output2_wdays", "Output 2 Week Days", "/config/" KEY_OUTPUT2_DAYS "/set", "/config/" KEY_OUTPUT2_DAYS, nullptr, "mdi:calendar", Mycila::HACategory::CONFIG));
@@ -69,13 +69,13 @@ Mycila::Task haDiscoveryTask("HADiscovery", Mycila::TaskType::ONCE, [](void* par
 
   haDiscovery.publish(Mycila::HAText("output1_state", "Output 1", "/router/output1/state"));
   haDiscovery.publish(Mycila::HAState("output1_bypass", "Output 1 Bypass", "/router/output1/bypass", YASOLR_ON, YASOLR_OFF, "running"));
-  haDiscovery.publish(Mycila::HANumber("output1_dimmer_duty", "Output 1 Dimmer Duty", "/router/output1/dimmer/duty/set", "/router/output1/dimmer/duty", Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:water-boiler"));
+  haDiscovery.publish(Mycila::HANumber("output1_dimmer_duty", "Output 1 Dimmer Duty Cycle", "/router/output1/dimmer/duty_cycle/set", "/router/output1/dimmer/duty_cycle", Mycila::HANumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler"));
   haDiscovery.publish(Mycila::HAOutlet("output1_relay", "Output 1 Bypass", "/router/output1/bypass/set", "/router/output1/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery.publish(Mycila::HAGauge("output1_temperature", "Output 1 Temperature", "/router/output1/temperature", "temperature", "mdi:thermometer", "°C"));
 
   haDiscovery.publish(Mycila::HAText("output2_state", "Output 2", "/router/output2/state"));
   haDiscovery.publish(Mycila::HAState("output2_bypass", "Output 2 Bypass", "/router/output2/bypass", YASOLR_ON, YASOLR_OFF, "running"));
-  haDiscovery.publish(Mycila::HANumber("output2_dimmer_duty", "Output 2 Dimmer Duty", "/router/output2/dimmer/duty/set", "/router/output2/dimmer/duty", Mycila::HANumberMode::SLIDER, 0, YASOLR_DIMMER_MAX_LEVEL, 1, "mdi:water-boiler"));
+  haDiscovery.publish(Mycila::HANumber("output2_dimmer_duty", "Output 2 Dimmer Duty Cycle", "/router/output2/dimmer/duty_cycle/set", "/router/output2/dimmer/duty_cycle", Mycila::HANumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler"));
   haDiscovery.publish(Mycila::HAOutlet("output2_relay", "Output 2 Bypass", "/router/output2/bypass/set", "/router/output2/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery.publish(Mycila::HAGauge("output2_temperature", "Output 2 Temperature", "/router/output2/temperature", "temperature", "mdi:thermometer", "°C"));
 

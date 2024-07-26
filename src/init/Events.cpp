@@ -44,16 +44,16 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       dimmerO1.setOff();
 
     } else if (key == KEY_OUTPUT1_DIMMER_MIN) {
-      dimmerO1.setDutyMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toInt());
+      dimmerO1.setDutyCycleMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toFloat() / 100);
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX) {
-      dimmerO1.setDutyMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toInt());
+      dimmerO1.setDutyCycleMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toFloat() / 100);
 
     } else if (key == KEY_OUTPUT1_DIMMER_LIMIT) {
-      dimmerO1.setDutyLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toInt());
+      dimmerO1.setDutyCycleLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toFloat() / 100);
 
-    } else if (key == KEY_OUTPUT1_DIMMER_MAX_TEMP) {
-      output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP).toInt();
+    } else if (key == KEY_OUTPUT1_DIMMER_STOP_TEMP) {
+      output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_STOP_TEMP).toInt();
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_BYPASS) {
       output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
@@ -74,23 +74,23 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
 
     } else if (key == KEY_OUTPUT1_RESERVED_EXCESS) {
-      output1.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
+      output1.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat() / 100;
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
       output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
       dimmerO2.setOff();
 
     } else if (key == KEY_OUTPUT2_DIMMER_MIN) {
-      dimmerO2.setDutyMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toInt());
+      dimmerO2.setDutyCycleMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toFloat() / 100);
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX) {
-      dimmerO2.setDutyMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toInt());
+      dimmerO2.setDutyCycleMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toFloat() / 100);
 
     } else if (key == KEY_OUTPUT2_DIMMER_LIMIT) {
-      dimmerO2.setDutyLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toInt());
+      dimmerO2.setDutyCycleLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toFloat() / 100);
 
-    } else if (key == KEY_OUTPUT2_DIMMER_MAX_TEMP) {
-      output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP).toInt();
+    } else if (key == KEY_OUTPUT2_DIMMER_STOP_TEMP) {
+      output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_STOP_TEMP).toInt();
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_BYPASS) {
       output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -111,7 +111,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
 
     } else if (key == KEY_OUTPUT2_RESERVED_EXCESS) {
-      output2.config.reservedExcessPowerRatio = constrain(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat(), 0.0f, 100.0f) / 100;
+      output2.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat() / 100;
 
     } else if (key == KEY_NTP_TIMEZONE) {
       Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));

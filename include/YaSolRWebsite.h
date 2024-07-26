@@ -106,8 +106,8 @@ namespace YaSolR {
       Tab _output1Tab = Tab(&dashboard, "\u2600 " YASOLR_LBL_046);
       Card _output1State = Card(&dashboard, STATUS_CARD, YASOLR_LBL_047, DASH_STATUS_IDLE);
       Card _output1DS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_048, "°C");
-      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_049, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, YASOLR_LBL_050, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_049, "%", 0.0f, 100.0f, 0.01f);
+      Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
       Card _output1Bypass = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_051);
       Card _output1BypassRO = Card(&dashboard, STATUS_CARD, YASOLR_LBL_051);
       Card _output1Power = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_052, "W");
@@ -118,10 +118,10 @@ namespace YaSolR {
       Card _output1Current = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_057, "A");
       Card _output1Resistance = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_058, "Ω");
       Card _output1Energy = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_059, "kWh");
-      Card _output1DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_062, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_062, "%", 0, 100, 1);
       Card _output1DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_063, "°C");
       Card _output1DimmerAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_060);
-      Card _output1DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_061, "%", 0, 100, 1);
+      Card _output1DimmerReservedExcess = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_061, "%", 0, 100, 1);
       Card _output1BypassAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_064);
       Card _output1AutoStartTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_065, "°C");
       Card _output1AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_066, "°C");
@@ -132,8 +132,8 @@ namespace YaSolR {
       Tab _output2Tab = Tab(&dashboard, "\u2600 " YASOLR_LBL_070);
       Card _output2State = Card(&dashboard, STATUS_CARD, YASOLR_LBL_047, DASH_STATUS_IDLE);
       Card _output2DS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_048, "°C");
-      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_049, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, YASOLR_LBL_050, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_049, "%", 0.0f, 100.0f, 0.01f);
+      Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
       Card _output2Bypass = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_051);
       Card _output2BypassRO = Card(&dashboard, STATUS_CARD, YASOLR_LBL_051);
       Card _output2Power = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_052, "W");
@@ -144,10 +144,10 @@ namespace YaSolR {
       Card _output2Current = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_057, "A");
       Card _output2Resistance = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_058, "Ω");
       Card _output2Energy = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_059, "kWh");
-      Card _output2DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_062, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerDutyLimiter = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_062, "%", 0, 100, 1);
       Card _output2DimmerTempLimiter = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_063, "°C");
       Card _output2DimmerAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_060);
-      Card _output2DimmerRatio = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_158, "%", 0, 100, 1);
+      Card _output2DimmerReservedExcess = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_158, "%", 0, 100, 1);
       Card _output2BypassAuto = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_064);
       Card _output2AutoStartTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_065);
       Card _output2AutoStoptTemp = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_066);
@@ -249,8 +249,8 @@ namespace YaSolR {
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_152);
       Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
       Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
-      Card _output1DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_183, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
-      Card _output2DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_184, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output1DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_183, "%", 0, 100, 1);
+      Card _output2DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_184, "%", 0, 100, 1);
       Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_147);
       Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_148);
 
@@ -292,6 +292,7 @@ namespace YaSolR {
       void _pinConfig(Card& card, const char* key);
       void _passwordConfig(Card& card, const char* key);
       void _sliderConfig(Card& card, const char* key);
+      void _percentageSlider(Card& card, const char* key);
       void _textConfig(Card& card, const char* key);
 
       void _outputDimmerSlider(Card& card, Mycila::RouterOutput& output);

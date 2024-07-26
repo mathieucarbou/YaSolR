@@ -120,14 +120,11 @@ namespace Mycila {
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer && config.calibratedResistance > 0; }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
-      uint16_t getDimmerDuty() const { return _dimmer->getDuty(); }
       float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
-      // Power Duty Cycle [0, MYCILA_DIMMER_MAX_DUTY]
-      bool tryDimmerDuty(uint16_t duty);
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
-      bool tryDimmerDutyCycle(float dutyCycle) { return tryDimmerDuty(dutyCycle * MYCILA_DIMMER_MAX_DUTY); }
+      bool tryDimmerDutyCycle(float dutyCycle);
       void applyTemperatureLimit();
 
       float autoDivert(float gridVoltage, float availablePowerToDivert) {
@@ -136,18 +133,17 @@ namespace Mycila {
           return 0;
         }
 
-        // maximum power that can be diverted to the load based on the calibrated resistance value
-        // match duty == 4095
+        // maximum power of the load based on the calibrated resistance value
         const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
 
         // power allowed to be diverted to the load after applying the reserved excess power ratio
         const float reservedPowerToDivert = constrain(availablePowerToDivert * config.reservedExcessPowerRatio, 0, maxPower);
 
         // convert to a duty
-        const uint16_t duty = maxPower == 0 ? 0 : reservedPowerToDivert / maxPower;
+        const float dutyCycle = maxPower == 0 ? 0 : reservedPowerToDivert / maxPower;
 
         // try to apply duty
-        _dimmer->setDuty(duty);
+        _dimmer->setDutyCycle(dutyCycle);
 
         // returns the used power as per the dimmer state
         return maxPower * _dimmer->getDutyCycle();

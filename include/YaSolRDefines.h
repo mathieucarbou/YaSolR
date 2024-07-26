@@ -43,7 +43,6 @@
 // default settings
 
 #define YASOLR_ADMIN_USERNAME              "admin"
-#define YASOLR_DIMMER_MAX_LEVEL            MYCILA_DIMMER_MAX_DUTY
 #define YASOLR_DISPLAY_LINE_SIZE           21
 #define YASOLR_DISPLAY_LINES               5
 #define YASOLR_MQTT_KEEPALIVE              60
@@ -122,7 +121,7 @@
 #define KEY_OUTPUT1_DAYS                   "o1_days"
 #define KEY_OUTPUT1_DIMMER_LIMIT           "o1_dim_limit"
 #define KEY_OUTPUT1_DIMMER_MAX             "o1_dim_max"
-#define KEY_OUTPUT1_DIMMER_MAX_TEMP        "o1_dim_max_t"
+#define KEY_OUTPUT1_DIMMER_STOP_TEMP        "o1_dim_max_t"
 #define KEY_OUTPUT1_DIMMER_MIN             "o1_dim_min"
 #define KEY_OUTPUT1_RELAY_TYPE             "o1_relay_type"
 #define KEY_OUTPUT1_RESERVED_EXCESS        "o1_excess_ratio"
@@ -135,7 +134,7 @@
 #define KEY_OUTPUT2_DAYS                   "o2_days"
 #define KEY_OUTPUT2_DIMMER_LIMIT           "o2_dim_limit"
 #define KEY_OUTPUT2_DIMMER_MAX             "o2_dim_max"
-#define KEY_OUTPUT2_DIMMER_MAX_TEMP        "o2_dim_max_t"
+#define KEY_OUTPUT2_DIMMER_STOP_TEMP        "o2_dim_max_t"
 #define KEY_OUTPUT2_DIMMER_MIN             "o2_dim_min"
 #define KEY_OUTPUT2_RELAY_TYPE             "o2_relay_type"
 #define KEY_OUTPUT2_RESERVED_EXCESS        "o2_excess_ratio"
