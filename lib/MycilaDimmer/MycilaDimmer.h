@@ -33,11 +33,17 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
-        root["angle"] = angle;
         root["angle_d"] = angle * RAD_TO_DEG;
+        root["angle"] = angle;
         root["delay"] = getFiringDelay();
-        root["duty"] = _duty;
         root["duty_cycle"] = getDutyCycle();
+        root["duty_cycle_limit"] = getDutyCycleLimit();
+        root["duty_cycle_min"] = getDutyCycleMin();
+        root["duty_cycle_max"] = getDutyCycleMax();
+        root["duty"] = _duty;
+        root["duty_limit"] = _dutyLimit;
+        root["duty_min"] = _dutyMin;
+        root["duty_max"] = _dutyMax;
         root["enabled"] = _dimmer != nullptr;
         root["state"] = isOn() ? "on" : "off";
       }

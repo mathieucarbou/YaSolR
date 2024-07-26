@@ -68,7 +68,7 @@ void Mycila::Dimmer::end() {
   }
 }
 
-void Mycila::Dimmer::setDuty(const uint16_t newDuty) {
+void Mycila::Dimmer::setDuty(uint16_t newDuty) {
   if (!_dimmer)
     return;
 
