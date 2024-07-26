@@ -22,24 +22,16 @@ namespace Mycila {
       // in microseconds
       // 50Hz => 10000
       // 60Hz => 8333
-      uint16_t getSemiPeriod() const;
+      uint16_t getNominalSemiPeriod() const;
 
       // Zero-Cross pulse information
-      float getPulseFrequency() const;
-      uint16_t getAvgPulseWidth() const;
-      uint16_t getLastPulseWidth() const;
-      uint16_t getMaxPulseWidth() const;
-      uint16_t getMinPulseWidth() const;
+      uint32_t getPulsePeriod() const;
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         root["enabled"] = isEnabled();
-        root["pulse_freq"] = getPulseFrequency();
-        root["pulse_width_avg"] = getAvgPulseWidth();
-        root["pulse_width_last"] = getLastPulseWidth();
-        root["pulse_width_max"] = getMaxPulseWidth();
-        root["pulse_width_min"] = getMinPulseWidth();
-        root["semi_period"] = getSemiPeriod();
+        root["nominal_semiperiod_us"] = getNominalSemiPeriod();
+        root["pulse_period_us"] = getPulsePeriod();
       }
 #endif
 

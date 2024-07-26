@@ -23,6 +23,30 @@
 #include <Arduino.h>
 
 /**
+ * These defines affect the declaration of this class and the relative wrappers.
+ */
+
+// Set the network frequency.
+// The first 2 options fix the frequency to the common values (respectively to 50 and 60Hz) at
+// compile time. The third option allows you change network frequency at runtime. This option
+// automatically enables the setFrequency() method. The main drawback is that it requires a few more
+// resources w.r.t. the "fixed frequency" alternatives.
+// Select one and ONLY one among the following alternatives:
+// #define NETWORK_FREQ_FIXED_50HZ
+// #define NETWORK_FREQ_FIXED_60HZ
+#define NETWORK_FREQ_RUNTIME
+
+// Set the default value if no option is selected
+#if !defined(NETWORK_FREQ_FIXED_50HZ) && !defined(NETWORK_FREQ_FIXED_60HZ) && !defined(NETWORK_FREQ_RUNTIME)
+  #define NETWORK_FREQ_FIXED_50HZ
+#endif
+
+// If enabled, you can monitor the actual frequency of the electrical network.
+#define MONITOR_FREQUENCY
+
+#define FILTER_INT_PERIOD
+
+/**
  * This is the core class of this library, that provides the finest control on thyristors.
  *
  * NOTE: Design Principle for this library: There are 2 main abstraction levels: the first one,
@@ -38,7 +62,7 @@
  * setDelay(..) and not, for example, setPower(..), setBrightness(..), ... This gives a precise idea
  * of what's happening at electrical level, that is controlling the activation time of the
  * thyristor. Secondly, the measurement unit is expressed in microseconds, allowing the finest and
- * feasible control reachable with almost any MCU available on the market (including Arduino UNO
+ * feasible control reachable with almost any MCU avaialble on the market (including Arduino UNO
  * based on ATmega328p).
  */
 class Thyristor {
@@ -70,7 +94,7 @@ class Thyristor {
      * Turn off the thyristor.
      */
     void turnOff() {
-     setDelay(getSemiPeriod()); 
+      setDelay(getNominalSemiPeriod());
     }
 
     ~Thyristor();
@@ -96,6 +120,13 @@ class Thyristor {
     }
 
     /**
+     * Set the pin direction (RISING (default), FALLING, CHANGE).
+     */
+    static void setSyncDir(decltype(RISING) dir) {
+      syncDir = dir;
+    }
+
+    /**
      * Set the pin pullup (true = INPUT_PULLUP, false = INPUT). The internal pullup resistor is not
      * available for each platform and each pin.
      */
@@ -111,30 +142,54 @@ class Thyristor {
     /**
      * Get the semiperiod.
      */
-    static uint16_t getSemiPeriod();
+    static uint16_t getNominalSemiPeriod();
 
+#ifdef NETWORK_FREQ_RUNTIME
     /**
      * Set target frequency. Negative values are ignored;
      * zero set the semi-period to 0.
      */
     static void setFrequency(float frequency);
+#endif
 
-    static uint16_t getAvgPulseWidth();
-    static uint16_t getMaxPulseWidth();
-    static uint16_t getMinPulseWidth();
-    static uint16_t getLastPulseWidth();
-
+#ifdef MONITOR_FREQUENCY
     /**
      * Get the detected frequency on the electrical network, constantly updated.
      * Return 0 if there is no signal or while sampling the first periods.
      *
      * NOTE: when (re)starting, it will take a while before returning a value different from 0.
      */
-    static float getPulseFrequency();
+    static uint32_t getPulsePeriod();
 
-    static const uint8_t N = 2;
+    /**
+     * Check if frequency monitor is always enabled.
+     */
+    static bool isFrequencyMonitorAlwaysOn() {
+      return frequencyMonitorAlwaysEnabled;
+    }
+
+    /**
+     * Control if the monitoring can be automatically stopped when
+     * all lights are on and off. True to force the constant monitoring,
+     * false to allow automatic stop. By default the monitoring is always active.
+     *
+     */
+    static void frequencyMonitorAlwaysOn(bool enable);
+#endif
+
+    static const uint8_t N = 8;
 
   private:
+    /**
+     * Tell if interrupt must be re-enabled. This metohd affect allMixedOnOff variable.
+     * This methods must be called every time a thyristor's delay is updated.
+     *
+     * NewDelay the new delay just set of this thyristor.
+     * Return true if interrupt for zero cross detection should be re-enabled,
+     * false do nothing.
+     */
+    bool mustInterruptBeReEnabled(uint16_t newDelay);
+
     /**
      * Search if all the values are only on and off.
      * Return true if all are on/off, false otherwise.
@@ -180,6 +235,11 @@ class Thyristor {
     static uint8_t syncPin;
 
     /**
+     * Pin direction (FALLING, RISING, CHANGE).
+     */
+    static decltype(RISING) syncDir;
+
+    /**
      * Pin pullup active.
      */
     static bool syncPullup;
@@ -191,6 +251,12 @@ class Thyristor {
      * 3) info messages
      */
     static const uint8_t verbosity = 1;
+
+    /**
+     * True means the is always listeing, false means
+     * auto-stop when all lights are on/off.
+     */
+    static bool frequencyMonitorAlwaysEnabled;
 
     /**
      * Pin used to control thyristor's gate.
@@ -209,15 +275,14 @@ class Thyristor {
     uint16_t delay;
 
     friend void activate_thyristors();
-    friend void zero_cross_pulse_int();
     friend void zero_cross_int();
     friend void turn_off_gates_int();
 
   public:
-    // Ignore zero-cross interrupts when they occurs too early w.r.t semi-period ideal length.
-    // The constant *semiPeriodShrinkMargin* defines the "too early" margin.
+#ifdef FILTER_INT_PERIOD
     static int semiPeriodShrinkMargin;
     static int semiPeriodExpandMargin;
+#endif
 };
 
 #endif // END THYRISTOR_H

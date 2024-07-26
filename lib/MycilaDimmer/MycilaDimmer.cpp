@@ -75,7 +75,7 @@ void Mycila::Dimmer::setDutyCycle(float newDutyCycle) {
   if (!_dimmer)
     return;
 
-  const uint16_t semiPeriod = _zcd->getSemiPeriod();
+  const uint16_t semiPeriod = _zcd->getNominalSemiPeriod();
   if (semiPeriod == 0)
     return;
 
@@ -89,7 +89,9 @@ void Mycila::Dimmer::setDutyCycle(float newDutyCycle) {
 
   } else {
     // duty remapping (equivalent to Shelly Dimmer remapping feature)
-    const uint16_t remappedDuty = _dutyCycleMin + _dutyCycle * (_dutyCycleMax - _dutyCycleMin);
+    const float remappedDutyCycle = _dutyCycleMin + _dutyCycle * (_dutyCycleMax - _dutyCycleMin);
+    const uint16_t remappedDuty = remappedDutyCycle * MYCILA_DIMMER_MAX_DUTY;
+    // ESP_LOGD(TAG, "Dimmer %d duty cycle set to %f (remapped to %f). Duty: %d", _pin, _dutyCycle, remappedDutyCycle, remappedDuty);
 
     // map new level to firing delay (LUT + linear interpolation)
     const uint32_t slot = remappedDuty * TABLE_PHASE_SCALE + (TABLE_PHASE_SCALE >> 1);
