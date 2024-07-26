@@ -249,6 +249,8 @@ namespace YaSolR {
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_152);
       Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
       Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
+      Card _output1DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_183, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
+      Card _output2DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_184, "", 0, YASOLR_DIMMER_MAX_LEVEL, 1);
       Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_147);
       Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_148);
 

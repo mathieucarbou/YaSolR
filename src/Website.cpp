@@ -100,7 +100,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
   _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_MAX_TEMP);
-  _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_MAX_DUTY);
+  _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_LIMIT);
   _sliderConfig(_output1DimmerRatio, KEY_OUTPUT1_RESERVED_EXCESS);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
@@ -125,7 +125,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
   _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_MAX_TEMP);
-  _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_MAX_DUTY);
+  _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_LIMIT);
   _sliderConfig(_output2DimmerRatio, KEY_OUTPUT2_RESERVED_EXCESS);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
@@ -306,6 +306,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _relay2Type.setTab(&_hardwareConfigTab);
   _output1ResistanceInput.setTab(&_hardwareConfigTab);
   _output2ResistanceInput.setTab(&_hardwareConfigTab);
+  _output1DimmerMapper.setTab(&_hardwareConfigTab);
+  _output2DimmerMapper.setTab(&_hardwareConfigTab);
 
   _numConfig(_gridFreq, KEY_GRID_FREQUENCY);
   _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
@@ -322,6 +324,24 @@ void YaSolR::WebsiteClass::initLayout() {
 
   _output1PZEMSync.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO1PairingTask.resume(); });
   _output2PZEMSync.attachCallback([] PUSH_BUTTON_CARD_CB { pzemO2PairingTask.resume(); });
+  _output1DimmerMapper.attachCallback([this](const char* value) {
+    const char* comma = strchr(value, ',');
+    if (comma != nullptr) {
+      config.set(KEY_OUTPUT1_DIMMER_MIN, String(value).substring(0, comma - value));
+      config.set(KEY_OUTPUT1_DIMMER_MAX, String(comma + 1));
+    }
+    _output1DimmerMapper.update(value);
+    dashboard.refreshCard(&_output1DimmerMapper);
+  });
+  _output2DimmerMapper.attachCallback([this](const char* value) {
+    const char* comma = strchr(value, ',');
+    if (comma != nullptr) {
+      config.set(KEY_OUTPUT2_DIMMER_MIN, String(value).substring(0, comma - value));
+      config.set(KEY_OUTPUT2_DIMMER_MAX, String(comma + 1));
+    }
+    _output2DimmerMapper.update(value);
+    dashboard.refreshCard(&_output2DimmerMapper);
+  });
 
   // PID
   _pidView.setTab(&_pidTab);
@@ -395,7 +415,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   _output1DimmerAuto.update(autoDimmer1Activated);
   _output1DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toInt()));
-  _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_MAX_DUTY).toInt()));
+  _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toInt()));
   _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_MAX_TEMP));
   _output1BypassAuto.update(autoBypass1Activated);
   _output1AutoStartWDays.update(config.get(KEY_OUTPUT1_DAYS));
@@ -438,7 +458,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   _output2DimmerAuto.update(autoDimmer2Activated);
   _output2DimmerRatio.update(static_cast<int>(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toInt()));
-  _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_MAX_DUTY).toInt()));
+  _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toInt()));
   _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_MAX_TEMP));
   _output2BypassAuto.update(autoBypass2Activated);
   _output2AutoStartWDays.update(config.get(KEY_OUTPUT2_DAYS));
@@ -562,6 +582,8 @@ void YaSolR::WebsiteClass::initCards() {
   _relay2Type.update(config.get(KEY_RELAY2_TYPE), "NO,NC");
   _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE), config.get(KEY_OUTPUT1_RESISTANCE).toFloat() == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
   _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE), config.get(KEY_OUTPUT2_RESISTANCE).toFloat() == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
+  _output1DimmerMapper.update(config.get(KEY_OUTPUT1_DIMMER_MIN) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX));
+  _output2DimmerMapper.update(config.get(KEY_OUTPUT2_DIMMER_MIN) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX));
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
@@ -574,6 +596,8 @@ void YaSolR::WebsiteClass::initCards() {
   _output2RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
   _relay1Type.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
   _relay2Type.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
+  _output1DimmerMapper.setDisplay(dimmer1Enabled);
+  _output2DimmerMapper.setDisplay(dimmer2Enabled);
 
   // PID
   const bool pidViewEnabled = config.getBool(KEY_ENABLE_PID_VIEW);

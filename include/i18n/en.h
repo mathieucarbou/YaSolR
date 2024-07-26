@@ -186,10 +186,8 @@
 #define YASOLR_LBL_180 "Not paired"
 #define YASOLR_LBL_181 "Output 1 Temperature MQTT Topic"
 #define YASOLR_LBL_182 "Output 2 Temperature MQTT Topic"
-#define YASOLR_LBL_183
-#define YASOLR_LBL_184
-#define YASOLR_LBL_185
-#define YASOLR_LBL_186
+#define YASOLR_LBL_183 "Output 1 Dimmer Min/Max Remapping"
+#define YASOLR_LBL_184 "Output 2 Dimmer Min/Max Remapping"
 #define YASOLR_LBL_187
 #define YASOLR_LBL_188
 #define YASOLR_LBL_189

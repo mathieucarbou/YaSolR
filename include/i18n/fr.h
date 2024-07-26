@@ -186,8 +186,8 @@
 #define YASOLR_LBL_180 "Non associé"
 #define YASOLR_LBL_181 "Topic MQTT pour la température sortie 1"
 #define YASOLR_LBL_182 "Topic MQTT pour la température sortie 2"
-#define YASOLR_LBL_183
-#define YASOLR_LBL_184
+#define YASOLR_LBL_183 "Redéfinition Min/Max Variateur Sortie 1"
+#define YASOLR_LBL_184 "Redéfinition Min/Max Variateur Sortie 2"
 #define YASOLR_LBL_185
 #define YASOLR_LBL_186
 #define YASOLR_LBL_187
