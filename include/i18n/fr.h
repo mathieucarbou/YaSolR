@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #pragma once
 
@@ -126,7 +126,7 @@
 #define YASOLR_LBL_120 "LED Jaune"
 #define YASOLR_LBL_121 "PZEM (TX) Serial RX"
 #define YASOLR_LBL_122 "PZEM (RX) Serial TX"
-#define YASOLR_LBL_123 "En attente..."
+#define YASOLR_LBL_123 "En attente"
 #define YASOLR_LBL_124 "Non démarré"
 #define YASOLR_LBL_125 "Détection de passage par zéro"
 #define YASOLR_LBL_126 "Matériel"
@@ -189,7 +189,7 @@
 #define YASOLR_LBL_183 "Redéfinition Min/Max Variateur Sortie 1"
 #define YASOLR_LBL_184 "Redéfinition Min/Max Variateur Sortie 2"
 #define YASOLR_LBL_185 "Période des Zero-Cross"
-#define YASOLR_LBL_186
+#define YASOLR_LBL_186 "Détection valeur résistances"
 #define YASOLR_LBL_187
 #define YASOLR_LBL_188
 #define YASOLR_LBL_189

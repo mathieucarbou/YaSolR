@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
 Mycila::Task initEventsTask("Init Events", [](void* params) {
-  logger.info(TAG, "Initializing Events...");
+  logger.info(TAG, "Initializing Events");
 
   mqtt.onConnect([](void) {
     logger.info(TAG, "MQTT connected!");
@@ -41,7 +41,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
       output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-      dimmerO1.setOff();
+      dimmerO1.off();
 
     } else if (key == KEY_OUTPUT1_DIMMER_MIN) {
       dimmerO1.setDutyCycleMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toFloat() / 100);
@@ -78,7 +78,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
       output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-      dimmerO2.setOff();
+      dimmerO2.off();
 
     } else if (key == KEY_OUTPUT2_DIMMER_MIN) {
       dimmerO2.setDutyCycleMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toFloat() / 100);
@@ -241,14 +241,14 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         logger.warn(TAG, "Disabled Network!");
         break;
       case ESPConnectState::AP_STARTING:
-        logger.info(TAG, "Starting Access Point %s...", ESPConnect.getAccessPointSSID().c_str());
+        logger.info(TAG, "Starting Access Point %s", ESPConnect.getAccessPointSSID().c_str());
         break;
       case ESPConnectState::AP_STARTED:
         logger.info(TAG, "Access Point %s started with IP address %s", ESPConnect.getWiFiSSID().c_str(), ESPConnect.getIPAddress().toString().c_str());
         networkConfigTask.resume();
         break;
       case ESPConnectState::NETWORK_CONNECTING:
-        logger.info(TAG, "Connecting to network...");
+        logger.info(TAG, "Connecting to network");
         break;
       case ESPConnectState::NETWORK_CONNECTED:
         logger.info(TAG, "Connected with IP address %s", ESPConnect.getIPAddress().toString().c_str());
@@ -261,10 +261,10 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         logger.warn(TAG, "Disconnected!");
         break;
       case ESPConnectState::NETWORK_RECONNECTING:
-        logger.info(TAG, "Trying to reconnect...");
+        logger.info(TAG, "Trying to reconnect");
         break;
       case ESPConnectState::PORTAL_STARTING:
-        logger.info(TAG, "Starting Captive Portal %s for %" PRIu32 " seconds...", ESPConnect.getAccessPointSSID().c_str(), ESPConnect.getCaptivePortalTimeout());
+        logger.info(TAG, "Starting Captive Portal %s for %" PRIu32 " seconds", ESPConnect.getAccessPointSSID().c_str(), ESPConnect.getCaptivePortalTimeout());
         break;
       case ESPConnectState::PORTAL_STARTED:
         logger.info(TAG, "Captive Portal started at %s with IP address %s", ESPConnect.getWiFiSSID().c_str(), ESPConnect.getIPAddress().toString().c_str());
@@ -292,9 +292,9 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   ElegantOTA.onStart([]() { otaTask.resume(); });
   ElegantOTA.onEnd([](bool success) {
     if (success) {
-      logger.info(TAG, "OTA Update Success! Restarting...");
+      logger.info(TAG, "OTA Update Success! Restarting");
     } else {
-      logger.error(TAG, "OTA Failed! Restarting...");
+      logger.error(TAG, "OTA Failed! Restarting");
     }
     restartTask.resume();
   });
@@ -351,7 +351,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   jsy.setCallback([](const Mycila::JSYEventType eventType) {
     if (eventType == Mycila::JSYEventType::EVT_CHANGE) {
-      grid.localGridMetrics().update({
+      grid.localMetrics().update({
         .apparentPower = jsy.getApparentPower2(),
         .current = jsy.getCurrent2(),
         .energy = jsy.getEnergy2(),
@@ -396,7 +396,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     JsonDocument doc;
     deserializeMsgPack(doc, buffer + 5, size);
 
-    grid.remoteGridMetrics().update({
+    grid.remoteMetrics().update({
       .apparentPower = doc["pf2"].as<float>() == 0 ? 0 : doc["p2"].as<float>() / doc["pf2"].as<float>(),
       .current = doc["c2"].as<float>(),
       .energy = doc["e2"].as<float>(),

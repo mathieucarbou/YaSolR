@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <MycilaZCD.h>
 
@@ -43,7 +43,7 @@ void Mycila::ZCD::begin(const int8_t pin, const uint8_t frequency) {
     return;
   }
 
-  LOGI(TAG, "Enable Zero-Cross Detection on pin %" PRId8 " with frequency %" PRIu8 " Hz...", _pin, frequency);
+  LOGI(TAG, "Enable Zero-Cross Detection on pin %" PRId8 " with frequency %" PRIu8 " Hz", _pin, frequency);
 
   // https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue
   Thyristor::semiPeriodShrinkMargin = 400;
@@ -57,7 +57,7 @@ void Mycila::ZCD::begin(const int8_t pin, const uint8_t frequency) {
 
 void Mycila::ZCD::end() {
   if (_enabled) {
-    LOGI(TAG, "Disable Zero-Cross Detection...");
+    LOGI(TAG, "Disable Zero-Cross Detection");
     _enabled = false;
     Thyristor::setFrequency(0);
     Thyristor::end();

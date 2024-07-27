@@ -36,7 +36,7 @@ function value() {
 
 function assert() {
   if [ "$#" -lt 2 ]; then
-    echo "Usage: assert <actual> <expected1> <expected2> ..."
+    echo "Usage: assert <actual> <expected1> <expected2> "
     exit 1
   fi
   actual=$1

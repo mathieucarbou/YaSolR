@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #pragma once
 
@@ -18,24 +18,24 @@
 #endif
 
 namespace Mycila {
-  typedef struct {
-      float apparentPower = 0;
-      float current = 0;
-      float energy = 0;
-      float energyReturned = 0;
-      float frequency = 0;
-      float power = 0;
-      float powerFactor = 0;
-      float voltage = 0;
-  } GridMetrics;
-
   class Grid {
     public:
-      ExpiringValue<GridMetrics>& localGridMetrics() { return _localGridMetrics; }
-      const ExpiringValue<GridMetrics>& localGridMetrics() const { return _localGridMetrics; }
+      typedef struct {
+          float apparentPower = 0;
+          float current = 0;
+          float energy = 0;
+          float energyReturned = 0;
+          float frequency = 0;
+          float power = 0;
+          float powerFactor = 0;
+          float voltage = 0;
+      } Metrics;
 
-      ExpiringValue<GridMetrics>& remoteGridMetrics() { return _remoteGridMetrics; }
-      const ExpiringValue<GridMetrics>& remoteGridMetrics() const { return _remoteGridMetrics; }
+      ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
+      const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
+
+      ExpiringValue<Metrics>& remoteMetrics() { return _remoteMetrics; }
+      const ExpiringValue<Metrics>& remoteMetrics() const { return _remoteMetrics; }
 
       ExpiringValue<float>& mqttPower() { return _mqttPower; }
       const ExpiringValue<float>& mqttPower() const { return _mqttPower; }
@@ -62,10 +62,10 @@ namespace Mycila {
         // - if JSY is connected, it has lowest priority
         if (_mqttPower.isPresent()) {
           update = _mqttPower.get();
-        } else if (_remoteGridMetrics.isPresent()) {
-          update = _remoteGridMetrics.get().power;
-        } else if (_localGridMetrics.isPresent()) {
-          update = _localGridMetrics.get().power;
+        } else if (_remoteMetrics.isPresent()) {
+          update = _remoteMetrics.get().power;
+        } else if (_localMetrics.isPresent()) {
+          update = _localMetrics.get().power;
         }
 
         if (isnan(update) && _power.neverUpdated()) {
@@ -99,10 +99,10 @@ namespace Mycila {
       // - if PZEM is connected, it has third priority
       // - if MQTT is connected, it has lowest priority
       std::optional<float> getVoltage() const {
-        if (_localGridMetrics.isPresent() && _localGridMetrics.get().voltage > 0)
-          return _localGridMetrics.get().voltage;
-        if (_remoteGridMetrics.isPresent() && _remoteGridMetrics.get().voltage > 0)
-          return _remoteGridMetrics.get().voltage;
+        if (_localMetrics.isPresent() && _localMetrics.get().voltage > 0)
+          return _localMetrics.get().voltage;
+        if (_remoteMetrics.isPresent() && _remoteMetrics.get().voltage > 0)
+          return _remoteMetrics.get().voltage;
         if (_pzemVoltage.isPresent() && _pzemVoltage.get() > 0)
           return _pzemVoltage.get();
         if (_mqttVoltage.isPresent() && _mqttVoltage.get() > 0)
@@ -112,34 +112,34 @@ namespace Mycila {
 
       // get the current grid measurements
       // returns false if no measurements are available
-      bool getMeasurements(GridMetrics& metrics) const {
+      bool getMeasurements(Metrics& metrics) const {
         if (_mqttPower.isPresent()) {
           metrics.power = _mqttPower.get();
           metrics.voltage = getVoltage().value_or(0);
           return true;
         }
 
-        if (_remoteGridMetrics.isPresent()) {
-          metrics.apparentPower = _remoteGridMetrics.get().apparentPower;
-          metrics.current = _remoteGridMetrics.get().current;
-          metrics.energy = _remoteGridMetrics.get().energy;
-          metrics.energyReturned = _remoteGridMetrics.get().energyReturned;
-          metrics.frequency = _remoteGridMetrics.get().frequency;
-          metrics.power = _remoteGridMetrics.get().power;
-          metrics.powerFactor = _remoteGridMetrics.get().powerFactor;
-          metrics.voltage = _remoteGridMetrics.get().voltage;
+        if (_remoteMetrics.isPresent()) {
+          metrics.apparentPower = _remoteMetrics.get().apparentPower;
+          metrics.current = _remoteMetrics.get().current;
+          metrics.energy = _remoteMetrics.get().energy;
+          metrics.energyReturned = _remoteMetrics.get().energyReturned;
+          metrics.frequency = _remoteMetrics.get().frequency;
+          metrics.power = _remoteMetrics.get().power;
+          metrics.powerFactor = _remoteMetrics.get().powerFactor;
+          metrics.voltage = _remoteMetrics.get().voltage;
           return true;
         }
 
-        if (_localGridMetrics.isPresent()) {
-          metrics.apparentPower = _localGridMetrics.get().apparentPower;
-          metrics.current = _localGridMetrics.get().current;
-          metrics.energy = _localGridMetrics.get().energy;
-          metrics.energyReturned = _localGridMetrics.get().energyReturned;
-          metrics.frequency = _localGridMetrics.get().frequency;
-          metrics.power = _localGridMetrics.get().power;
-          metrics.powerFactor = _localGridMetrics.get().powerFactor;
-          metrics.voltage = _localGridMetrics.get().voltage;
+        if (_localMetrics.isPresent()) {
+          metrics.apparentPower = _localMetrics.get().apparentPower;
+          metrics.current = _localMetrics.get().current;
+          metrics.energy = _localMetrics.get().energy;
+          metrics.energyReturned = _localMetrics.get().energyReturned;
+          metrics.frequency = _localMetrics.get().frequency;
+          metrics.power = _localMetrics.get().power;
+          metrics.powerFactor = _localMetrics.get().powerFactor;
+          metrics.voltage = _localMetrics.get().voltage;
           return true;
         }
 
@@ -159,26 +159,26 @@ namespace Mycila {
           root["voltage"] = voltage.value();
         }
 
-        GridMetrics measurements;
+        Metrics measurements;
         getMeasurements(measurements);
         toJson(root["measurements"].to<JsonObject>(), measurements);
 
         JsonObject local = root["source"]["local"].to<JsonObject>();
-        if (_localGridMetrics.isPresent()) {
+        if (_localMetrics.isPresent()) {
           local["enabled"] = true;
-          local["expired"] = _localGridMetrics.isExpired();
-          local["time"] = _localGridMetrics.getLastUpdateTime();
-          toJson(local, _localGridMetrics.get());
+          local["expired"] = _localMetrics.isExpired();
+          local["time"] = _localMetrics.getLastUpdateTime();
+          toJson(local, _localMetrics.get());
         } else {
           local["enabled"] = false;
         }
 
         JsonObject remote = root["source"]["remote"].to<JsonObject>();
-        if (_remoteGridMetrics.isPresent()) {
+        if (_remoteMetrics.isPresent()) {
           remote["enabled"] = true;
-          remote["expired"] = _remoteGridMetrics.isExpired();
-          remote["time"] = _remoteGridMetrics.getLastUpdateTime();
-          toJson(remote, _remoteGridMetrics.get());
+          remote["expired"] = _remoteMetrics.isExpired();
+          remote["time"] = _remoteMetrics.getLastUpdateTime();
+          toJson(remote, _remoteMetrics.get());
         } else {
           remote["enabled"] = false;
         }
@@ -204,7 +204,7 @@ namespace Mycila {
         }
       }
 
-      static void toJson(const JsonObject& dest, const GridMetrics& metrics) {
+      static void toJson(const JsonObject& dest, const Metrics& metrics) {
         dest["apparent_power"] = metrics.apparentPower;
         dest["current"] = metrics.current;
         dest["energy"] = metrics.energy;
@@ -217,8 +217,8 @@ namespace Mycila {
 #endif
 
     private:
-      ExpiringValue<GridMetrics> _localGridMetrics;
-      ExpiringValue<GridMetrics> _remoteGridMetrics;
+      ExpiringValue<Metrics> _localMetrics;
+      ExpiringValue<Metrics> _remoteMetrics;
       ExpiringValue<float> _mqttPower;
       ExpiringValue<float> _mqttVoltage;
       ExpiringValue<float> _pzemVoltage;

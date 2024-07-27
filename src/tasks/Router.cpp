@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
+
+Mycila::Task calibrationTask("Calibration", [](void* params) { router.calibrate(); });
 
 Mycila::Task routerTask("Router", [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
@@ -20,10 +22,10 @@ Mycila::Task routerTask("Router", [](void* params) {
 });
 
 Mycila::Task relayTask("Relay", [](void* params) {
-  Mycila::GridMetrics gridMetrics;
+  Mycila::Grid::Metrics gridMetrics;
   grid.getMeasurements(gridMetrics);
 
-  Mycila::RouterMetrics routerMetrics;
+  Mycila::Router::Metrics routerMetrics;
   router.getMeasurements(routerMetrics);
 
   float virtualGridPower = gridMetrics.power - routerMetrics.power;

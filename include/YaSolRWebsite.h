@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #pragma once
 
@@ -8,14 +8,10 @@
 
 #include <map>
 
-#ifdef APP_MODEL_PRO
-  #define PUSH_BUTTON_CARD_CB ()
-#else
+#ifdef APP_MODEL_OSS
   #define LINE_CHART          BAR_CHART
   #define AREA_CHART          BAR_CHART
   #define ENERGY_CARD         GENERIC_CARD
-  #define PUSH_BUTTON_CARD    BUTTON_CARD
-  #define PUSH_BUTTON_CARD_CB (int32_t value)
 #endif
 
 namespace YaSolR {
@@ -158,10 +154,8 @@ namespace YaSolR {
       Card _output2AutoStartWDays = Card(&dashboard, WEEK_SELECTOR_CARD, YASOLR_LBL_069);
 
       Tab _relaysTab = Tab(&dashboard, "\u2600 " YASOLR_LBL_071);
-      Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_072);
       Card _relay1Switch = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_073);
       Card _relay1SwitchRO = Card(&dashboard, STATUS_CARD, YASOLR_LBL_074);
-      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_075);
       Card _relay2Switch = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_076);
       Card _relay2SwitchRO = Card(&dashboard, STATUS_CARD, YASOLR_LBL_077);
 
@@ -245,16 +239,19 @@ namespace YaSolR {
       Card _displaySpeed = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_142, "s", 1, 10, 1);
       Card _displayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_143);
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_144);
-      Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_149);
-      Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_150);
       Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_151);
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_152);
-      Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
-      Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
+      Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_149);
+      Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_150);
       Card _output1DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_183, "%", 0, 100, 1);
       Card _output2DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_184, "%", 0, 100, 1);
-      Card _output1PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_147);
-      Card _output2PZEMSync = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_148);
+      Card _output1PZEMSync = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_147);
+      Card _output2PZEMSync = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_148);
+      Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_072);
+      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_075);
+      Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
+      Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
+      Card _resistanceCalibration = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_186);
 
       Tab _pidTab = Tab(&dashboard, "\u2699 " YASOLR_LBL_159);
       Card _pidView = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_169);

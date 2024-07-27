@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #pragma once
 
@@ -14,35 +14,33 @@
 #endif
 
 namespace Mycila {
-  enum class RouterOutputState {
-    // output disabled
-    OUTPUT_DISABLED = 0,
-    // idle
-    OUTPUT_IDLE,
-    // excess power sent to load
-    OUTPUT_ROUTING,
-    // full power sent to load through relay (manual trigger)
-    OUTPUT_BYPASS_MANUAL,
-    // full power sent to load through relay (auto trigger)
-    OUTPUT_BYPASS_AUTO
-  };
-
-  typedef struct {
-      float apparentPower = 0;
-      float current = 0;
-      float dimmedVoltage = 0;
-      float energy = 0;
-      float power = 0;
-      float powerFactor = 0;
-      float resistance = 0;
-      float thdi = 0;
-      float voltage = 0;
-  } RouterOutputMetrics;
-
-  typedef std::function<void()> RouterOutputStateCallback;
-
   class RouterOutput {
     public:
+      enum class State {
+        // output disabled
+        OUTPUT_DISABLED = 0,
+        // idle
+        OUTPUT_IDLE,
+        // excess power sent to load
+        OUTPUT_ROUTING,
+        // full power sent to load through relay (manual trigger)
+        OUTPUT_BYPASS_MANUAL,
+        // full power sent to load through relay (auto trigger)
+        OUTPUT_BYPASS_AUTO
+      };
+
+      typedef struct {
+          float apparentPower = 0;
+          float current = 0;
+          float dimmedVoltage = 0;
+          float energy = 0;
+          float power = 0;
+          float powerFactor = 0;
+          float resistance = 0;
+          float thdi = 0;
+          float voltage = 0;
+      } Metrics;
+
       typedef struct {
           float calibratedResistance = 0;
           bool autoDimmer = false;
@@ -65,54 +63,13 @@ namespace Mycila {
                                  _pzem(&pzem) {}
       // output
 
-      RouterOutputState getState() const {
-        if (!_dimmer->isEnabled() && !_relay->isEnabled())
-          return RouterOutputState::OUTPUT_DISABLED;
-        if (_autoBypassEnabled)
-          return RouterOutputState::OUTPUT_BYPASS_AUTO;
-        if (_bypassEnabled)
-          return RouterOutputState::OUTPUT_BYPASS_MANUAL;
-        if (_dimmer->isOn())
-          return RouterOutputState::OUTPUT_ROUTING;
-        return RouterOutputState::OUTPUT_IDLE;
-      }
+      State getState() const;
       const char* getStateName() const;
       const char* getName() const { return _name; }
 
-      void listen(RouterOutputStateCallback callback) { _callback = callback; }
-
 #ifdef MYCILA_JSON_SUPPORT
-      void toJson(const JsonObject& root, float gridVoltage) const {
-        root["bypass"] = isBypassOn() ? "on" : "off";
-        root["enabled"] = isDimmerEnabled();
-        root["state"] = getStateName();
-        root["temperature"] = _temperature.orElse(0);
-
-        _dimmer->toJson(root["dimmer"].to<JsonObject>());
-
-        RouterOutputMetrics outputMeasurements;
-        getMeasurements(outputMeasurements);
-        toJson(root["measurements"].to<JsonObject>(), outputMeasurements);
-
-        RouterOutputMetrics dimmerMetrics;
-        getDimmerMetrics(dimmerMetrics, gridVoltage);
-        toJson(root["metrics"].to<JsonObject>(), dimmerMetrics);
-
-        _pzem->toJson(root["pzem"].to<JsonObject>());
-        _relay->toJson(root["relay"].to<JsonObject>());
-      }
-
-      static void toJson(const JsonObject& dest, const RouterOutputMetrics& metrics) {
-        dest["apparent_power"] = metrics.apparentPower;
-        dest["current"] = metrics.current;
-        dest["energy"] = metrics.energy;
-        dest["power"] = metrics.power;
-        dest["power_factor"] = metrics.powerFactor;
-        dest["resistance"] = metrics.resistance;
-        dest["thdi"] = metrics.thdi;
-        dest["voltage"] = metrics.voltage;
-        dest["voltage_dimmed"] = metrics.dimmedVoltage;
-      }
+      void toJson(const JsonObject& root, float gridVoltage) const;
+      static void toJson(const JsonObject& dest, const Metrics& metrics);
 #endif
 
       // dimmer
@@ -120,81 +77,39 @@ namespace Mycila {
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer && config.calibratedResistance > 0; }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
+      bool isDimmerOn() const { return _dimmer->isOn(); }
       float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
+      float getDimmerDutyCycleLimit() const { return _dimmer->getDutyCycleLimit(); }
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
-      bool tryDimmerDutyCycle(float dutyCycle);
+      bool setDimmerDutyCycle(float dutyCycle);
+      bool setDimmerOff() { return setDimmerDutyCycle(0); }
       void applyTemperatureLimit();
 
-      float autoDivert(float gridVoltage, float availablePowerToDivert) {
-        if (!_dimmer->isEnabled() || _autoBypassEnabled || !config.autoDimmer || config.calibratedResistance <= 0 || isDimmerTemperatureLimitReached()) {
-          _dimmer->setOff();
-          return 0;
-        }
-
-        // maximum power of the load based on the calibrated resistance value
-        const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
-
-        // power allowed to be diverted to the load after applying the reserved excess power ratio
-        const float reservedPowerToDivert = constrain(availablePowerToDivert * config.reservedExcessPowerRatio, 0, maxPower);
-
-        // convert to a duty
-        const float dutyCycle = maxPower == 0 ? 0 : reservedPowerToDivert / maxPower;
-
-        // try to apply duty
-        _dimmer->setDutyCycle(dutyCycle);
-
-        // returns the used power as per the dimmer state
-        return maxPower * _dimmer->getDutyCycle();
-      }
+      float autoDivert(float gridVoltage, float availablePowerToDivert);
 
       // bypass
 
       bool isBypassEnabled() const { return _relay->isEnabled() || _dimmer->isEnabled(); }
       bool isAutoBypassEnabled() const { return isBypassEnabled() && config.autoBypass; }
       bool isBypassOn() const { return _bypassEnabled; }
-      bool tryBypassState(bool state);
+      bool setBypass(bool state);
+      bool setBypassOn() { return setBypass(true); }
+      bool setBypassOff() { return setBypass(false); }
       void applyAutoBypass();
 
       // metrics
 
       // get output theoretical metrics based on the dimmer state and the grid voltage
-      void getDimmerMetrics(RouterOutputMetrics& metrics, float gridVoltage) const {
-        metrics.resistance = config.calibratedResistance;
-        metrics.voltage = gridVoltage;
-        metrics.energy = _pzem->getEnergy();
-        const float dutyCycle = _dimmer->getDutyCycle();
-        const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
-        metrics.power = dutyCycle * maxPower;
-        metrics.powerFactor = sqrt(dutyCycle);
-        metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
-        metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
-        metrics.apparentPower = metrics.current * metrics.voltage;
-        metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
-      }
-
+      void getDimmerMetrics(Metrics& metrics, float gridVoltage) const;
       // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
-      bool getMeasurements(RouterOutputMetrics& metrics) const {
-        if (!_pzem->isConnected())
-          return false;
-        metrics.voltage = _pzem->getVoltage();
-        metrics.energy = _pzem->getEnergy();
-        if (getState() == RouterOutputState::OUTPUT_ROUTING) {
-          metrics.apparentPower = _pzem->getApparentPower();
-          metrics.current = _pzem->getCurrent();
-          metrics.dimmedVoltage = _pzem->getDimmedVoltage();
-          metrics.power = _pzem->getPower();
-          metrics.powerFactor = _pzem->getPowerFactor();
-          metrics.resistance = _pzem->getResistance();
-          metrics.thdi = _pzem->getTHDi(0);
-        }
-        return true;
-      }
+      bool getMeasurements(Metrics& metrics) const;
 
       // temperature
 
       ExpiringValue<float>& temperature() { return _temperature; }
+      const ExpiringValue<float>& temperature() const { return _temperature; }
 
     public:
       Config config;
@@ -206,7 +121,6 @@ namespace Mycila {
       PZEM* _pzem;
       bool _autoBypassEnabled = false;
       bool _bypassEnabled = false;
-      RouterOutputStateCallback _callback = nullptr;
       ExpiringValue<float> _temperature;
 
     private:

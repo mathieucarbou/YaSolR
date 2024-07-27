@@ -1,23 +1,23 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
 Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
   mqtt.end();
   if (!config.getBool(KEY_ENABLE_AP_MODE) && config.getBool(KEY_ENABLE_MQTT)) {
-    logger.info(TAG, "Enable MQTT...");
+    logger.info(TAG, "Enable MQTT");
 
     bool secured = config.getBool(KEY_MQTT_SECURED);
     String serverCert = "";
 
     if (secured && LittleFS.exists("/mqtt-server.crt")) {
-      logger.info(TAG, "Loading MQTT server certificate...");
+      logger.debug(TAG, "Loading MQTT server certificate");
       File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
       serverCert = serverCertFile.readString();
       serverCertFile.close();
-      logger.info(TAG, "Loaded MQTT server certificate:\n%s", serverCert.c_str());
+      logger.debug(TAG, "Loaded MQTT server certificate:\n%s", serverCert.c_str());
     }
 
     mqtt.begin({
@@ -35,7 +35,7 @@ Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* para
 });
 
 Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info(TAG, "Publishing static data to MQTT...");
+  logger.debug(TAG, "Publishing static data to MQTT");
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
 
   mqtt.publish(baseTopic + "/system/app/manufacturer", Mycila::AppInfo.manufacturer, true);
@@ -67,7 +67,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 });
 
 Mycila::Task mqttPublishConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info(TAG, "Publishing config to MQTT...");
+  logger.debug(TAG, "Publishing config to MQTT");
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
 
   for (auto& key : config.keys) {
@@ -113,7 +113,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
       break;
   }
 
-  Mycila::GridMetrics gridMetrics;
+  Mycila::Grid::Metrics gridMetrics;
   grid.getMeasurements(gridMetrics);
   mqtt.publish(baseTopic + "/grid/apparent_power", String(gridMetrics.apparentPower, 3));
   mqtt.publish(baseTopic + "/grid/current", String(gridMetrics.current, 3));
@@ -126,34 +126,28 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/grid/voltage", String(gridMetrics.voltage, 3));
   yield();
 
-  Mycila::RouterMetrics routerMeasurements;
+  Mycila::Router::Metrics routerMeasurements;
   router.getMeasurements(routerMeasurements);
   mqtt.publish(baseTopic + "/router/apparent_power", String(routerMeasurements.apparentPower, 3));
   mqtt.publish(baseTopic + "/router/current", String(routerMeasurements.current, 3));
   mqtt.publish(baseTopic + "/router/energy", String(routerMeasurements.energy, 3));
   mqtt.publish(baseTopic + "/router/lights", lights.toString());
-  mqtt.publish(baseTopic + "/router/power", String(routerMeasurements.power, 3));
   mqtt.publish(baseTopic + "/router/power_factor", String(routerMeasurements.powerFactor, 3));
+  mqtt.publish(baseTopic + "/router/power", String(routerMeasurements.power, 3));
+  mqtt.publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1.isOn()));
+  mqtt.publish(baseTopic + "/router/relay2", YASOLR_STATE(relay2.isOn()));
   mqtt.publish(baseTopic + "/router/temperature", String(ds18Sys.getTemperature().value_or(0)));
   mqtt.publish(baseTopic + "/router/thdi", String(routerMeasurements.thdi, 3));
   mqtt.publish(baseTopic + "/router/virtual_grid_power", String(gridMetrics.power - routerMeasurements.power, 3));
   yield();
 
-  mqtt.publish(baseTopic + "/router/output1/bypass", YASOLR_STATE(output1.isBypassOn()));
-  mqtt.publish(baseTopic + "/router/output1/state", output1.getStateName());
-  mqtt.publish(baseTopic + "/router/output1/temperature", String(output1.temperature().orElse(0), 1));
-  mqtt.publish(baseTopic + "/router/output1/dimmer/duty_cycle", String(dimmerO1.getDutyCycle() * 100));
-  mqtt.publish(baseTopic + "/router/output1/dimmer/state", YASOLR_STATE(dimmerO1.isOn()));
-  yield();
-
-  mqtt.publish(baseTopic + "/router/output2/bypass", YASOLR_STATE(output2.isBypassOn()));
-  mqtt.publish(baseTopic + "/router/output2/state", output2.getStateName());
-  mqtt.publish(baseTopic + "/router/output2/temperature", String(output2.temperature().orElse(0), 1));
-  mqtt.publish(baseTopic + "/router/output2/dimmer/duty_cycle", String(dimmerO2.getDutyCycle() * 100));
-  mqtt.publish(baseTopic + "/router/output2/dimmer/state", YASOLR_STATE(dimmerO2.isOn()));
-  yield();
-
-  mqtt.publish(baseTopic + "/router/relay1/state", YASOLR_STATE(relay1.isOn()));
-  mqtt.publish(baseTopic + "/router/relay2/state", YASOLR_STATE(relay2.isOn()));
-  yield();
+  for (const auto& output : router.getOutputs()) {
+    const String outputTopic = baseTopic + "/router/" + output->getName();
+    mqtt.publish(outputTopic + "/state", output->getStateName());
+    mqtt.publish(outputTopic + "/bypass", YASOLR_STATE(output->isBypassOn()));
+    mqtt.publish(outputTopic + "/dimmer", YASOLR_STATE(output->isDimmerOn()));
+    mqtt.publish(outputTopic + "/duty_cycle", String(output->getDimmerDutyCycle() * 100));
+    mqtt.publish(outputTopic + "/temperature", String(output->temperature().orElse(0), 1));
+    yield();
+  }
 });

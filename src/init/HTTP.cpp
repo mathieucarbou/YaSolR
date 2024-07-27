@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
@@ -14,7 +14,7 @@ extern const uint8_t config_html_gz_start[] asm("_binary__pio_data_config_html_g
 extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_end");
 
 Mycila::Task initWebTask("Init Web", [](void* params) {
-  logger.info(TAG, "Initializing HTTP Endpoints...");
+  logger.info(TAG, "Initializing HTTP Endpoints");
 
   webServer.rewrite("/dash/assets/logo/mini", "/logo-icon");
   webServer.rewrite("/dash/assets/logo/large", "/logo");

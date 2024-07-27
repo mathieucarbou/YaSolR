@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #pragma once
 
@@ -42,8 +42,8 @@ namespace Mycila {
       }
 #endif
 
-      void setOn() { setDutyCycle(1); }
-      void setOff() { setDutyCycle(0); }
+      void on() { setDutyCycle(1); }
+      void off() { setDutyCycle(0); }
       bool isOff() const { return _dutyCycle <= _dutyCycleMin; }
       bool isOn() const { return _dutyCycle > _dutyCycleMin; }
       bool isOnAtFullPower() const { return _dutyCycle >= _dutyCycleMax; }

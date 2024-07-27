@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
@@ -16,7 +16,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
 
   // early logging
   logger.forwardTo(&Serial);
-  logger.warn(TAG, "Booting %s...", Mycila::AppInfo.nameModelVersion.c_str());
+  logger.warn(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // system
   Mycila::System.begin();
@@ -76,7 +76,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_OUTPUT1_DIMMER_MAX, "100");
   config.configure(KEY_OUTPUT1_DIMMER_MIN, "0");
   config.configure(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
-  config.configure(KEY_OUTPUT1_RESERVED_EXCESS, String(100.0f, 2));
+  config.configure(KEY_OUTPUT1_RESERVED_EXCESS, "100");
   config.configure(KEY_OUTPUT1_RESISTANCE, "0");
   config.configure(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT1_TEMPERATURE_START, String(YASOLR_OUTPUT_AUTO_START_TEMPERATURE));
@@ -89,7 +89,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_OUTPUT2_DIMMER_MAX, "100");
   config.configure(KEY_OUTPUT2_DIMMER_MIN, "0");
   config.configure(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
-  config.configure(KEY_OUTPUT2_RESERVED_EXCESS, String(100.0f, 2));
+  config.configure(KEY_OUTPUT2_RESERVED_EXCESS, "100");
   config.configure(KEY_OUTPUT2_RESISTANCE, "0");
   config.configure(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT2_TEMPERATURE_START, String(YASOLR_OUTPUT_AUTO_START_TEMPERATURE));

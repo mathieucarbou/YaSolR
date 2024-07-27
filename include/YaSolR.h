@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #pragma once
 
@@ -47,7 +47,7 @@
 #else
   #include <ESPDash.h>
   #include <ElegantOTA.h>
-  #include <WebSerial.h>
+  #include <MycilaWebSerial.h>
 #endif
 
 #include <YaSolRDefines.h>
@@ -96,9 +96,6 @@ extern Mycila::Task restartTask;
 extern Mycila::Task trialTask;
 #endif
 
-extern Mycila::TaskManager jsyTaskManager;
-extern Mycila::Task jsyTask;
-
 extern Mycila::TaskManager mqttTaskManager;
 extern Mycila::Task haDiscoveryTask;
 extern Mycila::Task mqttConfigTask;
@@ -107,19 +104,23 @@ extern Mycila::Task mqttPublishStaticTask;
 extern Mycila::Task mqttPublishConfigTask;
 
 extern Mycila::TaskManager pioTaskManager;
+extern Mycila::Task calibrationTask;
 extern Mycila::Task carouselTask;
 extern Mycila::Task displayTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
-
-extern Mycila::TaskManager pzemTaskManager;
 extern Mycila::Task pzemO1PairingTask;
 extern Mycila::Task pzemO2PairingTask;
-extern Mycila::Task pzemTask;
-
-extern Mycila::TaskManager routerTaskManager;
 extern Mycila::Task relayTask;
 extern Mycila::Task routerTask;
+
+extern Mycila::TaskManager jsyTaskManager;
+extern Mycila::Task jsyTask;
+
+extern Mycila::TaskManager pzemTaskManager;
+extern Mycila::Task pzemTask;
+
+extern Mycila::TaskManager routingTaskManager;
 extern Mycila::Task routingTask;
 
 // Tasks alone without a manager

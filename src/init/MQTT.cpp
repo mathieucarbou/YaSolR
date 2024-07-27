@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
 Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
-  logger.info(TAG, "Initializing MQTT Subscribers...");
+  logger.info(TAG, "Initializing MQTT Subscribers");
 
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
 
@@ -22,7 +22,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
 
   // relays
 
-  mqtt.subscribe(baseTopic + "/router/relay1/state/set", [](const String& topic, const String& payload) {
+  mqtt.subscribe(baseTopic + "/router/relay1/set", [](const String& topic, const String& payload) {
     if (relay1.isEnabled()) {
       int start = payload.indexOf("=");
       String state = start >= 0 ? payload.substring(0, start) : payload;
@@ -33,7 +33,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
         routerRelay1.tryRelayState(false, duration);
     }
   });
-  mqtt.subscribe(baseTopic + "/router/relay2/state/set", [](const String& topic, const String& payload) {
+  mqtt.subscribe(baseTopic + "/router/relay2/set", [](const String& topic, const String& payload) {
     if (relay2.isEnabled()) {
       int start = payload.indexOf("=");
       String state = start >= 0 ? payload.substring(0, start) : payload;
@@ -47,29 +47,29 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
 
   // router
 
-  mqtt.subscribe(baseTopic + "/router/output1/dimmer/duty_cycle/set", [](const String& topic, const String& payload) {
-    output1.tryDimmerDutyCycle(payload.toFloat() / 100);
+  mqtt.subscribe(baseTopic + "/router/output1/duty_cycle/set", [](const String& topic, const String& payload) {
+    output1.setDimmerDutyCycle(payload.toFloat() / 100);
   });
 
-  mqtt.subscribe(baseTopic + "/router/output2/dimmer/duty_cycle/set", [](const String& topic, const String& payload) {
-    output2.tryDimmerDutyCycle(payload.toFloat() / 100);
+  mqtt.subscribe(baseTopic + "/router/output2/duty_cycle/set", [](const String& topic, const String& payload) {
+    output2.setDimmerDutyCycle(payload.toFloat() / 100);
   });
 
   mqtt.subscribe(baseTopic + "/router/output1/bypass/set", [](const String& topic, const String& payload) {
     if (output1.isBypassEnabled()) {
       if (payload == YASOLR_ON)
-        output1.tryBypassState(true);
+        output1.setBypassOn();
       else if (payload == YASOLR_OFF)
-        output1.tryBypassState(false);
+        output1.setBypassOff();
     }
   });
 
   mqtt.subscribe(baseTopic + "/router/output2/bypass/set", [](const String& topic, const String& payload) {
     if (output2.isBypassEnabled()) {
       if (payload == YASOLR_ON)
-        output2.tryBypassState(true);
+        output2.setBypassOn();
       else if (payload == YASOLR_OFF)
-        output2.tryBypassState(false);
+        output2.setBypassOff();
     }
   });
 
@@ -85,7 +85,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     logger.info(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic.c_str());
     mqtt.subscribe(gridPowerMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float p = payload.toFloat();
-      logger.info(TAG, "Grid Power from MQTT: %f", p);
+      logger.debug(TAG, "Grid Power from MQTT: %f", p);
       grid.mqttPower().update(p);
       if (grid.updatePower())
         routingTask.resume();
@@ -98,7 +98,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     logger.info(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic.c_str());
     mqtt.subscribe(gridVoltageMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float v = payload.toFloat();
-      logger.info(TAG, "Grid Voltage from MQTT: %f", v);
+      logger.debug(TAG, "Grid Voltage from MQTT: %f", v);
       grid.mqttVoltage().update(v);
     });
   }
@@ -109,7 +109,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     logger.info(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic.c_str());
     mqtt.subscribe(output1TemperatureMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float t = payload.toFloat();
-      logger.info(TAG, "Output 1 Temperature from MQTT: %f", t);
+      logger.debug(TAG, "Output 1 Temperature from MQTT: %f", t);
       output1.temperature().update(t);
     });
   }
@@ -120,7 +120,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     logger.info(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic.c_str());
     mqtt.subscribe(output2TemperatureMQTTTopic.c_str(), [](const String& topic, const String& payload) {
       float t = payload.toFloat();
-      logger.info(TAG, "Output 2 Temperature from MQTT: %f", t);
+      logger.debug(TAG, "Output 2 Temperature from MQTT: %f", t);
       output2.temperature().update(t);
     });
   }

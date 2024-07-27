@@ -1,20 +1,11 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
 Mycila::Task initConfigTask("Init Config", [](void* params) {
-  logger.warn(TAG, "Configuring %s...", Mycila::AppInfo.nameModelVersion.c_str());
-
-  // pioTaskManager
-  carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
-  carouselTask.setIntervalSupplier([]() { return config.get(KEY_DISPLAY_SPEED).toInt() * Mycila::TaskDuration::SECONDS; });
-  displayTask.setEnabledWhen([]() { return display.isEnabled(); });
-  displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
-  ds18Task.setInterval(5 * Mycila::TaskDuration::SECONDS);
-  lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
+  logger.warn(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // coreTaskManager
   dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
@@ -25,8 +16,20 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif
 
-  // jsyTaskManager
-  jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
+  // pioTaskManager
+  calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
+  calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
+  carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
+  carouselTask.setIntervalSupplier([]() { return config.get(KEY_DISPLAY_SPEED).toInt() * Mycila::TaskDuration::SECONDS; });
+  displayTask.setEnabledWhen([]() { return display.isEnabled(); });
+  displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
+  ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
+  ds18Task.setInterval(5 * Mycila::TaskDuration::SECONDS);
+  lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
+  relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
+  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
+  routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
+  routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
 
   // mqttTaskManager
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
@@ -34,18 +37,19 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setIntervalSupplier([]() { return config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS; });
 
+  // jsyTaskManager
+  jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
+
   // pzemTaskManager
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
 
-  // routerTaskManager
-  relayTask.setEnabledWhen([]() { return routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled(); });
-  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
-  routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  routingTask.setEnabledWhen([]() { return output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled(); });
+  // routingTaskManager
+
+  routingTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled()); });
 
   // Grid
-  grid.localGridMetrics().setExpiration(10000);                         // local is fast
-  grid.remoteGridMetrics().setExpiration(10000);                        // remote JSY is fast
+  grid.localMetrics().setExpiration(10000);                             // local is fast
+  grid.remoteMetrics().setExpiration(10000);                            // remote JSY is fast
   grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
   grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
   grid.pzemVoltage().setExpiration(10000);                              // local is fast

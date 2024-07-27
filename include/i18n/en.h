@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #pragma once
 
@@ -126,7 +126,7 @@
 #define YASOLR_LBL_120 "LED Yellow"
 #define YASOLR_LBL_121 "PZEM (TX) Serial RX"
 #define YASOLR_LBL_122 "PZEM (RX) Serial TX"
-#define YASOLR_LBL_123 "Pending..."
+#define YASOLR_LBL_123 "Pending"
 #define YASOLR_LBL_124 "Not started"
 #define YASOLR_LBL_125 "Zero-Cross Detection"
 #define YASOLR_LBL_126 "Hardware"
@@ -189,7 +189,7 @@
 #define YASOLR_LBL_183 "Output 1 Dimmer Min/Max Remapping"
 #define YASOLR_LBL_184 "Output 2 Dimmer Min/Max Remapping"
 #define YASOLR_LBL_185 "Zero-Cross Pulse Period"
-#define YASOLR_LBL_186
+#define YASOLR_LBL_186 "Resistance Value Detection"
 #define YASOLR_LBL_187
 #define YASOLR_LBL_188
 #define YASOLR_LBL_189

@@ -1,20 +1,14 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
 Mycila::Task initCoreTask("Init Core", [](void* params) {
-  logger.warn(TAG, "Initializing %s...", Mycila::AppInfo.nameModelVersion.c_str());
+  logger.warn(TAG, "Initializing %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // WDT
   Mycila::TaskManager::configureWDT(10, true);
-
-  // pioTaskManager
-  carouselTask.setManager(pioTaskManager);
-  displayTask.setManager(pioTaskManager);
-  ds18Task.setManager(pioTaskManager);
-  lightsTask.setManager(pioTaskManager);
 
   // coreTaskManager
   dashboardTask.setManager(coreTaskManager);
@@ -35,18 +29,25 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   mqttPublishStaticTask.setManager(mqttTaskManager);
   mqttPublishConfigTask.setManager(mqttTaskManager);
 
+  // pioTaskManager
+  calibrationTask.setManager(pioTaskManager);
+  carouselTask.setManager(pioTaskManager);
+  displayTask.setManager(pioTaskManager);
+  ds18Task.setManager(pioTaskManager);
+  lightsTask.setManager(pioTaskManager);
+  pzemO1PairingTask.setManager(pioTaskManager);
+  pzemO2PairingTask.setManager(pioTaskManager);
+  relayTask.setManager(pioTaskManager);
+  routerTask.setManager(pioTaskManager);
+
   // jsyTaskManager
   jsyTask.setManager(jsyTaskManager);
 
   // pzemTaskManager
   pzemTask.setManager(pzemTaskManager);
-  pzemO1PairingTask.setManager(pzemTaskManager);
-  pzemO2PairingTask.setManager(pzemTaskManager);
 
-  // routerTaskManager
-  relayTask.setManager(routerTaskManager);
-  routerTask.setManager(routerTaskManager);
-  routingTask.setManager(routerTaskManager);
+  // routingTaskManager
+  routingTask.setManager(routingTaskManager);
 
   // Router
   router.addOutput(output1);
@@ -62,7 +63,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   Mycila::TaskMonitor.addTask(pioTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(mqttTaskManager.getName());   // YaSolR
-  Mycila::TaskMonitor.addTask(routerTaskManager.getName()); // YaSolR
+  Mycila::TaskMonitor.addTask(routingTaskManager.getName()); // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
 

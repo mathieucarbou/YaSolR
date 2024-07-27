@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
@@ -11,10 +11,10 @@
 Mycila::Task networkManagerTask("ESPConnect", [](void* params) { ESPConnect.loop(); });
 
 Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info(TAG, "Enable Network Services...");
+  logger.info(TAG, "Enable Network Services");
 
   // Web server
-  logger.info(TAG, "Enable Web Server...");
+  logger.info(TAG, "Enable Web Server");
   webServer.begin();
   webServer.onNotFound([](AsyncWebServerRequest* request) {
     request->send(404);
@@ -22,12 +22,12 @@ Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* pa
 
   if (!config.getBool(KEY_ENABLE_AP_MODE)) {
     // NTP
-    logger.info(TAG, "Enable NTP...");
+    logger.info(TAG, "Enable NTP");
     Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
     // mDNS
 #ifndef ESPCONNECT_NO_MDNS
-    logger.info(TAG, "Enable mDNS...");
+    logger.info(TAG, "Enable mDNS");
     MDNS.addService("http", "tcp", 80);
 #endif
 
@@ -37,6 +37,6 @@ Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* pa
 
   // UDP Server
   const uint16_t udpPort = config.get(KEY_UDP_PORT).toInt();
-  logger.info(TAG, "Enable UDP Server on port %" PRIu16 "...", udpPort);
+  logger.info(TAG, "Enable UDP Server on port %" PRIu16, udpPort);
   udp.listen(udpPort);
 });

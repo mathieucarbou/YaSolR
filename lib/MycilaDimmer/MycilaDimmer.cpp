@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <MycilaDimmer.h>
 
@@ -50,7 +50,7 @@ void Mycila::Dimmer::begin(const int8_t pin) {
     return;
   }
 
-  LOGI(TAG, "Enable Dimmer on pin %" PRId8 "...", _pin);
+  LOGI(TAG, "Enable Dimmer on pin %" PRId8, _pin);
 
   pinMode(_pin, OUTPUT);
   digitalWrite(_pin, LOW);

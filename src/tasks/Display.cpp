@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
 
-typedef enum {
+enum class DisplayKind {
   DISPLAY_HOME = 1,
   DISPLAY_NETWORK,
   DISPLAY_ROUTER,
   DISPLAY_OUTPUT1,
   DISPLAY_OUTPUT2,
-} DisplayKind;
+};
 
 Mycila::Task carouselTask("Carousel", [](void* params) {
   void* data = displayTask.getData();
@@ -53,7 +53,7 @@ Mycila::Task displayTask("Display", [](void* params) {
   DisplayKind kind = data == nullptr ? DisplayKind::DISPLAY_HOME : (DisplayKind) reinterpret_cast<int>(data);
 
   display.home.clear();
-  display.home.printf("%-6.6s %-3.3s %-7.7s #%d\n", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str(), kind);
+  display.home.printf("%-6.6s %-3.3s %-7.7s #%d\n", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str(), static_cast<int>(kind));
 
   switch (kind) {
     case DisplayKind::DISPLAY_NETWORK: {
@@ -102,9 +102,9 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_ROUTER: {
-      Mycila::GridMetrics gridMetrics;
+      Mycila::Grid::Metrics gridMetrics;
       grid.getMeasurements(gridMetrics);
-      Mycila::RouterMetrics routerMetrics;
+      Mycila::Router::Metrics routerMetrics;
       router.getMeasurements(routerMetrics);
       display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(gridMetrics.power)));
       display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
@@ -120,7 +120,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT1: {
-      Mycila::RouterOutputMetrics outputMetrics;
+      Mycila::RouterOutput::Metrics outputMetrics;
       output1.getMeasurements(outputMetrics);
       display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
@@ -135,7 +135,7 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT2: {
-      Mycila::RouterOutputMetrics outputMetrics;
+      Mycila::RouterOutput::Metrics outputMetrics;
       output2.getMeasurements(outputMetrics);
       display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));

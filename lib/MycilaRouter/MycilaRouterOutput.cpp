@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou and others
+ * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <MycilaRouterOutput.h>
 
@@ -23,7 +23,7 @@ extern Mycila::Logger logger;
 
 #define TAG "OUTPUT"
 
-static const char* RouterOutputStateNames[] = {
+static const char* StateNames[] = {
   "DISABLED",
   "IDLE",
   "ROUTING",
@@ -33,11 +33,59 @@ static const char* RouterOutputStateNames[] = {
 
 static const char* DaysOfWeek[] = {"sun", "mon", "tue", "wed", "thu", "fri", "sat"};
 
-const char* Mycila::RouterOutput::getStateName() const { return RouterOutputStateNames[static_cast<int>(getState())]; }
+const char* Mycila::RouterOutput::getStateName() const { return StateNames[static_cast<int>(getState())]; }
+
+// output
+
+Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
+  if (!_dimmer->isEnabled() && !_relay->isEnabled())
+    return State::OUTPUT_DISABLED;
+  if (_autoBypassEnabled)
+    return State::OUTPUT_BYPASS_AUTO;
+  if (_bypassEnabled)
+    return State::OUTPUT_BYPASS_MANUAL;
+  if (_dimmer->isOn())
+    return State::OUTPUT_ROUTING;
+  return State::OUTPUT_IDLE;
+}
+
+#ifdef MYCILA_JSON_SUPPORT
+void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) const {
+  root["bypass"] = isBypassOn() ? "on" : "off";
+  root["enabled"] = isDimmerEnabled();
+  root["state"] = getStateName();
+  root["temperature"] = _temperature.orElse(0);
+
+  _dimmer->toJson(root["dimmer"].to<JsonObject>());
+
+  Metrics outputMeasurements;
+  getMeasurements(outputMeasurements);
+  toJson(root["measurements"].to<JsonObject>(), outputMeasurements);
+
+  Metrics dimmerMetrics;
+  getDimmerMetrics(dimmerMetrics, gridVoltage);
+  toJson(root["metrics"].to<JsonObject>(), dimmerMetrics);
+
+  _pzem->toJson(root["pzem"].to<JsonObject>());
+  _relay->toJson(root["relay"].to<JsonObject>());
+}
+
+void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics) {
+  dest["apparent_power"] = metrics.apparentPower;
+  dest["current"] = metrics.current;
+  dest["energy"] = metrics.energy;
+  dest["power"] = metrics.power;
+  dest["power_factor"] = metrics.powerFactor;
+  dest["resistance"] = metrics.resistance;
+  dest["thdi"] = metrics.thdi;
+  dest["voltage"] = metrics.voltage;
+  dest["voltage_dimmed"] = metrics.dimmedVoltage;
+}
+#endif
 
 // dimmer
 
-bool Mycila::RouterOutput::tryDimmerDutyCycle(float dutyCycle) {
+bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
   if (!_dimmer->isEnabled()) {
     LOGW(TAG, "Dimmer '%s' is disabled", _name);
     return false;
@@ -53,7 +101,7 @@ bool Mycila::RouterOutput::tryDimmerDutyCycle(float dutyCycle) {
     return false;
   }
 
-  if (isDimmerTemperatureLimitReached()) {
+  if (dutyCycle > 0 && isDimmerTemperatureLimitReached()) {
     LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
     return false;
   }
@@ -61,7 +109,7 @@ bool Mycila::RouterOutput::tryDimmerDutyCycle(float dutyCycle) {
   _setBypass(false);
   _dimmer->setDutyCycle(dutyCycle);
 
-  LOGD(TAG, "Set Dimmer '%s' duty to %f...", _name, _dimmer->getDutyCycle());
+  LOGD(TAG, "Set Dimmer '%s' duty to %f", _name, _dimmer->getDutyCycle());
 
   return true;
 }
@@ -78,14 +126,36 @@ void Mycila::RouterOutput::applyTemperatureLimit() {
 
   if (isDimmerTemperatureLimitReached()) {
     LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
-    _dimmer->setOff();
+    _dimmer->off();
     return;
   }
 }
 
+float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerToDivert) {
+  if (!_dimmer->isEnabled() || _autoBypassEnabled || !config.autoDimmer || config.calibratedResistance <= 0 || isDimmerTemperatureLimitReached()) {
+    _dimmer->off();
+    return 0;
+  }
+
+  // maximum power of the load based on the calibrated resistance value
+  const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
+
+  // power allowed to be diverted to the load after applying the reserved excess power ratio
+  const float reservedPowerToDivert = constrain(availablePowerToDivert * config.reservedExcessPowerRatio, 0, maxPower);
+
+  // convert to a duty
+  const float dutyCycle = maxPower == 0 ? 0 : reservedPowerToDivert / maxPower;
+
+  // try to apply duty
+  _dimmer->setDutyCycle(dutyCycle);
+
+  // returns the used power as per the dimmer state
+  return maxPower * _dimmer->getDutyCycle();
+}
+
 // bypass
 
-bool Mycila::RouterOutput::tryBypassState(bool switchOn) {
+bool Mycila::RouterOutput::setBypass(bool switchOn) {
   if (_autoBypassEnabled && !switchOn) {
     LOGW(TAG, "Auto Bypass '%s' is activated: unable to turn of bypass relay", _name);
     return false;
@@ -97,7 +167,7 @@ bool Mycila::RouterOutput::tryBypassState(bool switchOn) {
 void Mycila::RouterOutput::applyAutoBypass() {
   if (!config.autoBypass) {
     if (_autoBypassEnabled) {
-      LOGW(TAG, "Auto Bypass disabled: stopping Auto Bypass '%s'...", _name);
+      LOGW(TAG, "Auto Bypass disabled: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -108,7 +178,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
   if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
     if (_autoBypassEnabled) {
-      LOGW(TAG, "Relay and dimmer disabled: stopping Auto Bypass '%s'...", _name);
+      LOGW(TAG, "Relay and dimmer disabled: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -119,7 +189,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
   if (!NTP.isSynced()) {
     if (_autoBypassEnabled) {
-      LOGW(TAG, "NTP not available: stopping Auto Bypass '%s'...", _name);
+      LOGW(TAG, "NTP not available: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -129,7 +199,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
   struct tm timeInfo;
   if (!getLocalTime(&timeInfo, 5)) {
     if (_autoBypassEnabled) {
-      LOGW(TAG, "Unable to get time: stopping Auto Bypass '%s'...", _name);
+      LOGW(TAG, "Unable to get time: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -141,7 +211,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
   if (!_temperature.neverUpdated()) {
     if (!_temperature) {
       if (_autoBypassEnabled) {
-        LOGW(TAG, "Invalid temperature sensor value: stopping Auto Bypass '%s'...", _name);
+        LOGW(TAG, "Invalid temperature sensor value: stopping Auto Bypass '%s'", _name);
         _autoBypassEnabled = false;
         _setBypass(false);
       }
@@ -152,7 +222,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
     if (temp >= config.autoStopTemperature) {
       if (_autoBypassEnabled) {
-        LOGI(TAG, "Temperature reached %.02f °C: stopping Auto Bypass '%s'...", temp, _name);
+        LOGI(TAG, "Temperature reached %.02f °C: stopping Auto Bypass '%s'", temp, _name);
         _autoBypassEnabled = false;
         _setBypass(false);
       }
@@ -168,7 +238,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
   const int inRange = Time::timeInRange(timeInfo, config.autoStartTime, config.autoStopTime);
   if (inRange == -1) {
     if (_autoBypassEnabled) {
-      LOGW(TAG, "Time range %s to %s is invalid: stopping Auto Bypass '%s'...", config.autoStartTime.c_str(), config.autoStopTime.c_str(), _name);
+      LOGW(TAG, "Time range %s to %s is invalid: stopping Auto Bypass '%s'", config.autoStartTime.c_str(), config.autoStopTime.c_str(), _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -177,7 +247,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
   if (!inRange) {
     if (_autoBypassEnabled) {
-      LOGI(TAG, "Time reached %s: stopping Auto Bypass '%s'...", config.autoStopTime.c_str(), _name);
+      LOGI(TAG, "Time reached %s: stopping Auto Bypass '%s'", config.autoStopTime.c_str(), _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -192,7 +262,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
     }
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
     if (config.weekDays.indexOf(wday) >= 0) {
-      LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C...", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
+      LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
       _setBypass(true);
       _autoBypassEnabled = _bypassEnabled;
     }
@@ -210,19 +280,54 @@ void Mycila::RouterOutput::applyAutoBypass() {
     return;
 
   // start bypass
-  LOGI(TAG, "Auto Bypass '%s' is activated: restarting Relay...", _name);
+  LOGI(TAG, "Auto Bypass '%s' is activated: restarting Relay", _name);
   _setBypass(true);
 }
+
+// metrics
+
+void Mycila::RouterOutput::getDimmerMetrics(Metrics& metrics, float gridVoltage) const {
+  metrics.resistance = config.calibratedResistance;
+  metrics.voltage = gridVoltage;
+  metrics.energy = _pzem->getEnergy();
+  const float dutyCycle = _dimmer->getDutyCycle();
+  const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
+  metrics.power = dutyCycle * maxPower;
+  metrics.powerFactor = sqrt(dutyCycle);
+  metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
+  metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
+  metrics.apparentPower = metrics.current * metrics.voltage;
+  metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
+}
+
+bool Mycila::RouterOutput::getMeasurements(Metrics& metrics) const {
+  if (!_pzem->isConnected())
+    return false;
+  metrics.voltage = _pzem->getVoltage();
+  metrics.energy = _pzem->getEnergy();
+  if (getState() == State::OUTPUT_ROUTING) {
+    metrics.apparentPower = _pzem->getApparentPower();
+    metrics.current = _pzem->getCurrent();
+    metrics.dimmedVoltage = _pzem->getDimmedVoltage();
+    metrics.power = _pzem->getPower();
+    metrics.powerFactor = _pzem->getPowerFactor();
+    metrics.resistance = _pzem->getResistance();
+    metrics.thdi = _pzem->getTHDi(0);
+  }
+  return true;
+}
+
+// private
 
 void Mycila::RouterOutput::_setBypass(bool state, bool log) {
   if (state) {
     // we want to activate bypass
     if (_relay->isEnabled()) {
       // we have a relay in-place: use it
-      _dimmer->setOff();
+      _dimmer->off();
       if (_relay->isOff()) {
         if (log)
-          LOGD(TAG, "Turning Bypass Relay '%s' ON...", _name);
+          LOGD(TAG, "Turning Bypass Relay '%s' ON", _name);
         _relay->setState(true);
       }
       _bypassEnabled = true;
@@ -231,8 +336,8 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
       // we don't have a relay: use the dimmer
       if (_dimmer->isEnabled()) {
         if (log)
-          LOGD(TAG, "Turning Dimmer '%s' ON...", _name);
-        _dimmer->setOn();
+          LOGD(TAG, "Turning Dimmer '%s' ON", _name);
+        _dimmer->on();
         _bypassEnabled = true;
       } else {
         if (log)
@@ -246,13 +351,13 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
     if (_relay->isEnabled()) {
       if (_relay->isOn()) {
         if (log)
-          LOGD(TAG, "Turning Bypass Relay '%s' OFF...", _name);
+          LOGD(TAG, "Turning Bypass Relay '%s' OFF", _name);
         _relay->setState(false);
       }
     } else {
       if (log)
-        LOGD(TAG, "Turning Dimmer '%s' OFF...", _name);
-      _dimmer->setOff();
+        LOGD(TAG, "Turning Dimmer '%s' OFF", _name);
+      _dimmer->off();
     }
     _bypassEnabled = false;
   }
