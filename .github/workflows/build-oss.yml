@@ -76,13 +76,6 @@ jobs:
             ~/.cache/pip
             ~/.platformio
 
-      - name: Cache PlatformIO Dependencies (OSS)
-        if: ${{ startsWith(matrix.environment, 'oss-') }}
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-pio-oss-${{ matrix.environment }}
-          path: .pio
-
       - name: Python
         uses: actions/setup-python@v5
         with:
