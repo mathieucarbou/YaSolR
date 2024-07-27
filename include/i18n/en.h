@@ -188,7 +188,9 @@
 #define YASOLR_LBL_182 "Output 2 Temperature MQTT Topic"
 #define YASOLR_LBL_183 "Output 1 Dimmer Min/Max Remapping"
 #define YASOLR_LBL_184 "Output 2 Dimmer Min/Max Remapping"
-#define YASOLR_LBL_187 "Zero-Cross Pulse Period"
+#define YASOLR_LBL_185 "Zero-Cross Pulse Period"
+#define YASOLR_LBL_186
+#define YASOLR_LBL_187
 #define YASOLR_LBL_188
 #define YASOLR_LBL_189
 #define YASOLR_LBL_190

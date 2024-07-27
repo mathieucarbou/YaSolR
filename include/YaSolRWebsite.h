@@ -73,7 +73,7 @@ namespace YaSolR {
 
       Statistic _udpMessageRateBuffer = Statistic(&dashboard, YASOLR_LBL_157);
 
-      Statistic _zcdPulsePeriod = Statistic(&dashboard, YASOLR_LBL_187);
+      Statistic _zcdPulsePeriod = Statistic(&dashboard, YASOLR_LBL_185);
 
       Statistic _time = Statistic(&dashboard, YASOLR_LBL_034);
       Statistic _uptime = Statistic(&dashboard, YASOLR_LBL_035);
