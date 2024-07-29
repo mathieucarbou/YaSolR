@@ -3,12 +3,9 @@
 //************************************************
 const char *PageBrute = R"====(
  <!doctype html>
-   <html><head><meta charset="UTF-8"><style>
-    * {box-sizing: border-box;}
-    body {background: linear-gradient(#003,#77b5fe,#003);background-attachment:fixed;font-size:150%;text-align:center;width:100%;max-width:1000px;margin:auto;}
-    h2{text-align:center;color:white;}
-    a:link {color:#ccf;text-decoration: none;}
-    a:visited {color:#ccf;text-decoration: none;}
+   <html><head><meta charset="UTF-8">
+   <link rel="stylesheet" href="commun.css">
+   <style>
     .ri { text-align: right;}
     .Wh { background-color:#fdd;}
     .A { background-color:#ddf;}
@@ -25,20 +22,17 @@ const char *PageBrute = R"====(
     table {border:10px inset azure;}
     td { text-align: left;padding:4px;}
     #LED{position:absolute;top:4px;left:4px;width:0px;height:0px;border:5px solid red;border-radius:5px;}
-    .onglets{margin-top:4px;left:0px;font-size:130%;}
-    .Baccueil,.Bbrut,.Bparametres,.Bactions{margin-left:20px;border:outset 4px grey;background-color:#333;border-radius:6px;padding-left:20px;padding-right:20px;display:inline-block;}
     .Bbrut{border:inset 8px azure;}
-    .pied{display:flex;justify-content:space-between;font-size:14px;color:white;}
     .dispT{display:none;}
     .ce { text-align: center;position:relative;}
     svg { border:10px inset azure;background: linear-gradient(#333,#666,#333);}
     #infoUxIx2,#infoUxIx3,#infoUxI,#infoLinky,#infoEnphase,#infoSmartG,#infoShellyEm,#infoPmqtt{display:none;}
     #donneeDistante{font-size:50%;color:white;text-align:center;margin-bottom:10px;display:none;}
-  </style></head>
-  <body  onload='LoadParaRouteur();' >
+  </style>
+  </head>
+  <body  onload='SetHautBas();LoadParaRouteur();' >
     <div id='LED'></div>
-    <div class='onglets'><div class='Baccueil'><a href='/'>Accueil</a></div><div class='Bbrut'><a href='/Brute'>Donn&eacute;es brutes</a></div><div class='Bparametres'><a href='/Para'>Param&egrave;tres</a></div><div class='Bactions'><a href='/Actions'>Actions</a></div></div>
-    <h2 id='nom_R'>Routeur Solaire - RMS</h2>
+    <div id="lesOnglets"></div>
     <div id='date'>Date</div><br><br>
     <div id='infoUxI'>
       <div class='foot' >Tension et Courant sur 20ms</div>
@@ -79,8 +73,9 @@ const char *PageBrute = R"====(
     <div id="donneeDistante">Données distantes</div>
     <div class='foot' >Donn&eacute;es ESP32</div>
     <div><div id='DataESP32' ></div></div><br>
-    <div class='pied'><div>Routeur Version : <span id='version'></span></div><div><a href='https:F1ATB.fr' >F1ATB.fr</a></div></div>
+    <div id='pied'></div>
     <script src='BruteJS'></script>
+    <script src='BruteJS2'></script>
     <script src="/ParaRouteurJS"></script>
     <br></body></html>
 )====";
@@ -184,7 +179,52 @@ const char *PageBruteJS = R"====(
         }
         S+='</table>';
         GH('tableauLinky', S);
-      }
+       }
+       function LoadDataESP32() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() { 
+          if (this.readyState == 4 && this.status == 200) {
+              var dataESP=this.responseText;
+              var message=dataESP.split(RS);
+              var S='<table>';
+              var H=parseInt(message[0]);
+              H=H + (message[0]-H)*0.6;
+              H=H.toFixed(2);
+              H=H.replace(".", "h ")+"mn";
+              var LaSource=Source;
+              if (LaSource=='Ext') LaSource="Externe ("+Source_data+")<br>" +int2ip(RMSextIP);
+              S+='<tr><td>ESP On depuis :</td><td>'+H+'</td></tr>';
+              S+='<tr><td>Source des mesures :</td><td>'+LaSource+'</td></tr>';
+              S+='<tr><td>Niveau WiFi :</td><td>'+message[1]+' dBm</td></tr>';
+              S+="<tr><td>Point d'acc&egrave;s WiFi :</td><td>"+message[2]+'</td></tr>';
+              S+='<tr><td>Adresse MAC ESP32 :</td><td>'+message[3]+'</td></tr>';
+              S+='<tr><td>R&eacute;seau WiFi :</td><td>'+message[4]+'</td></tr>';
+              S+='<tr><td>Adresse IP ESP32 :</td><td>'+message[5]+'</td></tr>';
+              S+='<tr><td>Adresse passerelle :</td><td>'+message[6]+'</td></tr>';
+              S+='<tr><td>Masque du r&eacute;seau :</td><td>'+message[7]+'</td></tr>';
+              S+='<tr><td>Charge coeur 0 (Lecture Puissance) Min, Moy, Max :</td><td>'+message[8]+' ms</td></tr>';
+              S+='<tr><td>Charge coeur 1 (Calcul + Wifi) Min, Moy, Max :</td><td>'+message[9]+' ms</td></tr>';
+              S+='<tr><td>Espace mémoire EEPROM utilisé :</td><td>'+message[10]+' %</td></tr>';
+              S+='<tr><td>Mémoire RAM libre actuellement :</td><td>'+message[11]+' octet</td></tr>';
+              S+='<tr><td>Mémoire RAM libre minimum :</td><td>'+message[12]+' octet</td></tr>';
+              S+="<tr><td>Nombre d'interruptions en 15ms du Gradateur (signal Zc) : Filtrés/Brutes :</td><td>"+message[13]+'</td></tr>';
+              S+='<tr><td>Synchronisation 10ms au Secteur ou asynchrone horloge ESP32</td><td>'+message[14]+'</td></tr>';
+              S +='<tr><td style="text-align:center;"><strong>Messages</strong></td><td></td></tr>';
+              for (var i=0;i<10;i++){
+                S +='<tr><td>'+message[15+i]+'</td><td></td></tr>';
+              }
+              S+='</table>';
+              GH('DataESP32', S);             
+             setTimeout('LoadDataESP32();',5000);
+          }
+          
+        };
+        xhttp.open('GET', 'ajax_dataESP32', true);
+        xhttp.send();
+       }
+)====";
+
+const char *PageBruteJS2 = R"====(
       function LoadData() {
         GID('LED').style='display:block;';
         var xhttp = new XMLHttpRequest();
@@ -277,7 +317,7 @@ const char *PageBruteJS = R"====(
               GID('infoUxIx3').style.display="block";
                GH('dataUxIx3', groupes[1]);
             }
-            if (Source_data == "ShellyEm"){
+            if (Source_data == "ShellyEm" || Source_data == "ShellyPro"){
               GID('infoShellyEm').style.display="block";
               groupes[1] = groupes[1].replaceAll('"','');
               var G1=groupes[1].split(",");
@@ -340,46 +380,7 @@ const char *PageBruteJS = R"====(
         xhttp.open('GET', 'ajax_dataRMS?idx='+IdxMessage, true);
         xhttp.send();
       }
-      function LoadDataESP32() {
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() { 
-          if (this.readyState == 4 && this.status == 200) {
-              var dataESP=this.responseText;
-              var message=dataESP.split(RS);
-              var S='<table>';
-              var H=parseInt(message[0]);
-              H=H + (message[0]-H)*0.6;
-              H=H.toFixed(2);
-              H=H.replace(".", "h ")+"mn";
-              var LaSource=Source;
-              if (LaSource=='Ext') LaSource="Externe ("+Source_data+")<br>" +int2ip(RMSextIP);
-              S+='<tr><td>ESP On depuis :</td><td>'+H+'</td></tr>';
-              S+='<tr><td>Source des mesures :</td><td>'+LaSource+'</td></tr>';
-              S+='<tr><td>Niveau WiFi :</td><td>'+message[1]+' dBm</td></tr>';
-              S+="<tr><td>Point d'acc&egrave;s WiFi :</td><td>"+message[2]+'</td></tr>';
-              S+='<tr><td>Adresse MAC ESP32 :</td><td>'+message[3]+'</td></tr>';
-              S+='<tr><td>R&eacute;seau WiFi :</td><td>'+message[4]+'</td></tr>';
-              S+='<tr><td>Adresse IP ESP32 :</td><td>'+message[5]+'</td></tr>';
-              S+='<tr><td>Adresse passerelle :</td><td>'+message[6]+'</td></tr>';
-              S+='<tr><td>Masque du r&eacute;seau :</td><td>'+message[7]+'</td></tr>';
-              S+='<tr><td>Charge coeur 0 (Lecture Puissance) Min, Moy, Max :</td><td>'+message[8]+' ms</td></tr>';
-              S+='<tr><td>Charge coeur 1 (Calcul + Wifi) Min, Moy, Max :</td><td>'+message[9]+' ms</td></tr>';
-              S+='<tr><td>Espace mémoire EEPROM utilisé :</td><td>'+message[10]+' %</td></tr>';
-              S+="<tr><td>Nombre d'interruptions en 15ms du Gradateur (signal Zc) : Filtrés/Brutes :</td><td>"+message[11]+'</td></tr>';
-              S+='<tr><td>Synchronisation 10ms au Secteur ou asynchrone horloge ESP32</td><td>'+message[12]+'</td></tr>';
-              S +='<tr><td style="text-align:center;"><strong>Messages</strong></td><td></td></tr>';
-              for (var i=0;i<10;i++){
-                S +='<tr><td>'+message[13+i]+'</td><td></td></tr>';
-              }
-              S+='</table>';
-              GH('DataESP32', S);             
-             setTimeout('LoadDataESP32();',5000);
-          }
-          
-        };
-        xhttp.open('GET', 'ajax_dataESP32', true);
-        xhttp.send();
-      }
+      
       function LaDate(d){
           return d.substr(0,1)+' '+d.substr(5,2)+'/'+d.substr(3,2)+'/'+d.substr(1,2)+' '+d.substr(7,2)+'h '+d.substr(9,2)+'mn '+d.substr(11,2)+'s';
       }

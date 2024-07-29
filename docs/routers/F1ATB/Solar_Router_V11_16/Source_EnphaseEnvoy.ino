@@ -148,7 +148,6 @@ void LectureEnphase() {  //Lecture des consommations
     if (!clientFirmV5.connect(host.c_str(), 80)) {
       StockMessage("connection to client clientFirmV5 failed (call to Envoy-S)");
       delay(200);
-      ComAbuge();
       return;
     }
     String url = "/ivp/meters/reports/consumption";
@@ -223,7 +222,7 @@ void LectureEnphase() {  //Lecture des consommations
   PactProd = PactConso_M - int(PactReseau);
   EnergieActiveValide = true;
   if (PactReseau != 0 || PvaReseau != 0) {
-    ComOK();  //Reset du Watchdog à chaque trame  reçue de la passerelle Envoy-S metered
+    PuissanceRecue=true;  //Reset du Watchdog à chaque trame  reçue de la passerelle Envoy-S metered
   }
   if (cptLEDyellow > 30) {
     cptLEDyellow = 4;
@@ -239,7 +238,7 @@ String PrefiltreJson(String F1, String F2, String Json) {
 }
 
 float ValJson(String nom, String Json) {
-  int p = Json.indexOf(nom);
+  int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");
   Json = Json.substring(p + 1);
@@ -254,7 +253,7 @@ float ValJson(String nom, String Json) {
   return val;
 }
 long LongJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
-  int p = Json.indexOf(nom);
+  int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");
   Json = Json.substring(p + 1);
@@ -270,7 +269,7 @@ long LongJson(String nom, String Json) {  // Pour éviter des problèmes d'overf
 }
 
 long myLongJson(String nom, String Json) {  // Alternative a LongJson au dessus pour extraire chez EDF nb jour Tempo  https://particulier.edf.fr/services/rest/referentiel/getNbTempoDays?TypeAlerte=TEMPO
-  int p = Json.indexOf(nom);
+  int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");
   Json = Json.substring(p + 1);
@@ -285,10 +284,94 @@ long myLongJson(String nom, String Json) {  // Alternative a LongJson au dessus 
   }
   return val;
 }
+unsigned long ULongJson(String nom, String Json) {  // Alternative a LongJson au dessus pour extraire chez EDF nb jour Tempo  https://particulier.edf.fr/services/rest/referentiel/getNbTempoDays?TypeAlerte=TEMPO
+  int p = Json.indexOf(nom + "\":");
+  Json = Json.substring(p);
+  p = Json.indexOf(":");
+  Json = Json.substring(p + 1);
+  int q = Json.indexOf(",");//<==== Recherche d'une virgule et non d'un point
+  if (q == -1) q = 999;  //  /<==== Ajout de ces 2 lignes pour que la ligne p = min(p, q); ci dessous donne le bon résultat
+  p = Json.indexOf("}");
+  p = min(p, q);
+  unsigned long val = 0;
+  if (p > 0) {
+    Json = Json.substring(0, p);
+    Json ="0000"  + Json;
+    int L=Json.length();
+    unsigned long y = (Json.substring(0, L-5)).toInt(); //Problème des valeurs signées dans un unsigned
+    unsigned long z = (Json.substring(L-5)).toInt();
+    val = (y * 100000) + z;
+  }
+  return val;
+}
+int IntJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
+  int p = Json.indexOf(nom + "\":");
+  Json = Json.substring(p);
+  p = Json.indexOf(":");
+  Json = Json.substring(p + 1);
+  int q = Json.indexOf(",");
+  if (q == -1) q = 999;
+  p = Json.indexOf("}");
+  p = min(p, q);
+  int val = 0;
+  if (p > 0) {
+    Json = Json.substring(0, p);
+    val = Json.toInt();
+  }
+  return val;
+}
+byte  ByteJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
+  int p = Json.indexOf(nom + "\":");
+  Json = Json.substring(p);
+  p = Json.indexOf(":");
+  Json = Json.substring(p + 1);
+  int q = Json.indexOf(",");
+  if (q == -1) q = 999;
+  p = Json.indexOf("}");
+  p = min(p, q);
+  byte val = 0;
+  if (p > 0) {
+    Json = Json.substring(0, p);
+    val = Json.toInt();
+  }
+  return val;
+}
+unsigned short UShortJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
+  int p = Json.indexOf(nom + "\":");
+  Json = Json.substring(p);
+  p = Json.indexOf(":");
+  Json = Json.substring(p + 1);
+  int q = Json.indexOf(",");
+  if (q == -1) q = 999;
+  p = Json.indexOf("}");
+  p = min(p, q);
+  unsigned short val = 0;
+  if (p > 0) {
+    Json = Json.substring(0, p);
+    val = Json.toInt();
+  }
+  return val;
+}
+unsigned short ShortJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
+  int p = Json.indexOf(nom + "\":");
+  Json = Json.substring(p);
+  p = Json.indexOf(":");
+  Json = Json.substring(p + 1);
+  int q = Json.indexOf(",");
+  if (q == -1) q = 999;
+  p = Json.indexOf("}");
+  p = min(p, q);
+  short val = 0;
+  if (p > 0) {
+    Json = Json.substring(0, p);
+    val = Json.toInt();
+  }
+  return val;
+}
 
 
 String StringJson(String nom, String Json) {
-  int p = Json.indexOf(nom);
+  int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");
   Json = Json.substring(p + 1);

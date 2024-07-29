@@ -192,7 +192,7 @@ int Action::Valmax(int Heure) {  //Retourne la valeur Vmax (ex ouverture du Tria
 void Action::InitGpio() {  //Initialise les sorties GPIO pour des relais
   int p;
   String S;
-  String IS = String((char)31);  //Input Separator
+  String IS = "|";  //Input Separator
 
   if (Idx > 0) {
     T_LastAction = 0;

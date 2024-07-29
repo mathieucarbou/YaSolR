@@ -5,8 +5,9 @@ const char *ConnectAP_Html = R"====(
 <!doctype html>
 <html><head><meta charset="UTF-8">
     <script src="/ParaRouteurJS"></script>
+    <link rel="stylesheet" href="commun.css">
     <style>
-      body {font-size:150%;text-align:center;width:1000px;margin:auto;background: linear-gradient(#003,#77b5fe,#003);background-attachment:fixed;color:white;padding:4px;}
+      body {color:white;padding:4px;}
       a:link {color:#ccf;text-decoration: none;}
       a:visited {color:#ccf;text-decoration: none;}
       #form-passe {display: none;padding:10px;text-align:center;margin:auto;width:100%;}
@@ -14,18 +15,19 @@ const char *ConnectAP_Html = R"====(
       .l0{display:table-row;margin:auto;background-color:#333;padding:2px;}
       .l1{display:table-row;margin:auto;background-color:#666;padding:2px;}
       #ListeWifi{display:inline-block;margin:auto;}
+      .tableWifi{display:table;margin:auto;}
       #envoyer{padding-top:20px;display:none;}
-      #attente2{display:none;}
-      #onglets{margin-top:4px;left:0px;font-size:130%;display:none;}
-      .Baccueil,.Bbrut,.Bparametres,.Bactions{margin-left:20px;border:outset 4px grey;background-color:#333;border-radius:6px;padding-left:20px;padding-right:20px;display:inline-block;}
+      #attente2,#lesOnglets,#pied{display:none;}
+      .Bparametres{border:inset 10px azure;}
+      .Bwifi{border:inset 4px azure;}
     </style>
 </head>
-<body>
-<div id='onglets'><div class='Baccueil'><a href='/'>Accueil</a></div><div class='Bbrut'><a href='/Brute'>Donn&eacute;es brutes</a></div><div class='Bparametres'><a href='/Para'>Param&egrave;tres</a></div><div class='Bactions'><a href='/Actions'>Actions</a></div></div>
-<h1>Routeur Solaire - RMS</h1><h4>Connexion au r&eacute;seau WIFI local</h4>
+<body onload="init();">
+<div id='lesOnglets'></div>
+<h1 id="h1T">Routeur Solaire - RMS</h1><h4>Connexion au r&eacute;seau WIFI local</h4>
 <div id="ListeWifi"></div><br><br>
 <div id="scanReseau">
-    <input type='button' onclick="ScanWIFI();" value='Scan réseaux WIFI' >
+    <input class='bouton' type='button' onclick="ScanWIFI();" value='Scan réseaux WIFI' >
 </div>
 <br>
 <div id='form-passe'>
@@ -33,11 +35,12 @@ const char *ConnectAP_Html = R"====(
   <input type='password' name='passe' id='passe' >
 </div>
 <div id="envoyer" >
-    <input type='button' onclick="Envoyer();" value='Envoyer' >
+    <input class='bouton' type='button' onclick="Envoyer();" value='Envoyer' >
 </div>
 <br>
 <div id="attente2">Attendez l'adresse IP attribuée à l'ESP 32</div>
 <br>
+<div id="pied"></div>
 <script>
   function ScanWIFI(){
     GH("ListeWifi", "Patientez 2s");
@@ -46,7 +49,8 @@ const char *ConnectAP_Html = R"====(
           if (this.readyState == 4 && this.status == 200) {
              var LesWifi=this.responseText;
              var Wifi=LesWifi.split(GS); 
-             var S="Sélectionnez un réseau Wifi";
+             var S="Sélectionnez un réseau Wifi<br><span class='fsize10'>Une nouvelle adresse IP sera probablement attribuée par la box gérant le réseau</span>";
+             S +="<div class='tableWifi'>";
              for (var i=0;i<Wifi.length-1;i++) {
                 var wifi=Wifi[i].split(RS); 
                 var j=i%2;
@@ -55,8 +59,8 @@ const char *ConnectAP_Html = R"====(
                 S +="<div class='dB'>" +wifi[1] +" dBm</div> <input type='radio' name='Wifi' value='" +  wifi[0] +"' onclick='ChoixWifi(this.value);'>";
                 S +="</div>";
               }
-              
-              S +="<div><small>Ne sont visibles que les réseaux scannés <br>à la mise sous tension de l'ESP32</small></div>";
+              S +="</div>";
+              S +="<div><span class='fsize10'>Ne sont visibles que les réseaux scannés à la mise sous tension de l'ESP32 ou apès un reset</span></div>";
              GH("ListeWifi", S);
           }         
         };
@@ -98,9 +102,18 @@ const char *ConnectAP_Html = R"====(
       GID("envoyer").style.display = "inline-block";
       GID("form-passe").style.display = "inline-block";
   }
-  if (window.location.href.indexOf("192.168.4.1")==-1) {
-          GID("onglets").style.display = "block";
+  function init(){
+    
+    if (window.location.href.indexOf("192.168.4.1")==-1) {
+          SetHautBas(); 
+          LoadParaRouteur();         
+          GID("lesOnglets").style.display = "block";
+          GID("onglets2").style.display = "block";
+          GID("pied").style.display = "flex";
+          GID("h1T").style.display = "none";
+    }  
   }
+  function AdaptationSource(){ };
 </script>
 </body></html>
 )====";

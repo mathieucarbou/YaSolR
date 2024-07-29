@@ -21,7 +21,6 @@ void LectureShellyEm() {
   if (!clientESP_RMS.connect(host.c_str(), 80)) {
     StockMessage("connection to Shelly Em failed : " + host);
     delay(200);
-    ComAbuge();
     return;
   }
   int voie = EnphaseSerial.toInt();
@@ -61,7 +60,7 @@ void LectureShellyEm() {
     if (pf > 0) {
       total_Pva = abs(Pw) / pf;
     }
-    float total_E_soutire = ValJson("total\"", Shelly_Data);
+    float total_E_soutire = ValJson("total", Shelly_Data);
     float total_E_injecte = ValJson("total_returned", Shelly_Data);
     p = Shelly_Data.indexOf("}");
     Shelly_Data = Shelly_Data.substring(p + 1);
@@ -72,7 +71,7 @@ void LectureShellyEm() {
     if (pf > 0) {
       total_Pva += abs(Pw) / pf;
     }
-    total_E_soutire += ValJson("total\"", Shelly_Data);
+    total_E_soutire += ValJson("total", Shelly_Data);
     total_E_injecte += ValJson("total_returned", Shelly_Data);
     p = Shelly_Data.indexOf("}");
     Shelly_Data = Shelly_Data.substring(p + 1);
@@ -83,7 +82,7 @@ void LectureShellyEm() {
     if (pf > 0) {
       total_Pva += abs(Pw) / pf;
     }
-    total_E_soutire += ValJson("total\"", Shelly_Data);
+    total_E_soutire += ValJson("total", Shelly_Data);
     total_E_injecte += ValJson("total_returned", Shelly_Data);
     Energie_M_Soutiree = int(total_E_soutire);
     Energie_M_Injectee = int(total_E_injecte);
@@ -102,7 +101,7 @@ void LectureShellyEm() {
       PVAS_M_inst = 0;
     }
   } else {  //Monophasé
-    ShEm_dataBrute = "<strong>Voie : " + String(voie) + "</strong><br>" + Shelly_Data;
+    ShEm_dataBrute = "<strong>Voie : " + String(Voie) + "</strong><br>" + Shelly_Data;
     Shelly_Data = Shelly_Data + ",";
     if (Shelly_Data.indexOf("true") > 0) {  // Donnée valide
       Pw = PfloatMax(ValJson("power", Shelly_Data));
@@ -130,11 +129,11 @@ void LectureShellyEm() {
           }
           PVAS_M_inst = 0;
         }
-        Energie_M_Soutiree = int(ValJson("total\"", Shelly_Data));
+        Energie_M_Soutiree = int(ValJson("total", Shelly_Data));
         Energie_M_Injectee = int(ValJson("total_returned", Shelly_Data));
         PowerFactor_M = pf;
         Tension_M = voltage;
-        Pva_valide=true;
+        Pva_valide=true;        
       } else {  // voie secondaire
         if (LissageLong) {
           PwMoy2 = 0.2 * Pw + 0.8 * PwMoy2;  //Lissage car moins de mesure sur voie secondaire
@@ -161,7 +160,7 @@ void LectureShellyEm() {
           }
           PVAS_T_inst = 0;
         }
-        Energie_T_Soutiree = int(ValJson("total\"", Shelly_Data));
+        Energie_T_Soutiree = int(ValJson("total", Shelly_Data));
         Energie_T_Injectee = int(ValJson("total_returned", Shelly_Data));
         PowerFactor_T = pf;
         Tension_T = voltage;
@@ -169,7 +168,7 @@ void LectureShellyEm() {
     }
   }
   filtre_puissance();
-  ComOK();  //Reset du Watchdog à chaque trame du Shelly reçue
+  PuissanceRecue=true; //Reset du Watchdog à chaque trame du Shelly reçue
   if (ShEm_comptage_appels > 1) EnergieActiveValide = true;
   if (cptLEDyellow > 30) {
     cptLEDyellow = 4;

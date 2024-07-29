@@ -72,5 +72,5 @@ void ComputePower() {
   }
   filtre_puissance();
   EnergieActiveValide = true;
-  ComOK();
+  PuissanceRecue=true;
 }

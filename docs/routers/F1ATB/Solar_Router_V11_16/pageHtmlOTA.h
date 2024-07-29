@@ -3,31 +3,24 @@
 //***************************************************
 const char *OtaHtml = R"====(
   <!doctype html>
-  <html><head><meta charset="UTF-8"><style>
-    * {box-sizing: border-box;}
-    body {font-size:150%;text-align:center;width:100%;max-width:1000px;margin:auto;background: linear-gradient(#003,#77b5fe,#003);background-attachment:fixed;color:white;}
-    h2{text-align:center;color:white;}
-    .onglets{margin-top:4px;left:0px;font-size:130%;}
-    .Baccueil,.Bbrut,.Bparametres,.Bactions{margin-left:20px;border:outset 4px grey;background-color:#333;border-radius:6px;padding-left:20px;padding-right:20px;display:inline-block;}
-    a:link {color:#aaf;text-decoration: none;}
-    a:visited {color:#ccf;text-decoration: none;}
+  <html><head><meta charset="UTF-8">
+  <link rel="stylesheet" href="commun.css">
+  <style>
     input {font-size:20px;}
-    .pied{display:flex;justify-content:space-between;font-size:14px;color:white;} 
     .liste{display:flex;justify-content:center;text-align:left;} 
-    .lds-dual-ring {color: #cccc5b;visibility: hidden;}
-    .lds-dual-ring,.lds-dual-ring:after {box-sizing: border-box;}
-    .lds-dual-ring {display: inline-block;width: 80px;height: 80px;}
-    .lds-dual-ring:after {content: " ";display: block;width: 64px;height: 64px;margin: 8px;border-radius: 50%;border: 6.4px solid currentColor;border-color: currentColor transparent currentColor transparent;animation: lds-dual-ring 1.2s linear infinite;}
-    @keyframes lds-dual-ring {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}
+    #onglets2{display:block;}
+    .Bparametres{border:inset 10px azure;}
+    .Bota{border:inset 4px azure;}
+    body{color:white;}
   </style>
   <script src="/ParaRouteurJS"></script>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
 
   </head>
   <body onload="Init();">
-    <div class='onglets'><div class='Baccueil'><a href='/'>Accueil</a></div><div class='Bbrut'><a href='/Brute'>Donn&eacute;es brutes</a></div><div class='Bparametres'><a href='/Para'>Param&egrave;tres</a></div><div class='Bactions'><a href='/Actions'>Actions</a></div></div>
+    <div id='lesOnglets'></div>
     <h2 >Web OTA</h2>
-    <h4 >Mise à jour par Wifi</h4>
+    <h4>Mise à jour par Wifi</h4>
     <div class="liste">
       Votre version actuelle du routeur : <span id ="Version_actu"></span>
     </div>
@@ -40,14 +33,15 @@ const char *OtaHtml = R"====(
     </div>
     <div class="liste">
       <ul>
-        <li>1 - Téléchargez sur votre ordinateur, la version binaire du logiciel du routeur souhaitée (Solar_Router_Vxx.xx.ino.bin)</li>
-        <li>2 - Cliquez sur "Choisir un fichier" et sélectionnez ce binaire sur votre ordinateur</li>
-        <li>3 - Cliquez sur "Mettre à jour"</li>
+        <li>1 - <a href='/Export' >Sauvegardez vos paramètres</a> sur le PC</li>
+        <li>2 - Téléchargez sur votre ordinateur, la version binaire du logiciel du routeur souhaitée <br>(Solar_Router_Vxx.xx.ino.bin) en cliquant dessus</li>
+        <li>3 - Cliquez sur "Choisir un fichier" et sélectionnez ce binaire sur votre ordinateur</li>
+        <li>4 - Cliquez sur "Mettre à jour"</li>
       </ul>
     </div>
     <form method='POST' action='#' enctype='multipart/form-data' id='upload_form'>
       <input type='file' name='update' id="fichier">
-      <input type='submit' value='Mettre à jour'>
+      <input class='bouton' type='submit' value='Mettre à jour'>
     </form>
     <div id='prg'>progression: 0%</div>
     <script>
@@ -81,6 +75,7 @@ const char *OtaHtml = R"====(
           });
         });
         function Init(){
+          SetHautBas();
           LoadParaRouteur();
         }
         function AdaptationSource(){
@@ -88,7 +83,7 @@ const char *OtaHtml = R"====(
         };
     </script>
     <br>
-    <div class='pied'><div>Routeur Version : <span id='version'></span></div><div><a href='https:F1ATB.fr' >F1ATB.fr</a></div></div>
+    <div id='pied'></div>
     <br>
 </body></html>
  

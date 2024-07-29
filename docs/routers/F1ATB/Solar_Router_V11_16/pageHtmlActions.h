@@ -4,18 +4,14 @@
 
 const char *ActionsHtml = R"====(
    <!doctype html>
-  <html><head><meta charset="UTF-8"><style>
-    * {box-sizing: border-box;}
-    body {font-size:150%;text-align:center;background: linear-gradient(#003,#77b5fe,#003);background-attachment:fixed;color:white;}
-    h2{text-align:center;color:white;}
-    a:link {color:#aaf;text-decoration: none;}
-    a:visited {color:#ccf;text-decoration: none;}
-    .onglets{margin-top:4px;left:0px;font-size:130%;}
-    .Baccueil,.Bbrut,.Bparametres,.Bactions{margin-left:20px;border:outset 4px grey;background-color:#333;border-radius:6px;padding-left:20px;padding-right:20px;display:inline-block;}
+  <html><head><meta charset="UTF-8">
+  <link rel="stylesheet" href="commun.css">
+  <style>
+    body{color:white;}
     .Bactions{border:inset 8px azure;}
-    .cadre {width:100%;max-width:1200px;margin:auto;}
-    .form {width:100%;text-align:left;}
-    .titre{display:flex;justify-content:center;cursor:pointer;}
+    .cadre{width:100%;max-width:1200px;margin:auto;}
+    .form{width:100%;text-align:left;}
+    .titre{display:flex;justify-content:center;cursor:pointer;color:black;}
     .slideTriac{width:100%;position:relative;margin:4px;padding:4px;border:2px inset grey;background-color:#fff8f8;color:black;font-size:14px;}
     .slideTriacIn{display:flex;justify-content:center;width:100%;}
     .planning{width:100%;position:relative;margin:4px;padding:4px;border:2px inset grey;background-color:#fff8f8;color:black;}
@@ -46,25 +42,17 @@ const char *ActionsHtml = R"====(
     label{text-align:right;}
     input {margin: 5px;text-align:left;font-size:15px;max-width:150px;}
     #message{position:fixed;border:inset 4px grey;top:2px;right:2px;background-color:#333;color:white;font-size:16px;display:none;text-align:left;padding:5px;}
-    .pied{display:flex;justify-content:space-between;font-size:14px;color:white;}
     .bord1px{border:solid 1px grey; margin:2px;}
     #mode,.bouton_curseur{display:flex;justify-content: space-around;font-size:20px;}
     .boutons{display:inline-flex;}
     .triacNone0{display:none;}
-    .lds-dual-ring {color: #cccc5b;visibility: hidden;}
-    .lds-dual-ring,.lds-dual-ring:after {box-sizing: border-box;}
-    .lds-dual-ring {display: inline-block;width: 80px;height: 80px;}
-    .lds-dual-ring:after {content: " ";display: block;width: 64px;height: 64px;margin: 8px;border-radius: 50%;border: 6.4px solid currentColor;border-color: currentColor transparent currentColor transparent;animation: lds-dual-ring 1.2s linear infinite;}
-    @keyframes lds-dual-ring {0% {transform: rotate(0deg);} 100% {transform: rotate(360deg);}}
+    #plannings h4,#planning0 h4{color:black};{color:black};
   </style>
-  <script src="ActionsJS"></script>
-  <script src="ActionsJS2"></script>
-  <script src="/ParaRouteurJS"></script>
   </head>
-  <body onLoad="Init();" onmouseup='mouseClick=false;' >
+  <body onLoad="SetHautBas();Init();" onmouseup='mouseClick=false;' >
     <div class="cadre">
-      <div class='onglets'><div class='Baccueil'><a href='/'>Accueil</a></div><div class='Bbrut'><a href='/Brute'>Donn&eacute;es brutes</a></div><div class='Bparametres'><a href='/Para'>Param&egrave;tres</a></div><div class='Bactions'><a href='/Actions'>Actions</a></div></div>
-      <h2 id='nom_R'>Routeur Solaire - RMS</h2><h4>Planning des Routages <small>(suivant <span id='nomSondeMobile'>sonde Maison</span>)</small></h4>
+      <div id="lesOnglets"></div>
+      <h4>Planning des Routages <small>(suivant <span id='nomSondeMobile'>sonde Maison</span>)</small></h4>
       <h5 id="TitrTriac" >Routage via Triac</h5>
       <div class="form"   >
         <div id="planning0" class="planning" ></div>
@@ -76,12 +64,16 @@ const char *ActionsHtml = R"====(
         <div id="plannings"></div>
       </div> 
       <div  style='text-align:right;padding-top:20px;'>
-        <input type='button' value='Sauvegarder' onclick="SendValues();">
+        <input class='bouton' type='button' value='Sauvegarder' onclick="SendValues();">
         <div class="lds-dual-ring" id="attente"></div>
       </div>
     </div>
     <div id="message"></div><br>
-    <div class='pied'><div>Routeur Version : <span id='version'></span></div><div><a href='https:F1ATB.fr' >F1ATB.fr</a></div></div> 
+    <div id='pied'></div> 
+    <script src="ActionsJS"></script>
+    <script src="ActionsJS2"></script>
+    <script src="ActionsJS3"></script>
+    <script src="/ParaRouteurJS"></script>
   </body></html>
 )====";
 const char *ActionsJS = R"====(
@@ -91,7 +83,7 @@ const char *ActionsJS = R"====(
   var temperatureDS=-127;
   var LTARFbin=0;
   var pTriac=0;
-  var IS=String.fromCharCode(31); //Input Separator
+  var IS="|"; //Input Separator
   function Init() {
       LoadActions();
       DispTimer();
@@ -171,10 +163,10 @@ const char *ActionsJS = R"====(
       if(LesActions[iAct].OrdreOn.indexOf(IS)>0){
         var vals=LesActions[iAct].OrdreOn.split(IS);
         GID("selectPin"+iAct).value=vals[0];
-        GID("SelectOut" + iAct).value=vals[1];
+        GID("selectOut" + iAct).value=vals[1];
       } else {      
         GID("selectPin"+iAct).value=-1;
-        GID("SelectOut" + iAct).value=1;
+        GID("selectOut" + iAct).value=1;
         if(LesActions[iAct].OrdreOn=="") GID("selectPin"+iAct).value=0;
       }
       TracePeriodes(iAct);
@@ -244,6 +236,8 @@ const char *ActionsJS = R"====(
           NewPosition(t, leftPos, iAct);
       }
   }
+
+
   function NewPosition(t, leftPos, iAct) {
       var G = GID(t.id).style.left;
       //+ window.scrollX;
@@ -268,6 +262,10 @@ const char *ActionsJS = R"====(
       TracePeriodes(iAct);
 
   }
+)====";
+
+
+const char *ActionsJS2 = R"====(
   function AddSub(v, iAct) {
       if (v == 1) {
           if (LesActions[iAct].Periodes.length<8){
@@ -393,8 +391,7 @@ const char *ActionsJS = R"====(
           TracePeriodes(iAct);
       }
   }
-)====";
-const char *ActionsJS2 = R"====(
+
   function NewVal(t){
       var champs=t.id.split("info");
       var idx=champs[1].split("Z");   //Num Action, Num période
@@ -474,6 +471,11 @@ const char *ActionsJS2 = R"====(
         GID("fen_slide"+iAct).style.visibility = (LesActions[iAct].Actif== 1 && iAct>0  ) ? "hidden" : "visible";
     }
   }
+
+)====";
+
+
+const char *ActionsJS3 = R"====(
   function LoadActions() {
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {

@@ -114,7 +114,7 @@ void Lecture_JSY333() {
 
     Pva_valide = true;
     filtre_puissance();
-    ComOK();  //Reset du Watchdog à chaque trame du JSY reçue
+    PuissanceRecue=true;  //Reset du Watchdog à chaque trame du JSY reçue
     EnergieActiveValide = true;
     if (cptLEDyellow > 30) {
       cptLEDyellow = 4;

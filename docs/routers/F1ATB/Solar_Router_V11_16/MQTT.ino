@@ -1,7 +1,6 @@
 // **********************************************************************************************
 // *                        MQTT AUTO-DISCOVERY POUR HOME ASSISTANT ou DOMOTICZ                            *
 // **********************************************************************************************
-bool Discovered = false;
 char DEVICE[300];
 char ESP_ID[15];
 char mdl[30];
@@ -82,7 +81,7 @@ void envoiVersMQTT() {
   int etat = 0;                                                                     // utilisé pour l'envoie de l'état On/Off des actions.
   if (int((tps - previousMQTTenvoiMillis) / 1000) > MQTTRepet && MQTTRepet != 0) {  // Si Service MQTT activé avec période sup à 0
     previousMQTTenvoiMillis = tps;
-    if (!Discovered) {  //(uniquement au démarrage discovery = 0)
+    if (!Discovered) {  //(uniquement au démarrage discovery = 0 et toute les 5mn si HA redemarre)
       sendMQTTDiscoveryMsg_global();
     }
     SendDataToHomeAssistant();  // envoie du Payload au State topic
@@ -126,9 +125,11 @@ void callback(char *topic, byte *payload, unsigned int length) {
 
 void sendMQTTDiscoveryMsg_global() {
   String ActType;
+  String ActifType;
+  String ActionDur;
   // augmente la taille du buffer wifi Mqtt (voir PubSubClient.h)
   clientMQTT.setBufferSize(700);  // voir -->#define MQTT_MAX_PACKET_SIZE 256 is the default value in PubSubClient.h
-  if (Source == "UxIx2" || Source == "ShellyEm") {
+  if (Source == "UxIx2" || Source == "ShellyEm" || Source == "ShellyPro") {
     DeviceToDiscover("PuissanceS_T", "W", "power", "0");
     DeviceToDiscover("PuissanceI_T", "W", "power", "0");
     DeviceToDiscover("Tension_T", "V", "voltage", "2");
@@ -164,8 +165,16 @@ void sendMQTTDiscoveryMsg_global() {
 
   for (int i = 0; i < NbActions; i++) {
     ActType = "Ouverture_Relais_" + String(i);
-    if (i == 0) ActType = "OuvertureTriac";
+    ActifType = "Actif_Relais_" + String(i);
+    ActionDur = "Duree_relais_"+ String(i);
+    if (i == 0) {
+      ActType = "Ouverture_Triac";
+      ActifType = "Actif_Triac";
+      ActionDur = "Duree_Triac";
+    }
     DeviceToDiscover(ActType, "%", "power_factor", "0");  //Type power factor pour etre accepté par HA
+    DeviceBin2Discover(ActifType);
+    DeviceToDiscover(ActionDur, "h", "duration", "2");  
   }
 
 
@@ -194,6 +203,20 @@ void DeviceToDiscover(String VarName, String Unit, String Class, String Round) {
   sprintf(value, "{\"name\": \"%s\",\"uniq_id\": \"%s\",\"stat_t\": \"%s\",\"device_class\": \"%s\",\"unit_of_meas\": \"%s\",%s\"val_tpl\": \"%s\",\"device\": %s}", TitleName.c_str(), UniqueID, StateTopic, Class.c_str(), Unit.c_str(), state_class, ValTpl, DEVICE);
   clientMQTT.publish(DiscoveryTopic, value);
 }
+void DeviceBin2Discover(String VarName) {
+  char value[700];
+  char DiscoveryTopic[120];
+  char UniqueID[50];
+  char ValTpl[60];
+  int init = 0;  // default value
+  String ic = "mdi:electric-switch";
+  String TitleName = String(MQTTdeviceName) + " " + String(VarName);
+  sprintf(DiscoveryTopic, "%s/%s/%s_%s/%s", MQTTPrefix.c_str(), BINS, MQTTdeviceName.c_str(), VarName.c_str(), "config");
+  sprintf(UniqueID, "%s_%s", MQTTdeviceName.c_str(), VarName.c_str());
+  sprintf(ValTpl, "{{ value_json.%s}}", VarName.c_str());
+  sprintf(value, "{\"name\": \"%s\",\"uniq_id\": \"%s\",\"stat_t\": \"%s\",\"init\": %d,\"ic\": \"%s\",\"payload_off\":\"0\",\"payload_on\":\"1\",\"val_tpl\": \"%s\",\"device\": %s}", TitleName.c_str(), UniqueID, StateTopic, init, ic.c_str(), ValTpl, DEVICE);
+  clientMQTT.publish(DiscoveryTopic, value);
+}
 void DeviceBinToDiscover(String VarName, String TitleName) {
   char value[700];
   char DiscoveryTopic[120];
@@ -207,6 +230,7 @@ void DeviceBinToDiscover(String VarName, String TitleName) {
   sprintf(value, "{\"name\": \"%s\",\"uniq_id\": \"%s\",\"stat_t\": \"%s\",\"init\": \"%s\",\"ic\": \"%s\",\"val_tpl\": \"%s\",\"device\": %s}", TitleName.c_str(), UniqueID, StateTopic, init.c_str(), ic.c_str(), ValTpl, DEVICE);
   clientMQTT.publish(DiscoveryTopic, value);
 }
+
 
 void DeviceTextToDiscover(String VarName, String TitleName) {
   char value[600];
@@ -225,10 +249,12 @@ void DeviceTextToDiscover(String VarName, String TitleName) {
 
 void SendDataToHomeAssistant() {
   String ActType;
+  String ActifType;
+  String ActionDur;
   char value[1000];
   sprintf(value, "{\"PuissanceS_M\": %d, \"PuissanceI_M\": %d, \"Tension_M\": %.1f, \"Intensite_M\": %.1f, \"PowerFactor_M\": %.2f, \"Energie_M_Soutiree\":%d,\"Energie_M_Injectee\":%d, \"EnergieJour_M_Soutiree\":%d, \"EnergieJour_M_Injectee\":%d", PuissanceS_M, PuissanceI_M, Tension_M, Intensite_M, PowerFactor_M, Energie_M_Soutiree, Energie_M_Injectee, EnergieJour_M_Soutiree, EnergieJour_M_Injectee);
 
-  if (Source == "UxIx2" || Source == "ShellyEm") {
+  if (Source == "UxIx2" || Source == "ShellyEm" || Source == "ShellyPro") {
     sprintf(value, "%s,\"PuissanceS_T\": %d, \"PuissanceI_T\": %d, \"Tension_T\": %.1f, \"Intensite_T\": %.1f, \"PowerFactor_T\": %.2f, \"Energie_T_Soutiree\":%d,\"Energie_T_Injectee\":%d, \"EnergieJour_T_Soutiree\":%d, \"EnergieJour_T_Injectee\":%d, \"Frequence\":%.2f", value, PuissanceS_T, PuissanceI_T, Tension_T, Intensite_T, PowerFactor_T, Energie_T_Soutiree, Energie_T_Injectee, EnergieJour_T_Soutiree, EnergieJour_T_Injectee, Frequence);
   }
   if (temperature > -100 && Source_Temp != "tempNo") {
@@ -256,9 +282,22 @@ void SendDataToHomeAssistant() {
 
   for (int i = 0; i < NbActions; i++) {
     ActType = "Ouverture_Relais_" + String(i);
-    if (i == 0) ActType = "OuvertureTriac";
+    ActifType = "Actif_Relais_" + String(i);
+    ActionDur = "Duree_relais_"+ String(i);
+    if (i == 0) {
+      ActType = "Ouverture_Triac";
+      ActifType = "Actif_Triac";
+      ActionDur = "Duree_Triac";
+    }
     int Ouv = 100 - Retard[i];
     sprintf(value, "%s,\"%s\":%d", value, ActType.c_str(), Ouv);
+    if (Ouv != 0) {
+      sprintf(value, "%s,\"%s\":%d", value, ActifType.c_str(), 1);
+    }
+    else{
+      sprintf(value, "%s,\"%s\":%d", value, ActifType.c_str(), 0);
+    }
+    sprintf(value, "%s,\"%s\":%f", value, ActionDur.c_str(), H_Ouvre[i]);
   }
   sprintf(value, "%s}", value);
   bool published = clientMQTT.publish(StateTopic, value);

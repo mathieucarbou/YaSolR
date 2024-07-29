@@ -1,20 +1,24 @@
+#define Version "11.16"
+#define HOSTNAME "RMS-ESP32-"
+#define CLE_Rom_Init 912567899  //Valeur pour tester si ROM vierge ou pas. Un changement de valeur remet à zéro toutes les données. / Value to test whether blank ROM or not.
+
 /*
   PV Router / Routeur Solaire 
   ****************************************
-  Version V10.00 
-
+  
   RMS=Routeur Multi Sources
 
-  Choix de 9 sources différentes pour lire la consommation électrique en entrée de maison
+  Choix de 10 sources différentes pour lire la consommation électrique en entrée de maison
   - lecture de la tension avec un transformateur et du courant avec une sonde ampèremétrique (UxI)
   - lecture des données du Linky (Linky)
   - module (JSY-MK-194T) intégrant une mesure de tension secteur et 2 sondes ampèmétriques (UxIx2)
   - module (JSY-MK-333) pour une installation triphasé
   - Lecture passerelle Enphase - Envoy-S metered (firmware V5 et V7)
-  - Lecture depuis un autre ESP qui comprend l'une des 4 sources citées plus haut
   - Lecture avec Shelly Em
+  - Lecture avec Shelly Pro Em
   - Lecture compteur SmartG 
   - Lecture via MQTT
+  - Lecture depuis un autre ESP depuis une des sources citées plus haut
   
   En option une mesure de température en interne (DS18B20), en externe ou via MQTT est possible.
 
@@ -39,21 +43,40 @@
     OTA par le Web directement en complément de l'Arduino IDE
     Modification des calculs de puissance en UxIx3 pour avoir une représentation similaire au Linky (Merci PhDV61)
     Modification de la surveillance Watchdog
+  - V11.00
+    Possibilité de définir le SSID et le mot de passe du Wifi par le port série
+    Import / Export des paramètres et actions
+    Relance découverte MQTT toutes les 5mn
+    Re-écriture de la surveillance par watchdog suite au changement de bibliothèque 3.0.x carte ESP32
+    Estimation temps equivalent d'ouverture max du Triac et relais cumulée depuis 6h du matin. Prise en compte de la puissance en sin² du mode découpe
+    Correction d'un bug de syntaxe non détecté par le compilateur depuis la version V9 affectant les communications d'un ESP esclave vers le maître
+    Affichage de l'occupation RAM
+  - V11.10
+    Nouvelle source de mesure Shelly Pro Em
+  - V11.11
+    Correction bug mesure de température distante
+  - V11.12
+    Correction bug mesure données Shelly Em suite évolution bibliothèque ESP32 V3.0.2
+  - V11.13
+    Correction bug sur export des paramètres
+  - V11.14
+    Correction bug choix sortie 0V ou 3.3V actif
+  - V11.15
+    Correction bug sur export des paramètres
+  - V11.16
+    Modification pour pouvoir faire des imports de paramètres avec Firefox
               
   
   Les détails sont disponibles sur / Details are available here:
   https://f1atb.fr  Section Domotique / Home Automation
 
-  F1ATB Juin 2024 
+  F1ATB Juillet 2024 
 
   GNU Affero General Public License (AGPL) / AGPL-3.0-or-later
 
 
 
 */
-#define Version "10.00"
-#define HOSTNAME "RMS-ESP32-"
-#define CLE_Rom_Init 912567899  //Valeur pour tester si ROM vierge ou pas. Un changement de valeur remet à zéro toutes les données. / Value to test whether blank ROM or not.
 
 
 //Librairies
@@ -79,6 +102,7 @@
 #include "pageHtmlPara.h"
 #include "pageHtmlActions.h"
 #include "pageHtmlOTA.h"
+#include "pageHtmlExport.h"
 #include "Actions.h"
 
 
@@ -118,6 +142,7 @@ String ssid = "";
 String password = "";
 String Source = "UxI";
 String Source_data = "UxI";
+String SerialIn = "";
 byte dhcpOn = 1;
 unsigned long IP_Fixe = 0;
 unsigned long Gateway = 0;
@@ -312,6 +337,7 @@ unsigned long LastPwMQTTMillis = 0;
 
 //Actions et Triac(action 0)
 float RetardF[LesActionsLength];  //Floating value of retard
+float H_Ouvre[LesActionsLength];  //Heure equivalente ouverture depuis 6h
 //Variables in RAM for interruptions
 volatile unsigned long lastIT = 0;
 volatile int IT10ms = 0;     //Interruption avant deglitch
@@ -356,10 +382,10 @@ int TemperatureValide = 0;
 //MQTT
 WiFiClient MqttClient;
 PubSubClient clientMQTT(MqttClient);
+bool Discovered = false;
 
 //WIFI
 int WIFIbug = 0;
-int ComBug = 0;
 WiFiClientSecure clientSecu;
 WiFiClientSecure clientSecuEDF;
 String Liste_AP = "";
@@ -368,7 +394,7 @@ String Liste_AP = "";
 //Multicoeur - Processeur 0 - Collecte données RMS local ou distant
 TaskHandle_t Task1;
 esp_err_t ESP32_ERROR;
-bool FirstLoop0 = false;
+bool PuissanceRecue = false;
 
 //Interruptions, Current Zero Crossing from Triac device and Internal Timer
 //*************************************************************************
@@ -451,6 +477,7 @@ void setup() {
 
 
   //Watchdog initialisation
+  esp_task_wdt_deinit();
   // Initialisation de la structure de configuration pour la WDT
   esp_task_wdt_config_t wdt_config = {
     .timeout_ms = WDT_TIMEOUT * 1000,                 // Convertir le temps en millisecondes
@@ -459,7 +486,10 @@ void setup() {
   };
   // Initialisation de la WDT avec la structure de configuration
   ESP32_ERROR = esp_task_wdt_init(&wdt_config);
-  StockMessage("Dernier Reset : " + String(esp_err_to_name(ESP32_ERROR)));
+  Serial.println("Dernier Reset : " + String(esp_err_to_name(ESP32_ERROR)));
+  esp_task_wdt_add(NULL);  //add current thread to WDT watch
+  esp_task_wdt_reset();
+  delay(1);  //VERY VERY IMPORTANT for Watchdog Reset
 
 
 
@@ -526,6 +556,8 @@ void setup() {
     WiFi.mode(WIFI_STA);
     delay(10);
   }
+  WiFi.setSortMethod(WIFI_CONNECT_AP_BY_SIGNAL);
+  WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
 
   INIT_EEPROM();
   //Lecture Clé pour identifier si la ROM a déjà été initialisée
@@ -637,7 +669,6 @@ void setup() {
   ArduinoOTA.begin();  //Mandatory
 
 
-
   //Adaptation à la Source
   Serial.println("Source : " + Source);
 
@@ -720,6 +751,9 @@ void setup() {
   LastRMS_Millis = millis();
   previousActionMillis = millis();
   previousTempMillis = millis() - 118000;
+
+  esp_task_wdt_reset();
+  delay(1);  //VERY VERY IMPORTANT for Watchdog Reset
 }
 
 /* **********************
@@ -728,16 +762,9 @@ void setup() {
    * ****************** *
    **********************
 */
-
+int cpt=0;
 void Task_LectureRMS(void *pvParameters) {
-  esp_task_wdt_add(NULL);  //add current thread to WDT watch
-  esp_task_wdt_reset();
   for (;;) {
-    if (!FirstLoop0) {
-      Serial.println("FirstLoop0");
-      FirstLoop0 = true;
-      ComOK();
-    }
     unsigned long tps = millis();
     float deltaT = float(tps - previousTimeRMS);
     previousTimeRMS = tps;
@@ -788,18 +815,23 @@ void Task_LectureRMS(void *pvParameters) {
         LastRMS_Millis = millis();
         PeriodeProgMillis = 200 + ralenti;  //On s'adapte à la vitesse réponse ShellyEm
       }
+      if (Source == "ShellyPro") {
+        LectureShellyProEm();
+        LastRMS_Millis = millis();
+        PeriodeProgMillis = 200 + ralenti;  //On s'adapte à la vitesse réponse ShellyProEm
+      }
 
       if (Source == "Ext") {
         CallESP32_Externe();
-        LastRMS_Millis =
-          PeriodeProgMillis = 200 + ralenti;  //Après pour ne pas surchargé Wifi
+        LastRMS_Millis = millis();
+        PeriodeProgMillis = 200 + ralenti;  //Après pour ne pas surchargé Wifi
       }
       if (Source == "Pmqtt") {
         PeriodeProgMillis = 600;
         LastRMS_Millis = millis();
         UpdatePmqtt();
       }
-    }
+    } 
     delay(2);
   }
 }
@@ -852,10 +884,14 @@ void loop() {
         }
       }
       IdxStockPW = (IdxStockPW + 1) % 600;
+
+      //Discovery message pour MQTT (if HA restart)
+      Discovered = false;
     }
 
 
     if (tps - previousTimer2sMillis >= 2000) {
+      unsigned long dt = tps - previousTimer2sMillis;
       previousTimer2sMillis = tps;
       tabPw_Maison_2s[IdxStock2s] = PuissanceS_M - PuissanceI_M;
       tabPw_Triac_2s[IdxStock2s] = PuissanceS_T - PuissanceI_T;
@@ -864,6 +900,7 @@ void loop() {
       IdxStock2s = (IdxStock2s + 1) % 300;
       JourHeureChange();
       EnergieQuotidienne();
+      H_Ouvre_Equivalent(dt);
     }
 
     if (tps - previousOverProdMillis >= 200) {
@@ -899,15 +936,14 @@ void loop() {
     previousWifiMillis = tps;
     if (WiFi.getMode() == WIFI_STA) {
       if (WiFi.waitForConnectResult(10000) != WL_CONNECTED) {
-        StockMessage("WIFI Connection Failed! #" + String(WIFIbug) + "ComBug #" + String(ComBug));
+        StockMessage("WIFI Connection Failed! #" + String(WIFIbug));
         WIFIbug++;
-        if (WIFIbug > 4) {
-          ESP.restart();
-        }
       } else {
         WIFIbug = 0;
       }
-      
+
+
+
 
       Serial.print("Niveau Signal WIFI:");
       Serial.println(WiFi.RSSI());
@@ -915,14 +951,23 @@ void loop() {
       Serial.println(WiFi.localIP());
       Serial.print("WIFIbug : #");
       Serial.println(WIFIbug);
-      Serial.print("ComBug : #");
-      Serial.println(ComBug);
+      Serial.print("Puissance reçue : ");
+      String OK = "Non";
+      if (PuissanceRecue) OK = "Oui";
+      Serial.println(OK);
       Serial.println("Charge Lecture RMS (coeur 0) en ms - Min : " + String(int(previousTimeRMSMin)) + " Moy : " + String(int(previousTimeRMSMoy)) + "  Max : " + String(int(previousTimeRMSMax)));
       Serial.println("Charge Boucle générale (coeur 1) en ms - Min : " + String(int(previousLoopMin)) + " Moy : " + String(int(previousLoopMoy)) + "  Max : " + String(int(previousLoopMax)));
-
+      Serial.println("Mémoire RAM libre actuellement: "+ String(esp_get_free_internal_heap_size()) +" byte") ;
+      Serial.println("Mémoire RAM libre minimum: "+ String(esp_get_minimum_free_heap_size()) +" byte") ;
       int T = int(millis() / 1000);
       float DureeOn = float(T) / 3600;
       Serial.println("ESP32 ON depuis : " + String(DureeOn) + " heures");
+
+      if (PuissanceRecue && WIFIbug < 5) {
+        PuissanceRecue = false;
+        esp_task_wdt_reset();
+        delay(1);  //VERY VERY IMPORTANT for Watchdog Reset to apply.
+      }
 
       JourHeureChange();
       Call_EDF_data();
@@ -945,6 +990,8 @@ void loop() {
     delay(5000);
     ESP.restart();
   }
+  //Port Série
+  LireSerial();
 }
 
 // ************
@@ -1043,6 +1090,20 @@ void EnergieQuotidienne() {
   }
 }
 
+void H_Ouvre_Equivalent(unsigned long dt) {
+  float Dheure = float(dt) / 3600000;
+  for (int i = 0; i < NbActions; i++) {
+    if (Actif[i] > 0) {                                   //valeur en RAM du Mode de regulation
+      if (i == 0 && Actif[i] == 1) {                      //Decoupe pour Triac
+        float teta = 6.28318 * (100 - RetardF[i]) / 100;  //2*PI integral sin²
+        H_Ouvre[i] += Dheure * (teta - sin(2 * teta) / 2) / 6.28318;
+      } else {
+        H_Ouvre[i] += Dheure * (100 - RetardF[i]) / 100;
+      }
+    }
+  }
+}
+
 // **************
 // * Heure DATE * -
 // **************
@@ -1106,19 +1167,4 @@ int PintMax(int Pin) {
   int P = max(-M, Pin);
   P = min(M, P);
   return P;
-}
-//****************************************************
-//* Comportement etrange depuis V3.0.1 de l'ESP32    *
-// le watchdog se reset si le wifi plante. A creuser *
-// Work around en attendant                          *
-//****************************************************
-void ComAbuge() {
-  ComBug++;
-  if (ComBug < 200) {
-    esp_task_wdt_reset();
-  }
-}
-void ComOK() {
-  ComBug = 0;
-  esp_task_wdt_reset();  // Reset du Watchdog
 }

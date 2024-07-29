@@ -40,8 +40,8 @@ void RAZ_Histo_Conso() {
 
 void LectureConsoMatinJour(void) {
 
-  Energie_jour_Soutiree = 0; // en Wh
-  Energie_jour_Injectee = 0; // en Wh
+  Energie_jour_Soutiree = 0;  // en Wh
+  Energie_jour_Injectee = 0;  // en Wh
 
   EAS_T_J0 = EEPROM.readULong(adr_E_T_soutire0);  //Triac
   EAI_T_J0 = EEPROM.readULong(adr_E_T_injecte0);
@@ -101,6 +101,11 @@ void JourHeureChange() {
         LectureConsoMatinJour();
       }
       DateCeJour = JourCourant;
+    }
+    if (HeureCouranteDeci >= 599 && HeureCouranteDeci <= 600) {
+      for (int i = 0; i < LesActionsLength; i++) {
+        H_Ouvre[i] = 0;  //RAZ temps equivalent ouverture à 6h du matin
+      }
     }
   }
 }
@@ -203,7 +208,7 @@ void LectureEnROM() {
   pTriac = EEPROM.readByte(address);
   address += sizeof(byte);
 
-  address += 100; //Réserve de 100 bytes
+  address += 100;  //Réserve de 100 bytes
 
   //Zone des actions
   NbActions = EEPROM.readUShort(address);
@@ -219,6 +224,7 @@ void LectureEnROM() {
     address += sizeof(unsigned short);
     LesActions[iAct].OrdreOn = EEPROM.readString(address);
     address += LesActions[iAct].OrdreOn.length() + 1;
+    LesActions[iAct].OrdreOn.replace(String((char)31), "|");  //Depuis la V10.01 (Input separator)
     LesActions[iAct].OrdreOff = EEPROM.readString(address);
     address += LesActions[iAct].OrdreOff.length() + 1;
     LesActions[iAct].Repet = EEPROM.readUShort(address);
@@ -227,7 +233,7 @@ void LectureEnROM() {
     address += sizeof(unsigned short);
     LesActions[iAct].Reactivite = EEPROM.readByte(address);
     address += sizeof(byte);
-    address += 40; //Réserve de 40 bytes
+    address += 40;  //Réserve de 40 bytes
     LesActions[iAct].NbPeriode = EEPROM.readByte(address);
     address += sizeof(byte);
     Hdeb = 0;
@@ -248,17 +254,16 @@ void LectureEnROM() {
       address += sizeof(unsigned short);
       LesActions[iAct].Tarif[i] = EEPROM.readByte(address);
       address += sizeof(byte);
-      address += 10; //Réserve de 10 bytes
+      address += 10;  //Réserve de 10 bytes
     }
   }
   Calibration(address);
-  
 }
 int EcritureEnROM() {
   int address = adr_ParaActions;
   int VersionStocke = 0;
-  String V=Version;
-  VersionStocke =int(100*V.toFloat());
+  String V = Version;
+  VersionStocke = int(100 * V.toFloat());
   EEPROM.writeULong(address, Cle_ROM);
   address += sizeof(unsigned long);
   EEPROM.writeUShort(address, VersionStocke);
@@ -332,7 +337,7 @@ int EcritureEnROM() {
   EEPROM.writeByte(address, pTriac);
   address += sizeof(byte);
 
-  address += 100; //Réserve de 100 bytes
+  address += 100;  //Réserve de 100 bytes
 
   //Enregistrement des Actions
   EEPROM.writeUShort(address, NbActions);
@@ -356,7 +361,7 @@ int EcritureEnROM() {
     address += sizeof(unsigned short);
     EEPROM.writeByte(address, LesActions[iAct].Reactivite);
     address += sizeof(byte);
-    address += 40; //Réserve de 40 bytes
+    address += 40;  //Réserve de 40 bytes
     EEPROM.writeByte(address, LesActions[iAct].NbPeriode);
     address += sizeof(byte);
     for (byte i = 0; i < LesActions[iAct].NbPeriode; i++) {
@@ -374,7 +379,7 @@ int EcritureEnROM() {
       address += sizeof(unsigned short);
       EEPROM.writeByte(address, LesActions[iAct].Tarif[i]);
       address += sizeof(byte);
-      address += 10; //Réserve de 10 bytes
+      address += 10;  //Réserve de 10 bytes
     }
   }
   Calibration(address);
@@ -463,4 +468,185 @@ void StockMessage(String m) {
   Serial.println(m);
   MessageH[idxMessage] = m;
   idxMessage = (idxMessage + 1) % 10;
+}
+
+// PORT SERIE
+void LireSerial() {
+  int inbyte;
+  while (Serial.available() > 0) {
+    inbyte = Serial.read();
+    String sw;
+    String valeur = "";
+    int p;
+
+    if (inbyte == 13) {
+      SerialIn.trim();
+      Serial.println(SerialIn);
+      p = SerialIn.indexOf(":");
+      if (p > 0) {
+        sw = SerialIn.substring(0, p);
+        valeur = SerialIn.substring(p + 1);
+        sw.trim();
+        valeur.trim();
+      } else {
+        sw = SerialIn;
+      }
+
+      if (sw.indexOf("restart") >= 0) {
+        ESP.restart();
+      }
+      if (sw.indexOf("ssid") >= 0) {
+        ssid = valeur;
+        EcritureEnROM();
+      }
+      if (sw.indexOf("password") >= 0) {
+        password = valeur;
+        EcritureEnROM();
+      }
+
+
+      SerialIn = "";
+    } else {
+      SerialIn += String(char(inbyte));
+    }
+  }
+}
+
+//Fichier parametres à dowloader
+String Fichier_parametres(String ip, String para, String action) {
+  byte NbPeriode;
+  String S = "{\"Routeur\":\"F1ATB\"";
+  String V = Version;
+  int VersionStocke = int(100 * V.toFloat());
+  S += AddInt("VersionStocke", VersionStocke);
+  if (ip == "true") {
+    S += AddStr("ssid", ssid) + AddStr("password", password) + AddByte("dhcpOn", dhcpOn) + AddUlong("IP_Fixe", IP_Fixe);
+    S += AddUlong("Gateway", Gateway) + AddUlong("masque", masque) + AddUlong("dns", dns);
+  }
+  if (para == "true") {
+    S += AddStr("Source", Source) + AddUlong("RMSextIP", RMSextIP) + AddStr("EnphaseUser", EnphaseUser) + AddStr("EnphasePwd", EnphasePwd) + AddStr("EnphaseSerial", EnphaseSerial);
+    S += AddUshort("MQTTRepet", MQTTRepet) + AddUlong("MQTTIP", MQTTIP) + AddUshort("MQTTPort", MQTTPort);
+    S += AddStr("MQTTUser", MQTTUser) + AddStr("MQTTPwd", MQTTPwd) + AddStr("MQTTPrefix", MQTTPrefix);
+    S += AddStr("MQTTdeviceName", MQTTdeviceName) + AddStr("TopicP", TopicP) + AddStr("TopicT", TopicT);
+    S += AddByte("subMQTT", subMQTT) + AddStr("nomRouteur", nomRouteur) + AddStr("nomSondeFixe", nomSondeFixe);
+    S += AddStr("nomSondeMobile", nomSondeMobile) + AddStr("nomTemperature", nomTemperature) + AddStr("Source_Temp", Source_Temp);
+    S += AddUlong("IPtemp", IPtemp) + AddUshort("CalibU", CalibU) + AddUshort("CalibI", CalibI);
+    S += AddByte("TempoEDFon", TempoEDFon) + AddByte("WifiSleep", WifiSleep) + AddByte("pSerial", pSerial) + AddByte("pTriac", pTriac);
+  }
+  if (action == "true") {
+    S += AddUshort("NbActions", NbActions) + ",\"Actions\":[";
+    for (int iAct = 0; iAct < NbActions; iAct++) {
+      S += "{\"Action\":" + String(iAct) + AddByte("Actif", LesActions[iAct].Actif) + AddStr("Titre", LesActions[iAct].Titre);
+      S += AddStr("Host", LesActions[iAct].Host) + AddUshort("Port", LesActions[iAct].Port) + AddStr("OrdreOn", LesActions[iAct].OrdreOn) + AddStr("OrdreOff", LesActions[iAct].OrdreOff);
+      S += AddUshort("Repet", LesActions[iAct].Repet) + AddUshort("Tempo", LesActions[iAct].Tempo) + AddByte("Reactivite", LesActions[iAct].Reactivite);
+      NbPeriode = LesActions[iAct].NbPeriode;
+      S += AddByte("NbPeriode", NbPeriode) + ",\"Périodes\":[";
+      for (byte i = 0; i < NbPeriode; i++) {
+        S += "{\"Periode\":" + String(i) + AddByte("Type", LesActions[iAct].Type[i]);
+        S += AddInt("Hfin", LesActions[iAct].Hfin[i]) + AddInt("Vmin", LesActions[iAct].Vmin[i]) + AddInt("Vmax", LesActions[iAct].Vmax[i]);
+        S += AddInt("Tinf", LesActions[iAct].Tinf[i]) + AddInt("Tsup", LesActions[iAct].Tsup[i]) + AddByte("Tarif", LesActions[iAct].Tarif[i]) + "}";
+        if (i != NbPeriode - 1) S += ",";
+      }
+
+      S += "]}";
+      if (iAct != NbActions - 1) S += ",";
+    }
+    S += "]";
+  }
+  S += "}";
+  return S;
+}
+
+String AddInt(String nom, int valeur) {
+  return ",\"" + nom + "\":" + String(valeur);
+}
+String AddByte(String nom, byte valeur) {
+  return ",\"" + nom + "\":" + String(valeur);
+}
+String AddUlong(String nom, unsigned long valeur) {
+  return ",\"" + nom + "\":" + String(valeur);
+}
+String AddUshort(String nom, unsigned short valeur) {
+  return ",\"" + nom + "\":" + String(valeur);
+}
+
+String AddStr(String nom, String valeur) {
+  return ",\"" + nom + "\":\"" + valeur + "\"";
+}
+//Importation des paramètres
+//***************************
+void ImportParametres(String Conf) {
+  int Hdeb;
+  int VersionStocke = IntJson("VersionStocke", Conf);
+  if (Conf.indexOf("\"ssid\":") > 0) {  //On a les données IP
+    ssid = StringJson("ssid", Conf);
+    password = StringJson("password", Conf);
+    dhcpOn = ByteJson("dhcpOn", Conf);
+    IP_Fixe = ULongJson("IP_Fixe", Conf);
+    Gateway = ULongJson("Gateway", Conf);
+    masque = ULongJson("masque", Conf);
+    dns = ULongJson("dns", Conf);
+  }
+  if (Conf.indexOf("\"Source\":") > 0) {  //Autres parametres
+    Source = StringJson("Source", Conf);
+    RMSextIP = ULongJson("RMSextIP", Conf);
+    EnphaseUser = StringJson("EnphaseUser", Conf);
+    EnphasePwd = StringJson("EnphasePwd", Conf);
+    EnphaseSerial = StringJson("EnphaseSerial", Conf);
+    MQTTRepet = UShortJson("MQTTRepet", Conf);
+    MQTTIP = ULongJson("MQTTIP", Conf);
+    MQTTPort = UShortJson("MQTTPort", Conf);
+    MQTTUser = StringJson("MQTTUser", Conf);
+    MQTTPwd = StringJson("MQTTPwd", Conf);
+    MQTTPrefix = StringJson("MQTTPrefix", Conf);
+    MQTTdeviceName = StringJson("MQTTdeviceName", Conf);
+    TopicP = StringJson("TopicP", Conf);
+    TopicT = StringJson("TopicT", Conf);
+    subMQTT = ByteJson("subMQTT", Conf);
+    nomRouteur = StringJson("nomRouteur", Conf);
+    nomSondeFixe = StringJson("nomSondeFixe", Conf);
+    nomSondeMobile = StringJson("nomSondeMobile", Conf);
+    nomTemperature = StringJson("nomTemperature", Conf);
+    Source_Temp = StringJson("Source_Temp", Conf);
+    IPtemp = ULongJson("IPtemp", Conf);
+    CalibU = UShortJson("CalibU", Conf);
+    CalibI = UShortJson("CalibI", Conf);
+    TempoEDFon = ByteJson("TempoEDFon", Conf);
+    WifiSleep = ByteJson("WifiSleep", Conf);
+    pSerial = ByteJson("pSerial", Conf);
+    pTriac = ByteJson("pTriac", Conf);
+  }
+  if (Conf.indexOf("\"NbActions\":") > 0) {  //ACTIONS
+    NbActions = UShortJson("NbActions", Conf);
+    for (int iAct = 0; iAct < NbActions; iAct++) {
+      int p = Conf.indexOf("{\"Action\":");
+      Conf = Conf.substring(p + 10);  //On enlève les precédents
+      LesActions[iAct].Actif = ByteJson("Actif", Conf);
+      LesActions[iAct].Titre = StringJson("Titre", Conf);
+      LesActions[iAct].Host = StringJson("Host", Conf);
+      LesActions[iAct].Port = UShortJson("Port", Conf);
+      LesActions[iAct].OrdreOn = StringJson("OrdreOn", Conf);
+      LesActions[iAct].OrdreOff = StringJson("OrdreOff", Conf);
+      LesActions[iAct].Repet = UShortJson("Repet", Conf);
+      LesActions[iAct].Tempo = UShortJson("Tempo", Conf);
+      LesActions[iAct].Reactivite = ByteJson("Reactivite", Conf);
+      LesActions[iAct].NbPeriode = ByteJson("NbPeriode", Conf);
+      Hdeb = 0;
+      for (byte i = 0; i < LesActions[iAct].NbPeriode; i++) {
+        int p = Conf.indexOf("{\"Periode\":");
+        Conf = Conf.substring(p + 11);  //On enlève les precédents
+        LesActions[iAct].Type[i] = ByteJson("Type", Conf);
+        LesActions[iAct].Hfin[i] = IntJson("Hfin", Conf);
+        LesActions[iAct].Hdeb[i] = Hdeb;
+        Hdeb = LesActions[iAct].Hfin[i];
+        LesActions[iAct].Vmin[i] = IntJson("Vmin", Conf);
+        LesActions[iAct].Vmax[i] = IntJson("Vmax", Conf);
+        LesActions[iAct].Tinf[i] = IntJson("Tinf", Conf);
+        LesActions[iAct].Tsup[i] = IntJson("Tsup", Conf);
+        LesActions[iAct].Tarif[i] = ByteJson("Tarif", Conf);
+      }
+    }
+  }
+
+  EcritureEnROM();
 }

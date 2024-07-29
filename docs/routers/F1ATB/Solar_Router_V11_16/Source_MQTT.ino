@@ -46,7 +46,7 @@ void UpdatePmqtt() {
   filtre_puissance();
 
   if (P_MQTT_Brute.indexOf("Pw") > 0) EnergieActiveValide = true;
-  if (millis() - LastPwMQTTMillis < 30000) ComOK();  //Reset du Watchdog si trame  MQTT reçue avec au minimum Pw récente
+  if (millis() - LastPwMQTTMillis < 30000) PuissanceRecue=true;  //Reset du Watchdog si trame  MQTT reçue avec au minimum Pw récente
 
   if (cptLEDyellow > 30) {
     cptLEDyellow = 4;

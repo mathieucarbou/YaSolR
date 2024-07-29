@@ -6,7 +6,7 @@ void CallESP32_Externe() {
   String RMSExtDataB = "";
   String Gr[4];
   String data_[22];
-
+ 
 
   // Use WiFiClient class to create TCP connections
   WiFiClient clientESP_RMS;
@@ -18,7 +18,7 @@ void CallESP32_Externe() {
 
   String host = String(arr[3]) + "." + String(arr[2]) + "." + String(arr[1]) + "." + String(arr[0]);
   if (!clientESP_RMS.connect(host.c_str(), 80)) {
-    ComAbuge();
+    
     StockMessage("connection to ESP_RMS : " + host +" failed");
     delay(200);
     return;
@@ -30,7 +30,6 @@ void CallESP32_Externe() {
     if (millis() - timeout > 5000) {
       
       StockMessage("client ESP_RMS Timeout !" + host);
-      
       clientESP_RMS.stop();
       return;
     }
@@ -40,9 +39,10 @@ void CallESP32_Externe() {
   while (clientESP_RMS.available() && (millis() - timeout < 5000)) {
     RMSExtDataB += clientESP_RMS.readStringUntil('\r');
   }
-  if (RMSExtDataB.length() > 300) {
+  if (RMSExtDataB.length() > 400) {
     RMSExtDataB = "";
   }
+
   if (RMSExtDataB.indexOf("Deb") >= 0 && RMSExtDataB.indexOf("Fin") > 0) {  //Trame complète reçue
     RMSExtDataB = RMSExtDataB.substring(RMSExtDataB.indexOf("Deb") + 4);
     RMSExtDataB = RMSExtDataB.substring(0, RMSExtDataB.indexOf("Fin") + 3);
@@ -107,7 +107,7 @@ void CallESP32_Externe() {
           break;
         case 13:
           Energie_M_Injectee = data_[i].toInt();
-          ComOK();  //Reset du Watchdog à chaque trame du RMS reçue
+          PuissanceRecue=true; //Reset du Watchdog à chaque trame du RMS reçue
           cptLEDyellow = 4;
           EnergieActiveValide=true;
           break;

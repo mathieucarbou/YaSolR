@@ -40,7 +40,6 @@ void LectureTemperature() {
     if (!clientESP_RMS.connect(host.c_str(), 80)) {
       StockMessage("connection to ESP_RMS Temperature failed : " + host);
       delay(200);
-      ComAbuge();
       if (TemperatureValide > 0) {
         TemperatureValide = TemperatureValide - 1;  // Perte éventuels de quelques mesures
       } else {                                      //Trop de pertes
@@ -68,7 +67,8 @@ void LectureTemperature() {
     while (clientESP_RMS.available() && (millis() - timeout < 5000)) {
       RMSExtTemp += clientESP_RMS.readStringUntil('\r');
     }
-    if (RMSExtTemp.length() > 100) {
+
+    if (RMSExtTemp.length() > 150) {
       RMSExtTemp = "";
     }
     if (RMSExtTemp.indexOf(GS) >= 0 && RMSExtTemp.indexOf(RS) > 0) {  //Trame complète reçue

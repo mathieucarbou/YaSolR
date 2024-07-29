@@ -1,10 +1,14 @@
 // ***************
 // *  WEB SERVER *
 // ***************
+bool opened = false;
+String ConfImport;
 void Init_Server() {
   //Init Web Server on port 80
   server.on("/", handleRoot);
   server.on("/MainJS", handleMainJS);
+  server.on("/MainJS2", handleMainJS2);
+  server.on("/MainJS3", handleMainJS3);
   server.on("/Para", handlePara);
   server.on("/ParaJS", handleParaJS);
   server.on("/ParaRouteurJS", handleParaRouteurJS);
@@ -14,10 +18,12 @@ void Init_Server() {
   server.on("/Actions", handleActions);
   server.on("/ActionsJS", handleActionsJS);
   server.on("/ActionsJS2", handleActionsJS2);
+  server.on("/ActionsJS3", handleActionsJS3);
   server.on("/ActionsUpdate", handleActionsUpdate);
   server.on("/ActionsAjax", handleActionsAjax);
   server.on("/Brute", handleBrute);
   server.on("/BruteJS", handleBruteJS);
+  server.on("/BruteJS2", handleBruteJS2);
   server.on("/ajax_histo48h", handleAjaxHisto48h);
   server.on("/ajax_histo1an", handleAjaxHisto1an);
   server.on("/ajax_dataRMS", handleAjaxRMS);
@@ -27,10 +33,13 @@ void Init_Server() {
   server.on("/ajax_etatActions", handleAjax_etatActions);
   server.on("/ajax_Temperature", handleAjaxTemperature);
   server.on("/SetGPIO", handleSetGpio);
+  server.on("/Export", handleExport);
+  server.on("/export_file", handleExport_file);
   server.on("/restart", handleRestart);
   server.on("/Change_Wifi", handleChange_Wifi);
   server.on("/AP_ScanWifi", handleAP_ScanWifi);
   server.on("/AP_SetWifi", handleAP_SetWifi);
+  server.on("/commun.css", handleCommunCSS);
   server.onNotFound(handleNotFound);
 
   //SERVER OTA
@@ -66,29 +75,76 @@ void Init_Server() {
       }
     });
 
+  /*handling uploading file */
+  server.on(
+    "/import", HTTP_POST, []() {
+      server.sendHeader("Connection", "close");
+      server.send(200, "text/plain", "OK");
+    },
+    []() {
+      HTTPUpload& upload = server.upload();
+      if (opened == false) {
+        opened = true;
+
+        Serial.println("Debut Upload");
+        ConfImport="";
+      }
+      if (upload.status == UPLOAD_FILE_WRITE) {
+        for (int i = 0; i < upload.currentSize; i++) {
+         
+          ConfImport +=String(char(upload.buf[i]));
+        }
+      } else if (upload.status == UPLOAD_FILE_END) {
+
+        Serial.println("UPLOAD_FILE_END");
+        Serial.println(ConfImport);
+        ImportParametres(ConfImport);
+        opened = false;
+      }
+    });
+
+
+
 
   server.begin();
 }
 
 
 void handleRoot() {                  //Pages principales
+   server.sendHeader("Connection", "close");
   if (WiFi.getMode() != WIFI_STA) {  // en AP et STA mode
     server.send(200, "text/html", String(ConnectAP_Html));
   } else {  //Station Mode seul
     server.send(200, "text/html", String(MainHtml));
   }
 }
-void handleChange_Wifi(){
+void handleChange_Wifi() {
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", String(ConnectAP_Html));
 }
 void handleMainJS() {                             //Code Javascript
-  server.send(200, "text/html", String(MainJS));  // Javascript code
+server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(MainJS));  // Javascript code
+}
+void handleMainJS2() {                             //Code Javascript
+server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(MainJS2));  // Javascript code
+}
+void handleMainJS3() {                             //Code Javascript
+server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(MainJS3));  // Javascript code
 }
 void handleBrute() {  //Page données brutes
+server.sendHeader("Connection", "close");
   server.send(200, "text/html", String(PageBrute));
 }
 void handleBruteJS() {                                 //Code Javascript
-  server.send(200, "text/html", String(PageBruteJS));  // Javascript code
+server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(PageBruteJS));  // Javascript code
+}
+void handleBruteJS2() {                                 //Code Javascript
+server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(PageBruteJS2));  // Javascript code
 }
 
 void handleAjaxRMS() {  // Envoi des dernières données  brutes reçues du RMS
@@ -184,7 +240,7 @@ void handleAjaxRMS() {  // Envoi des dernières données  brutes reçues du RMS
     if (Source_data == "SmartG") {
       S += GS + SG_dataBrute;
     }
-    if (Source_data == "ShellyEm") {
+    if (Source_data == "ShellyEm" || Source_data == "ShellyPro") {
       S += GS + ShEm_dataBrute;
     }
     if (Source_data == "UxIx3") {
@@ -194,7 +250,7 @@ void handleAjaxRMS() {  // Envoi des dernières données  brutes reçues du RMS
       S += GS + P_MQTT_Brute;
     }
   }
-
+server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
 }
 void handleAjaxHisto48h() {  // Envoi Historique de 50h (600points) toutes les 5mn
@@ -222,6 +278,7 @@ void handleAjaxHisto48h() {  // Envoi Historique de 50h (600points) toutes les 5
       }
     }
   }
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", Source_data + GS + S + GS + T + GS + String(temperature) + GS + U + Ouverture);
 }
 void handleAjaxESP32() {  // Envoi des dernières infos sur l'ESP32
@@ -233,6 +290,7 @@ void handleAjaxESP32() {  // Envoi des dernières infos sur l'ESP32
   String coeur1 = String(int(previousLoopMin)) + ", " + String(int(previousLoopMoy)) + ", " + String(int(previousLoopMax));
   S += String(H) + RS + WiFi.RSSI() + RS + WiFi.BSSIDstr() + RS + WiFi.macAddress() + RS + ssid + RS + WiFi.localIP().toString() + RS + WiFi.gatewayIP().toString() + RS + WiFi.subnetMask().toString();
   S += RS + coeur0 + RS + coeur1 + RS + String(P_cent_EEPROM) + RS;
+  S +=  String(esp_get_free_internal_heap_size()) + RS + String(esp_get_minimum_free_heap_size()) + RS;
   delay(15);  //Comptage interruptions
   if (IT10ms_in > 0) {
     S += String(IT10ms_in) + "/" + String(IT10ms);
@@ -249,9 +307,11 @@ void handleAjaxESP32() {  // Envoi des dernières infos sur l'ESP32
     S += RS + MessageH[j];
     j = (j + 1) % 10;
   }
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
 }
 void handleAjaxHisto1an() {  // Envoi Historique Energie quotiiienne sur 1 an 370 points
+server.sendHeader("Connection", "close");
   server.send(200, "text/html", HistoriqueEnergie1An());
 }
 void handleAjaxData() {  //Données page d'accueil
@@ -262,11 +322,12 @@ void handleAjaxData() {  //Données page d'accueil
   String S = "Deb" + RS + DateLast + RS + Source_data + RS + LTARF + RS + STGE + RS + String(temperature) + RS + String(Pva_valide);
   S += GS + String(PuissanceS_M) + RS + String(PuissanceI_M) + RS + String(PVAS_M) + RS + String(PVAI_M);
   S += RS + String(EnergieJour_M_Soutiree) + RS + String(EnergieJour_M_Injectee) + RS + String(Energie_M_Soutiree) + RS + String(Energie_M_Injectee);
-  if (Source_data == "UxIx2" || (Source_data == "ShellyEm" && EnphaseSerial.toInt() < 3)) {  //UxIx2 ou Shelly monophasé avec 2 sondes
+  if (Source_data == "UxIx2" || ((Source_data == "ShellyEm" || Source_data == "ShellyPro" )&& EnphaseSerial.toInt() < 3)) {  //UxIx2 ou Shelly monophasé avec 2 sondes
     S += GS + String(PuissanceS_T) + RS + String(PuissanceI_T) + RS + String(PVAS_T) + RS + String(PVAI_T);
     S += RS + String(EnergieJour_T_Soutiree) + RS + String(EnergieJour_T_Injectee) + RS + String(Energie_T_Soutiree) + RS + String(Energie_T_Injectee);
   }
   S += GS + "Fin";
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
 }
 void handleAjax_etatActions() {
@@ -304,17 +365,21 @@ void handleAjax_etatActions() {
         S += String(100 - Retard[i]) + RS;
       }
       S += String(LesActions[i].tOnOff) + RS;
+      S += String(H_Ouvre[i]) + RS;
       S += GS;
       NbActifs++;
     }
   }
   S = String(temperature) + GS + String(Source_data) + GS + String(RMSextIP) + GS + NbActifs + GS + S;
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
 }
 void handleAjaxTemperature() {
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", GS + String(temperature) + RS);
 }
 void handleRestart() {  // Eventuellement Reseter l'ESP32 à distance
+server.sendHeader("Connection", "close");
   server.send(200, "text/plain", "OK Reset. Attendez.");
   delay(1000);
   ESP.restart();
@@ -330,16 +395,24 @@ void handleAjaxData10mn() {  // Envoi Historique de 10mn (300points)Energie Acti
     T += String(tabPva_Triac_2s[iS]) + ",";
     iS = (1 + iS) % 300;
   }
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", Source_data + GS + S + GS + T);
 }
 void handleActions() {
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", String(ActionsHtml));
 }
 void handleActionsJS() {
-  server.send(200, "text/html", String(ActionsJS));
+  server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(ActionsJS));
 }
 void handleActionsJS2() {
-  server.send(200, "text/html", String(ActionsJS2));
+  server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(ActionsJS2));
+}
+void handleActionsJS3() {
+  server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(ActionsJS3));
 }
 void handleActionsUpdate() {
   int adresse_max = 0;
@@ -354,6 +427,7 @@ void handleActionsUpdate() {
     NbActions = NbActions + 1;
   }
   adresse_max = EcritureEnROM();
+  server.sendHeader("Connection", "close");
   server.send(200, "text/plain", "OK" + String(adresse_max));
   InitGpioActions();
 }
@@ -362,10 +436,12 @@ void handleActionsAjax() {
   for (int i = 0; i < NbActions; i++) {
     S += LesActions[i].Lire();
   }
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
 }
 
 void handlePara() {
+server.sendHeader("Connection", "close");
   server.send(200, "text/html", String(ParaHtml));
 }
 void handleParaUpdate() {
@@ -414,14 +490,17 @@ void handleParaUpdate() {
   if (Source != "Ext") {
     Source_data = Source;
   }
+  server.sendHeader("Connection", "close");
   server.send(200, "text/plain", "OK" + String(adresse_max));
   LastHeureEDF = -1;
 }
 void handleParaJS() {
-  server.send(200, "text/html", String(ParaJS));
+  server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(ParaJS));
 }
 void handleParaRouteurJS() {
-  server.send(200, "text/html", String(ParaRouteurJS));
+  server.sendHeader("Connection", "close");
+  server.send(200, "text/javascript", String(ParaRouteurJS));
 }
 void handleParaAjax() {
   String S = String(dhcpOn) + RS + String(IP_Fixe) + RS + String(Gateway) + RS + String(masque) + RS + String(dns) + RS + Source + RS + String(RMSextIP) + RS;
@@ -431,11 +510,13 @@ void handleParaAjax() {
   S += RS + String(temperature) + RS + nomTemperature + RS + Source_Temp + RS + TopicT + RS + String(IPtemp);
   S += RS + String(CalibU) + RS + String(CalibI);
   S += RS + String(TempoEDFon) + RS + String(WifiSleep) + RS + String(pSerial) + RS + String(pTriac);
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
 }
 void handleParaRouteurAjax() {
   String S = Source + RS + Source_data + RS + nomRouteur + RS + Version + RS + nomSondeFixe + RS + nomSondeMobile + RS + String(RMSextIP);
   S += RS + nomTemperature;
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
 }
 void handleSetGpio() {
@@ -447,14 +528,25 @@ void handleSetGpio() {
     digitalWrite(gpio, out);
     S = "OK : gpio =" + String(gpio) + " out =" + String(out);
   }
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
+}
+void handleExport() {
+  server.sendHeader("Connection", "close");
+  server.send(200, "text/html", String(ExportHtml));
+}
+void handleExport_file() {
+  String S = Fichier_parametres(server.arg("ip"),server.arg("para"),server.arg("action"));
+  server.sendHeader("Connection", "close");
+  server.send(200, "application/json", S);
 }
 void handleAP_ScanWifi() {
   server.send(200, "text/html", Liste_AP);
 }
 void Liste_WIFI() {  //Doit être fait avant toute connection WIFI depuis biblio ESP32 3.0.1
   WIFIbug = 0;
-  ComBug=0;
+  esp_task_wdt_reset();
+  delay(1);  
   int n = 0;
   WiFi.disconnect();
   delay(100);
@@ -484,7 +576,8 @@ void Liste_WIFI() {  //Doit être fait avant toute connection WIFI depuis biblio
 }
 void handleAP_SetWifi() {
   WIFIbug = 0;
-  ComBug =0;
+  esp_task_wdt_reset();
+  delay(1);  
   Serial.println("Set Wifi");
   String NewSsid = server.arg("ssid");
   NewSsid.trim();
@@ -518,9 +611,15 @@ void handleAP_SetWifi() {
   } else {
     S = "No" + RS + "ESP32 non connecté à :" + ssid + "<br>";
   }
+  server.sendHeader("Connection", "close");
   server.send(200, "text/html", S);
   delay(1000);
   ESP.restart();
+}
+
+void handleCommunCSS(){
+  server.sendHeader("Connection", "close");
+  server.send(200, "text/css", String(CommunCSS));
 }
 
 
@@ -536,5 +635,6 @@ void handleNotFound() {  //Page Web pas trouvé
   for (uint8_t i = 0; i < server.args(); i++) {
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
+  server.sendHeader("Connection", "close");
   server.send(404, "text/plain", message);
 }

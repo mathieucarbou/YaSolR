@@ -3,12 +3,9 @@
 //************************************************
 const char *MainHtml = R"====(
  <!doctype html>
-  <html><head><meta charset="UTF-8"><style>
-    * {box-sizing: border-box;}
-    body {background: linear-gradient(#003,#77b5fe,#003);background-attachment:fixed;font-size:150%;text-align:center;width:100%;max-width:1000px;margin:auto;}
-    a:link {color:#aaf;text-decoration: none;}
-    a:visited {color:#ccf;text-decoration: none;}
-    h2{text-align:center;color:white;}
+  <html><head><meta charset="UTF-8">
+  <link rel="stylesheet" href="commun.css">
+  <style>
     .ri { text-align: right;}
     .ce { text-align: center;}
     .blue { background-color:#ddf;}
@@ -18,7 +15,6 @@ const char *MainHtml = R"====(
     .deg { background-color:#fdf;}
     .temper { background-color:#8f8;}
     .foot { color:white;font-size:16px;}
-    .pied{display:flex;justify-content:space-between;font-size:14px;color:white;}
     #date { color:white;}
     .tableau { background-color:white;display:inline-block;margin:auto;padding:4px;}
     table {border:10px inset azure;}
@@ -26,8 +22,6 @@ const char *MainHtml = R"====(
     th { text-align: center;padding:4px;}
     svg { border:10px inset azure;background: linear-gradient(#333,#666,#333);}
     #LED{position:absolute;top:4px;left:4px;width:0px;height:0px;border:5px solid red;border-radius:5px;}
-    .onglets{margin-top:4px;font-size:130%;}
-    .Baccueil,.Bbrut,.Bparametres,.Bactions{margin-left:20px;border:outset 4px grey;background-color:#333;border-radius:6px;padding-left:20px;padding-right:20px;display:inline-block;}
     .Baccueil{border:inset 8px azure;}
     .jauge{background-color:#ff8;height:28px;text-align:left;overflow: visible;position:absolute;top:4px;left:4px;}
     .jaugeBack{background-color:aqua;width:208px;height:36px;position:relative;padding:4px;}
@@ -38,11 +32,11 @@ const char *MainHtml = R"====(
     #info{position:absolute;border-left: 1px solid black;display:none;}
     #info_txt{position:absolute;background-color:rgba(120, 120, 120, 0.7);padding:4px;right:10px;border: 1px solid black;text-align: right;}
     #couleurTarif_jour,#couleurTarif_J1{font-size:8px;}
-  </style></head>
-  <body onload='LoadParaRouteur();LoadData();LoadHisto10mn();EtatActions(0,0);' >
+  </style>
+  </head>
+  <body onload='Init();' >
     <div id='LED'></div>
-    <div class='onglets'><div class='Baccueil'><a href='/'>Accueil</a></div><div class='Bbrut'><a href='/Brute'>Donn&eacute;es brutes</a></div><div class='Bparametres'><a href='/Para'>Param&egrave;tres</a></div><div class='Bactions'><a href='/Actions'>Actions</a></div></div>
-    <h2 id='nom_R'>Routeur Solaire - RMS</h2>
+    <div id='lesOnglets'></div>
     <div id='date'>DATE</div>
     <div><div class='tableau'><table >
       <tr class='blue'><th></th><th colspan='2' id='nomSondeMobile'>Maison</th><th colspan='2' class='dispT' id='nomSondeFixe'>Fixe</th><th id='couleurTarif_jour'></th></tr>
@@ -63,8 +57,10 @@ const char *MainHtml = R"====(
     <p id='SVG_Wh1an' ></p>
     <div id='info'><div id='info_txt'></div></div>
     <br><br><div class='foot' >Donn&eacute;es  RMS<div id='source'></div></div>
-    <div class='pied'><div>Routeur Version : <span id='version'></span></div><div><a href='https:F1ATB.fr' >F1ATB.fr</a></div></div>
+    <div id='pied'></div>
     <script src='MainJS'></script>
+    <script src='MainJS2'></script>
+    <script src='MainJS3'></script>
     <script src="/ParaRouteurJS"></script>
     <br></body></html>
 )====";
@@ -154,7 +150,7 @@ const char *MainJS = R"====(
             tabPW2sT.push(parseFloat(G2[0]-G2[1]));
             tabPW2sT.push(parseFloat(G2[2]-G2[3]));
             Plot('SVG_PW2sT',tabPW2sT,'#f44','Puissance Active '+GID("nomSondeFixe").innerHTML+' sur 10 mn en W','aqua','Puissance Apparente sur 10 mn en VA'); 
-            if (parseInt(G2[5])==0 && Source!="ShellyEm")  { //Il n'y a pas d'injecté normalement
+            if (parseInt(G2[5])==0 && Source!="ShellyEm" && Source!="ShellyPro")  { //Il n'y a pas d'injecté normalement
               GID('produite').innerHTML='';
               GID('PwI_T').innerHTML='';
               GID('PVAI_T').innerHTML='';
@@ -249,6 +245,8 @@ const char *MainJS = R"====(
       xhttp.open('GET', 'ajax_histo1an', true);
       xhttp.send();
     }
+)====";
+const char *MainJS2 = R"====(
     function Plot(SVG,Tab,couleur1,titre1,couleur2,titre2){
         var Vmax=0;
         var Vmin=0;
@@ -416,6 +414,9 @@ const char *MainJS = R"====(
       }
       
     }
+)====";
+
+const char *MainJS3 = R"====(
     function stopAffiche(){
       GID("info").style.display="none";
     }
@@ -497,11 +498,12 @@ const char *MainJS = R"====(
               ActionForce[i]= data[3];
               S+="<tr><td>"+data[1]+"</td>";
               if (data[2]=="On" || data[2]=="Off"){
-                S+="<td><div ><div class='centrer'>"+data[2]+"</div></td>";
+                S+="<td><div class='centrer'>"+data[2]+"</div></td>";
               } else {
                 var W=1+1.99*data[2];
                 S+="<td><div class='jaugeBack'><div class='jauge' style='width:"+W+"px'></div><div class='centrer w100'>"+data[2]+"%</div></div></td>";
               }
+              S+="<td><div class='centrer'>"+data[4]+"</div></td>";
               var stOn=(ActionForce[i]>0) ? "style='background-color:#f66;'":"";
               var stOff=(ActionForce[i]<0) ? "style='background-color:#f66;'":"";
               var min=(ActionForce[i]==0) ? "&nbsp;&nbsp;":Math.abs(ActionForce[i]) +" min";
@@ -510,7 +512,7 @@ const char *MainJS = R"====(
           }
           S=S+T;
           if (S!=""){
-            S="<div class='tableau'><table ><tr><th colspan='2'>Etat Action(s)</th><th colspan='3'> Forçage</th></tr>" +S + "</table></div>";
+            S="<div class='tableau'><table ><tr><th colspan='2'>Etat Action(s)</th><th>H<div class='fsize10'>ouverture équivalente</div></th><th colspan='3'> Forçage</th></tr>" +S + "</table></div>";
             GH("etatActions",S);
           }
           myActionTimeout=setTimeout('EtatActions(0,0);',3500);
@@ -549,5 +551,12 @@ const char *MainJS = R"====(
         S +='ESP local';
       }
       GH('source',S);
+    }
+    function Init(){
+      SetHautBas();
+      LoadParaRouteur();
+      LoadData();
+      LoadHisto10mn();
+      EtatActions(0,0);
     }
 )====";

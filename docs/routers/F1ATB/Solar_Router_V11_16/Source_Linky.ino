@@ -153,7 +153,7 @@ void LectureLinky() {  //Lecture port série du LINKY .
             }
           }
           if (code.indexOf("DATE") == 0) {
-            ComOK();  //Reset du Watchdog à chaque trame du Linky reçue
+            PuissanceRecue=true;  //Reset du Watchdog à chaque trame du Linky reçue
           }
           if (code.indexOf("URMS1") == 0) {
             Tension_M = val.toFloat();  //phase 1 uniquement

@@ -88,7 +88,7 @@ void LectureUxIx2() {  //Ecriture et Lecture port série du JSY-MK-194  .
     filtre_puissance();
     EnergieActiveValide = true;
     Pva_valide = true;
-    ComOK();  //Reset du Watchdog à chaque trame du module JSY-MK-194 reçue
+    PuissanceRecue=true; //Reset du Watchdog à chaque trame du module JSY-MK-194 reçue
     if (cptLEDyellow > 30) {
       cptLEDyellow = 4;
     }
