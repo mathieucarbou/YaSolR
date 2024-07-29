@@ -347,7 +347,7 @@ Links are provided for reference only, you can find them on other websites.
 
 | **Zero-Cross Detection**                                       | ZCD module is required with SSR.                                                                                                                                          |
 | :------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px"> | [Very good ZCD module for DIN Rail from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (used in conjunction with a Random SSR) |
+| <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px"> | [Very good ZCD module for DIN Rail from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (used in conjunction with a Random SSR) and its [DIN Rail support](https://fr.aliexpress.com/item/32276247838.html) |
 
 **Other SSR:**
 
