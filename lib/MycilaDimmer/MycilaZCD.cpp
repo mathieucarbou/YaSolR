@@ -57,7 +57,7 @@ void Mycila::ZCD::begin(const int8_t pin, const uint8_t frequency) {
 
 void Mycila::ZCD::end() {
   if (_enabled) {
-    LOGI(TAG, "Disable Zero-Cross Detection");
+    LOGI(TAG, "Disable Zero-Cross Detection on pin %" PRId8, _pin);
     _enabled = false;
     Thyristor::setFrequency(0);
     Thyristor::end();
