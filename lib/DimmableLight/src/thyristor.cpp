@@ -195,7 +195,9 @@ void activate_thyristors() {
       digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
     }
   }
-  digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
+  if (pinDelay[thyristorManaged].pin != 0xff) {
+    digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
+  }
   thyristorManaged++;
 
   // This while is dedicated to all those thyristors with delay == semiPeriodLength-margin; those
@@ -365,7 +367,9 @@ void zero_cross_int() {
   // If I don't turn OFF all those thyristors, I must wait
   // a semiperiod to turn off those one.
   for (int i = 0; i < Thyristor::nThyristors; i++) {
-    digitalWrite(pinDelay[i].pin, LOW);
+    if (pinDelay[i].pin != 0xff) {
+      digitalWrite(pinDelay[i].pin, LOW);
+    }
   }
 
 #ifdef CHECK_MANAGED_THYR
@@ -412,10 +416,12 @@ void zero_cross_int() {
   // if all are on and off, I can disable the zero cross interrupt
   if (_allThyristorsOnOff) {
     for (int i = 0; i < Thyristor::nThyristors; i++) {
-      if (pinDelay[i].delay == semiPeriodLength) {
-        digitalWrite(pinDelay[i].pin, LOW);
-      } else {
-        digitalWrite(pinDelay[i].pin, HIGH);
+      if (pinDelay[i].pin != 0xff) {
+        if (pinDelay[i].delay == semiPeriodLength) {
+          digitalWrite(pinDelay[i].pin, LOW);
+        } else {
+          digitalWrite(pinDelay[i].pin, HIGH);
+        }
       }
       thyristorManaged++;
     }
@@ -443,7 +449,9 @@ void zero_cross_int() {
 
   // Turn on thyristors with 0 delay (always on)
   while (thyristorManaged < Thyristor::nThyristors && pinDelay[thyristorManaged].delay == 0) {
-    digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
+    if(pinDelay[thyristorManaged].pin != 0xff) {
+      digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
+    }
     thyristorManaged++;
   }
 
@@ -659,9 +667,6 @@ void Thyristor::begin() {
 
 void Thyristor::end() {
   detachInterrupt(digitalPinToInterrupt(syncPin));
-#ifdef NETWORK_FREQ_RUNTIME
-  setFrequency(0);
-#endif
 #ifdef MONITOR_FREQUENCY
   queue.reset();
 #endif
@@ -674,7 +679,7 @@ float Thyristor::getFrequency() {
   return 1000000 / 2 / (float)(semiPeriodLength);
 }
 
-uint16_t Thyristor::getNominalSemiPeriod() {
+uint16_t Thyristor::getSemiPeriod() {
   return semiPeriodLength;
 }
 
@@ -690,6 +695,9 @@ void Thyristor::setFrequency(float frequency) {
   }
 
   semiPeriodLength = 1000000 / 2 / frequency;
+}
+void Thyristor::setSemiPeriod(uint16_t semiPeriod) {
+  semiPeriodLength = semiPeriod;
 }
 #endif
 

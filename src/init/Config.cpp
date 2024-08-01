@@ -195,6 +195,4 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // ZCD + Dimmers
   zcdTask.forceRun();
-  dimmer1Task.forceRun();
-  dimmer2Task.forceRun();
 });

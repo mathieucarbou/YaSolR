@@ -19,7 +19,7 @@ namespace Mycila {
     public:
       ~Dimmer() { end(); }
 
-      void begin(const int8_t pin, const uint8_t nominalFrequency);
+      void begin(const int8_t pin, const uint16_t semiPeriod);
       void end();
 
       gpio_num_t getPin() const { return _pin; }
@@ -70,7 +70,7 @@ namespace Mycila {
       // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
       // At 0% power, delay is equal to the semi-period
       // At 100% power, the delay is 0 us
-      uint16_t getFiringDelay() const { return isEnabled() ? _dimmer->getDelay() : 0; }
+      uint16_t getFiringDelay() const { return isEnabled() ? _dimmer->getDelay() : _semiPeriod; }
 
       // Phase angle [0, PI] rad
       // At 0% power, the phase angle is equal to PI

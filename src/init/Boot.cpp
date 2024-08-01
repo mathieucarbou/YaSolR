@@ -57,7 +57,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_ENABLE_RELAY1, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY2, YASOLR_FALSE);
   config.configure(KEY_ENABLE_ZCD, YASOLR_FALSE);
-  config.configure(KEY_GRID_FREQUENCY, "50");
+  config.configure(KEY_GRID_FREQUENCY, "0");
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
   config.configure(KEY_GRID_VOLTAGE_MQTT_TOPIC);
   config.configure(KEY_HA_DISCOVERY_TOPIC, MYCILA_HA_DISCOVERY_TOPIC);

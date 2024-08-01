@@ -4,9 +4,42 @@
  */
 #include <YaSolR.h>
 
+static uint16_t findBestSemiPeriod() {
+  uint8_t frequency = 0;
+
+  // first get frequency from the measurement tools
+
+  Mycila::Grid::Metrics gridMetrics;
+  grid.getMeasurements(gridMetrics);
+
+  if (!frequency)
+    frequency = round(gridMetrics.frequency);
+  if (!frequency)
+    frequency = round(pzemO1.getFrequency());
+  if (!frequency)
+    frequency = round(pzemO2.getFrequency());
+
+  // otherwise try get frequency from the configuration
+
+  if (!frequency)
+    frequency = config.get(KEY_GRID_FREQUENCY).toInt();
+
+  // if a frequency is found, we return its semi-period
+
+  if (frequency) {
+    logger.debug(TAG, "Semi-period detected from a measurement device: %" PRIu16 " us", static_cast<uint16_t>(1000000 / 2 / frequency));
+    return 1000000 / 2 / frequency;
+  }
+
+  // otherwise use auto-detection
+  logger.debug(TAG, "Semi-period detected from pulse analyzer: %" PRIu16 " us", static_cast<uint16_t>(pulseAnalyzer.getPeriod()));
+  return pulseAnalyzer.getPeriod();
+}
+
 Mycila::Task zcdTask("ZCD", [](void* params) {
   const bool zcdSwitchedOn = config.getBool(KEY_ENABLE_ZCD);
   const Mycila::PulseAnalyzer::State analyzerState = pulseAnalyzer.getState();
+  uint16_t semiPeriod = 0;
 
   // if the user is asking to disable ZCD, and it is starting or running, we stop it
   if (!zcdSwitchedOn) {
@@ -37,7 +70,17 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
       logger.info(TAG, "PulseAnalyzer analysis finished, starting ZCD");
       pulseAnalyzer.analyze();
       pulseAnalyzer.end();
-      zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
+      semiPeriod = findBestSemiPeriod();
+      if (!semiPeriod) {
+        logger.error(TAG, "Cannot start ZCD and Dimmers: unable to determine semi-period");
+        return;
+      }
+      zcd.begin(config.get(KEY_PIN_ZCD).toInt(), semiPeriod);
+      if (zcd.isEnabled()) {
+        logger.info(TAG, "ZCD started");
+        dimmer1Task.resume();
+        dimmer2Task.resume();
+      }
       return;
 
     default:

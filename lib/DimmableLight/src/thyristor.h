@@ -94,7 +94,7 @@ class Thyristor {
      * Turn off the thyristor.
      */
     void turnOff() {
-      setDelay(getNominalSemiPeriod());
+      setDelay(getSemiPeriod());
     }
 
     ~Thyristor();
@@ -142,7 +142,7 @@ class Thyristor {
     /**
      * Get the semiperiod.
      */
-    static uint16_t getNominalSemiPeriod();
+    static uint16_t getSemiPeriod();
 
 #ifdef NETWORK_FREQ_RUNTIME
     /**
@@ -150,6 +150,7 @@ class Thyristor {
      * zero set the semi-period to 0.
      */
     static void setFrequency(float frequency);
+    static void setSemiPeriod(uint16_t semiPeriod);
 #endif
 
 #ifdef MONITOR_FREQUENCY
