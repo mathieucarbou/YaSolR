@@ -52,8 +52,8 @@
 #define YASOLR_LBL_046 "Sortie 1"
 #define YASOLR_LBL_047 "État"
 #define YASOLR_LBL_048 "Température"
-#define YASOLR_LBL_049 "Contrôle manuel du routage"
-#define YASOLR_LBL_050 "Niveau du routage"
+#define YASOLR_LBL_049
+#define YASOLR_LBL_050 "variateur"
 #define YASOLR_LBL_051 "Marche forcée"
 #define YASOLR_LBL_052 "Puissance"
 #define YASOLR_LBL_053 "Puissance Apparente"
@@ -188,9 +188,9 @@
 #define YASOLR_LBL_182 "Topic MQTT pour la température sortie 2"
 #define YASOLR_LBL_183 "Redéfinition Min/Max Variateur Sortie 1"
 #define YASOLR_LBL_184 "Redéfinition Min/Max Variateur Sortie 2"
-#define YASOLR_LBL_185 "ZCD: Période des pulses"
+#define YASOLR_LBL_185 "ZCD: Période mesurée des pulses"
 #define YASOLR_LBL_186 "Détection valeur résistances"
-#define YASOLR_LBL_187 "ZCD: Longueur des pulses"
+#define YASOLR_LBL_187 "ZCD: Longueur mesurée des pulses"
 #define YASOLR_LBL_188
 #define YASOLR_LBL_189
 #define YASOLR_LBL_190

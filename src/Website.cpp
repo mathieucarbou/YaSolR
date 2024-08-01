@@ -17,19 +17,64 @@ void YaSolR::WebsiteClass::initLayout() {
     _historyX[i] = i - YASOLR_GRAPH_POINTS;
 
   // overview
+
   _gridPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routedPowerHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
+
+  _outputBypassSwitch(_output1Bypass, output1);
+  _outputDimmerSlider(_output1DimmerSlider, output1);
+
+  _outputBypassSwitch(_output2Bypass, output2);
+  _outputDimmerSlider(_output2DimmerSlider, output2);
+
+  _relaySwitch(_relay1Switch, routerRelay1);
+  _relaySwitch(_relay2Switch, routerRelay2);
+
+  _output1PZEMSync.attachCallback([this](int32_t value) {
+    pzemO1PairingTask.resume();
+    _output1PZEMSync.update(!pzemO1PairingTask.isPaused());
+    dashboard.refreshCard(&_output1PZEMSync);
+  });
+
+  _output2PZEMSync.attachCallback([this](int32_t value) {
+    pzemO2PairingTask.resume();
+    _output2PZEMSync.update(!pzemO2PairingTask.isPaused());
+    dashboard.refreshCard(&_output2PZEMSync);
+  });
+
+  _resistanceCalibration.attachCallback([this](int32_t value) {
+    config.set(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
+    config.set(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);
+    config.set(KEY_OUTPUT1_DIMMER_LIMIT, "100", false);
+    config.set(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_FALSE, false);
+    config.set(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_FALSE, false);
+    config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
+
+    router.beginCalibration([]() {
+      config.set(KEY_OUTPUT1_RESISTANCE, String(router.getOutputs()[0]->config.calibratedResistance));
+      config.set(KEY_OUTPUT2_RESISTANCE, String(router.getOutputs()[1]->config.calibratedResistance));
+    });
+
+    YaSolR::Website.initCards();
+    mqttPublishConfigTask.resume();
+    mqttPublishTask.requestEarlyRun();
+
+    _resistanceCalibration.update(router.isCalibrationRunning());
+    dashboard.refreshCard(&_resistanceCalibration);
+  });
 
 #ifdef APP_MODEL_PRO
   dashboard.setChartAnimations(false);
 
   // overview graphs
+
   _gridPowerHistory.setSize(chartSize);
   _routedPowerHistory.setSize(chartSize);
   _routerTHDiHistory.setSize(chartSize);
 
   // PID
+
   _pidInputHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _pidOutputHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
   _pidErrorHistory.updateX(_historyX, YASOLR_GRAPH_POINTS);
@@ -46,7 +91,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _pidErrorHistory.setSize(chartSize);
   _pidSumHistory.setSize(chartSize);
 
-  // output 1 (status)
+  // output 1
+
   _output1State.setTab(&_output1Tab);
   _output1DS18State.setTab(&_output1Tab);
   _output1DimmerSlider.setTab(&_output1Tab);
@@ -64,25 +110,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1Current.setTab(&_output1Tab);
   _output1Resistance.setTab(&_output1Tab);
 
-  // output 2 (status)
-  _output2State.setTab(&_output2Tab);
-  _output2DS18State.setTab(&_output2Tab);
-  _output2DimmerSlider.setTab(&_output2Tab);
-  _output2DimmerSliderRO.setTab(&_output2Tab);
-  _output2Bypass.setTab(&_output2Tab);
-  _output2BypassRO.setTab(&_output2Tab);
-
-  _output2Power.setTab(&_output2Tab);
-  _output2PowerFactor.setTab(&_output2Tab);
-  _output2THDi.setTab(&_output2Tab);
-  _output2Energy.setTab(&_output2Tab);
-
-  _output2ApparentPower.setTab(&_output2Tab);
-  _output2Voltage.setTab(&_output2Tab);
-  _output2Current.setTab(&_output2Tab);
-  _output2Resistance.setTab(&_output2Tab);
-
-  // output 1 (control)
   _output1BypassAuto.setTab(&_output1Tab);
   _output1DimmerAuto.setTab(&_output1Tab);
   _output1AutoStartTemp.setTab(&_output1Tab);
@@ -104,10 +131,26 @@ void YaSolR::WebsiteClass::initLayout() {
   _percentageSlider(_output1DimmerReservedExcess, KEY_OUTPUT1_RESERVED_EXCESS);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
-  _outputBypassSwitch(_output1Bypass, output1);
-  _outputDimmerSlider(_output1DimmerSlider, output1);
 
-  // output 2 (control)
+  // output 2
+
+  _output2State.setTab(&_output2Tab);
+  _output2DS18State.setTab(&_output2Tab);
+  _output2DimmerSlider.setTab(&_output2Tab);
+  _output2DimmerSliderRO.setTab(&_output2Tab);
+  _output2Bypass.setTab(&_output2Tab);
+  _output2BypassRO.setTab(&_output2Tab);
+
+  _output2Power.setTab(&_output2Tab);
+  _output2PowerFactor.setTab(&_output2Tab);
+  _output2THDi.setTab(&_output2Tab);
+  _output2Energy.setTab(&_output2Tab);
+
+  _output2ApparentPower.setTab(&_output2Tab);
+  _output2Voltage.setTab(&_output2Tab);
+  _output2Current.setTab(&_output2Tab);
+  _output2Resistance.setTab(&_output2Tab);
+
   _output2BypassAuto.setTab(&_output2Tab);
   _output2DimmerAuto.setTab(&_output2Tab);
   _output2AutoStartTemp.setTab(&_output2Tab);
@@ -129,19 +172,16 @@ void YaSolR::WebsiteClass::initLayout() {
   _percentageSlider(_output2DimmerReservedExcess, KEY_OUTPUT2_RESERVED_EXCESS);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
-  _outputBypassSwitch(_output2Bypass, output2);
-  _outputDimmerSlider(_output2DimmerSlider, output2);
 
-  // relays (control)
+  // relays
+
   _relay1Switch.setTab(&_relaysTab);
   _relay1SwitchRO.setTab(&_relaysTab);
   _relay2Switch.setTab(&_relaysTab);
   _relay2SwitchRO.setTab(&_relaysTab);
 
-  _relaySwitch(_relay1Switch, routerRelay1);
-  _relaySwitch(_relay2Switch, routerRelay2);
-
   // management
+
   _configBackup.setTab(&_managementTab);
   _configRestore.setTab(&_managementTab);
   _consoleLink.setTab(&_managementTab);
@@ -163,6 +203,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _restart.attachCallback([](int32_t value) { restartTask.resume(); });
 
   // network (config)
+
   _adminPwd.setTab(&_networkConfigTab);
   _apMode.setTab(&_networkConfigTab);
   _ntpServer.setTab(&_networkConfigTab);
@@ -186,6 +227,7 @@ void YaSolR::WebsiteClass::initLayout() {
   });
 
   // mqtt (config)
+
   _haDiscovery.setTab(&_mqttConfigTab);
   _haDiscoveryTopic.setTab(&_mqttConfigTab);
   _mqttGridPower.setTab(&_mqttConfigTab);
@@ -216,6 +258,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_mqttUser, KEY_MQTT_USERNAME);
 
   // GPIO (configuration)
+
   _pinDimmerO1.setTab(&_pinConfigTab);
   _pinDimmerO2.setTab(&_pinConfigTab);
   _pinDisplayClock.setTab(&_pinConfigTab);
@@ -257,6 +300,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _pinConfig(_pinZCD, KEY_PIN_ZCD);
 
   // Hardware
+
   _display.setTab(&_hardwareEnableTab);
   _jsy.setTab(&_hardwareEnableTab);
   _led.setTab(&_hardwareEnableTab);
@@ -292,6 +336,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _boolConfig(_zcd, KEY_ENABLE_ZCD);
 
   // Hardware (config)
+
   _gridFreq.setTab(&_hardwareConfigTab);
   _displayRotation.setTab(&_hardwareConfigTab);
   _displayType.setTab(&_hardwareConfigTab);
@@ -323,36 +368,6 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_relay2Type, KEY_RELAY2_TYPE);
   _sliderConfig(_displaySpeed, KEY_DISPLAY_SPEED);
 
-  _output1PZEMSync.attachCallback([this](int32_t value) {
-    pzemO1PairingTask.resume();
-    _output1PZEMSync.update(!pzemO1PairingTask.isPaused());
-    dashboard.refreshCard(&_output1PZEMSync);
-  });
-  _output2PZEMSync.attachCallback([this](int32_t value) {
-    pzemO2PairingTask.resume();
-    _output2PZEMSync.update(!pzemO2PairingTask.isPaused());
-    dashboard.refreshCard(&_output2PZEMSync);
-  });
-  _resistanceCalibration.attachCallback([this](int32_t value) {
-    config.set(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
-    config.set(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);
-    config.set(KEY_OUTPUT1_DIMMER_LIMIT, "100", false);
-    config.set(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_FALSE, false);
-    config.set(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_FALSE, false);
-    config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
-
-    router.beginCalibration([]() {
-      config.set(KEY_OUTPUT1_RESISTANCE, String(router.getOutputs()[0]->config.calibratedResistance));
-      config.set(KEY_OUTPUT2_RESISTANCE, String(router.getOutputs()[1]->config.calibratedResistance));
-    });
-
-    YaSolR::Website.initCards();
-    mqttPublishConfigTask.resume();
-    mqttPublishTask.requestEarlyRun();
-
-    _resistanceCalibration.update(router.isCalibrationRunning());
-    dashboard.refreshCard(&_resistanceCalibration);
-  });
   _output1DimmerMapper.attachCallback([this](const char* value) {
     const char* comma = strchr(value, ',');
     if (comma != nullptr) {
@@ -373,6 +388,7 @@ void YaSolR::WebsiteClass::initLayout() {
   });
 
   // PID
+
   _pidView.setTab(&_pidTab);
   _pidPMode.setTab(&_pidTab);
   _pidDMode.setTab(&_pidTab);
@@ -415,6 +431,7 @@ void YaSolR::WebsiteClass::initCards() {
   logger.debug(TAG, "Initializing cards");
 
   // Statistics
+
   _appManufacturer.set(Mycila::AppInfo.manufacturer.c_str());
   _appModel.set((Mycila::AppInfo.model.c_str()));
   _appName.set((Mycila::AppInfo.name.c_str()));
@@ -437,6 +454,7 @@ void YaSolR::WebsiteClass::initCards() {
   const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY);
 
   // output 1 (control)
+
   const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
   const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY);
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
@@ -481,6 +499,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output1AutoStoptTemp.setDisplay(bypass1Possible && autoBypass1Activated && output1TempEnabled);
 
   // output 2 (control)
+
   const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
   const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY);
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
@@ -525,6 +544,7 @@ void YaSolR::WebsiteClass::initCards() {
   _output2AutoStoptTemp.setDisplay(bypass2Possible && autoBypass2Activated && output2TempEnabled);
 
   // relays (control)
+
   const int32_t load1 = config.get(KEY_RELAY1_LOAD).toInt();
   const int32_t load2 = config.get(KEY_RELAY2_LOAD).toInt();
   const bool relay1Enabled = config.getBool(KEY_ENABLE_RELAY1);
@@ -536,6 +556,7 @@ void YaSolR::WebsiteClass::initCards() {
   _relay2SwitchRO.setDisplay(relay2Enabled && load2 > 0);
 
   // management
+
   _configBackup.update("/api/config/backup");
   _configRestore.update("/api/config/restore");
   _consoleLink.update("/console");
@@ -546,6 +567,7 @@ void YaSolR::WebsiteClass::initCards() {
   _debugInfo.setDisplay(config.getBool(KEY_ENABLE_DEBUG));
 
   // network (config)
+
   _adminPwd.update(config.get(KEY_ADMIN_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
   _apMode.update(config.getBool(KEY_ENABLE_AP_MODE));
   _ntpServer.update(config.get(KEY_NTP_SERVER));
@@ -554,6 +576,7 @@ void YaSolR::WebsiteClass::initCards() {
   _wifiSSID.update(config.get(KEY_WIFI_SSID));
 
   // mqtt (config)
+
   _haDiscovery.update(config.getBool(KEY_ENABLE_HA_DISCOVERY));
   _haDiscoveryTopic.update(config.get(KEY_HA_DISCOVERY_TOPIC));
   _mqttGridPower.update(config.get(KEY_GRID_POWER_MQTT_TOPIC));
@@ -595,6 +618,7 @@ void YaSolR::WebsiteClass::initCards() {
   pinout.clear();
 
   // Hardware
+
   _status(_display, KEY_ENABLE_DISPLAY, display.isEnabled());
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
   _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, bypassRelayO1.isEnabled());
@@ -603,7 +627,19 @@ void YaSolR::WebsiteClass::initCards() {
   _status(_relay2, KEY_ENABLE_RELAY2, relay2.isEnabled());
 
   // Hardware (config)
-  _gridFreq.update(config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? "60 Hz" : "50 Hz", "50 Hz,60 Hz");
+
+  switch (config.get(KEY_GRID_FREQUENCY).toInt()) {
+    case 50:
+      _gridFreq.update("50 Hz", "Auto-detect,50 Hz,60 Hz");
+      break;
+    case 60:
+      _gridFreq.update("60 Hz", "Auto-detect,50 Hz,60 Hz");
+      break;
+    default:
+      _gridFreq.update("Auto-detect", "Auto-detect,50 Hz,60 Hz");
+      break;
+  }
+
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
   _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
   _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
@@ -639,6 +675,7 @@ void YaSolR::WebsiteClass::initCards() {
                                     (dimmer2Enabled && pzem2Enabled));
 
   // PID
+
   const bool pidViewEnabled = config.getBool(KEY_ENABLE_PID_VIEW);
   _pidView.update(pidViewEnabled);
   switch (config.get(KEY_PID_P_MODE).toInt()) {
@@ -710,6 +747,11 @@ void YaSolR::WebsiteClass::updateCards() {
   Mycila::RouterOutput::Metrics output2Measurements;
   output2.getMeasurements(output2Measurements);
 
+  float freq = gridMetrics.frequency;
+  if (freq == 0 && zcd.getSemiPeriod() > 0) {
+    freq = 1000000.0f / 2 / zcd.getSemiPeriod();
+  }
+
   // stats
   Mycila::SystemMemory memory = Mycila::System.getMemory();
   ESPConnectMode mode = ESPConnect.getMode();
@@ -719,7 +761,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _deviceHeapUsed.set((String(memory.used) + " bytes").c_str());
   _gridEnergy.set((String(gridMetrics.energy, 3) + " kWh").c_str());
   _gridEnergyReturned.set((String(gridMetrics.energyReturned, 3) + " kWh").c_str());
-  _gridFrequency.set((String(gridMetrics.frequency) + " Hz").c_str());
+  _gridFrequency.set((String(freq) + " Hz").c_str());
   _networkAPIP.set(ESPConnect.getIPAddress(ESPConnectMode::AP).toString().c_str());
   _networkEthIP.set(ESPConnect.getIPAddress(ESPConnectMode::ETH).toString().c_str());
   _networkInterface.set(mode == ESPConnectMode::AP ? "AP" : (mode == ESPConnectMode::STA ? "WiFi" : (mode == ESPConnectMode::ETH ? "Ethernet" : "")));
@@ -739,6 +781,7 @@ void YaSolR::WebsiteClass::updateCards() {
 #endif
 
   // home
+
   _routerPower.update(routerMetrics.power);
   _routerApparentPower.update(routerMetrics.apparentPower);
   _routerPowerFactor.update(routerMetrics.powerFactor);
@@ -747,11 +790,12 @@ void YaSolR::WebsiteClass::updateCards() {
   _routerCurrent.update(routerMetrics.current);
   _routerResistance.update(routerMetrics.resistance);
   _routerEnergy.update(routerMetrics.energy);
+
   _gridPower.update(gridMetrics.power);
   _temperature(_routerDS18State, ds18Sys);
 
-#ifdef APP_MODEL_PRO
-  // Output 1 (status)
+  // output 1
+
   switch (output1.getState()) {
     case Mycila::RouterOutput::State::OUTPUT_DISABLED:
     case Mycila::RouterOutput::State::OUTPUT_IDLE:
@@ -770,19 +814,10 @@ void YaSolR::WebsiteClass::updateCards() {
   }
   _temperature(_output1DS18State, output1);
   _output1DimmerSlider.update(dimmerO1.getDutyCycle() * 100);
-  _output1DimmerSliderRO.update(dimmerO1.getDutyCycle() * 100);
   _output1Bypass.update(output1.isBypassOn());
-  _output1BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _output1Power.update(output1Measurements.power);
-  _output1ApparentPower.update(output1Measurements.apparentPower);
-  _output1PowerFactor.update(output1Measurements.powerFactor);
-  _output1THDi.update(output1Measurements.thdi * 100);
-  _output1Voltage.update(output1Measurements.dimmedVoltage);
-  _output1Current.update(output1Measurements.current);
-  _output1Resistance.update(output1Measurements.resistance);
-  _output1Energy.update(output1Measurements.energy);
 
   // output 2
+
   switch (output2.getState()) {
     case Mycila::RouterOutput::State::OUTPUT_DISABLED:
     case Mycila::RouterOutput::State::OUTPUT_IDLE:
@@ -801,8 +836,36 @@ void YaSolR::WebsiteClass::updateCards() {
   }
   _temperature(_output2DS18State, output2);
   _output2DimmerSlider.update(dimmerO2.getDutyCycle() * 100);
-  _output2DimmerSliderRO.update(dimmerO2.getDutyCycle() * 100);
   _output2Bypass.update(output2.isBypassOn());
+
+  // relay
+
+  _relay1Switch.update(relay1.isOn());
+  _relay2Switch.update(relay2.isOn());
+
+  // Hardware (config)
+
+  _output1PZEMSync.update(!pzemO1PairingTask.isPaused());
+  _output2PZEMSync.update(!pzemO2PairingTask.isPaused());
+  _resistanceCalibration.update(router.isCalibrationRunning());
+
+#ifdef APP_MODEL_PRO
+  // Output 1
+
+  _output1DimmerSliderRO.update(dimmerO1.getDutyCycle() * 100);
+  _output1BypassRO.update(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
+  _output1Power.update(output1Measurements.power);
+  _output1ApparentPower.update(output1Measurements.apparentPower);
+  _output1PowerFactor.update(output1Measurements.powerFactor);
+  _output1THDi.update(output1Measurements.thdi * 100);
+  _output1Voltage.update(output1Measurements.dimmedVoltage);
+  _output1Current.update(output1Measurements.current);
+  _output1Resistance.update(output1Measurements.resistance);
+  _output1Energy.update(output1Measurements.energy);
+
+  // output 2
+
+  _output2DimmerSliderRO.update(dimmerO2.getDutyCycle() * 100);
   _output2BypassRO.update(YASOLR_STATE(output2.isBypassOn()), output2.isBypassOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
   _output2Power.update(output2Measurements.power);
   _output2ApparentPower.update(output2Measurements.apparentPower);
@@ -814,12 +877,12 @@ void YaSolR::WebsiteClass::updateCards() {
   _output2Energy.update(output2Measurements.energy);
 
   // relays
-  _relay1Switch.update(relay1.isOn());
+
   _relay1SwitchRO.update(YASOLR_STATE(relay1.isOn()), relay1.isOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
-  _relay2Switch.update(relay2.isOn());
   _relay2SwitchRO.update(YASOLR_STATE(relay2.isOn()), relay2.isOn() ? DASH_STATUS_SUCCESS : DASH_STATUS_IDLE);
 
   // Hardware (status)
+
   _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), YASOLR_LBL_110);
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : YASOLR_LBL_113);
   _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), zcd.isEnabled(), YASOLR_LBL_179);
@@ -830,11 +893,6 @@ void YaSolR::WebsiteClass::updateCards() {
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected() && pzemO2.readAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2.isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, YASOLR_LBL_114);
   _status(_zcd, KEY_ENABLE_ZCD, true, zcd.isEnabled(), YASOLR_LBL_110);
-
-  // Hardware (config)
-  _output1PZEMSync.update(!pzemO1PairingTask.isPaused());
-  _output2PZEMSync.update(!pzemO2PairingTask.isPaused());
-  _resistanceCalibration.update(router.isCalibrationRunning());
 #endif
 }
 

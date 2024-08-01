@@ -63,7 +63,6 @@
   const supportedConfig = {
 
     "Output 1 Control": "TITLE",
-    o1_resistance: ["Output 1 Resistance (Ohm)", "uint"],
     o1_dim_limit: ["Dimmer Duty Cycle Limiter (%)", "percent"],
     o1_dim_max_t: ["Dimmer Temperature Limiter (stop routing when temperature reached)", "percent"],
     o1_excess_ratio: ["Grid Excess Reserved to Output 1. Output 2 will take the remaining. If 100%, Output 2 will be activated only if there is some remaining excess.", "percent"],
@@ -76,7 +75,6 @@
     o1_temp_stop: ["Bypass Stop Temperature (C)", "uint"],
 
     "Output 2 Control": "TITLE",
-    o2_resistance: ["Output 2 Resistance (Ohm)", "uint"],
     o2_dim_limit: ["Dimmer Duty Cycle Limiter (%)", "percent"],
     o2_dim_max_t: ["Dimmer Temperature Limiter (stop routing when temperature reached)", "percent"],
     o2_excess_ratio: ["Grid Excess Reserved to Output 2. Output 2 will take the remaining after output 1. If 100%, Output 2 will try to consume 100% of the remaining.", "percent"],
@@ -87,10 +85,6 @@
     o2_time_stop: ["Bypass Stop Time (HH:mm)", "time"],
     o2_temp_start: ["Bypass Start Temperature (C)", "uint"],
     o2_temp_stop: ["Bypass Stop Temperature (C)", "uint"],
-
-    "Relays": "TITLE",
-    relay1_load: ["Relay 1 Automatic Control: Connected Load (Watts)", "uint"],
-    relay2_load: ["Relay 2 Automatic Control: Connected Load (Watts)", "uint"],
 
     "Management": "TITLE",
     debug_enable: ["Enable Debug Logging", "switch"],
@@ -160,14 +154,18 @@
     disp_speed: ["Display Speed (s)", "select", "1,2,3,4,5,6,7,8,9,10"],
     disp_type: ["Display Type", "select", "SH1106,SH1107,SSD1306"],
     disp_angle: ["Display Rotation", "select", "0,90,180,270"],
-    o1_relay_type: ["Output 1 Bypass Relay Type", "select", "NO,NC"],
-    o2_relay_type: ["Output 2 Bypass Relay Type", "select", "NO,NC"],
     relay1_type: ["Relay 1 Type", "select", "NO,NC"],
     relay2_type: ["Relay 2 Type", "select", "NO,NC"],
+    relay1_load: ["Relay 1 Automatic Control: Connected Load (Watts)", "uint"],
+    relay2_load: ["Relay 2 Automatic Control: Connected Load (Watts)", "uint"],
+    o1_relay_type: ["Output 1 Bypass Relay Type", "select", "NO,NC"],
+    o2_relay_type: ["Output 2 Bypass Relay Type", "select", "NO,NC"],
     o1_dim_min: ["Output 1 Dimmer Remap Min (%)", "percent"],
     o1_dim_max: ["Output 1 Dimmer Remap Max (%)", "percent"],
     o2_dim_min: ["Output 2 Dimmer Remap Min (%)", "percent"],
     o2_dim_max: ["Output 2 Dimmer Remap Max (%)", "percent"],
+    o1_resistance: ["Output 1 Resistance (Ohm)", "uint"],
+    o2_resistance: ["Output 2 Resistance (Ohm)", "uint"],
 
     "PID Calibration": "TITLE",
     pid_view_enable: ["View PID Data", "switch"],

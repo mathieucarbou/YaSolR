@@ -50,6 +50,8 @@ namespace YaSolR {
       Statistic _gridEnergyReturned = Statistic(&dashboard, YASOLR_LBL_017);
       Statistic _gridFrequency = Statistic(&dashboard, YASOLR_LBL_018);
 
+      Statistic _udpMessageRateBuffer = Statistic(&dashboard, YASOLR_LBL_157);
+
       Statistic _networkHostname = Statistic(&dashboard, YASOLR_LBL_019);
       Statistic _networkInterface = Statistic(&dashboard, YASOLR_LBL_020);
       Statistic _networkAPIP = Statistic(&dashboard, YASOLR_LBL_021);
@@ -67,8 +69,6 @@ namespace YaSolR {
       Statistic _relay1SwitchCount = Statistic(&dashboard, YASOLR_LBL_032);
       Statistic _relay2SwitchCount = Statistic(&dashboard, YASOLR_LBL_033);
 
-      Statistic _udpMessageRateBuffer = Statistic(&dashboard, YASOLR_LBL_157);
-
       Statistic _zcdPulseLength = Statistic(&dashboard, YASOLR_LBL_187);
       Statistic _zcdPulsePeriod = Statistic(&dashboard, YASOLR_LBL_185);
 
@@ -79,6 +79,7 @@ namespace YaSolR {
 #endif
 
       // home
+
       Card _routerPower = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_036, "W");
       Card _routerApparentPower = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_037, "VA");
       Card _routerPowerFactor = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_038);
@@ -89,6 +90,20 @@ namespace YaSolR {
       Card _routerEnergy = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_043, "kWh");
       Card _gridPower = Card(&dashboard, ENERGY_CARD, YASOLR_LBL_044, "W");
       Card _routerDS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_045, "°C");
+#ifdef APP_MODEL_OSS
+      Card _relay1Switch = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_073);
+      Card _relay2Switch = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_076);
+
+      Card _output1State = Card(&dashboard, STATUS_CARD, YASOLR_LBL_046, DASH_STATUS_IDLE);
+      Card _output1DS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_046 ": " YASOLR_LBL_048, "°C");
+      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_046 ": " YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
+      Card _output1Bypass = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_046 ": " YASOLR_LBL_051);
+
+      Card _output2State = Card(&dashboard, STATUS_CARD, YASOLR_LBL_070, DASH_STATUS_IDLE);
+      Card _output2DS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_070 ": " YASOLR_LBL_048, "°C");
+      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_070 ": " YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
+      Card _output2Bypass = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_070 ": " YASOLR_LBL_051);
+#endif
 
       int _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
       int _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
@@ -96,6 +111,12 @@ namespace YaSolR {
       Chart _gridPowerHistory = Chart(&dashboard, LINE_CHART, YASOLR_LBL_044 " (W)");
       Chart _routedPowerHistory = Chart(&dashboard, AREA_CHART, YASOLR_LBL_036 " (W)");
       Chart _routerTHDiHistory = Chart(&dashboard, BAR_CHART, YASOLR_LBL_039 " (%)");
+
+#ifdef APP_MODEL_OSS
+      Card _output1PZEMSync = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_147);
+      Card _output2PZEMSync = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_148);
+      Card _resistanceCalibration = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_186);
+#endif
 
 #ifdef APP_MODEL_PRO
       // tabs icons:
@@ -105,7 +126,7 @@ namespace YaSolR {
       Tab _output1Tab = Tab(&dashboard, "\u2600 " YASOLR_LBL_046);
       Card _output1State = Card(&dashboard, STATUS_CARD, YASOLR_LBL_047, DASH_STATUS_IDLE);
       Card _output1DS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_048, "°C");
-      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_049, "%", 0.0f, 100.0f, 0.01f);
+      Card _output1DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
       Card _output1DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
       Card _output1Bypass = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_051);
       Card _output1BypassRO = Card(&dashboard, STATUS_CARD, YASOLR_LBL_051);
@@ -131,7 +152,7 @@ namespace YaSolR {
       Tab _output2Tab = Tab(&dashboard, "\u2600 " YASOLR_LBL_070);
       Card _output2State = Card(&dashboard, STATUS_CARD, YASOLR_LBL_047, DASH_STATUS_IDLE);
       Card _output2DS18State = Card(&dashboard, TEMPERATURE_CARD, YASOLR_LBL_048, "°C");
-      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_049, "%", 0.0f, 100.0f, 0.01f);
+      Card _output2DimmerSlider = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
       Card _output2DimmerSliderRO = Card(&dashboard, PROGRESS_CARD, YASOLR_LBL_050, "%", 0.0f, 100.0f, 0.01f);
       Card _output2Bypass = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_051);
       Card _output2BypassRO = Card(&dashboard, STATUS_CARD, YASOLR_LBL_051);
@@ -242,14 +263,14 @@ namespace YaSolR {
       Card _displayRotation = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_144);
       Card _relay1Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_151);
       Card _relay2Type = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_152);
+      Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_072);
+      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_075);
       Card _output1RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_149);
       Card _output2RelayType = Card(&dashboard, DROPDOWN_CARD, YASOLR_LBL_150);
       Card _output1DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_183, "%", 0, 100, 1);
       Card _output2DimmerMapper = Card(&dashboard, RANGE_SLIDER_CARD, YASOLR_LBL_184, "%", 0, 100, 1);
       Card _output1PZEMSync = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_147);
       Card _output2PZEMSync = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_148);
-      Card _relay1Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_072);
-      Card _relay2Load = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_075);
       Card _output1ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_145);
       Card _output2ResistanceInput = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_146);
       Card _resistanceCalibration = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_186);
