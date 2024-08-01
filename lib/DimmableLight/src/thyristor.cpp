@@ -659,8 +659,12 @@ void Thyristor::begin() {
 
 void Thyristor::end() {
   detachInterrupt(digitalPinToInterrupt(syncPin));
-  queue.reset();
+#ifdef NETWORK_FREQ_RUNTIME
   setFrequency(0);
+#endif
+#ifdef MONITOR_FREQUENCY
+  queue.reset();
+#endif
 }
 
 float Thyristor::getFrequency() {

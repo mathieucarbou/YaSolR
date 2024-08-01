@@ -32,6 +32,8 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // pioTaskManager
   calibrationTask.setManager(pioTaskManager);
   carouselTask.setManager(pioTaskManager);
+  dimmer1Task.setManager(pioTaskManager);
+  dimmer2Task.setManager(pioTaskManager);
   displayTask.setManager(pioTaskManager);
   ds18Task.setManager(pioTaskManager);
   lightsTask.setManager(pioTaskManager);
@@ -39,6 +41,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   pzemO2PairingTask.setManager(pioTaskManager);
   relayTask.setManager(pioTaskManager);
   routerTask.setManager(pioTaskManager);
+  zcdTask.setManager(pioTaskManager);
 
   // jsyTaskManager
   jsyTask.setManager(jsyTaskManager);

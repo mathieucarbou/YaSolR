@@ -42,7 +42,7 @@
 #endif
 
 // If enabled, you can monitor the actual frequency of the electrical network.
-#define MONITOR_FREQUENCY
+// #define MONITOR_FREQUENCY
 
 #define FILTER_INT_PERIOD
 

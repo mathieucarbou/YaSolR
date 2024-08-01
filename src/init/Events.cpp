@@ -144,22 +144,16 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         ds18O2.begin(config.get(KEY_PIN_OUTPUT2_DS18).toInt());
 
     } else if (key == KEY_ENABLE_ZCD) {
-      zcd.end();
-      if (config.getBool(KEY_ENABLE_ZCD))
-        zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
+      zcdTask.requestEarlyRun();
 
     } else if (key == KEY_ENABLE_MQTT) {
       mqttConfigTask.resume();
 
     } else if (key == KEY_ENABLE_OUTPUT1_DIMMER) {
-      dimmerO1.end();
-      if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
-        dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
+      dimmer1Task.resume();
 
     } else if (key == KEY_ENABLE_OUTPUT2_DIMMER) {
-      dimmerO2.end();
-      if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
-        dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
+      dimmer2Task.resume();
 
     } else if (key == KEY_ENABLE_OUTPUT1_RELAY) {
       bypassRelayO1.end();

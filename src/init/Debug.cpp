@@ -43,6 +43,8 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
 
   // Log execution time for some "ONCE" tasks
   ds18Task.setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  dimmer1Task.setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  dimmer2Task.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   haDiscoveryTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   mqttConfigTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   mqttPublishConfigTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);

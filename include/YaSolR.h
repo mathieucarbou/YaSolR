@@ -24,6 +24,7 @@
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
 #include <MycilaPID.h>
+#include <MycilaPulseAnalyzer.h>
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
 #include <MycilaRouter.h>
@@ -70,6 +71,7 @@ extern Mycila::JSY jsy;
 extern Mycila::Logger logger;
 extern Mycila::MQTT mqtt;
 extern Mycila::PID pidController;
+extern Mycila::PulseAnalyzer pulseAnalyzer;
 extern Mycila::PZEM pzemO1;
 extern Mycila::PZEM pzemO2;
 extern Mycila::Relay bypassRelayO1;
@@ -106,6 +108,8 @@ extern Mycila::Task mqttPublishConfigTask;
 extern Mycila::TaskManager pioTaskManager;
 extern Mycila::Task calibrationTask;
 extern Mycila::Task carouselTask;
+extern Mycila::Task dimmer1Task;
+extern Mycila::Task dimmer2Task;
 extern Mycila::Task displayTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
@@ -113,6 +117,7 @@ extern Mycila::Task pzemO1PairingTask;
 extern Mycila::Task pzemO2PairingTask;
 extern Mycila::Task relayTask;
 extern Mycila::Task routerTask;
+extern Mycila::Task zcdTask;
 
 extern Mycila::TaskManager jsyTaskManager;
 extern Mycila::Task jsyTask;

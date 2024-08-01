@@ -4,7 +4,6 @@
  */
 #pragma once
 
-#include <MycilaZCD.h>
 #include <WString.h>
 #include <esp32-hal-gpio.h>
 #include <thyristor.h>
@@ -18,10 +17,9 @@
 namespace Mycila {
   class Dimmer {
     public:
-      explicit Dimmer(ZCD& zcd) : _zcd(&zcd) {}
       ~Dimmer() { end(); }
 
-      void begin(const int8_t pin);
+      void begin(const int8_t pin, const uint8_t nominalFrequency);
       void end();
 
       gpio_num_t getPin() const { return _pin; }
@@ -30,6 +28,8 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
+        root["enabled"] = _dimmer != nullptr;
+        root["state"] = isOn() ? "on" : "off";
         root["angle_d"] = angle * RAD_TO_DEG;
         root["angle"] = angle;
         root["delay"] = getFiringDelay();
@@ -37,8 +37,7 @@ namespace Mycila {
         root["duty_cycle_limit"] = _dutyCycleLimit;
         root["duty_cycle_min"] = _dutyCycleMin;
         root["duty_cycle_max"] = _dutyCycleMax;
-        root["enabled"] = _dimmer != nullptr;
-        root["state"] = isOn() ? "on" : "off";
+        root["semi_period"] = _semiPeriod;
       }
 #endif
 
@@ -78,14 +77,13 @@ namespace Mycila {
       // At 100% power, the phase angle is equal to 0
       float getPhaseAngle() const {
         // angle_rad = PI * delay_us / period_us
-        uint16_t semiPeriod = _zcd->getNominalSemiPeriod();
-        return semiPeriod == 0 ? PI : PI * getFiringDelay() / semiPeriod;
+        return _semiPeriod == 0 ? PI : PI * getFiringDelay() / _semiPeriod;
       }
 
     private:
-      ZCD* _zcd;
       gpio_num_t _pin = GPIO_NUM_NC;
       Thyristor* _dimmer = nullptr;
+      uint16_t _semiPeriod = 0;
       float _dutyCycleMin = 0;
       float _dutyCycleMax = 1;
       float _dutyCycleLimit = 1;

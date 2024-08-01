@@ -9,9 +9,9 @@
 #include <map>
 
 #ifdef APP_MODEL_OSS
-  #define LINE_CHART          BAR_CHART
-  #define AREA_CHART          BAR_CHART
-  #define ENERGY_CARD         GENERIC_CARD
+  #define LINE_CHART  BAR_CHART
+  #define AREA_CHART  BAR_CHART
+  #define ENERGY_CARD GENERIC_CARD
 #endif
 
 namespace YaSolR {
@@ -69,6 +69,7 @@ namespace YaSolR {
 
       Statistic _udpMessageRateBuffer = Statistic(&dashboard, YASOLR_LBL_157);
 
+      Statistic _zcdPulseLength = Statistic(&dashboard, YASOLR_LBL_187);
       Statistic _zcdPulsePeriod = Statistic(&dashboard, YASOLR_LBL_185);
 
       Statistic _time = Statistic(&dashboard, YASOLR_LBL_034);

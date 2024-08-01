@@ -30,6 +30,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
+  zcdTask.setInterval(1500 * Mycila::TaskDuration::MILLISECONDS);
 
   // mqttTaskManager
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
@@ -124,24 +125,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   if (config.getBool(KEY_ENABLE_OUTPUT2_DS18))
     ds18O2.begin(config.get(KEY_PIN_OUTPUT2_DS18).toInt());
 
-  // Electricity: ZCD
-  if (config.getBool(KEY_ENABLE_ZCD))
-    zcd.begin(config.get(KEY_PIN_ZCD).toInt(), config.get(KEY_GRID_FREQUENCY).toInt() == 60 ? 60 : 50);
-
-  // Electricity: Dimmer 1
-  dimmerO1.setDutyCycleMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toFloat() / 100);
-  dimmerO1.setDutyCycleMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toFloat() / 100);
-  dimmerO1.setDutyCycleLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toFloat() / 100);
-  if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER))
-    dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt());
-
-  // Electricity: Dimmer 2
-  dimmerO2.setDutyCycleMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toFloat() / 100);
-  dimmerO2.setDutyCycleMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toFloat() / 100);
-  dimmerO2.setDutyCycleLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toFloat() / 100);
-  if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER))
-    dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt());
-
   // Electricity: Relays
   if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY))
     bypassRelayO1.begin(config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), config.get(KEY_OUTPUT1_RELAY_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
@@ -209,4 +192,9 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   ESPConnect.setAutoRestart(true);
   ESPConnect.setBlocking(false);
   ESPConnect.begin(webServer, Mycila::AppInfo.defaultHostname, Mycila::AppInfo.defaultSSID, config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
+
+  // ZCD + Dimmers
+  zcdTask.forceRun();
+  dimmer1Task.forceRun();
+  dimmer2Task.forceRun();
 });

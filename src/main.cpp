@@ -15,6 +15,7 @@ Mycila::JSY jsy;
 Mycila::Logger logger;
 Mycila::MQTT mqtt;
 Mycila::PID pidController;
+Mycila::PulseAnalyzer pulseAnalyzer;
 Mycila::PZEM pzemO1;
 Mycila::PZEM pzemO2;
 Mycila::Relay bypassRelayO1;
@@ -33,8 +34,8 @@ Mycila::TaskManager routingTaskManager("y-router");
 
 Mycila::Router router(pidController, jsy);
 
-Mycila::Dimmer dimmerO1(zcd);
-Mycila::Dimmer dimmerO2(zcd);
+Mycila::Dimmer dimmerO1;
+Mycila::Dimmer dimmerO2;
 
 Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1, pzemO1);
 Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, pzemO2);
@@ -42,9 +43,9 @@ Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, pzemO2);
 Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);
 
+AsyncUDP udp;
 Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 
-AsyncUDP udp;
 AsyncWebServer webServer(80);
 AsyncWebSocket wsDebugPID("/ws/pid/csv");
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);

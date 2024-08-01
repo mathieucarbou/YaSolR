@@ -188,9 +188,9 @@
 #define YASOLR_LBL_182 "Topic MQTT pour la température sortie 2"
 #define YASOLR_LBL_183 "Redéfinition Min/Max Variateur Sortie 1"
 #define YASOLR_LBL_184 "Redéfinition Min/Max Variateur Sortie 2"
-#define YASOLR_LBL_185 "Période des Zero-Cross"
+#define YASOLR_LBL_185 "ZCD: Période des pulses"
 #define YASOLR_LBL_186 "Détection valeur résistances"
-#define YASOLR_LBL_187
+#define YASOLR_LBL_187 "ZCD: Longueur des pulses"
 #define YASOLR_LBL_188
 #define YASOLR_LBL_189
 #define YASOLR_LBL_190

@@ -86,6 +86,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       ds18O1.toJson(routerJson["router"]["output1"]["ds18"].to<JsonObject>());
       ds18O2.toJson(routerJson["router"]["output2"]["ds18"].to<JsonObject>());
       zcd.toJson(routerJson["zcd"].to<JsonObject>());
+      pulseAnalyzer.toJson(routerJson["zcd"]["stats"].to<JsonObject>());
 
       JsonObject systemJson = root["system"].to<JsonObject>();
       systemInfoToJson(systemJson);

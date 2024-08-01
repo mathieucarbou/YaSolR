@@ -19,19 +19,9 @@ namespace Mycila {
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
 
-      // in microseconds
-      // 50Hz => 10000
-      // 60Hz => 8333
-      uint16_t getNominalSemiPeriod() const;
-
-      // Zero-Cross pulse information
-      uint32_t getPulsePeriod() const;
-
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         root["enabled"] = isEnabled();
-        root["nominal_semiperiod_us"] = getNominalSemiPeriod();
-        root["pulse_period_us"] = getPulsePeriod();
       }
 #endif
 
