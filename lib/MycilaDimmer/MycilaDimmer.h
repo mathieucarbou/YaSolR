@@ -8,8 +8,9 @@
   #include <ArduinoJson.h>
 #endif
 
-#include <esp32-hal-gpio.h>
-#include <thyristor.h>
+#include <driver/gptimer_types.h>
+#include <hal/gpio_types.h>
+#include <stddef.h>
 
 /**
  * Optional resolution, 15bits max
@@ -195,6 +196,15 @@ namespace Mycila {
 
       uint16_t _lookupPhaseDelay(float dutyCycle);
 
-      Thyristor* _dimmer = nullptr;
+      static Dimmer* _dimmers[MYCILA_DIMMER_MAX_COUNT];
+      static size_t _dimmerCount;
+      static portMUX_TYPE _spinlock;
+      static gptimer_handle_t _fireTimer;
+
+      static bool _registerDimmer(Dimmer* dimmer);
+      static void _unregisterDimmer(Dimmer* dimmer);
+
+      // Timer ISR to be called as soon as a dimmer needs to be fired
+      static bool _fireTimerISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* event, void* arg);
   };
 } // namespace Mycila
