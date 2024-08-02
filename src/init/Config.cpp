@@ -4,8 +4,6 @@
  */
 #include <YaSolR.h>
 
-#include <thyristor.h>
-
 Mycila::Task initConfigTask("Init Config", [](void* params) {
   logger.warn(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
@@ -189,7 +187,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD).c_str(), {config.get(KEY_WIFI_SSID).c_str(), config.get(KEY_WIFI_PASSWORD).c_str(), config.getBool(KEY_ENABLE_AP_MODE)});
 
   // ZCD + Dimmers
-  pulseAnalyzer.onZeroCross(Thyristor::zero_cross_int);
+  pulseAnalyzer.onZeroCross(Mycila::Dimmer::onZeroCross);
   dimmerO1.setDutyCycleMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toFloat() / 100);
   dimmerO1.setDutyCycleMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toFloat() / 100);
   dimmerO1.setDutyCycleLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toFloat() / 100);

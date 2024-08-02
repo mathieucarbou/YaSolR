@@ -8,8 +8,9 @@
   #include <ArduinoJson.h>
 #endif
 
-#include <esp32-hal-gpio.h>
-#include <thyristor.h>
+#include <driver/gptimer_types.h>
+#include <hal/gpio_types.h>
+#include <stddef.h>
 
 /**
  * Optional resolution, 15bits max
@@ -170,6 +171,8 @@ namespace Mycila {
        */
       float getPhaseAngle() const { return _delay >= _semiPeriod ? PI : PI * _delay / _semiPeriod; }
 
+      static void onZeroCross(void* args);
+
     private:
       bool _enabled = false;
       gpio_num_t _pin = GPIO_NUM_NC;
@@ -182,6 +185,13 @@ namespace Mycila {
 
       uint32_t _lookupPhaseDelay(float dutyCycle);
 
-      Thyristor* _dimmer = nullptr;
+      static volatile Dimmer* _dimmers[MYCILA_DIMMER_MAX_COUNT];
+      static size_t _dimmerCount;
+      static portMUX_TYPE _spinlock;
+      static gptimer_handle_t _fireTimer;
+
+      static bool _registerDimmer(Dimmer* dimmer);
+      static void _unregisterDimmer(Dimmer* dimmer);
+      static bool _fireTimerISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* event, void* arg);
   };
 } // namespace Mycila
