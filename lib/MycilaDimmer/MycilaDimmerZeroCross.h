@@ -5,7 +5,7 @@
 #pragma once
 
 #include "MycilaDimmer.h"
-#include <thyristor.h>
+#include <driver/gptimer_types.h>
 
 namespace Mycila {
   class ZeroCrossDimmer : public Dimmer {
@@ -56,6 +56,16 @@ namespace Mycila {
 
     private:
       gpio_num_t _pin = GPIO_NUM_NC;
-      Thyristor* _dimmer = nullptr;
+
+      static ZeroCrossDimmer* _dimmers[2];
+      static size_t _dimmerCount;
+      static portMUX_TYPE _spinlock;
+      static gptimer_handle_t _fireTimer;
+
+      static bool _registerDimmer(ZeroCrossDimmer* dimmer);
+      static void _unregisterDimmer(ZeroCrossDimmer* dimmer);
+
+      // Timer ISR to be called as soon as a dimmer needs to be fired
+      static bool _fireTimerISR(gptimer_handle_t timer, const gptimer_alarm_event_data_t* event, void* arg);
   };
 } // namespace Mycila

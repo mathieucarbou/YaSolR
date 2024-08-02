@@ -5,8 +5,6 @@
 #include <yasolr.h>
 #include <yasolr_dashboard.h>
 
-#include <thyristor.h>
-
 #include <string>
 
 Mycila::PID pidController;
@@ -279,18 +277,23 @@ void yasolr_configure_frequency() {
 
     // until we have our new dimmer impl... Only for ZC based dimmers...
     if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
-      if (Thyristor::getSemiPeriod()) {
-        // Thyristor already running, just update semi-period
-        LOGI(TAG, "Updating Thyristor semi-period");
-        Thyristor::setSemiPeriod(semiPeriod);
-      } else {
-        Thyristor::setSemiPeriod(semiPeriod);
-        LOGI(TAG, "Starting Thyristor");
-        Thyristor::begin();
-        if (dimmer1)
+      if (dimmer1) {
+        LOGI(TAG, "Updating Output 1 Dimmer semi-period");
+        dimmer1->setSemiPeriod(semiPeriod);
+        if (!dimmer1->isEnabled()) {
+          LOGI(TAG, "Starting Output 1 Dimmer");
+          dimmer1->begin();
           dimmer1->off();
-        if (dimmer2)
+        }
+      }
+      if (dimmer2) {
+        LOGI(TAG, "Updating Output 2 Dimmer semi-period");
+        dimmer2->setSemiPeriod(semiPeriod);
+        if (!dimmer2->isEnabled()) {
+          LOGI(TAG, "Starting Output 2 Dimmer");
+          dimmer2->begin();
           dimmer2->off();
+        }
       }
     }
 
