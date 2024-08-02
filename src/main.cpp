@@ -24,25 +24,31 @@ void setup() {
   yasolr_init_web_server();
   yasolr_init_network();
 
+  // DS18 first since we need to wait and loop
+  yasolr_configure_output1_ds18();
+  yasolr_configure_output2_ds18();
+  yasolr_configure_router_ds18();
+
+  // Dimmer second - need speed and not a lot of disk writes for ISR during their init
+  yasolr_configure_output1_dimmer();
+  yasolr_configure_output2_dimmer();
+
+  // PZEM and JSY are long to initialize and do not cause a lot of logs so they will not impact dimmer ISR
+  yasolr_configure_output1_pzem();
+  yasolr_configure_output2_pzem();
+  yasolr_configure_jsy();
+
+  yasolr_configure_output1_bypass_relay();
+  yasolr_configure_output2_bypass_relay();
+
   yasolr_configure_display();
   yasolr_configure_jsy_remote();
-  yasolr_configure_jsy();
   yasolr_configure_lights();
   yasolr_configure_mqtt();
   yasolr_configure_pid();
   yasolr_configure_relay1();
   yasolr_configure_relay2();
-  yasolr_configure_router_ds18();
   yasolr_configure_victron();
-
-  yasolr_configure_output1_bypass_relay();
-  yasolr_configure_output2_bypass_relay();
-  yasolr_configure_output1_pzem();
-  yasolr_configure_output2_pzem();
-  yasolr_configure_output1_ds18(); // must be before dimmer otherwise ISR will cause crash since ds18 initialization is time sensitive
-  yasolr_configure_output2_ds18();
-  yasolr_configure_output1_dimmer();
-  yasolr_configure_output2_dimmer();
 
   // STARTUP READY!
   yasolr_start_task_manager();

@@ -4,42 +4,34 @@
  */
 #include <yasolr.h>
 
+#define LOG_STREAM_FILE_SIZE 24 * 1024
+
 class LogStream : public Print {
   public:
-    LogStream(const char* path, size_t limit) : _path(path), _limit(limit) {
-      File file = LittleFS.open(_path, "r");
-      _logSize = file ? file.size() : 0;
+    LogStream() {
+      File file = LittleFS.open(YASOLR_LOG_FILE, "r");
+      _fileSize = file ? file.size() : 0;
       file.close();
-      if (_logSize >= _limit) {
-        _closed = true;
-      }
-    }
-
-    size_t write(const uint8_t* buffer, size_t size) override {
-      if (_closed)
-        return 0;
-      if (_logSize + size > _limit) {
-        _closed = true;
-        return 0;
-      }
-      File file = LittleFS.open(_path, "a");
-      if (!file)
-        return 0;
-      size_t written = file.write(buffer, size);
-      file.close();
-      _logSize += written;
-      return written;
     }
 
     size_t write(uint8_t c) override {
       return write(&c, 1);
     }
 
+    size_t write(const uint8_t* buffer, size_t size) override {
+      if (_fileSize > LOG_STREAM_FILE_SIZE)
+        return 0;
+      File file = LittleFS.open(YASOLR_LOG_FILE, "a");
+      if (!file)
+        return 0;
+      size_t written = file.write(buffer, size);
+      file.close();
+      _fileSize += written;
+      return written;
+    }
+
   private:
-    const char* _path;
-    const size_t _limit;
-    bool _closed = false;
-    size_t _logSize = 0;
+    size_t _fileSize = 0;
 };
 
 static Mycila::Task* loggingTask = nullptr;
@@ -92,7 +84,7 @@ void yasolr_configure_logging() {
       if (LittleFS.remove(YASOLR_LOG_FILE))
         LOGI(TAG, "Previous log file removed");
 
-      logStream = new LogStream(YASOLR_LOG_FILE, 24 * 1024);
+      logStream = new LogStream();
     }
 
     if (loggingTask == nullptr) {

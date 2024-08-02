@@ -5,8 +5,6 @@
 #include <yasolr.h>
 #include <yasolr_dashboard.h>
 
-#include <thyristor.h>
-
 #include <string>
 
 Mycila::PID pidController;
@@ -60,22 +58,6 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
         dimmer2->setSemiPeriod(semiPeriod);
       }
 
-      // ONLY for Thyristor lib
-      if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
-        if (Thyristor::getSemiPeriod()) {
-          LOGI(TAG, "Updating Thyristor semi-period");
-          Thyristor::setSemiPeriod(semiPeriod);
-        } else {
-          LOGI(TAG, "Starting Thyristor");
-          Thyristor::setSemiPeriod(semiPeriod);
-          Thyristor::begin();
-          if (dimmer1)
-            dimmer1->off();
-          if (dimmer2)
-            dimmer2->off();
-        }
-      }
-
       dashboardInitTask.resume();
     }
 
@@ -92,15 +74,6 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
         LOGI(TAG, "Pausing Output 2 Dimmer");
         dimmer2->setSemiPeriod(0);
         dimmer2->off();
-      }
-
-      // ONLY for Thyristor lib
-      if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
-        if (Thyristor::getSemiPeriod()) {
-          LOGI(TAG, "Pausing Thyristor");
-          Thyristor::setSemiPeriod(0);
-          Thyristor::end();
-        }
       }
 
       dashboardInitTask.resume();
