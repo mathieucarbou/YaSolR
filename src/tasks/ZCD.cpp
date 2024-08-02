@@ -4,8 +4,6 @@
  */
 #include <YaSolR.h>
 
-#include <thyristor.h>
-
 Mycila::Task zcdTask("ZCD", [](void* params) {
   const bool zcdSwitched = config.getBool(KEY_ENABLE_ZCD);
   const bool dimmer1Switched = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
@@ -28,8 +26,6 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
     pulseAnalyzer.end();
     dimmerO1.end();
     dimmerO2.end();
-    Thyristor::end();
-    Thyristor::setSemiPeriod(0);
     return;
   }
 
@@ -53,15 +49,9 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
 
   // => ZCD switch turned on + Pulse Analyzer online
 
-  if (!Thyristor::getSemiPeriod() || (dimmer1Switched && !dimmerO1.isEnabled()) || (dimmer2Switched && !dimmerO2.isEnabled())) {
+  if ((dimmer1Switched && !dimmerO1.isEnabled()) || (dimmer2Switched && !dimmerO2.isEnabled())) {
     float frequency = detectGridFrequency();
     uint16_t semiPeriod = 1000000 / 2 / frequency;
-
-    if (!Thyristor::getSemiPeriod()) {
-      logger.info(TAG, "Starting Thyristor with semi-period: %" PRIu16 " us", semiPeriod);
-      Thyristor::setSemiPeriod(semiPeriod);
-      Thyristor::begin();
-    }
 
     if (dimmer1Switched && !dimmerO1.isEnabled()) {
       dimmerO1.begin(config.getLong(KEY_PIN_OUTPUT1_DIMMER), semiPeriod);
