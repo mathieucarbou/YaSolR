@@ -29,11 +29,6 @@ void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
   Metrics Metrics;
   getMetrics(Metrics, voltage);
   toJson(root["metrics"].to<JsonObject>(), Metrics);
-
-  for (const auto& output : _outputs)
-    output->toJson(root[output->getName()].to<JsonObject>(), voltage);
-
-  _pidController->toJson(root["pid"].to<JsonObject>());
 }
 
 void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {

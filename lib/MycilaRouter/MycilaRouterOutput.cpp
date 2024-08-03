@@ -56,8 +56,6 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   root["state"] = getStateName();
   root["temperature"] = _temperature.orElse(0);
 
-  _dimmer->toJson(root["dimmer"].to<JsonObject>());
-
   Metrics outputMeasurements;
   getMeasurements(outputMeasurements);
   toJson(root["measurements"].to<JsonObject>(), outputMeasurements);
@@ -65,9 +63,6 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   Metrics dimmerMetrics;
   getDimmerMetrics(dimmerMetrics, gridVoltage);
   toJson(root["metrics"].to<JsonObject>(), dimmerMetrics);
-
-  _pzem->toJson(root["pzem"].to<JsonObject>());
-  _relay->toJson(root["relay"].to<JsonObject>());
 }
 
 void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics) {

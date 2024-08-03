@@ -30,7 +30,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  zcdTask.setInterval(1500 * Mycila::TaskDuration::MILLISECONDS);
+  zcdTask.setInterval(2000 * Mycila::TaskDuration::MILLISECONDS);
 
   // mqttTaskManager
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });

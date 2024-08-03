@@ -77,29 +77,47 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      JsonObject routerJson = root["router"].to<JsonObject>();
-      grid.toJson(routerJson["grid"].to<JsonObject>());
-      jsy.toJson(routerJson["jsy"].to<JsonObject>());
-      relay1.toJson(routerJson["relay1"].to<JsonObject>());
-      relay2.toJson(routerJson["relay2"].to<JsonObject>());
-      router.toJson(routerJson["router"].to<JsonObject>(), grid.getVoltage().value_or(0));
-      ds18O1.toJson(routerJson["router"]["output1"]["ds18"].to<JsonObject>());
-      ds18O2.toJson(routerJson["router"]["output2"]["ds18"].to<JsonObject>());
-      zcd.toJson(routerJson["zcd"].to<JsonObject>());
-      pulseAnalyzer.toJson(routerJson["zcd"]["stats"].to<JsonObject>());
-
-      JsonObject systemJson = root["system"].to<JsonObject>();
-      systemInfoToJson(systemJson);
-      ds18Sys.toJson(systemJson["ds18Sys"].to<JsonObject>());
-      lights.toJson(systemJson["leds"].to<JsonObject>());
-      Mycila::TaskMonitor.toJson(systemJson["stack"].to<JsonObject>());
-      pioTaskManager.toJson(systemJson[pioTaskManager.getName()].to<JsonObject>());
-      coreTaskManager.toJson(systemJson[coreTaskManager.getName()].to<JsonObject>());
-      routingTaskManager.toJson(systemJson[routingTaskManager.getName()].to<JsonObject>());
-      jsyTaskManager.toJson(systemJson[jsyTaskManager.getName()].to<JsonObject>());
-      pzemTaskManager.toJson(systemJson[pzemTaskManager.getName()].to<JsonObject>());
-      mqttTaskManager.toJson(systemJson[mqttTaskManager.getName()].to<JsonObject>());
-
+      // grid
+      grid.toJson(root["grid"].to<JsonObject>());
+      // measurements
+      jsy.toJson(root["jsy"].to<JsonObject>());
+      // zcd
+      zcd.toJson(root["zcd"].to<JsonObject>());
+      pulseAnalyzer.toJson(root["zcd_pulse_analyzer"].to<JsonObject>());
+      // pid
+      pidController.toJson(root["pid"].to<JsonObject>());
+      // router
+      float voltage = grid.getVoltage().value_or(0);
+      router.toJson(root["router"].to<JsonObject>(), voltage);
+      output1.toJson(root["output1"].to<JsonObject>(), voltage);
+      output2.toJson(root["output2"].to<JsonObject>(), voltage);
+      dimmerO1.toJson(root["output1"]["dimmer"].to<JsonObject>());
+      dimmerO2.toJson(root["output2"]["dimmer"].to<JsonObject>());
+      ds18O1.toJson(root["output1"]["ds18"].to<JsonObject>());
+      ds18O2.toJson(root["output2"]["ds18"].to<JsonObject>());
+      pzemO1.toJson(root["output1"]["pzem"].to<JsonObject>());
+      pzemO2.toJson(root["output2"]["pzem"].to<JsonObject>());
+      bypassRelayO1.toJson(root["output1"]["relay"].to<JsonObject>());
+      bypassRelayO2.toJson(root["output2"]["relay"].to<JsonObject>());
+      // relays
+      relay1.toJson(root["relay1"].to<JsonObject>());
+      relay2.toJson(root["relay2"].to<JsonObject>());
+      // ds18
+      ds18Sys.toJson(root["ds18_sys"].to<JsonObject>());
+      // leds
+      lights.toJson(root["leds"].to<JsonObject>());
+      // system
+      systemInfoToJson(root);
+      // stack
+      Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
+      // tasks
+      pioTaskManager.toJson(root["tasks"][pioTaskManager.getName()].to<JsonObject>());
+      coreTaskManager.toJson(root["tasks"][coreTaskManager.getName()].to<JsonObject>());
+      routingTaskManager.toJson(root["tasks"][routingTaskManager.getName()].to<JsonObject>());
+      jsyTaskManager.toJson(root["tasks"][jsyTaskManager.getName()].to<JsonObject>());
+      pzemTaskManager.toJson(root["tasks"][pzemTaskManager.getName()].to<JsonObject>());
+      mqttTaskManager.toJson(root["tasks"][mqttTaskManager.getName()].to<JsonObject>());
+      // config
       config.toJson(root["config"].to<JsonObject>());
 
       response->setLength();
