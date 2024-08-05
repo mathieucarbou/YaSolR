@@ -194,13 +194,13 @@ void YaSolR::WebsiteClass::initLayout() {
 
   _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
 
-  _energyReset.attachCallback([](int32_t value) {
+  _energyReset.attachCallback([]() {
     jsy.resetEnergy();
     pzemO1.resetEnergy();
     pzemO2.resetEnergy();
   });
-  _reset.attachCallback([](int32_t value) { resetTask.resume(); });
-  _restart.attachCallback([](int32_t value) { restartTask.resume(); });
+  _reset.attachCallback([]() { resetTask.resume(); });
+  _restart.attachCallback([]() { restartTask.resume(); });
 
   // network (config)
 
@@ -409,7 +409,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _pidDTermHistory.setTab(&_pidTab);
   _pidReset.setTab(&_pidTab);
 
-  _pidReset.attachCallback([this](int32_t value) {
+  _pidReset.attachCallback([this]() {
     resetPID();
     updatePID();
   });
