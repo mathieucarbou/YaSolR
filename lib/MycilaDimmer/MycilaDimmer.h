@@ -17,16 +17,16 @@
 namespace Mycila {
   class Dimmer {
     public:
-      ~Dimmer() { end(); }
+      ~Dimmer() { endDimmer(); }
 
-      void begin(const int8_t pin, const uint16_t semiPeriod);
-      void end();
+      void beginDimmer(const int8_t pin, const uint16_t semiPeriod);
+      void endDimmer();
 
       gpio_num_t getPin() const { return _pin; }
-      bool isEnabled() const { return _dimmer != nullptr; }
+      bool isDimmerEnabled() const { return _dimmer != nullptr; }
 
 #ifdef MYCILA_JSON_SUPPORT
-      void toJson(const JsonObject& root) const {
+      void dimmerToJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
         root["enabled"] = _dimmer != nullptr;
         root["state"] = isOn() ? "on" : "off";
@@ -70,7 +70,7 @@ namespace Mycila {
       // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
       // At 0% power, delay is equal to the semi-period
       // At 100% power, the delay is 0 us
-      uint16_t getFiringDelay() const { return isEnabled() ? _dimmer->getDelay() : _semiPeriod; }
+      uint16_t getFiringDelay() const { return isDimmerEnabled() ? _dimmer->getDelay() : _semiPeriod; }
 
       // Phase angle [0, PI] rad
       // At 0% power, the phase angle is equal to PI

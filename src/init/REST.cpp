@@ -77,39 +77,37 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      // grid
       grid.toJson(root["grid"].to<JsonObject>());
-      // measurements
       jsy.toJson(root["jsy"].to<JsonObject>());
-      // zcd
-      zcd.toJson(root["zcd"].to<JsonObject>());
+      zcd.zcdToJson(root["zcd"].to<JsonObject>());
       pulseAnalyzer.toJson(root["zcd_pulse_analyzer"].to<JsonObject>());
-      // pid
       pidController.toJson(root["pid"].to<JsonObject>());
+
       // router
       float voltage = grid.getVoltage().value_or(0);
       router.toJson(root["router"].to<JsonObject>(), voltage);
       output1.toJson(root["output1"].to<JsonObject>(), voltage);
       output2.toJson(root["output2"].to<JsonObject>(), voltage);
-      dimmerO1.toJson(root["output1"]["dimmer"].to<JsonObject>());
-      dimmerO2.toJson(root["output2"]["dimmer"].to<JsonObject>());
+      dimmerO1.dimmerToJson(root["output1"]["dimmer"].to<JsonObject>());
+      dimmerO2.dimmerToJson(root["output2"]["dimmer"].to<JsonObject>());
       ds18O1.toJson(root["output1"]["ds18"].to<JsonObject>());
       ds18O2.toJson(root["output2"]["ds18"].to<JsonObject>());
       pzemO1.toJson(root["output1"]["pzem"].to<JsonObject>());
       pzemO2.toJson(root["output2"]["pzem"].to<JsonObject>());
       bypassRelayO1.toJson(root["output1"]["relay"].to<JsonObject>());
       bypassRelayO2.toJson(root["output2"]["relay"].to<JsonObject>());
+
       // relays
       relay1.toJson(root["relay1"].to<JsonObject>());
       relay2.toJson(root["relay2"].to<JsonObject>());
-      // ds18
-      ds18Sys.toJson(root["ds18_sys"].to<JsonObject>());
-      // leds
-      lights.toJson(root["leds"].to<JsonObject>());
-      // system
+
       systemInfoToJson(root);
+      ds18Sys.toJson(root["ds18_sys"].to<JsonObject>());
+      lights.toJson(root["leds"].to<JsonObject>());
+
       // stack
       Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
+
       // tasks
       pioTaskManager.toJson(root["tasks"][pioTaskManager.getName()].to<JsonObject>());
       coreTaskManager.toJson(root["tasks"][coreTaskManager.getName()].to<JsonObject>());
@@ -117,6 +115,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       jsyTaskManager.toJson(root["tasks"][jsyTaskManager.getName()].to<JsonObject>());
       pzemTaskManager.toJson(root["tasks"][pzemTaskManager.getName()].to<JsonObject>());
       mqttTaskManager.toJson(root["tasks"][mqttTaskManager.getName()].to<JsonObject>());
+
       // config
       config.toJson(root["config"].to<JsonObject>());
 

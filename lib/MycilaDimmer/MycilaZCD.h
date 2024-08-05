@@ -22,7 +22,7 @@ namespace Mycila {
       uint16_t getSemiPeriod() const;
 
 #ifdef MYCILA_JSON_SUPPORT
-      void toJson(const JsonObject& root) const {
+      void zcdToJson(const JsonObject& root) const {
         root["enabled"] = isEnabled();
       }
 #endif

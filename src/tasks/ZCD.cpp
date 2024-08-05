@@ -4,7 +4,7 @@
  */
 #include <YaSolR.h>
 
-static uint16_t findBestSemiPeriod() {
+static uint32_t findBestSemiPeriod() {
   uint8_t frequency = 0;
 
   // first get frequency from the measurement tools
@@ -27,19 +27,20 @@ static uint16_t findBestSemiPeriod() {
   // if a frequency is found, we return its semi-period
 
   if (frequency) {
-    logger.debug(TAG, "Semi-period detected from a measurement device: %" PRIu16 " us", static_cast<uint16_t>(1000000 / 2 / frequency));
+    logger.debug(TAG, "Semi-period detected from a measurement device: %" PRIu32 " us", static_cast<uint32_t>(1000000 / 2 / frequency));
     return 1000000 / 2 / frequency;
   }
 
   // otherwise use auto-detection
-  logger.debug(TAG, "Semi-period detected from pulse analyzer: %" PRIu16 " us", static_cast<uint16_t>(pulseAnalyzer.getPeriod()));
+  logger.debug(TAG, "Semi-period detected from pulse analyzer: %" PRIu32 " us", pulseAnalyzer.getPeriod());
   return pulseAnalyzer.getPeriod();
 }
 
 Mycila::Task zcdTask("ZCD", [](void* params) {
   const bool zcdSwitchedOn = config.getBool(KEY_ENABLE_ZCD);
   const Mycila::PulseAnalyzer::State analyzerState = pulseAnalyzer.getState();
-  uint16_t semiPeriod = 0;
+  uint32_t semiPeriod = 0;
+  uint32_t delay = 0;
 
   // if the user is asking to disable ZCD, and it is starting or running, we stop it
   if (!zcdSwitchedOn) {
@@ -52,8 +53,8 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
   }
 
   switch (analyzerState) {
-    //  ZCD switched on, and no analysis is in progress, we start a new one if ZCD is not enabled yet
-    // Otherwise if ZCD switch is on and ZCd is enabled, system is running and we do nothing
+    // ZCD switched on, and no analysis is in progress, we start a new one if ZCD is not enabled yet
+    // Otherwise if ZCD switch is on and ZCD is enabled, system is running and we do nothing
     case Mycila::PulseAnalyzer::State::IDLE:
       if (!zcd.isEnabled()) {
         logger.info(TAG, "ZCD enabled, starting PulseAnalyzer");
@@ -70,11 +71,19 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
       logger.info(TAG, "PulseAnalyzer analysis finished, starting ZCD");
       pulseAnalyzer.analyze();
       pulseAnalyzer.end();
+
       semiPeriod = findBestSemiPeriod();
       if (!semiPeriod) {
         logger.error(TAG, "Cannot start ZCD and Dimmers: unable to determine semi-period");
         return;
       }
+
+      delay = pulseAnalyzer.getLength();
+      // Support BM1Z102FJ chip where the pulse length will be detected as the semi-period
+      if (delay > semiPeriod * 8 / 10 && delay < semiPeriod * 12 / 10) {
+        delay = 0;
+      }
+
       zcd.begin(config.get(KEY_PIN_ZCD).toInt(), semiPeriod);
       if (zcd.isEnabled()) {
         logger.info(TAG, "ZCD started");

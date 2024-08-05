@@ -38,7 +38,7 @@ const char* Mycila::RouterOutput::getStateName() const { return StateNames[stati
 // output
 
 Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
-  if (!_dimmer->isEnabled() && !_relay->isEnabled())
+  if (!_dimmer->isDimmerEnabled() && !_relay->isEnabled())
     return State::OUTPUT_DISABLED;
   if (_autoBypassEnabled)
     return State::OUTPUT_BYPASS_AUTO;
@@ -81,7 +81,7 @@ void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics
 // dimmer
 
 bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
-  if (!_dimmer->isEnabled()) {
+  if (!_dimmer->isDimmerEnabled()) {
     LOGW(TAG, "Dimmer '%s' is disabled", _name);
     return false;
   }
@@ -127,7 +127,7 @@ void Mycila::RouterOutput::applyTemperatureLimit() {
 }
 
 float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerToDivert) {
-  if (!_dimmer->isEnabled() || _autoBypassEnabled || !config.autoDimmer || config.calibratedResistance <= 0 || isDimmerTemperatureLimitReached()) {
+  if (!_dimmer->isDimmerEnabled() || _autoBypassEnabled || !config.autoDimmer || config.calibratedResistance <= 0 || isDimmerTemperatureLimitReached()) {
     _dimmer->off();
     return 0;
   }
@@ -171,7 +171,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
   // dimmer & relay checks
 
-  if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
+  if (!_relay->isEnabled() && !_dimmer->isDimmerEnabled()) {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Relay and dimmer disabled: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
@@ -252,7 +252,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
   // time and temp OK, let's start
   if (!_autoBypassEnabled) {
     // auto bypass is not enabled, let's start it
-    if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
+    if (!_relay->isEnabled() && !_dimmer->isDimmerEnabled()) {
       return;
     }
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
@@ -329,7 +329,7 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
 
     } else {
       // we don't have a relay: use the dimmer
-      if (_dimmer->isEnabled()) {
+      if (_dimmer->isDimmerEnabled()) {
         if (log)
           LOGD(TAG, "Turning Dimmer '%s' ON", _name);
         _dimmer->on();
