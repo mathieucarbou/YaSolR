@@ -71,13 +71,13 @@ void Mycila::Router::getMeasurements(Metrics& metrics) const {
   metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
   for (const auto& output : _outputs) {
     if (output->getState() == RouterOutput::State::OUTPUT_ROUTING) {
-      metrics.apparentPower = _jsy->getApparentPower1();
-      metrics.current = _jsy->getCurrent1();
-      metrics.dimmedVoltage = _jsy->getDimmedVoltage1();
-      metrics.power = _jsy->getPower1();
-      metrics.powerFactor = _jsy->getPowerFactor1();
-      metrics.resistance = _jsy->getResistance1();
-      metrics.thdi = _jsy->getTHDi1(0);
+      metrics.apparentPower = abs(_jsy->getApparentPower1());
+      metrics.current = abs(_jsy->getCurrent1());
+      metrics.dimmedVoltage = abs(_jsy->getDimmedVoltage1());
+      metrics.power = abs(_jsy->getPower1());
+      metrics.powerFactor = abs(_jsy->getPowerFactor1());
+      metrics.resistance = abs(_jsy->getResistance1());
+      metrics.thdi = abs(_jsy->getTHDi1(0));
       break;
     }
   }

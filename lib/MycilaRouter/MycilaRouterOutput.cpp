@@ -301,13 +301,13 @@ bool Mycila::RouterOutput::getMeasurements(Metrics& metrics) const {
   metrics.voltage = _pzem->getVoltage();
   metrics.energy = _pzem->getEnergy();
   if (getState() == State::OUTPUT_ROUTING) {
-    metrics.apparentPower = _pzem->getApparentPower();
-    metrics.current = _pzem->getCurrent();
-    metrics.dimmedVoltage = _pzem->getDimmedVoltage();
-    metrics.power = _pzem->getPower();
-    metrics.powerFactor = _pzem->getPowerFactor();
-    metrics.resistance = _pzem->getResistance();
-    metrics.thdi = _pzem->getTHDi(0);
+    metrics.apparentPower = abs(_pzem->getApparentPower());
+    metrics.current = abs(_pzem->getCurrent());
+    metrics.dimmedVoltage = abs(_pzem->getDimmedVoltage());
+    metrics.power = abs(_pzem->getPower());
+    metrics.powerFactor = abs(_pzem->getPowerFactor());
+    metrics.resistance = abs(_pzem->getResistance());
+    metrics.thdi = abs(_pzem->getTHDi(0));
   }
   return true;
 }
