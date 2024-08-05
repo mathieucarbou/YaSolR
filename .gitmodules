@@ -1,0 +1,12 @@
+[submodule "lib/ElegantOTAPro"]
+	path = lib/ElegantOTAPro
+	url = git@github.com:mathieucarbou/ElegantOTA-Pro.git
+	branch = yasolr
+[submodule "lib/WebSerialPro"]
+	path = lib/WebSerialPro
+	url = git@github.com:mathieucarbou/WebSerial-Pro.git
+	branch = yasolr
+[submodule "lib/ESPDASHPro"]
+	path = lib/ESPDASHPro
+	url = git@github.com:mathieucarbou/ESP-DASH-Pro.git
+	branch = yasolr
