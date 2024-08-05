@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-name: Build YaSolR OSS
+name: Build YaSolR
 
 on:
   workflow_dispatch:
@@ -19,7 +19,6 @@ concurrency:
 
 jobs:
   pio_envs:
-    if: ${{ github.repository != 'mathieucarbou/YaSolR' }}
     name: Get PlatformIO Envs
     runs-on: ubuntu-latest
     steps:
@@ -49,6 +48,9 @@ jobs:
           echo "pio_name=$(pio project config --json-output | jq -cr '.[0][1][0][1]')" >> $GITHUB_OUTPUT
           echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-") and (contains("-debug")|not)) | .[4:] ]')" >> $GITHUB_OUTPUT
           # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-")) | .[4:] ]')" >> $GITHUB_OUTPUT
+          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
+          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-") or startswith("env:trial-") or startswith("env:oss-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
+          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-") or startswith("env:trial-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
 
     outputs:
       pio_name: ${{ steps.envs.outputs.pio_name }}
