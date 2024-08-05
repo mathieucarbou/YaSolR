@@ -35,7 +35,7 @@ Of course the accuracy is as good as the grid remains a perfect sine wave.
 phase = (powf(1 - duty, 0.31338) - powf(duty, 0.31338) + 1) / 2
 
 -----------------------------------------------------------------------------
-https://github.com/mathieucarbou/YaSolR-OSS/discussions/21#discussion-6435999
+https://github.com/mathieucarbou/YaSolR/discussions/21#discussion-6435999
 -----------------------------------------------------------------------------
 
 One thing I don't like is that the duty level is only 8 bits.
@@ -86,7 +86,7 @@ The lookup is interpolated without FPU.
 The error is under 0.001 compared to the ideal model.
 
 -----------------------------------------------------------------------------
-https://github.com/mathieucarbou/YaSolR-OSS/issues/18#issuecomment-2023988139
+https://github.com/mathieucarbou/YaSolR/issues/18#issuecomment-2023988139
 -----------------------------------------------------------------------------
 
 The JSY should be plugged on main voltage, not after the dimmer.
@@ -113,7 +113,7 @@ I use the MCPWM module of the ESP32 to drive a MOC3023 and BTA24-600CWRG . It's 
 I use the same kind of ZCD circuit you are mentioning but with modifications. I replaced the 1nF capacitor in front of the bridge rectifier by a 10nF to reduce the delay of the zero crossing. I also added a 10nF in parallel of the diode and reduced the 1k resistor to 330ohms to improve the triggering edge.
 
 -----------------------------------------------------------------------------
-https://github.com/mathieucarbou/YaSolR-OSS/issues/18#issuecomment-2177785644
+https://github.com/mathieucarbou/YaSolR/issues/18#issuecomment-2177785644
 -----------------------------------------------------------------------------
 
 I simply use the PID coefficients without the timing and integral.
