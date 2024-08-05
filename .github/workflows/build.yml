@@ -48,9 +48,6 @@ jobs:
           echo "pio_name=$(pio project config --json-output | jq -cr '.[0][1][0][1]')" >> $GITHUB_OUTPUT
           echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-") and (contains("-debug")|not)) | .[4:] ]')" >> $GITHUB_OUTPUT
           # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-")) | .[4:] ]')" >> $GITHUB_OUTPUT
-          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
-          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-") or startswith("env:trial-") or startswith("env:oss-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
-          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-") or startswith("env:trial-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
 
     outputs:
       pio_name: ${{ steps.envs.outputs.pio_name }}
@@ -70,20 +67,6 @@ jobs:
       - name: Get Tags
         run: git fetch --force --tags origin
 
-      - name: Remove Pro Content
-        if: ${{ startsWith(matrix.environment, 'oss-') }}
-        run: |
-          rm -f -r -v \
-            lib/ElegantOTAPro \
-            lib/ESPDASHPro \
-            lib/WebSerialPro
-
-      - name: Remove OSS Content
-        if: ${{ startsWith(matrix.environment, 'pro-') }}
-        run: |
-          rm -f -r -v \
-            lib/ESPDASH
-
       - name: Cache PlatformIO
         uses: actions/cache@v4
         with:
@@ -93,24 +76,9 @@ jobs:
             ~/.platformio
 
       - name: Cache PlatformIO Dependencies (OSS)
-        if: ${{ startsWith(matrix.environment, 'oss-') }}
         uses: actions/cache@v4
         with:
           key: ${{ runner.os }}-pio-oss-${{ matrix.environment }}
-          path: .pio
-
-      - name: Cache PlatformIO Dependencies (Pro)
-        if: ${{ startsWith(matrix.environment, 'pro-') }}
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-pio-pro-${{ matrix.environment }}
-          path: .pio
-
-      - name: Cache PlatformIO Dependencies (Trial)
-        if: ${{ startsWith(matrix.environment, 'trial-') }}
-        uses: actions/cache@v4
-        with:
-          key: ${{ runner.os }}-pio-trial-${{ matrix.environment }}
           path: .pio
 
       - name: Python
