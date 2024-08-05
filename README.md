@@ -8,7 +8,7 @@
 [![Doc](https://img.shields.io/badge/Doc-html-green.svg)](https://yasolr.carbou.me/manual)
 [![Facebook Group](https://img.shields.io/badge/Facebook-group-blue.svg?logo=Facebook&logoColor=white)](https://www.facebook.com/groups/yasolr)
 
-[![Build](https://github.com/mathieucarbou/YaSolR-OSS/actions/workflows/build-oss.yml/badge.svg?branch=main)](https://github.com/mathieucarbou/YaSolR-OSS/actions/workflows/build-oss.yml)
+[![Build](https://github.com/mathieucarbou/YaSolR-OSS/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mathieucarbou/YaSolR-OSS/actions/workflows/build.yml)
 [![GitHub latest commit](https://badgen.net/github/last-commit/mathieucarbou/YaSolR-OSS)](https://GitHub.com/mathieucarbou/YaSolR-OSS/commit/)
 
 # Documentation

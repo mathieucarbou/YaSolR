@@ -1,25 +1,25 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-name: Build YaSolR-OSS
+name: Build YaSolR Pro
 
 on:
   workflow_dispatch:
   # schedule:
   #   - cron: "0 5 * * 1"
-  push:
-    tags: ["v*"]
-    branches: ["*"]
-    paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**"]
-  pull_request:
-    paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**"]
+  # push:
+  #   tags: ["v*"]
+  #   branches: ["*"]
+  #   paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**"]
+  # pull_request:
+  #   paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**"]
 
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+# concurrency:
+#   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+#   cancel-in-progress: true
 
 jobs:
   pio_envs:
-    if: ${{ github.repository != 'mathieucarbou/YaSolR' }}
+    if: ${{ github.repository == 'mathieucarbou/YaSolR' }}
     name: Get PlatformIO Envs
     runs-on: ubuntu-latest
     steps:
@@ -47,8 +47,9 @@ jobs:
         run: |
           rm -f platformio_override.ini
           echo "pio_name=$(pio project config --json-output | jq -cr '.[0][1][0][1]')" >> $GITHUB_OUTPUT
-          echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-") and (contains("-debug")|not)) | .[4:] ]')" >> $GITHUB_OUTPUT
-          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:oss-")) | .[4:] ]')" >> $GITHUB_OUTPUT
+          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
+          echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-") or startswith("env:trial-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
+          # echo "pio_default_envs=$(pio project config --json-output | jq -cr '[ .[][0] | select(startswith("env:pro-") or startswith("env:trial-") or startswith("env:oss-")) | select(contains("-debug")|not) | .[4:] ]')" >> $GITHUB_OUTPUT
 
     outputs:
       pio_name: ${{ steps.envs.outputs.pio_name }}
@@ -68,6 +69,20 @@ jobs:
       - name: Get Tags
         run: git fetch --force --tags origin
 
+      - name: Remove Pro Content
+        if: ${{ startsWith(matrix.environment, 'oss-') }}
+        run: |
+          rm -f -r -v \
+            lib/ElegantOTAPro \
+            lib/ESPDASHPro \
+            lib/WebSerialPro
+
+      - name: Remove OSS Content
+        if: ${{ startsWith(matrix.environment, 'pro-') }}
+        run: |
+          rm -f -r -v \
+            lib/ESPDASH
+
       - name: Cache PlatformIO
         uses: actions/cache@v4
         with:
@@ -75,6 +90,27 @@ jobs:
           path: |
             ~/.cache/pip
             ~/.platformio
+
+      - name: Cache PlatformIO Dependencies (OSS)
+        if: ${{ startsWith(matrix.environment, 'oss-') }}
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-pio-oss-${{ matrix.environment }}
+          path: .pio
+
+      - name: Cache PlatformIO Dependencies (Pro)
+        if: ${{ startsWith(matrix.environment, 'pro-') }}
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-pio-pro-${{ matrix.environment }}
+          path: .pio
+
+      - name: Cache PlatformIO Dependencies (Trial)
+        if: ${{ startsWith(matrix.environment, 'trial-') }}
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}-pio-trial-${{ matrix.environment }}
+          path: .pio
 
       - name: Python
         uses: actions/setup-python@v5
