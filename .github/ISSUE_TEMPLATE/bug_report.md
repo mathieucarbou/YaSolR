@@ -11,17 +11,21 @@ assignees: ''
 
 Which firmware file name and version you are using ?
 
-**Description**
-
-A clear and concise description of what the bug is.
-
 **Board**
 
-esp32dev, esp32s3, etc
+Which board are you using ? (exact make, model, flash size, etc)
 
 **Ethernet adapter used ?**
 
 If yes, please specify which one
+
+**hardware setup**
+
+Please describe your hardware setup and wiring schema (in simple words): do you have a PZEM, JSY, Shelly EM ? Do you use Random SSR, ZC SSR, relays ? etc.
+
+**Description**
+
+A clear and concise description of what the bug is.
 
 **Stack trace**
 
