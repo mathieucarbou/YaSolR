@@ -40,7 +40,6 @@ void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {
   dest["resistance"] = metrics.resistance;
   dest["thdi"] = metrics.thdi;
   dest["voltage"] = metrics.voltage;
-  dest["voltage_dimmed"] = metrics.dimmedVoltage;
 }
 #endif
 
@@ -58,7 +57,6 @@ void Mycila::Router::getMetrics(Metrics& metrics, float voltage) const {
   }
 
   metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
-  metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
   metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
   metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
 
@@ -67,18 +65,38 @@ void Mycila::Router::getMetrics(Metrics& metrics, float voltage) const {
 }
 
 void Mycila::Router::getMeasurements(Metrics& metrics) const {
-  metrics.voltage = _jsy->getVoltage1();
-  metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
-  for (const auto& output : _outputs) {
-    if (output->getState() == RouterOutput::State::OUTPUT_ROUTING) {
+  bool pzemAvailable = true;
+  bool routing = false;
+
+  // collect output measurements with PZEM
+  RouterOutput::Metrics outputMeasurements[_outputs.size()] = {};
+  for (size_t i = 0; i < _outputs.size(); i++) {
+    routing |= _outputs[i]->getState() == RouterOutput::State::OUTPUT_ROUTING;
+    pzemAvailable &= _outputs[i]->getMeasurements(outputMeasurements[i]);
+  }
+
+  if (pzemAvailable) {
+    for (size_t i = 0; i < _outputs.size(); i++) {
+      metrics.voltage = outputMeasurements[i].voltage;
+      metrics.energy += outputMeasurements[i].energy;
+      metrics.apparentPower += outputMeasurements[i].apparentPower;
+      metrics.current += outputMeasurements[i].current;
+      metrics.power += outputMeasurements[i].power;
+    }
+    metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
+    metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
+    metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
+
+  } else if (_jsy->isConnected()) {
+    metrics.voltage = _jsy->getVoltage1();
+    metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
+    if (routing) {
       metrics.apparentPower = abs(_jsy->getApparentPower1());
       metrics.current = abs(_jsy->getCurrent1());
-      metrics.dimmedVoltage = abs(_jsy->getDimmedVoltage1());
       metrics.power = abs(_jsy->getPower1());
       metrics.powerFactor = abs(_jsy->getPowerFactor1());
       metrics.resistance = abs(_jsy->getResistance1());
       metrics.thdi = abs(_jsy->getTHDi1(0));
-      break;
     }
   }
 }

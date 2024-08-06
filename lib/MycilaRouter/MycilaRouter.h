@@ -22,7 +22,6 @@ namespace Mycila {
       typedef struct {
           float apparentPower = 0;
           float current = 0;
-          float dimmedVoltage = 0;
           float energy = 0;
           float power = 0;
           float powerFactor = 0;
