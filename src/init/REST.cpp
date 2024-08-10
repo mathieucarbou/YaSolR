@@ -119,6 +119,29 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       // config
       config.toJson(root["config"].to<JsonObject>());
 
+      // libs versions
+      root["library"]["ArduinoJson"] = ARDUINOJSON_VERSION;
+      root["library"]["AsyncTCP"] = ASYNCTCP_VERSION;
+      root["library"]["CRC"] = CRC_LIB_VERSION;
+      root["library"]["ESPAsyncWebServer"] = ASYNCWEBSERVER_VERSION;
+      root["library"]["MycilaConfig"] = MYCILA_CONFIG_VERSION;
+      root["library"]["MycilaDS18"] = MYCILA_DS18_VERSION;
+      root["library"]["MycilaEasyDisplay"] = MYCILA_EASY_DISPLAY_VERSION;
+      root["library"]["MycilaESPConnect"] = ESPCONNECT_VERSION;
+      root["library"]["MycilaHADiscovery"] = MYCILA_HA_VERSION;
+      root["library"]["MycilaJSY"] = MYCILA_JSY_VERSION;
+      root["library"]["MycilaLogger"] = MYCILA_LOGGER_VERSION;
+      root["library"]["MycilaMQTT"] = MYCILA_MQTT_VERSION;
+      root["library"]["MycilaNTP"] = MYCILA_NTP_VERSION;
+      root["library"]["MycilaPulseAnalyzer"] = MYCILA_PULSE_VERSION;
+      root["library"]["MycilaPZEM004Tv3"] = MYCILA_PZEM_VERSION;
+      root["library"]["MycilaRelay"] = MYCILA_RELAY_VERSION;
+      root["library"]["MycilaSystem"] = MYCILA_SYSTEM_VERSION;
+      root["library"]["MycilaTaskManager"] = MYCILA_TASK_MANAGER_VERSION;
+      root["library"]["MycilaTaskMonitor"] = MYCILA_TASK_MONITOR_VERSION;
+      root["library"]["MycilaTrafficLight"] = MYCILA_TRAFFIC_LIGHT_VERSION;
+      root["library"]["MycilaUtilities"] = MYCILA_UTILITIES_VERSION;
+
       response->setLength();
       request->send(response);
     })
