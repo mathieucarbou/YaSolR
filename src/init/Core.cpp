@@ -58,17 +58,17 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
 
   // Task Monitor
   Mycila::TaskMonitor.begin();
-  // Mycila::TaskMonitor.addTask("arduino_events");            // Network
-  // Mycila::TaskMonitor.addTask("async_udp");                 // AsyncUDP
-  // Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT
-  // Mycila::TaskMonitor.addTask("wifi");                      // WiFI
-  Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP
-  Mycila::TaskMonitor.addTask(pioTaskManager.getName());    // YaSolR
-  Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
-  Mycila::TaskMonitor.addTask(mqttTaskManager.getName());   // YaSolR
+  // Mycila::TaskMonitor.addTask("arduino_events");            // Network (stack size cannot be set)
+  // Mycila::TaskMonitor.addTask("async_udp");                 // AsyncUDP (stack size cannot be set)
+  // Mycila::TaskMonitor.addTask("wifi");                      // WiFI (stack size cannot be set)
+  Mycila::TaskMonitor.addTask("mqtt_task");                  // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
+  Mycila::TaskMonitor.addTask("async_tcp");                  // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
+  Mycila::TaskMonitor.addTask(pioTaskManager.getName());     // YaSolR
+  Mycila::TaskMonitor.addTask(coreTaskManager.getName());    // YaSolR
+  Mycila::TaskMonitor.addTask(mqttTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(routingTaskManager.getName()); // YaSolR
-  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
-  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
+  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());     // YaSolR
+  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());    // YaSolR
 
   // HA
   haDiscovery.setPublisher([](const String& topic, const String& payload) {
