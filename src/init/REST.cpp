@@ -162,7 +162,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       "/api/config/restore",
       HTTP_POST,
       [](AsyncWebServerRequest* request) {
-        AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", "OK");
         if (!LittleFS.exists("/config.txt")) {
           return request->send(400, "text/plain", "No config.txt file uploaded");
         }
@@ -170,9 +169,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         const String data = cfg.readString();
         cfg.close();
         config.restore(data);
-        response->addHeader("Connection", "close");
-        response->addHeader("Access-Control-Allow-Origin", "*");
-        request->send(response);
+        request->send(200, "text/plain", "OK");
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
         if (!index)
@@ -196,8 +193,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
         logger.info(TAG, "Uploaded MQTT server certificate:\n%s", serverCertFile.readString().c_str());
         serverCertFile.close();
-        response->addHeader("Connection", "close");
-        response->addHeader("Access-Control-Allow-Origin", "*");
         request->send(response);
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
