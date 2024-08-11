@@ -16,3 +16,27 @@
 Please look at the manual in the website to know which firmware to download and flash.
 
 👉 Website: [https://yasolr.carbou.me/](https://yasolr.carbou.me/)
+
+# Downloads
+
+Please look at the release section to find the firmwares.
+
+👉 Releases: [https://github.com/mathieucarbou/YaSolR-Pro/releases](https://github.com/mathieucarbou/YaSolR-Pro/releases)
+
+**Make sure to download the firmware matching your board.**
+
+Firmware files are named as follow:
+
+- `YaSolR-<VERSION>-<MODEL>-<BOARD>-<LANG>.OTA.bin`: This firmware is used to update through the Web OTA interface
+- `YaSolR-<VERSION>-<MODEL>-<BOARD>-<LANG>.FACTORY.bin`: This firmware is used for a first ESP installation, or wen doing a factory reset through USB flashing
+
+Where:
+
+- `VERSION`: YaSolR version, or `main` for the latest development build
+- `MODEL`: `oss`, `pro`
+- `BOARD`: the board type
+- `LANG`: `en`, `fr`, ...
+
+Notes:
+
+- `*.elf` files are used to parse stack traces with [https://maximeborges.github.io/esp-stacktrace-decoder/](https://maximeborges.github.io/esp-stacktrace-decoder/). You do not have to use them.
