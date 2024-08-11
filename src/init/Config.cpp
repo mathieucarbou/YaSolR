@@ -174,7 +174,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // ElegantOTA
 #ifdef APP_MODEL_PRO
   ElegantOTA.setID(Mycila::AppInfo.firmware.c_str());
-  ElegantOTA.setTitle((Mycila::AppInfo.name + " Web Updater").c_str());
+  ElegantOTA.setTitle((Mycila::AppInfo.name + " OTA Updater").c_str());
   ElegantOTA.setFWVersion(Mycila::AppInfo.version.c_str());
   ElegantOTA.setFirmwareMode(true);
   ElegantOTA.setFilesystemMode(false);
