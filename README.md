@@ -21,7 +21,7 @@ Please look at the manual in the website to know which firmware to download and 
 
 Please look at the release section to find the firmwares.
 
-👉 Releases: [https://github.com/mathieucarbou/YaSolR-Pro/releases](https://github.com/mathieucarbou/YaSolR-Pro/releases)
+👉 Releases: [https://github.com/mathieucarbou/YaSolR/releases](https://github.com/mathieucarbou/YaSolR/releases)
 
 **Make sure to download the firmware matching your board.**
 
