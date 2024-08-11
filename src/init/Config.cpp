@@ -24,7 +24,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
   ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
-  ds18Task.setInterval(5 * Mycila::TaskDuration::SECONDS);
+  ds18Task.setInterval(8 * Mycila::TaskDuration::SECONDS);
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
