@@ -68,6 +68,10 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_MQTT_SERVER);
   config.configure(KEY_MQTT_TOPIC, Mycila::AppInfo.defaultMqttClientId);
   config.configure(KEY_MQTT_USERNAME, "homeassistant");
+  config.configure(KEY_NET_DNS);
+  config.configure(KEY_NET_GATEWAY);
+  config.configure(KEY_NET_IP);
+  config.configure(KEY_NET_SUBNET);
   config.configure(KEY_NTP_SERVER, "pool.ntp.org");
   config.configure(KEY_NTP_TIMEZONE, "Europe/Paris");
   config.configure(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS);

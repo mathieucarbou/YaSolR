@@ -191,10 +191,10 @@
 #define YASOLR_LBL_185 "ZCD: Période mesurée des pulses"
 #define YASOLR_LBL_186 "Détection valeur résistances"
 #define YASOLR_LBL_187 "ZCD: Longueur mesurée des pulses"
-#define YASOLR_LBL_188
-#define YASOLR_LBL_189
-#define YASOLR_LBL_190
-#define YASOLR_LBL_191
+#define YASOLR_LBL_188 "Adresse IP statique"
+#define YASOLR_LBL_189 "Masque de sous-réseau"
+#define YASOLR_LBL_190 "Passerelle"
+#define YASOLR_LBL_191 "Serveur DNS"
 #define YASOLR_LBL_192
 #define YASOLR_LBL_193
 #define YASOLR_LBL_194

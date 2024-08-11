@@ -199,6 +199,10 @@ namespace YaSolR {
       Card _ntpSync = Card(&dashboard, TIME_SYNC_CARD, YASOLR_LBL_091);
       Card _wifiSSID = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_092);
       Card _wifiPwd = Card(&dashboard, PASSWORD_CARD, YASOLR_LBL_093);
+      Card _staticIP = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_188);
+      Card _subnetMask = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_189);
+      Card _gateway = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_190);
+      Card _dnsServer = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_191);
       Card _apMode = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_094);
 
       Tab _mqttConfigTab = Tab(&dashboard, "\u2728 " YASOLR_LBL_095);

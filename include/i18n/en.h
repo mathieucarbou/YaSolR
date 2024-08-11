@@ -191,10 +191,10 @@
 #define YASOLR_LBL_031 "Relay: " YASOLR_LBL_070 " Bypass Relay Switch Count"
 #define YASOLR_LBL_032 "Relay: " YASOLR_LBL_074 " Switch Count"
 #define YASOLR_LBL_033 "Relay: " YASOLR_LBL_077 " Switch Count"
-#define YASOLR_LBL_188
-#define YASOLR_LBL_189
-#define YASOLR_LBL_190
-#define YASOLR_LBL_191
+#define YASOLR_LBL_188 "Static IP Address"
+#define YASOLR_LBL_189 "Subnet Mask"
+#define YASOLR_LBL_190 "Gateway"
+#define YASOLR_LBL_191 "DNS Server"
 #define YASOLR_LBL_192
 #define YASOLR_LBL_193
 #define YASOLR_LBL_194

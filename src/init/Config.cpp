@@ -189,6 +189,16 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Network Manager
+  Mycila::ESPConnect::IPConfig ipConfig;
+  if (!config.get(KEY_NET_IP).isEmpty())
+    ipConfig.ip.fromString(config.get(KEY_NET_IP));
+  if (!config.get(KEY_NET_GATEWAY).isEmpty())
+    ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
+  if (!config.get(KEY_NET_SUBNET).isEmpty())
+    ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));
+  if (!config.get(KEY_NET_DNS).isEmpty())
+    ipConfig.dns.fromString(config.get(KEY_NET_DNS));
+  espConnect.setIPConfig(ipConfig);
   espConnect.setAutoRestart(true);
   espConnect.setBlocking(false);
   espConnect.begin(Mycila::AppInfo.defaultHostname, Mycila::AppInfo.defaultSSID, config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});

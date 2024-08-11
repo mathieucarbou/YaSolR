@@ -211,6 +211,10 @@ void YaSolR::WebsiteClass::initLayout() {
   _ntpTimezone.setTab(&_networkConfigTab);
   _wifiPwd.setTab(&_networkConfigTab);
   _wifiSSID.setTab(&_networkConfigTab);
+  _staticIP.setTab(&_networkConfigTab);
+  _subnetMask.setTab(&_networkConfigTab);
+  _gateway.setTab(&_networkConfigTab);
+  _dnsServer.setTab(&_networkConfigTab);
 
   _boolConfig(_apMode, KEY_ENABLE_AP_MODE);
   _passwordConfig(_adminPwd, KEY_ADMIN_PASSWORD);
@@ -218,6 +222,10 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_ntpServer, KEY_NTP_SERVER);
   _textConfig(_ntpTimezone, KEY_NTP_TIMEZONE);
   _textConfig(_wifiSSID, KEY_WIFI_SSID);
+  _textConfig(_staticIP, KEY_NET_IP);
+  _textConfig(_subnetMask, KEY_NET_SUBNET);
+  _textConfig(_gateway, KEY_NET_GATEWAY);
+  _textConfig(_dnsServer, KEY_NET_DNS);
 
   _ntpSync.attachCallback([](const char* value) {
     const String str = String(value);
@@ -574,6 +582,10 @@ void YaSolR::WebsiteClass::initCards() {
   _ntpTimezone.update(config.get(KEY_NTP_TIMEZONE), "/timezones");
   _wifiPwd.update(config.get(KEY_WIFI_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
   _wifiSSID.update(config.get(KEY_WIFI_SSID));
+  _staticIP.update(config.get(KEY_NET_IP));
+  _subnetMask.update(config.get(KEY_NET_SUBNET));
+  _gateway.update(config.get(KEY_NET_GATEWAY));
+  _dnsServer.update(config.get(KEY_NET_DNS));
 
   // mqtt (config)
 
