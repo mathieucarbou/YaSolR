@@ -11,13 +11,20 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   Mycila::TaskManager::configureWDT(10, true);
 
   // coreTaskManager
+  calibrationTask.setManager(coreTaskManager);
+  carouselTask.setManager(coreTaskManager);
   dashboardTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
-  networkManagerTask.setManager(coreTaskManager);
-  networkConfigTask.setManager(coreTaskManager);
+  dimmer1Task.setManager(coreTaskManager);
+  dimmer2Task.setManager(coreTaskManager);
+  displayTask.setManager(coreTaskManager);
+  lightsTask.setManager(coreTaskManager);
   otaTask.setManager(coreTaskManager);
+  relayTask.setManager(coreTaskManager);
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);
+  routerTask.setManager(coreTaskManager);
+  zcdTask.setManager(coreTaskManager);
 #ifdef APP_MODEL_TRIAL
   trialTask.setManager(coreTaskManager);
 #endif
@@ -30,18 +37,11 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   mqttPublishConfigTask.setManager(mqttTaskManager);
 
   // pioTaskManager
-  calibrationTask.setManager(pioTaskManager);
-  carouselTask.setManager(pioTaskManager);
-  dimmer1Task.setManager(pioTaskManager);
-  dimmer2Task.setManager(pioTaskManager);
-  displayTask.setManager(pioTaskManager);
   ds18Task.setManager(pioTaskManager);
-  lightsTask.setManager(pioTaskManager);
+  networkManagerTask.setManager(pioTaskManager);
+  networkConfigTask.setManager(pioTaskManager);
   pzemO1PairingTask.setManager(pioTaskManager);
   pzemO2PairingTask.setManager(pioTaskManager);
-  relayTask.setManager(pioTaskManager);
-  routerTask.setManager(pioTaskManager);
-  zcdTask.setManager(pioTaskManager);
 
   // jsyTaskManager
   jsyTask.setManager(jsyTaskManager);

@@ -8,35 +8,36 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   logger.warn(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // coreTaskManager
-  dashboardTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
-  debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
-  debugTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
-#ifdef APP_MODEL_TRIAL
-  trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
-#endif
-
-  // pioTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
   carouselTask.setIntervalSupplier([]() { return config.get(KEY_DISPLAY_SPEED).toInt() * Mycila::TaskDuration::SECONDS; });
+  dashboardTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
+  debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
+  debugTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
-  ds18Task.setInterval(8 * Mycila::TaskDuration::SECONDS);
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
   zcdTask.setInterval(2000 * Mycila::TaskDuration::MILLISECONDS);
+#ifdef APP_MODEL_TRIAL
+  trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
+#endif
 
   // mqttTaskManager
-  mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
-  mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishTask.setIntervalSupplier([]() { return config.get(KEY_MQTT_PUBLISH_INTERVAL).toInt() * Mycila::TaskDuration::SECONDS; });
+  mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
+  mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
+
+  // pioTaskManager
+  ds18Task.setEnabledWhen([]() { return ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled(); });
+  ds18Task.setInterval(8 * Mycila::TaskDuration::SECONDS);
+  networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
 
   // jsyTaskManager
   jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
@@ -45,7 +46,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
 
   // routingTaskManager
-
   routingTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled()); });
 
   // Grid
