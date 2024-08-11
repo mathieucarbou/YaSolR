@@ -445,10 +445,10 @@ void YaSolR::WebsiteClass::initCards() {
   _firmwareBuildHash.set(Mycila::AppInfo.buildHash.c_str());
   _firmwareBuildTimestamp.set(Mycila::AppInfo.buildDate.c_str());
   _firmwareFilename.set(Mycila::AppInfo.firmware.c_str());
-  _networkAPMAC.set(ESPConnect.getMACAddress(ESPConnectMode::AP).c_str());
-  _networkEthMAC.set(ESPConnect.getMACAddress(ESPConnectMode::ETH).isEmpty() ? "N/A" : ESPConnect.getMACAddress(ESPConnectMode::ETH).c_str());
+  _networkAPMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP).c_str());
+  _networkEthMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).isEmpty() ? "N/A" : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).c_str());
   _networkHostname.set(Mycila::AppInfo.defaultHostname.c_str());
-  _networkWiFiMAC.set(ESPConnect.getMACAddress(ESPConnectMode::STA).c_str());
+  _networkWiFiMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA).c_str());
 
 #ifdef APP_MODEL_PRO
   const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY);
@@ -754,7 +754,7 @@ void YaSolR::WebsiteClass::updateCards() {
 
   // stats
   Mycila::SystemMemory memory = Mycila::System.getMemory();
-  ESPConnectMode mode = ESPConnect.getMode();
+  Mycila::ESPConnect::Mode mode = espConnect.getMode();
   _output1RelaySwitchCount.set(String(bypassRelayO1.getSwitchCount()).c_str());
   _output2RelaySwitchCount.set(String(bypassRelayO2.getSwitchCount()).c_str());
   _deviceHeapUsage.set((String(memory.usage) + " %").c_str());
@@ -762,13 +762,13 @@ void YaSolR::WebsiteClass::updateCards() {
   _gridEnergy.set((String(gridMetrics.energy, 3) + " kWh").c_str());
   _gridEnergyReturned.set((String(gridMetrics.energyReturned, 3) + " kWh").c_str());
   _gridFrequency.set((String(freq) + " Hz").c_str());
-  _networkAPIP.set(ESPConnect.getIPAddress(ESPConnectMode::AP).toString().c_str());
-  _networkEthIP.set(ESPConnect.getIPAddress(ESPConnectMode::ETH).toString().c_str());
-  _networkInterface.set(mode == ESPConnectMode::AP ? "AP" : (mode == ESPConnectMode::STA ? "WiFi" : (mode == ESPConnectMode::ETH ? "Ethernet" : "")));
-  _networkWiFiIP.set(ESPConnect.getIPAddress(ESPConnectMode::STA).toString().c_str());
-  _networkWiFiRSSI.set((String(ESPConnect.getWiFiRSSI()) + " dBm").c_str());
-  _networkWiFiSignal.set((String(ESPConnect.getWiFiSignalQuality()) + " %").c_str());
-  _networkWiFiSSID.set(ESPConnect.getWiFiSSID().c_str());
+  _networkAPIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::AP).toString().c_str());
+  _networkEthIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
+  _networkInterface.set(mode == Mycila::ESPConnect::Mode::AP ? "AP" : (mode == Mycila::ESPConnect::Mode::STA ? "WiFi" : (mode == Mycila::ESPConnect::Mode::ETH ? "Ethernet" : "")));
+  _networkWiFiIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
+  _networkWiFiRSSI.set((String(espConnect.getWiFiRSSI()) + " dBm").c_str());
+  _networkWiFiSignal.set((String(espConnect.getWiFiSignalQuality()) + " %").c_str());
+  _networkWiFiSSID.set(espConnect.getWiFiSSID().c_str());
   _relay1SwitchCount.set(String(relay1.getSwitchCount()).c_str());
   _relay2SwitchCount.set(String(relay2.getSwitchCount()).c_str());
   _udpMessageRateBuffer.set((String(udpMessageRateBuffer.rate()) + " msg/s").c_str());

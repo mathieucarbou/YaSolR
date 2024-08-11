@@ -60,9 +60,9 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
   mqtt.publish(baseTopic + "/system/firmware/filename", Mycila::AppInfo.firmware, true);
   yield();
 
-  mqtt.publish(baseTopic + "/system/network/eth/mac_address", ESPConnect.getMACAddress(ESPConnectMode::ETH), true);
-  mqtt.publish(baseTopic + "/system/network/hostname", ESPConnect.getHostname(), true);
-  mqtt.publish(baseTopic + "/system/network/wifi/mac_address", ESPConnect.getMACAddress(ESPConnectMode::STA), true);
+  mqtt.publish(baseTopic + "/system/network/eth/mac_address", espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH), true);
+  mqtt.publish(baseTopic + "/system/network/hostname", espConnect.getHostname(), true);
+  mqtt.publish(baseTopic + "/system/network/wifi/mac_address", espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA), true);
   yield();
 });
 
@@ -87,25 +87,25 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/system/device/uptime", String(Mycila::System.getUptime()));
   yield();
 
-  mqtt.publish(baseTopic + "/system/network/eth/ip_address", ESPConnect.getIPAddress(ESPConnectMode::ETH).toString());
-  mqtt.publish(baseTopic + "/system/network/ip_address", ESPConnect.getIPAddress().toString());
-  mqtt.publish(baseTopic + "/system/network/mac_address", ESPConnect.getMACAddress());
+  mqtt.publish(baseTopic + "/system/network/eth/ip_address", espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString());
+  mqtt.publish(baseTopic + "/system/network/ip_address", espConnect.getIPAddress().toString());
+  mqtt.publish(baseTopic + "/system/network/mac_address", espConnect.getMACAddress());
   mqtt.publish(baseTopic + "/system/network/ntp", YASOLR_STATE(Mycila::NTP.isSynced()));
-  mqtt.publish(baseTopic + "/system/network/wifi/bssid", ESPConnect.getWiFiBSSID());
-  mqtt.publish(baseTopic + "/system/network/wifi/ip_address", ESPConnect.getIPAddress(ESPConnectMode::STA).toString());
-  mqtt.publish(baseTopic + "/system/network/wifi/quality", String(ESPConnect.getWiFiSignalQuality()));
-  mqtt.publish(baseTopic + "/system/network/wifi/rssi", String(ESPConnect.getWiFiRSSI()));
-  mqtt.publish(baseTopic + "/system/network/wifi/ssid", ESPConnect.getWiFiSSID());
+  mqtt.publish(baseTopic + "/system/network/wifi/bssid", espConnect.getWiFiBSSID());
+  mqtt.publish(baseTopic + "/system/network/wifi/ip_address", espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString());
+  mqtt.publish(baseTopic + "/system/network/wifi/quality", String(espConnect.getWiFiSignalQuality()));
+  mqtt.publish(baseTopic + "/system/network/wifi/rssi", String(espConnect.getWiFiRSSI()));
+  mqtt.publish(baseTopic + "/system/network/wifi/ssid", espConnect.getWiFiSSID());
   yield();
 
-  switch (ESPConnect.getMode()) {
-    case ESPConnectMode::ETH:
+  switch (espConnect.getMode()) {
+    case Mycila::ESPConnect::Mode::ETH:
       mqtt.publish(baseTopic + "/system/network/mode", "eth");
       break;
-    case ESPConnectMode::STA:
+    case Mycila::ESPConnect::Mode::STA:
       mqtt.publish(baseTopic + "/system/network/mode", "wifi");
       break;
-    case ESPConnectMode::AP:
+    case Mycila::ESPConnect::Mode::AP:
       mqtt.publish(baseTopic + "/system/network/mode", "ap");
       break;
     default:

@@ -57,47 +57,47 @@ Mycila::Task displayTask("Display", [](void* params) {
 
   switch (kind) {
     case DisplayKind::DISPLAY_NETWORK: {
-      switch (ESPConnect.getState()) {
-        case ESPConnectState::AP_STARTING:
+      switch (espConnect.getState()) {
+        case Mycila::ESPConnect::State::AP_STARTING:
           display.home.printf("Starting Access Point\n");
           break;
-        case ESPConnectState::AP_STARTED:
-          display.home.printf("AP: %s17.17s\n", ESPConnect.getWiFiSSID().c_str());
+        case Mycila::ESPConnect::State::AP_STARTED:
+          display.home.printf("AP: %s17.17s\n", espConnect.getWiFiSSID().c_str());
           break;
-        case ESPConnectState::NETWORK_CONNECTING:
+        case Mycila::ESPConnect::State::NETWORK_CONNECTING:
           display.home.printf("Connecting...\n");
           break;
-        case ESPConnectState::NETWORK_CONNECTED:
-          display.home.printf("SSID: %15.15s\n", ESPConnect.getWiFiSSID().c_str());
+        case Mycila::ESPConnect::State::NETWORK_CONNECTED:
+          display.home.printf("SSID: %15.15s\n", espConnect.getWiFiSSID().c_str());
           break;
-        case ESPConnectState::NETWORK_TIMEOUT:
+        case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
           display.home.printf("Unable to connect!\n");
           break;
-        case ESPConnectState::NETWORK_DISCONNECTED:
+        case Mycila::ESPConnect::State::NETWORK_DISCONNECTED:
           display.home.printf("Disconnected!\n");
           break;
-        case ESPConnectState::NETWORK_RECONNECTING:
+        case Mycila::ESPConnect::State::NETWORK_RECONNECTING:
           display.home.printf("Reconnecting...\n");
           break;
-        case ESPConnectState::PORTAL_STARTING:
+        case Mycila::ESPConnect::State::PORTAL_STARTING:
           display.home.printf("Starting Portal...\n");
           break;
-        case ESPConnectState::PORTAL_STARTED:
-          display.home.printf("Portal: %13.13s\n", ESPConnect.getWiFiSSID().c_str());
+        case Mycila::ESPConnect::State::PORTAL_STARTED:
+          display.home.printf("Portal: %13.13s\n", espConnect.getWiFiSSID().c_str());
           break;
-        case ESPConnectState::PORTAL_COMPLETE:
+        case Mycila::ESPConnect::State::PORTAL_COMPLETE:
           display.home.printf("Network configured!\n");
           break;
-        case ESPConnectState::PORTAL_TIMEOUT:
+        case Mycila::ESPConnect::State::PORTAL_TIMEOUT:
           display.home.printf("Portal timeout\n");
           break;
         default:
           display.home.printf("Unknown network state\n");
           break;
       }
-      display.home.printf("IP:   %15.15s\n", ESPConnect.getIPAddress().toString().c_str());
+      display.home.printf("IP:   %15.15s\n", espConnect.getIPAddress().toString().c_str());
       display.home.printf("Host: %15.15s\n", Mycila::AppInfo.defaultHostname.c_str());
-      display.home.printf("MAC %s\n", ESPConnect.getMACAddress().c_str());
+      display.home.printf("MAC %s\n", espConnect.getMACAddress().c_str());
       break;
     }
 

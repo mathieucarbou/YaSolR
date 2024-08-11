@@ -49,6 +49,7 @@ Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 AsyncWebServer webServer(80);
 AsyncWebSocket wsDebugPID("/ws/pid/csv");
 ESPDash dashboard = ESPDash(&webServer, "/dashboard", false);
+Mycila::ESPConnect espConnect(webServer);
 
 void setup() {
   bootTask.forceRun();

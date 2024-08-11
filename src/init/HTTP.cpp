@@ -23,7 +23,7 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
   webServer.rewrite("/ota/logo/light", "/logo");
   webServer.rewrite("/wsl/logo/dark", "/logo");
   webServer.rewrite("/wsl/logo/light", "/logo");
-  webServer.rewrite("/", "/dashboard").setFilter([](AsyncWebServerRequest* request) { return ESPConnect.getState() != ESPConnectState::PORTAL_STARTED; });
+  webServer.rewrite("/", "/dashboard").setFilter([](AsyncWebServerRequest* request) { return espConnect.getState() != Mycila::ESPConnect::State::PORTAL_STARTED; });
 
   webServer.on("/logo-icon", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncWebServerResponse* response = request->beginResponse(200, "image/png", logo_icon_png_gz_start, logo_icon_png_gz_end - logo_icon_png_gz_start);

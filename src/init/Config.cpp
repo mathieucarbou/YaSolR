@@ -8,7 +8,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   logger.warn(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // coreTaskManager
-  dashboardTask.setEnabledWhen([]() { return ESPConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
   debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
   debugTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
@@ -110,7 +110,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     .version = Mycila::AppInfo.version,
     .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
     .manufacturer = Mycila::AppInfo.manufacturer,
-    .url = "http://" + ESPConnect.getIPAddress().toString(),
+    .url = "http://" + espConnect.getIPAddress().toString(),
   });
 
   // Lights
@@ -189,9 +189,9 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 #endif
 
   // Network Manager
-  ESPConnect.setAutoRestart(true);
-  ESPConnect.setBlocking(false);
-  ESPConnect.begin(webServer, Mycila::AppInfo.defaultHostname, Mycila::AppInfo.defaultSSID, config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
+  espConnect.setAutoRestart(true);
+  espConnect.setBlocking(false);
+  espConnect.begin(Mycila::AppInfo.defaultHostname, Mycila::AppInfo.defaultSSID, config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
 
   // ZCD + Dimmers
   zcdTask.forceRun();

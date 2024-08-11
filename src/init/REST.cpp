@@ -32,20 +32,20 @@ static void systemInfoToJson(JsonObject& root) {
   root["firmware"]["debug"] = Mycila::AppInfo.debug;
   root["firmware"]["filename"] = Mycila::AppInfo.firmware;
 
-  root["network"]["eth"]["ip_address"] = ESPConnect.getIPAddress(ESPConnectMode::ETH).toString();
-  root["network"]["eth"]["mac_address"] = ESPConnect.getMACAddress(ESPConnectMode::ETH);
+  root["network"]["eth"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString();
+  root["network"]["eth"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
 
-  root["network"]["hostname"] = ESPConnect.getHostname();
-  root["network"]["ip_address"] = ESPConnect.getIPAddress().toString();
-  root["network"]["mac_address"] = ESPConnect.getMACAddress();
-  switch (ESPConnect.getMode()) {
-    case ESPConnectMode::ETH:
+  root["network"]["hostname"] = espConnect.getHostname();
+  root["network"]["ip_address"] = espConnect.getIPAddress().toString();
+  root["network"]["mac_address"] = espConnect.getMACAddress();
+  switch (espConnect.getMode()) {
+    case Mycila::ESPConnect::Mode::ETH:
       root["network"]["mode"] = "eth";
       break;
-    case ESPConnectMode::STA:
+    case Mycila::ESPConnect::Mode::STA:
       root["network"]["mode"] = "wifi";
       break;
-    case ESPConnectMode::AP:
+    case Mycila::ESPConnect::Mode::AP:
       root["network"]["mode"] = "ap";
       break;
     default:
@@ -55,12 +55,12 @@ static void systemInfoToJson(JsonObject& root) {
 
   root["network"]["ntp"] = YASOLR_STATE(Mycila::NTP.isSynced());
 
-  root["network"]["wifi"]["bssid"] = ESPConnect.getWiFiBSSID();
-  root["network"]["wifi"]["ip_address"] = ESPConnect.getIPAddress(ESPConnectMode::STA).toString();
-  root["network"]["wifi"]["mac_address"] = ESPConnect.getMACAddress(ESPConnectMode::STA);
-  root["network"]["wifi"]["quality"] = ESPConnect.getWiFiSignalQuality();
-  root["network"]["wifi"]["rssi"] = ESPConnect.getWiFiRSSI();
-  root["network"]["wifi"]["ssid"] = ESPConnect.getWiFiSSID();
+  root["network"]["wifi"]["bssid"] = espConnect.getWiFiBSSID();
+  root["network"]["wifi"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString();
+  root["network"]["wifi"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA);
+  root["network"]["wifi"]["quality"] = espConnect.getWiFiSignalQuality();
+  root["network"]["wifi"]["rssi"] = espConnect.getWiFiRSSI();
+  root["network"]["wifi"]["ssid"] = espConnect.getWiFiSSID();
 }
 
 Mycila::Task initRestApiTask("Init REST API", [](void* params) {
@@ -388,7 +388,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject root = response->getRoot();
 
       String base = "http://";
-      base.concat(ESPConnect.getIPAddress().toString());
+      base.concat(espConnect.getIPAddress().toString());
       base.concat("/api");
 
       root["config"] = base + "/config";

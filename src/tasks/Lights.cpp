@@ -29,9 +29,9 @@ Mycila::Task lightsTask("Lights", [](void* params) {
     return;
   }
 
-  switch (ESPConnect.getState()) {
-    case ESPConnectState::NETWORK_CONNECTED:
-    case ESPConnectState::AP_STARTED:
+  switch (espConnect.getState()) {
+    case Mycila::ESPConnect::State::NETWORK_CONNECTED:
+    case Mycila::ESPConnect::State::AP_STARTED:
       lights.setRed(false);
       break;
     default:

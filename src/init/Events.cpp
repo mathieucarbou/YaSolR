@@ -228,54 +228,54 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
   });
 
-  ESPConnect.listen([](ESPConnectState previous, ESPConnectState state) {
-    logger.debug(TAG, "NetworkState: %s => %s", ESPConnect.getStateName(previous), ESPConnect.getStateName(state));
+  espConnect.listen([](Mycila::ESPConnect::State previous, Mycila::ESPConnect::State state) {
+    logger.debug(TAG, "NetworkState: %s => %s", espConnect.getStateName(previous), espConnect.getStateName(state));
     switch (state) {
-      case ESPConnectState::NETWORK_DISABLED:
+      case Mycila::ESPConnect::State::NETWORK_DISABLED:
         logger.warn(TAG, "Disabled Network!");
         break;
-      case ESPConnectState::AP_STARTING:
-        logger.info(TAG, "Starting Access Point %s", ESPConnect.getAccessPointSSID().c_str());
+      case Mycila::ESPConnect::State::AP_STARTING:
+        logger.info(TAG, "Starting Access Point %s", espConnect.getAccessPointSSID().c_str());
         break;
-      case ESPConnectState::AP_STARTED:
-        logger.info(TAG, "Access Point %s started with IP address %s", ESPConnect.getWiFiSSID().c_str(), ESPConnect.getIPAddress().toString().c_str());
+      case Mycila::ESPConnect::State::AP_STARTED:
+        logger.info(TAG, "Access Point %s started with IP address %s", espConnect.getWiFiSSID().c_str(), espConnect.getIPAddress().toString().c_str());
         networkConfigTask.resume();
         break;
-      case ESPConnectState::NETWORK_CONNECTING:
+      case Mycila::ESPConnect::State::NETWORK_CONNECTING:
         logger.info(TAG, "Connecting to network");
         break;
-      case ESPConnectState::NETWORK_CONNECTED:
-        logger.info(TAG, "Connected with IP address %s", ESPConnect.getIPAddress().toString().c_str());
+      case Mycila::ESPConnect::State::NETWORK_CONNECTED:
+        logger.info(TAG, "Connected with IP address %s", espConnect.getIPAddress().toString().c_str());
         networkConfigTask.resume();
         break;
-      case ESPConnectState::NETWORK_TIMEOUT:
+      case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
         logger.warn(TAG, "Unable to connect!");
         break;
-      case ESPConnectState::NETWORK_DISCONNECTED:
+      case Mycila::ESPConnect::State::NETWORK_DISCONNECTED:
         logger.warn(TAG, "Disconnected!");
         break;
-      case ESPConnectState::NETWORK_RECONNECTING:
+      case Mycila::ESPConnect::State::NETWORK_RECONNECTING:
         logger.info(TAG, "Trying to reconnect");
         break;
-      case ESPConnectState::PORTAL_STARTING:
-        logger.info(TAG, "Starting Captive Portal %s for %" PRIu32 " seconds", ESPConnect.getAccessPointSSID().c_str(), ESPConnect.getCaptivePortalTimeout());
+      case Mycila::ESPConnect::State::PORTAL_STARTING:
+        logger.info(TAG, "Starting Captive Portal %s for %" PRIu32 " seconds", espConnect.getAccessPointSSID().c_str(), espConnect.getCaptivePortalTimeout());
         break;
-      case ESPConnectState::PORTAL_STARTED:
-        logger.info(TAG, "Captive Portal started at %s with IP address %s", ESPConnect.getWiFiSSID().c_str(), ESPConnect.getIPAddress().toString().c_str());
+      case Mycila::ESPConnect::State::PORTAL_STARTED:
+        logger.info(TAG, "Captive Portal started at %s with IP address %s", espConnect.getWiFiSSID().c_str(), espConnect.getIPAddress().toString().c_str());
         break;
-      case ESPConnectState::PORTAL_COMPLETE: {
-        if (ESPConnect.hasConfiguredAPMode()) {
+      case Mycila::ESPConnect::State::PORTAL_COMPLETE: {
+        if (espConnect.hasConfiguredAPMode()) {
           logger.info(TAG, "Captive Portal: Access Point configured");
           config.setBool(KEY_ENABLE_AP_MODE, true);
         } else {
           logger.info(TAG, "Captive Portal: WiFi configured");
           config.setBool(KEY_ENABLE_AP_MODE, false);
-          config.set(KEY_WIFI_SSID, ESPConnect.getConfiguredWiFiSSID());
-          config.set(KEY_WIFI_PASSWORD, ESPConnect.getConfiguredWiFiPassword());
+          config.set(KEY_WIFI_SSID, espConnect.getConfiguredWiFiSSID());
+          config.set(KEY_WIFI_PASSWORD, espConnect.getConfiguredWiFiPassword());
         }
         break;
       }
-      case ESPConnectState::PORTAL_TIMEOUT:
+      case Mycila::ESPConnect::State::PORTAL_TIMEOUT:
         logger.warn(TAG, "Captive Portal: timed out.");
         break;
       default:
