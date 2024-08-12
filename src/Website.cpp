@@ -187,7 +187,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _consoleLink.setTab(&_managementTab);
   _debugInfo.setTab(&_managementTab);
   _debugMode.setTab(&_managementTab);
-  _otaLink.setTab(&_managementTab);
+  _safeBoot.setTab(&_managementTab);
   _reset.setTab(&_managementTab);
   _restart.setTab(&_managementTab);
   _energyReset.setTab(&_managementTab);
@@ -201,6 +201,7 @@ void YaSolR::WebsiteClass::initLayout() {
   });
   _reset.attachCallback([]() { resetTask.resume(); });
   _restart.attachCallback([]() { restartTask.resume(); });
+  _safeBoot.attachCallback([]() { safeBootTask.resume(); });
 
   // network (config)
 
@@ -246,6 +247,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _mqttSecured.setTab(&_mqttConfigTab);
   _mqttServer.setTab(&_mqttConfigTab);
   _mqttServerCert.setTab(&_mqttConfigTab);
+  _mqttServerCertDelete.setTab(&_mqttConfigTab);
   _mqttTopic.setTab(&_mqttConfigTab);
   _mqttUser.setTab(&_mqttConfigTab);
   _mqttTempO1.setTab(&_mqttConfigTab);
@@ -264,6 +266,14 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_mqttServer, KEY_MQTT_SERVER);
   _textConfig(_mqttTopic, KEY_MQTT_TOPIC);
   _textConfig(_mqttUser, KEY_MQTT_USERNAME);
+
+  _mqttServerCertDelete.attachCallback([this]() {
+    if (LittleFS.exists("/mqtt-server.crt") && LittleFS.remove("/mqtt-server.crt")) {
+      logger.warn(TAG, "MQTT server certificate deleted successfully!");
+      initCards();
+      dashboardTask.requestEarlyRun();
+    }
+  });
 
   // GPIO (configuration)
 
@@ -570,7 +580,6 @@ void YaSolR::WebsiteClass::initCards() {
   _consoleLink.update("/console");
   _debugInfo.update("/api/debug");
   _debugMode.update(config.getBool(KEY_ENABLE_DEBUG));
-  _otaLink.update("/update");
   _energyReset.setDisplay(jsyEnabled || pzem1Enabled || pzem2Enabled);
   _debugInfo.setDisplay(config.getBool(KEY_ENABLE_DEBUG));
 
@@ -603,7 +612,11 @@ void YaSolR::WebsiteClass::initCards() {
   _mqttServerCert.update("/api/config/mqttServerCertificate");
   _mqttTopic.update(config.get(KEY_MQTT_TOPIC));
   _mqttUser.update(config.get(KEY_MQTT_USERNAME));
+
+  const bool serverCertExists = LittleFS.exists("/mqtt-server.crt");
   _mqttConfigTab.setDisplay(config.getBool(KEY_ENABLE_MQTT));
+  _mqttServerCert.setDisplay(!serverCertExists);
+  _mqttServerCertDelete.setDisplay(serverCertExists);
 
   // GPIO
 

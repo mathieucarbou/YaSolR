@@ -52,7 +52,7 @@
 #define YASOLR_LBL_046 "Sortie 1"
 #define YASOLR_LBL_047 "État"
 #define YASOLR_LBL_048 "Température"
-#define YASOLR_LBL_049
+#define YASOLR_LBL_049 "Supprimer le certificat serveur"
 #define YASOLR_LBL_050 "variateur"
 #define YASOLR_LBL_051 "Marche forcée"
 #define YASOLR_LBL_052 "Puissance"
@@ -84,7 +84,7 @@
 #define YASOLR_LBL_078 "Gestion"
 #define YASOLR_LBL_079 "Backup de la configuration"
 #define YASOLR_LBL_080 "Restauration de la configuration"
-#define YASOLR_LBL_081 "Mise à jour du micrologiciel OTA"
+#define YASOLR_LBL_081 "Redémarrer en mode SafeBoot"
 #define YASOLR_LBL_082 "Redémarrer"
 #define YASOLR_LBL_083 "Débogage"
 #define YASOLR_LBL_084 "Console"

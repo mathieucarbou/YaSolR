@@ -184,8 +184,8 @@ namespace YaSolR {
       Tab _managementTab = Tab(&dashboard, "\u2764 " YASOLR_LBL_078);
       Card _configBackup = Card(&dashboard, LINK_CARD, YASOLR_LBL_079);
       Card _configRestore = Card(&dashboard, FILE_UPLOAD_CARD, YASOLR_LBL_080, ".txt");
-      Card _otaLink = Card(&dashboard, LINK_CARD, YASOLR_LBL_081);
       Card _restart = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_082);
+      Card _safeBoot = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_081);
       Card _energyReset = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_085);
       Card _reset = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_086);
       Card _debugMode = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_083);
@@ -212,6 +212,7 @@ namespace YaSolR {
       Card _mqttPwd = Card(&dashboard, PASSWORD_CARD, YASOLR_LBL_099);
       Card _mqttSecured = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_100);
       Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, YASOLR_LBL_101, ".pem,crt,der");
+      Card _mqttServerCertDelete = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_049);
       Card _mqttPublishInterval = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_102, "s", 5, 30, 1);
       Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_103);
       Card _haDiscovery = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_104);

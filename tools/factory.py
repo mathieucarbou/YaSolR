@@ -2,44 +2,80 @@
 #
 # Copyright (C) 2023-2024 Mathieu Carbou
 #
-Import("env", "projenv")
+Import("env")
 
 import sys
 import os
+import requests
 from os.path import join, getsize
 
 sys.path.append(join(env.PioPlatform().get_package_dir("tool-esptoolpy")))
 import esptool
 
 # print(env.Dump())
-# print(projenv.Dump())
+
+quiet = False
 
 
-def esp32_create_combined_bin(source, target, env):
-    print("Generating factory image for serial flashing")
+def status(msg):
+    """Print status message to stderr"""
+    if not quiet:
+        critical(msg)
 
-    # print("Building Safeboot image for board: %s" % env.get("BOARD"))
-    # env.Execute("SAFEBOOT_BOARD=%s pio run -d ../../tools/Safeboot" % env.get("BOARD"))
 
-    # print("Building File System image")
-    # env.Execute('pio run -t buildfs -e %s' % env['PIOENV'])
+def critical(msg):
+    """Print critical message to stderr"""
+    sys.stderr.write("factory.py: ")
+    sys.stderr.write(msg)
+    sys.stderr.write("\n")
 
-    safeboot_offset = 0x10000
-    safeboot_image = "../../tools/Safeboot/.pio/build/safeboot/safeboot.bin"
 
-    app_offset = 0x110000
+def generateFactooryImage(source, target, env):
+    status("Generating factory image for serial flashing")
+
+    app_offset = 0xB0000
     app_image = env.subst("$BUILD_DIR/${PROGNAME}.bin")
 
+    # Set fs_offset = 0 to disable LittleFS image generation
+    # Set fs_offset to the correct offset from the partition to generate a LittleFS image
     fs_offset = 0
     fs_image = env.subst("$BUILD_DIR/littlefs.bin")
 
-    if env.get("PARTITIONS_TABLE_CSV").endswith("partitions-4MB.csv"):
-        fs_offset = 0x3F0000
-    if env.get("PARTITIONS_TABLE_CSV").endswith("partitions-8MB.csv"):
-        fs_offset = 0x7E0000
-    if fs_offset == 0:
-        print(env.get("PARTITIONS_TABLE_CSV"))
-        raise Exception("Unknown partition file, cannot determine FS offset")
+    safeboot_offset = 0x10000
+    safeboot_image = ""
+
+    safeboot_project = env.GetProjectOption("custom_safeboot_dir", "")
+    if safeboot_project != "":
+        status(
+            "Building SafeBoot image for board %s from %s"
+            % (env.get("BOARD"), safeboot_project)
+        )
+        if not os.path.isdir(safeboot_project):
+            raise Exception("SafeBoot project not found: %s" % safeboot_project)
+        env.Execute(
+            "SAFEBOOT_BOARD=%s pio run -d %s" % (env.get("BOARD"), safeboot_project)
+        )
+        safeboot_image = join(safeboot_project, ".pio/build/safeboot/safeboot.bin")
+        if not os.path.isfile(safeboot_image):
+            raise Exception("SafeBoot image not found: %s" % safeboot_image)
+
+    safeboot_url = env.GetProjectOption("custom_safeboot_url", "")
+    if safeboot_url != "":
+        safeboot_image = env.subst("$BUILD_DIR/safeboot.bin")
+        if not os.path.isfile(safeboot_image):
+            status(
+                "Downloading SafeBoot image from %s to %s"
+                % (safeboot_url, safeboot_image)
+            )
+            response = requests.get(safeboot_url)
+            if response.status_code != 200:
+                raise Exception("Download error: %d" % response.status_code)
+            with open(safeboot_image, "wb") as file:
+                file.write(response.content)
+
+    if fs_offset != 0:
+        status("Building File System image")
+        env.Execute("pio run -t buildfs -e %s" % env["PIOENV"])
 
     factory_image = env.subst("$BUILD_DIR/${PROGNAME}.factory.bin")
 
@@ -79,28 +115,28 @@ def esp32_create_combined_bin(source, target, env):
     if fw_size > max_size:
         raise Exception("Firmware binary too large: %d > %d" % (fw_size, max_size))
 
-    print("    Offset | File")
+    status("    Offset | File")
     for section in sections:
         sect_adr, sect_file = section.split(" ", 1)
-        print(f" -   {sect_adr} | {sect_file}")
+        status(f" -   {sect_adr} | {sect_file}")
         cmd += [sect_adr, sect_file]
 
-    if os.path.isfile(safeboot_image):
-        print(f" -  {hex(safeboot_offset)} | {safeboot_image}")
+    if safeboot_image != "" and os.path.isfile(safeboot_image):
+        status(f" -  {hex(safeboot_offset)} | {safeboot_image}")
         cmd += [hex(safeboot_offset), safeboot_image]
 
-    print(f" - {hex(app_offset)} | {app_image}")
+    status(f" -  {hex(app_offset)} | {app_image}")
     cmd += [hex(app_offset), app_image]
 
-    if os.path.isfile(fs_image):
-        print(f" - {hex(fs_offset)} | {fs_image}")
+    if fs_image != 0 and os.path.isfile(fs_image):
+        status(f" - {hex(fs_offset)} | {fs_image}")
         cmd += [hex(fs_offset), fs_image]
 
-    print("Using esptool.py arguments: %s" % " ".join(cmd))
+    status("Using esptool.py arguments: %s" % " ".join(cmd))
 
     esptool.main(cmd)
 
-    print("Factory image generated: %s" % factory_image)
+    status("Factory image generated! You can flash it with:\n> esptool.py write_flash 0x0 %s" % factory_image)
 
 
-env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", esp32_create_combined_bin)
+env.AddPostAction("$BUILD_DIR/${PROGNAME}.bin", generateFactooryImage)

@@ -50,7 +50,7 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
   mqttPublishConfigTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   mqttPublishStaticTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   mqttPublishTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  otaTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  safeBootTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   debugTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   pzemO1PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   pzemO2PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);

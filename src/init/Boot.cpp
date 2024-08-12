@@ -19,7 +19,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   logger.warn(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // system
-  Mycila::System.begin();
+  Mycila::System.begin(true, "fs");
 
   // trial
 #ifdef APP_MODEL_TRIAL
@@ -67,7 +67,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_MQTT_SECURED, YASOLR_FALSE);
   config.configure(KEY_MQTT_SERVER);
   config.configure(KEY_MQTT_TOPIC, Mycila::AppInfo.defaultMqttClientId);
-  config.configure(KEY_MQTT_USERNAME, "homeassistant");
+  config.configure(KEY_MQTT_USERNAME);
   config.configure(KEY_NET_DNS);
   config.configure(KEY_NET_GATEWAY);
   config.configure(KEY_NET_IP);

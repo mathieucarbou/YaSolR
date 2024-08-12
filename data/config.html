@@ -18,6 +18,13 @@
     </tr>
     <tr>
       <td>
+        <form id="safeboot-form">
+          <button type="submit">Restart in SafeBoot mode</button>
+        </form>
+      </td>
+    </tr>
+    <tr>
+      <td>
         <form id="backup-form" method="get" action="/api/config/backup" target="_blank">
           <button type="submit">Backup</button>
         </form>
@@ -319,6 +326,17 @@
       .addEventListener("submit", function (event) {
         event.preventDefault();
         fetch("/api/system/restart", { method: "POST" }).then((res) => {
+          setTimeout(function () {
+            window.location.reload();
+          }, 2000);
+        });
+      });
+
+      document
+      .getElementById("safeboot-form")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+        fetch("/api/system/safeboot", { method: "POST" }).then((res) => {
           setTimeout(function () {
             window.location.reload();
           }, 2000);
