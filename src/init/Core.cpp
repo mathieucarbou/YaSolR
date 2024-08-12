@@ -19,7 +19,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   dimmer2Task.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
-  otaTask.setManager(coreTaskManager);
+  safeBootTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);

@@ -4,8 +4,8 @@
  */
 #include <YaSolR.h>
 
-Mycila::Task otaTask("OTA", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info(TAG, "Preparing OTA update");
+Mycila::Task safeBootTask("SafeBoot", Mycila::TaskType::ONCE, [](void* params) {
+  logger.info(TAG, "Restarting %s in SafeBoot mode...", Mycila::AppInfo.nameModelVersion.c_str());
   // stop electricity
   dimmerO1.endDimmer();
   dimmerO2.endDimmer();
@@ -20,4 +20,5 @@ Mycila::Task otaTask("OTA", Mycila::TaskType::ONCE, [](void* params) {
 #ifdef APP_MODEL_TRIAL
   Mycila::Trial.end();
 #endif
+  Mycila::System.restartFactory("safeboot");
 });

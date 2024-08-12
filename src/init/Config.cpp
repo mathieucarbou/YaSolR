@@ -15,7 +15,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   dashboardTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
   debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
-  debugTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
+  debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });
   displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
@@ -170,17 +170,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   WebSerial.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD).c_str());
   WebSerial.begin(&webServer, "/console");
   logger.forwardTo(&WebSerial);
-
-  // ElegantOTA
-#ifdef APP_MODEL_PRO
-  ElegantOTA.setID(Mycila::AppInfo.firmware.c_str());
-  ElegantOTA.setTitle((Mycila::AppInfo.name + " OTA Updater").c_str());
-  ElegantOTA.setFWVersion(Mycila::AppInfo.version.c_str());
-  ElegantOTA.setFirmwareMode(true);
-  ElegantOTA.setFilesystemMode(false);
-#endif
-  ElegantOTA.setAutoReboot(false);
-  ElegantOTA.begin(&webServer, YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD).c_str());
 
   // Dashboard
   dashboard.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD).c_str());

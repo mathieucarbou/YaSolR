@@ -5,6 +5,8 @@
 #include <YaSolR.h>
 
 #include <AsyncJson.h>
+#include <YaSolRWebsite.h>
+
 #include <map>
 
 static void systemInfoToJson(JsonObject& root) {
@@ -193,6 +195,8 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
         logger.info(TAG, "Uploaded MQTT server certificate:\n%s", serverCertFile.readString().c_str());
         serverCertFile.close();
+        YaSolR::Website.initCards();
+        dashboardTask.requestEarlyRun();
         request->send(response);
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
@@ -234,6 +238,13 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   webServer
     .on("/api/system/restart", HTTP_ANY, [](AsyncWebServerRequest* request) {
       restartTask.resume();
+      request->send(200);
+    })
+    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+
+  webServer
+    .on("/api/system/safeboot", HTTP_ANY, [](AsyncWebServerRequest* request) {
+      safeBootTask.resume();
       request->send(200);
     })
     .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));

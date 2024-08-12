@@ -4,33 +4,43 @@
  */
 #include <YaSolR.h>
 
+extern const uint8_t ca_certs_bundle_start[] asm("_binary__pio_data_cacerts_bin_start");
+extern const uint8_t ca_certs_bundle_end[] asm("_binary__pio_data_cacerts_bin_end");
+
 Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
   mqtt.end();
   if (!config.getBool(KEY_ENABLE_AP_MODE) && config.getBool(KEY_ENABLE_MQTT)) {
-    logger.info(TAG, "Enable MQTT");
-
     bool secured = config.getBool(KEY_MQTT_SECURED);
-    String serverCert = "";
 
-    if (secured && LittleFS.exists("/mqtt-server.crt")) {
-      logger.debug(TAG, "Loading MQTT server certificate");
-      File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
-      serverCert = serverCertFile.readString();
-      serverCertFile.close();
-      logger.debug(TAG, "Loaded MQTT server certificate:\n%s", serverCert.c_str());
+    Mycila::MQTT::Config mqttConfig;
+    mqttConfig.server = config.get(KEY_MQTT_SERVER);
+    mqttConfig.port = static_cast<uint16_t>(config.get(KEY_MQTT_PORT).toInt());
+    mqttConfig.secured = secured;
+    mqttConfig.username = config.get(KEY_MQTT_USERNAME);
+    mqttConfig.password = config.get(KEY_MQTT_PASSWORD);
+    mqttConfig.clientId = Mycila::AppInfo.defaultMqttClientId;
+    mqttConfig.willTopic = config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC;
+    mqttConfig.keepAlive = YASOLR_MQTT_KEEPALIVE;
+
+    if (secured) {
+      // if a server certificate has been used, set it
+      if (LittleFS.exists("/mqtt-server.crt")) {
+        logger.debug(TAG, "Loading MQTT server certificate");
+        File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
+        mqttConfig.serverCert = serverCertFile.readString();
+        serverCertFile.close();
+        logger.debug(TAG, "Loaded MQTT server certificate:\n%s", mqttConfig.serverCert.c_str());
+      } else {
+        logger.debug(TAG, "Using cacert bundle for MQTT");
+        // if no server certificate has been used, set default CA certs bundle
+        mqttConfig.certBundle = ca_certs_bundle_start;
+        mqttConfig.certBundleSize = static_cast<size_t>(ca_certs_bundle_end - ca_certs_bundle_start);
+      }
     }
 
-    mqtt.begin({
-      .server = config.get(KEY_MQTT_SERVER),
-      .port = static_cast<uint16_t>(config.get(KEY_MQTT_PORT).toInt()),
-      .secured = secured,
-      .serverCert = serverCert,
-      .username = config.get(KEY_MQTT_USERNAME),
-      .password = config.get(KEY_MQTT_PASSWORD),
-      .clientId = Mycila::AppInfo.defaultMqttClientId,
-      .willTopic = config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC,
-      .keepAlive = YASOLR_MQTT_KEEPALIVE,
-    });
+    logger.info(TAG, "Enable MQTT (server: ://%s:%" PRIu16 ")", (secured ? "mqtts" : "mqtt"), mqttConfig.server.c_str(), mqttConfig.port);
+    mqtt.setAsync(false);
+    mqtt.begin(mqttConfig);
   }
 });
 

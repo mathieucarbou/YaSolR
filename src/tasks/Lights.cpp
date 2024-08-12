@@ -5,7 +5,7 @@
 #include <YaSolR.h>
 
 Mycila::Task lightsTask("Lights", [](void* params) {
-  if (!otaTask.isPaused()) {
+  if (!safeBootTask.isPaused()) {
     lights.setAllOn();
     return;
   }

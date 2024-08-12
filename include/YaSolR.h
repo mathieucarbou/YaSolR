@@ -42,11 +42,9 @@
 
 #ifdef APP_MODEL_PRO
   #include <ESPDashPro.h>
-  #include <ElegantOTAPro.h>
   #include <WebSerialPro.h>
 #else
   #include <ESPDash.h>
-  #include <ElegantOTA.h>
   #include <MycilaWebSerial.h>
 #endif
 
@@ -91,7 +89,7 @@ extern Mycila::Task dashboardTask;
 extern Mycila::Task debugTask;
 extern Mycila::Task networkConfigTask;
 extern Mycila::Task networkManagerTask;
-extern Mycila::Task otaTask;
+extern Mycila::Task safeBootTask;
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
 #ifdef APP_MODEL_TRIAL

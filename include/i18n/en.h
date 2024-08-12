@@ -49,7 +49,7 @@
 #define YASOLR_LBL_046 "Output 1"
 #define YASOLR_LBL_047 "Status"
 #define YASOLR_LBL_050 "Dimmer"
-#define YASOLR_LBL_049
+#define YASOLR_LBL_049 "Remove Server Certificate"
 #define YASOLR_LBL_051 "Bypass"
 #define YASOLR_LBL_052 "Power"
 #define YASOLR_LBL_053 "Apparent Power"
@@ -80,7 +80,7 @@
 #define YASOLR_LBL_078 "Management"
 #define YASOLR_LBL_079 "Configuration Backup"
 #define YASOLR_LBL_080 "Configuration Restore"
-#define YASOLR_LBL_081 "OTA Firmware Update"
+#define YASOLR_LBL_081 "Restart in SafeBoot mode"
 #define YASOLR_LBL_082 "Restart"
 #define YASOLR_LBL_083 "Debug"
 #define YASOLR_LBL_084 "Console"

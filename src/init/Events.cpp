@@ -283,16 +283,6 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
   });
 
-  ElegantOTA.onStart([]() { otaTask.resume(); });
-  ElegantOTA.onEnd([](bool success) {
-    if (success) {
-      logger.info(TAG, "OTA Update Success! Restarting");
-    } else {
-      logger.error(TAG, "OTA Failed! Restarting");
-    }
-    restartTask.resume();
-  });
-
   bypassRelayO1.listen([](bool state) {
     logger.info(TAG, "Output 1 Relay changed to %s", state ? "ON" : "OFF");
     mqttPublishTask.requestEarlyRun();
