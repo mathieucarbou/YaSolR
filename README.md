@@ -13,9 +13,9 @@
 
 # Documentation
 
-Please look at the manual in the website to know which firmware to download and flash.
+Please look at the website to know which firmware to download and flash.
 
-👉 Website: [https://yasolr.carbou.me/](https://yasolr.carbou.me/)
+👉 Website: [https://yasolr.carbou.me/](https://yasolr.carbou.me/download)
 
 # Downloads
 
