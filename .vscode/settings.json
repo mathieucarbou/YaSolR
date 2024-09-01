@@ -1,84 +1,74 @@
 {
-  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: LLVM, UseTab: Never, IndentWidth: 2, TabWidth: 2, AllowShortIfStatementsOnASingleLine: false, IndentCaseLabels: true, ColumnLimit: 0, AccessModifierOffset: -2, NamespaceIndentation: All, FixNamespaceComments: false, IndentAccessModifiers: true, PointerAlignment: Left, ReferenceAlignment: Left, ContinuationIndentWidth: 2, AllowShortLambdasOnASingleLine: Inline, BinPackArguments: false, AllowAllArgumentsOnNextLine: false, AllowAllParametersOfDeclarationOnNextLine: false, AlignConsecutiveMacros: true}",
-  "files.exclude": {
-    "**/.lh": true
-  },
-  "cSpell.words": [
-    "YASOLR"
-  ],
-  "scm.defaultViewMode": "tree",
-  "files.associations": {
-    "*.cps": "javascript",
-    "*.config": "cpp",
-    "functional": "cpp",
-    "type_traits": "cpp",
-    "cmath": "cpp",
-    "limits": "cpp",
-    "soc_caps.h": "c",
-    "string": "cpp",
-    "array": "cpp",
-    "atomic": "cpp",
-    "bit": "cpp",
-    "*.tcc": "cpp",
-    "bitset": "cpp",
-    "cctype": "cpp",
-    "clocale": "cpp",
-    "compare": "cpp",
-    "concepts": "cpp",
-    "condition_variable": "cpp",
-    "cstdarg": "cpp",
-    "cstddef": "cpp",
-    "cstdint": "cpp",
-    "cstdio": "cpp",
-    "cstdlib": "cpp",
-    "cstring": "cpp",
-    "ctime": "cpp",
-    "cwchar": "cpp",
-    "cwctype": "cpp",
-    "deque": "cpp",
-    "list": "cpp",
-    "map": "cpp",
-    "set": "cpp",
-    "unordered_map": "cpp",
-    "unordered_set": "cpp",
-    "vector": "cpp",
-    "exception": "cpp",
-    "algorithm": "cpp",
-    "iterator": "cpp",
-    "memory": "cpp",
-    "memory_resource": "cpp",
-    "numeric": "cpp",
-    "optional": "cpp",
-    "random": "cpp",
-    "ratio": "cpp",
-    "regex": "cpp",
-    "string_view": "cpp",
-    "system_error": "cpp",
-    "tuple": "cpp",
-    "utility": "cpp",
-    "initializer_list": "cpp",
-    "iomanip": "cpp",
-    "iosfwd": "cpp",
-    "istream": "cpp",
-    "mutex": "cpp",
-    "new": "cpp",
-    "numbers": "cpp",
-    "ostream": "cpp",
-    "semaphore": "cpp",
-    "span": "cpp",
-    "sstream": "cpp",
-    "stdexcept": "cpp",
-    "stop_token": "cpp",
-    "streambuf": "cpp",
-    "thread": "cpp",
-    "cinttypes": "cpp",
-    "typeinfo": "cpp",
-    "complex": "cpp",
-    "iostream": "cpp"
-  },
-  "git.enableCommitSigning": true,
-  "git.alwaysSignOff": true,
-  "git-graph.repository.commits.showSignatureStatus": true,
-  "git-graph.repository.sign.commits": true,
-  "git-graph.repository.sign.tags": true
+  "platformio-ide.toolbar": [
+    {
+      "text": "$(home)",
+      "tooltip": "PlatformIO: Home",
+      "commands": "platformio-ide.showHome"
+    },
+    {
+      "text": "$(trash)",
+      "tooltip": "PlatformIO: Clean",
+      "commands": "platformio-ide.clean"
+    },
+    {
+      "text": "$(check)",
+      "tooltip": "PlatformIO: Build",
+      "commands": "platformio-ide.build"
+    },
+    {
+      "text": "Upload",
+      "tooltip": "PlatformIO: Flash firmware (NO build run)",
+      "commands": [
+        {
+          "id": "platformio-ide.runPIOCoreCommand",
+          "args": "pio run -t nobuild -t factory_flash -e ${command:platformio-ide.activeEnvironment}"
+        }
+      ]
+    },
+    {
+      "text": "$(zap)",
+      "tooltip": "PlatformIO: Build and Upload",
+      "commands": "platformio-ide.upload"
+    },
+    {
+      "text": "$(flame)",
+      "tooltip": "PlatformIO: Build, Erase and Upload",
+      "commands": [
+        {
+          "id": "platformio-ide.runPIOCoreCommand",
+          "args": "pio run -t erase_upload -e ${command:platformio-ide.activeEnvironment}"
+        }
+      ]
+    },
+    {
+      "text": "$(error)",
+      "tooltip": "PlatformIO: Erase Flash",
+      "commands": [
+        {
+          "id": "platformio-ide.runPIOCoreCommand",
+          "args": "pio run -t nobuild -t erase -e ${command:platformio-ide.activeEnvironment}"
+        }
+      ]
+    },
+    {
+      "text": "$(arrow-right)",
+      "tooltip": "PlatformIO: Build, Upload and Monitor",
+      "commands": "platformio-ide.uploadAndMonitor"
+    },
+    {
+      "text": "$(device-desktop)",
+      "tooltip": "PlatformIO: Serial Monitor",
+      "commands": "platformio-ide.serialMonitor"
+    },
+    {
+      "text": "$(terminal)",
+      "tooltip": "PlatformIO: New Terminal",
+      "commands": "platformio-ide.newTerminal"
+    },
+    {
+      "text": "$(refresh)",
+      "tooltip": "PlatformIO: Rebuild IntelliSense Index",
+      "commands": "platformio-ide.rebuildProjectIndex"
+    }
+  ]
 }

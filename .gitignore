@@ -3,6 +3,7 @@
 /.pio
 /.vscode/*
 !/.vscode/settings.json
+!/.vscode/extensions.json
 /logs
 /platformio-device-monitor*.log
 /data/*.gz

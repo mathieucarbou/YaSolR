@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
 
-name: Build YaSolR
+name: Build
 
 on:
   workflow_dispatch:
