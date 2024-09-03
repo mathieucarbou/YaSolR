@@ -151,8 +151,8 @@ Mycila::Task displayTask("Display", [](void* params) {
 
     default: {
       struct tm timeInfo;
-      display.home.printf("Restarts: %11" PRIu32 "\n", Mycila::System.getBootCount());
-      display.home.printf("Uptime: %13.13s\n", Mycila::Time::toDHHMMSS(Mycila::System.getUptime()).c_str());
+      display.home.printf("Restarts: %11" PRIu32 "\n", Mycila::System::getBootCount());
+      display.home.printf("Uptime: %13.13s\n", Mycila::Time::toDHHMMSS(Mycila::System::getUptime()).c_str());
       if (Mycila::NTP.isSynced() && getLocalTime(&timeInfo, 5))
         display.home.printf("NTP Time:       %02u:%02u\n", timeInfo.tm_hour, timeInfo.tm_min);
       else

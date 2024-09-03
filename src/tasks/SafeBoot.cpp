@@ -20,5 +20,5 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::TaskType::ONCE, [](void* params) {
 #ifdef APP_MODEL_TRIAL
   Mycila::Trial.end();
 #endif
-  Mycila::System.restartFactory("safeboot");
+  Mycila::System::restartFactory("safeboot");
 });

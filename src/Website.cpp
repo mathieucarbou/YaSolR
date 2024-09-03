@@ -454,7 +454,7 @@ void YaSolR::WebsiteClass::initCards() {
   _appModel.set((Mycila::AppInfo.model.c_str()));
   _appName.set((Mycila::AppInfo.name.c_str()));
   _appVersion.set(Mycila::AppInfo.version.c_str());
-  _deviceBootCount.set(String(Mycila::System.getBootCount()).c_str());
+  _deviceBootCount.set(String(Mycila::System::getBootCount()).c_str());
   _deviceCores.set(String(ESP.getChipCores()).c_str());
   _deviceModel.set(ESP.getChipModel());
   _deviceRev.set(String(ESP.getChipRevision()).c_str());
@@ -778,7 +778,8 @@ void YaSolR::WebsiteClass::updateCards() {
   }
 
   // stats
-  Mycila::SystemMemory memory = Mycila::System.getMemory();
+  Mycila::System::Memory memory;
+  Mycila::System::getMemory(memory);
   Mycila::ESPConnect::Mode mode = espConnect.getMode();
   _output1RelaySwitchCount.set(String(bypassRelayO1.getSwitchCount()).c_str());
   _output2RelaySwitchCount.set(String(bypassRelayO2.getSwitchCount()).c_str());
@@ -800,7 +801,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _zcdPulsePeriod.set((String(pulseAnalyzer.getPeriod()) + " us").c_str());
   _zcdPulseLength.set((String(pulseAnalyzer.getLength()) + " us").c_str());
   _time.set(Mycila::Time::getLocalStr().c_str());
-  _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System.getUptime()).c_str());
+  _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System::getUptime()).c_str());
 #ifdef APP_MODEL_TRIAL
   _trialRemainingTime.set(Mycila::Time::toDHHMMSS(Mycila::Trial.getRemaining()).c_str());
 #endif

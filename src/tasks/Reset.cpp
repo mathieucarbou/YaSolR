@@ -7,5 +7,5 @@
 Mycila::Task resetTask("Reset", Mycila::TaskType::ONCE, [](void* params) {
   logger.warn("YaSolR", "Resetting %s", Mycila::AppInfo.nameModelVersion.c_str());
   config.clear();
-  Mycila::System.restart(500);
+  Mycila::System::restart(500);
 });

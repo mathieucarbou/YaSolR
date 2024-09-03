@@ -19,7 +19,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   logger.warn(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // system
-  Mycila::System.begin(true, "fs");
+  Mycila::System::init(true, "fs");
 
   // trial
 #ifdef APP_MODEL_TRIAL

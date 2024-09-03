@@ -6,5 +6,5 @@
 
 Mycila::Task restartTask("Restart", Mycila::TaskType::ONCE, [](void* params) {
   logger.warn("YaSolR", "Restarting %s", Mycila::AppInfo.nameModelVersion.c_str());
-  Mycila::System.restart(500);
+  Mycila::System::restart(500);
 });

@@ -10,14 +10,15 @@
 #include <map>
 
 static void systemInfoToJson(JsonObject& root) {
-  Mycila::SystemMemory memory = Mycila::System.getMemory();
+  Mycila::System::Memory memory;
+  Mycila::System::getMemory(memory);
 
   root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
   root["app"]["model"] = Mycila::AppInfo.model;
   root["app"]["name"] = Mycila::AppInfo.name;
   root["app"]["version"] = Mycila::AppInfo.version;
 
-  root["device"]["boots"] = Mycila::System.getBootCount();
+  root["device"]["boots"] = Mycila::System::getBootCount();
   root["device"]["cores"] = ESP.getChipCores();
   root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
   root["device"]["heap"]["total"] = memory.total;
@@ -26,7 +27,7 @@ static void systemInfoToJson(JsonObject& root) {
   root["device"]["id"] = Mycila::AppInfo.id;
   root["device"]["model"] = ESP.getChipModel();
   root["device"]["revision"] = ESP.getChipRevision();
-  root["device"]["uptime"] = Mycila::System.getUptime();
+  root["device"]["uptime"] = Mycila::System::getUptime();
 
   root["firmware"]["build"]["branch"] = Mycila::AppInfo.buildBranch;
   root["firmware"]["build"]["hash"] = Mycila::AppInfo.buildHash;
