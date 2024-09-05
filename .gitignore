@@ -1,8 +1,8 @@
 .DS_Store
 .lh
 /.pio
-/.vscode/*
-!/.vscode/settings.json
+/.vscode
+
 !/.vscode/extensions.json
 /logs
 /platformio-device-monitor*.log
