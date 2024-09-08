@@ -620,7 +620,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   // GPIO
 
-  std::map<int32_t, Card*> pinout = {};
+  std::unordered_map<int32_t, Card*> pinout = {};
   _pinout(_pinDimmerO1, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), pinout);
   _pinout(_pinDimmerO2, config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), pinout);
   _pinout(_pinDisplayClock, config.get(KEY_PIN_DISPLAY_SCL).toInt(), pinout);
@@ -1153,7 +1153,7 @@ void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bo
     card.update(config.getBool(key), DASH_STATUS_SUCCESS "," YASOLR_LBL_130);
 }
 
-void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout) {
+void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::unordered_map<int32_t, Card*>& pinout) {
   if (pin == GPIO_NUM_NC) {
     card.update(YASOLR_LBL_115, DASH_STATUS_IDLE);
   } else if (pinout.find(pin) != pinout.end()) {

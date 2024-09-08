@@ -6,7 +6,7 @@
 
 #include <YaSolR.h>
 
-#include <map>
+#include <unordered_map>
 
 #ifdef APP_MODEL_OSS
   #define LINE_CHART  BAR_CHART
@@ -325,7 +325,7 @@ namespace YaSolR {
       void _outputBypassSwitch(Card& card, Mycila::RouterOutput& output);
       void _relaySwitch(Card& card, Mycila::RouterRelay& relay);
 
-      void _pinout(Card& card, int32_t pin, std::map<int32_t, Card*>& pinout);
+      void _pinout(Card& card, int32_t pin, std::unordered_map<int32_t, Card*>& pinout);
       void _status(Card& card, const char* key, bool enabled, bool state = true, const char* err = "");
       void _temperature(Card& card, Mycila::DS18& sensor);
       void _temperature(Card& card, Mycila::RouterOutput& output);
