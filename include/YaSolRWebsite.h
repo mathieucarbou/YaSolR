@@ -34,6 +34,7 @@ namespace YaSolR {
       Statistic _appManufacturer = Statistic(&dashboard, YASOLR_LBL_004);
 
       Statistic _deviceBootCount = Statistic(&dashboard, YASOLR_LBL_005);
+      Statistic _deviceBootReason = Statistic(&dashboard, YASOLR_LBL_192);
       Statistic _deviceCores = Statistic(&dashboard, YASOLR_LBL_006);
       Statistic _deviceHeapTotal = Statistic(&dashboard, YASOLR_LBL_007);
       Statistic _deviceHeapUsage = Statistic(&dashboard, YASOLR_LBL_008);

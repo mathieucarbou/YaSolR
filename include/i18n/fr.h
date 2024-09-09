@@ -195,7 +195,7 @@
 #define YASOLR_LBL_189 "Masque de sous-réseau"
 #define YASOLR_LBL_190 "Passerelle"
 #define YASOLR_LBL_191 "Serveur DNS"
-#define YASOLR_LBL_192
+#define YASOLR_LBL_192 "Micro-contrôleur: Raison du reboot"
 #define YASOLR_LBL_193
 #define YASOLR_LBL_194
 #define YASOLR_LBL_195

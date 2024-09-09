@@ -455,6 +455,7 @@ void YaSolR::WebsiteClass::initCards() {
   _appName.set((Mycila::AppInfo.name.c_str()));
   _appVersion.set(Mycila::AppInfo.version.c_str());
   _deviceBootCount.set(String(Mycila::System::getBootCount()).c_str());
+  _deviceBootReason.set(Mycila::System::getLastRebootReason());
   _deviceCores.set(String(ESP.getChipCores()).c_str());
   _deviceModel.set(ESP.getChipModel());
   _deviceRev.set(String(ESP.getChipRevision()).c_str());

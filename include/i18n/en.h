@@ -4,6 +4,7 @@
  */
 #pragma once
 
+#define YASOLR_LBL_087 "Network"
 #define YASOLR_LBL_001 "Application: Name"
 #define YASOLR_LBL_002 "Application: Model"
 #define YASOLR_LBL_003 "Application: Version"
@@ -22,17 +23,17 @@
 #define YASOLR_LBL_016 "Grid: Energy"
 #define YASOLR_LBL_017 "Grid: Energy Returned"
 #define YASOLR_LBL_018 "Grid: Frequency"
-#define YASOLR_LBL_019 "Network: Hostname"
-#define YASOLR_LBL_020 "Network: Interface"
-#define YASOLR_LBL_021 "Network: Access Point IP Address"
-#define YASOLR_LBL_022 "Network: Access Point MAC Address"
-#define YASOLR_LBL_023 "Network: Ethernet IP Address"
-#define YASOLR_LBL_024 "Network: Ethernet MAC Address"
-#define YASOLR_LBL_025 "Network: WiFi IP Address"
-#define YASOLR_LBL_026 "Network: WiFi MAC Address"
-#define YASOLR_LBL_027 "Network: WiFi SSID"
-#define YASOLR_LBL_028 "Network: WiFi RSSI"
-#define YASOLR_LBL_029 "Network: WiFi Signal"
+#define YASOLR_LBL_019 YASOLR_LBL_087 ": Hostname"
+#define YASOLR_LBL_020 YASOLR_LBL_087 ": Interface"
+#define YASOLR_LBL_021 YASOLR_LBL_087 ": Access Point IP Address"
+#define YASOLR_LBL_022 YASOLR_LBL_087 ": Access Point MAC Address"
+#define YASOLR_LBL_023 YASOLR_LBL_087 ": Ethernet IP Address"
+#define YASOLR_LBL_024 YASOLR_LBL_087 ": Ethernet MAC Address"
+#define YASOLR_LBL_025 YASOLR_LBL_087 ": WiFi IP Address"
+#define YASOLR_LBL_026 YASOLR_LBL_087 ": WiFi MAC Address"
+#define YASOLR_LBL_027 YASOLR_LBL_087 ": WiFi SSID"
+#define YASOLR_LBL_028 YASOLR_LBL_087 ": WiFi RSSI"
+#define YASOLR_LBL_029 YASOLR_LBL_087 ": WiFi Signal"
 #define YASOLR_LBL_034 "Time"
 #define YASOLR_LBL_035 "Uptime"
 #define YASOLR_LBL_036 "Routed Power"
@@ -86,7 +87,6 @@
 #define YASOLR_LBL_084 "Console"
 #define YASOLR_LBL_085 "Energy Reset"
 #define YASOLR_LBL_086 "Factory Reset"
-#define YASOLR_LBL_087 "Network"
 #define YASOLR_LBL_088 "Admin Password"
 #define YASOLR_LBL_089 "NTP Server"
 #define YASOLR_LBL_090 "Timezone"
@@ -195,7 +195,7 @@
 #define YASOLR_LBL_189 "Subnet Mask"
 #define YASOLR_LBL_190 "Gateway"
 #define YASOLR_LBL_191 "DNS Server"
-#define YASOLR_LBL_192
+#define YASOLR_LBL_192 "Device: Reboot Reason"
 #define YASOLR_LBL_193
 #define YASOLR_LBL_194
 #define YASOLR_LBL_195
