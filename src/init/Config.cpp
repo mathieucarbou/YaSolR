@@ -97,12 +97,12 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   pidController.setOutputLimits(config.get(KEY_PID_OUT_MIN).toFloat(), config.get(KEY_PID_OUT_MAX).toFloat());
 
   // NTP
-  Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+  Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE).c_str());
 
   // Home Assistant Discovery
-  haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
-  haDiscovery.setBaseTopic(config.get(KEY_MQTT_TOPIC));
-  haDiscovery.setWillTopic(config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC);
+  haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC).c_str());
+  haDiscovery.setBaseTopic(config.get(KEY_MQTT_TOPIC).c_str());
+  haDiscovery.setWillTopic((config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC).c_str());
   haDiscovery.setBufferSise(512);
   haDiscovery.setDevice({
     .id = Mycila::AppInfo.defaultMqttClientId,
@@ -190,7 +190,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   espConnect.setIPConfig(ipConfig);
   espConnect.setAutoRestart(true);
   espConnect.setBlocking(false);
-  espConnect.begin(Mycila::AppInfo.defaultHostname, Mycila::AppInfo.defaultSSID, config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
+  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD).c_str(), {config.get(KEY_WIFI_SSID).c_str(), config.get(KEY_WIFI_PASSWORD).c_str(), config.getBool(KEY_ENABLE_AP_MODE)});
 
   // ZCD + Dimmers
   zcdTask.forceRun();

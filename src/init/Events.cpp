@@ -114,14 +114,14 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       output2.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat() / 100;
 
     } else if (key == KEY_NTP_TIMEZONE) {
-      Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+      Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE).c_str());
 
     } else if (key == KEY_NTP_SERVER) {
       if (!config.getBool(KEY_ENABLE_AP_MODE))
-        Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
+        Mycila::NTP.sync(config.get(KEY_NTP_SERVER).c_str());
 
     } else if (key == KEY_HA_DISCOVERY_TOPIC) {
-      haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
+      haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC).c_str());
 
     } else if (key == KEY_ENABLE_LIGHTS) {
       lights.end();

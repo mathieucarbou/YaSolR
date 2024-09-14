@@ -23,7 +23,7 @@ Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* pa
   if (!config.getBool(KEY_ENABLE_AP_MODE)) {
     // NTP
     logger.info(TAG, "Enable NTP");
-    Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
+    Mycila::NTP.sync(config.get(KEY_NTP_SERVER).c_str());
 
     // mDNS
 #ifndef ESPCONNECT_NO_MDNS

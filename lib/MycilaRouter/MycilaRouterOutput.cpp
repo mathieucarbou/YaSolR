@@ -230,7 +230,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
     }
   }
 
-  const int inRange = Time::timeInRange(timeInfo, config.autoStartTime, config.autoStopTime);
+  const int inRange = Time::timeInRange(timeInfo, config.autoStartTime.c_str(), config.autoStopTime.c_str());
   if (inRange == -1) {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Time range %s to %s is invalid: stopping Auto Bypass '%s'", config.autoStartTime.c_str(), config.autoStopTime.c_str(), _name);
