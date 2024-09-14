@@ -13,6 +13,8 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
 
   const bool debug = config.getBool(KEY_ENABLE_DEBUG);
 
+  loggingMiddleware.setEnabled(debug);
+
   if (debug) {
     logger.setLevel(debug ? ARDUHAL_LOG_LEVEL_DEBUG : ARDUHAL_LOG_LEVEL_INFO);
     esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));

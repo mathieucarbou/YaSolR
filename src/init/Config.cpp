@@ -167,12 +167,10 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
   WebSerial.setInput(false);
 #endif
-  WebSerial.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD).c_str());
   WebSerial.begin(&webServer, "/console");
   logger.forwardTo(&WebSerial);
 
   // Dashboard
-  dashboard.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD).c_str());
 #ifdef APP_MODEL_PRO
   dashboard.setTitle(Mycila::AppInfo.nameModel.c_str());
 #endif

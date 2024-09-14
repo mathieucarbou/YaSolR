@@ -147,8 +147,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       response->setLength();
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   // config
 
@@ -157,8 +156,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", config.backup());
       response->addHeader("Content-Disposition", "attachment; filename=\"config.txt\"");
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on(
@@ -181,8 +179,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           request->_tempFile.write(data, len);
         if (final)
           request->_tempFile.close();
-      })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+      });
 
   webServer
     .on(
@@ -207,8 +204,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           request->_tempFile.write(data, len);
         if (final)
           request->_tempFile.close();
-      })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+      });
 
   webServer
     .on("/api/config", HTTP_POST, [](AsyncWebServerRequest* request) {
@@ -222,8 +218,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       }
       request->send(200);
       config.set(settings);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/config", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -231,8 +226,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       config.toJson(response->getRoot());
       response->setLength();
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   // system
 
@@ -240,22 +234,19 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
     .on("/api/system/restart", HTTP_ANY, [](AsyncWebServerRequest* request) {
       restartTask.resume();
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/system/safeboot", HTTP_ANY, [](AsyncWebServerRequest* request) {
       safeBootTask.resume();
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/system/reset", HTTP_ANY, [](AsyncWebServerRequest* request) {
       resetTask.resume();
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/system", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -264,8 +255,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       systemInfoToJson(root);
       response->setLength();
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   // grid
 
@@ -278,8 +268,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       Mycila::Grid::toJson(root, metrics);
       response->setLength();
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   // router relays
 
@@ -294,8 +283,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           routerRelay1.tryRelayState(false, duration);
       }
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/router/relay2", HTTP_POST, [](AsyncWebServerRequest* request) {
@@ -308,8 +296,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           routerRelay2.tryRelayState(false, duration);
       }
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   // router dimmers
 
@@ -318,16 +305,14 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       if (request->hasParam("duty_cycle", true))
         output1.setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/router/output2/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (request->hasParam("duty_cycle", true))
         output2.setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   // router bypass
 
@@ -341,8 +326,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           output1.setBypassOff();
       }
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/router/output2/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
@@ -354,8 +338,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           output2.setBypassOff();
       }
       request->send(200);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api/router", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -391,8 +374,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       response->setLength();
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/api", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -414,6 +396,5 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       response->setLength();
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 });

@@ -16,6 +16,16 @@ extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_
 Mycila::Task initWebTask("Init Web", [](void* params) {
   logger.info(TAG, "Initializing HTTP Endpoints");
 
+  loggingMiddleware.setOutput(Serial);
+
+  authMiddleware.setAuthType(AuthenticationMiddleware::AuthType::AUTH_DIGEST);
+  authMiddleware.setRealm("YaSolR");
+  authMiddleware.setUsername(YASOLR_ADMIN_USERNAME);
+  authMiddleware.setPassword(config.get(KEY_ADMIN_PASSWORD).c_str());
+
+  webServer.addMiddleware(&loggingMiddleware);
+  webServer.addMiddleware(&authMiddleware);
+
   webServer.rewrite("/dash/assets/logo/mini", "/logo-icon");
   webServer.rewrite("/dash/assets/logo/large", "/logo");
   webServer.rewrite("/dash/assets/logo", "/logo");
@@ -49,8 +59,7 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
       AsyncWebServerResponse* response = request->beginResponse(200, "text/html", config_html_gz_start, config_html_gz_end - config_html_gz_start);
       response->addHeader("Content-Encoding", "gzip");
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
   webServer
     .on("/timezones", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -58,10 +67,8 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
       Mycila::NTP.timezonesToJsonArray(response->getRoot().as<JsonArray>());
       response->setLength();
       request->send(response);
-    })
-    .setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
+    });
 
-  wsDebugPID.setAuthentication(YASOLR_ADMIN_USERNAME, config.get(KEY_ADMIN_PASSWORD));
   wsDebugPID.onEvent([](AsyncWebSocket* server, AsyncWebSocketClient* client, AwsEventType type, void* arg, uint8_t* data, size_t len) {
     if (type == WS_EVT_CONNECT) {
       logger.info(TAG, "Websocket client connected to: /ws/pid/csv");
