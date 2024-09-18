@@ -5,6 +5,7 @@
 #include <YaSolR.h>
 
 #include <AsyncJson.h>
+#include <StreamString.h>
 #include <YaSolRWebsite.h>
 
 #include <map>
@@ -153,7 +154,10 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/config/backup", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", config.backup());
+      String body;
+      body.reserve(4096);
+      config.backup(body);
+      AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", body);
       response->addHeader("Content-Disposition", "attachment; filename=\"config.txt\"");
       request->send(response);
     });
@@ -163,22 +167,27 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       "/api/config/restore",
       HTTP_POST,
       [](AsyncWebServerRequest* request) {
-        if (!LittleFS.exists("/config.txt")) {
-          return request->send(400, "text/plain", "No config.txt file uploaded");
+        if (!request->_tempObject) {
+          return request->send(400, "text/plain", "No config file uploaded");
         }
-        File cfg = LittleFS.open("/config.txt", "r");
-        const String data = cfg.readString();
-        cfg.close();
-        config.restore(data);
+        StreamString* buffer = reinterpret_cast<StreamString*>(request->_tempObject);
+        config.restore(*buffer);
+        delete buffer;
+        request->_tempObject = nullptr;
         request->send(200, "text/plain", "OK");
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
-        if (!index)
-          request->_tempFile = LittleFS.open("/config.txt", "w");
-        if (len)
-          request->_tempFile.write(data, len);
-        if (final)
-          request->_tempFile.close();
+        if (!index) {
+          if (request->_tempObject) {
+            delete reinterpret_cast<StreamString*>(request->_tempObject);
+          }
+          StreamString* buffer = new StreamString();
+          buffer->reserve(4096);
+          request->_tempObject = buffer;
+        }
+        if (len) {
+          reinterpret_cast<StreamString*>(request->_tempObject)->write(data, len);
+        }
       });
 
   webServer
