@@ -31,12 +31,12 @@ extern Mycila::Logger logger;
 
 // Mycila::ZCD
 
-void Mycila::ZCD::begin(const int8_t pin, const uint16_t semiPeriod) {
+void Mycila::ZCD::begin(const int8_t pin, const uint32_t semiPeriod) {
   if (_enabled)
     return;
 
   if (!semiPeriod) {
-    LOGE(TAG, "Disable Dimmer on pin %" PRId8 ": Invalid semi-period: %" PRIu16 " us", pin, semiPeriod);
+    LOGE(TAG, "Disable Dimmer on pin %" PRId8 ": Invalid semi-period: %" PRIu32 " us", pin, semiPeriod);
     return;
   }
 
@@ -48,7 +48,7 @@ void Mycila::ZCD::begin(const int8_t pin, const uint16_t semiPeriod) {
     return;
   }
 
-  LOGI(TAG, "Enable Zero-Cross Detection on pin %" PRId8 " with semi-period %" PRIu16 " us", _pin, semiPeriod);
+  LOGI(TAG, "Enable Zero-Cross Detection on pin %" PRId8 " with semi-period %" PRIu32 " us", _pin, semiPeriod);
 
   // https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue
   Thyristor::semiPeriodShrinkMargin = 400;
@@ -69,6 +69,6 @@ void Mycila::ZCD::end() {
   }
 }
 
-uint16_t Mycila::ZCD::getSemiPeriod() const {
+uint32_t Mycila::ZCD::getSemiPeriod() const {
   return Thyristor::getSemiPeriod();
 }

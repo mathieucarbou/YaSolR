@@ -13,13 +13,13 @@
 namespace Mycila {
   class ZCD {
     public:
-      void begin(const int8_t pin, const uint16_t semiPeriod);
+      void begin(const int8_t pin, const uint32_t semiPeriod);
       void end();
 
       gpio_num_t getPin() const { return _pin; }
       bool isEnabled() const { return _enabled; }
 
-      uint16_t getSemiPeriod() const;
+      uint32_t getSemiPeriod() const;
 
 #ifdef MYCILA_JSON_SUPPORT
       void zcdToJson(const JsonObject& root) const {

@@ -800,7 +800,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _relay2SwitchCount.set(String(relay2.getSwitchCount()).c_str());
   _udpMessageRateBuffer.set((String(udpMessageRateBuffer.rate()) + " msg/s").c_str());
   _zcdPulsePeriod.set((String(pulseAnalyzer.getPeriod()) + " us").c_str());
-  _zcdPulseLength.set((String(pulseAnalyzer.getLength()) + " us").c_str());
+  _zcdPulseLength.set((String(pulseAnalyzer.getWidth()) + " us").c_str());
   _time.set(Mycila::Time::getLocalStr().c_str());
   _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System::getUptime()).c_str());
 #ifdef APP_MODEL_TRIAL
