@@ -919,7 +919,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2.isEnabled(), ds18O2.getLastTime() > 0, YASOLR_LBL_114);
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected() && pzemO2.readAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2.isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys.isEnabled(), ds18Sys.getLastTime() > 0, YASOLR_LBL_114);
-  _status(_zcd, KEY_ENABLE_ZCD, true, zcd.isEnabled(), YASOLR_LBL_110);
+  _status(_zcd, KEY_ENABLE_ZCD, zcd.isEnabled(), pulseAnalyzer.isConnected(), YASOLR_LBL_110);
 #endif
 }
 
