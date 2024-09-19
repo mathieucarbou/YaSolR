@@ -28,7 +28,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
 #endif
 
   // setup config system
-  config.begin(80);
+  config.begin(120);
   config.configure(KEY_ADMIN_PASSWORD);
   config.configure(KEY_DISPLAY_ROTATION, "0");
   config.configure(KEY_DISPLAY_SPEED, "5");

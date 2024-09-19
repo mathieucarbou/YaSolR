@@ -1,0 +1,7 @@
+# Name,Type,SubType,Offset,Size,Flags
+nvs,data,nvs,36K,20K,
+otadata,data,ota,56K,8K,
+safeboot,app,factory,64K,640K,
+app,app,ota_0,704K,3264K,
+fs,data,spiffs,3968K,64K,
+coredump,data,coredump,4032K,64K,
