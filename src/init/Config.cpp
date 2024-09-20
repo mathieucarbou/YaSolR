@@ -23,7 +23,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  zcdTask.setInterval(2000 * Mycila::TaskDuration::MILLISECONDS);
+  zcdTask.setInterval(1500 * Mycila::TaskDuration::MILLISECONDS);
 #ifdef APP_MODEL_TRIAL
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif
