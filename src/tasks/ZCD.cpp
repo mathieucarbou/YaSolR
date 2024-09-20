@@ -4,49 +4,11 @@
  */
 #include <YaSolR.h>
 
-static uint32_t findBestSemiPeriod() {
-  float frequency = 0;
-  uint32_t semiPeriod = 0;
-
-  // first get res from the measurement tools
-  Mycila::Grid::Metrics gridMetrics;
-  grid.getMeasurements(gridMetrics);
-  if (!frequency)
-    frequency = round(gridMetrics.frequency);
-  if (!frequency)
-    frequency = round(pzemO1.getFrequency());
-  if (!frequency)
-    frequency = round(pzemO2.getFrequency());
-  if (frequency) {
-    semiPeriod = 1000000 / 2 / frequency;
-    logger.info(TAG, "Semi-period detected by a measurement device: %" PRIu32 " us", semiPeriod);
-    return semiPeriod;
-  }
-
-  // otherwise try get res from the configuration
-  frequency = config.get(KEY_GRID_FREQUENCY).toInt();
-  if (frequency) {
-    semiPeriod = 1000000 / 2 / frequency;
-    logger.info(TAG, "Semi-period derived from configured frequency: %" PRIu32 " us", semiPeriod);
-    return semiPeriod;
-  }
-
-  // otherwise use auto-detection
-  frequency = round(pulseAnalyzer.getFrequency());
-  if (frequency) {
-    semiPeriod = 1000000 / frequency;
-    logger.info(TAG, "Semi-period detected by pulse analyzer: %" PRIu32 " us", semiPeriod);
-    return semiPeriod;
-  }
-
-  return 0;
-}
-
 Mycila::Task zcdTask("ZCD", [](void* params) {
   // if the user is asking to disable ZCD, and it is starting or running, we stop it
   if (!config.getBool(KEY_ENABLE_ZCD)) {
     if (zcd.isEnabled() || pulseAnalyzer.isEnabled()) {
-      logger.warn(TAG, "ZCD disabled, stopping ZCD and PulseAnalyzer");
+      logger.warn(TAG, "ZCD disabled, stopping ZCD and Pulse Analyzer");
       zcd.end();
       pulseAnalyzer.end();
     }
@@ -62,10 +24,13 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
   // => ZCD disabled.
 
   // try to find the semiPeriod
-  uint32_t semiPeriod = findBestSemiPeriod();
+  const float frequency = detectGridFrequency();
 
-  // if we have a semiPeriod, we start ZCD
-  if (semiPeriod) {
+  if (frequency) {
+    const uint32_t semiPeriod = 1000000 / 2 / frequency;
+    logger.info(TAG, "Semi-period: %" PRIu32 " us, Grid Frequency: %.2f Hz", semiPeriod, frequency);
+
+    // if we have a semiPeriod, we start ZCD
     pulseAnalyzer.end();
     zcd.begin(config.get(KEY_PIN_ZCD).toInt(), semiPeriod);
     if (zcd.isEnabled()) {
@@ -73,16 +38,14 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
       dimmer1Task.resume();
       dimmer2Task.resume();
     }
-    return;
-  }
 
-  // => ZCD switch turned + ZCD disabled + no semiPeriod => we need start analyser or wait for results
-
-  if (!pulseAnalyzer.isEnabled()) {
+  } else if (!pulseAnalyzer.isEnabled()) {
+    // => ZCD switch turned + ZCD disabled + no semiPeriod + analyzer off => we need start analyser
     logger.info(TAG, "Starting PulseAnalyzer");
     pulseAnalyzer.begin(config.get(KEY_PIN_ZCD).toInt());
-    return;
-  }
 
-  logger.warn(TAG, "Waiting for ZCD pulse analysis to complete...");
+  } else {
+    // => ZCD switch turned + ZCD disabled + no semiPeriod + analyzer running => we need to wait
+    logger.warn(TAG, "Waiting for ZCD pulse analysis to complete...");
+  }
 });

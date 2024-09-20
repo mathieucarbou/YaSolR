@@ -140,3 +140,5 @@ extern Mycila::Task initRestApiTask;
 extern Mycila::Task initWebTask;
 
 extern Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
+
+extern float detectGridFrequency();

@@ -773,11 +773,6 @@ void YaSolR::WebsiteClass::updateCards() {
   Mycila::RouterOutput::Metrics output2Measurements;
   output2.getMeasurements(output2Measurements);
 
-  float freq = gridMetrics.frequency;
-  if (freq == 0 && zcd.isEnabled()) {
-    freq = 1000000.0f / 2 / zcd.getSemiPeriod();
-  }
-
   // stats
   Mycila::System::Memory memory;
   Mycila::System::getMemory(memory);
@@ -788,7 +783,7 @@ void YaSolR::WebsiteClass::updateCards() {
   _deviceHeapUsed.set((String(memory.used) + " bytes").c_str());
   _gridEnergy.set((String(gridMetrics.energy, 3) + " kWh").c_str());
   _gridEnergyReturned.set((String(gridMetrics.energyReturned, 3) + " kWh").c_str());
-  _gridFrequency.set((String(freq) + " Hz").c_str());
+  _gridFrequency.set((String(detectGridFrequency(), 0) + " Hz").c_str());
   _networkAPIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::AP).toString().c_str());
   _networkEthIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
   _networkInterface.set(mode == Mycila::ESPConnect::Mode::AP ? "AP" : (mode == Mycila::ESPConnect::Mode::STA ? "WiFi" : (mode == Mycila::ESPConnect::Mode::ETH ? "Ethernet" : "")));
