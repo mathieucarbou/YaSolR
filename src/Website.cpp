@@ -1108,7 +1108,7 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
 
 void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput& output) {
   card.attachCallbackF([&card, &output, this](float value) {
-    if (output.isEnabled()) {
+    if (output.isDimmerEnabled()) {
       output.setDimmerDutyCycle(value / 100);
     }
     card.update(output.getDimmerDutyCycle() * 100);

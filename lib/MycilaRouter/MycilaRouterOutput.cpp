@@ -52,7 +52,7 @@ Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) const {
   root["bypass"] = isBypassOn() ? "on" : "off";
-  root["enabled"] = isEnabled();
+  root["enabled"] = isDimmerEnabled();
   root["state"] = getStateName();
   root["temperature"] = _temperature.orElse(0);
 

@@ -74,7 +74,7 @@ namespace Mycila {
 
       // dimmer
 
-      bool isEnabled() const { return _dimmer->isEnabled(); }
+      bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
       bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer && config.calibratedResistance > 0; }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
       bool isDimmerOn() const { return _dimmer->isOn(); }
