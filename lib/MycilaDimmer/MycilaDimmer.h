@@ -17,22 +17,49 @@
 namespace Mycila {
   class Dimmer {
     public:
-      ~Dimmer() { endDimmer(); }
+      Dimmer() {}
+      ~Dimmer() { end(); }
 
-      void beginDimmer(const int8_t pin, const uint16_t semiPeriod);
-      void endDimmer();
+      /**
+       * @brief Enable a dimmer on a specific GPIO pin
+       *
+       * @param pin: the GPIO pin to use for the dimmer
+       *
+       * @warning Dimmer won't be enabled if pin is invalid
+       * @warning Dimmer won't be activated until the ZCD is enabled
+       */
+      void begin(int8_t pin, uint32_t semiPeriod);
 
+      /**
+       * @brief Disable the dimmer
+       *
+       * @warning Dimmer won't be destroyed but won't turn on anymore even is a duty cycle is set.
+       */
+      void end();
+
+      /**
+       * @brief Check if the dimmer is enabled
+       */
+      bool isEnabled() const { return _enabled; }
+
+      /**
+       * @brief Get the GPIO pin used for the dimmer
+       */
       gpio_num_t getPin() const { return _pin; }
-      bool isDimmerEnabled() const { return _dimmer != nullptr; }
 
 #ifdef MYCILA_JSON_SUPPORT
+      /**
+       * @brief Serialize Dimmer information to a JSON object
+       *
+       * @param root: the JSON object to serialize to
+       */
       void dimmerToJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
-        root["enabled"] = _dimmer != nullptr;
+        root["enabled"] = _enabled;
         root["state"] = isOn() ? "on" : "off";
         root["angle_d"] = angle * RAD_TO_DEG;
         root["angle"] = angle;
-        root["delay"] = getFiringDelay();
+        root["delay"] = _delay;
         root["duty_cycle"] = _dutyCycle;
         root["duty_cycle_limit"] = _dutyCycleLimit;
         root["duty_cycle_min"] = _dutyCycleMin;
@@ -41,52 +68,106 @@ namespace Mycila {
       }
 #endif
 
+      /**
+       * @brief Turn on the dimmer at full power
+       */
       void on() { setDutyCycle(1); }
+
+      /**
+       * @brief Turn off the dimmer
+       */
       void off() { setDutyCycle(0); }
+
+      /**
+       * @brief Check if the dimmer is off
+       */
       bool isOff() const { return _dutyCycle <= _dutyCycleMin; }
+
+      /**
+       * @brief Check if the dimmer is on
+       */
       bool isOn() const { return _dutyCycle > _dutyCycleMin; }
+
+      /**
+       * @brief Check if the dimmer is on at full power
+       */
       bool isOnAtFullPower() const { return _dutyCycle >= _dutyCycleMax; }
 
-      // Power Duty Cycle [0, 1]
-      // At 0% power, duty == 0
-      // At 100% power, duty == 1
+      /**
+       * @brief Set the power duty
+       *
+       * @param dutyCycle: the power duty cycle in the range [0.0, 1.0]
+       */
       void setDutyCycle(float dutyCycle);
 
-      // set the maximum duty [0, 1]
+      /**
+       * @brief Set the power duty cycle limit of the dimmer. The duty cycle will be clamped to this limit.
+       *
+       * @param limit: the power duty cycle limit in the range [0.0, 1.0]
+       */
       void setDutyCycleLimit(float limit);
 
-      // Duty remapping (equivalent to Shelly Dimmer remapping feature)
-      // remap the duty minimum and maximum values to be a new ones
-      // useful to calibrate the dimmer when using for example a PWM signal to 0-10V analog convertor connected to a voltage regulator which is only working in a specific voltage range like 1-8V
+      /**
+       * @brief Duty remapping (equivalent to Shelly Dimmer remapping feature).
+       * Useful to calibrate the dimmer when using for example a PWM signal to 0-10V analog convertor connected to a voltage regulator which is only working in a specific voltage range like 1-8V.
+       *
+       * @param min: Set the new "0" value for the power duty cycle. The duty cycle in the range [0.0, 1.0] will be remapped to [min, max].
+       */
       void setDutyCycleMin(float min);
+
+      /**
+       * @brief Duty remapping (equivalent to Shelly Dimmer remapping feature).
+       * Useful to calibrate the dimmer when using for example a PWM signal to 0-10V analog convertor connected to a voltage regulator which is only working in a specific voltage range like 1-8V.
+       *
+       * @param max: Set the new "1" value for the power duty cycle. The duty cycle in the range [0.0, 1.0] will be remapped to [min, max].
+       */
       void setDutyCycleMax(float max);
 
+      /**
+       * @brief Get the power duty cycle of the dimmer
+       */
       float getDutyCycle() const { return _dutyCycle; }
+
+      /**
+       * @brief Get the power duty cycle limit of the dimmer
+       */
       float getDutyCycleLimit() const { return _dutyCycleLimit; }
+
+      /**
+       * @brief Get the remapped "0" of the dimmer duty cycle
+       */
       float getDutyCycleMin() const { return _dutyCycleMin; }
+
+      /**
+       * @brief Get the remapped "1" of the dimmer duty cycle
+       */
       float getDutyCycleMax() const { return _dutyCycleMax; }
 
-      // Delay [0, semi-period] us
-      // Where semi-period = 1000000 / 2 / frequency (50h: 10000 us, 60Hz: 8333 us)
-      // At 0% power, delay is equal to the semi-period
-      // At 100% power, the delay is 0 us
-      uint16_t getFiringDelay() const { return isDimmerEnabled() ? _dimmer->getDelay() : _semiPeriod; }
+      /**
+       * @brief Get the firing delay in us of the dimmer in the range [0, semi-period]
+       * At 0% power, delay is equal to the semi-period.
+       * At 100% power, the delay is 0 us
+       * If the firing delay is UINT32_MAX, the dimmer is off
+       */
+      uint32_t getFiringDelay() const { return _delay; }
 
-      // Phase angle [0, PI] rad
-      // At 0% power, the phase angle is equal to PI
-      // At 100% power, the phase angle is equal to 0
-      float getPhaseAngle() const {
-        // angle_rad = PI * delay_us / period_us
-        return _semiPeriod == 0 ? PI : PI * getFiringDelay() / _semiPeriod;
-      }
+      /**
+       * @brief Get the phase angle in radians of the dimmer in the range [0, PI]
+       * At 0% power, the phase angle is equal to PI
+       * At 100% power, the phase angle is equal to 0
+       */
+      float getPhaseAngle() const { return _delay >= _semiPeriod ? PI : PI * _delay / _semiPeriod; }
 
     private:
+      bool _enabled = false;
       gpio_num_t _pin = GPIO_NUM_NC;
-      Thyristor* _dimmer = nullptr;
-      uint16_t _semiPeriod = 0;
+      uint32_t _semiPeriod = 0;
+      float _dutyCycle = 0;
+      float _dutyCycleLimit = 1;
       float _dutyCycleMin = 0;
       float _dutyCycleMax = 1;
-      float _dutyCycleLimit = 1;
-      float _dutyCycle = 0;
+      void _disable();
+      uint32_t _delay = UINT32_MAX;
+      Thyristor* _dimmer = nullptr;
   };
 } // namespace Mycila

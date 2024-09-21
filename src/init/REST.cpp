@@ -83,8 +83,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       grid.toJson(root["grid"].to<JsonObject>());
       jsy.toJson(root["jsy"].to<JsonObject>());
-      zcd.zcdToJson(root["zcd"].to<JsonObject>());
-      pulseAnalyzer.toJson(root["zcd_pulse_analyzer"].to<JsonObject>());
+      pulseAnalyzer.toJson(root["pulse_analyzer"].to<JsonObject>());
       pidController.toJson(root["pid"].to<JsonObject>());
 
       // router

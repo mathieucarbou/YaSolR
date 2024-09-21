@@ -5,13 +5,13 @@
 #include <YaSolR.h>
 
 Mycila::Task dimmer1Task("Dimmer 1", Mycila::TaskType::ONCE, [](void* params) {
-  if (dimmerO1.isDimmerEnabled()) {
-    dimmerO1.endDimmer();
+  if (dimmerO1.isEnabled()) {
+    dimmerO1.end();
     delay(10);
   }
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && zcd.isEnabled()) {
-    dimmerO1.beginDimmer(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), zcd.getSemiPeriod());
-    if (dimmerO1.isDimmerEnabled()) {
+    dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), zcd.getSemiPeriod());
+    if (dimmerO1.isEnabled()) {
       dimmerO1.setDutyCycleMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toFloat() / 100);
       dimmerO1.setDutyCycleMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toFloat() / 100);
       dimmerO1.setDutyCycleLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toFloat() / 100);
@@ -20,13 +20,13 @@ Mycila::Task dimmer1Task("Dimmer 1", Mycila::TaskType::ONCE, [](void* params) {
 });
 
 Mycila::Task dimmer2Task("Dimmer 2", Mycila::TaskType::ONCE, [](void* params) {
-  if (dimmerO2.isDimmerEnabled()) {
-    dimmerO2.endDimmer();
+  if (dimmerO2.isEnabled()) {
+    dimmerO2.end();
     delay(10);
   }
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && zcd.isEnabled()) {
-    dimmerO2.beginDimmer(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), zcd.getSemiPeriod());
-    if (dimmerO2.isDimmerEnabled()) {
+    dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), zcd.getSemiPeriod());
+    if (dimmerO2.isEnabled()) {
       dimmerO2.setDutyCycleMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toFloat() / 100);
       dimmerO2.setDutyCycleMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toFloat() / 100);
       dimmerO2.setDutyCycleLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toFloat() / 100);

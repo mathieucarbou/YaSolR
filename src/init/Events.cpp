@@ -143,11 +143,11 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       if (config.getBool(KEY_ENABLE_OUTPUT2_DS18))
         ds18O2.begin(config.get(KEY_PIN_OUTPUT2_DS18).toInt());
 
-    } else if (key == KEY_ENABLE_ZCD) {
-      zcdTask.requestEarlyRun();
-
     } else if (key == KEY_ENABLE_MQTT) {
       mqttConfigTask.resume();
+
+    } else if (key == KEY_ENABLE_ZCD) {
+      zcdTask.requestEarlyRun();
 
     } else if (key == KEY_ENABLE_OUTPUT1_DIMMER) {
       dimmer1Task.resume();
