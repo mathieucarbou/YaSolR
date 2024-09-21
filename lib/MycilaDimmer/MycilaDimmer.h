@@ -11,6 +11,13 @@
   #include <ArduinoJson.h>
 #endif
 
+/**
+ * Optional resolution, 15bits max
+ */
+#ifndef MYCILA_DIMMER_RESOLUTION
+  #define MYCILA_DIMMER_RESOLUTION 12
+#endif
+
 namespace Mycila {
   class Dimmer {
     public:
@@ -43,6 +50,11 @@ namespace Mycila {
        * @brief Get the GPIO pin used for the dimmer
        */
       gpio_num_t getPin() const { return _pin; }
+
+      /**
+       * @brief Get the semi-period of the dimmer in us
+       */
+      uint32_t getSemiPeriod() const { return _semiPeriod; }
 
 #ifdef MYCILA_JSON_SUPPORT
       /**
@@ -123,7 +135,7 @@ namespace Mycila {
       /**
        * @brief Get the power duty cycle of the dimmer
        */
-      float getDutyCycle() const { return _dutyCycle; }
+      float getDutyCycle() const { return _enabled ? _dutyCycle : 0; }
 
       /**
        * @brief Get the power duty cycle limit of the dimmer
@@ -163,7 +175,6 @@ namespace Mycila {
       float _dutyCycleLimit = 1;
       float _dutyCycleMin = 0;
       float _dutyCycleMax = 1;
-      void _disable();
       uint32_t _delay = UINT32_MAX;
       Thyristor* _dimmer = nullptr;
   };
