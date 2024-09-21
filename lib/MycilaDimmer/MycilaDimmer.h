@@ -4,15 +4,12 @@
  */
 #pragma once
 
-#include <WString.h>
 #include <esp32-hal-gpio.h>
 #include <thyristor.h>
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
 #endif
-
-#include <functional>
 
 namespace Mycila {
   class Dimmer {
