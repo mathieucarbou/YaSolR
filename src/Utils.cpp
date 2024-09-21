@@ -25,9 +25,9 @@ float detectGridFrequency() {
   if (frequency)
     return frequency;
 
-  frequency = round(pulseAnalyzer.getFrequency());
+  frequency = round(pulseAnalyzer.getFrequency() / 2);
   if (frequency)
-    return frequency / 2;
+    return frequency;
 
   return 0;
 }
