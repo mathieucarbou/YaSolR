@@ -295,11 +295,11 @@ static Mycila::CircularBuffer<uint32_t, 10> queue;
 #endif
 
 #if defined(ARDUINO_ARCH_ESP8266)
-void HW_TIMER_IRAM_ATTR zero_cross_int() {
+void HW_TIMER_IRAM_ATTR Thyristor::zero_cross_int() {
 #elif defined(ARDUINO_ARCH_ESP32)
-void ARDUINO_ISR_ATTR zero_cross_int() {
+void ARDUINO_ISR_ATTR Thyristor::zero_cross_int() {
 #else
-void zero_cross_int() {
+void Thyristor::zero_cross_int() {
 #endif
 
 #if defined(FILTER_INT_PERIOD) || defined(MONITOR_FREQUENCY)
@@ -429,8 +429,9 @@ void zero_cross_int() {
 #if defined(MONITOR_FREQUENCY)
     if (!Thyristor::frequencyMonitorAlwaysEnabled) {
       interruptEnabled = false;
+  #ifdef THYRISTOR_ZCD
       detachInterrupt(digitalPinToInterrupt(Thyristor::syncPin));
-
+  #endif
       queue.reset();
 
       lastTime = 0;
@@ -438,10 +439,14 @@ void zero_cross_int() {
 #elif defined(FILTER_INT_MONITOR)
     lastTime = 0;
     interruptEnabled = false;
+  #ifdef THYRISTOR_ZCD
     detachInterrupt(digitalPinToInterrupt(Thyristor::syncPin));
+  #endif
 #else
     interruptEnabled = false;
+  #ifdef THYRISTOR_ZCD
     detachInterrupt(digitalPinToInterrupt(Thyristor::syncPin));
+  #endif
 #endif
 
     return;
@@ -627,7 +632,9 @@ void Thyristor::setDelay(uint16_t newDelay) {
     if (verbosity > 2)
       Serial.println("Re-enabling interrupt");
     interruptEnabled = true;
+#ifdef THYRISTOR_ZCD
     attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, syncDir);
+#endif
   }
 
   if (verbosity > 2) {
@@ -640,7 +647,9 @@ void Thyristor::setDelay(uint16_t newDelay) {
 }
 
 void Thyristor::begin() {
+#ifdef THYRISTOR_ZCD
   pinMode(syncPin, syncPullup ? INPUT_PULLUP : INPUT);
+#endif
 
 #if defined(ARDUINO_ARCH_ESP8266)
   timer1_attachInterrupt(activate_thyristors);
@@ -661,12 +670,16 @@ void Thyristor::begin() {
   // Starts immediately to sense the eletricity grid
 
   interruptEnabled = true;
+  #ifdef THYRISTOR_ZCD
   attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, syncDir);
+  #endif
 #endif
 }
 
 void Thyristor::end() {
+  #ifdef THYRISTOR_ZCD
   detachInterrupt(digitalPinToInterrupt(syncPin));
+  #endif
 #ifdef MONITOR_FREQUENCY
   queue.reset();
 #endif
@@ -732,7 +745,9 @@ void Thyristor::frequencyMonitorAlwaysOn(bool enable) {
 
     if (enable && !interruptEnabled) {
       interruptEnabled = true;
+#ifdef THYRISTOR_ZCDptEnabled = true;
       attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, syncDir);
+#endif
     }
     frequencyMonitorAlwaysEnabled = enable;
 
@@ -833,7 +848,9 @@ Thyristor* Thyristor::thyristors[Thyristor::N] = {nullptr};
 bool Thyristor::newDelayValues = false;
 bool Thyristor::updatingStruct = false;
 bool Thyristor::allThyristorsOnOff = true;
+#ifdef THYRISTOR_ZCD
 uint8_t Thyristor::syncPin = 255;
 decltype(RISING) Thyristor::syncDir = RISING;
 bool Thyristor::syncPullup = false;
+#endif
 bool Thyristor::frequencyMonitorAlwaysEnabled = true;

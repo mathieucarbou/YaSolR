@@ -45,6 +45,7 @@
 // #define MONITOR_FREQUENCY
 
 #define FILTER_INT_PERIOD
+#define THYRISTOR_ZCD
 
 /**
  * This is the core class of this library, that provides the finest control on thyristors.
@@ -112,6 +113,7 @@ class Thyristor {
       return nThyristors;
     };
 
+#ifdef THYRISTOR_ZCD
     /**
      * Set the pin dedicated to receive the AC zero cross signal.
      */
@@ -133,6 +135,7 @@ class Thyristor {
     static void setSyncPullup(bool pullup) {
       syncPullup = pullup;
     }
+#endif
 
     /**
      * Get frequency.
@@ -230,6 +233,7 @@ class Thyristor {
      */
     static bool allThyristorsOnOff;
 
+#ifdef THYRISTOR_ZCD
     /**
      * Pin receiving the external Zero Cross signal.
      */
@@ -244,6 +248,7 @@ class Thyristor {
      * Pin pullup active.
      */
     static bool syncPullup;
+#endif
 
     /**
      * 0) no messages
@@ -276,10 +281,11 @@ class Thyristor {
     uint16_t delay;
 
     friend void activate_thyristors();
-    friend void zero_cross_int();
     friend void turn_off_gates_int();
 
   public:
+    static void zero_cross_int();
+
 #ifdef FILTER_INT_PERIOD
     static int semiPeriodShrinkMargin;
     static int semiPeriodExpandMargin;
