@@ -34,7 +34,6 @@
 #include <MycilaTaskMonitor.h>
 #include <MycilaTrafficLight.h>
 #include <MycilaUtilities.h>
-#include <MycilaZCD.h>
 
 #ifdef APP_MODEL_TRIAL
   #include <MycilaTrial.h>
@@ -84,7 +83,6 @@ extern Mycila::RouterOutput output2;
 extern Mycila::RouterRelay routerRelay1;
 extern Mycila::RouterRelay routerRelay2;
 extern Mycila::TrafficLight lights;
-extern Mycila::ZCD zcd;
 
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task dashboardTask;
@@ -108,8 +106,6 @@ extern Mycila::Task mqttPublishConfigTask;
 extern Mycila::TaskManager pioTaskManager;
 extern Mycila::Task calibrationTask;
 extern Mycila::Task carouselTask;
-extern Mycila::Task dimmer1Task;
-extern Mycila::Task dimmer2Task;
 extern Mycila::Task displayTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;

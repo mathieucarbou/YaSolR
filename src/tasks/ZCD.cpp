@@ -4,48 +4,71 @@
  */
 #include <YaSolR.h>
 
+#include <thyristor.h>
+
 Mycila::Task zcdTask("ZCD", [](void* params) {
-  // if the user is asking to disable ZCD, and it is starting or running, we stop it
-  if (!config.getBool(KEY_ENABLE_ZCD)) {
-    if (zcd.isEnabled() || pulseAnalyzer.isEnabled()) {
-      logger.warn(TAG, "ZCD disabled, stopping ZCD and Pulse Analyzer");
-      zcd.end();
-      pulseAnalyzer.end();
-    }
+  const bool zcdSwitched = config.getBool(KEY_ENABLE_ZCD);
+  const bool dimmer1Switched = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
+  const bool dimmer2Switched = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
+  const bool online = pulseAnalyzer.isOnline();
+
+  // Check dimmers
+
+  if (!(dimmer1Switched && online) && dimmerO1.isEnabled()) {
+    dimmerO1.end();
+  }
+
+  if (!(dimmer2Switched && online) && dimmerO2.isEnabled()) {
+    dimmerO2.end();
+  }
+
+  // Check ZCD
+
+  if (!zcdSwitched) {
+    pulseAnalyzer.end();
+    dimmerO1.end();
+    dimmerO2.end();
+    Thyristor::end();
+    Thyristor::setSemiPeriod(0);
     return;
   }
 
-  // ZCD switch turned on
+  // => ZCD switch turned on
 
-  // if ZCD is already enabled, we do nothing
-  if (zcd.isEnabled())
+  // turn on Pulse Analyzer if off
+  if (!pulseAnalyzer.isEnabled()) {
+    logger.info(TAG, "Starting Pulse Analyzer");
+    pulseAnalyzer.begin(config.get(KEY_PIN_ZCD).toInt());
     return;
+  }
 
-  // => ZCD disabled.
+  // => ZCD switch turned on + Pulse Analyzer running
 
-  // try to find the semiPeriod
-  const float frequency = detectGridFrequency();
+  // check if ZCD is online (connected to the grid)
+  // this is required for dimmers to work
+  if (!online) {
+    logger.debug(TAG, "No electricity detected by ZCD module");
+    return;
+  }
 
-  if (frequency) {
-    const uint32_t semiPeriod = 1000000 / 2 / frequency;
-    logger.info(TAG, "Semi-period: %" PRIu32 " us, Grid Frequency: %.2f Hz", semiPeriod, frequency);
+  // => ZCD switch turned on + Pulse Analyzer online
 
-    // if we have a semiPeriod, we start ZCD
-    pulseAnalyzer.end();
-    zcd.begin(config.get(KEY_PIN_ZCD).toInt(), semiPeriod);
-    if (zcd.isEnabled()) {
-      logger.info(TAG, "ZCD started");
-      dimmer1Task.resume();
-      dimmer2Task.resume();
+  if (!Thyristor::getSemiPeriod() || (dimmer1Switched && !dimmerO1.isEnabled()) || (dimmer2Switched && !dimmerO2.isEnabled())) {
+    float frequency = detectGridFrequency();
+    uint32_t semiPeriod = 1000000 / 2 / frequency;
+
+    if (!Thyristor::getSemiPeriod()) {
+      logger.info(TAG, "Starting Thyristor with semi-period: %u" PRIu32, semiPeriod);
+      Thyristor::setSemiPeriod(semiPeriod);
+      Thyristor::begin();
     }
 
-  } else if (!pulseAnalyzer.isEnabled()) {
-    // => ZCD switch turned + ZCD disabled + no semiPeriod + analyzer off => we need start analyser
-    logger.info(TAG, "Starting PulseAnalyzer");
-    pulseAnalyzer.begin(config.get(KEY_PIN_ZCD).toInt());
+    if (dimmer1Switched && !dimmerO1.isEnabled()) {
+      dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), semiPeriod);
+    }
 
-  } else {
-    // => ZCD switch turned + ZCD disabled + no semiPeriod + analyzer running => we need to wait
-    logger.warn(TAG, "Waiting for ZCD pulse analysis to complete...");
+    if (dimmer2Switched && !dimmerO2.isEnabled()) {
+      dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), semiPeriod);
+    }
   }
 });

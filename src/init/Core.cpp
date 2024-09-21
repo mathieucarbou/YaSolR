@@ -15,8 +15,6 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   carouselTask.setManager(coreTaskManager);
   dashboardTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
-  dimmer1Task.setManager(coreTaskManager);
-  dimmer2Task.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
   safeBootTask.setManager(coreTaskManager);

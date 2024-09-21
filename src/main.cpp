@@ -23,7 +23,6 @@ Mycila::Relay bypassRelayO2;
 Mycila::Relay relay1;
 Mycila::Relay relay2;
 Mycila::TrafficLight lights;
-Mycila::ZCD zcd;
 
 Mycila::TaskManager coreTaskManager("y-core");
 Mycila::TaskManager jsyTaskManager("y-jsy");

@@ -295,11 +295,11 @@ static Mycila::CircularBuffer<uint32_t, 10> queue;
 #endif
 
 #if defined(ARDUINO_ARCH_ESP8266)
-void HW_TIMER_IRAM_ATTR Thyristor::zero_cross_int() {
+void HW_TIMER_IRAM_ATTR Thyristor::zero_cross_int(void* arg) {
 #elif defined(ARDUINO_ARCH_ESP32)
-void ARDUINO_ISR_ATTR Thyristor::zero_cross_int() {
+void ARDUINO_ISR_ATTR Thyristor::zero_cross_int(void* arg) {
 #else
-void Thyristor::zero_cross_int() {
+void Thyristor::zero_cross_int(void* arg) {
 #endif
 
 #if defined(FILTER_INT_PERIOD) || defined(MONITOR_FREQUENCY)

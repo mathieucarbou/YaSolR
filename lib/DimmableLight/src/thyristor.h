@@ -45,7 +45,7 @@
 // #define MONITOR_FREQUENCY
 
 #define FILTER_INT_PERIOD
-#define THYRISTOR_ZCD
+// #define THYRISTOR_ZCD
 
 /**
  * This is the core class of this library, that provides the finest control on thyristors.
@@ -284,7 +284,7 @@ class Thyristor {
     friend void turn_off_gates_int();
 
   public:
-    static void zero_cross_int();
+    static void zero_cross_int(void* arg);
 
 #ifdef FILTER_INT_PERIOD
     static int semiPeriodShrinkMargin;

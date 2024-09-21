@@ -150,10 +150,10 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       zcdTask.requestEarlyRun();
 
     } else if (key == KEY_ENABLE_OUTPUT1_DIMMER) {
-      dimmer1Task.resume();
+      zcdTask.requestEarlyRun();
 
     } else if (key == KEY_ENABLE_OUTPUT2_DIMMER) {
-      dimmer2Task.resume();
+      zcdTask.requestEarlyRun();
 
     } else if (key == KEY_ENABLE_OUTPUT1_RELAY) {
       bypassRelayO1.end();
