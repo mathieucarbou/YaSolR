@@ -178,7 +178,7 @@
 #define YASOLR_LBL_176 "D Term (W)"
 #define YASOLR_LBL_177 "Chart Reset"
 #define YASOLR_LBL_178 YASOLR_LBL_083 " Information"
-#define YASOLR_LBL_179 "ZCD Disabled"
+#define YASOLR_LBL_179 "ZCD not started"
 #define YASOLR_LBL_180 "Not paired"
 #define YASOLR_LBL_181 YASOLR_LBL_046 " " YASOLR_LBL_048 " MQTT Topic"
 #define YASOLR_LBL_182 YASOLR_LBL_070 " " YASOLR_LBL_048 " MQTT Topic"
