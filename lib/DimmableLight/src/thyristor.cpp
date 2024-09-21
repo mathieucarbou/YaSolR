@@ -66,17 +66,13 @@ static const uint16_t semiPeriodLength = 8333;
 static uint16_t semiPeriodLength = 0;
 #endif
 
-// maximum supported pulse width in microseconds
-#define MAX_PULSE_WIDTH 4000
-#define MIN_PULSE_WIDTH 100
-
 // These margins are precautions against noise, electrical spikes and frequency skew errors.
 // Activation delays lower than *startMargin* turn the thyristor fully ON.
 // Activation delays higher than *endMargin* turn the thyristor fully OFF.
 // Tune this parameters accordingly to your setup (electrical network, MCU, and ZC circuitry).
 // Values are expressed in microseconds.
 static const uint16_t startMargin = 200;
-static const uint16_t endMargin = 500;
+static const uint16_t endMargin = 200;
 
 // Merge Period represents the time span in which 2 (or more) very near delays are merged (the
 // higher ones are merged in the smaller one). This could be necessary for 2 main reasons:
@@ -102,7 +98,7 @@ static const uint16_t mergePeriod = 20;
 // Period in microseconds before the end of the semiperiod when an interrupt is triggered to
 // turn off all gate signals. This parameter doesn't have any effect if you enable
 // PREDEFINED_PULSE_LENGTH.
-static const uint16_t gateTurnOffTime = 300;
+static const uint16_t gateTurnOffTime = 100;
 
 static_assert(endMargin - gateTurnOffTime > mergePeriod, "endMargin must be greater than "
                                                          "(gateTurnOffTime + mergePeriod)");
@@ -281,7 +277,7 @@ void activate_thyristors() {
 
 #ifdef FILTER_INT_PERIOD
 // In microsecond
-int Thyristor::semiPeriodShrinkMargin = 50;
+int Thyristor::semiPeriodShrinkMargin = 500;
 int Thyristor::semiPeriodExpandMargin = 50;
 #endif
 
