@@ -58,7 +58,7 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
     uint32_t semiPeriod = 1000000 / 2 / frequency;
 
     if (!Thyristor::getSemiPeriod()) {
-      logger.info(TAG, "Starting Thyristor with semi-period: %u" PRIu32, semiPeriod);
+      logger.info(TAG, "Starting Thyristor with semi-period: %" PRIu32 " us", semiPeriod);
       Thyristor::setSemiPeriod(semiPeriod);
       Thyristor::begin();
     }
