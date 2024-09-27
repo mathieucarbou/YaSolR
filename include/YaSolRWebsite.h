@@ -70,9 +70,6 @@ namespace YaSolR {
       Statistic _relay1SwitchCount = Statistic(&dashboard, YASOLR_LBL_032);
       Statistic _relay2SwitchCount = Statistic(&dashboard, YASOLR_LBL_033);
 
-      Statistic _zcdPulseLength = Statistic(&dashboard, YASOLR_LBL_187);
-      Statistic _zcdPulsePeriod = Statistic(&dashboard, YASOLR_LBL_185);
-
       Statistic _time = Statistic(&dashboard, YASOLR_LBL_034);
       Statistic _uptime = Statistic(&dashboard, YASOLR_LBL_035);
 #ifdef APP_MODEL_TRIAL

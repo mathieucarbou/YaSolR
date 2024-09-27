@@ -184,9 +184,9 @@
 #define YASOLR_LBL_182 YASOLR_LBL_070 " " YASOLR_LBL_048 " MQTT Topic"
 #define YASOLR_LBL_183 YASOLR_LBL_046 " Dimmer Min/Max Remapping"
 #define YASOLR_LBL_184 YASOLR_LBL_070 " Dimmer Min/Max Remapping"
-#define YASOLR_LBL_185 "ZCD: Measured Pulse Period"
+#define YASOLR_LBL_185
 #define YASOLR_LBL_186 "Resistance Value Detection"
-#define YASOLR_LBL_187 "ZCD: Measured Pulse Length"
+#define YASOLR_LBL_187
 #define YASOLR_LBL_030 "Relay: " YASOLR_LBL_046 " Bypass Relay Switch Count"
 #define YASOLR_LBL_031 "Relay: " YASOLR_LBL_070 " Bypass Relay Switch Count"
 #define YASOLR_LBL_032 "Relay: " YASOLR_LBL_074 " Switch Count"

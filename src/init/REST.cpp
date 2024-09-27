@@ -10,63 +10,6 @@
 
 #include <map>
 
-static void systemInfoToJson(JsonObject& root) {
-  Mycila::System::Memory memory;
-  Mycila::System::getMemory(memory);
-
-  root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
-  root["app"]["model"] = Mycila::AppInfo.model;
-  root["app"]["name"] = Mycila::AppInfo.name;
-  root["app"]["version"] = Mycila::AppInfo.version;
-
-  root["device"]["boots"] = Mycila::System::getBootCount();
-  root["device"]["cores"] = ESP.getChipCores();
-  root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
-  root["device"]["heap"]["total"] = memory.total;
-  root["device"]["heap"]["usage"] = memory.usage;
-  root["device"]["heap"]["used"] = memory.used;
-  root["device"]["id"] = Mycila::AppInfo.id;
-  root["device"]["model"] = ESP.getChipModel();
-  root["device"]["revision"] = ESP.getChipRevision();
-  root["device"]["uptime"] = Mycila::System::getUptime();
-
-  root["firmware"]["build"]["branch"] = Mycila::AppInfo.buildBranch;
-  root["firmware"]["build"]["hash"] = Mycila::AppInfo.buildHash;
-  root["firmware"]["build"]["timestamp"] = Mycila::AppInfo.buildDate;
-  root["firmware"]["debug"] = Mycila::AppInfo.debug;
-  root["firmware"]["filename"] = Mycila::AppInfo.firmware;
-
-  root["network"]["eth"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString();
-  root["network"]["eth"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
-
-  root["network"]["hostname"] = espConnect.getHostname();
-  root["network"]["ip_address"] = espConnect.getIPAddress().toString();
-  root["network"]["mac_address"] = espConnect.getMACAddress();
-  switch (espConnect.getMode()) {
-    case Mycila::ESPConnect::Mode::ETH:
-      root["network"]["mode"] = "eth";
-      break;
-    case Mycila::ESPConnect::Mode::STA:
-      root["network"]["mode"] = "wifi";
-      break;
-    case Mycila::ESPConnect::Mode::AP:
-      root["network"]["mode"] = "ap";
-      break;
-    default:
-      root["network"]["mode"] = "";
-      break;
-  }
-
-  root["network"]["ntp"] = YASOLR_STATE(Mycila::NTP.isSynced());
-
-  root["network"]["wifi"]["bssid"] = espConnect.getWiFiBSSID();
-  root["network"]["wifi"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString();
-  root["network"]["wifi"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA);
-  root["network"]["wifi"]["quality"] = espConnect.getWiFiSignalQuality();
-  root["network"]["wifi"]["rssi"] = espConnect.getWiFiRSSI();
-  root["network"]["wifi"]["ssid"] = espConnect.getWiFiSSID();
-}
-
 Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   logger.info(TAG, "Initializing REST API");
 
@@ -80,70 +23,79 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
+      float voltage = grid.getVoltage().value_or(0);
 
+      Mycila::AppInfo.toJson(root["app"].to<JsonObject>());
+      config.toJson(root["config"].to<JsonObject>());
       grid.toJson(root["grid"].to<JsonObject>());
       jsy.toJson(root["jsy"].to<JsonObject>());
-      pulseAnalyzer.toJson(root["pulse_analyzer"].to<JsonObject>());
-      pidController.toJson(root["pid"].to<JsonObject>());
+      espConnect.toJson(root["network"].to<JsonObject>());
 
-      // router
-      float voltage = grid.getVoltage().value_or(0);
-      router.toJson(root["router"].to<JsonObject>(), voltage);
+      // output 1
       output1.toJson(root["output1"].to<JsonObject>(), voltage);
-      output2.toJson(root["output2"].to<JsonObject>(), voltage);
       dimmerO1.dimmerToJson(root["output1"]["dimmer"].to<JsonObject>());
-      dimmerO2.dimmerToJson(root["output2"]["dimmer"].to<JsonObject>());
       ds18O1.toJson(root["output1"]["ds18"].to<JsonObject>());
-      ds18O2.toJson(root["output2"]["ds18"].to<JsonObject>());
       pzemO1.toJson(root["output1"]["pzem"].to<JsonObject>());
-      pzemO2.toJson(root["output2"]["pzem"].to<JsonObject>());
       bypassRelayO1.toJson(root["output1"]["relay"].to<JsonObject>());
+
+      // output 2
+      output2.toJson(root["output2"].to<JsonObject>(), voltage);
+      dimmerO2.dimmerToJson(root["output2"]["dimmer"].to<JsonObject>());
+      ds18O2.toJson(root["output2"]["ds18"].to<JsonObject>());
+      pzemO2.toJson(root["output2"]["pzem"].to<JsonObject>());
       bypassRelayO2.toJson(root["output2"]["relay"].to<JsonObject>());
+
+      pidController.toJson(root["pid"].to<JsonObject>());
+      pulseAnalyzer.toJson(root["pulse_analyzer"].to<JsonObject>());
 
       // relays
       relay1.toJson(root["relay1"].to<JsonObject>());
       relay2.toJson(root["relay2"].to<JsonObject>());
 
-      systemInfoToJson(root);
-      ds18Sys.toJson(root["ds18_sys"].to<JsonObject>());
-      lights.toJson(root["leds"].to<JsonObject>());
+      // router
+      router.toJson(root["router"].to<JsonObject>(), voltage);
+
+      // system
+      JsonObject system = root["system"].to<JsonObject>();
+      Mycila::System::toJson(system);
+      ds18Sys.toJson(system["ds18"].to<JsonObject>());
+      lights.toJson(system["leds"].to<JsonObject>());
 
       // stack
-      Mycila::TaskMonitor.toJson(root["stack"].to<JsonObject>());
+      Mycila::TaskMonitor.toJson(system["stack"].to<JsonObject>());
 
       // tasks
-      pioTaskManager.toJson(root["tasks"][pioTaskManager.getName()].to<JsonObject>());
-      coreTaskManager.toJson(root["tasks"][coreTaskManager.getName()].to<JsonObject>());
-      routingTaskManager.toJson(root["tasks"][routingTaskManager.getName()].to<JsonObject>());
-      jsyTaskManager.toJson(root["tasks"][jsyTaskManager.getName()].to<JsonObject>());
-      pzemTaskManager.toJson(root["tasks"][pzemTaskManager.getName()].to<JsonObject>());
-      mqttTaskManager.toJson(root["tasks"][mqttTaskManager.getName()].to<JsonObject>());
-
-      // config
-      config.toJson(root["config"].to<JsonObject>());
+      JsonObject tasks = system["task"].to<JsonObject>();
+      pioTaskManager.toJson(tasks[pioTaskManager.getName()].to<JsonObject>());
+      coreTaskManager.toJson(tasks[coreTaskManager.getName()].to<JsonObject>());
+      routingTaskManager.toJson(tasks[routingTaskManager.getName()].to<JsonObject>());
+      jsyTaskManager.toJson(tasks[jsyTaskManager.getName()].to<JsonObject>());
+      pzemTaskManager.toJson(tasks[pzemTaskManager.getName()].to<JsonObject>());
+      mqttTaskManager.toJson(tasks[mqttTaskManager.getName()].to<JsonObject>());
 
       // libs versions
-      root["library"]["ArduinoJson"] = ARDUINOJSON_VERSION;
-      root["library"]["AsyncTCP"] = ASYNCTCP_VERSION;
-      root["library"]["CRC"] = CRC_LIB_VERSION;
-      root["library"]["ESPAsyncWebServer"] = ASYNCWEBSERVER_VERSION;
-      root["library"]["MycilaConfig"] = MYCILA_CONFIG_VERSION;
-      root["library"]["MycilaDS18"] = MYCILA_DS18_VERSION;
-      root["library"]["MycilaEasyDisplay"] = MYCILA_EASY_DISPLAY_VERSION;
-      root["library"]["MycilaESPConnect"] = ESPCONNECT_VERSION;
-      root["library"]["MycilaHADiscovery"] = MYCILA_HA_VERSION;
-      root["library"]["MycilaJSY"] = MYCILA_JSY_VERSION;
-      root["library"]["MycilaLogger"] = MYCILA_LOGGER_VERSION;
-      root["library"]["MycilaMQTT"] = MYCILA_MQTT_VERSION;
-      root["library"]["MycilaNTP"] = MYCILA_NTP_VERSION;
-      root["library"]["MycilaPulseAnalyzer"] = MYCILA_PULSE_VERSION;
-      root["library"]["MycilaPZEM004Tv3"] = MYCILA_PZEM_VERSION;
-      root["library"]["MycilaRelay"] = MYCILA_RELAY_VERSION;
-      root["library"]["MycilaSystem"] = MYCILA_SYSTEM_VERSION;
-      root["library"]["MycilaTaskManager"] = MYCILA_TASK_MANAGER_VERSION;
-      root["library"]["MycilaTaskMonitor"] = MYCILA_TASK_MONITOR_VERSION;
-      root["library"]["MycilaTrafficLight"] = MYCILA_TRAFFIC_LIGHT_VERSION;
-      root["library"]["MycilaUtilities"] = MYCILA_UTILITIES_VERSION;
+      JsonObject library = system["lib"].to<JsonObject>();
+      library["ArduinoJson"] = ARDUINOJSON_VERSION;
+      library["AsyncTCP"] = ASYNCTCP_VERSION;
+      library["CRC"] = CRC_LIB_VERSION;
+      library["ESPAsyncWebServer"] = ASYNCWEBSERVER_VERSION;
+      library["MycilaConfig"] = MYCILA_CONFIG_VERSION;
+      library["MycilaDS18"] = MYCILA_DS18_VERSION;
+      library["MycilaEasyDisplay"] = MYCILA_EASY_DISPLAY_VERSION;
+      library["MycilaESPConnect"] = ESPCONNECT_VERSION;
+      library["MycilaHADiscovery"] = MYCILA_HA_VERSION;
+      library["MycilaJSY"] = MYCILA_JSY_VERSION;
+      library["MycilaLogger"] = MYCILA_LOGGER_VERSION;
+      library["MycilaMQTT"] = MYCILA_MQTT_VERSION;
+      library["MycilaNTP"] = MYCILA_NTP_VERSION;
+      library["MycilaPulseAnalyzer"] = MYCILA_PULSE_VERSION;
+      library["MycilaPZEM004Tv3"] = MYCILA_PZEM_VERSION;
+      library["MycilaRelay"] = MYCILA_RELAY_VERSION;
+      library["MycilaSystem"] = MYCILA_SYSTEM_VERSION;
+      library["MycilaTaskManager"] = MYCILA_TASK_MANAGER_VERSION;
+      library["MycilaTaskMonitor"] = MYCILA_TASK_MONITOR_VERSION;
+      library["MycilaTrafficLight"] = MYCILA_TRAFFIC_LIGHT_VERSION;
+      library["MycilaUtilities"] = MYCILA_UTILITIES_VERSION;
 
       response->setLength();
       request->send(response);
@@ -260,7 +212,62 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
     .on("/api/system", HTTP_GET, [](AsyncWebServerRequest* request) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
-      systemInfoToJson(root);
+
+      Mycila::System::Memory memory;
+      Mycila::System::getMemory(memory);
+
+      root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
+      root["app"]["model"] = Mycila::AppInfo.model;
+      root["app"]["name"] = Mycila::AppInfo.name;
+      root["app"]["version"] = Mycila::AppInfo.version;
+
+      root["device"]["boots"] = Mycila::System::getBootCount();
+      root["device"]["cores"] = ESP.getChipCores();
+      root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
+      root["device"]["heap"]["total"] = memory.total;
+      root["device"]["heap"]["usage"] = memory.usage;
+      root["device"]["heap"]["used"] = memory.used;
+      root["device"]["id"] = Mycila::AppInfo.id;
+      root["device"]["model"] = ESP.getChipModel();
+      root["device"]["revision"] = ESP.getChipRevision();
+      root["device"]["uptime"] = Mycila::System::getUptime();
+
+      root["firmware"]["build"]["branch"] = Mycila::AppInfo.buildBranch;
+      root["firmware"]["build"]["hash"] = Mycila::AppInfo.buildHash;
+      root["firmware"]["build"]["timestamp"] = Mycila::AppInfo.buildDate;
+      root["firmware"]["debug"] = Mycila::AppInfo.debug;
+      root["firmware"]["filename"] = Mycila::AppInfo.firmware;
+
+      root["network"]["eth"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString();
+      root["network"]["eth"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
+
+      root["network"]["hostname"] = espConnect.getHostname();
+      root["network"]["ip_address"] = espConnect.getIPAddress().toString();
+      root["network"]["mac_address"] = espConnect.getMACAddress();
+      switch (espConnect.getMode()) {
+        case Mycila::ESPConnect::Mode::ETH:
+          root["network"]["mode"] = "eth";
+          break;
+        case Mycila::ESPConnect::Mode::STA:
+          root["network"]["mode"] = "wifi";
+          break;
+        case Mycila::ESPConnect::Mode::AP:
+          root["network"]["mode"] = "ap";
+          break;
+        default:
+          root["network"]["mode"] = "";
+          break;
+      }
+
+      root["network"]["ntp"] = YASOLR_STATE(Mycila::NTP.isSynced());
+
+      root["network"]["wifi"]["bssid"] = espConnect.getWiFiBSSID();
+      root["network"]["wifi"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString();
+      root["network"]["wifi"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA);
+      root["network"]["wifi"]["quality"] = espConnect.getWiFiSignalQuality();
+      root["network"]["wifi"]["rssi"] = espConnect.getWiFiRSSI();
+      root["network"]["wifi"]["ssid"] = espConnect.getWiFiSSID();
+
       response->setLength();
       request->send(response);
     });

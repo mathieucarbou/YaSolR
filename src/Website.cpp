@@ -459,7 +459,6 @@ void YaSolR::WebsiteClass::initCards() {
   _deviceCores.set(String(ESP.getChipCores()).c_str());
   _deviceModel.set(ESP.getChipModel());
   _deviceRev.set(String(ESP.getChipRevision()).c_str());
-  _deviceHeapTotal.set((String(ESP.getHeapSize()) + " bytes").c_str());
   _deviceID.set(Mycila::AppInfo.id.c_str());
   _firmwareBuildHash.set(Mycila::AppInfo.buildHash.c_str());
   _firmwareBuildTimestamp.set(Mycila::AppInfo.buildDate.c_str());
@@ -779,8 +778,9 @@ void YaSolR::WebsiteClass::updateCards() {
   Mycila::ESPConnect::Mode mode = espConnect.getMode();
   _output1RelaySwitchCount.set(String(bypassRelayO1.getSwitchCount()).c_str());
   _output2RelaySwitchCount.set(String(bypassRelayO2.getSwitchCount()).c_str());
-  _deviceHeapUsage.set((String(memory.usage) + " %").c_str());
+  _deviceHeapTotal.set((String(memory.total) + " bytes").c_str());
   _deviceHeapUsed.set((String(memory.used) + " bytes").c_str());
+  _deviceHeapUsage.set((String(memory.usage) + " %").c_str());
   _gridEnergy.set((String(gridMetrics.energy, 3) + " kWh").c_str());
   _gridEnergyReturned.set((String(gridMetrics.energyReturned, 3) + " kWh").c_str());
   _gridFrequency.set((String(detectGridFrequency(), 0) + " Hz").c_str());
@@ -794,8 +794,6 @@ void YaSolR::WebsiteClass::updateCards() {
   _relay1SwitchCount.set(String(relay1.getSwitchCount()).c_str());
   _relay2SwitchCount.set(String(relay2.getSwitchCount()).c_str());
   _udpMessageRateBuffer.set((String(udpMessageRateBuffer.rate()) + " msg/s").c_str());
-  _zcdPulsePeriod.set((String(pulseAnalyzer.getPeriod()) + " us").c_str());
-  _zcdPulseLength.set((String(pulseAnalyzer.getWidth()) + " us").c_str());
   _time.set(Mycila::Time::getLocalStr().c_str());
   _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System::getUptime()).c_str());
 #ifdef APP_MODEL_TRIAL

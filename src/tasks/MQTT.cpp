@@ -58,7 +58,6 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
   mqtt.publish(baseTopic + "/system/device/boots", String(Mycila::System::getBootCount()), true);
   mqtt.publish(baseTopic + "/system/device/cores", String(ESP.getChipCores()), true);
   mqtt.publish(baseTopic + "/system/device/cpu_freq", String(ESP.getCpuFreqMHz()), true);
-  mqtt.publish(baseTopic + "/system/device/heap/total", String(ESP.getHeapSize()), true);
   mqtt.publish(baseTopic + "/system/device/id", Mycila::AppInfo.id, true);
   mqtt.publish(baseTopic + "/system/device/model", ESP.getChipModel(), true);
   yield();
@@ -94,6 +93,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   Mycila::System::Memory memory;
   Mycila::System::getMemory(memory);
 
+  mqtt.publish(baseTopic + "/system/device/heap/total", String(memory.total));
   mqtt.publish(baseTopic + "/system/device/heap/usage", String(memory.usage));
   mqtt.publish(baseTopic + "/system/device/heap/used", String(memory.used));
   mqtt.publish(baseTopic + "/system/device/uptime", String(Mycila::System::getUptime()));
