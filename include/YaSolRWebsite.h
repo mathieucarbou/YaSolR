@@ -209,7 +209,7 @@ namespace YaSolR {
       Card _mqttUser = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_098);
       Card _mqttPwd = Card(&dashboard, PASSWORD_CARD, YASOLR_LBL_099);
       Card _mqttSecured = Card(&dashboard, BUTTON_CARD, YASOLR_LBL_100);
-      Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, YASOLR_LBL_101, ".pem,crt,der");
+      Card _mqttServerCert = Card(&dashboard, FILE_UPLOAD_CARD, YASOLR_LBL_101, ".pem");
       Card _mqttServerCertDelete = Card(&dashboard, PUSH_BUTTON_CARD, YASOLR_LBL_049);
       Card _mqttPublishInterval = Card(&dashboard, SLIDER_CARD, YASOLR_LBL_102, "s", 5, 30, 1);
       Card _mqttTopic = Card(&dashboard, TEXT_INPUT_CARD, YASOLR_LBL_103);

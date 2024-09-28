@@ -100,7 +100,7 @@
 #define YASOLR_LBL_098 "Username"
 #define YASOLR_LBL_099 "Password"
 #define YASOLR_LBL_100 "SSL / TLS"
-#define YASOLR_LBL_101 "Server Certificate"
+#define YASOLR_LBL_101 "Server Certificate (PEM)"
 #define YASOLR_LBL_102 "Publish Interval"
 #define YASOLR_LBL_103 "Base Topic"
 #define YASOLR_LBL_104 "Home Assistant Integration"

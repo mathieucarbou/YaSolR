@@ -147,11 +147,11 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       HTTP_POST,
       [](AsyncWebServerRequest* request) {
         AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", "OK");
-        if (!LittleFS.exists("/mqtt-server.crt")) {
-          return request->send(400, "text/plain", "No server certificate file uploaded");
+        if (!LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE)) {
+          return request->send(400, "text/plain", "No PEM server certificate file uploaded");
         }
-        File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
-        logger.info(TAG, "Uploaded MQTT server certificate:\n%s", serverCertFile.readString().c_str());
+        File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
+        logger.info(TAG, "Uploaded MQTT PEM server certificate:\n%s", serverCertFile.readString().c_str());
         serverCertFile.close();
         YaSolR::Website.initCards();
         dashboardTask.requestEarlyRun();
@@ -159,7 +159,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
         if (!index)
-          request->_tempFile = LittleFS.open("/mqtt-server.crt", "w");
+          request->_tempFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "w");
         if (len)
           request->_tempFile.write(data, len);
         if (final)

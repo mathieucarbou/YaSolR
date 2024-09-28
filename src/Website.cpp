@@ -268,7 +268,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_mqttUser, KEY_MQTT_USERNAME);
 
   _mqttServerCertDelete.attachCallback([this]() {
-    if (LittleFS.exists("/mqtt-server.crt") && LittleFS.remove("/mqtt-server.crt")) {
+    if (LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE) && LittleFS.remove(YASOLR_MQTT_SERVER_CERT_FILE)) {
       logger.warn(TAG, "MQTT server certificate deleted successfully!");
       initCards();
       dashboardTask.requestEarlyRun();
@@ -613,7 +613,7 @@ void YaSolR::WebsiteClass::initCards() {
   _mqttTopic.update(config.get(KEY_MQTT_TOPIC));
   _mqttUser.update(config.get(KEY_MQTT_USERNAME));
 
-  const bool serverCertExists = LittleFS.exists("/mqtt-server.crt");
+  const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
   _mqttConfigTab.setDisplay(config.getBool(KEY_ENABLE_MQTT));
   _mqttServerCert.setDisplay(!serverCertExists);
   _mqttServerCertDelete.setDisplay(serverCertExists);

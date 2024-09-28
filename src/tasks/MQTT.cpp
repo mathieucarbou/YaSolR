@@ -24,9 +24,9 @@ Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* para
 
     if (secured) {
       // if a server certificate has been used, set it
-      if (LittleFS.exists("/mqtt-server.crt")) {
-        logger.debug(TAG, "Loading MQTT server certificate");
-        File serverCertFile = LittleFS.open("/mqtt-server.crt", "r");
+      if (LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE)) {
+        logger.debug(TAG, "Loading MQTT PEM server certificate");
+        File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
         mqttConfig.serverCert = serverCertFile.readString();
         serverCertFile.close();
         logger.debug(TAG, "Loaded MQTT server certificate:\n%s", mqttConfig.serverCert.c_str());

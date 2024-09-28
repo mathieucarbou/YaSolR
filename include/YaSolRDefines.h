@@ -63,6 +63,7 @@
 #define YASOLR_PID_IC_MODE_1               "1: Clamp"
 #define YASOLR_PID_IC_MODE_2               "2: Advanced"
 #define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
+#define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
 
 // UDP communication
 
