@@ -4,18 +4,22 @@
  */
 #pragma once
 
-#include <esp32-hal-gpio.h>
-#include <thyristor.h>
-
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
 #endif
+
+#include <esp32-hal-gpio.h>
+#include <thyristor.h>
 
 /**
  * Optional resolution, 15bits max
  */
 #ifndef MYCILA_DIMMER_RESOLUTION
   #define MYCILA_DIMMER_RESOLUTION 12
+#endif
+
+#ifndef MYCILA_DIMMER_MAX_COUNT
+  #define MYCILA_DIMMER_MAX_COUNT 1
 #endif
 
 namespace Mycila {
@@ -90,17 +94,17 @@ namespace Mycila {
       /**
        * @brief Check if the dimmer is off
        */
-      bool isOff() const { return _dutyCycle <= _dutyCycleMin; }
+      bool isOff() const { return getDutyCycle() <= getDutyCycleMin(); }
 
       /**
        * @brief Check if the dimmer is on
        */
-      bool isOn() const { return _dutyCycle > _dutyCycleMin; }
+      bool isOn() const { return getDutyCycle() > getDutyCycleMin(); }
 
       /**
        * @brief Check if the dimmer is on at full power
        */
-      bool isOnAtFullPower() const { return _dutyCycle >= _dutyCycleMax; }
+      bool isOnAtFullPower() const { return getDutyCycle() >= getDutyCycleMax(); }
 
       /**
        * @brief Set the power duty
@@ -154,11 +158,10 @@ namespace Mycila {
 
       /**
        * @brief Get the firing delay in us of the dimmer in the range [0, semi-period]
-       * At 0% power, delay is equal to the semi-period.
-       * At 100% power, the delay is 0 us
-       * If the firing delay is UINT32_MAX, the dimmer is off
+       * At 0% power, delay is equal to the semi-period: the dimmer is kept off
+       * At 100% power, the delay is 0 us: the dimmer is kept on
        */
-      uint32_t getFiringDelay() const { return _delay; }
+      uint32_t getFiringDelay() const { return _delay > _semiPeriod ? _semiPeriod : _delay; }
 
       /**
        * @brief Get the phase angle in radians of the dimmer in the range [0, PI]
@@ -176,6 +179,9 @@ namespace Mycila {
       float _dutyCycleMin = 0;
       float _dutyCycleMax = 1;
       uint32_t _delay = UINT32_MAX;
+
+      uint32_t _lookupPhaseDelay(float dutyCycle);
+
       Thyristor* _dimmer = nullptr;
   };
 } // namespace Mycila
