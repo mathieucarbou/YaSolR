@@ -378,8 +378,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
-  _numConfig(_output1ResistanceInput, KEY_OUTPUT1_RESISTANCE);
-  _numConfig(_output2ResistanceInput, KEY_OUTPUT2_RESISTANCE);
+  _floatConfig(_output1ResistanceInput, KEY_OUTPUT1_RESISTANCE);
+  _floatConfig(_output2ResistanceInput, KEY_OUTPUT2_RESISTANCE);
   _textConfig(_output1RelayType, KEY_OUTPUT1_RELAY_TYPE);
   _textConfig(_output2RelayType, KEY_OUTPUT2_RELAY_TYPE);
   _textConfig(_relay1Type, KEY_RELAY1_TYPE);
@@ -1076,7 +1076,7 @@ void YaSolR::WebsiteClass::_passwordConfig(Card& card, const char* key) {
   card.attachCallback([key, &card, this](const char* value) {
     if (strlen(value) == 0) {
       config.unset(key);
-    } else if (strlen(value) >= 8) {
+    } else {
       config.set(key, value);
     }
     card.update(config.get(key).isEmpty() ? "" : HIDDEN_PWD);
