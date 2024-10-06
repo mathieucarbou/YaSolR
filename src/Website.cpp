@@ -4,6 +4,8 @@
  */
 #include <YaSolRWebsite.h>
 
+#include <unordered_map>
+
 #define HIDDEN_PWD "********"
 
 #ifdef APP_MODEL_PRO

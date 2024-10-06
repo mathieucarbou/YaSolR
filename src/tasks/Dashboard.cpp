@@ -4,6 +4,7 @@
  */
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
+#include <cstdio>
 
 Mycila::Task dashboardTask("Dashboard", [](void* params) {
   if (config.getBool(KEY_ENABLE_PID_VIEW)) {
