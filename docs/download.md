@@ -10,7 +10,7 @@ description: Download
 
 Firmware files are named as follow:
 
-- `YaSolR-<VERSION>-<MODEL>-<BOARD>-<LANG>.OTA.bin`: This firmware is used to update through the Web interface from teh SafeBoot mode (OTA)
+- `YaSolR-<VERSION>-<MODEL>-<BOARD>-<LANG>.OTA.bin`: This firmware is used to update through the Web interface from the SafeBoot mode (OTA)
 - `YaSolR-<VERSION>-<MODEL>-<BOARD>-<LANG>.FACTORY.bin`: This firmware is used for a first ESP installation, or wen doing a factory reset through USB flashing
 
 Where:

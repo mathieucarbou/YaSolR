@@ -43,6 +43,7 @@ description: Manual
   - [LEDs](#leds)
   - [Temperature Sensor](#temperature-sensor)
   - [Virtual Grid Power / Compatibility with EV box](#virtual-grid-power--compatibility-with-ev-box)
+  - [Voltage Regulators (LSA, LCTC, etc)](#voltage-regulators-lsa-lctc-etc)
   - [Zero-Cross Detection](#zero-cross-detection)
 - [Help and support](#help-and-support)
 
@@ -524,18 +525,11 @@ The reason is that the grid utility frequency can change for example from 50Hz t
 This feature allows to remap where the 0% power is set (`Min`) and where the 100% power is set (`Max`).
 When remapped, the new duty range (0-100%) will match values from `Min` to `Max` instead of `0` to `100%`.
 
-This is especially useful when using a module converting the PWM signal to an analog voltage range between 0-10V for a voltage regulator.
-But voltage regulators like LSA do work on a voltage range which is closer to 1-8V, 1 being 0% on the voltage regulator and 8V matching 100%.
+This can be used for example to limit the power output of a dimmer, or to remap the pwm signal sent to a voltage regulator.
 
 For example, if you set the range to `10-80%, then the new 0 will match a duty cycle of 10% and the new full power (100%) will match a duty cycle of 80%.
 
-> ##### TIP
->
-> If you use a voltage regulator with a conversion module, you will need to do some testing to find the best range.
-> A good start is to find the triggering voltage of the voltage regulator (usually around 1V) and the maximum voltage (usually around 8V) which matches 100%.
-> This is usually written in the specifications of the voltage regulator.
-> Then remap the dimmer ranges to match these values like the example above.
-{: .block-tip }
+Read more about how to calibrate a voltage regulator in the [Voltage Regulators](#voltage-regulators-lsa-lctc-etc) section.
 
 #### Display
 
@@ -730,7 +724,7 @@ To reset the other values to their default value, just click on the validate / e
 
 [![](assets/img/screenshots/pid_tuning.jpeg)](assets/img/screenshots/pid_tuning.jpeg)
 
-- `Real-time Data`: can be activated to see the PID action in real time in teh graphs.
+- `Real-time Data`: can be activated to see the PID action in real time in the graphs.
 - `Chart Reset`: click to reset the charts (has no effect on the PID controller).
 
 > ##### IMPORTANT
@@ -882,6 +876,53 @@ So the router will take whatever is not used by the EV box.
 >
 > `Virtual Grid Power` requires a PZEM or JSY in place to measure the routed power.
 {: .block-important }
+
+### Voltage Regulators (LSA, LCTC, etc)
+
+Using voltage regulators such as LSA or LCTC is possible with the help of a conversion board like the one listed in the [hardware page](./build#voltage-regulators).
+
+- The conversion board needs to be powered with a 12V DC input (you can use a Meanwell HDR-15-12 DIN rail for that, installed under a 2A breaker)
+- The GND and dimmer output of YaSolr must be connected to the PWM- and PWM+ of the conversion board instead of going to a SSR or Robodyn
+- The output GND (-) and A0 (+) of the conversion board must be connected to the LSA or LCTC voltage regulator, at the 0-10V analog input
+
+**How it works:**
+
+1. The conversion board will transform the 100Hz 3.3V dimmer PWM signal to an analog output, which is a voltage in the range 0-10V
+2. The LSA reads this voltage and based on its level it knows how much power he has to let go to the load
+
+**Calibration:**
+
+> ##### TIP
+>
+> If you use the conversion board listed, you won't need to calibrate: it works out of the box.
+> 
+{: .block-tip }
+
+1. Use the [`Dimmer Range Remapping` feature](#dimmer-range-remapping) to remap the dimmer range if needed to increase the base voltage or decrease the duty cycle
+2. Eventually calibrate the conversion board (potentiometer) as described in the manual of the conversion board
+3. Adjust the input voltage of the conversion board (HDR-15-12 potentiometer)
+
+**Oscilloscope views:**
+
+Here is what happens when you change the dimmer slider at 10%, 50% and 50%:
+
+| **10%** | **50%** | **90%** |
+| :-----: | :-----: | :------: |
+| [![](assets/img/measurements/LSA_10p.png)](assets/img/measurements/LSA_10p.png) | [![](assets/img/measurements/LSA_50p.png)](assets/img/measurements/LSA_50p.png) | [![](assets/img/measurements/LSA_90p.png)](assets/img/measurements/LSA_90p.png) |
+
+- The red line is the input AC voltage
+- The yellow line is the Zero-Cross pulse form the ZCD (here I am using the ZCD from Daniel S.)
+- The blue line is the PWM signal sent to the conversion board: it is in other term the triac firing delay that would be applied to a triac or random SSR
+- The pink line is the current going out from the LSA to the load
+
+We can see that updating the slider in YasolR will change the current going out from the LSA to the load, and the lines are close enough so that the PID algorithm of the router will be able to still work properly.
+
+This could even be tweaked further: ideally, the pink line should match the blue line.
+
+Here, the pink line triggers AFTER the blue line at 10%, which means that the voltage going to the LSA input is not high enough when teh duty cycle is low.
+The pink line triggers BEFORE the blue line at 90%, which means that the voltage going to the LSA input is too high when the duty cycle in YaSolR is at 90%.
+
+Note: using the `Dimmer Range Remapping` feature won't fix that: this is a calibration that has to be done on conversion board and or by adjusting the HDR-15-12 voltage.
 
 ### Zero-Cross Detection
 

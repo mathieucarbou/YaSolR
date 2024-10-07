@@ -108,7 +108,7 @@ Example of supported dimmers:
 | **Robodyn 40A**<br> ![](./assets/img/hardware/Robodyn_40A.jpeg)            |       ✅        |            ✅             |
 | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg)              |       ✅        |            ✅             |
 | **Zero-Cross SSR** (🚧)<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg)     |       ❌        |            ✅             |
-| **Voltage Regulator** (🚧)<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |       ✅        |            ✅             |
+| **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg)      |       ✅        |            ✅             |
 
 #### Bypass Relay (optional)
 
@@ -225,7 +225,7 @@ The router can be completely controlled remotely through a Home Automation Syste
 - `Captive Portal` a captive portal is started first time to help you connect the router
 - `Ethernet & Wifi`: **ESP32 boards with Ethernet and WiFi are supported**
 - `NTP` support to synchronize time and date with Internet. If not activated, it is still possible to manually sync with your browser.
-- `Offline Mode`: **The router can work without WiFi, even teh features requiring time and date.**
+- `Offline Mode`: **The router can work without WiFi, even the features requiring time and date.**
 
 ### PID Control and Tuning
 

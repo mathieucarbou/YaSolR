@@ -233,7 +233,7 @@ DIMMERS: {
 When you'll have 3000W of excess:
 
 - the first one will take up to 50% of it (1500 W), but it will only take 1000 W because of the resistance. So 2000 W remains.
-- the second one 25% of teh remaining (500 W)
+- the second one 25% of the remaining (500 W)
 - the third one will take the remaining 1000 W
 
 ### Start / Stop Automatic Divert
