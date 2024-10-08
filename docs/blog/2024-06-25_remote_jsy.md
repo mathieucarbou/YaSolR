@@ -8,7 +8,7 @@ _Date: 2024-06-25_
 
 # Remote JSY
 
-The free [JSY library](https://oss.carbou.me/MycilaJSY/) has been completed with 2 new examples to show how to use the JSY remotely through UDP.
+The free [JSY library](https://mathieu.carbou.me/MycilaJSY/) has been completed with 2 new examples to show how to use the JSY remotely through UDP.
 
 The `Sender` program must be uploaded to an ESP32 connected to a JSY.
 It sends through UDP broadcast the JSY data several times per second.
@@ -21,7 +21,7 @@ There is also a `Listener` example which is the same app, bit not connected to t
 The 2 samples are made with ESP-DASH, ElegantOTA, WebSerial, MycilaESpConnect, etc.
 
 => [MycilaJSY RemoteUDP](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP)
-=> [MycilaJSY](https://oss.carbou.me/MycilaJSY/) project
+=> [MycilaJSY](https://mathieu.carbou.me/MycilaJSY/) project
 
 ## Remote JSY in YaSolR
 

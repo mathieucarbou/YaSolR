@@ -8,7 +8,7 @@ _Date: 2024-06-26_
 
 # Everything on the JSY
 
-I am developing quite a few projects and librairies in the Arduino / ESP32 / Home automation landscape ([https://oss.carbou.me](https://oss.carbou.me)), including YaSolR routing software as well.
+I am developing quite a few projects and librairies in the Arduino / ESP32 / Home automation landscape ([https://mathieu.carbou.me](https://mathieu.carbou.me)), including YaSolR routing software as well.
 
 Last year I created a specialized library for the JSY, which I wanted to talk to you about today in order to present its operation and use in the context of a solar router.
 

@@ -817,7 +817,7 @@ This is a standalone application that looks looks like this and will show all yo
 
 ![](https://github.com/mathieucarbou/MycilaJSY/assets/61346/3066bf12-31d5-45de-9303-d810f14731d0)
 
-You can look in the [JSY project](https://oss.carbou.me/MycilaJSY/) to find more information about how to setup remote JSY and the supported protocols.
+You can look in the [JSY project](https://mathieu.carbou.me/MycilaJSY/) to find more information about how to setup remote JSY and the supported protocols.
 
 When using a remote JSY with the router, the following rules apply:
 
