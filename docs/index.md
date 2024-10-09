@@ -34,15 +34,16 @@ YaSolR is one of the **most optimized and powerful** Open-Source Solar Router fi
 - **Dimmer range remapping** like Shelly Dimmers
 - **Frequency auto-detection** (support any frequency: not only 50/60Hz)
 - **Harmonics** can be lowered to comply with regulations thanks to several settings
+- **Independent or Sequential Outputs**
 - **PID Controller** optimized and customizable
 - **PID Tuning** web interface
 - **Precise Power Calibration**
 - **Precise Zero-Cross Detection with ZC pulse analysis**
 - **RMT Peripheral** used for DS18 readings
+- **SafeBoot** partition for recovery and system update
 - **SSL/TLS MQTT Support**
 - **Up to 20 measurements / second** with a remote JSY
 - **Up to 25 measurements / second** with a local JSY
-- **SafeBoot** partition for recovery and system update
 
 This is a big **Open-Source** project following **best development practices**.
 YaSolR is:
