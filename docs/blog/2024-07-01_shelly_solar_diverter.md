@@ -63,7 +63,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 ## Download
 
-- **[Shelly Solar Diverter Script](../downloads/auto_diverter_v1.js)**
+- **[Shelly Solar Diverter Script V1](../downloads/auto_diverter_v1.js)**: initial version
+- **[Shelly Solar Diverter Script V2](../downloads/auto_diverter_v2.js)**: Fix: Shelly Dimmer does not accept floats anymore ([see here](https://forum-photovoltaique.fr/viewtopic.php?p=794582#p794582))
 
 ## Hardware
 
