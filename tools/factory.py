@@ -33,7 +33,7 @@ def critical(msg):
 def generateFactooryImage(source, target, env):
     status("Generating factory image for serial flashing")
 
-    app_offset = 0xB0000
+    app_offset = 0x10000
     app_image = env.subst("$BUILD_DIR/${PROGNAME}.bin")
 
     # Set fs_offset = 0 to disable LittleFS image generation
@@ -53,9 +53,9 @@ def generateFactooryImage(source, target, env):
         if not os.path.isdir(safeboot_project):
             raise Exception("SafeBoot project not found: %s" % safeboot_project)
         env.Execute(
-            "SAFEBOOT_BOARD=%s pio run -d %s" % (env.get("BOARD"), safeboot_project)
+            "SAFEBOOT_BOARD=%s pio run -e safeboot -d %s" % (env.get("BOARD"), safeboot_project)
         )
-        safeboot_image = join(safeboot_project, ".pio/build/safeboot/safeboot.bin")
+        safeboot_image = join(safeboot_project, ".pio/build/safeboot/firmware.bin")
         if not os.path.isfile(safeboot_image):
             raise Exception("SafeBoot image not found: %s" % safeboot_image)
 
@@ -115,13 +115,14 @@ def generateFactooryImage(source, target, env):
     if fw_size > max_size:
         raise Exception("Firmware binary too large: %d > %d" % (fw_size, max_size))
 
-    status("    Offset | File")
+    status("     Offset | File")
     for section in sections:
         sect_adr, sect_file = section.split(" ", 1)
         status(f" -   {sect_adr} | {sect_file}")
         cmd += [sect_adr, sect_file]
 
     if safeboot_image != "" and os.path.isfile(safeboot_image):
+        app_offset = 0xB0000
         status(f" -  {hex(safeboot_offset)} | {safeboot_image}")
         cmd += [hex(safeboot_offset), safeboot_image]
 
