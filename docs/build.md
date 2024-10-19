@@ -81,7 +81,7 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 
 The _Minimalist_ build uses inexpensive and easy to use components to start a router.
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |                     JSY-MK-194T with 2 remote clamps                     |
+|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |                     JSY-MK-194 T/G with 2 remote clamps                     |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -104,7 +104,7 @@ The _Adventurer_ build is for people who are able to mitigate the flaws of the R
 The TRIAC can be changed to a BTA40-800B RD91 fixed directly on the heat sink, and the heat sink can be upgraded.
 See the [Robodyn](#robodyn) section for more information.
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-194T with 2 remote clamps                                         |
+|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-194 T/G with 2 remote clamps                                         |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :------------------------------------------------------------------: | :-------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_24A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -126,7 +126,7 @@ See the [Robodyn](#robodyn) section for more information.
 
 The _Elite_ build is for people who want to use a Random SSR instead of a Robodyn to safely dim more power and have a better Zero-Cross Detection circuit more more precising routing.
 
-|                              ESP32-DevKitC                               |                       Random Solid State Relay                        |                              Heat Sink                               |                  Zero-Cross Detection Module                   | JSY-MK-194T with 2 remote clamps                                         |
+|                              ESP32-DevKitC                               |                       Random Solid State Relay                        |                              Heat Sink                               |                  Zero-Cross Detection Module                   | JSY-MK-194 T/G with 2 remote clamps                                         |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :------------------------------------------------------------------: | :------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -152,7 +152,7 @@ The _Professional_ build uses a Voltage Regulator to control the power routing.
 This is probably the best reliable and efficient solution, but it is more complex to setup and wire.
 It requires an additional 12V power supply.
 
-|                              ESP32-DevKitC                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-194T with 2 remote clamps                                         |
+|                              ESP32-DevKitC                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-194 T/G with 2 remote clamps                                         |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -192,7 +192,7 @@ This is a standalone application that looks looks like this and will show all yo
 
 You can look in the [JSY project](https://mathieu.carbou.me/MycilaJSY/) to find more information about how to setup remote JSY and the supported protocols.
 
-|                        Mean Well HDR-15-5 5V DC                        |                              ESP32-DevKitC                               | JSY-MK-194T with 2 remote clamps                                         |
+|                        Mean Well HDR-15-5 5V DC                        |                              ESP32-DevKitC                               |JSY-MK-194 T/G with 2 remote clamps                                         |
 | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/DIN_HDR-15-5.jpeg" style="width:80px"> | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -409,8 +409,8 @@ If you are interested in one, please have a look at the availabilities in the [P
 
 |                                                                          |                                                                                                                                                                                                                                                                                                                                                                                               |
 | :----------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="./assets/img/hardware/JSY-MK-194T_1.jpeg" style="width:150px"> | [JSY-MK-194T with 1 fixed tore and 1 remote clamp](https://www.aliexpress.com/item/1005005396796284.html) Used to measure the grid power and total routed power                                                                                                                                                                                                                               |
-| <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> | [JSY-MK-194T with 2 remote clamps](https://fr.aliexpress.com/item/1005005529999366.html) Used to measure the grid power and total routed power                                                                                                                                                                                                                                                |
+| <img src="./assets/img/hardware/JSY-MK-194T_1.jpeg" style="width:150px"> | [JSY-MK-194 T/G with 1 fixed tore and 1 remote clamp](https://www.aliexpress.com/item/1005005396796284.html) Used to measure the grid power and total routed power                                                                                                                                                                                                                               |
+| <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> | [JSY-MK-194 T/G with 2 remote clamps](https://fr.aliexpress.com/item/1005005529999366.html) Used to measure the grid power and total routed power                                                                                                                                                                                                                                                |
 | <img src="./assets/img/hardware/PZEM-004T.jpeg" style="width:150px">     | Peacefair PZEM-004T V3 100A Openable (with clamp) [official](https://fr.aliexpress.com/item/33043137964.html), [with connector](https://fr.aliexpress.com/item/1005005984795952.html), [USB-TTL Cable](https://fr.aliexpress.com/item/1005006255175075.html). Can be used to measure each output individually and more precisely. Several PZEM-004T can be connected to the same Serial port. |
 | <img src="./assets/img/hardware/Shelly_EM.png" style="width:150px">      | [Shelly EM](https://www.shelly.com/en-fr/products/product-overview/shelly-em-120a/shelly-em-2x-50a) (or any other alternative sending data to MQTT)                                                                                                                                                                                                                                           |
 
@@ -458,8 +458,8 @@ Here are below the default GPIO pinout for each board.
 | :-------------------------------- | :-------: | :-------------: | :---------: | :------------: | :------------: |
 | Display CLOCK (CLK)               |    22     |       22        |      9      |       32       |       40       |
 | Display DATA (SDA)                |    21     |       21        |      8      |       33       |       41       |
-| JSY-MK-194T RX (Serial TX)        |    17     |       17        |     17      |       17       |       17       |
-| JSY-MK-194T TX (Serial RX)        |    16     |       16        |     16      |       5        |       18       |
+| JSY-MK-194 RX (Serial TX)         |    17     |       17        |     17      |       17       |       17       |
+| JSY-MK-194 TX (Serial RX)         |    16     |       16        |     16      |       5        |       18       |
 | Light Feedback (Green)            |     0     |        0        |      0      |       -1       |       38       |
 | Light Feedback (Red)              |    15     |       15        |     15      |       -1       |       46       |
 | Light Feedback (Yellow)           |     2     |        2        |      2      |       -1       |       21       |
@@ -485,8 +485,8 @@ Here are below the default GPIO pinout for each board.
 | :-------------------------------- | :-----------: | :---------------------: | :--------------: | :---------------: | :--------------: | :----------------: |
 | Display CLOCK (CLK)               |      16       |            6            |        22        |         9         |        -1        |         -1         |
 | Display DATA (SDA)                |      13       |            7            |        19        |         8         |        -1        |         -1         |
-| JSY-MK-194T RX (Serial TX)        |      33       |           20            |        17        |        39         |        -1        |         -1         |
-| JSY-MK-194T TX (Serial RX)        |      35       |           21            |        16        |        37         |        -1        |         -1         |
+| JSY-MK-194 RX (Serial TX)         |      33       |           20            |        17        |        39         |        -1        |         -1         |
+| JSY-MK-194 TX (Serial RX)         |      35       |           21            |        16        |        37         |        -1        |         -1         |
 | Light Feedback (Green)            |      -1       |           -1            |        0         |         3         |        -1        |         -1         |
 | Light Feedback (Red)              |      -1       |           -1            |        15        |         6         |        -1        |         -1         |
 | Light Feedback (Yellow)           |      -1       |           -1            |        2         |         2         |        -1        |         -1         |

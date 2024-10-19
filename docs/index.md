@@ -143,7 +143,7 @@ Each output supports an optional measurement device to measure the power routed 
 - `JSY-MK-194T`: has 2 clamps, and is used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
 - `PZEM-004T V3`: can monitor each output independently. **It cannot be used to measure the grid power.**
 
-|                     PZEM-004T V3                      |                       JSY-MK-194T                        |
+|                     PZEM-004T V3                      |                       JSY-MK-194 T/G                     |
 | :---------------------------------------------------: | :------------------------------------------------------: |
 | ![PZEM-004T V3](./assets/img/hardware/PZEM-004T.jpeg) | ![JSY-MK-194T](./assets/img/hardware/JSY-MK-194T_2.jpeg) |
 
