@@ -38,8 +38,8 @@ description: Manual
   - [`Statistics` section](#statistics-section)
 - [Important Hardware Information](#important-hardware-information)
   - [Bypass Relay](#bypass-relay)
-  - [JSY-MK-194 T/G (local)](#jsy-mk-194-tg-local)
-  - [JSY-MK-194 T/G (remote)](#jsy-mk-194-tg-remote)
+  - [JSY-MK-194T/G (local)](#jsy-mk-194tg-local)
+  - [JSY-MK-194T/G (remote)](#jsy-mk-194tg-remote)
   - [LEDs](#leds)
   - [Temperature Sensor](#temperature-sensor)
   - [Virtual Grid Power / Compatibility with EV box](#virtual-grid-power--compatibility-with-ev-box)
@@ -799,7 +799,7 @@ If no relay is installed, the dimmer will be used and will be set to 100%.
 
 In the `Hardware Config` section, `Output 1 Relay Type (Bypass)` and `Output 2 Relay Type (Bypass)` are used to specify the type of the relay: `Normally Open` or `Normally Closed`.
 
-### JSY-MK-194 T/G (local)
+### JSY-MK-194T/G (local)
 
 The JSY is used to measure:
 
@@ -809,7 +809,7 @@ The JSY is used to measure:
 The JSY can be replaced by MQTT, reading the power and voltage from MQTT topics.
 See [MQTT as a Grid Source](#mqtt-as-a-grid-source).
 
-### JSY-MK-194 T/G (remote)
+### JSY-MK-194T/G (remote)
 
 JSY can also be replaced with a remote JSY **without any impact on routing speed**.
 You can install the [Sender](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP) .ino file on a ESP32 and connect it to the JSY.
@@ -895,7 +895,7 @@ Using voltage regulators such as LSA or LCTC is possible with the help of a conv
 > ##### TIP
 >
 > If you use the conversion board listed, you won't need to calibrate: it works out of the box.
-> 
+>
 {: .block-tip }
 
 1. Use the [`Dimmer Range Remapping` feature](#dimmer-range-remapping) to remap the dimmer range if needed to increase the base voltage or decrease the duty cycle
@@ -906,8 +906,8 @@ Using voltage regulators such as LSA or LCTC is possible with the help of a conv
 
 Here is what happens when you change the dimmer slider at 10%, 50% and 50%:
 
-| **10%** | **50%** | **90%** |
-| :-----: | :-----: | :------: |
+|                                     **10%**                                     |                                     **50%**                                     |                                     **90%**                                     |
+| :-----------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: |
 | [![](assets/img/measurements/LSA_10p.png)](assets/img/measurements/LSA_10p.png) | [![](assets/img/measurements/LSA_50p.png)](assets/img/measurements/LSA_50p.png) | [![](assets/img/measurements/LSA_90p.png)](assets/img/measurements/LSA_90p.png) |
 
 - The red line is the input AC voltage

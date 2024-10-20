@@ -103,13 +103,13 @@ Each output is composed of the following components:
 A dimmer controls the power sent to the load.
 Example of supported dimmers:
 
-| Dimmer Type                                                                | `Phase Control` | `Burst Fire Control` (🚧) |
-| :------------------------------------------------------------------------- | :-------------: | :-----------------------: |
-| **Robodyn 24A**<br> ![](./assets/img/hardware/Robodyn_24A.jpeg)            |       ✅        |            ✅             |
-| **Robodyn 40A**<br> ![](./assets/img/hardware/Robodyn_40A.jpeg)            |       ✅        |            ✅             |
-| **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg)              |       ✅        |            ✅             |
-| **Zero-Cross SSR** (🚧)<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg)     |       ❌        |            ✅             |
-| **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg)      |       ✅        |            ✅             |
+| Dimmer Type                                                            | `Phase Control` | `Burst Fire Control` (🚧) |
+| :--------------------------------------------------------------------- | :-------------: | :-----------------------: |
+| **Robodyn 24A**<br> ![](./assets/img/hardware/Robodyn_24A.jpeg)        |       ✅        |            ✅             |
+| **Robodyn 40A**<br> ![](./assets/img/hardware/Robodyn_40A.jpeg)        |       ✅        |            ✅             |
+| **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg)          |       ✅        |            ✅             |
+| **Zero-Cross SSR** (🚧)<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) |       ❌        |            ✅             |
+| **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg)  |       ✅        |            ✅             |
 
 #### Bypass Relay (optional)
 
@@ -140,10 +140,10 @@ This can also be done:
 
 Each output supports an optional measurement device to measure the power routed to the load.
 
-- `JSY-MK-194T`: has 2 clamps, and is used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
+- `JSY-MK-194T/G`: has 2 clamps, and is used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
 - `PZEM-004T V3`: can monitor each output independently. **It cannot be used to measure the grid power.**
 
-|                     PZEM-004T V3                      |                       JSY-MK-194 T/G                     |
+|                     PZEM-004T V3                      |                JSY-MK-194T or JSY-MK-194G                |
 | :---------------------------------------------------: | :------------------------------------------------------: |
 | ![PZEM-004T V3](./assets/img/hardware/PZEM-004T.jpeg) | ![JSY-MK-194T](./assets/img/hardware/JSY-MK-194T_2.jpeg) |
 
@@ -170,9 +170,9 @@ YaSolR supports many ways to measure the grid power and voltage:
 **Mono-phase**:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
-- `JSY-MK-194T` (25 measurements / second)
-- Remote `JSY-MK-194T` through **UDP** (20 measurements / second)
-- Remote `JSY-MK-194T` through **ESP-Now** (🚧)
+- `JSY-MK-194T/G` (25 measurements / second)
+- Remote `JSY-MK-194T/G` through **UDP** (20 measurements / second)
+- Remote `JSY-MK-194T/G` through **ESP-Now** (🚧)
 
 **3-Phase**:
 
