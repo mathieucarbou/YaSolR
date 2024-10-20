@@ -63,7 +63,7 @@ void setup() {
   initMqttSubscribersTask.forceRun();
   initDashboardCards.forceRun();
 
-  assert(    jsyTaskManager.asyncStart(512 * 4, 5, 0, 100, true));  // NOLINT
+  assert(    jsyTaskManager.asyncStart(512 * 6, 5, 0, 100, true));  // NOLINT
   assert(    pioTaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
   assert(   coreTaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT
   assert(   mqttTaskManager.asyncStart(512 * 7, 1, 1, 100, false)); // NOLINT
