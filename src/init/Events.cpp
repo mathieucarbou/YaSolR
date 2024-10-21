@@ -176,7 +176,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         relay2.begin(config.get(KEY_PIN_RELAY2).toInt(), config.get(KEY_RELAY2_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
     } else if (key == KEY_ENABLE_JSY) {
-      Mycila::JSYBaudRate bauds = jsy.getBaudRate();
+      Mycila::JSY::BaudRate bauds = jsy.getBaudRate();
       jsy.end();
       if (config.getBool(KEY_ENABLE_JSY)) {
         jsy.begin(YASOLR_JSY_SERIAL, config.get(KEY_PIN_JSY_RX).toInt(), config.get(KEY_PIN_JSY_TX).toInt(), bauds);
@@ -333,15 +333,15 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
   });
 
-  jsy.setCallback([](const Mycila::JSYEventType eventType) {
-    if (eventType == Mycila::JSYEventType::EVT_CHANGE) {
+  jsy.setCallback([](const Mycila::JSY::EventType eventType) {
+    if (eventType == Mycila::JSY::EventType::EVT_CHANGE) {
       grid.localMetrics().update({
         .apparentPower = jsy.getApparentPower2(),
         .current = jsy.getCurrent2(),
         .energy = jsy.getEnergy2(),
         .energyReturned = jsy.getEnergyReturned2(),
         .frequency = jsy.getFrequency(),
-        .power = jsy.getPower2(),
+        .power = jsy.getActivePower2(),
         .powerFactor = jsy.getPowerFactor2(),
         .voltage = jsy.getVoltage2(),
       });

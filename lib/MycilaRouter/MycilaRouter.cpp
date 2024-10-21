@@ -93,7 +93,7 @@ void Mycila::Router::getMeasurements(Metrics& metrics) const {
     if (routing) {
       metrics.apparentPower = abs(_jsy->getApparentPower1());
       metrics.current = abs(_jsy->getCurrent1());
-      metrics.power = abs(_jsy->getPower1());
+      metrics.power = abs(_jsy->getActivePower1());
       metrics.powerFactor = abs(_jsy->getPowerFactor1());
       metrics.resistance = abs(_jsy->getResistance1());
       metrics.thdi = abs(_jsy->getTHDi1(0));
