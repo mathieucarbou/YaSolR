@@ -335,16 +335,36 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   jsy.setCallback([](const Mycila::JSY::EventType eventType) {
     if (eventType == Mycila::JSY::EventType::EVT_CHANGE) {
-      grid.localMetrics().update({
-        .apparentPower = jsy.getApparentPower2(),
-        .current = jsy.getCurrent2(),
-        .energy = jsy.getEnergy2(),
-        .energyReturned = jsy.getEnergyReturned2(),
-        .frequency = jsy.getFrequency(),
-        .power = jsy.getActivePower2(),
-        .powerFactor = jsy.getPowerFactor2(),
-        .voltage = jsy.getVoltage2(),
-      });
+      switch (jsy.getModel()) {
+        case MYCILA_JSY_MK_163:
+          grid.localMetrics().update({
+            .apparentPower = jsy.getApparentPower1(),
+            .current = jsy.getCurrent1(),
+            .energy = jsy.getEnergy1(),
+            .energyReturned = jsy.getEnergyReturned1(),
+            .frequency = jsy.getFrequency(),
+            .power = jsy.getActivePower1(),
+            .powerFactor = jsy.getPowerFactor1(),
+            .voltage = jsy.getVoltage1(),
+          });
+          break;
+
+        case MYCILA_JSY_MK_194:
+          grid.localMetrics().update({
+            .apparentPower = jsy.getApparentPower2(),
+            .current = jsy.getCurrent2(),
+            .energy = jsy.getEnergy2(),
+            .energyReturned = jsy.getEnergyReturned2(),
+            .frequency = jsy.getFrequency(),
+            .power = jsy.getActivePower2(),
+            .powerFactor = jsy.getPowerFactor2(),
+            .voltage = jsy.getVoltage2(),
+          });
+          break;
+
+        default:
+          break;
+      }
       if (grid.updatePower()) {
         routingTask.resume();
       }
@@ -377,21 +397,41 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     if (memcmp(&crc, buffer + size + 5, 4) != 0)
       return;
 
+    udpMessageRateBuffer.add(millis() / 1000.0f);
+
     JsonDocument doc;
     deserializeMsgPack(doc, buffer + 5, size);
 
-    grid.remoteMetrics().update({
-      .apparentPower = doc["pf2"].as<float>() == 0 ? 0 : doc["p2"].as<float>() / doc["pf2"].as<float>(),
-      .current = doc["c2"].as<float>(),
-      .energy = doc["e2"].as<float>(),
-      .energyReturned = doc["er2"].as<float>(),
-      .frequency = doc["f"].as<float>(),
-      .power = doc["p2"].as<float>(),
-      .powerFactor = doc["pf2"].as<float>(),
-      .voltage = doc["v2"].as<float>(),
-    });
+    switch (doc["m"].as<uint16_t>()) {
+      case MYCILA_JSY_MK_163:
+        grid.remoteMetrics().update({
+          .apparentPower = doc["pf1"].as<float>() == 0 ? 0 : doc["p1"].as<float>() / doc["pf1"].as<float>(),
+          .current = doc["c1"].as<float>(),
+          .energy = doc["e1"].as<float>(),
+          .energyReturned = doc["er1"].as<float>(),
+          .frequency = doc["f"].as<float>(),
+          .power = doc["p1"].as<float>(),
+          .powerFactor = doc["pf1"].as<float>(),
+          .voltage = doc["v1"].as<float>(),
+        });
+        break;
 
-    udpMessageRateBuffer.add(millis() / 1000.0f);
+      case MYCILA_JSY_MK_194:
+        grid.remoteMetrics().update({
+          .apparentPower = doc["pf2"].as<float>() == 0 ? 0 : doc["p2"].as<float>() / doc["pf2"].as<float>(),
+          .current = doc["c2"].as<float>(),
+          .energy = doc["e2"].as<float>(),
+          .energyReturned = doc["er2"].as<float>(),
+          .frequency = doc["f"].as<float>(),
+          .power = doc["p2"].as<float>(),
+          .powerFactor = doc["pf2"].as<float>(),
+          .voltage = doc["v2"].as<float>(),
+        });
+        break;
+
+      default:
+        break;
+    }
 
     if (grid.updatePower()) {
       routingTask.resume();
