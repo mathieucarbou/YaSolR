@@ -38,8 +38,8 @@ description: Manual
   - [`Statistics` section](#statistics-section)
 - [Important Hardware Information](#important-hardware-information)
   - [Bypass Relay](#bypass-relay)
-  - [JSY-MK-194T/G (local)](#jsy-mk-194tg-local)
-  - [JSY-MK-194T/G (remote)](#jsy-mk-194tg-remote)
+  - [JSY (local)](#jsy-local)
+  - [JSY (remote)](#jsy-remote)
   - [LEDs](#leds)
   - [Temperature Sensor](#temperature-sensor)
   - [Virtual Grid Power / Compatibility with EV box](#virtual-grid-power--compatibility-with-ev-box)
@@ -639,7 +639,7 @@ You can set the dimmer in manual mode and set it to 50% and 100% and read the re
 Then you just have to report it in the `Hardware Config` page.
 
 - **PZEM-004T v3:** If you have wired a PZEM-004T v3 connected to each output, it will measure the resistance value when routing.
-- **JSY-MK-194T:** If you have a JSY-MK-194T, you can activate the dimmers one by one to 100% and wait for the values to stabilize.
+- **JSY:** If you have a JSY, you can activate the dimmers one by one to 100% and wait for the values to stabilize.
   The router will then display the resistance value in the `Overview` page, thanks to the JSY.
 
 **Using the automatic detection feature**
@@ -799,7 +799,7 @@ If no relay is installed, the dimmer will be used and will be set to 100%.
 
 In the `Hardware Config` section, `Output 1 Relay Type (Bypass)` and `Output 2 Relay Type (Bypass)` are used to specify the type of the relay: `Normally Open` or `Normally Closed`.
 
-### JSY-MK-194T/G (local)
+### JSY (local)
 
 The JSY is used to measure:
 
@@ -809,7 +809,7 @@ The JSY is used to measure:
 The JSY can be replaced by MQTT, reading the power and voltage from MQTT topics.
 See [MQTT as a Grid Source](#mqtt-as-a-grid-source).
 
-### JSY-MK-194T/G (remote)
+### JSY (remote)
 
 JSY can also be replaced with a remote JSY **without any impact on routing speed**.
 You can install the [Sender](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP) .ino file on a ESP32 and connect it to the JSY.

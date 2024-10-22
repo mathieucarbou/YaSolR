@@ -68,23 +68,19 @@ YaSolR is:
 
 ## Detailed Features
 
-- [Routing Outputs](#routing-outputs)
++ [Routing Outputs](#routing-outputs)
   - [Dimmer (required)](#dimmer-required)
   - [Bypass Relay (optional)](#bypass-relay-optional)
   - [Temperature (optional)](#temperature-optional)
   - [Measurement device (optional)](#measurement-device-optional)
-  - [Additional Features](#additional-output-features)
-- [Grid Power Measurement](#grid-power-measurement)
-  - [JSY-MK-194T](#jsy-mk-194t)
-  - [Remote Grid Measurement](#remote-grid-measurement)
-  - [3-Phase Support](#3-phase-support)
-- [2x Relays](#2x-relays)
-- [Monitoring and Management](#monitoring-and-management)
-- [MQTT, REST API and Home Automation Systems](#mqtt-rest-api-and-home-automation-systems)
-- [Online / Offline modes](#online--offline-modes)
-- [PID Control and Tuning](#pid-control-and-tuning)
-- [Remote Capabilities](#remote-capabilities)
-- [Virtual Excess and EV Charger Compatibility](#virtual-excess-and-ev-charger-compatibility)
+  - [Additional Output Features](#additional-output-features)
++ [Grid Power Measurement](#grid-power-measurement)
++ [Relays](#relays)
++ [Monitoring and Management](#monitoring-and-management)
++ [MQTT, REST API and Home Automation Systems](#mqtt-rest-api-and-home-automation-systems)
++ [Online / Offline modes](#online--offline-modes)
++ [PID Control and Tuning](#pid-control-and-tuning)
++ [Virtual Excess and EV Charger Compatibility](#virtual-excess-and-ev-charger-compatibility)
 
 ### Routing Outputs
 
@@ -140,10 +136,11 @@ This can also be done:
 
 Each output supports an optional measurement device to measure the power routed to the load.
 
-- `JSY-MK-194T/G`: has 2 clamps, and is used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
+- `JSY-MK-163T`: has 1 clamp and can be used to monitor the grid power.
+- `JSY-MK-194T, JSY-MK-194G`: have 2 clamps and can be used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
 - `PZEM-004T V3`: can monitor each output independently. **It cannot be used to measure the grid power.**
 
-|                     PZEM-004T V3                      |                JSY-MK-194T or JSY-MK-194G                |
+|                     PZEM-004T V3                      |     JSY-MK-163T, JSY-MK-194T or JSY-MK-194G              |
 | :---------------------------------------------------: | :------------------------------------------------------: |
 | ![PZEM-004T V3](./assets/img/hardware/PZEM-004T.jpeg) | ![JSY-MK-194T](./assets/img/hardware/JSY-MK-194T_2.jpeg) |
 
@@ -170,9 +167,9 @@ YaSolR supports many ways to measure the grid power and voltage:
 **Mono-phase**:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
-- `JSY-MK-194T/G` (25 measurements / second)
-- Remote `JSY-MK-194T/G` through **UDP** (20 measurements / second)
-- Remote `JSY-MK-194T/G` through **ESP-Now** (🚧)
+- `JSY-MK-163T`, `JSY-MK-194T`, `JSY-MK-194G` (25 measurements / second)
+- Remote `JSY-MK-163T`, `JSY-MK-194T`, `JSY-MK-194G` through **UDP** (20 measurements / second)
+- Remote `JSY-MK-163T`, `JSY-MK-194T`, `JSY-MK-194G` through **ESP-Now** (🚧)
 
 **3-Phase**:
 

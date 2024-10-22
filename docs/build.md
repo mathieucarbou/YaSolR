@@ -81,7 +81,7 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 
 The _Minimalist_ build uses inexpensive and easy to use components to start a router.
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |             JSY-MK-194T or JSY-MK-194G with 2 remote clamps              |
+|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |             JSY-MK-163T, JSY-MK-194T or JSY-MK-194G with 2 remote clamps              |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -145,8 +145,6 @@ The _Elite_ build is for people who want to use a Random SSR instead of a Robody
 {: .block-warning }
 
 ### The Professional
-
-(🚧)
 
 The _Professional_ build uses a Voltage Regulator to control the power routing.
 This is probably the best reliable and efficient solution, but it is more complex to setup and wire.
@@ -409,6 +407,7 @@ If you are interested in one, please have a look at the availabilities in the [P
 
 |                                                                          |                                                                                                                                                                                                                                                                                                                                                                                               |
 | :----------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> | [JSY-MK-163T with a clamp](https://www.aliexpress.com/item/1005006223854694.html) Used to measure the grid power only.                                                                                                                                                                                                                                                                        |
 | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> | [JSY-MK-194T or JSY-MK-194G with 2 clamps](https://fr.aliexpress.com/item/1005007371816324.html) Used to measure the grid power and total routed power. There is also another version with a tore and a clamp.                                                                                                                                                                                |
 | <img src="./assets/img/hardware/PZEM-004T.jpeg" style="width:150px">     | Peacefair PZEM-004T V3 100A Openable (with clamp) [official](https://fr.aliexpress.com/item/33043137964.html), [with connector](https://fr.aliexpress.com/item/1005005984795952.html), [USB-TTL Cable](https://fr.aliexpress.com/item/1005006255175075.html). Can be used to measure each output individually and more precisely. Several PZEM-004T can be connected to the same Serial port. |
 | <img src="./assets/img/hardware/Shelly_EM.png" style="width:150px">      | [Shelly EM](https://www.shelly.com/en-fr/products/product-overview/shelly-em-120a/shelly-em-2x-50a) (or any other alternative sending data to MQTT)                                                                                                                                                                                                                                           |
@@ -438,6 +437,7 @@ If you are interested in one, please have a look at the availabilities in the [P
 | <img src="./assets/img/hardware/DIN_SSR_Clip.png" style="width:150px">           | [DIN Rail Clips for SSR](https://fr.aliexpress.com/item/1005004396715182.html)                                                                                                                                                                                                                                                                                                                                             |
 | <img src="./assets/img/hardware/DIN_HDR-15-5.jpeg" style="width:80px">           | AC-DC 5V 2.4A DIN Adapter HDR-15-5 [Amazon](https://www.amazon.fr/Alimentation-rail-Mean-Well-HDR-15-5/dp/B06XWQSJGW), [AliExpress](https://fr.aliexpress.com/item/4000513120668.html). Can be used to power the ESP when installed in an electric box on DIN rail. Also if you need, a 12V version s available: [HDR-15-15 12V DC version](https://www.amazon.fr/Alimentation-rail-Mean-Well-HDR-15-5/dp/B07942GFTH?th=1) |
 | <img src="./assets/img/hardware/jsy-enclosure.jpeg" style="width:150px">         | [3D Print enclosure for JSY-MK-194T](https://www.thingiverse.com/thing:6003867). You can screw it on an SSR DIN Rail to place your JSY on a DIN Rail in this enclosure.                                                                                                                                                                                                                                                    |
+| <img src="https://mathieu.carbou.me/MycilaJSY/jsy-box-3.jpeg" style="width:150px"> | [3D Print enclosure for JSY-MK-194G](https://mathieu.carbou.me/MycilaJSY/#boxes-and-3d-models). You can screw it on an SSR DIN Rail to place your JSY on a DIN Rail in this enclosure.                                                                                                                                                                                                                                                    |
 | <img src="./assets/img/hardware/DupontWire.jpeg" style="width:150px">            | [Dupont Cable Kit](https://fr.aliexpress.com/item/1699285992.html)                                                                                                                                                                                                                                                                                                                                                         |
 | <img src="./assets/img/hardware/RC_Snubber.jpeg" style="width:150px">            | [100 ohms 0.1uF RC Snubber](https://www.quintium.fr/shelly/168-shelly-rc-snubber.html) (for Robodyn AC dimmer and Random SSR: can be placed at dimmer output)                                                                                                                                                                                                                                                              |
 
@@ -457,8 +457,8 @@ Here are below the default GPIO pinout for each board.
 | :-------------------------------- | :-------: | :-------------: | :---------: | :------------: | :------------: |
 | Display CLOCK (CLK)               |    22     |       22        |      9      |       32       |       40       |
 | Display DATA (SDA)                |    21     |       21        |      8      |       33       |       41       |
-| JSY-MK-194 RX (Serial TX)         |    17     |       17        |     17      |       17       |       17       |
-| JSY-MK-194 TX (Serial RX)         |    16     |       16        |     16      |       5        |       18       |
+| JSY RX (Serial TX)                |    17     |       17        |     17      |       17       |       17       |
+| JSY TX (Serial RX)                |    16     |       16        |     16      |       5        |       18       |
 | Light Feedback (Green)            |     0     |        0        |      0      |       -1       |       38       |
 | Light Feedback (Red)              |    15     |       15        |     15      |       -1       |       46       |
 | Light Feedback (Yellow)           |     2     |        2        |      2      |       -1       |       21       |
@@ -484,8 +484,8 @@ Here are below the default GPIO pinout for each board.
 | :-------------------------------- | :-----------: | :---------------------: | :--------------: | :---------------: | :--------------: | :----------------: |
 | Display CLOCK (CLK)               |      16       |            6            |        22        |         9         |        -1        |         -1         |
 | Display DATA (SDA)                |      13       |            7            |        19        |         8         |        -1        |         -1         |
-| JSY-MK-194 RX (Serial TX)         |      33       |           20            |        17        |        39         |        -1        |         -1         |
-| JSY-MK-194 TX (Serial RX)         |      35       |           21            |        16        |        37         |        -1        |         -1         |
+| JSY RX (Serial TX)                |      33       |           20            |        17        |        39         |        -1        |         -1         |
+| JSY TX (Serial RX)                |      35       |           21            |        16        |        37         |        -1        |         -1         |
 | Light Feedback (Green)            |      -1       |           -1            |        0         |         3         |        -1        |         -1         |
 | Light Feedback (Red)              |      -1       |           -1            |        15        |         6         |        -1        |         -1         |
 | Light Feedback (Yellow)           |      -1       |           -1            |        2         |         2         |        -1        |         -1         |
