@@ -83,8 +83,8 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_OUTPUT1_RESERVED_EXCESS, "100");
   config.configure(KEY_OUTPUT1_RESISTANCE, "0");
   config.configure(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
-  config.configure(KEY_OUTPUT1_TEMPERATURE_START, String(YASOLR_OUTPUT_AUTO_START_TEMPERATURE));
-  config.configure(KEY_OUTPUT1_TEMPERATURE_STOP, String(YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE));
+  config.configure(KEY_OUTPUT1_TEMPERATURE_START, "50");
+  config.configure(KEY_OUTPUT1_TEMPERATURE_STOP, "60");
   config.configure(KEY_OUTPUT1_TIME_START, "22:00");
   config.configure(KEY_OUTPUT1_TIME_STOP, "06:00");
   config.configure(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS);
@@ -96,8 +96,8 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_OUTPUT2_RESERVED_EXCESS, "100");
   config.configure(KEY_OUTPUT2_RESISTANCE, "0");
   config.configure(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
-  config.configure(KEY_OUTPUT2_TEMPERATURE_START, String(YASOLR_OUTPUT_AUTO_START_TEMPERATURE));
-  config.configure(KEY_OUTPUT2_TEMPERATURE_STOP, String(YASOLR_OUTPUT_AUTO_STOP_TEMPERATURE));
+  config.configure(KEY_OUTPUT2_TEMPERATURE_START, "50");
+  config.configure(KEY_OUTPUT2_TEMPERATURE_STOP, "60");
   config.configure(KEY_OUTPUT2_TIME_START, "22:00");
   config.configure(KEY_OUTPUT2_TIME_STOP, "06:00");
   config.configure(KEY_PID_D_MODE, "1");
