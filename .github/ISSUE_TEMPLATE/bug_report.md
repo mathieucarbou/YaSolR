@@ -1,35 +1,31 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Only for bugs! Otherwise, please go to the discussions section!
 title: "[BUG]"
-labels: bug
-assignees: ''
-
+labels: triage
+assignees: ""
 ---
 
-**Firmware**
+**Only for bugs found in the library! Otherwise, please go to the [discussions section](https://github.com/mathieucarbou/YaSolR/discussions)!**
 
-Which firmware file name and version you are using ?
+**Please make sure to go through the manual before opening a bug report:**
 
-**Board**
-
-Which board are you using ? (exact make, model, flash size, etc)
-
-**Ethernet adapter used ?**
-
-If yes, please specify which one
-
-**hardware setup**
-
-Please describe your hardware setup and wiring schema (in simple words): do you have a PZEM, JSY, Shelly EM ? Do you use Random SSR, ZC SSR, relays ? etc.
+[https://yasolr.carbou.me/manual](https://yasolr.carbou.me/manual)
 
 **Description**
 
-A clear and concise description of what the bug is.
+_A clear and concise description of what the bug is._
+
+**Version:**
+
+**Board**: _esp32dev, esp32s3, .._
+
+**Ethernet adapter used:** _If yes, please specify which one_
 
 **Stack trace**
 
-Please provide the stack trace here taken with `monitor_filters = esp32_exception_decoder`.
+Please provide a **decoded stack trace** taken with `monitor_filters = esp32_exception_decoder` if possible.
+
 **Any issue opened with a non readable stack trace will be ignored because not helpful at all.**
 
 As an alternative, you can use [https://maximeborges.github.io/esp-stacktrace-decoder/](https://maximeborges.github.io/esp-stacktrace-decoder/).
@@ -37,7 +33,3 @@ As an alternative, you can use [https://maximeborges.github.io/esp-stacktrace-de
 **Additional notes**
 
 Add any other context about the problem here.
-
-**Screenshots**
-
-If applicable, add screenshots to help explain your problem.
