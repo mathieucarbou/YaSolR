@@ -60,8 +60,21 @@ void Mycila::Router::getMetrics(Metrics& metrics, float voltage) const {
   metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
   metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
 
-  if (!metrics.energy)
-    metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
+  if (!metrics.energy) {
+    switch (_jsy->data.model) {
+      case MYCILA_JSY_MK_163:
+        // JSY MK-163 only has 1 clamp and if connected is used to measure the grid so there is no way to measure the output
+        break;
+      case MYCILA_JSY_MK_194:
+        metrics.energy = _jsy->data.channel1().activeEnergy; // imported + exported
+        break;
+      case MYCILA_JSY_MK_333:
+        // JSY MK-333 only has 3 clamps to measure a 3-phase system (grid) so there is no way to measure the output
+        break;
+      default:
+        break;
+    }
+  }
 }
 
 void Mycila::Router::getMeasurements(Metrics& metrics) const {
@@ -88,15 +101,27 @@ void Mycila::Router::getMeasurements(Metrics& metrics) const {
     metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
 
   } else if (_jsy->isConnected()) {
-    metrics.voltage = _jsy->getVoltage1();
-    metrics.energy = _jsy->getEnergy1() + _jsy->getEnergyReturned1();
-    if (routing) {
-      metrics.apparentPower = abs(_jsy->getApparentPower1());
-      metrics.current = abs(_jsy->getCurrent1());
-      metrics.power = abs(_jsy->getActivePower1());
-      metrics.powerFactor = abs(_jsy->getPowerFactor1());
-      metrics.resistance = abs(_jsy->getResistance1());
-      metrics.thdi = abs(_jsy->getTHDi1(0));
+    switch (_jsy->data.model) {
+      case MYCILA_JSY_MK_163:
+        // JSY MK-163 only has 1 clamp and if connected is used to measure the grid so there is no way to measure the output
+        break;
+      case MYCILA_JSY_MK_194:
+        metrics.voltage = _jsy->data.channel1().voltage;
+        metrics.energy = _jsy->data.channel1().activeEnergy; // imported + exported
+        if (routing) {
+          metrics.apparentPower = _jsy->data.channel1().apparentPower;
+          metrics.current = _jsy->data.channel1().current;
+          metrics.power = abs(_jsy->data.channel1().activePower);
+          metrics.powerFactor = _jsy->data.channel1().powerFactor;
+          metrics.resistance = _jsy->data.channel1().resistance();
+          metrics.thdi = _jsy->data.channel1().thdi();
+        }
+        break;
+      case MYCILA_JSY_MK_333:
+        // JSY MK-333 only has 3 clamps to measure a 3-phase system (grid) so there is no way to measure the output
+        break;
+      default:
+        break;
     }
   }
 }

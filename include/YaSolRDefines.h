@@ -68,7 +68,8 @@
 // UDP communication
 
 #define YASOLR_UDP_PORT              53964
-#define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x01
+// #define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x01 // old json
+#define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x02 // new json
 
 // password configuration keys
 

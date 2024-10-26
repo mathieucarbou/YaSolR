@@ -335,30 +335,43 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   jsy.setCallback([](const Mycila::JSY::EventType eventType) {
     if (eventType == Mycila::JSY::EventType::EVT_CHANGE) {
-      switch (jsy.getModel()) {
+      switch (jsy.data.model) {
         case MYCILA_JSY_MK_163:
           grid.localMetrics().update({
-            .apparentPower = jsy.getApparentPower1(),
-            .current = jsy.getCurrent1(),
-            .energy = jsy.getEnergy1(),
-            .energyReturned = jsy.getEnergyReturned1(),
-            .frequency = jsy.getFrequency(),
-            .power = jsy.getActivePower1(),
-            .powerFactor = jsy.getPowerFactor1(),
-            .voltage = jsy.getVoltage1(),
+            .apparentPower = jsy.data.single().apparentPower,
+            .current = jsy.data.single().current,
+            .energy = jsy.data.single().activeEnergyImported,
+            .energyReturned = jsy.data.single().activeEnergyReturned,
+            .frequency = jsy.data.frequency,
+            .power = jsy.data.single().activePower,
+            .powerFactor = jsy.data.single().powerFactor,
+            .voltage = jsy.data.single().voltage,
           });
           break;
 
         case MYCILA_JSY_MK_194:
           grid.localMetrics().update({
-            .apparentPower = jsy.getApparentPower2(),
-            .current = jsy.getCurrent2(),
-            .energy = jsy.getEnergy2(),
-            .energyReturned = jsy.getEnergyReturned2(),
-            .frequency = jsy.getFrequency(),
-            .power = jsy.getActivePower2(),
-            .powerFactor = jsy.getPowerFactor2(),
-            .voltage = jsy.getVoltage2(),
+            .apparentPower = jsy.data.channel2().apparentPower,
+            .current = jsy.data.channel2().current,
+            .energy = jsy.data.channel2().activeEnergyImported,
+            .energyReturned = jsy.data.channel2().activeEnergyReturned,
+            .frequency = jsy.data.frequency,
+            .power = jsy.data.channel2().activePower,
+            .powerFactor = jsy.data.channel2().powerFactor,
+            .voltage = jsy.data.channel2().voltage,
+          });
+          break;
+
+        case MYCILA_JSY_MK_333:
+          grid.localMetrics().update({
+            .apparentPower = jsy.data.aggregate.apparentPower,
+            .current = jsy.data.aggregate.current,
+            .energy = jsy.data.aggregate.activeEnergyImported,
+            .energyReturned = jsy.data.aggregate.activeEnergyReturned,
+            .frequency = jsy.data.frequency,
+            .power = jsy.data.aggregate.activePower,
+            .powerFactor = jsy.data.aggregate.powerFactor,
+            .voltage = jsy.data.aggregate.voltage,
           });
           break;
 
@@ -402,30 +415,43 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     JsonDocument doc;
     deserializeMsgPack(doc, buffer + 5, size);
 
-    switch (doc["m"].as<uint16_t>()) {
+    switch (doc["model"].as<uint16_t>()) {
       case MYCILA_JSY_MK_163:
         grid.remoteMetrics().update({
-          .apparentPower = doc["pf1"].as<float>() == 0 ? 0 : doc["p1"].as<float>() / doc["pf1"].as<float>(),
-          .current = doc["c1"].as<float>(),
-          .energy = doc["e1"].as<float>(),
-          .energyReturned = doc["er1"].as<float>(),
-          .frequency = doc["f"].as<float>(),
-          .power = doc["p1"].as<float>(),
-          .powerFactor = doc["pf1"].as<float>(),
-          .voltage = doc["v1"].as<float>(),
+          .apparentPower = doc["apparent_power"].as<float>(),
+          .current = doc["current"].as<float>(),
+          .energy = doc["active_energy_imported"].as<float>(),
+          .energyReturned = doc["active_energy_returned"].as<float>(),
+          .frequency = doc["frequency"].as<float>(),
+          .power = doc["active_power"].as<float>(),
+          .powerFactor = doc["power_factor"].as<float>(),
+          .voltage = doc["voltage"].as<float>(),
         });
         break;
 
       case MYCILA_JSY_MK_194:
         grid.remoteMetrics().update({
-          .apparentPower = doc["pf2"].as<float>() == 0 ? 0 : doc["p2"].as<float>() / doc["pf2"].as<float>(),
-          .current = doc["c2"].as<float>(),
-          .energy = doc["e2"].as<float>(),
-          .energyReturned = doc["er2"].as<float>(),
-          .frequency = doc["f"].as<float>(),
-          .power = doc["p2"].as<float>(),
-          .powerFactor = doc["pf2"].as<float>(),
-          .voltage = doc["v2"].as<float>(),
+          .apparentPower = doc["channel2"]["apparent_power"].as<float>(),
+          .current = doc["channel2"]["current"].as<float>(),
+          .energy = doc["channel2"]["active_energy_imported"].as<float>(),
+          .energyReturned = doc["channel2"]["active_energy_returned"].as<float>(),
+          .frequency = doc["channel2"]["frequency"].as<float>(),
+          .power = doc["channel2"]["active_power"].as<float>(),
+          .powerFactor = doc["channel2"]["power_factor"].as<float>(),
+          .voltage = doc["channel2"]["voltage"].as<float>(),
+        });
+        break;
+
+      case MYCILA_JSY_MK_333:
+        grid.remoteMetrics().update({
+          .apparentPower = doc["aggregate"]["apparent_power"].as<float>(),
+          .current = doc["aggregate"]["current"].as<float>(),
+          .energy = doc["aggregate"]["active_energy_imported"].as<float>(),
+          .energyReturned = doc["aggregate"]["active_energy_returned"].as<float>(),
+          .frequency = doc["aggregate"]["frequency"].as<float>(),
+          .power = doc["aggregate"]["active_power"].as<float>(),
+          .powerFactor = doc["aggregate"]["power_factor"].as<float>(),
+          .voltage = doc["aggregate"]["voltage"].as<float>(),
         });
         break;
 
