@@ -58,7 +58,7 @@ void Mycila::Router::getMetrics(Metrics& metrics, float voltage) const {
 
   metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
   metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
-  metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
+  metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
 
   if (!metrics.energy) {
     switch (_jsy->data.model) {
@@ -98,7 +98,7 @@ void Mycila::Router::getMeasurements(Metrics& metrics) const {
     }
     metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
     metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
-    metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / pow(metrics.powerFactor, 2) - 1);
+    metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
 
   } else if (_jsy->isConnected()) {
     switch (_jsy->data.model) {

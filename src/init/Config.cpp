@@ -140,8 +140,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // Electricity: JSY
   if (config.getBool(KEY_ENABLE_JSY)) {
     jsy.begin(YASOLR_JSY_SERIAL, config.get(KEY_PIN_JSY_RX).toInt(), config.get(KEY_PIN_JSY_TX).toInt());
-    if (jsy.isEnabled() && jsy.getBaudRate() != Mycila::JSY::BaudRate::BAUD_38400)
-      jsy.setBaudRate(Mycila::JSY::BaudRate::BAUD_38400);
+    if (jsy.isEnabled() && jsy.getBaudRate() != jsy.getMaxAvailableBaudRate())
+      jsy.setBaudRate(jsy.getMaxAvailableBaudRate());
   }
 
   // Electricity: PZEMs
