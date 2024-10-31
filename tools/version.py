@@ -27,13 +27,12 @@ def do_main():
             check=False,
         )  # retrieve branch name
         branch = ret.stdout.strip()
+        branch = branch.replace("/", "")
+        branch = branch.replace("-", "")
+        branch = branch.replace("_", "")
 
     if branch == "":
         raise Exception("No branch name found")
-
-    branch = branch.replace("/", "")
-    branch = branch.replace("-", "")
-    branch = branch.replace("_", "")
 
     # is_tag ?
     tagPattern = re.compile("^v[0-9]+.[0-9]+.[0-9]+([_-][a-zA-Z0-9]+)?$")
