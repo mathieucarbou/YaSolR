@@ -87,8 +87,6 @@ jobs:
           pip install --upgrade cryptography
           ref="${{ github.ref_name }}"
           ref="${ref//\//}"
-          ref="${ref//-/}"
-          ref="${ref//_/}"
           # lang: en
           REF_NAME="${{ github.ref_name }}" pio run -e ${{ matrix.environment }}
           mv .pio/build/${{ matrix.environment }}/firmware.bin ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-en.OTA.bin
