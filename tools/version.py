@@ -21,11 +21,16 @@ def do_main():
         text=True,
         check=False,
     )  # retrieve branch name
+
     branch = ret.stdout.strip()
     ref_name = os.environ.get("GITHUB_REF_NAME")
+
     if ref_name:
         # on GitHub CI
         branch = ref_name
+    if branch == "":
+        raise Exception("No branch name found")
+
     branch = branch.replace("/", "")
     branch = branch.replace("-", "")
     branch = branch.replace("_", "")
@@ -62,6 +67,11 @@ def do_main():
             f'const char* __COMPILED_BUILD_NAME__ = "{env["PIOENV"]}";\n'
             f'const char* __COMPILED_BUILD_TIMESTAMP__ = "{datetime.now(timezone.utc).isoformat()}";\n'
         )
+        sys.stderr.write(f"version.py: APP_VERSION: {version[1:] if tagPattern.match(version)  else version}\n")
+        sys.stderr.write(f"version.py: BUILD_BRANCH: {branch}\n")
+        sys.stderr.write(f"version.py: BUILD_HASH: {short_hash}\n")
+        sys.stderr.write(f"version.py: BUILD_NAME: {env['PIOENV']}\n")
+        sys.stderr.write(f"version.py: BUILD_TIMESTAMP: {datetime.now(timezone.utc).isoformat()}\n")
 
     env.AppendUnique(PIOBUILDFILES=[constantFile])
 
