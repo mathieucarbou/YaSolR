@@ -36,7 +36,12 @@ def do_main():
     branch = branch.replace("_", "")
 
     # is_tag ?
-    is_tag = branch.startswith("v") and len(branch) >= 6
+    tagPattern = re.compile("^v[0-9]+.[0-9]+.[0-9]+([_-][a-zA-Z0-9]+)?$")
+    is_tag = branch.startswith("v") and len(branch) >= 6 and tagPattern.match(branch)
+
+    version = branch
+    if not is_tag:
+        version += "_" + short_hash
 
     # local modifications ?
     has_local_modifications = False
@@ -50,14 +55,10 @@ def do_main():
         )
         has_local_modifications = ret.returncode != 0
 
-    version = branch
-    if not is_tag:
-        version += "_" + short_hash
     if has_local_modifications:
         version += "_modified"
 
     # version = "v2.40.2-rc1"
-    tagPattern = re.compile("^v[0-9]+.[0-9]+.[0-9]+([_-][a-zA-Z0-9]+)?$")
     constantFile = os.path.join(env.subst("$BUILD_DIR"), "__compiled_constants.c")
     with open(constantFile, "w") as f:
         f.write(
