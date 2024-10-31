@@ -32,7 +32,7 @@ _Firmware and source code for the Open-Source version are available directly in 
 
 _Firmware for the Pro version are only available to Pro users. You must be logged into your GitHub account to access them._
 
-Please go to the [💪 Pro](pro) page if you are interested in receiving the **Pro** version.
+Please go to the [Pro 💪](pro) page if you are interested in receiving the **Pro** version.
 
 ### Trial versions
 
