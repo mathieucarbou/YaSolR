@@ -22,11 +22,15 @@ Where:
 
 ## Open-Source versions
 
+- [v1.0.0-rc1](https://github.com/mathieucarbou/YaSolR/releases/tag/v1.0.0-rc1)
+
 - [latest](https://github.com/mathieucarbou/YaSolR/releases) (latest development build can be unstable)
 
 _Firmware and source code for the Open-Source version are available directly in the GitHub project at [https://github.com/mathieucarbou/YaSolR/releases](https://github.com/mathieucarbou/YaSolR/releases)._
 
 ## Pro versions
+
+- [v1.0.0-rc1](https://github.com/mathieucarbou/YaSolR-Pro/releases/tag/v1.0.0-rc1)
 
 - [latest](https://github.com/mathieucarbou/YaSolR-Pro/releases) (latest development build can be unstable)
 
