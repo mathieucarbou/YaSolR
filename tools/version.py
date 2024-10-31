@@ -31,7 +31,7 @@ def do_main():
     branch = branch.replace("_", "")
 
     # is_tag ?
-    is_tag = branch.startswith("v") and len(branch) == 6
+    is_tag = branch.startswith("v") and len(branch) >= 6
 
     # local modifications ?
     has_local_modifications = False
