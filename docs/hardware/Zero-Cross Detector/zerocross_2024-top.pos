@@ -1,0 +1,25 @@
+### Module positions - created on 05/20/24 03:04:41 ###
+### Printed by Pcbnew version kicad (5.1.9)-1
+## Unit = mm, Angle = deg.
+## Side : top
+# Ref     Val             Package                                           PosX       PosY       Rot  Side
+C1        1nF             C_0805_2012Metric_Pad1.18x1.45mm_HandSolder    67.7500   -46.0000   90.0000  top
+C2        10uF            C_0805_2012Metric_Pad1.18x1.45mm_HandSolder    82.7500   -52.7500    0.0000  top
+C4        100nF           C_0805_2012Metric_Pad1.18x1.45mm_HandSolder   104.0000   -46.0000  270.0000  top
+D1        M7              D_SMA-SMB_Universal_Handsoldering              74.7500   -52.7500  180.0000  top
+D2        M7              D_SMA-SMB_Universal_Handsoldering              74.7500   -39.2500  180.0000  top
+D3        M7              D_SMA-SMB_Universal_Handsoldering              74.7500   -43.7500    0.0000  top
+D4        M7              D_SMA-SMB_Universal_Handsoldering              74.7500   -48.2500    0.0000  top
+D5        1N4148WS        D_SOD-323_HandSoldering                        82.7500   -50.0000    0.0000  top
+F1        Fuse_1A         Littelfuse_1A_250V_SMD                         54.0000   -46.0000   90.0000  top
+Q1        BC817W          SOT-323_SC-70_Handsoldering                    83.0000   -46.0000    0.0000  top
+R1        110K            R_1206_3216Metric_Pad1.30x1.75mm_HandSolder    62.2500   -52.5000  180.0000  top
+R2        110K            R_1206_3216Metric_Pad1.30x1.75mm_HandSolder    62.2500   -39.5000  180.0000  top
+R3        110K            R_1206_3216Metric_Pad1.30x1.75mm_HandSolder    67.2500   -52.5000  180.0000  top
+R4        110K            R_1206_3216Metric_Pad1.30x1.75mm_HandSolder    67.2500   -39.5000  180.0000  top
+R5        22K             R_0805_2012Metric_Pad1.20x1.40mm_HandSolder    82.7500   -42.0000    0.0000  top
+R6        1K              R_0805_2012Metric_Pad1.20x1.40mm_HandSolder    82.7500   -39.2500    0.0000  top
+R7        4.7K            R_0805_2012Metric_Pad1.20x1.40mm_HandSolder   104.0000   -42.2500   90.0000  top
+R8        110R            R_0805_2012Metric_Pad1.20x1.40mm_HandSolder   101.8500   -46.0000  270.0000  top
+U2        SN74LVC1G14DBV  SOT-23-5_HandSoldering                        100.0000   -41.0000    0.0000  top
+## End
