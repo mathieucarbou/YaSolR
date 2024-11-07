@@ -6,6 +6,7 @@ description: Blog
 
 # Blog
 
+- [2024-11-07 - JSY-MK-194G](./blog/2024-11-07_jsy_mk_194g)
 - [2024-09-05 - Home Assistant Solar Diverter / Router](./blog/2024-09-05_ha_diverter)
 - [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
 - [2024-07-24 - The Importance of a good ZCD circuit](./blog/2024-07-24_the_importance_of_a_good_zcd_circuit)
