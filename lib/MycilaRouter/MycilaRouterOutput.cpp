@@ -284,7 +284,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
 void Mycila::RouterOutput::getDimmerMetrics(Metrics& metrics, float gridVoltage) const {
   metrics.resistance = config.calibratedResistance;
   metrics.voltage = gridVoltage;
-  metrics.energy = _pzem->getEnergy();
+  metrics.energy = _pzem->data.activeEnergy;
   const float dutyCycle = _dimmer->getDutyCycle();
   const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
   metrics.power = dutyCycle * maxPower;
@@ -298,16 +298,16 @@ void Mycila::RouterOutput::getDimmerMetrics(Metrics& metrics, float gridVoltage)
 bool Mycila::RouterOutput::getMeasurements(Metrics& metrics) const {
   if (!_pzem->isConnected())
     return false;
-  metrics.voltage = _pzem->getVoltage();
-  metrics.energy = _pzem->getEnergy();
+  metrics.voltage = _pzem->data.voltage;
+  metrics.energy = _pzem->data.activeEnergy;
   if (getState() == State::OUTPUT_ROUTING) {
-    metrics.apparentPower = abs(_pzem->getApparentPower());
-    metrics.current = abs(_pzem->getCurrent());
-    metrics.dimmedVoltage = abs(_pzem->getDimmedVoltage());
-    metrics.power = abs(_pzem->getPower());
-    metrics.powerFactor = abs(_pzem->getPowerFactor());
-    metrics.resistance = abs(_pzem->getResistance());
-    metrics.thdi = abs(_pzem->getTHDi(0));
+    metrics.apparentPower = abs(_pzem->data.apparentPower);
+    metrics.current = abs(_pzem->data.current);
+    metrics.dimmedVoltage = abs(_pzem->data.dimmedVoltage());
+    metrics.power = abs(_pzem->data.activePower);
+    metrics.powerFactor = abs(_pzem->data.powerFactor);
+    metrics.resistance = abs(_pzem->data.resistance());
+    metrics.thdi = abs(_pzem->data.thdi(0));
   }
   return true;
 }

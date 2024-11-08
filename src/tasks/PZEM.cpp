@@ -12,67 +12,67 @@ Mycila::Task pzemTask("PZEM", [](void* params) {
 });
 
 Mycila::Task pzemO1PairingTask("PZEM Pairing 0x01", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info(TAG, "Pairing connected PZEM to Output 1");
-  if (pzemO1.isEnabled() && pzemO1.readAddress() == YASOLR_PZEM_ADDRESS_OUTPUT1) {
-    logger.warn(TAG, "PZEM already paired to Output 1");
-  } else {
-    pzemO1.end();
-    pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt());
-    switch (pzemO1.readAddress()) {
-      case MYCILA_PZEM_INVALID_ADDRESS:
-        logger.error(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
+  logger.info(TAG, "Pairing connected PZEM to Output 1...");
+  pzemO1.end();
+  pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), MYCILA_PZEM_ADDRESS_GENERAL);
+  switch (pzemO1.getDeviceAddress()) {
+    case YASOLR_PZEM_ADDRESS_OUTPUT1:
+      // already paired
+      if (!config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+        // stop PZEM if it was not enabled
         pzemO1.end();
-        break;
-      case YASOLR_PZEM_ADDRESS_OUTPUT1:
-        logger.warn(TAG, "PZEM already paired to Output 1");
-        pzemO1.end();
-        if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM))
-          pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT1);
-        break;
-      default:
-        if (pzemO1.setAddress(YASOLR_PZEM_ADDRESS_OUTPUT1)) {
-          logger.info(TAG, "PZEM has been paired to Output 1");
-          pzemO1.end();
-          if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM))
-            pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT1);
-        } else {
-          logger.error(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
+      }
+      logger.warn(TAG, "PZEM already paired to Output 1");
+      break;
+    case MYCILA_PZEM_ADDRESS_UNKNOWN:
+      // no device found
+      pzemO1.end();
+      logger.error(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
+      break;
+    default:
+      // found a device
+      if (pzemO1.setDeviceAddress(YASOLR_PZEM_ADDRESS_OUTPUT1)) {
+        if (!config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+          // stop PZEM if it was not enabled
           pzemO1.end();
         }
-        break;
-    }
+        logger.info(TAG, "PZEM has been paired to Output 1");
+      } else {
+        pzemO1.end();
+        logger.error(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
+      }
   }
 });
 
 Mycila::Task pzemO2PairingTask("PZEM Pairing 0x02", Mycila::TaskType::ONCE, [](void* params) {
-  logger.info(TAG, "Pairing connected PZEM to Output 2");
-  if (pzemO2.isEnabled() && pzemO2.readAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2) {
-    logger.warn(TAG, "PZEM already paired to Output 2");
-  } else {
-    pzemO2.end();
-    pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt());
-    switch (pzemO2.readAddress()) {
-      case MYCILA_PZEM_INVALID_ADDRESS:
-        logger.error(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
+  logger.info(TAG, "Pairing connected PZEM to Output 2...");
+  pzemO2.end();
+  pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), MYCILA_PZEM_ADDRESS_GENERAL);
+  switch (pzemO2.getDeviceAddress()) {
+    case YASOLR_PZEM_ADDRESS_OUTPUT2:
+      // already paired
+      if (!config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+        // stop PZEM if it was not enabled
         pzemO2.end();
-        break;
-      case YASOLR_PZEM_ADDRESS_OUTPUT2:
-        logger.warn(TAG, "PZEM already paired to Output 2");
-        pzemO2.end();
-        if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM))
-          pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT2);
-        break;
-      default:
-        if (pzemO2.setAddress(YASOLR_PZEM_ADDRESS_OUTPUT2)) {
-          logger.info(TAG, "PZEM has been paired to Output 2");
-          pzemO2.end();
-          if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM))
-            pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT2);
-        } else {
-          logger.error(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
+      }
+      logger.warn(TAG, "PZEM already paired to Output 2");
+      break;
+    case MYCILA_PZEM_ADDRESS_UNKNOWN:
+      // no device found
+      pzemO2.end();
+      logger.error(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
+      break;
+    default:
+      // found a device
+      if (pzemO2.setDeviceAddress(YASOLR_PZEM_ADDRESS_OUTPUT2)) {
+        if (!config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+          // stop PZEM if it was not enabled
           pzemO2.end();
         }
-        break;
-    }
+        logger.info(TAG, "PZEM has been paired to Output 2");
+      } else {
+        pzemO2.end();
+        logger.error(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
+      }
   }
 });

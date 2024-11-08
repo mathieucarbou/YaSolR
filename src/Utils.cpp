@@ -13,11 +13,11 @@ float detectGridFrequency() {
   if (frequency)
     return frequency;
 
-  frequency = round(pzemO1.getFrequency());
+  frequency = round(pzemO1.data.frequency);
   if (frequency)
     return frequency;
 
-  frequency = round(pzemO2.getFrequency());
+  frequency = round(pzemO2.data.frequency);
   if (frequency)
     return frequency;
 

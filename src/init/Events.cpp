@@ -322,15 +322,15 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
   });
 
-  pzemO1.setCallback([](const Mycila::PZEMEventType eventType) {
-    if (eventType == Mycila::PZEMEventType::EVT_READ) {
-      grid.pzemVoltage().update(pzemO1.getVoltage());
+  pzemO1.setCallback([](const Mycila::PZEM::EventType eventType) {
+    if (eventType == Mycila::PZEM::EventType::EVT_READ) {
+      grid.pzemVoltage().update(pzemO1.data.voltage);
     }
   });
 
-  pzemO2.setCallback([](const Mycila::PZEMEventType eventType) {
-    if (eventType == Mycila::PZEMEventType::EVT_READ) {
-      grid.pzemVoltage().update(pzemO2.getVoltage());
+  pzemO2.setCallback([](const Mycila::PZEM::EventType eventType) {
+    if (eventType == Mycila::PZEM::EventType::EVT_READ) {
+      grid.pzemVoltage().update(pzemO2.data.voltage);
     }
   });
 
