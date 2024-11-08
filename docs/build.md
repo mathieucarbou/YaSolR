@@ -130,6 +130,8 @@ The _Elite_ build is for people who want to use a Random SSR instead of a Robody
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :------------------------------------------------------------------: | :------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
+The **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR directly without the need of an external ZCD module.
+
 > ##### TIP
 >
 > - Dedicated ZCD circuit with a good pulse
@@ -367,6 +369,8 @@ Links are provided for reference only, you can find them on other websites.
 | <img src="./assets/img/hardware/SSR_Heat_Sink.png" style="width:150px"> | [Heat Sink for SSR](https://fr.aliexpress.com/item/32739226601.html) (there are many more types available: take a big heat sink placed vertically)                                                                                                                                                                                       |
 
 ### Zero-Cross Detection Modules
+
+Please note that the **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR directly without the need of an external ZCD module.
 
 | **Zero-Cross Detection**                                                 | Very good and dedicated ZCD modules - Required to use a SSR                                                                                                                                                       |
 | :----------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
