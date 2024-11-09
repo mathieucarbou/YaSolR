@@ -14,11 +14,11 @@ float detectGridFrequency() {
     return frequency;
 
   frequency = round(pzemO1.data.frequency);
-  if (frequency)
+  if (!isnanf(frequency) && frequency)
     return frequency;
 
   frequency = round(pzemO2.data.frequency);
-  if (frequency)
+  if (!isnanf(frequency) && frequency)
     return frequency;
 
   frequency = config.get(KEY_GRID_FREQUENCY).toInt();
