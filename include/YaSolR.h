@@ -65,7 +65,7 @@ extern Mycila::DS18 ds18Sys;
 extern Mycila::EasyDisplay display;
 extern Mycila::ESPConnect espConnect;
 extern Mycila::Grid grid;
-extern Mycila::HADiscovery haDiscovery;
+extern Mycila::HA::Discovery haDiscovery;
 extern Mycila::JSY jsy;
 extern Mycila::Logger logger;
 extern Mycila::MQTT mqtt;

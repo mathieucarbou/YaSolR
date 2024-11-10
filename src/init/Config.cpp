@@ -103,17 +103,20 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Home Assistant Discovery
   haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC).c_str());
-  haDiscovery.setBaseTopic(config.get(KEY_MQTT_TOPIC).c_str());
   haDiscovery.setWillTopic((config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC).c_str());
-  haDiscovery.setBufferSise(512);
-  haDiscovery.setDevice({
-    .id = Mycila::AppInfo.defaultMqttClientId,
-    .name = Mycila::AppInfo.defaultSSID,
-    .version = Mycila::AppInfo.version,
-    .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
-    .manufacturer = Mycila::AppInfo.manufacturer,
-    .url = "http://" + espConnect.getIPAddress().toString(),
-  });
+  haDiscovery.begin({
+                      .id = Mycila::AppInfo.defaultMqttClientId,
+                      .name = Mycila::AppInfo.defaultSSID,
+                      .version = Mycila::AppInfo.version,
+                      .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
+                      .manufacturer = Mycila::AppInfo.manufacturer,
+                      .url = "http://" + espConnect.getIPAddress().toString(),
+                    },
+                    config.get(KEY_MQTT_TOPIC).c_str(),
+                    512,
+                    [](const char* topic, const char* payload) {
+                      mqtt.publish(topic, payload, true);
+                    });
 
   // Lights
   if (config.getBool(KEY_ENABLE_LIGHTS))

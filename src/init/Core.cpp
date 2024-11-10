@@ -67,9 +67,4 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   Mycila::TaskMonitor.addTask(routingTaskManager.getName()); // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(pzemTaskManager.getName());    // YaSolR
-
-  // HA
-  haDiscovery.setPublisher([](const String& topic, const String& payload) {
-    mqtt.publish(topic, payload, true);
-  });
 });

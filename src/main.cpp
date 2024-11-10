@@ -10,7 +10,7 @@ Mycila::DS18 ds18O2;
 Mycila::DS18 ds18Sys;
 Mycila::EasyDisplay display(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 Mycila::Grid grid;
-Mycila::HADiscovery haDiscovery;
+Mycila::HA::Discovery haDiscovery;
 Mycila::JSY jsy;
 Mycila::Logger logger;
 Mycila::MQTT mqtt;
