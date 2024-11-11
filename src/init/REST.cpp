@@ -105,7 +105,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/config/backup", HTTP_GET, [](AsyncWebServerRequest* request) {
-      String body;
+      StreamString body;
       body.reserve(4096);
       config.backup(body);
       AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", body);
@@ -122,7 +122,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
           return request->send(400, "text/plain", "No config file uploaded");
         }
         StreamString* buffer = reinterpret_cast<StreamString*>(request->_tempObject);
-        config.restore(*buffer);
+        config.restore((*buffer).c_str());
         delete buffer;
         request->_tempObject = nullptr;
         request->send(200, "text/plain", "OK");

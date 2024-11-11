@@ -14,12 +14,12 @@ Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* para
 
     Mycila::MQTT::Config mqttConfig;
     mqttConfig.server = config.get(KEY_MQTT_SERVER);
-    mqttConfig.port = static_cast<uint16_t>(config.get(KEY_MQTT_PORT).toInt());
+    mqttConfig.port = static_cast<uint16_t>(config.getLong(KEY_MQTT_PORT));
     mqttConfig.secured = secured;
     mqttConfig.username = config.get(KEY_MQTT_USERNAME);
     mqttConfig.password = config.get(KEY_MQTT_PASSWORD);
     mqttConfig.clientId = Mycila::AppInfo.defaultMqttClientId;
-    mqttConfig.willTopic = config.get(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC;
+    mqttConfig.willTopic = String(config.get(KEY_MQTT_TOPIC)) + YASOLR_MQTT_WILL_TOPIC;
     mqttConfig.keepAlive = YASOLR_MQTT_KEEPALIVE;
 
     if (secured) {
@@ -79,7 +79,7 @@ Mycila::Task mqttPublishConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](voi
   logger.debug(TAG, "Publishing config to MQTT");
   const String baseTopic = config.get(KEY_MQTT_TOPIC);
 
-  for (auto& key : config.keys) {
+  for (auto& key : config.keys()) {
     String value = config.get(key);
     if (!value.isEmpty() && config.isPasswordKey(key))
       value = "********";

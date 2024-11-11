@@ -14,7 +14,7 @@ Mycila::Task pzemTask("PZEM", [](void* params) {
 Mycila::Task pzemO1PairingTask("PZEM Pairing 0x01", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Pairing connected PZEM to Output 1...");
   pzemO1.end();
-  pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), MYCILA_PZEM_ADDRESS_GENERAL);
+  pzemO1.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
   switch (pzemO1.getDeviceAddress()) {
     case YASOLR_PZEM_ADDRESS_OUTPUT1:
       // already paired
@@ -47,7 +47,7 @@ Mycila::Task pzemO1PairingTask("PZEM Pairing 0x01", Mycila::TaskType::ONCE, [](v
 Mycila::Task pzemO2PairingTask("PZEM Pairing 0x02", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Pairing connected PZEM to Output 2...");
   pzemO2.end();
-  pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), MYCILA_PZEM_ADDRESS_GENERAL);
+  pzemO2.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
   switch (pzemO2.getDeviceAddress()) {
     case YASOLR_PZEM_ADDRESS_OUTPUT2:
       // already paired

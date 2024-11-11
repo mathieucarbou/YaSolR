@@ -38,7 +38,7 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
   // turn on Pulse Analyzer if off
   if (!pulseAnalyzer.isEnabled()) {
     logger.info(TAG, "Starting Pulse Analyzer");
-    pulseAnalyzer.begin(config.get(KEY_PIN_ZCD).toInt());
+    pulseAnalyzer.begin(config.getLong(KEY_PIN_ZCD));
     return;
   }
 
@@ -64,11 +64,11 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
     }
 
     if (dimmer1Switched && !dimmerO1.isEnabled()) {
-      dimmerO1.begin(config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), semiPeriod);
+      dimmerO1.begin(config.getLong(KEY_PIN_OUTPUT1_DIMMER), semiPeriod);
     }
 
     if (dimmer2Switched && !dimmerO2.isEnabled()) {
-      dimmerO2.begin(config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), semiPeriod);
+      dimmerO2.begin(config.getLong(KEY_PIN_OUTPUT2_DIMMER), semiPeriod);
     }
   }
 });

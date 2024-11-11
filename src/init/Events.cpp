@@ -10,7 +10,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   mqtt.onConnect([](void) {
     logger.info(TAG, "MQTT connected!");
-    if (config.getBool(KEY_ENABLE_HA_DISCOVERY) && !config.get(KEY_HA_DISCOVERY_TOPIC).isEmpty())
+    if (config.getBool(KEY_ENABLE_HA_DISCOVERY) && !config.isEmpty(KEY_HA_DISCOVERY_TOPIC))
       haDiscoveryTask.resume();
     mqttPublishStaticTask.resume();
     mqttPublishConfigTask.resume();
@@ -21,48 +21,49 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     restartTask.resume();
   });
 
-  config.listen([](const String& key, const String& oldValue, const String& newValue) {
-    logger.info(TAG, "Set %s: '%s' => '%s'", key.c_str(), oldValue.c_str(), newValue.c_str());
+  config.listen([](const char* k, const String& newValue) {
+    logger.info(TAG, "'%s' => '%s'", k, newValue.c_str());
+    const String key = k;
 
     if (key == KEY_ENABLE_DEBUG) {
       initLoggingTask.forceRun();
 
     } else if (key == KEY_RELAY1_LOAD) {
-      routerRelay1.setLoad(config.get(KEY_RELAY1_LOAD).toInt());
+      routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
 
     } else if (key == KEY_RELAY2_LOAD) {
-      routerRelay2.setLoad(config.get(KEY_RELAY2_LOAD).toInt());
+      routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
 
     } else if (key == KEY_OUTPUT1_RESISTANCE) {
-      output1.config.calibratedResistance = config.get(KEY_OUTPUT1_RESISTANCE).toFloat();
+      output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
 
     } else if (key == KEY_OUTPUT2_RESISTANCE) {
-      output2.config.calibratedResistance = config.get(KEY_OUTPUT2_RESISTANCE).toFloat();
+      output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
       output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
       dimmerO1.off();
 
     } else if (key == KEY_OUTPUT1_DIMMER_MIN) {
-      dimmerO1.setDutyCycleMin(config.get(KEY_OUTPUT1_DIMMER_MIN).toFloat() / 100);
+      dimmerO1.setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX) {
-      dimmerO1.setDutyCycleMax(config.get(KEY_OUTPUT1_DIMMER_MAX).toFloat() / 100);
+      dimmerO1.setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
 
     } else if (key == KEY_OUTPUT1_DIMMER_LIMIT) {
-      dimmerO1.setDutyCycleLimit(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toFloat() / 100);
+      dimmerO1.setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
 
     } else if (key == KEY_OUTPUT1_DIMMER_STOP_TEMP) {
-      output1.config.dimmerTempLimit = config.get(KEY_OUTPUT1_DIMMER_STOP_TEMP).toInt();
+      output1.config.dimmerTempLimit = config.getLong(KEY_OUTPUT1_DIMMER_STOP_TEMP);
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_BYPASS) {
       output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
 
     } else if (key == KEY_OUTPUT1_TEMPERATURE_START) {
-      output1.config.autoStartTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_START).toInt();
+      output1.config.autoStartTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_START);
 
     } else if (key == KEY_OUTPUT1_TEMPERATURE_STOP) {
-      output1.config.autoStopTemperature = config.get(KEY_OUTPUT1_TEMPERATURE_STOP).toInt();
+      output1.config.autoStopTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_STOP);
 
     } else if (key == KEY_OUTPUT1_TIME_START) {
       output1.config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
@@ -74,32 +75,32 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
 
     } else if (key == KEY_OUTPUT1_RESERVED_EXCESS) {
-      output1.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT1_RESERVED_EXCESS).toFloat() / 100;
+      output1.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT1_RESERVED_EXCESS) / 100;
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
       output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
       dimmerO2.off();
 
     } else if (key == KEY_OUTPUT2_DIMMER_MIN) {
-      dimmerO2.setDutyCycleMin(config.get(KEY_OUTPUT2_DIMMER_MIN).toFloat() / 100);
+      dimmerO2.setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX) {
-      dimmerO2.setDutyCycleMax(config.get(KEY_OUTPUT2_DIMMER_MAX).toFloat() / 100);
+      dimmerO2.setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
 
     } else if (key == KEY_OUTPUT2_DIMMER_LIMIT) {
-      dimmerO2.setDutyCycleLimit(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toFloat() / 100);
+      dimmerO2.setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
 
     } else if (key == KEY_OUTPUT2_DIMMER_STOP_TEMP) {
-      output2.config.dimmerTempLimit = config.get(KEY_OUTPUT2_DIMMER_STOP_TEMP).toInt();
+      output2.config.dimmerTempLimit = config.getLong(KEY_OUTPUT2_DIMMER_STOP_TEMP);
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_BYPASS) {
       output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
 
     } else if (key == KEY_OUTPUT2_TEMPERATURE_START) {
-      output2.config.autoStartTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_START).toInt();
+      output2.config.autoStartTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_START);
 
     } else if (key == KEY_OUTPUT2_TEMPERATURE_STOP) {
-      output2.config.autoStopTemperature = config.get(KEY_OUTPUT2_TEMPERATURE_STOP).toInt();
+      output2.config.autoStopTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_STOP);
 
     } else if (key == KEY_OUTPUT2_TIME_START) {
       output2.config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
@@ -111,37 +112,37 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
 
     } else if (key == KEY_OUTPUT2_RESERVED_EXCESS) {
-      output2.config.reservedExcessPowerRatio = config.get(KEY_OUTPUT2_RESERVED_EXCESS).toFloat() / 100;
+      output2.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT2_RESERVED_EXCESS) / 100;
 
     } else if (key == KEY_NTP_TIMEZONE) {
-      Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE).c_str());
+      Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
 
     } else if (key == KEY_NTP_SERVER) {
       if (!config.getBool(KEY_ENABLE_AP_MODE))
-        Mycila::NTP.sync(config.get(KEY_NTP_SERVER).c_str());
+        Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
     } else if (key == KEY_HA_DISCOVERY_TOPIC) {
-      haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC).c_str());
+      haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
 
     } else if (key == KEY_ENABLE_LIGHTS) {
       lights.end();
       if (config.getBool(KEY_ENABLE_LIGHTS))
-        lights.begin(config.get(KEY_PIN_LIGHTS_GREEN).toInt(), config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), config.get(KEY_PIN_LIGHTS_RED).toInt());
+        lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
 
     } else if (key == KEY_ENABLE_DS18_SYSTEM) {
       ds18Sys.end();
       if (config.getBool(KEY_ENABLE_DS18_SYSTEM))
-        ds18Sys.begin(config.get(KEY_PIN_ROUTER_DS18).toInt());
+        ds18Sys.begin(config.getLong(KEY_PIN_ROUTER_DS18));
 
     } else if (key == KEY_ENABLE_OUTPUT1_DS18) {
       ds18O1.end();
       if (config.getBool(KEY_ENABLE_OUTPUT1_DS18))
-        ds18O1.begin(config.get(KEY_PIN_OUTPUT1_DS18).toInt());
+        ds18O1.begin(config.getLong(KEY_PIN_OUTPUT1_DS18));
 
     } else if (key == KEY_ENABLE_OUTPUT2_DS18) {
       ds18O2.end();
       if (config.getBool(KEY_ENABLE_OUTPUT2_DS18))
-        ds18O2.begin(config.get(KEY_PIN_OUTPUT2_DS18).toInt());
+        ds18O2.begin(config.getLong(KEY_PIN_OUTPUT2_DS18));
 
     } else if (key == KEY_ENABLE_MQTT) {
       mqttConfigTask.resume();
@@ -158,27 +159,27 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     } else if (key == KEY_ENABLE_OUTPUT1_RELAY) {
       bypassRelayO1.end();
       if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY))
-        bypassRelayO1.begin(config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), config.get(KEY_OUTPUT1_RELAY_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+        bypassRelayO1.begin(config.getLong(KEY_PIN_OUTPUT1_RELAY), config.get(KEY_OUTPUT1_RELAY_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
     } else if (key == KEY_ENABLE_OUTPUT2_RELAY) {
       bypassRelayO2.end();
       if (config.getBool(KEY_ENABLE_OUTPUT2_RELAY))
-        bypassRelayO2.begin(config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), config.get(KEY_OUTPUT2_RELAY_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+        bypassRelayO2.begin(config.getLong(KEY_PIN_OUTPUT2_RELAY), config.get(KEY_OUTPUT2_RELAY_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
     } else if (key == KEY_ENABLE_RELAY1) {
       relay1.end();
       if (config.getBool(KEY_ENABLE_RELAY1))
-        relay1.begin(config.get(KEY_PIN_RELAY1).toInt(), config.get(KEY_RELAY1_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+        relay1.begin(config.getLong(KEY_PIN_RELAY1), config.get(KEY_RELAY1_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
     } else if (key == KEY_ENABLE_RELAY2) {
       relay2.end();
       if (config.getBool(KEY_ENABLE_RELAY2))
-        relay2.begin(config.get(KEY_PIN_RELAY2).toInt(), config.get(KEY_RELAY2_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+        relay2.begin(config.getLong(KEY_PIN_RELAY2), config.get(KEY_RELAY2_TYPE) == YASOLR_RELAY_TYPE_NC ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
     } else if (key == KEY_ENABLE_JSY) {
       jsy.end();
       if (config.getBool(KEY_ENABLE_JSY)) {
-        jsy.begin(YASOLR_JSY_SERIAL, config.get(KEY_PIN_JSY_RX).toInt(), config.get(KEY_PIN_JSY_TX).toInt());
+        jsy.begin(YASOLR_JSY_SERIAL, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
         if (jsy.isEnabled() && jsy.getBaudRate() != jsy.getMaxAvailableBaudRate())
           jsy.setBaudRate(jsy.getMaxAvailableBaudRate());
       }
@@ -186,34 +187,34 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     } else if (key == KEY_ENABLE_OUTPUT1_PZEM) {
       pzemO1.end();
       if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM))
-        pzemO1.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT1);
+        pzemO1.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
 
     } else if (key == KEY_ENABLE_OUTPUT2_PZEM) {
       pzemO2.end();
       if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM))
-        pzemO2.begin(YASOLR_PZEM_SERIAL, config.get(KEY_PIN_PZEM_RX).toInt(), config.get(KEY_PIN_PZEM_TX).toInt(), YASOLR_PZEM_ADDRESS_OUTPUT2);
+        pzemO2.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
 
     } else if (key == KEY_ENABLE_DISPLAY) {
       display.end();
       if (config.getBool(KEY_ENABLE_DISPLAY)) {
         const String displayType = config.get(KEY_DISPLAY_TYPE);
         if (displayType == "SSD1306")
-          display.begin(Mycila::EasyDisplayType::SSD1306, config.get(KEY_PIN_DISPLAY_SCL).toInt(), config.get(KEY_PIN_DISPLAY_SDA).toInt(), config.get(KEY_DISPLAY_ROTATION).toInt());
+          display.begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
         else if (displayType == "SH1107")
-          display.begin(Mycila::EasyDisplayType::SH1107, config.get(KEY_PIN_DISPLAY_SCL).toInt(), config.get(KEY_PIN_DISPLAY_SDA).toInt(), config.get(KEY_DISPLAY_ROTATION).toInt());
+          display.begin(Mycila::EasyDisplayType::SH1107, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
         else if (displayType == "SH1106")
-          display.begin(Mycila::EasyDisplayType::SH1106, config.get(KEY_PIN_DISPLAY_SCL).toInt(), config.get(KEY_PIN_DISPLAY_SDA).toInt(), config.get(KEY_DISPLAY_ROTATION).toInt());
+          display.begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
         display.clearDisplay();
         display.setActive(true);
       }
 
     } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_P_MODE || key == KEY_PID_D_MODE || key == KEY_PID_IC_MODE || key == KEY_PID_SETPOINT) {
-      pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.get(KEY_PID_P_MODE).toInt());
-      pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.get(KEY_PID_D_MODE).toInt());
-      pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.get(KEY_PID_IC_MODE).toInt());
-      pidController.setSetPoint(config.get(KEY_PID_SETPOINT).toFloat());
-      pidController.setTunings(config.get(KEY_PID_KP).toFloat(), config.get(KEY_PID_KI).toFloat(), config.get(KEY_PID_KD).toFloat());
-      pidController.setOutputLimits(config.get(KEY_PID_OUT_MIN).toFloat(), config.get(KEY_PID_OUT_MAX).toFloat());
+      pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
+      pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.getLong(KEY_PID_D_MODE));
+      pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.getLong(KEY_PID_IC_MODE));
+      pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
+      pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
+      pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
       logger.info(TAG, "PID Controller reconfigured!");
     }
 

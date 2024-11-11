@@ -23,7 +23,7 @@ Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* pa
   if (!config.getBool(KEY_ENABLE_AP_MODE)) {
     // NTP
     logger.info(TAG, "Enable NTP");
-    Mycila::NTP.sync(config.get(KEY_NTP_SERVER).c_str());
+    Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
     // mDNS
 #ifndef ESPCONNECT_NO_MDNS
@@ -36,7 +36,7 @@ Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* pa
   }
 
   // UDP Server
-  const uint16_t udpPort = config.get(KEY_UDP_PORT).toInt();
+  const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
   logger.info(TAG, "Enable UDP Server on port %" PRIu16, udpPort);
   udp.listen(udpPort);
 });

@@ -21,7 +21,7 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
   authMiddleware.setAuthType(AsyncAuthType::AUTH_DIGEST);
   authMiddleware.setRealm("YaSolR");
   authMiddleware.setUsername(YASOLR_ADMIN_USERNAME);
-  authMiddleware.setPassword(config.get(KEY_ADMIN_PASSWORD).c_str());
+  authMiddleware.setPassword(config.get(KEY_ADMIN_PASSWORD));
   authMiddleware.generateHash();
 
   webServer.addMiddleware(&loggingMiddleware);

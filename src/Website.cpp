@@ -480,12 +480,12 @@ void YaSolR::WebsiteClass::initCards() {
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool output1TempEnabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18) || !config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC).isEmpty();
+  const bool output1TempEnabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18) || config.isEmpty(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   const bool pzem1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_PZEM);
 
   _output1DimmerAuto.update(autoDimmer1Activated);
-  _output1DimmerReservedExcess.update(static_cast<int>(config.get(KEY_OUTPUT1_RESERVED_EXCESS).toInt()));
-  _output1DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT1_DIMMER_LIMIT).toInt()));
+  _output1DimmerReservedExcess.update(config.getInt(KEY_OUTPUT1_RESERVED_EXCESS));
+  _output1DimmerDutyLimiter.update(config.getInt(KEY_OUTPUT1_DIMMER_LIMIT));
   _output1DimmerTempLimiter.update(config.get(KEY_OUTPUT1_DIMMER_STOP_TEMP));
   _output1BypassAuto.update(autoBypass1Activated);
   _output1AutoStartWDays.update(config.get(KEY_OUTPUT1_DAYS));
@@ -525,12 +525,12 @@ void YaSolR::WebsiteClass::initCards() {
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  const bool output2TempEnabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18) || !config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC).isEmpty();
+  const bool output2TempEnabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18) || !config.isEmpty(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
   const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM);
 
   _output2DimmerAuto.update(autoDimmer2Activated);
-  _output2DimmerReservedExcess.update(static_cast<int>(config.get(KEY_OUTPUT2_RESERVED_EXCESS).toInt()));
-  _output2DimmerDutyLimiter.update(static_cast<int>(config.get(KEY_OUTPUT2_DIMMER_LIMIT).toInt()));
+  _output2DimmerReservedExcess.update(config.getInt(KEY_OUTPUT2_RESERVED_EXCESS));
+  _output2DimmerDutyLimiter.update(config.getInt(KEY_OUTPUT2_DIMMER_LIMIT));
   _output2DimmerTempLimiter.update(config.get(KEY_OUTPUT2_DIMMER_STOP_TEMP));
   _output2BypassAuto.update(autoBypass2Activated);
   _output2AutoStartWDays.update(config.get(KEY_OUTPUT2_DAYS));
@@ -565,8 +565,8 @@ void YaSolR::WebsiteClass::initCards() {
 
   // relays (control)
 
-  const int32_t load1 = config.get(KEY_RELAY1_LOAD).toInt();
-  const int32_t load2 = config.get(KEY_RELAY2_LOAD).toInt();
+  const int load1 = config.getInt(KEY_RELAY1_LOAD);
+  const int load2 = config.getInt(KEY_RELAY2_LOAD);
   const bool relay1Enabled = config.getBool(KEY_ENABLE_RELAY1);
   const bool relay2Enabled = config.getBool(KEY_ENABLE_RELAY2);
   _relaysTab.setDisplay(relay1Enabled || relay2Enabled);
@@ -587,11 +587,11 @@ void YaSolR::WebsiteClass::initCards() {
 
   // network (config)
 
-  _adminPwd.update(config.get(KEY_ADMIN_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
+  _adminPwd.update(config.isEmpty(KEY_ADMIN_PASSWORD) ? "" : HIDDEN_PWD);
   _apMode.update(config.getBool(KEY_ENABLE_AP_MODE));
   _ntpServer.update(config.get(KEY_NTP_SERVER));
   _ntpTimezone.update(config.get(KEY_NTP_TIMEZONE), "/timezones");
-  _wifiPwd.update(config.get(KEY_WIFI_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
+  _wifiPwd.update(config.isEmpty(KEY_WIFI_PASSWORD) ? "" : HIDDEN_PWD);
   _wifiSSID.update(config.get(KEY_WIFI_SSID));
   _staticIP.update(config.get(KEY_NET_IP));
   _subnetMask.update(config.get(KEY_NET_SUBNET));
@@ -608,7 +608,7 @@ void YaSolR::WebsiteClass::initCards() {
   _mqttTempO2.update(config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
   _mqttPort.update(config.get(KEY_MQTT_PORT));
   _mqttPublishInterval.update(config.get(KEY_MQTT_PUBLISH_INTERVAL));
-  _mqttPwd.update(config.get(KEY_MQTT_PASSWORD).isEmpty() ? "" : HIDDEN_PWD);
+  _mqttPwd.update(config.isEmpty(KEY_MQTT_PASSWORD) ? "" : HIDDEN_PWD);
   _mqttSecured.update(config.getBool(KEY_MQTT_SECURED));
   _mqttServer.update(config.get(KEY_MQTT_SERVER));
   _mqttServerCert.update("/api/config/mqttServerCertificate");
@@ -623,25 +623,25 @@ void YaSolR::WebsiteClass::initCards() {
   // GPIO
 
   std::unordered_map<int32_t, Card*> pinout = {};
-  _pinout(_pinDimmerO1, config.get(KEY_PIN_OUTPUT1_DIMMER).toInt(), pinout);
-  _pinout(_pinDimmerO2, config.get(KEY_PIN_OUTPUT2_DIMMER).toInt(), pinout);
-  _pinout(_pinDisplayClock, config.get(KEY_PIN_DISPLAY_SCL).toInt(), pinout);
-  _pinout(_pinDisplayData, config.get(KEY_PIN_DISPLAY_SDA).toInt(), pinout);
-  _pinout(_pinDS18O1, config.get(KEY_PIN_OUTPUT1_DS18).toInt(), pinout);
-  _pinout(_pinDS18O2, config.get(KEY_PIN_OUTPUT2_DS18).toInt(), pinout);
-  _pinout(_pinDS18Router, config.get(KEY_PIN_ROUTER_DS18).toInt(), pinout);
-  _pinout(_pinJsyRX, config.get(KEY_PIN_JSY_RX).toInt(), pinout);
-  _pinout(_pinJsyTX, config.get(KEY_PIN_JSY_TX).toInt(), pinout);
-  _pinout(_pinLEDGreen, config.get(KEY_PIN_LIGHTS_GREEN).toInt(), pinout);
-  _pinout(_pinLEDRed, config.get(KEY_PIN_LIGHTS_RED).toInt(), pinout);
-  _pinout(_pinLEDYellow, config.get(KEY_PIN_LIGHTS_YELLOW).toInt(), pinout);
-  _pinout(_pinPZEMRX, config.get(KEY_PIN_PZEM_RX).toInt(), pinout);
-  _pinout(_pinPZEMTX, config.get(KEY_PIN_PZEM_TX).toInt(), pinout);
-  _pinout(_pinRelay1, config.get(KEY_PIN_RELAY1).toInt(), pinout);
-  _pinout(_pinRelay2, config.get(KEY_PIN_RELAY2).toInt(), pinout);
-  _pinout(_pinRelayO1, config.get(KEY_PIN_OUTPUT1_RELAY).toInt(), pinout);
-  _pinout(_pinRelayO2, config.get(KEY_PIN_OUTPUT2_RELAY).toInt(), pinout);
-  _pinout(_pinZCD, config.get(KEY_PIN_ZCD).toInt(), pinout);
+  _pinout(_pinDimmerO1, config.getLong(KEY_PIN_OUTPUT1_DIMMER), pinout);
+  _pinout(_pinDimmerO2, config.getLong(KEY_PIN_OUTPUT2_DIMMER), pinout);
+  _pinout(_pinDisplayClock, config.getLong(KEY_PIN_DISPLAY_SCL), pinout);
+  _pinout(_pinDisplayData, config.getLong(KEY_PIN_DISPLAY_SDA), pinout);
+  _pinout(_pinDS18O1, config.getLong(KEY_PIN_OUTPUT1_DS18), pinout);
+  _pinout(_pinDS18O2, config.getLong(KEY_PIN_OUTPUT2_DS18), pinout);
+  _pinout(_pinDS18Router, config.getLong(KEY_PIN_ROUTER_DS18), pinout);
+  _pinout(_pinJsyRX, config.getLong(KEY_PIN_JSY_RX), pinout);
+  _pinout(_pinJsyTX, config.getLong(KEY_PIN_JSY_TX), pinout);
+  _pinout(_pinLEDGreen, config.getLong(KEY_PIN_LIGHTS_GREEN), pinout);
+  _pinout(_pinLEDRed, config.getLong(KEY_PIN_LIGHTS_RED), pinout);
+  _pinout(_pinLEDYellow, config.getLong(KEY_PIN_LIGHTS_YELLOW), pinout);
+  _pinout(_pinPZEMRX, config.getLong(KEY_PIN_PZEM_RX), pinout);
+  _pinout(_pinPZEMTX, config.getLong(KEY_PIN_PZEM_TX), pinout);
+  _pinout(_pinRelay1, config.getLong(KEY_PIN_RELAY1), pinout);
+  _pinout(_pinRelay2, config.getLong(KEY_PIN_RELAY2), pinout);
+  _pinout(_pinRelayO1, config.getLong(KEY_PIN_OUTPUT1_RELAY), pinout);
+  _pinout(_pinRelayO2, config.getLong(KEY_PIN_OUTPUT2_RELAY), pinout);
+  _pinout(_pinZCD, config.getLong(KEY_PIN_ZCD), pinout);
   pinout.clear();
 
   // Hardware
@@ -655,7 +655,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   // Hardware (config)
 
-  switch (config.get(KEY_GRID_FREQUENCY).toInt()) {
+  switch (config.getLong(KEY_GRID_FREQUENCY)) {
     case 50:
       _gridFreq.update("50 Hz", "Auto-detect,50 Hz,60 Hz");
       break;
@@ -668,18 +668,18 @@ void YaSolR::WebsiteClass::initCards() {
   }
 
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
-  _displaySpeed.update(static_cast<int>(config.get(KEY_DISPLAY_SPEED).toInt()));
-  _displayRotation.update(config.get(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
+  _displaySpeed.update(config.getInt(KEY_DISPLAY_SPEED));
+  _displayRotation.update((String(config.get(KEY_DISPLAY_ROTATION))) + "°", "0°,90°,180°,270°");
   _output1RelayType.update(config.get(KEY_OUTPUT1_RELAY_TYPE), "NO,NC");
   _output2RelayType.update(config.get(KEY_OUTPUT2_RELAY_TYPE), "NO,NC");
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
   _relay2Type.update(config.get(KEY_RELAY2_TYPE), "NO,NC");
-  _relay1Load.update(static_cast<int>(load1));
-  _relay2Load.update(static_cast<int>(load2));
-  _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE), config.get(KEY_OUTPUT1_RESISTANCE).toFloat() == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
-  _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE), config.get(KEY_OUTPUT2_RESISTANCE).toFloat() == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
-  _output1DimmerMapper.update(config.get(KEY_OUTPUT1_DIMMER_MIN) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX));
-  _output2DimmerMapper.update(config.get(KEY_OUTPUT2_DIMMER_MIN) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX));
+  _relay1Load.update(load1);
+  _relay2Load.update(load2);
+  _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE), config.getFloat(KEY_OUTPUT1_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
+  _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE), config.getFloat(KEY_OUTPUT2_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
+  _output1DimmerMapper.update(String(config.get(KEY_OUTPUT1_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX));
+  _output2DimmerMapper.update(String(config.get(KEY_OUTPUT2_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX));
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
@@ -705,7 +705,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   const bool pidViewEnabled = config.getBool(KEY_ENABLE_PID_VIEW);
   _pidView.update(pidViewEnabled);
-  switch (config.get(KEY_PID_P_MODE).toInt()) {
+  switch (config.getLong(KEY_PID_P_MODE)) {
     case 1:
       _pidPMode.update(YASOLR_PID_P_MODE_1, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
       break;
@@ -719,7 +719,7 @@ void YaSolR::WebsiteClass::initCards() {
       _pidPMode.update("", YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
       break;
   }
-  switch (config.get(KEY_PID_D_MODE).toInt()) {
+  switch (config.getLong(KEY_PID_D_MODE)) {
     case 1:
       _pidDMode.update(YASOLR_PID_D_MODE_1, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2);
       break;
@@ -730,7 +730,7 @@ void YaSolR::WebsiteClass::initCards() {
       _pidDMode.update("", YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2);
       break;
   }
-  switch (config.get(KEY_PID_IC_MODE).toInt()) {
+  switch (config.getLong(KEY_PID_IC_MODE)) {
     case 0:
       _pidICMode.update(YASOLR_PID_IC_MODE_0, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
       break;
@@ -990,7 +990,7 @@ void YaSolR::WebsiteClass::resetPID() {
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
     config.set(key, String(value));
-    card.update(static_cast<int>(config.get(key).toInt()));
+    card.update(config.getInt(key));
     dashboard.refreshCard(&card);
   });
 }
@@ -1025,7 +1025,7 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
     } else {
       config.set(key, String(strtol(value, nullptr, 10)));
     }
-    card.update(static_cast<int>(config.get(key).toInt()));
+    card.update(config.getInt(key));
     dashboard.refreshCard(&card);
   });
 #endif
@@ -1048,7 +1048,7 @@ void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
 void YaSolR::WebsiteClass::_boolConfig(Card& card, const char* key) {
   card.attachCallback([key, &card, this](int value) {
     config.setBool(key, value);
-    card.update(static_cast<int>(config.getBool(key)));
+    card.update(config.getBool(key) ? 1 : 0);
     dashboard.refreshCard(&card);
   });
 }
@@ -1081,7 +1081,7 @@ void YaSolR::WebsiteClass::_passwordConfig(Card& card, const char* key) {
     } else {
       config.set(key, value);
     }
-    card.update(config.get(key).isEmpty() ? "" : HIDDEN_PWD);
+    card.update(config.isEmpty(key) ? "" : HIDDEN_PWD);
     dashboard.refreshCard(&card);
   });
 #endif

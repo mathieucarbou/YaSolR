@@ -21,7 +21,7 @@ float detectGridFrequency() {
   if (!isnanf(frequency) && frequency)
     return frequency;
 
-  frequency = config.get(KEY_GRID_FREQUENCY).toInt();
+  frequency = config.getFloat(KEY_GRID_FREQUENCY);
   if (frequency)
     return frequency;
 
