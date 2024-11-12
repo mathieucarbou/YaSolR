@@ -9,6 +9,7 @@
 #include <YaSolRWebsite.h>
 
 #include <map>
+#include <string>
 
 Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   logger.info(TAG, "Initializing REST API");
@@ -168,12 +169,12 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/config", HTTP_POST, [](AsyncWebServerRequest* request) {
-      std::map<const char*, String> settings;
+      std::map<const char*, std::string> settings;
       for (size_t i = 0, max = request->params(); i < max; i++) {
         const AsyncWebParameter* p = request->getParam(i);
         if (p->isPost() && !p->isFile()) {
           const char* keyRef = config.keyRef(p->name().c_str());
-          settings[keyRef] = p->value();
+          settings[keyRef] = p->value().c_str();
         }
       }
       request->send(200);
