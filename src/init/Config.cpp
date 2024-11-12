@@ -6,6 +6,8 @@
 
 #include <thyristor.h>
 
+#include <string>
+
 Mycila::Task initConfigTask("Init Config", [](void* params) {
   logger.warn(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
@@ -105,12 +107,12 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
   haDiscovery.setWillTopic((String(config.get(KEY_MQTT_TOPIC)) + YASOLR_MQTT_WILL_TOPIC).c_str());
   haDiscovery.begin({
-                      .id = Mycila::AppInfo.defaultMqttClientId,
-                      .name = Mycila::AppInfo.defaultSSID,
-                      .version = Mycila::AppInfo.version,
-                      .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
-                      .manufacturer = Mycila::AppInfo.manufacturer,
-                      .url = "http://" + espConnect.getIPAddress().toString(),
+                      .id = Mycila::AppInfo.defaultMqttClientId.c_str(),
+                      .name = Mycila::AppInfo.defaultSSID.c_str(),
+                      .version = Mycila::AppInfo.version.c_str(),
+                      .model = (Mycila::AppInfo.name + " " + Mycila::AppInfo.model).c_str(),
+                      .manufacturer = Mycila::AppInfo.manufacturer.c_str(),
+                      .url = std::string("http://") + espConnect.getIPAddress().toString().c_str(),
                     },
                     config.get(KEY_MQTT_TOPIC),
                     512,
