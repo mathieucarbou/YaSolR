@@ -17,7 +17,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     const String key = topic.substring(start + 1, end);
     const char* keyRef = config.keyRef(key.c_str());
     if (keyRef)
-      config.set(keyRef, payload);
+      config.set(keyRef, payload.c_str());
   });
 
   // relays

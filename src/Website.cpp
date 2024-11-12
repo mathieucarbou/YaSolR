@@ -54,8 +54,8 @@ void YaSolR::WebsiteClass::initLayout() {
     config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
 
     router.beginCalibration([]() {
-      config.set(KEY_OUTPUT1_RESISTANCE, String(router.getOutputs()[0]->config.calibratedResistance));
-      config.set(KEY_OUTPUT2_RESISTANCE, String(router.getOutputs()[1]->config.calibratedResistance));
+      config.set(KEY_OUTPUT1_RESISTANCE, String(router.getOutputs()[0]->config.calibratedResistance).c_str());
+      config.set(KEY_OUTPUT2_RESISTANCE, String(router.getOutputs()[1]->config.calibratedResistance).c_str());
     });
 
     YaSolR::Website.initCards();
@@ -391,8 +391,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1DimmerMapper.attachCallback([this](const char* value) {
     const char* comma = strchr(value, ',');
     if (comma != nullptr) {
-      config.set(KEY_OUTPUT1_DIMMER_MIN, String(value).substring(0, comma - value));
-      config.set(KEY_OUTPUT1_DIMMER_MAX, String(comma + 1));
+      config.set(KEY_OUTPUT1_DIMMER_MIN, String(value).substring(0, comma - value).c_str());
+      config.set(KEY_OUTPUT1_DIMMER_MAX, comma + 1);
     }
     _output1DimmerMapper.update(value);
     dashboard.refreshCard(&_output1DimmerMapper);
@@ -400,8 +400,8 @@ void YaSolR::WebsiteClass::initLayout() {
   _output2DimmerMapper.attachCallback([this](const char* value) {
     const char* comma = strchr(value, ',');
     if (comma != nullptr) {
-      config.set(KEY_OUTPUT2_DIMMER_MIN, String(value).substring(0, comma - value));
-      config.set(KEY_OUTPUT2_DIMMER_MAX, String(comma + 1));
+      config.set(KEY_OUTPUT2_DIMMER_MIN, String(value).substring(0, comma - value).c_str());
+      config.set(KEY_OUTPUT2_DIMMER_MAX, comma + 1);
     }
     _output2DimmerMapper.update(value);
     dashboard.refreshCard(&_output2DimmerMapper);
@@ -989,7 +989,7 @@ void YaSolR::WebsiteClass::resetPID() {
 
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
-    config.set(key, String(value));
+    config.set(key, String(value).c_str());
     card.update(config.getInt(key));
     dashboard.refreshCard(&card);
   });
@@ -997,7 +997,7 @@ void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
 
 void YaSolR::WebsiteClass::_percentageSlider(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
-    config.set(key, String(value));
+    config.set(key, String(value).c_str());
     card.update(value);
     dashboard.refreshCard(&card);
   });
@@ -1023,7 +1023,7 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
     if (strlen(value) == 0) {
       config.unset(key);
     } else {
-      config.set(key, String(strtol(value, nullptr, 10)));
+      config.set(key, String(strtol(value, nullptr, 10)).c_str());
     }
     card.update(config.getInt(key));
     dashboard.refreshCard(&card);
@@ -1037,7 +1037,7 @@ void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
     if (strlen(value) == 0) {
       config.unset(key);
     } else {
-      config.set(key, String(strtol(value, nullptr, 10)));
+      config.set(key, String(strtol(value, nullptr, 10)).c_str());
     }
     initCards();
     dashboard.refreshCard(&card);

@@ -21,8 +21,8 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     restartTask.resume();
   });
 
-  config.listen([](const char* k, const String& newValue) {
-    logger.info(TAG, "'%s' => '%s'", k, newValue.c_str());
+  config.listen([](const char* k, const char* newValue) {
+    logger.info(TAG, "'%s' => '%s'", k, newValue);
     const String key = k;
 
     if (key == KEY_ENABLE_DEBUG) {
@@ -272,8 +272,8 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         } else {
           logger.info(TAG, "Captive Portal: WiFi configured");
           config.setBool(KEY_ENABLE_AP_MODE, false);
-          config.set(KEY_WIFI_SSID, espConnect.getConfiguredWiFiSSID());
-          config.set(KEY_WIFI_PASSWORD, espConnect.getConfiguredWiFiPassword());
+          config.set(KEY_WIFI_SSID, espConnect.getConfiguredWiFiSSID().c_str());
+          config.set(KEY_WIFI_PASSWORD, espConnect.getConfiguredWiFiPassword().c_str());
         }
         break;
       }
