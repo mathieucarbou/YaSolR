@@ -33,7 +33,7 @@ extern const char* __COMPILED_BUILD_HASH__;
 extern const char* __COMPILED_BUILD_NAME__;
 extern const char* __COMPILED_BUILD_TIMESTAMP__;
 
-Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr()),
+Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr().c_str()),
                                        name(APP_NAME),
                                        model(APP_MODEL),
                                        version(__COMPILED_APP_VERSION__),
