@@ -466,7 +466,7 @@ void YaSolR::WebsiteClass::initCards() {
   _firmwareBuildTimestamp.set(Mycila::AppInfo.buildDate.c_str());
   _firmwareFilename.set(Mycila::AppInfo.firmware.c_str());
   _networkAPMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP).c_str());
-  _networkEthMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).isEmpty() ? "N/A" : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).c_str());
+  _networkEthMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).empty() ? "N/A" : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).c_str());
   _networkHostname.set(Mycila::AppInfo.defaultHostname.c_str());
   _networkWiFiMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA).c_str());
 
