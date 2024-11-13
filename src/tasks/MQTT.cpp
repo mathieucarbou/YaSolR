@@ -143,7 +143,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/router/apparent_power", String(routerMeasurements.apparentPower, 3));
   mqtt.publish(baseTopic + "/router/current", String(routerMeasurements.current, 3));
   mqtt.publish(baseTopic + "/router/energy", String(routerMeasurements.energy, 3));
-  mqtt.publish(baseTopic + "/router/lights", lights.toString());
+  mqtt.publish(baseTopic + "/router/lights", lights.toString().c_str());
   mqtt.publish(baseTopic + "/router/power_factor", String(routerMeasurements.powerFactor, 3));
   mqtt.publish(baseTopic + "/router/power", String(routerMeasurements.power, 3));
   mqtt.publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1.isOn()));
