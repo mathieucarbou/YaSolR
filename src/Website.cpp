@@ -1006,10 +1006,10 @@ void YaSolR::WebsiteClass::_percentageSlider(Card& card, const char* key) {
 void YaSolR::WebsiteClass::_floatConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
-    if (strlen(value) == 0) {
-      config.unset(key);
-    } else {
+    if (value[0]) {
       config.set(key, value);
+    } else {
+      config.unset(key);
     }
     card.update(config.get(key));
     dashboard.refreshCard(&card);
@@ -1020,10 +1020,10 @@ void YaSolR::WebsiteClass::_floatConfig(Card& card, const char* key) {
 void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
-    if (strlen(value) == 0) {
-      config.unset(key);
-    } else {
+    if (value[0]) {
       config.set(key, String(strtol(value, nullptr, 10)).c_str());
+    } else {
+      config.unset(key);
     }
     card.update(config.getInt(key));
     dashboard.refreshCard(&card);
@@ -1034,10 +1034,10 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
 void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
-    if (strlen(value) == 0) {
-      config.unset(key);
-    } else {
+    if (value[0]) {
       config.set(key, String(strtol(value, nullptr, 10)).c_str());
+    } else {
+      config.unset(key);
     }
     initCards();
     dashboard.refreshCard(&card);
@@ -1066,7 +1066,7 @@ void YaSolR::WebsiteClass::_textConfig(Card& card, const char* key) {
 void YaSolR::WebsiteClass::_daysConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
-    config.set(key, strlen(value) == 0 ? "none" : value);
+    config.set(key, value[0] ? value : "none");
     card.update(config.get(key));
     dashboard.refreshCard(&card);
   });
@@ -1076,10 +1076,10 @@ void YaSolR::WebsiteClass::_daysConfig(Card& card, const char* key) {
 void YaSolR::WebsiteClass::_passwordConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
-    if (strlen(value) == 0) {
-      config.unset(key);
-    } else {
+    if (value[0]) {
       config.set(key, value);
+    } else {
+      config.unset(key);
     }
     card.update(config.isEmpty(key) ? "" : HIDDEN_PWD);
     dashboard.refreshCard(&card);
