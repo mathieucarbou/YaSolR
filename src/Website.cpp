@@ -454,23 +454,23 @@ void YaSolR::WebsiteClass::initCards() {
 
   // Statistics
 
-  _appManufacturer.set(Mycila::AppInfo.manufacturer.c_str());
-  _appModel.set((Mycila::AppInfo.model.c_str()));
-  _appName.set((Mycila::AppInfo.name.c_str()));
-  _appVersion.set(Mycila::AppInfo.version.c_str());
-  _deviceBootCount.set(std::to_string(Mycila::System::getBootCount()).c_str());
+  _appManufacturer.set(Mycila::AppInfo.manufacturer);
+  _appModel.set(Mycila::AppInfo.model);
+  _appName.set(Mycila::AppInfo.name);
+  _appVersion.set(Mycila::AppInfo.version);
+  _deviceBootCount.set(std::to_string(Mycila::System::getBootCount()));
   _deviceBootReason.set(Mycila::System::getLastRebootReason());
-  _deviceCores.set(std::to_string(ESP.getChipCores()).c_str());
+  _deviceCores.set(std::to_string(ESP.getChipCores()));
   _deviceModel.set(ESP.getChipModel());
-  _deviceRev.set(std::to_string(ESP.getChipRevision()).c_str());
-  _deviceID.set(Mycila::AppInfo.id.c_str());
-  _firmwareBuildHash.set(Mycila::AppInfo.buildHash.c_str());
-  _firmwareBuildTimestamp.set(Mycila::AppInfo.buildDate.c_str());
-  _firmwareFilename.set(Mycila::AppInfo.firmware.c_str());
-  _networkAPMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP).c_str());
-  _networkEthMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).empty() ? "N/A" : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).c_str());
-  _networkHostname.set(Mycila::AppInfo.defaultHostname.c_str());
-  _networkWiFiMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA).c_str());
+  _deviceRev.set(std::to_string(ESP.getChipRevision()));
+  _deviceID.set(Mycila::AppInfo.id);
+  _firmwareBuildHash.set(Mycila::AppInfo.buildHash);
+  _firmwareBuildTimestamp.set(Mycila::AppInfo.buildDate);
+  _firmwareFilename.set(Mycila::AppInfo.firmware);
+  _networkAPMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP));
+  _networkEthMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).empty() ? std::string("N/A") : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH));
+  _networkHostname.set(Mycila::AppInfo.defaultHostname);
+  _networkWiFiMAC.set(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA));
 
 #ifdef APP_MODEL_PRO
   const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY);
@@ -671,7 +671,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
   _displaySpeed.update(config.getInt(KEY_DISPLAY_SPEED));
-  _displayRotation.update((config.getString(KEY_DISPLAY_ROTATION) + "°").c_str(), "0°,90°,180°,270°");
+  _displayRotation.update(config.getString(KEY_DISPLAY_ROTATION) + "°", "0°,90°,180°,270°");
   _output1RelayType.update(config.get(KEY_OUTPUT1_RELAY_TYPE), "NO,NC");
   _output2RelayType.update(config.get(KEY_OUTPUT2_RELAY_TYPE), "NO,NC");
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
@@ -680,8 +680,8 @@ void YaSolR::WebsiteClass::initCards() {
   _relay2Load.update(load2);
   _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE), config.getFloat(KEY_OUTPUT1_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
   _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE), config.getFloat(KEY_OUTPUT2_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
-  _output1DimmerMapper.update((config.getString(KEY_OUTPUT1_DIMMER_MIN) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX)).c_str());
-  _output2DimmerMapper.update((config.getString(KEY_OUTPUT2_DIMMER_MIN) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX)).c_str());
+  _output1DimmerMapper.update(config.getString(KEY_OUTPUT1_DIMMER_MIN) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX));
+  _output2DimmerMapper.update(config.getString(KEY_OUTPUT2_DIMMER_MIN) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX));
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
@@ -780,28 +780,28 @@ void YaSolR::WebsiteClass::updateCards() {
   Mycila::System::Memory memory;
   Mycila::System::getMemory(memory);
   Mycila::ESPConnect::Mode mode = espConnect.getMode();
-  _output1RelaySwitchCount.set(std::to_string(bypassRelayO1.getSwitchCount()).c_str());
-  _output2RelaySwitchCount.set(std::to_string(bypassRelayO2.getSwitchCount()).c_str());
-  _deviceHeapTotal.set((std::to_string(memory.total) + " bytes").c_str());
-  _deviceHeapUsed.set((std::to_string(memory.used) + " bytes").c_str());
-  _deviceHeapUsage.set((Mycila::string::to_string(memory.usage, 2) + " %").c_str());
-  _gridEnergy.set((Mycila::string::to_string(gridMetrics.energy, 3) + " kWh").c_str());
-  _gridEnergyReturned.set((Mycila::string::to_string(gridMetrics.energyReturned, 3) + " kWh").c_str());
-  _gridFrequency.set((Mycila::string::to_string(detectGridFrequency(), 0) + " Hz").c_str());
+  _output1RelaySwitchCount.set(std::to_string(bypassRelayO1.getSwitchCount()));
+  _output2RelaySwitchCount.set(std::to_string(bypassRelayO2.getSwitchCount()));
+  _deviceHeapTotal.set(std::to_string(memory.total) + " bytes");
+  _deviceHeapUsed.set(std::to_string(memory.used) + " bytes");
+  _deviceHeapUsage.set(Mycila::string::to_string(memory.usage, 2) + " %");
+  _gridEnergy.set(Mycila::string::to_string(gridMetrics.energy, 3) + " kWh");
+  _gridEnergyReturned.set(Mycila::string::to_string(gridMetrics.energyReturned, 3) + " kWh");
+  _gridFrequency.set(Mycila::string::to_string(detectGridFrequency(), 0) + " Hz");
   _networkAPIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::AP).toString().c_str());
   _networkEthIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
   _networkInterface.set(mode == Mycila::ESPConnect::Mode::AP ? "AP" : (mode == Mycila::ESPConnect::Mode::STA ? "WiFi" : (mode == Mycila::ESPConnect::Mode::ETH ? "Ethernet" : "")));
   _networkWiFiIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
-  _networkWiFiRSSI.set((std::to_string(espConnect.getWiFiRSSI()) + " dBm").c_str());
-  _networkWiFiSignal.set((std::to_string(espConnect.getWiFiSignalQuality()) + " %").c_str());
-  _networkWiFiSSID.set(espConnect.getWiFiSSID().c_str());
-  _relay1SwitchCount.set(std::to_string(relay1.getSwitchCount()).c_str());
-  _relay2SwitchCount.set(std::to_string(relay2.getSwitchCount()).c_str());
-  _udpMessageRateBuffer.set((Mycila::string::to_string(udpMessageRateBuffer.rate(), 2) + " msg/s").c_str());
-  _time.set(Mycila::Time::getLocalStr().c_str());
-  _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System::getUptime()).c_str());
+  _networkWiFiRSSI.set(std::to_string(espConnect.getWiFiRSSI()) + " dBm");
+  _networkWiFiSignal.set(std::to_string(espConnect.getWiFiSignalQuality()) + " %");
+  _networkWiFiSSID.set(espConnect.getWiFiSSID());
+  _relay1SwitchCount.set(std::to_string(relay1.getSwitchCount()));
+  _relay2SwitchCount.set(std::to_string(relay2.getSwitchCount()));
+  _udpMessageRateBuffer.set(Mycila::string::to_string(udpMessageRateBuffer.rate(), 2) + " msg/s");
+  _time.set(Mycila::Time::getLocalStr());
+  _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System::getUptime()));
 #ifdef APP_MODEL_TRIAL
-  _trialRemainingTime.set(Mycila::Time::toDHHMMSS(Mycila::Trial.getRemaining()).c_str());
+  _trialRemainingTime.set(Mycila::Time::toDHHMMSS(Mycila::Trial.getRemaining()));
 #endif
 
   // home
@@ -1156,17 +1156,17 @@ void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::unordered_map<i
     card.update(YASOLR_LBL_115, DASH_STATUS_IDLE);
   } else if (pinout.find(pin) != pinout.end()) {
     std::string v = std::to_string(pin) + " (" YASOLR_LBL_153 ")";
-    pinout[pin]->update(v.c_str(), DASH_STATUS_DANGER);
-    card.update(v.c_str(), DASH_STATUS_DANGER);
+    pinout[pin]->update(v, DASH_STATUS_DANGER);
+    card.update(v, DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_GPIO(pin)) {
     pinout[pin] = &card;
-    card.update((std::to_string(pin) + " (" YASOLR_LBL_154 ")").c_str(), DASH_STATUS_DANGER);
+    card.update(std::to_string(pin) + " (" YASOLR_LBL_154 ")", DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_OUTPUT_GPIO(pin)) {
     pinout[pin] = &card;
-    card.update((std::to_string(pin) + " (" YASOLR_LBL_155 ")").c_str(), DASH_STATUS_WARNING);
+    card.update(std::to_string(pin) + " (" YASOLR_LBL_155 ")", DASH_STATUS_WARNING);
   } else {
     pinout[pin] = &card;
-    card.update((std::to_string(pin) + " (" YASOLR_LBL_156 ")").c_str(), DASH_STATUS_SUCCESS);
+    card.update(std::to_string(pin) + " (" YASOLR_LBL_156 ")", DASH_STATUS_SUCCESS);
   }
 }
 

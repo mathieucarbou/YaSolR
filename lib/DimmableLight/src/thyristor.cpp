@@ -313,15 +313,11 @@ void Thyristor::zero_cross_int(void* arg) {
     if (diff < semiPeriodLength - Thyristor::semiPeriodShrinkMargin) {
     #ifdef ARDUINO_ARCH_ESP32
       ets_printf("B%d\n", diff);
-    #else
-      Serial.println(String('B') + diff);
     #endif
     }
     if (diff > semiPeriodLength + Thyristor::semiPeriodExpandMargin) {
     #ifdef ARDUINO_ARCH_ESP32
       ets_printf("A%d\n", diff);
-    #else
-      Serial.println(String('A') + diff);
     #endif
     }
   #endif
@@ -527,14 +523,6 @@ void isr_selector() {
 }
 
 void Thyristor::setDelay(uint16_t newDelay) {
-  if (verbosity > 2) {
-    for (int i = 0; i < Thyristor::nThyristors; i++) {
-      Serial.print(String("setB: ") + "posIntoArray:" + thyristors[i]->posIntoArray + " pin:" + thyristors[i]->pin);
-      Serial.print(" ");
-      Serial.println(thyristors[i]->delay);
-    }
-  }
-
   if (newDelay > semiPeriodLength) {
     newDelay = semiPeriodLength;
   }
@@ -633,14 +621,6 @@ void Thyristor::setDelay(uint16_t newDelay) {
 #ifdef THYRISTOR_ZCD
     attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, syncDir);
 #endif
-  }
-
-  if (verbosity > 2) {
-    for (int i = 0; i < Thyristor::nThyristors; i++) {
-      Serial.print(String("\tsetB: ") + "posIntoArray:" + thyristors[i]->posIntoArray + " pin:" + thyristors[i]->pin);
-      Serial.print(" ");
-      Serial.println(thyristors[i]->delay);
-    }
   }
 }
 
@@ -836,8 +816,6 @@ bool Thyristor::mustInterruptBeReEnabled(uint16_t newDelay) {
   }
 
   allThyristorsOnOff = newAllThyristorsOnOff;
-  if (verbosity > 1)
-    Serial.println(String("allThyristorsOnOff: ") + allThyristorsOnOff);
   return !interruptEnabled && interruptMustBeEnabled;
 }
 

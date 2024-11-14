@@ -90,8 +90,8 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   });
 
   // grid power
-  String gridPowerMQTTTopic = config.get(KEY_GRID_POWER_MQTT_TOPIC);
-  if (!gridPowerMQTTTopic.isEmpty()) {
+  const std::string& gridPowerMQTTTopic = config.getString(KEY_GRID_POWER_MQTT_TOPIC);
+  if (!gridPowerMQTTTopic.empty()) {
     logger.info(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic.c_str());
     mqtt.subscribe(gridPowerMQTTTopic.c_str(), [](const std::string& topic, const std::string& payload) {
       float p = std::stof(payload);
@@ -103,10 +103,10 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   }
 
   // grid voltage
-  String gridVoltageMQTTTopic = config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC);
-  if (!gridVoltageMQTTTopic.isEmpty()) {
-    logger.info(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic.c_str());
-    mqtt.subscribe(gridVoltageMQTTTopic.c_str(), [](const std::string& topic, const std::string& payload) {
+  const char* gridVoltageMQTTTopic = config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC);
+  if (gridVoltageMQTTTopic[0] != '\0') {
+    logger.info(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
+    mqtt.subscribe(gridVoltageMQTTTopic, [](const std::string& topic, const std::string& payload) {
       float v = std::stof(payload);
       logger.debug(TAG, "Grid Voltage from MQTT: %f", v);
       grid.mqttVoltage().update(v);
@@ -114,10 +114,10 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   }
 
   // output 1 temperature
-  String output1TemperatureMQTTTopic = config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
-  if (!output1TemperatureMQTTTopic.isEmpty()) {
-    logger.info(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic.c_str());
-    mqtt.subscribe(output1TemperatureMQTTTopic.c_str(), [](const std::string& topic, const std::string& payload) {
+  const char* output1TemperatureMQTTTopic = config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
+  if (output1TemperatureMQTTTopic[0] != '\0') {
+    logger.info(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic);
+    mqtt.subscribe(output1TemperatureMQTTTopic, [](const std::string& topic, const std::string& payload) {
       float t = std::stof(payload);
       logger.debug(TAG, "Output 1 Temperature from MQTT: %f", t);
       output1.temperature().update(t);
@@ -125,10 +125,10 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   }
 
   // output 2 temperature
-  String output2TemperatureMQTTTopic = config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
-  if (!output2TemperatureMQTTTopic.isEmpty()) {
-    logger.info(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic.c_str());
-    mqtt.subscribe(output2TemperatureMQTTTopic.c_str(), [](const std::string& topic, const std::string& payload) {
+  const char* output2TemperatureMQTTTopic = config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
+  if (output2TemperatureMQTTTopic[0] != '\0') {
+    logger.info(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic);
+    mqtt.subscribe(output2TemperatureMQTTTopic, [](const std::string& topic, const std::string& payload) {
       float t = std::stof(payload);
       logger.debug(TAG, "Output 2 Temperature from MQTT: %f", t);
       output2.temperature().update(t);
