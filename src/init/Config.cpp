@@ -105,7 +105,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Home Assistant Discovery
   haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
-  haDiscovery.setWillTopic((String(config.get(KEY_MQTT_TOPIC)) + YASOLR_MQTT_WILL_TOPIC).c_str());
+  haDiscovery.setWillTopic((std::string(config.get(KEY_MQTT_TOPIC)) + YASOLR_MQTT_WILL_TOPIC).c_str());
   haDiscovery.begin({
                       .id = Mycila::AppInfo.defaultMqttClientId.c_str(),
                       .name = Mycila::AppInfo.defaultSSID.c_str(),
@@ -157,7 +157,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // Display
   if (config.getBool(KEY_ENABLE_DISPLAY)) {
-    const String displayType = config.get(KEY_DISPLAY_TYPE);
+    const std::string displayType = config.get(KEY_DISPLAY_TYPE);
     if (displayType == "SSD1306")
       display.begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
     else if (displayType == "SH1107")

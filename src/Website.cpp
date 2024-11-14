@@ -5,6 +5,7 @@
 #include <YaSolRWebsite.h>
 
 #include <unordered_map>
+#include <string>
 
 #define HIDDEN_PWD "********"
 
@@ -54,8 +55,8 @@ void YaSolR::WebsiteClass::initLayout() {
     config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
 
     router.beginCalibration([]() {
-      config.set(KEY_OUTPUT1_RESISTANCE, String(router.getOutputs()[0]->config.calibratedResistance).c_str());
-      config.set(KEY_OUTPUT2_RESISTANCE, String(router.getOutputs()[1]->config.calibratedResistance).c_str());
+      config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(router.getOutputs()[0]->config.calibratedResistance, 2).c_str());
+      config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2).c_str());
     });
 
     YaSolR::Website.initCards();
@@ -231,9 +232,10 @@ void YaSolR::WebsiteClass::initLayout() {
   _textConfig(_dnsServer, KEY_NET_DNS);
 
   _ntpSync.attachCallback([](const char* value) {
-    const String str = String(value);
-    const size_t len = str.length();
-    const timeval tv = {str.substring(0, len - 3).toInt(), str.substring(len - 3).toInt()};
+    const size_t len = strlen(value);
+    timeval tv;
+    tv.tv_sec = std::stoul(std::string(value, len - 3));
+    tv.tv_usec = atol(value + len - 3);
     Mycila::NTP.sync(tv);
   });
 
@@ -391,7 +393,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1DimmerMapper.attachCallback([this](const char* value) {
     const char* comma = strchr(value, ',');
     if (comma != nullptr) {
-      config.set(KEY_OUTPUT1_DIMMER_MIN, String(value).substring(0, comma - value).c_str());
+      config.set(KEY_OUTPUT1_DIMMER_MIN, std::string(value, comma - value).c_str());
       config.set(KEY_OUTPUT1_DIMMER_MAX, comma + 1);
     }
     _output1DimmerMapper.update(value);
@@ -400,7 +402,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output2DimmerMapper.attachCallback([this](const char* value) {
     const char* comma = strchr(value, ',');
     if (comma != nullptr) {
-      config.set(KEY_OUTPUT2_DIMMER_MIN, String(value).substring(0, comma - value).c_str());
+      config.set(KEY_OUTPUT2_DIMMER_MIN, std::string(value, comma - value).c_str());
       config.set(KEY_OUTPUT2_DIMMER_MAX, comma + 1);
     }
     _output2DimmerMapper.update(value);
@@ -456,11 +458,11 @@ void YaSolR::WebsiteClass::initCards() {
   _appModel.set((Mycila::AppInfo.model.c_str()));
   _appName.set((Mycila::AppInfo.name.c_str()));
   _appVersion.set(Mycila::AppInfo.version.c_str());
-  _deviceBootCount.set(String(Mycila::System::getBootCount()).c_str());
+  _deviceBootCount.set(std::to_string(Mycila::System::getBootCount()).c_str());
   _deviceBootReason.set(Mycila::System::getLastRebootReason());
-  _deviceCores.set(String(ESP.getChipCores()).c_str());
+  _deviceCores.set(std::to_string(ESP.getChipCores()).c_str());
   _deviceModel.set(ESP.getChipModel());
-  _deviceRev.set(String(ESP.getChipRevision()).c_str());
+  _deviceRev.set(std::to_string(ESP.getChipRevision()).c_str());
   _deviceID.set(Mycila::AppInfo.id.c_str());
   _firmwareBuildHash.set(Mycila::AppInfo.buildHash.c_str());
   _firmwareBuildTimestamp.set(Mycila::AppInfo.buildDate.c_str());
@@ -669,7 +671,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
   _displaySpeed.update(config.getInt(KEY_DISPLAY_SPEED));
-  _displayRotation.update((String(config.get(KEY_DISPLAY_ROTATION))) + "°", "0°,90°,180°,270°");
+  _displayRotation.update((std::string(config.get(KEY_DISPLAY_ROTATION)) + "°").c_str(), "0°,90°,180°,270°");
   _output1RelayType.update(config.get(KEY_OUTPUT1_RELAY_TYPE), "NO,NC");
   _output2RelayType.update(config.get(KEY_OUTPUT2_RELAY_TYPE), "NO,NC");
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
@@ -678,8 +680,8 @@ void YaSolR::WebsiteClass::initCards() {
   _relay2Load.update(load2);
   _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE), config.getFloat(KEY_OUTPUT1_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
   _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE), config.getFloat(KEY_OUTPUT2_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
-  _output1DimmerMapper.update(String(config.get(KEY_OUTPUT1_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX));
-  _output2DimmerMapper.update(String(config.get(KEY_OUTPUT2_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX));
+  _output1DimmerMapper.update((std::string(config.get(KEY_OUTPUT1_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX)).c_str());
+  _output2DimmerMapper.update((std::string(config.get(KEY_OUTPUT2_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX)).c_str());
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
@@ -778,24 +780,24 @@ void YaSolR::WebsiteClass::updateCards() {
   Mycila::System::Memory memory;
   Mycila::System::getMemory(memory);
   Mycila::ESPConnect::Mode mode = espConnect.getMode();
-  _output1RelaySwitchCount.set(String(bypassRelayO1.getSwitchCount()).c_str());
-  _output2RelaySwitchCount.set(String(bypassRelayO2.getSwitchCount()).c_str());
-  _deviceHeapTotal.set((String(memory.total) + " bytes").c_str());
-  _deviceHeapUsed.set((String(memory.used) + " bytes").c_str());
-  _deviceHeapUsage.set((String(memory.usage) + " %").c_str());
-  _gridEnergy.set((String(gridMetrics.energy, 3) + " kWh").c_str());
-  _gridEnergyReturned.set((String(gridMetrics.energyReturned, 3) + " kWh").c_str());
-  _gridFrequency.set((String(detectGridFrequency(), 0) + " Hz").c_str());
+  _output1RelaySwitchCount.set(std::to_string(bypassRelayO1.getSwitchCount()).c_str());
+  _output2RelaySwitchCount.set(std::to_string(bypassRelayO2.getSwitchCount()).c_str());
+  _deviceHeapTotal.set((std::to_string(memory.total) + " bytes").c_str());
+  _deviceHeapUsed.set((std::to_string(memory.used) + " bytes").c_str());
+  _deviceHeapUsage.set((Mycila::string::to_string(memory.usage, 2) + " %").c_str());
+  _gridEnergy.set((Mycila::string::to_string(gridMetrics.energy, 3) + " kWh").c_str());
+  _gridEnergyReturned.set((Mycila::string::to_string(gridMetrics.energyReturned, 3) + " kWh").c_str());
+  _gridFrequency.set((Mycila::string::to_string(detectGridFrequency(), 0) + " Hz").c_str());
   _networkAPIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::AP).toString().c_str());
   _networkEthIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
   _networkInterface.set(mode == Mycila::ESPConnect::Mode::AP ? "AP" : (mode == Mycila::ESPConnect::Mode::STA ? "WiFi" : (mode == Mycila::ESPConnect::Mode::ETH ? "Ethernet" : "")));
   _networkWiFiIP.set(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
-  _networkWiFiRSSI.set((String(espConnect.getWiFiRSSI()) + " dBm").c_str());
-  _networkWiFiSignal.set((String(espConnect.getWiFiSignalQuality()) + " %").c_str());
+  _networkWiFiRSSI.set((std::to_string(espConnect.getWiFiRSSI()) + " dBm").c_str());
+  _networkWiFiSignal.set((std::to_string(espConnect.getWiFiSignalQuality()) + " %").c_str());
   _networkWiFiSSID.set(espConnect.getWiFiSSID().c_str());
-  _relay1SwitchCount.set(String(relay1.getSwitchCount()).c_str());
-  _relay2SwitchCount.set(String(relay2.getSwitchCount()).c_str());
-  _udpMessageRateBuffer.set((String(udpMessageRateBuffer.rate()) + " msg/s").c_str());
+  _relay1SwitchCount.set(std::to_string(relay1.getSwitchCount()).c_str());
+  _relay2SwitchCount.set(std::to_string(relay2.getSwitchCount()).c_str());
+  _udpMessageRateBuffer.set((Mycila::string::to_string(udpMessageRateBuffer.rate(), 2) + " msg/s").c_str());
   _time.set(Mycila::Time::getLocalStr().c_str());
   _uptime.set(Mycila::Time::toDHHMMSS(Mycila::System::getUptime()).c_str());
 #ifdef APP_MODEL_TRIAL
@@ -989,7 +991,7 @@ void YaSolR::WebsiteClass::resetPID() {
 
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
-    config.set(key, String(value).c_str());
+    config.set(key, std::to_string(value).c_str());
     card.update(config.getInt(key));
     dashboard.refreshCard(&card);
   });
@@ -997,7 +999,7 @@ void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
 
 void YaSolR::WebsiteClass::_percentageSlider(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
-    config.set(key, String(value).c_str());
+    config.set(key, std::to_string(value).c_str());
     card.update(value);
     dashboard.refreshCard(&card);
   });
@@ -1021,7 +1023,7 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
     if (value[0]) {
-      config.set(key, String(strtol(value, nullptr, 10)).c_str());
+      config.set(key, std::to_string(strtol(value, nullptr, 10)).c_str());
     } else {
       config.unset(key);
     }
@@ -1035,7 +1037,7 @@ void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
     if (value[0]) {
-      config.set(key, String(strtol(value, nullptr, 10)).c_str());
+      config.set(key, std::to_string(strtol(value, nullptr, 10)).c_str());
     } else {
       config.unset(key);
     }
@@ -1144,7 +1146,7 @@ void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bo
   else if (!enabled)
     card.update(config.getBool(key), DASH_STATUS_DANGER "," YASOLR_LBL_124);
   else if (!active)
-    card.update(config.getBool(key), (String(DASH_STATUS_WARNING) + "," + err).c_str());
+    card.update(config.getBool(key), (std::string(DASH_STATUS_WARNING) + "," + err).c_str());
   else
     card.update(config.getBool(key), DASH_STATUS_SUCCESS "," YASOLR_LBL_130);
 }
@@ -1153,18 +1155,18 @@ void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::unordered_map<i
   if (pin == GPIO_NUM_NC) {
     card.update(YASOLR_LBL_115, DASH_STATUS_IDLE);
   } else if (pinout.find(pin) != pinout.end()) {
-    String v = String(pin) + " (" YASOLR_LBL_153 ")";
-    pinout[pin]->update(v, DASH_STATUS_DANGER);
-    card.update(v, DASH_STATUS_DANGER);
+    std::string v = std::to_string(pin) + " (" YASOLR_LBL_153 ")";
+    pinout[pin]->update(v.c_str(), DASH_STATUS_DANGER);
+    card.update(v.c_str(), DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_GPIO(pin)) {
     pinout[pin] = &card;
-    card.update(String(pin) + " (" YASOLR_LBL_154 ")", DASH_STATUS_DANGER);
+    card.update((std::to_string(pin) + " (" YASOLR_LBL_154 ")").c_str(), DASH_STATUS_DANGER);
   } else if (!GPIO_IS_VALID_OUTPUT_GPIO(pin)) {
     pinout[pin] = &card;
-    card.update(String(pin) + " (" YASOLR_LBL_155 ")", DASH_STATUS_WARNING);
+    card.update((std::to_string(pin) + " (" YASOLR_LBL_155 ")").c_str(), DASH_STATUS_WARNING);
   } else {
     pinout[pin] = &card;
-    card.update(String(pin) + " (" YASOLR_LBL_156 ")", DASH_STATUS_SUCCESS);
+    card.update((std::to_string(pin) + " (" YASOLR_LBL_156 ")").c_str(), DASH_STATUS_SUCCESS);
   }
 }
 

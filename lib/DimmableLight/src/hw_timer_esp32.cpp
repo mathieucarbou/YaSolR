@@ -21,6 +21,8 @@
 
 #include "hw_timer_esp32.h"
 
+#include <esp32-hal-timer.h>
+
 const static int TIMER_ID = 0;
 
 static hw_timer_t* timer = nullptr;

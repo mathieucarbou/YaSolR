@@ -7,6 +7,8 @@
 #include <MycilaString.h>
 #include <MycilaSystem.h>
 
+#include <string>
+
 #ifndef APP_NAME
   #define APP_NAME "YaSolR"
 #endif
@@ -40,15 +42,15 @@ Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr().c_str()
                                        nameModel(name + " " + model),
                                        nameModelVersion(name + " " + model + " " + version),
                                        manufacturer(APP_MANUFACTURER),
-                                       firmware(String(APP_NAME) + (isdigit(version.charAt(0)) ? "-v" : "-") + (version.indexOf("_") >= 0 ? version.substring(0, version.indexOf("_")) : version) + "-" + __COMPILED_BUILD_NAME__ + ".bin"),
+                                       firmware(std::string(APP_NAME) + (std::isdigit(version[0]) ? "-v" : "-") + version.substr(0, version.find("_")) + "-" + __COMPILED_BUILD_NAME__ + ".bin"),
                                        buildBranch(__COMPILED_BUILD_BRANCH__),
                                        buildHash(__COMPILED_BUILD_HASH__),
                                        buildDate(__COMPILED_BUILD_TIMESTAMP__),
-                                       defaultHostname(Mycila::Str::lowerCaseCopy(name + "-" + id)),
-                                       defaultMqttClientId(Mycila::Str::lowerCaseCopy(name + "_" + id)),
+                                       defaultHostname(Mycila::string::toLowerCase(name + "-" + id)),
+                                       defaultMqttClientId(Mycila::string::toLowerCase(name + "_" + id)),
                                        defaultSSID(name + "-" + id),
-                                       debug(firmware.indexOf("debug") >= 0),
-                                       trial(firmware.indexOf("trial") >= 0) {}
+                                       debug(firmware.find("debug") != std::string::npos),
+                                       trial(firmware.find("trial") != std::string::npos) {}
 
 void Mycila::AppInfoClass::toJson(const JsonObject& root) const {
   root["build_date"] = buildDate;

@@ -291,7 +291,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   webServer
     .on("/api/router/relay1", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (relay1.isEnabled() && request->hasParam("state", true)) {
-        String state = request->getParam("state", true)->value();
+        std::string state = request->getParam("state", true)->value().c_str();
         uint32_t duration = request->hasParam("duration", true) ? request->getParam("duration", true)->value().toInt() : 0;
         if (state == YASOLR_ON)
           routerRelay1.tryRelayState(true, duration);
@@ -304,7 +304,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   webServer
     .on("/api/router/relay2", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (relay2.isEnabled() && request->hasParam("state", true)) {
-        String state = request->getParam("state", true)->value();
+        std::string state = request->getParam("state", true)->value().c_str();
         uint32_t duration = request->hasParam("duration", true) ? request->getParam("duration", true)->value().toInt() : 0;
         if (state == YASOLR_ON)
           routerRelay2.tryRelayState(true, duration);
@@ -335,7 +335,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   webServer
     .on("/api/router/output1/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (output1.isBypassEnabled() && request->hasParam("state", true)) {
-        String state = request->getParam("state", true)->value();
+        std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
           output1.setBypassOn();
         else if (state == YASOLR_OFF)
@@ -347,7 +347,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   webServer
     .on("/api/router/output2/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (output2.isBypassEnabled() && request->hasParam("state", true)) {
-        String state = request->getParam("state", true)->value();
+        std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
           output2.setBypassOn();
         else if (state == YASOLR_OFF)
@@ -397,9 +397,9 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
 
-      String base = "http://";
-      base.concat(espConnect.getIPAddress().toString());
-      base.concat("/api");
+      std::string base = "http://";
+      base += espConnect.getIPAddress().toString().c_str();
+      base += "/api";
 
       root["config"] = base + "/config";
       root["config/backup"] = base + "/config/backup";

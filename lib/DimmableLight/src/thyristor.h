@@ -20,7 +20,7 @@
 #ifndef THYRISTOR_H
 #define THYRISTOR_H
 
-#include <Arduino.h>
+#include <stdint.h>
 
 /**
  * These defines affect the declaration of this class and the relative wrappers.

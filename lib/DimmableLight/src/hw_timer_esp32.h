@@ -20,7 +20,7 @@
 #ifndef HW_TIMER_ESP32_H
 #define HW_TIMER_ESP32_H
 
-#include <Arduino.h>
+#include <stdint.h>
 
 void timerInit(void (*callback)());
 

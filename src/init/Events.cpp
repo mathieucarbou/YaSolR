@@ -5,6 +5,8 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
+#include <string>
+
 Mycila::Task initEventsTask("Init Events", [](void* params) {
   logger.info(TAG, "Initializing Events");
 
@@ -23,7 +25,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   config.listen([](const char* k, const char* newValue) {
     logger.info(TAG, "'%s' => '%s'", k, newValue);
-    const String key = k;
+    const std::string key = k;
 
     if (key == KEY_ENABLE_DEBUG) {
       initLoggingTask.forceRun();
@@ -197,7 +199,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     } else if (key == KEY_ENABLE_DISPLAY) {
       display.end();
       if (config.getBool(KEY_ENABLE_DISPLAY)) {
-        const String displayType = config.get(KEY_DISPLAY_TYPE);
+        const std::string displayType = config.get(KEY_DISPLAY_TYPE);
         if (displayType == "SSD1306")
           display.begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
         else if (displayType == "SH1107")

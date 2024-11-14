@@ -13,6 +13,8 @@
   #include <ArduinoJson.h>
 #endif
 
+#include <string>
+
 namespace Mycila {
   class RouterOutput {
     public:
@@ -48,9 +50,9 @@ namespace Mycila {
           bool autoBypass = false;
           uint8_t autoStartTemperature = 0;
           uint8_t autoStopTemperature = 0;
-          String autoStartTime;
-          String autoStopTime;
-          String weekDays;
+          std::string autoStartTime;
+          std::string autoStopTime;
+          std::string weekDays;
           float reservedExcessPowerRatio = 1;
       } Config;
 

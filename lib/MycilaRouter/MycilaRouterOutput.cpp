@@ -7,6 +7,8 @@
 #include <MycilaNTP.h>
 #include <MycilaTime.h>
 
+#include <string>
+
 #ifdef MYCILA_LOGGER_SUPPORT
   #include <MycilaLogger.h>
 extern Mycila::Logger logger;
@@ -256,7 +258,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
       return;
     }
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
-    if (config.weekDays.indexOf(wday) >= 0) {
+    if (config.weekDays.find(wday) != std::string::npos) {
       LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
       _setBypass(true);
       _autoBypassEnabled = _bypassEnabled;

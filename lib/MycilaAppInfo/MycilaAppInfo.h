@@ -5,7 +5,8 @@
 #pragma once
 
 #include <ArduinoJson.h>
-#include <WString.h>
+
+#include <string>
 
 namespace Mycila {
   class AppInfoClass {
@@ -15,20 +16,20 @@ namespace Mycila {
       void toJson(const JsonObject& root) const;
 
     public:
-      const String id;
-      const String name;
-      const String model;
-      const String version;
-      const String nameModel;
-      const String nameModelVersion;
-      const String manufacturer;
-      const String firmware;
-      const String buildBranch;
-      const String buildHash;
-      const String buildDate;
-      const String defaultHostname;
-      const String defaultMqttClientId;
-      const String defaultSSID;
+      const std::string id;
+      const std::string name;
+      const std::string model;
+      const std::string version;
+      const std::string nameModel;
+      const std::string nameModelVersion;
+      const std::string manufacturer;
+      const std::string firmware;
+      const std::string buildBranch;
+      const std::string buildHash;
+      const std::string buildDate;
+      const std::string defaultHostname;
+      const std::string defaultMqttClientId;
+      const std::string defaultSSID;
       const bool debug;
       const bool trial;
   };

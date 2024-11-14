@@ -19,8 +19,10 @@
  ******************************************************************************/
 #include "thyristor.h"
 
-#include <Arduino.h>
 #include <MycilaCircularBuffer.h>
+#include <HardwareSerial.h>
+
+#include <esp32-hal-gpio.h>
 
 #if defined(ARDUINO_ARCH_ESP8266)
   #include "hw_timer_esp8266.h"
