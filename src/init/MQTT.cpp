@@ -9,7 +9,7 @@
 Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   logger.info(TAG, "Initializing MQTT Subscribers");
 
-  const std::string baseTopic = config.get(KEY_MQTT_TOPIC);
+  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   // config
 
@@ -20,7 +20,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     const std::size_t start = topic.rfind("/", end - 1);
     const char* key = config.keyRef(topic.substr(start + 1, end - start - 1).c_str());
     if (key)
-      config.set(key, payload.c_str());
+      config.set(key, payload);
   });
 
   // relays

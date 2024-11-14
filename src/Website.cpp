@@ -4,8 +4,8 @@
  */
 #include <YaSolRWebsite.h>
 
-#include <unordered_map>
 #include <string>
+#include <unordered_map>
 
 #define HIDDEN_PWD "********"
 
@@ -55,8 +55,8 @@ void YaSolR::WebsiteClass::initLayout() {
     config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
 
     router.beginCalibration([]() {
-      config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(router.getOutputs()[0]->config.calibratedResistance, 2).c_str());
-      config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2).c_str());
+      config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(router.getOutputs()[0]->config.calibratedResistance, 2));
+      config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2));
     });
 
     YaSolR::Website.initCards();
@@ -393,7 +393,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output1DimmerMapper.attachCallback([this](const char* value) {
     const char* comma = strchr(value, ',');
     if (comma != nullptr) {
-      config.set(KEY_OUTPUT1_DIMMER_MIN, std::string(value, comma - value).c_str());
+      config.set(KEY_OUTPUT1_DIMMER_MIN, std::string(value, comma - value));
       config.set(KEY_OUTPUT1_DIMMER_MAX, comma + 1);
     }
     _output1DimmerMapper.update(value);
@@ -402,7 +402,7 @@ void YaSolR::WebsiteClass::initLayout() {
   _output2DimmerMapper.attachCallback([this](const char* value) {
     const char* comma = strchr(value, ',');
     if (comma != nullptr) {
-      config.set(KEY_OUTPUT2_DIMMER_MIN, std::string(value, comma - value).c_str());
+      config.set(KEY_OUTPUT2_DIMMER_MIN, std::string(value, comma - value));
       config.set(KEY_OUTPUT2_DIMMER_MAX, comma + 1);
     }
     _output2DimmerMapper.update(value);
@@ -671,7 +671,7 @@ void YaSolR::WebsiteClass::initCards() {
 
   _displayType.update(config.get(KEY_DISPLAY_TYPE), "SH1106,SH1107,SSD1306");
   _displaySpeed.update(config.getInt(KEY_DISPLAY_SPEED));
-  _displayRotation.update((std::string(config.get(KEY_DISPLAY_ROTATION)) + "°").c_str(), "0°,90°,180°,270°");
+  _displayRotation.update((config.getString(KEY_DISPLAY_ROTATION) + "°").c_str(), "0°,90°,180°,270°");
   _output1RelayType.update(config.get(KEY_OUTPUT1_RELAY_TYPE), "NO,NC");
   _output2RelayType.update(config.get(KEY_OUTPUT2_RELAY_TYPE), "NO,NC");
   _relay1Type.update(config.get(KEY_RELAY1_TYPE), "NO,NC");
@@ -680,8 +680,8 @@ void YaSolR::WebsiteClass::initCards() {
   _relay2Load.update(load2);
   _output1ResistanceInput.update(config.get(KEY_OUTPUT1_RESISTANCE), config.getFloat(KEY_OUTPUT1_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
   _output2ResistanceInput.update(config.get(KEY_OUTPUT2_RESISTANCE), config.getFloat(KEY_OUTPUT2_RESISTANCE) == 0 ? DASH_STATUS_DANGER : DASH_STATUS_SUCCESS);
-  _output1DimmerMapper.update((std::string(config.get(KEY_OUTPUT1_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX)).c_str());
-  _output2DimmerMapper.update((std::string(config.get(KEY_OUTPUT2_DIMMER_MIN)) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX)).c_str());
+  _output1DimmerMapper.update((config.getString(KEY_OUTPUT1_DIMMER_MIN) + "," + config.get(KEY_OUTPUT1_DIMMER_MAX)).c_str());
+  _output2DimmerMapper.update((config.getString(KEY_OUTPUT2_DIMMER_MIN) + "," + config.get(KEY_OUTPUT2_DIMMER_MAX)).c_str());
 
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
@@ -991,7 +991,7 @@ void YaSolR::WebsiteClass::resetPID() {
 
 void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
-    config.set(key, std::to_string(value).c_str());
+    config.set(key, std::to_string(value));
     card.update(config.getInt(key));
     dashboard.refreshCard(&card);
   });
@@ -999,7 +999,7 @@ void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
 
 void YaSolR::WebsiteClass::_percentageSlider(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
-    config.set(key, std::to_string(value).c_str());
+    config.set(key, std::to_string(value));
     card.update(value);
     dashboard.refreshCard(&card);
   });
@@ -1023,7 +1023,7 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
     if (value[0]) {
-      config.set(key, std::to_string(strtol(value, nullptr, 10)).c_str());
+      config.set(key, std::to_string(strtol(value, nullptr, 10)));
     } else {
       config.unset(key);
     }
@@ -1037,7 +1037,7 @@ void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
     if (value[0]) {
-      config.set(key, std::to_string(strtol(value, nullptr, 10)).c_str());
+      config.set(key, std::to_string(strtol(value, nullptr, 10)));
     } else {
       config.unset(key);
     }

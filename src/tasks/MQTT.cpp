@@ -15,13 +15,13 @@ Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* para
     bool secured = config.getBool(KEY_MQTT_SECURED);
 
     Mycila::MQTT::Config mqttConfig;
-    mqttConfig.server = config.get(KEY_MQTT_SERVER);
+    mqttConfig.server = config.getString(KEY_MQTT_SERVER);
     mqttConfig.port = static_cast<uint16_t>(config.getLong(KEY_MQTT_PORT));
     mqttConfig.secured = secured;
-    mqttConfig.username = config.get(KEY_MQTT_USERNAME);
-    mqttConfig.password = config.get(KEY_MQTT_PASSWORD);
-    mqttConfig.clientId = Mycila::AppInfo.defaultMqttClientId.c_str();
-    mqttConfig.willTopic = std::string(config.get(KEY_MQTT_TOPIC)) + YASOLR_MQTT_WILL_TOPIC;
+    mqttConfig.username = config.getString(KEY_MQTT_USERNAME);
+    mqttConfig.password = config.getString(KEY_MQTT_PASSWORD);
+    mqttConfig.clientId = Mycila::AppInfo.defaultMqttClientId;
+    mqttConfig.willTopic = config.getString(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC;
     mqttConfig.keepAlive = YASOLR_MQTT_KEEPALIVE;
 
     if (secured) {
@@ -48,7 +48,7 @@ Mycila::Task mqttConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* para
 
 Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](void* params) {
   logger.debug(TAG, "Publishing static data to MQTT");
-  const std::string baseTopic = config.get(KEY_MQTT_TOPIC);
+  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   mqtt.publish((baseTopic + "/system/app/manufacturer").c_str(), Mycila::AppInfo.manufacturer.c_str(), true);
   mqtt.publish((baseTopic + "/system/app/model").c_str(), Mycila::AppInfo.model.c_str(), true);
@@ -79,7 +79,7 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
 
 Mycila::Task mqttPublishConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](void* params) {
   logger.debug(TAG, "Publishing config to MQTT");
-  const std::string baseTopic = config.get(KEY_MQTT_TOPIC);
+  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   for (auto& key : config.keys()) {
     const char* value = config.get(key);
@@ -90,7 +90,7 @@ Mycila::Task mqttPublishConfigTask("MQTT Config", Mycila::TaskType::ONCE, [](voi
 });
 
 Mycila::Task mqttPublishTask("MQTT", [](void* params) {
-  const std::string baseTopic = config.get(KEY_MQTT_TOPIC);
+  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   Mycila::System::Memory memory;
   Mycila::System::getMemory(memory);

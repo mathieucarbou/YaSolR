@@ -23,8 +23,8 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     restartTask.resume();
   });
 
-  config.listen([](const char* k, const char* newValue) {
-    logger.info(TAG, "'%s' => '%s'", k, newValue);
+  config.listen([](const char* k, const std::string& newValue) {
+    logger.info(TAG, "'%s' => '%s'", k, newValue.c_str());
     const std::string key = k;
 
     if (key == KEY_ENABLE_DEBUG) {
@@ -199,7 +199,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     } else if (key == KEY_ENABLE_DISPLAY) {
       display.end();
       if (config.getBool(KEY_ENABLE_DISPLAY)) {
-        const std::string displayType = config.get(KEY_DISPLAY_TYPE);
+        const std::string& displayType = config.getString(KEY_DISPLAY_TYPE);
         if (displayType == "SSD1306")
           display.begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
         else if (displayType == "SH1107")
@@ -274,8 +274,8 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         } else {
           logger.info(TAG, "Captive Portal: WiFi configured");
           config.setBool(KEY_ENABLE_AP_MODE, false);
-          config.set(KEY_WIFI_SSID, espConnect.getConfiguredWiFiSSID().c_str());
-          config.set(KEY_WIFI_PASSWORD, espConnect.getConfiguredWiFiPassword().c_str());
+          config.set(KEY_WIFI_SSID, espConnect.getConfiguredWiFiSSID());
+          config.set(KEY_WIFI_PASSWORD, espConnect.getConfiguredWiFiPassword());
         }
         break;
       }
