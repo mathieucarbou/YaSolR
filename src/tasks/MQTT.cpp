@@ -50,30 +50,30 @@ Mycila::Task mqttPublishStaticTask("MQTT Static", Mycila::TaskType::ONCE, [](voi
   logger.debug(TAG, "Publishing static data to MQTT");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
-  mqtt.publish((baseTopic + "/system/app/manufacturer").c_str(), Mycila::AppInfo.manufacturer.c_str(), true);
-  mqtt.publish((baseTopic + "/system/app/model").c_str(), Mycila::AppInfo.model.c_str(), true);
-  mqtt.publish((baseTopic + "/system/app/name").c_str(), Mycila::AppInfo.name.c_str(), true);
+  mqtt.publish((baseTopic + "/system/app/manufacturer").c_str(), Mycila::AppInfo.manufacturer, true);
+  mqtt.publish((baseTopic + "/system/app/model").c_str(), Mycila::AppInfo.model, true);
+  mqtt.publish((baseTopic + "/system/app/name").c_str(), Mycila::AppInfo.name, true);
   mqtt.publish((baseTopic + "/system/app/trial").c_str(), YASOLR_BOOL(Mycila::AppInfo.trial), true);
-  mqtt.publish((baseTopic + "/system/app/version").c_str(), Mycila::AppInfo.version.c_str(), true);
+  mqtt.publish((baseTopic + "/system/app/version").c_str(), Mycila::AppInfo.version, true);
   yield();
 
-  mqtt.publish((baseTopic + "/system/device/boots").c_str(), std::to_string(Mycila::System::getBootCount()).c_str(), true);
-  mqtt.publish((baseTopic + "/system/device/cores").c_str(), std::to_string(ESP.getChipCores()).c_str(), true);
-  mqtt.publish((baseTopic + "/system/device/cpu_freq").c_str(), std::to_string(ESP.getCpuFreqMHz()).c_str(), true);
-  mqtt.publish((baseTopic + "/system/device/id").c_str(), Mycila::AppInfo.id.c_str(), true);
+  mqtt.publish((baseTopic + "/system/device/boots").c_str(), std::to_string(Mycila::System::getBootCount()), true);
+  mqtt.publish((baseTopic + "/system/device/cores").c_str(), std::to_string(ESP.getChipCores()), true);
+  mqtt.publish((baseTopic + "/system/device/cpu_freq").c_str(), std::to_string(ESP.getCpuFreqMHz()), true);
+  mqtt.publish((baseTopic + "/system/device/id").c_str(), Mycila::AppInfo.id, true);
   mqtt.publish((baseTopic + "/system/device/model").c_str(), ESP.getChipModel(), true);
   yield();
 
-  mqtt.publish((baseTopic + "/system/firmware/build/branch").c_str(), Mycila::AppInfo.buildBranch.c_str(), true);
-  mqtt.publish((baseTopic + "/system/firmware/build/hash").c_str(), Mycila::AppInfo.buildHash.c_str(), true);
-  mqtt.publish((baseTopic + "/system/firmware/build/timestamp").c_str(), Mycila::AppInfo.buildDate.c_str(), true);
+  mqtt.publish((baseTopic + "/system/firmware/build/branch").c_str(), Mycila::AppInfo.buildBranch, true);
+  mqtt.publish((baseTopic + "/system/firmware/build/hash").c_str(), Mycila::AppInfo.buildHash, true);
+  mqtt.publish((baseTopic + "/system/firmware/build/timestamp").c_str(), Mycila::AppInfo.buildDate, true);
   mqtt.publish((baseTopic + "/system/firmware/debug").c_str(), YASOLR_BOOL(Mycila::AppInfo.debug), true);
-  mqtt.publish((baseTopic + "/system/firmware/filename").c_str(), Mycila::AppInfo.firmware.c_str(), true);
+  mqtt.publish((baseTopic + "/system/firmware/filename").c_str(), Mycila::AppInfo.firmware, true);
   yield();
 
-  mqtt.publish((baseTopic + "/system/network/eth/mac_address").c_str(), espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).c_str(), true);
-  mqtt.publish((baseTopic + "/system/network/hostname").c_str(), espConnect.getHostname().c_str(), true);
-  mqtt.publish((baseTopic + "/system/network/wifi/mac_address").c_str(), espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA).c_str(), true);
+  mqtt.publish((baseTopic + "/system/network/eth/mac_address").c_str(), espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH), true);
+  mqtt.publish((baseTopic + "/system/network/hostname").c_str(), espConnect.getHostname(), true);
+  mqtt.publish((baseTopic + "/system/network/wifi/mac_address").c_str(), espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA), true);
   yield();
 });
 
@@ -95,21 +95,21 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   Mycila::System::Memory memory;
   Mycila::System::getMemory(memory);
 
-  mqtt.publish((baseTopic + "/system/device/heap/total").c_str(), std::to_string(memory.total).c_str());
-  mqtt.publish((baseTopic + "/system/device/heap/usage").c_str(), std::to_string(memory.usage).c_str());
-  mqtt.publish((baseTopic + "/system/device/heap/used").c_str(), std::to_string(memory.used).c_str());
-  mqtt.publish((baseTopic + "/system/device/uptime").c_str(), std::to_string(Mycila::System::getUptime()).c_str());
+  mqtt.publish((baseTopic + "/system/device/heap/total").c_str(), std::to_string(memory.total));
+  mqtt.publish((baseTopic + "/system/device/heap/usage").c_str(), std::to_string(memory.usage));
+  mqtt.publish((baseTopic + "/system/device/heap/used").c_str(), std::to_string(memory.used));
+  mqtt.publish((baseTopic + "/system/device/uptime").c_str(), std::to_string(Mycila::System::getUptime()));
   yield();
 
   mqtt.publish((baseTopic + "/system/network/eth/ip_address").c_str(), espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
   mqtt.publish((baseTopic + "/system/network/ip_address").c_str(), espConnect.getIPAddress().toString().c_str());
-  mqtt.publish((baseTopic + "/system/network/mac_address").c_str(), espConnect.getMACAddress().c_str());
+  mqtt.publish((baseTopic + "/system/network/mac_address").c_str(), espConnect.getMACAddress());
   mqtt.publish((baseTopic + "/system/network/ntp").c_str(), YASOLR_STATE(Mycila::NTP.isSynced()));
-  mqtt.publish((baseTopic + "/system/network/wifi/bssid").c_str(), espConnect.getWiFiBSSID().c_str());
+  mqtt.publish((baseTopic + "/system/network/wifi/bssid").c_str(), espConnect.getWiFiBSSID());
   mqtt.publish((baseTopic + "/system/network/wifi/ip_address").c_str(), espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
-  mqtt.publish((baseTopic + "/system/network/wifi/quality").c_str(), std::to_string(espConnect.getWiFiSignalQuality()).c_str());
-  mqtt.publish((baseTopic + "/system/network/wifi/rssi").c_str(), std::to_string(espConnect.getWiFiRSSI()).c_str());
-  mqtt.publish((baseTopic + "/system/network/wifi/ssid").c_str(), espConnect.getWiFiSSID().c_str());
+  mqtt.publish((baseTopic + "/system/network/wifi/quality").c_str(), std::to_string(espConnect.getWiFiSignalQuality()));
+  mqtt.publish((baseTopic + "/system/network/wifi/rssi").c_str(), std::to_string(espConnect.getWiFiRSSI()));
+  mqtt.publish((baseTopic + "/system/network/wifi/ssid").c_str(), espConnect.getWiFiSSID());
   yield();
 
   switch (espConnect.getMode()) {
@@ -129,30 +129,30 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
 
   Mycila::Grid::Metrics gridMetrics;
   grid.getMeasurements(gridMetrics);
-  mqtt.publish((baseTopic + "/grid/apparent_power").c_str(), std::to_string(gridMetrics.apparentPower).c_str());
-  mqtt.publish((baseTopic + "/grid/current").c_str(), std::to_string(gridMetrics.current).c_str());
-  mqtt.publish((baseTopic + "/grid/energy").c_str(), std::to_string(gridMetrics.energy).c_str());
-  mqtt.publish((baseTopic + "/grid/energy_returned").c_str(), std::to_string(gridMetrics.energyReturned).c_str());
-  mqtt.publish((baseTopic + "/grid/frequency").c_str(), std::to_string(gridMetrics.frequency).c_str());
+  mqtt.publish((baseTopic + "/grid/apparent_power").c_str(), std::to_string(gridMetrics.apparentPower));
+  mqtt.publish((baseTopic + "/grid/current").c_str(), std::to_string(gridMetrics.current));
+  mqtt.publish((baseTopic + "/grid/energy").c_str(), std::to_string(gridMetrics.energy));
+  mqtt.publish((baseTopic + "/grid/energy_returned").c_str(), std::to_string(gridMetrics.energyReturned));
+  mqtt.publish((baseTopic + "/grid/frequency").c_str(), std::to_string(gridMetrics.frequency));
   mqtt.publish((baseTopic + "/grid/online").c_str(), YASOLR_BOOL(grid.isConnected()));
-  mqtt.publish((baseTopic + "/grid/power").c_str(), std::to_string(gridMetrics.power).c_str());
-  mqtt.publish((baseTopic + "/grid/power_factor").c_str(), std::to_string(gridMetrics.powerFactor).c_str());
-  mqtt.publish((baseTopic + "/grid/voltage").c_str(), std::to_string(gridMetrics.voltage).c_str());
+  mqtt.publish((baseTopic + "/grid/power").c_str(), std::to_string(gridMetrics.power));
+  mqtt.publish((baseTopic + "/grid/power_factor").c_str(), std::to_string(gridMetrics.powerFactor));
+  mqtt.publish((baseTopic + "/grid/voltage").c_str(), std::to_string(gridMetrics.voltage));
   yield();
 
   Mycila::Router::Metrics routerMeasurements;
   router.getMeasurements(routerMeasurements);
-  mqtt.publish((baseTopic + "/router/apparent_power").c_str(), std::to_string(routerMeasurements.apparentPower).c_str());
-  mqtt.publish((baseTopic + "/router/current").c_str(), std::to_string(routerMeasurements.current).c_str());
-  mqtt.publish((baseTopic + "/router/energy").c_str(), std::to_string(routerMeasurements.energy).c_str());
-  mqtt.publish((baseTopic + "/router/lights").c_str(), lights.toString().c_str());
-  mqtt.publish((baseTopic + "/router/power_factor").c_str(), std::to_string(routerMeasurements.powerFactor).c_str());
-  mqtt.publish((baseTopic + "/router/power").c_str(), std::to_string(routerMeasurements.power).c_str());
+  mqtt.publish((baseTopic + "/router/apparent_power").c_str(), std::to_string(routerMeasurements.apparentPower));
+  mqtt.publish((baseTopic + "/router/current").c_str(), std::to_string(routerMeasurements.current));
+  mqtt.publish((baseTopic + "/router/energy").c_str(), std::to_string(routerMeasurements.energy));
+  mqtt.publish((baseTopic + "/router/lights").c_str(), lights.toString());
+  mqtt.publish((baseTopic + "/router/power_factor").c_str(), std::to_string(routerMeasurements.powerFactor));
+  mqtt.publish((baseTopic + "/router/power").c_str(), std::to_string(routerMeasurements.power));
   mqtt.publish((baseTopic + "/router/relay1").c_str(), YASOLR_STATE(relay1.isOn()));
   mqtt.publish((baseTopic + "/router/relay2").c_str(), YASOLR_STATE(relay2.isOn()));
-  mqtt.publish((baseTopic + "/router/temperature").c_str(), std::to_string(ds18Sys.getTemperature().value_or(0)).c_str());
-  mqtt.publish((baseTopic + "/router/thdi").c_str(), std::to_string(routerMeasurements.thdi).c_str());
-  mqtt.publish((baseTopic + "/router/virtual_grid_power").c_str(), std::to_string(gridMetrics.power - routerMeasurements.power).c_str());
+  mqtt.publish((baseTopic + "/router/temperature").c_str(), std::to_string(ds18Sys.getTemperature().value_or(0)));
+  mqtt.publish((baseTopic + "/router/thdi").c_str(), std::to_string(routerMeasurements.thdi));
+  mqtt.publish((baseTopic + "/router/virtual_grid_power").c_str(), std::to_string(gridMetrics.power - routerMeasurements.power));
   yield();
 
   for (const auto& output : router.getOutputs()) {
@@ -160,8 +160,8 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
     mqtt.publish((outputTopic + "/state").c_str(), output->getStateName());
     mqtt.publish((outputTopic + "/bypass").c_str(), YASOLR_STATE(output->isBypassOn()));
     mqtt.publish((outputTopic + "/dimmer").c_str(), YASOLR_STATE(output->isDimmerOn()));
-    mqtt.publish((outputTopic + "/duty_cycle").c_str(), std::to_string(output->getDimmerDutyCycle() * 100).c_str());
-    mqtt.publish((outputTopic + "/temperature").c_str(), std::to_string(output->temperature().orElse(0)).c_str());
+    mqtt.publish((outputTopic + "/duty_cycle").c_str(), std::to_string(output->getDimmerDutyCycle() * 100));
+    mqtt.publish((outputTopic + "/temperature").c_str(), std::to_string(output->temperature().orElse(0)));
     yield();
   }
 });
