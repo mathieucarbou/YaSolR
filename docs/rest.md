@@ -259,7 +259,6 @@ curl -X GET http://<esp-ip>/api/router
 # Change relay state for a specific duration (duration is optional)
 curl -X POST \
   -F "state=on" \
-  -F "duration=20000" \
   http://<esp-ip>/api/router/relay1
 ```
 

@@ -158,7 +158,6 @@ virtual_grid_power = -503.7492371
 ```properties
 # Switch relay on or off or for a duration in milliseconds
 <prefix>/router/relayX/set = "on"
-<prefix>/router/relayX/set = "on=5000"
 <prefix>/router/relayX/set = "off"
 ```
 
