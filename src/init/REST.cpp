@@ -294,11 +294,10 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
     .on("/api/router/relay1", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (relay1.isEnabled() && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
-        uint32_t duration = request->hasParam("duration", true) ? request->getParam("duration", true)->value().toInt() : 0;
         if (state == YASOLR_ON)
-          routerRelay1.tryRelayState(true, duration);
+          routerRelay1.tryRelayState(true);
         else if (state == YASOLR_OFF)
-          routerRelay1.tryRelayState(false, duration);
+          routerRelay1.tryRelayState(false);
       }
       request->send(200);
     });
@@ -307,11 +306,10 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
     .on("/api/router/relay2", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (relay2.isEnabled() && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
-        uint32_t duration = request->hasParam("duration", true) ? request->getParam("duration", true)->value().toInt() : 0;
         if (state == YASOLR_ON)
-          routerRelay2.tryRelayState(true, duration);
+          routerRelay2.tryRelayState(true);
         else if (state == YASOLR_OFF)
-          routerRelay2.tryRelayState(false, duration);
+          routerRelay2.tryRelayState(false);
       }
       request->send(200);
     });
