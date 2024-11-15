@@ -78,29 +78,39 @@ void Mycila::Router::getMetrics(Metrics& metrics, float voltage) const {
 }
 
 void Mycila::Router::getMeasurements(Metrics& metrics) const {
-  bool pzemAvailable = true;
   bool routing = false;
 
-  // collect output measurements with PZEM
-  RouterOutput::Metrics outputMeasurements[_outputs.size()] = {};
   for (size_t i = 0; i < _outputs.size(); i++) {
-    routing |= _outputs[i]->getState() == RouterOutput::State::OUTPUT_ROUTING;
-    pzemAvailable &= _outputs[i]->getMeasurements(outputMeasurements[i]);
+    // check if we have a PZEM output
+    RouterOutput::Metrics pzemMetrics;
+    const bool pzem = _outputs[i]->getMeasurements(pzemMetrics);
+
+    // pzem output found, grave voltage and energy
+    if (pzem) {
+      metrics.voltage = pzemMetrics.voltage;
+      metrics.energy += pzemMetrics.energy;
+    }
+
+    bool r = _outputs[i]->getState() == RouterOutput::State::OUTPUT_ROUTING;
+    routing |= r;
+
+    // pzem found and routing => we have all the metrics
+    if (pzem && r) {
+      metrics.apparentPower += pzemMetrics.apparentPower;
+      metrics.current += pzemMetrics.current;
+      metrics.power += pzemMetrics.power;
+
+      metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
+      metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
+      metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
+    }
   }
 
-  if (pzemAvailable) {
-    for (size_t i = 0; i < _outputs.size(); i++) {
-      metrics.voltage = outputMeasurements[i].voltage;
-      metrics.energy += outputMeasurements[i].energy;
-      metrics.apparentPower += outputMeasurements[i].apparentPower;
-      metrics.current += outputMeasurements[i].current;
-      metrics.power += outputMeasurements[i].power;
-    }
-    metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
-    metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
-    metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
+  // we found some pzem ? we are done
+  if (metrics.voltage)
+    return;
 
-  } else if (_jsy->isConnected()) {
+  if (_jsy->isConnected()) {
     switch (_jsy->data.model) {
       case MYCILA_JSY_MK_163:
         // JSY MK-163 only has 1 clamp and if connected is used to measure the grid so there is no way to measure the output
