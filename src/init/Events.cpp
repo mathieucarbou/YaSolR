@@ -7,6 +7,8 @@
 
 #include <string>
 
+extern YaSolR::Website website;
+
 Mycila::Task initEventsTask("Init Events", [](void* params) {
   logger.info(TAG, "Initializing Events");
 
@@ -220,7 +222,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       logger.info(TAG, "PID Controller reconfigured!");
     }
 
-    YaSolR::Website.initCards();
+    website.initCards();
     mqttPublishConfigTask.resume();
     mqttPublishTask.requestEarlyRun();
   });
@@ -228,7 +230,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   dashboard.onBeforeUpdate([](bool changes_only) {
     if (!changes_only) {
       logger.info(TAG, "Dashboard refresh requested");
-      YaSolR::Website.initCards();
+      website.initCards();
     }
   });
 

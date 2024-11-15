@@ -3,6 +3,7 @@
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
+#include <YaSolRWebsite.h>
 
 Mycila::Config config;
 Mycila::DS18 ds18O1;
@@ -41,6 +42,8 @@ Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, pzemO2);
 
 Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);
+
+YaSolR::Website website;
 
 AsyncUDP udp;
 Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;

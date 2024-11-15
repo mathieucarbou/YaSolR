@@ -13,7 +13,7 @@
 static const ChartSize chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
 #endif
 
-void YaSolR::WebsiteClass::initLayout() {
+void YaSolR::Website::initLayout() {
   logger.debug(TAG, "Initializing layout");
 
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
@@ -59,7 +59,7 @@ void YaSolR::WebsiteClass::initLayout() {
       config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2));
     });
 
-    YaSolR::Website.initCards();
+    initCards();
     mqttPublishConfigTask.resume();
     mqttPublishTask.requestEarlyRun();
 
@@ -449,7 +449,7 @@ void YaSolR::WebsiteClass::initLayout() {
 #endif
 }
 
-void YaSolR::WebsiteClass::initCards() {
+void YaSolR::Website::initCards() {
   logger.debug(TAG, "Initializing cards");
 
   // Statistics
@@ -763,7 +763,7 @@ void YaSolR::WebsiteClass::initCards() {
 #endif
 }
 
-void YaSolR::WebsiteClass::updateCards() {
+void YaSolR::Website::updateCards() {
   Mycila::Grid::Metrics gridMetrics;
   grid.getMeasurements(gridMetrics);
 
@@ -920,7 +920,7 @@ void YaSolR::WebsiteClass::updateCards() {
 #endif
 }
 
-void YaSolR::WebsiteClass::updateCharts() {
+void YaSolR::Website::updateCharts() {
   // read last metrics
   Mycila::Grid::Metrics gridMetrics;
   grid.getMeasurements(gridMetrics);
@@ -945,7 +945,7 @@ void YaSolR::WebsiteClass::updateCharts() {
   _routerTHDiHistory.updateY(_routerTHDiHistoryY, YASOLR_GRAPH_POINTS);
 }
 
-void YaSolR::WebsiteClass::updatePID() {
+void YaSolR::Website::updatePID() {
 #ifdef APP_MODEL_PRO
   // shift array
   constexpr size_t shift = sizeof(_pidInputHistoryY) - sizeof(*_pidInputHistoryY);
@@ -977,7 +977,7 @@ void YaSolR::WebsiteClass::updatePID() {
 #endif
 }
 
-void YaSolR::WebsiteClass::resetPID() {
+void YaSolR::Website::resetPID() {
 #ifdef APP_MODEL_PRO
   memset(_pidOutputHistoryY, 0, sizeof(_pidOutputHistoryY));
   memset(_pidInputHistoryY, 0, sizeof(_pidInputHistoryY));
@@ -989,7 +989,7 @@ void YaSolR::WebsiteClass::resetPID() {
 #endif
 }
 
-void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
+void YaSolR::Website::_sliderConfig(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
     config.set(key, std::to_string(value));
     card.update(config.getInt(key));
@@ -997,7 +997,7 @@ void YaSolR::WebsiteClass::_sliderConfig(Card& card, const char* key) {
   });
 }
 
-void YaSolR::WebsiteClass::_percentageSlider(Card& card, const char* key) {
+void YaSolR::Website::_percentageSlider(Card& card, const char* key) {
   card.attachCallback([key, &card](int value) {
     config.set(key, std::to_string(value));
     card.update(value);
@@ -1005,7 +1005,7 @@ void YaSolR::WebsiteClass::_percentageSlider(Card& card, const char* key) {
   });
 }
 
-void YaSolR::WebsiteClass::_floatConfig(Card& card, const char* key) {
+void YaSolR::Website::_floatConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
     if (value[0]) {
@@ -1019,7 +1019,7 @@ void YaSolR::WebsiteClass::_floatConfig(Card& card, const char* key) {
 #endif
 }
 
-void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
+void YaSolR::Website::_numConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
     if (value[0]) {
@@ -1033,7 +1033,7 @@ void YaSolR::WebsiteClass::_numConfig(Card& card, const char* key) {
 #endif
 }
 
-void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
+void YaSolR::Website::_pinConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
     if (value[0]) {
@@ -1047,7 +1047,7 @@ void YaSolR::WebsiteClass::_pinConfig(Card& card, const char* key) {
 #endif
 }
 
-void YaSolR::WebsiteClass::_boolConfig(Card& card, const char* key) {
+void YaSolR::Website::_boolConfig(Card& card, const char* key) {
   card.attachCallback([key, &card, this](int value) {
     config.setBool(key, value);
     card.update(config.getBool(key) ? 1 : 0);
@@ -1055,7 +1055,7 @@ void YaSolR::WebsiteClass::_boolConfig(Card& card, const char* key) {
   });
 }
 
-void YaSolR::WebsiteClass::_textConfig(Card& card, const char* key) {
+void YaSolR::Website::_textConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card](const char* value) {
     config.set(key, value);
@@ -1065,7 +1065,7 @@ void YaSolR::WebsiteClass::_textConfig(Card& card, const char* key) {
 #endif
 }
 
-void YaSolR::WebsiteClass::_daysConfig(Card& card, const char* key) {
+void YaSolR::Website::_daysConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
     config.set(key, value[0] ? value : "none");
@@ -1075,7 +1075,7 @@ void YaSolR::WebsiteClass::_daysConfig(Card& card, const char* key) {
 #endif
 }
 
-void YaSolR::WebsiteClass::_passwordConfig(Card& card, const char* key) {
+void YaSolR::Website::_passwordConfig(Card& card, const char* key) {
 #ifdef APP_MODEL_PRO
   card.attachCallback([key, &card, this](const char* value) {
     if (value[0]) {
@@ -1089,7 +1089,7 @@ void YaSolR::WebsiteClass::_passwordConfig(Card& card, const char* key) {
 #endif
 }
 
-void YaSolR::WebsiteClass::_relaySwitch(Card& card, Mycila::RouterRelay& relay) {
+void YaSolR::Website::_relaySwitch(Card& card, Mycila::RouterRelay& relay) {
   card.attachCallback([&card, &relay, this](int value) {
     relay.tryRelayState(value);
     card.update(relay.isOn());
@@ -1097,7 +1097,7 @@ void YaSolR::WebsiteClass::_relaySwitch(Card& card, Mycila::RouterRelay& relay) 
   });
 }
 
-void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput& output) {
+void YaSolR::Website::_outputBypassSwitch(Card& card, Mycila::RouterOutput& output) {
   card.attachCallback([&card, &output, this](int value) {
     if (output.isBypassEnabled()) {
       output.setBypass(value);
@@ -1108,7 +1108,7 @@ void YaSolR::WebsiteClass::_outputBypassSwitch(Card& card, Mycila::RouterOutput&
   });
 }
 
-void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput& output) {
+void YaSolR::Website::_outputDimmerSlider(Card& card, Mycila::RouterOutput& output) {
   card.attachCallbackF([&card, &output, this](float value) {
     if (output.isDimmerEnabled()) {
       output.setDimmerDutyCycle(value / 100);
@@ -1119,7 +1119,7 @@ void YaSolR::WebsiteClass::_outputDimmerSlider(Card& card, Mycila::RouterOutput&
   });
 }
 
-void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
+void YaSolR::Website::_temperature(Card& card, Mycila::DS18& sensor) {
   if (!sensor.isEnabled()) {
     card.update(YASOLR_LBL_115, "");
   } else if (!sensor.isValid()) {
@@ -1129,7 +1129,7 @@ void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::DS18& sensor) {
   }
 }
 
-void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::RouterOutput& output) {
+void YaSolR::Website::_temperature(Card& card, Mycila::RouterOutput& output) {
   if (output.temperature().neverUpdated()) {
     card.update(YASOLR_LBL_115, "");
   } else if (output.temperature().isAbsent()) {
@@ -1139,7 +1139,7 @@ void YaSolR::WebsiteClass::_temperature(Card& card, Mycila::RouterOutput& output
   }
 }
 
-void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bool active, const char* err) {
+void YaSolR::Website::_status(Card& card, const char* key, bool enabled, bool active, const char* err) {
   const bool configEnabled = config.getBool(key);
   if (!configEnabled)
     card.update(config.getBool(key), DASH_STATUS_IDLE "," YASOLR_LBL_115);
@@ -1151,7 +1151,7 @@ void YaSolR::WebsiteClass::_status(Card& card, const char* key, bool enabled, bo
     card.update(config.getBool(key), DASH_STATUS_SUCCESS "," YASOLR_LBL_130);
 }
 
-void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::unordered_map<int32_t, Card*>& pinout) {
+void YaSolR::Website::_pinout(Card& card, int32_t pin, std::unordered_map<int32_t, Card*>& pinout) {
   if (pin == GPIO_NUM_NC) {
     card.update(YASOLR_LBL_115, DASH_STATUS_IDLE);
   } else if (pinout.find(pin) != pinout.end()) {
@@ -1169,7 +1169,3 @@ void YaSolR::WebsiteClass::_pinout(Card& card, int32_t pin, std::unordered_map<i
     card.update(std::to_string(pin) + " (" YASOLR_LBL_156 ")", DASH_STATUS_SUCCESS);
   }
 }
-
-namespace YaSolR {
-  WebsiteClass Website;
-} // namespace YaSolR

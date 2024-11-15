@@ -11,6 +11,8 @@
 #include <map>
 #include <string>
 
+extern YaSolR::Website website;
+
 Mycila::Task initRestApiTask("Init REST API", [](void* params) {
   logger.info(TAG, "Initializing REST API");
 
@@ -154,7 +156,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
         logger.info(TAG, "Uploaded MQTT PEM server certificate:\n%s", serverCertFile.readString().c_str());
         serverCertFile.close();
-        YaSolR::Website.initCards();
+        website.initCards();
         dashboardTask.requestEarlyRun();
         request->send(response);
       },

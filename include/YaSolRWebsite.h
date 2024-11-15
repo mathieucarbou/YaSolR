@@ -15,7 +15,7 @@
 #endif
 
 namespace YaSolR {
-  class WebsiteClass {
+  class Website {
     public:
       void initLayout();
       void initCards();
@@ -328,6 +328,4 @@ namespace YaSolR {
       void _temperature(Card& card, Mycila::DS18& sensor);
       void _temperature(Card& card, Mycila::RouterOutput& output);
   };
-
-  extern WebsiteClass Website;
 } // namespace YaSolR

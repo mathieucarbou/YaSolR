@@ -5,9 +5,11 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
+extern YaSolR::Website website;
+
 Mycila::Task initDashboardCards("Init Dashboard", [](void* params) {
   logger.info(TAG, "Initializing dashboard");
-  YaSolR::Website.initLayout();
-  YaSolR::Website.initCards();
-  YaSolR::Website.updateCards();
+  website.initLayout();
+  website.initCards();
+  website.updateCards();
 });
