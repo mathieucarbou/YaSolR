@@ -13,7 +13,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
 
   // config
 
-  mqtt.subscribe((baseTopic + "/config/+/set").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/config/+/set", [](const std::string& topic, const std::string_view& payload) {
     const std::size_t end = topic.rfind("/set");
     if (end == std::string::npos)
       return;
@@ -25,7 +25,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
 
   // relays
 
-  mqtt.subscribe((baseTopic + "/router/relay1/set").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/router/relay1/set", [](const std::string& topic, const std::string_view& payload) {
     if (relay1.isEnabled()) {
       const std::string_view state = payload.substr(0, payload.find("="));
       if (state.empty())
@@ -37,7 +37,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     }
   });
 
-  mqtt.subscribe((baseTopic + "/router/relay2/set").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/router/relay2/set", [](const std::string& topic, const std::string_view& payload) {
     if (relay2.isEnabled()) {
       const std::string_view state = payload.substr(0, payload.find("="));
       if (state.empty())
@@ -52,15 +52,15 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
 
   // router
 
-  mqtt.subscribe((baseTopic + "/router/output1/duty_cycle/set").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/router/output1/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
     output1.setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
   });
 
-  mqtt.subscribe((baseTopic + "/router/output2/duty_cycle/set").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/router/output2/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
     output2.setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
   });
 
-  mqtt.subscribe((baseTopic + "/router/output1/bypass/set").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/router/output1/bypass/set", [](const std::string& topic, const std::string_view& payload) {
     if (output1.isBypassEnabled()) {
       if (payload == YASOLR_ON)
         output1.setBypassOn();
@@ -69,7 +69,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
     }
   });
 
-  mqtt.subscribe((baseTopic + "/router/output2/bypass/set").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/router/output2/bypass/set", [](const std::string& topic, const std::string_view& payload) {
     if (output2.isBypassEnabled()) {
       if (payload == YASOLR_ON)
         output2.setBypassOn();
@@ -80,15 +80,15 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
 
   // device
 
-  mqtt.subscribe((baseTopic + "/system/device/restart").c_str(), [](const std::string& topic, const std::string_view& payload) {
+  mqtt.subscribe(baseTopic + "/system/device/restart", [](const std::string& topic, const std::string_view& payload) {
     restartTask.resume();
   });
 
   // grid power
-  const std::string& gridPowerMQTTTopic = config.getString(KEY_GRID_POWER_MQTT_TOPIC);
-  if (!gridPowerMQTTTopic.empty()) {
-    logger.info(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic.c_str());
-    mqtt.subscribe(gridPowerMQTTTopic.c_str(), [](const std::string& topic, const std::string_view& payload) {
+  const char* gridPowerMQTTTopic = config.get(KEY_GRID_POWER_MQTT_TOPIC);
+  if (gridPowerMQTTTopic[0] != '\0') {
+    logger.info(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
+    mqtt.subscribe(gridPowerMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       float p = std::stof(std::string(payload));
       logger.debug(TAG, "Grid Power from MQTT: %f", p);
       grid.mqttPower().update(p);

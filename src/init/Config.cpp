@@ -104,8 +104,8 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
 
   // Home Assistant Discovery
-  haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
-  haDiscovery.setWillTopic((std::string(config.get(KEY_MQTT_TOPIC)) + YASOLR_MQTT_WILL_TOPIC).c_str());
+  haDiscovery.setDiscoveryTopic(config.getString(KEY_HA_DISCOVERY_TOPIC));
+  haDiscovery.setWillTopic(config.getString(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC);
   haDiscovery.begin({
                       .id = Mycila::AppInfo.defaultMqttClientId,
                       .name = Mycila::AppInfo.defaultSSID,
@@ -116,9 +116,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
                     },
                     config.get(KEY_MQTT_TOPIC),
                     512,
-                    [](const char* topic, const char* payload) {
-                      mqtt.publish(topic, payload, true);
-                    });
+                    [](const char* topic, const char* payload) { mqtt.publish(topic, payload, true); });
 
   // Lights
   if (config.getBool(KEY_ENABLE_LIGHTS))
