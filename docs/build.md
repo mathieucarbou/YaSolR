@@ -81,7 +81,7 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 
 The _Minimalist_ build uses inexpensive and easy to use components to start a router.
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |             JSY-MK-163T, JSY-MK-194T, JSY-MK-194G or JSY-MK-333           |
+|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |             JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333           |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -104,7 +104,7 @@ The _Adventurer_ build is for people who are able to mitigate the flaws of the R
 The TRIAC can be changed to a BTA40-800B RD91 fixed directly on the heat sink, and the heat sink can be upgraded.
 See the [Robodyn](#robodyn) section for more information.
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-163T, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :------------------------------------------------------------------: | :-------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_24A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -126,7 +126,7 @@ See the [Robodyn](#robodyn) section for more information.
 
 The _Elite_ build is for people who want to use a Random SSR instead of a Robodyn to safely dim more power and have a better Zero-Cross Detection circuit more more precising routing.
 
-|                              ESP32-DevKitC                               |                       Random Solid State Relay                        |                              Heat Sink                               |                  Zero-Cross Detection Module                   | JSY-MK-163T, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+|                              ESP32-DevKitC                               |                       Random Solid State Relay                        |                              Heat Sink                               |                  Zero-Cross Detection Module                   | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :------------------------------------------------------------------: | :------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -152,7 +152,7 @@ The _Professional_ build uses a Voltage Regulator to control the power routing.
 This is probably the best reliable and efficient solution, but it is more complex to setup and wire.
 It requires an additional 12V power supply.
 
-|                              ESP32-DevKitC                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+|                              ESP32-DevKitC                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -192,7 +192,7 @@ This is a standalone application that looks looks like this and will show all yo
 
 You can look in the [JSY project](https://mathieu.carbou.me/MycilaJSY/) to find more information about how to setup remote JSY and the supported protocols.
 
-|                        Mean Well HDR-15-5 5V DC                        |                              ESP32-DevKitC                               | JSY-MK-163T, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+|                        Mean Well HDR-15-5 5V DC                        |                              ESP32-DevKitC                               | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/DIN_HDR-15-5.jpeg" style="width:80px"> | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 

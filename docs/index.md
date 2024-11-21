@@ -141,11 +141,11 @@ This can also be done:
 Each output supports an optional measurement device to measure the power routed to the load.
 
 - `JSY-MK-163T`: has 1 clamp and can be used to monitor the grid power.
-- `JSY-MK-194T, JSY-MK-194G`: have 2 clamps and can be used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
+- `JSY-MK-193, JSY-MK-194T, JSY-MK-194G`: have 2 clamps and can be used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
 - `JSY-MK-333`: has 3 clamps and can be used to monitor the grid power of a 3-phase installation.
 - `PZEM-004T V3`: can monitor each output independently. **It cannot be used to measure the grid power.**
 
-|                     PZEM-004T V3                      |     JSY-MK-163T, JSY-MK-194T, JSY-MK-194G, JSY-MK-333    |
+|                     PZEM-004T V3                      |     JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G, JSY-MK-333    |
 | :---------------------------------------------------: | :------------------------------------------------------: |
 | ![PZEM-004T V3](./assets/img/hardware/PZEM-004T.jpeg) | ![JSY-MK-194T](./assets/img/hardware/JSY-MK-194T_2.jpeg) |
 
@@ -172,16 +172,16 @@ YaSolR supports many ways to measure the grid power and voltage:
 **Mono-phase**:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
-- `JSY-MK-163T`, `JSY-MK-194T`, `JSY-MK-194G` (25 measurements / second)
-- Remote `JSY-MK-163T`, `JSY-MK-194T`, `JSY-MK-194G` through **UDP** (20 measurements / second)
-- Remote `JSY-MK-163T`, `JSY-MK-194T`, `JSY-MK-194G` through **ESP-Now** (🚧)
+- `JSY-MK-163T`, `JSY-MK-193`, `JSY-MK-194T`, `JSY-MK-194G` (25 measurements / second)
+- Remote JSY through **UDP** (20 measurements / second)
+- Remote JSY through **ESP-Now** (🚧)
 
 **3-Phase**:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly 3EM`, etc)
 - `JSY-MK-333`
-- Remote `JSY-MK-333` through **UDP**
-- Remote `JSY-MK-333` through **ESP-Now** (🚧)
+- Remote JSY through **UDP**
+- Remote JSY through **ESP-Now** (🚧)
 
 ### Relays
 
