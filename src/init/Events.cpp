@@ -348,7 +348,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
             .current = jsy.data.single().current,
             .energy = jsy.data.single().activeEnergyImported,
             .energyReturned = jsy.data.single().activeEnergyReturned,
-            .frequency = jsy.data.frequency,
+            .frequency = jsy.data.single().frequency,
             .power = jsy.data.single().activePower,
             .powerFactor = jsy.data.single().powerFactor,
             .voltage = jsy.data.single().voltage,
@@ -361,7 +361,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
             .current = jsy.data.channel2().current,
             .energy = jsy.data.channel2().activeEnergyImported,
             .energyReturned = jsy.data.channel2().activeEnergyReturned,
-            .frequency = jsy.data.frequency,
+            .frequency = jsy.data.aggregate.frequency,
             .power = jsy.data.channel2().activePower,
             .powerFactor = jsy.data.channel2().powerFactor,
             .voltage = jsy.data.channel2().voltage,
@@ -374,7 +374,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
             .current = jsy.data.aggregate.current,
             .energy = jsy.data.aggregate.activeEnergyImported,
             .energyReturned = jsy.data.aggregate.activeEnergyReturned,
-            .frequency = jsy.data.frequency,
+            .frequency = jsy.data.aggregate.frequency,
             .power = jsy.data.aggregate.activePower,
             .powerFactor = jsy.data.aggregate.powerFactor,
             .voltage = jsy.data.aggregate.voltage,
@@ -435,13 +435,14 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         });
         break;
 
+      case MYCILA_JSY_MK_193:
       case MYCILA_JSY_MK_194:
         grid.remoteMetrics().update({
           .apparentPower = doc["channel2"]["apparent_power"].as<float>(),
           .current = doc["channel2"]["current"].as<float>(),
           .energy = doc["channel2"]["active_energy_imported"].as<float>(),
           .energyReturned = doc["channel2"]["active_energy_returned"].as<float>(),
-          .frequency = doc["frequency"].as<float>(),
+          .frequency = doc["aggregate"]["frequency"].as<float>(),
           .power = doc["channel2"]["active_power"].as<float>(),
           .powerFactor = doc["channel2"]["power_factor"].as<float>(),
           .voltage = doc["channel2"]["voltage"].as<float>(),
@@ -454,7 +455,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
           .current = doc["aggregate"]["current"].as<float>(),
           .energy = doc["aggregate"]["active_energy_imported"].as<float>(),
           .energyReturned = doc["aggregate"]["active_energy_returned"].as<float>(),
-          .frequency = doc["frequency"].as<float>(),
+          .frequency = doc["aggregate"]["frequency"].as<float>(),
           .power = doc["aggregate"]["active_power"].as<float>(),
           .powerFactor = doc["aggregate"]["power_factor"].as<float>(),
           .voltage = doc["aggregate"]["voltage"].as<float>(),
