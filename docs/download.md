@@ -32,7 +32,7 @@ Download location: [https://github.com/mathieucarbou/YaSolR-Pro/releases](https:
 
 _Firmware for the Pro version are only available to Pro users. You must be logged into your GitHub account to access them._
 
-Please go to the [Pro 💪](pro) page if you are interested in receiving the **Pro** version.
+Please go to the **[Pro](pro)** page if you are interested in receiving the **Pro** version! 💪
 
 ### Trial versions
 
