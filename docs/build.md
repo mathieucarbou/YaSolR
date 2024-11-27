@@ -9,6 +9,7 @@ description: Build
 - [Build Examples](#build-examples)
   - [The Recycler](#the-recycler)
   - [The Minimalist](#the-minimalist)
+  - [The Elegant](#the-elegant)
   - [The Adventurer](#the-adventurer)
   - [The Elite](#the-elite)
   - [The Professional](#the-professional)
@@ -95,6 +96,25 @@ The _Minimalist_ build uses inexpensive and easy to use components to start a ro
 >
 > - Advised load not more than 2000W
 > - Robodyn has poor quality heat sink, soldering and Zero-Cross pulse
+> - Bypass mode will use the Robodyn dimmer at 100% power
+{: .block-warning }
+
+### The Elegant
+
+This is an improved version of the _Minimalist_ build using the new JSY-MK-194G which has an integrated ZCD.
+
+|                              ESP32-DevKitC                               |                       Random Solid State Relay                        |             JSY-MK-194G                   |
+| :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :----------------------------------------------------------------------: |
+| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194G_3.jpeg" style="width:150px"> |
+
+> ##### TIP
+>
+> - JSY-MK-194G includes a Zero-Cross Detection circuit
+> - Supports **Phase Control** and **Burst mode**
+{: .block-tip }
+
+> ##### WARNING
+>
 > - Bypass mode will use the Robodyn dimmer at 100% power
 {: .block-warning }
 
