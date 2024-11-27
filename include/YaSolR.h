@@ -85,7 +85,8 @@ extern Mycila::RouterRelay routerRelay2;
 extern Mycila::TrafficLight lights;
 
 extern Mycila::TaskManager coreTaskManager;
-extern Mycila::Task dashboardTask;
+extern Mycila::Task dashboardInitTask;
+extern Mycila::Task dashboardUpdateTask;
 extern Mycila::Task debugTask;
 extern Mycila::Task networkConfigTask;
 extern Mycila::Task networkManagerTask;
@@ -128,7 +129,7 @@ extern Mycila::Task routingTask;
 extern Mycila::Task bootTask;
 extern Mycila::Task initConfigTask;
 extern Mycila::Task initCoreTask;
-extern Mycila::Task initDashboardCards;
+extern Mycila::Task initDashboard;
 extern Mycila::Task initEventsTask;
 extern Mycila::Task initLoggingTask;
 extern Mycila::Task initMqttSubscribersTask;

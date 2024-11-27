@@ -64,7 +64,7 @@ void setup() {
   initWebTask.forceRun();
   initRestApiTask.forceRun();
   initMqttSubscribersTask.forceRun();
-  initDashboardCards.forceRun();
+  initDashboard.forceRun();
 
   assert(    jsyTaskManager.asyncStart(512 * 6, 5, 0, 100, true));  // NOLINT
   assert(    pioTaskManager.asyncStart(512 * 7, 1, 1, 100, true));  // NOLINT

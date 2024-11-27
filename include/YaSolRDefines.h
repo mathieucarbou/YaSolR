@@ -45,25 +45,27 @@
 #define YASOLR_ADMIN_USERNAME              "admin"
 #define YASOLR_DISPLAY_LINE_SIZE           21
 #define YASOLR_DISPLAY_LINES               5
+#define YASOLR_GRAPH_POINTS                120
+#define YASOLR_HIDDEN_PWD                  "********"
 #define YASOLR_MQTT_KEEPALIVE              60
+#define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
+#define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
 #define YASOLR_MQTT_WILL_TOPIC             "/status"
+#define YASOLR_PID_D_MODE_1                YASOLR_PID_P_MODE_1
+#define YASOLR_PID_D_MODE_2                YASOLR_PID_P_MODE_2
+#define YASOLR_PID_IC_MODE_0               "0: Off"
+#define YASOLR_PID_IC_MODE_1               "1: Clamp"
+#define YASOLR_PID_IC_MODE_2               "2: Advanced"
+#define YASOLR_PID_P_MODE_1                "1: On Error"
+#define YASOLR_PID_P_MODE_2                "2: On Input"
+#define YASOLR_PID_P_MODE_3                "3: Both"
 #define YASOLR_PZEM_ADDRESS_OUTPUT1        0x01
 #define YASOLR_PZEM_ADDRESS_OUTPUT2        0x02
 #define YASOLR_RELAY_TYPE_NC               "NC"
 #define YASOLR_RELAY_TYPE_NO               "NO"
 #define YASOLR_SERIAL_BAUDRATE             115200
 #define YASOLR_WEEK_DAYS                   "sun,mon,tue,wed,thu,fri,sat"
-#define YASOLR_GRAPH_POINTS                120
-#define YASOLR_PID_P_MODE_1                "1: On Error"
-#define YASOLR_PID_P_MODE_2                "2: On Input"
-#define YASOLR_PID_P_MODE_3                "3: Both"
-#define YASOLR_PID_D_MODE_1                YASOLR_PID_P_MODE_1
-#define YASOLR_PID_D_MODE_2                YASOLR_PID_P_MODE_2
-#define YASOLR_PID_IC_MODE_0               "0: Off"
-#define YASOLR_PID_IC_MODE_1               "1: Clamp"
-#define YASOLR_PID_IC_MODE_2               "2: Advanced"
-#define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
-#define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
+#define YASOLR_WEEK_DAYS_EMPTY             "none"
 
 // UDP communication
 

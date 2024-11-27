@@ -222,7 +222,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       logger.info(TAG, "PID Controller reconfigured!");
     }
 
-    website.initCards();
+    dashboardInitTask.resume();
     mqttPublishConfigTask.resume();
     mqttPublishTask.requestEarlyRun();
   });
@@ -287,6 +287,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       default:
         break;
     }
+    dashboardInitTask.resume();
   });
 
   bypassRelayO1.listen([](bool state) {

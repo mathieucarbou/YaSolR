@@ -16,8 +16,9 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   carouselTask.setEnabledWhen([]() { return display.isEnabled(); });
   carouselTask.setIntervalSupplier([]() { return config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS; });
-  dashboardTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
+  dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardUpdateTask.setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
   debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
   debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
   displayTask.setEnabledWhen([]() { return display.isEnabled(); });

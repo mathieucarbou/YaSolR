@@ -348,7 +348,7 @@ void YaSolR::Website::initLayout() {
       config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2));
     });
 
-    initCards();
+    dashboardInitTask.resume();
     mqttPublishConfigTask.resume();
     mqttPublishTask.requestEarlyRun();
 
@@ -563,8 +563,7 @@ void YaSolR::Website::initLayout() {
   _mqttServerCertDelete.attachCallback([this]() {
     if (LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE) && LittleFS.remove(YASOLR_MQTT_SERVER_CERT_FILE)) {
       logger.warn(TAG, "MQTT server certificate deleted successfully!");
-      initCards();
-      dashboardTask.requestEarlyRun();
+      dashboardInitTask.resume();
     }
   });
 
@@ -1330,7 +1329,6 @@ void YaSolR::Website::_pinConfig(Card& card, const char* key) {
     } else {
       config.unset(key);
     }
-    initCards();
     dashboard.refreshCard(&card);
   });
 #endif
@@ -1393,7 +1391,7 @@ void YaSolR::Website::_outputBypassSwitch(Card& card, Mycila::RouterOutput& outp
     }
     card.update(output.isBypassOn());
     dashboard.refreshCard(&card);
-    dashboardTask.requestEarlyRun();
+    dashboardInitTask.resume();
   });
 }
 
@@ -1404,7 +1402,7 @@ void YaSolR::Website::_outputDimmerSlider(Card& card, Mycila::RouterOutput& outp
     }
     card.update(output.getDimmerDutyCycle() * 100);
     dashboard.refreshCard(&card);
-    dashboardTask.requestEarlyRun();
+    dashboardUpdateTask.requestEarlyRun();
   });
 }
 

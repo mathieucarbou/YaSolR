@@ -7,7 +7,7 @@
 
 extern YaSolR::Website website;
 
-Mycila::Task initDashboardCards("Init Dashboard", [](void* params) {
+Mycila::Task initDashboard("Init Dashboard", [](void* params) {
   logger.info(TAG, "Initializing dashboard");
   website.initLayout();
   website.initCards();

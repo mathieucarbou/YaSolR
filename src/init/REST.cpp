@@ -156,8 +156,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
         logger.info(TAG, "Uploaded MQTT PEM server certificate:\n%s", serverCertFile.readString().c_str());
         serverCertFile.close();
-        website.initCards();
-        dashboardTask.requestEarlyRun();
+        dashboardInitTask.resume();
         request->send(response);
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {

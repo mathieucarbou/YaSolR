@@ -11,7 +11,7 @@ Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
   if (voltage.has_value() && power.isPresent()) {
     router.divert(voltage.value(), power.get());
     if (config.getBool(KEY_ENABLE_PID_VIEW)) {
-      dashboardTask.requestEarlyRun();
+      dashboardUpdateTask.requestEarlyRun();
     }
   }
 });

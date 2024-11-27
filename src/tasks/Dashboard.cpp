@@ -8,7 +8,13 @@
 
 extern YaSolR::Website website;
 
-Mycila::Task dashboardTask("Dashboard", [](void* params) {
+Mycila::Task dashboardInitTask("Dashboard Init", Mycila::TaskType::ONCE, [](void* params) {
+  website.initCards();
+  website.updateCards();
+  dashboard.sendUpdates();
+});
+
+Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
   if (config.getBool(KEY_ENABLE_PID_VIEW)) {
     website.updatePID();
     if (wsDebugPID.count()) {

@@ -13,7 +13,8 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
   carouselTask.setManager(coreTaskManager);
-  dashboardTask.setManager(coreTaskManager);
+  dashboardInitTask.setManager(coreTaskManager);
+  dashboardUpdateTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
