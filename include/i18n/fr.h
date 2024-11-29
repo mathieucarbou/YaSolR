@@ -10,18 +10,18 @@
 #define YASOLR_LBL_004 "Application: Développeur"
 #define YASOLR_LBL_005 "Micro-contrôleur: Démarrages"
 #define YASOLR_LBL_006 "Micro-contrôleur: Coeurs"
-#define YASOLR_LBL_007 "Micro-contrôleur: Mémoire Heap: totale"
-#define YASOLR_LBL_008 "Micro-contrôleur: Mémoire Heap: utilisation"
-#define YASOLR_LBL_009 "Micro-contrôleur: Mémoire Heap: utilisée"
+#define YASOLR_LBL_007 "Micro-contrôleur: Mémoire Heap: totale (bytes)"
+#define YASOLR_LBL_008 "Micro-contrôleur: Mémoire Heap: utilisation (%)"
+#define YASOLR_LBL_009 "Micro-contrôleur: Mémoire Heap: utilisée (bytes)"
 #define YASOLR_LBL_010 "Micro-contrôleur: ID"
 #define YASOLR_LBL_011 "Micro-contrôleur: Modèle"
 #define YASOLR_LBL_012 "Micro-contrôleur: Révision"
 #define YASOLR_LBL_013 "Micro-logiciel: Hachage de construction"
 #define YASOLR_LBL_014 "Micro-logiciel: Date de construction"
 #define YASOLR_LBL_015 "Micro-logiciel: Nom de fichier"
-#define YASOLR_LBL_016 "Réseau électrique: Énergie"
-#define YASOLR_LBL_017 "Réseau électrique: Énergie retournée"
-#define YASOLR_LBL_018 "Réseau électrique: Fréquence"
+#define YASOLR_LBL_016 "Réseau électrique: Énergie (kWh)"
+#define YASOLR_LBL_017 "Réseau électrique: Énergie retournée (kWh)"
+#define YASOLR_LBL_018 "Réseau électrique: Fréquence (Hz)"
 #define YASOLR_LBL_019 "Réseau: Nom d'hôte"
 #define YASOLR_LBL_020 "Réseau: Interface"
 #define YASOLR_LBL_021 "Réseau: Point d'accès: Adresse IP"
@@ -31,8 +31,8 @@
 #define YASOLR_LBL_025 "Réseau: WiFi: Adresse IP"
 #define YASOLR_LBL_026 "Réseau: WiFi: Adresse MAC"
 #define YASOLR_LBL_027 "Réseau: WiFi: SSID"
-#define YASOLR_LBL_028 "Réseau: WiFi: RSSI"
-#define YASOLR_LBL_029 "Réseau: WiFi: Signal"
+#define YASOLR_LBL_028 "Réseau: WiFi: RSSI (dBm)"
+#define YASOLR_LBL_029 "Réseau: WiFi: Signal (%)"
 #define YASOLR_LBL_030 "Relais: Déclenchements relais marche forcée sortie 1"
 #define YASOLR_LBL_031 "Relais: Déclenchements relais marche forcée sortie 2"
 #define YASOLR_LBL_032 "Relais: Déclenchements relais 1"
@@ -65,11 +65,11 @@
 #define YASOLR_LBL_059 "Énergie"
 #define YASOLR_LBL_060 "Routage automatique"
 #define YASOLR_LBL_061 "Surplus réseau réservé"
-#define YASOLR_LBL_062 "Limitation du routage"
-#define YASOLR_LBL_063 "Température de consigne d'arrêt du routage"
+#define YASOLR_LBL_062 "Limitation puissance routage"
+#define YASOLR_LBL_063 "Température de consigne d'arrêt du routage (°C)"
 #define YASOLR_LBL_064 "Marche forcée automatique"
-#define YASOLR_LBL_065 "Température de démarrage de la marche forcée"
-#define YASOLR_LBL_066 "Température d'arrêt de la marche forcée"
+#define YASOLR_LBL_065 "Température de démarrage de la marche forcée (°C)"
+#define YASOLR_LBL_066 "Température d'arrêt de la marche forcée (°C)"
 #define YASOLR_LBL_067 "Heure de démarrage de la marche forcée"
 #define YASOLR_LBL_068 "Heure d'arrêt de la marche forcée"
 #define YASOLR_LBL_069 "Jours de démarrage de la marche forcée"
@@ -144,10 +144,10 @@
 #define YASOLR_LBL_138 "Sortie 2: Relais (marche forcée)"
 #define YASOLR_LBL_139 "Router DS18"
 #define YASOLR_LBL_140 "Configuration du matériel"
-#define YASOLR_LBL_141 "Fréquence nominale du réseau"
+#define YASOLR_LBL_141 "Fréquence nominale du réseau (Hz)"
 #define YASOLR_LBL_142 "Écran: Vitesse"
 #define YASOLR_LBL_143 "Écran: Type"
-#define YASOLR_LBL_144 "Écran: Rotation"
+#define YASOLR_LBL_144 "Écran: Rotation (°)"
 #define YASOLR_LBL_145 "Sortie 1: Résistance (Ω)"
 #define YASOLR_LBL_146 "Sortie 2: Résistance (Ω)"
 #define YASOLR_LBL_147 "Sortie 1: Association du PZEM"
@@ -160,7 +160,7 @@
 #define YASOLR_LBL_154 "Invalide"
 #define YASOLR_LBL_155 "Entrée uniquement"
 #define YASOLR_LBL_156 "E/S"
-#define YASOLR_LBL_157 "JSY Remote UDP: Débit"
+#define YASOLR_LBL_157 "JSY Remote UDP: Débit (msg/s)"
 #define YASOLR_LBL_158 "Surplus réseau restant"
 #define YASOLR_LBL_159 "Contrôleur PID"
 #define YASOLR_LBL_160 "Mode proportionnel"
@@ -188,19 +188,19 @@
 #define YASOLR_LBL_182 "Topic MQTT pour la température sortie 2"
 #define YASOLR_LBL_183 "Redéfinition Min/Max Variateur Sortie 1"
 #define YASOLR_LBL_184 "Redéfinition Min/Max Variateur Sortie 2"
-#define YASOLR_LBL_185
+// #define YASOLR_LBL_185
 #define YASOLR_LBL_186 "Détection valeur résistances"
-#define YASOLR_LBL_187
+// #define YASOLR_LBL_187
 #define YASOLR_LBL_188 "Adresse IP statique"
 #define YASOLR_LBL_189 "Masque de sous-réseau"
 #define YASOLR_LBL_190 "Passerelle"
 #define YASOLR_LBL_191 "Serveur DNS"
 #define YASOLR_LBL_192 "Micro-contrôleur: Raison du reboot"
-#define YASOLR_LBL_193
-#define YASOLR_LBL_194
-#define YASOLR_LBL_195
-#define YASOLR_LBL_196
-#define YASOLR_LBL_197
-#define YASOLR_LBL_198
-#define YASOLR_LBL_199
-#define YASOLR_LBL_200
+// #define YASOLR_LBL_193
+// #define YASOLR_LBL_194
+// #define YASOLR_LBL_195
+// #define YASOLR_LBL_196
+// #define YASOLR_LBL_197
+// #define YASOLR_LBL_198
+// #define YASOLR_LBL_199
+// #define YASOLR_LBL_200

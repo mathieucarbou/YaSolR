@@ -11,18 +11,18 @@
 #define YASOLR_LBL_004 "Application: Manufacturer"
 #define YASOLR_LBL_005 "Device: Boot Count"
 #define YASOLR_LBL_006 "Device: Cores"
-#define YASOLR_LBL_007 "Device: Heap Memory Total"
-#define YASOLR_LBL_008 "Device: Heap Memory Usage"
-#define YASOLR_LBL_009 "Device: Heap Memory Used"
+#define YASOLR_LBL_007 "Device: Heap Memory Total (bytes)"
+#define YASOLR_LBL_008 "Device: Heap Memory Usage (%)"
+#define YASOLR_LBL_009 "Device: Heap Memory Used (bytes)"
 #define YASOLR_LBL_010 "Device: ID"
 #define YASOLR_LBL_011 "Device: Model"
 #define YASOLR_LBL_012 "Device: Revision"
 #define YASOLR_LBL_013 "Firmware: Build Hash"
 #define YASOLR_LBL_014 "Firmware: Build Timestamp"
 #define YASOLR_LBL_015 "Firmware: Filename"
-#define YASOLR_LBL_016 "Grid: Energy"
-#define YASOLR_LBL_017 "Grid: Energy Returned"
-#define YASOLR_LBL_018 "Grid: Frequency"
+#define YASOLR_LBL_016 "Grid: Energy (kWh)"
+#define YASOLR_LBL_017 "Grid: Energy Returned (kWh)"
+#define YASOLR_LBL_018 "Grid: Frequency (Hz)"
 #define YASOLR_LBL_019 YASOLR_LBL_087 ": Hostname"
 #define YASOLR_LBL_020 YASOLR_LBL_087 ": Interface"
 #define YASOLR_LBL_021 YASOLR_LBL_087 ": Access Point IP Address"
@@ -32,8 +32,8 @@
 #define YASOLR_LBL_025 YASOLR_LBL_087 ": WiFi IP Address"
 #define YASOLR_LBL_026 YASOLR_LBL_087 ": WiFi MAC Address"
 #define YASOLR_LBL_027 YASOLR_LBL_087 ": WiFi SSID"
-#define YASOLR_LBL_028 YASOLR_LBL_087 ": WiFi RSSI"
-#define YASOLR_LBL_029 YASOLR_LBL_087 ": WiFi Signal"
+#define YASOLR_LBL_028 YASOLR_LBL_087 ": WiFi RSSI (dBm)"
+#define YASOLR_LBL_029 YASOLR_LBL_087 ": WiFi Signal (%)"
 #define YASOLR_LBL_034 "Time"
 #define YASOLR_LBL_035 "Uptime"
 #define YASOLR_LBL_036 "Routed Power"
@@ -62,11 +62,11 @@
 #define YASOLR_LBL_059 "Energy"
 #define YASOLR_LBL_060 YASOLR_LBL_050 " Automatic Control"
 #define YASOLR_LBL_061 "Grid Excess Reserved"
-#define YASOLR_LBL_062 YASOLR_LBL_050 " Limiter"
-#define YASOLR_LBL_063 YASOLR_LBL_050 " " YASOLR_LBL_048 " Limiter"
+#define YASOLR_LBL_062 YASOLR_LBL_050 " Power Limiter"
+#define YASOLR_LBL_063 YASOLR_LBL_050 " " YASOLR_LBL_048 " Limiter (°C)"
 #define YASOLR_LBL_064 "Bypass Automatic Control"
-#define YASOLR_LBL_065 "Bypass Start " YASOLR_LBL_048
-#define YASOLR_LBL_066 "Bypass Stop " YASOLR_LBL_048
+#define YASOLR_LBL_065 "Bypass Start " YASOLR_LBL_048 " (°C)"
+#define YASOLR_LBL_066 "Bypass Stop " YASOLR_LBL_048 " (°C)"
 #define YASOLR_LBL_067 "Bypass Start Time"
 #define YASOLR_LBL_068 "Bypass Stop Time"
 #define YASOLR_LBL_069 "Bypass Week Days"
@@ -140,10 +140,10 @@
 #define YASOLR_LBL_138 YASOLR_LBL_070 " Relay (Bypass)"
 #define YASOLR_LBL_139 "Router DS18"
 #define YASOLR_LBL_140 YASOLR_LBL_126 " Config"
-#define YASOLR_LBL_141 "Nominal Grid Frequency"
+#define YASOLR_LBL_141 "Nominal Grid Frequency (Hz)"
 #define YASOLR_LBL_142 YASOLR_LBL_127 " Speed"
 #define YASOLR_LBL_143 YASOLR_LBL_127 " Type"
-#define YASOLR_LBL_144 YASOLR_LBL_127 " Rotation"
+#define YASOLR_LBL_144 YASOLR_LBL_127 " Rotation (°)"
 #define YASOLR_LBL_145 YASOLR_LBL_046 " Resistance (Ω)"
 #define YASOLR_LBL_146 YASOLR_LBL_070 " Resistance (Ω)"
 #define YASOLR_LBL_147 YASOLR_LBL_046 " PZEM Pairing"
@@ -156,7 +156,7 @@
 #define YASOLR_LBL_154 "Invalid"
 #define YASOLR_LBL_155 "Input Only"
 #define YASOLR_LBL_156 "I/O"
-#define YASOLR_LBL_157 YASOLR_LBL_128 " Remote UDP: Message Rate"
+#define YASOLR_LBL_157 YASOLR_LBL_128 " Remote UDP (msg/s)"
 #define YASOLR_LBL_158 "Grid Excess Remaining"
 #define YASOLR_LBL_159 "PID Controller"
 #define YASOLR_LBL_160 "Proportional Mode"
@@ -184,9 +184,9 @@
 #define YASOLR_LBL_182 YASOLR_LBL_070 " " YASOLR_LBL_048 " MQTT Topic"
 #define YASOLR_LBL_183 YASOLR_LBL_046 " Dimmer Min/Max Remapping"
 #define YASOLR_LBL_184 YASOLR_LBL_070 " Dimmer Min/Max Remapping"
-#define YASOLR_LBL_185
+// #define YASOLR_LBL_185
 #define YASOLR_LBL_186 "Resistance Value Detection"
-#define YASOLR_LBL_187
+// #define YASOLR_LBL_187
 #define YASOLR_LBL_030 "Relay: " YASOLR_LBL_046 " Bypass Relay Switch Count"
 #define YASOLR_LBL_031 "Relay: " YASOLR_LBL_070 " Bypass Relay Switch Count"
 #define YASOLR_LBL_032 "Relay: " YASOLR_LBL_074 " Switch Count"
@@ -196,11 +196,11 @@
 #define YASOLR_LBL_190 "Gateway"
 #define YASOLR_LBL_191 "DNS Server"
 #define YASOLR_LBL_192 "Device: Reboot Reason"
-#define YASOLR_LBL_193
-#define YASOLR_LBL_194
-#define YASOLR_LBL_195
-#define YASOLR_LBL_196
-#define YASOLR_LBL_197
-#define YASOLR_LBL_198
-#define YASOLR_LBL_199
-#define YASOLR_LBL_200
+// #define YASOLR_LBL_193
+// #define YASOLR_LBL_194
+// #define YASOLR_LBL_195
+// #define YASOLR_LBL_196
+// #define YASOLR_LBL_197
+// #define YASOLR_LBL_198
+// #define YASOLR_LBL_199
+// #define YASOLR_LBL_200
