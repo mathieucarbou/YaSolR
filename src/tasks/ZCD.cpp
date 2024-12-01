@@ -55,10 +55,10 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
 
   if (!Thyristor::getSemiPeriod() || (dimmer1Switched && !dimmerO1.isEnabled()) || (dimmer2Switched && !dimmerO2.isEnabled())) {
     float frequency = detectGridFrequency();
-    uint32_t semiPeriod = 1000000 / 2 / frequency;
+    uint16_t semiPeriod = 1000000 / 2 / frequency;
 
     if (!Thyristor::getSemiPeriod()) {
-      logger.info(TAG, "Starting Thyristor with semi-period: %" PRIu32 " us", semiPeriod);
+      logger.info(TAG, "Starting Thyristor with semi-period: %" PRIu16 " us", semiPeriod);
       Thyristor::setSemiPeriod(semiPeriod);
       Thyristor::begin();
     }

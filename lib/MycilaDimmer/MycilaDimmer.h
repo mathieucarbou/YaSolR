@@ -36,7 +36,7 @@ namespace Mycila {
        * @warning Dimmer won't be enabled if pin is invalid
        * @warning Dimmer won't be activated until the ZCD is enabled
        */
-      void begin(int8_t pin, uint32_t semiPeriod);
+      void begin(int8_t pin, uint16_t semiPeriod);
 
       /**
        * @brief Disable the dimmer
@@ -58,28 +58,7 @@ namespace Mycila {
       /**
        * @brief Get the semi-period of the dimmer in us
        */
-      uint32_t getSemiPeriod() const { return _semiPeriod; }
-
-#ifdef MYCILA_JSON_SUPPORT
-      /**
-       * @brief Serialize Dimmer information to a JSON object
-       *
-       * @param root: the JSON object to serialize to
-       */
-      void dimmerToJson(const JsonObject& root) const {
-        const float angle = getPhaseAngle();
-        root["enabled"] = _enabled;
-        root["state"] = isOn() ? "on" : "off";
-        root["angle_d"] = angle * RAD_TO_DEG;
-        root["angle"] = angle;
-        root["delay"] = _delay;
-        root["duty_cycle"] = _dutyCycle;
-        root["duty_cycle_limit"] = _dutyCycleLimit;
-        root["duty_cycle_min"] = _dutyCycleMin;
-        root["duty_cycle_max"] = _dutyCycleMax;
-        root["semi_period"] = _semiPeriod;
-      }
-#endif
+      uint16_t getSemiPeriod() const { return _semiPeriod; }
 
       /**
        * @brief Turn on the dimmer at full power
@@ -161,7 +140,7 @@ namespace Mycila {
        * At 0% power, delay is equal to the semi-period: the dimmer is kept off
        * At 100% power, the delay is 0 us: the dimmer is kept on
        */
-      uint32_t getFiringDelay() const { return _delay > _semiPeriod ? _semiPeriod : _delay; }
+      uint16_t getFiringDelay() const { return _delay > _semiPeriod ? _semiPeriod : _delay; }
 
       /**
        * @brief Get the phase angle in radians of the dimmer in the range [0, PI]
@@ -169,6 +148,27 @@ namespace Mycila {
        * At 100% power, the phase angle is equal to 0
        */
       float getPhaseAngle() const { return _delay >= _semiPeriod ? PI : PI * _delay / _semiPeriod; }
+
+#ifdef MYCILA_JSON_SUPPORT
+      /**
+       * @brief Serialize Dimmer information to a JSON object
+       *
+       * @param root: the JSON object to serialize to
+       */
+      void dimmerToJson(const JsonObject& root) const {
+        const float angle = getPhaseAngle();
+        root["enabled"] = isEnabled();
+        root["state"] = isOn() ? "on" : "off";
+        root["angle_d"] = angle * RAD_TO_DEG;
+        root["angle"] = angle;
+        root["delay"] = getFiringDelay();
+        root["duty_cycle"] = getDutyCycle();
+        root["duty_cycle_limit"] = getDutyCycleLimit();
+        root["duty_cycle_min"] = getDutyCycleMin();
+        root["duty_cycle_max"] = getDutyCycleMax();
+        root["semi_period"] = getSemiPeriod();
+      }
+#endif
 
       /**
        * Callback to be called when a zero-crossing event is detected.
@@ -181,14 +181,14 @@ namespace Mycila {
     private:
       bool _enabled = false;
       gpio_num_t _pin = GPIO_NUM_NC;
-      uint32_t _semiPeriod = 0;
+      uint16_t _semiPeriod = 0;
       float _dutyCycle = 0;
       float _dutyCycleLimit = 1;
       float _dutyCycleMin = 0;
       float _dutyCycleMax = 1;
-      uint32_t _delay = UINT32_MAX;
+      uint16_t _delay = UINT16_MAX;
 
-      uint32_t _lookupPhaseDelay(float dutyCycle);
+      uint16_t _lookupPhaseDelay(float dutyCycle);
 
       Thyristor* _dimmer = nullptr;
   };
