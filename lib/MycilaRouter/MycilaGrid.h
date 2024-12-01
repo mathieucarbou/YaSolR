@@ -166,7 +166,6 @@ namespace Mycila {
         JsonObject local = root["source"]["local"].to<JsonObject>();
         if (_localMetrics.isPresent()) {
           local["enabled"] = true;
-          local["expired"] = _localMetrics.isExpired();
           local["time"] = _localMetrics.getLastUpdateTime();
           toJson(local, _localMetrics.get());
         } else {
@@ -176,7 +175,6 @@ namespace Mycila {
         JsonObject remote = root["source"]["remote"].to<JsonObject>();
         if (_remoteMetrics.isPresent()) {
           remote["enabled"] = true;
-          remote["expired"] = _remoteMetrics.isExpired();
           remote["time"] = _remoteMetrics.getLastUpdateTime();
           toJson(remote, _remoteMetrics.get());
         } else {
@@ -186,7 +184,6 @@ namespace Mycila {
         JsonObject mqttPower = root["source"]["mqtt_power"].to<JsonObject>();
         if (_mqttPower.isPresent()) {
           mqttPower["enabled"] = true;
-          mqttPower["expired"] = _mqttPower.isExpired();
           mqttPower["time"] = _mqttPower.getLastUpdateTime();
           mqttPower["value"] = _mqttPower.get();
         } else {
@@ -196,7 +193,6 @@ namespace Mycila {
         JsonObject mqttVoltage = root["source"]["mqtt_voltage"].to<JsonObject>();
         if (_mqttVoltage.isPresent()) {
           mqttVoltage["enabled"] = true;
-          mqttVoltage["expired"] = _mqttVoltage.isExpired();
           mqttVoltage["time"] = _mqttVoltage.getLastUpdateTime();
           mqttVoltage["value"] = _mqttVoltage.get();
         } else {
