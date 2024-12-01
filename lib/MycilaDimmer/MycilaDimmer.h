@@ -170,6 +170,14 @@ namespace Mycila {
        */
       float getPhaseAngle() const { return _delay >= _semiPeriod ? PI : PI * _delay / _semiPeriod; }
 
+      /**
+       * Callback to be called when a zero-crossing event is detected.
+       * When using MycilaPulseAnalyzer library, this callback can be registered like this:
+       *
+       * pulseAnalyzer.onZeroCross(Mycila::Dimmer::onZeroCross);
+       */
+      static void onZeroCross(void* args);
+
     private:
       bool _enabled = false;
       gpio_num_t _pin = GPIO_NUM_NC;

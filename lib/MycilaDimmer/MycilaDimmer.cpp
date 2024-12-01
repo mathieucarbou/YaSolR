@@ -154,3 +154,7 @@ uint32_t Mycila::Dimmer::_lookupPhaseDelay(float dutyCycle) {
   uint32_t delay = a - (((a - b) * (slot & 0xffff)) >> 16); // interpolate a b
   return (delay * _semiPeriod) >> 16;                       // scale to period
 }
+
+void ARDUINO_ISR_ATTR Mycila::Dimmer::onZeroCross(void* arg) {
+  Thyristor::zero_cross_int(arg);
+}
