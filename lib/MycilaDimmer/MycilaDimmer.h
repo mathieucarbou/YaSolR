@@ -176,7 +176,7 @@ namespace Mycila {
        *
        * pulseAnalyzer.onZeroCross(Mycila::Dimmer::onZeroCross);
        */
-      static void onZeroCross(void* args);
+      static void onZeroCross(int16_t delay, void* args);
 
     private:
       bool _enabled = false;

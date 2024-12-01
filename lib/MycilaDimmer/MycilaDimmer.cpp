@@ -154,6 +154,6 @@ uint16_t Mycila::Dimmer::_lookupPhaseDelay(float dutyCycle) {
   return (delay * _semiPeriod) >> 16;                       // scale to period
 }
 
-void ARDUINO_ISR_ATTR Mycila::Dimmer::onZeroCross(void* arg) {
+void ARDUINO_ISR_ATTR Mycila::Dimmer::onZeroCross(int16_t delay, void* arg) {
   Thyristor::zero_cross_int(arg);
 }
