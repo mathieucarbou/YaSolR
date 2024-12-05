@@ -61,21 +61,17 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
   });
 
   mqtt.subscribe(baseTopic + "/router/output1/bypass/set", [](const std::string& topic, const std::string_view& payload) {
-    if (output1.isBypassEnabled()) {
-      if (payload == YASOLR_ON)
-        output1.setBypassOn();
-      else if (payload == YASOLR_OFF)
-        output1.setBypassOff();
-    }
+    if (payload == YASOLR_ON)
+      output1.setBypassOn();
+    else if (payload == YASOLR_OFF)
+      output1.setBypassOff();
   });
 
   mqtt.subscribe(baseTopic + "/router/output2/bypass/set", [](const std::string& topic, const std::string_view& payload) {
-    if (output2.isBypassEnabled()) {
-      if (payload == YASOLR_ON)
-        output2.setBypassOn();
-      else if (payload == YASOLR_OFF)
-        output2.setBypassOff();
-    }
+    if (payload == YASOLR_ON)
+      output2.setBypassOn();
+    else if (payload == YASOLR_OFF)
+      output2.setBypassOff();
   });
 
   // device

@@ -1208,7 +1208,7 @@ void YaSolR::Website::updateCards() {
       break;
   }
   _output1DS18State.setValue(output1.temperature().orElse(0.0f));
-  _output1DimmerSlider.setValue(dimmerO1.getDutyCycle() * 100);
+  _output1DimmerSlider.setValue(output1.getDimmerDutyCycle() * 100);
   _output1Bypass.setValue(output1.isBypassOn());
 
   // output 2
@@ -1230,7 +1230,7 @@ void YaSolR::Website::updateCards() {
       break;
   }
   _output2DS18State.setValue(output2.temperature().orElse(0.0f));
-  _output2DimmerSlider.setValue(dimmerO2.getDutyCycle() * 100);
+  _output2DimmerSlider.setValue(output2.getDimmerDutyCycle() * 100);
   _output2Bypass.setValue(output2.isBypassOn());
 
   // relay
@@ -1247,7 +1247,7 @@ void YaSolR::Website::updateCards() {
 #ifdef APP_MODEL_PRO
   // Output 1
 
-  _output1DimmerSliderRO.setValue(dimmerO1.getDutyCycle() * 100);
+  _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleLive() * 100);
   _output1BypassRO.setFeedback(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
   _output1Power.setValue(output1Measurements.power);
   _output1ApparentPower.setValue(output1Measurements.apparentPower);
@@ -1260,7 +1260,7 @@ void YaSolR::Website::updateCards() {
 
   // output 2
 
-  _output2DimmerSliderRO.setValue(dimmerO2.getDutyCycle() * 100);
+  _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleLive() * 100);
   _output2BypassRO.setFeedback(YASOLR_STATE(output2.isBypassOn()), output2.isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
   _output2Power.setValue(output2Measurements.power);
   _output2ApparentPower.setValue(output2Measurements.apparentPower);

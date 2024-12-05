@@ -54,7 +54,7 @@ Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) const {
   root["bypass"] = isBypassOn() ? "on" : "off";
-  root["enabled"] = isDimmerEnabled();
+  root["enabled"] = _dimmer->isEnabled();
   root["state"] = getStateName();
   root["temperature"] = _temperature.orElse(0);
 
@@ -83,11 +83,6 @@ void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics
 // dimmer
 
 bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
-  if (!_dimmer->isEnabled()) {
-    LOGW(TAG, "Dimmer '%s' is disabled", _name);
-    return false;
-  }
-
   if (_autoBypassEnabled) {
     LOGW(TAG, "Auto Bypass '%s' is activated: unable to change dimmer level", _name);
     return false;
@@ -129,7 +124,10 @@ void Mycila::RouterOutput::applyTemperatureLimit() {
 }
 
 float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerToDivert) {
-  if (!_dimmer->isEnabled() || _autoBypassEnabled || !config.autoDimmer || config.calibratedResistance <= 0 || isDimmerTemperatureLimitReached()) {
+  if (!isAutoDimmerEnabled())
+    return 0;
+
+  if (_dimmer->isEnabled() || isDimmerTemperatureLimitReached()) {
     _dimmer->off();
     return 0;
   }
@@ -147,7 +145,7 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
   _dimmer->setDutyCycle(dutyCycle);
 
   // returns the used power as per the dimmer state
-  return maxPower * _dimmer->getDutyCycle();
+  return maxPower * getDimmerDutyCycleLive();
 }
 
 // bypass
@@ -162,20 +160,14 @@ bool Mycila::RouterOutput::setBypass(bool switchOn) {
 }
 
 void Mycila::RouterOutput::applyAutoBypass() {
+  if (config.autoBypass && !_autoBypassEnabled && _bypassEnabled) {
+    LOGI(TAG, "Auto Bypass enabled: turning off manual bypass on output '%s'", _name);
+    _setBypass(false);
+  }
+
   if (!config.autoBypass) {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Auto Bypass disabled: stopping Auto Bypass '%s'", _name);
-      _autoBypassEnabled = false;
-      _setBypass(false);
-    }
-    return;
-  }
-
-  // dimmer & relay checks
-
-  if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
-    if (_autoBypassEnabled) {
-      LOGW(TAG, "Relay and dimmer disabled: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
       _setBypass(false);
     }
@@ -254,9 +246,6 @@ void Mycila::RouterOutput::applyAutoBypass() {
   // time and temp OK, let's start
   if (!_autoBypassEnabled) {
     // auto bypass is not enabled, let's start it
-    if (!_relay->isEnabled() && !_dimmer->isEnabled()) {
-      return;
-    }
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
     if (config.weekDays.find(wday) != std::string::npos) {
       LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
@@ -272,7 +261,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
   if (_relay->isOn())
     return;
 
-  // or relay is disabled and dimmer at full power tu replace it ?
+  // or relay is disabled and dimmer at full power to replace it ?
   if (!_relay->isEnabled() && _dimmer->isOnAtFullPower())
     return;
 
@@ -287,7 +276,7 @@ void Mycila::RouterOutput::getDimmerMetrics(Metrics& metrics, float gridVoltage)
   metrics.resistance = config.calibratedResistance;
   metrics.voltage = gridVoltage;
   metrics.energy = _pzem->data.activeEnergy;
-  const float dutyCycle = _dimmer->getDutyCycle();
+  const float dutyCycle = getDimmerDutyCycleLive();
   const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
   metrics.power = dutyCycle * maxPower;
   metrics.powerFactor = sqrt(dutyCycle);
@@ -331,18 +320,11 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
 
     } else {
       // we don't have a relay: use the dimmer
-      if (_dimmer->isEnabled()) {
-        if (log)
-          LOGD(TAG, "Turning Dimmer '%s' ON", _name);
-        _dimmer->on();
-        _bypassEnabled = true;
-      } else {
-        if (log)
-          LOGW(TAG, "Dimmer '%s' is not connected to the grid: unable to activate bypass", _name);
-        _bypassEnabled = false;
-      }
+      if (log)
+        LOGD(TAG, "Turning Dimmer '%s' ON", _name);
+      _dimmer->on();
+      _bypassEnabled = true;
     }
-
   } else {
     // we want to deactivate bypass
     if (_relay->isEnabled()) {

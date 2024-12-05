@@ -124,7 +124,7 @@ Mycila::Task displayTask("Display", [](void* params) {
       output1.getMeasurements(outputMetrics);
       display.home.printf("Output 1: %11.11s\n", output1.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
-      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(dimmerO1.getDutyCycle() * 100)), static_cast<int>(round(outputMetrics.power)));
+      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output1.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(outputMetrics.power)));
       if (output1.temperature())
         display.home.printf("Temperature:  %4.1f ", output1.temperature().get());
       else
@@ -139,7 +139,7 @@ Mycila::Task displayTask("Display", [](void* params) {
       output2.getMeasurements(outputMetrics);
       display.home.printf("Output 2: %11.11s\n", output2.getStateName());
       display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
-      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(dimmerO2.getDutyCycle() * 100)), static_cast<int>(round(outputMetrics.power)));
+      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output2.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(outputMetrics.power)));
       if (output2.temperature())
         display.home.printf("Temperature:  %4.1f ", output2.temperature().get());
       else

@@ -333,7 +333,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/router/output1/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output1.isBypassEnabled() && request->hasParam("state", true)) {
+      if (request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
           output1.setBypassOn();
@@ -345,7 +345,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
   webServer
     .on("/api/router/output2/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output2.isBypassEnabled() && request->hasParam("state", true)) {
+      if (request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
           output2.setBypassOn();

@@ -116,9 +116,14 @@ namespace Mycila {
       void setDutyCycleMax(float max);
 
       /**
-       * @brief Get the power duty cycle of the dimmer
+       * @brief Get the power duty cycle configured for the dimmer
        */
-      float getDutyCycle() const { return _enabled ? _dutyCycle : 0; }
+      float getDutyCycle() const { return _dutyCycle; }
+
+      /**
+       * @brief Get the runtime (live value) of the power duty cycle in effect for the dimmer. This is the value that is actually applied to the dimmer: if the dimmer is disabled, this value will be 0.
+       */
+      float getDutyCycleLive() const { return _enabled ? _dutyCycle : 0; }
 
       /**
        * @brief Get the power duty cycle limit of the dimmer

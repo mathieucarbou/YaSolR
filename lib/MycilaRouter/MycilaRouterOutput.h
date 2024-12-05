@@ -76,11 +76,11 @@ namespace Mycila {
 
       // dimmer
 
-      bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
-      bool isAutoDimmerEnabled() const { return _dimmer->isEnabled() && config.autoDimmer && config.calibratedResistance > 0; }
+      bool isAutoDimmerEnabled() const { return config.autoDimmer && config.calibratedResistance > 0 && !_autoBypassEnabled && !_bypassEnabled; }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
       bool isDimmerOn() const { return _dimmer->isOn(); }
       float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
+      float getDimmerDutyCycleLive() const { return _dimmer->getDutyCycleLive(); }
       float getDimmerDutyCycleLimit() const { return _dimmer->getDutyCycleLimit(); }
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
@@ -93,8 +93,7 @@ namespace Mycila {
 
       // bypass
 
-      bool isBypassEnabled() const { return _relay->isEnabled() || _dimmer->isEnabled(); }
-      bool isAutoBypassEnabled() const { return isBypassEnabled() && config.autoBypass; }
+      bool isAutoBypassEnabled() const { return config.autoBypass; }
       bool isBypassOn() const { return _bypassEnabled; }
       bool setBypass(bool state);
       bool setBypassOn() { return setBypass(true); }

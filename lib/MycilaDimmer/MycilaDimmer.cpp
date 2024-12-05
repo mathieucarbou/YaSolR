@@ -105,11 +105,12 @@ void Mycila::Dimmer::end() {
 }
 
 void Mycila::Dimmer::setDutyCycle(float newDutyCycle) {
+  // apply limit and save the wanted duty cycle.
+  // it wil only be applied when dimmer will be on
+  _dutyCycle = constrain(newDutyCycle, 0, _dutyCycleLimit);
+
   if (!_enabled)
     return;
-
-  // apply limit
-  _dutyCycle = constrain(newDutyCycle, 0, _dutyCycleLimit);
 
   // duty remapping (equivalent to Shelly Dimmer remapping feature)
   const float mappedDutyCycle = _dutyCycleMin + _dutyCycle * (_dutyCycleMax - _dutyCycleMin);

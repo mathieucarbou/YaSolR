@@ -47,18 +47,14 @@ namespace Mycila {
       void divert(float gridVoltage, float gridPower) {
         float powerToDivert = _pidController->compute(gridPower);
         for (const auto& output : _outputs) {
-          if (output->isAutoDimmerEnabled()) {
-            const float usedPower = output->autoDivert(gridVoltage, powerToDivert);
-            powerToDivert = std::max(0.0f, powerToDivert - usedPower);
-          }
+          const float usedPower = output->autoDivert(gridVoltage, powerToDivert);
+          powerToDivert = std::max(0.0f, powerToDivert - usedPower);
         }
       }
 
       void noDivert() {
         for (const auto& output : _outputs) {
-          if (output->isAutoDimmerEnabled()) {
-            output->autoDivert(0, 0);
-          }
+          output->autoDivert(0, 0);
         }
       }
 
