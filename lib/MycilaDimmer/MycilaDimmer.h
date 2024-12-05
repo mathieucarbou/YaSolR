@@ -191,7 +191,7 @@ namespace Mycila {
       float _dutyCycleLimit = 1;
       float _dutyCycleMin = 0;
       float _dutyCycleMax = 1;
-      uint16_t _delay = UINT16_MAX;
+      uint16_t _delay = UINT16_MAX;  // this is the next firing delay to apply
 
       uint16_t _lookupPhaseDelay(float dutyCycle);
 

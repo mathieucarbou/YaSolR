@@ -116,7 +116,7 @@ void Mycila::Dimmer::setDutyCycle(float newDutyCycle) {
   const float mappedDutyCycle = _dutyCycleMin + _dutyCycle * (_dutyCycleMax - _dutyCycleMin);
 
   if (mappedDutyCycle == 0) {
-    _delay = UINT32_MAX;
+    _delay = UINT16_MAX;
   } else if (mappedDutyCycle == 1) {
     _delay = PHASE_DELAY_MIN_US;
   } else {
