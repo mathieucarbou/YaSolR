@@ -343,7 +343,13 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
   jsy.setCallback([](const Mycila::JSY::EventType eventType) {
     if (eventType == Mycila::JSY::EventType::EVT_CHANGE) {
       switch (jsy.data.model) {
+        case MYCILA_JSY_MK_1031:
+          // JSY1030 has no sign: it cannot be used to measure the grid
+          break;
+
         case MYCILA_JSY_MK_163:
+        case MYCILA_JSY_MK_227:
+        case MYCILA_JSY_MK_229:
           grid.localMetrics().update({
             .apparentPower = jsy.data.single().apparentPower,
             .current = jsy.data.single().current,
@@ -356,6 +362,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
           });
           break;
 
+        case MYCILA_JSY_MK_193:
         case MYCILA_JSY_MK_194:
           grid.localMetrics().update({
             .apparentPower = jsy.data.channel2().apparentPower,
@@ -423,7 +430,13 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     deserializeMsgPack(doc, buffer + 5, size);
 
     switch (doc["model"].as<uint16_t>()) {
+      case MYCILA_JSY_MK_1031:
+          // JSY1030 has no sign: it cannot be used to measure the grid
+          break;
+
       case MYCILA_JSY_MK_163:
+      case MYCILA_JSY_MK_227:
+      case MYCILA_JSY_MK_229:
         grid.remoteMetrics().update({
           .apparentPower = doc["apparent_power"].as<float>(),
           .current = doc["current"].as<float>(),

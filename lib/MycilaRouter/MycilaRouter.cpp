@@ -62,14 +62,16 @@ void Mycila::Router::getMetrics(Metrics& metrics, float voltage) const {
 
   if (!metrics.energy) {
     switch (_jsy->data.model) {
+      case MYCILA_JSY_MK_1031:
       case MYCILA_JSY_MK_163:
-        // JSY MK-163 only has 1 clamp and if connected is used to measure the grid so there is no way to measure the output
+      case MYCILA_JSY_MK_227:
+      case MYCILA_JSY_MK_229:
+      case MYCILA_JSY_MK_333:
+        // only 1 channel, and if connected is used to measure the grid so there is no way to measure the output
         break;
+      case MYCILA_JSY_MK_193:
       case MYCILA_JSY_MK_194:
         metrics.energy = _jsy->data.channel1().activeEnergy; // imported + exported
-        break;
-      case MYCILA_JSY_MK_333:
-        // JSY MK-333 only has 3 clamps to measure a 3-phase system (grid) so there is no way to measure the output
         break;
       default:
         break;
@@ -112,9 +114,14 @@ void Mycila::Router::getMeasurements(Metrics& metrics) const {
 
   if (_jsy->isConnected()) {
     switch (_jsy->data.model) {
+      case MYCILA_JSY_MK_1031:
       case MYCILA_JSY_MK_163:
-        // JSY MK-163 only has 1 clamp and if connected is used to measure the grid so there is no way to measure the output
+      case MYCILA_JSY_MK_227:
+      case MYCILA_JSY_MK_229:
+      case MYCILA_JSY_MK_333:
+        // only 1 channel, and if connected is used to measure the grid so there is no way to measure the output
         break;
+      case MYCILA_JSY_MK_193:
       case MYCILA_JSY_MK_194:
         metrics.voltage = _jsy->data.channel1().voltage;
         metrics.energy = _jsy->data.channel1().activeEnergy; // imported + exported
@@ -126,9 +133,6 @@ void Mycila::Router::getMeasurements(Metrics& metrics) const {
           metrics.resistance = _jsy->data.channel1().resistance();
           metrics.thdi = _jsy->data.channel1().thdi();
         }
-        break;
-      case MYCILA_JSY_MK_333:
-        // JSY MK-333 only has 3 clamps to measure a 3-phase system (grid) so there is no way to measure the output
         break;
       default:
         break;
