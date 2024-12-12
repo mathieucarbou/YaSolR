@@ -139,13 +139,13 @@ This can also be done:
 #### Measurement device (optional)
 
 Each output supports an optional measurement device to measure the power routed to the load.
+Here is a list of all supported devices:
 
-- `JSY-MK-163T`: has 1 clamp and can be used to monitor the grid power.
-- `JSY-MK-193, JSY-MK-194T, JSY-MK-194G`: have 2 clamps and can be used to monitor the aggregated routed output power (sum of the two outputs) and the grid power with the second clamp.
-- `JSY-MK-333`: has 3 clamps and can be used to monitor the grid power of a 3-phase installation.
-- `PZEM-004T V3`: can monitor each output independently. **It cannot be used to measure the grid power.**
+- `JSY-MK-193` first channel (AC, RS485 interface)
+- `JSY-MK-194T` and `JSY-MK-194G` first channel (AC, TTL interface)
+- `PZEM-004T V3`
 
-|                     PZEM-004T V3                      |     JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G, JSY-MK-333    |
+|                     PZEM-004T V3                      |     JSY    |
 | :---------------------------------------------------: | :------------------------------------------------------: |
 | ![PZEM-004T V3](./assets/img/hardware/PZEM-004T.jpeg) | ![JSY-MK-194T](./assets/img/hardware/JSY-MK-194T_2.jpeg) |
 
@@ -172,14 +172,17 @@ YaSolR supports many ways to measure the grid power and voltage:
 **Mono-phase**:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
-- `JSY-MK-163T`, `JSY-MK-193`, `JSY-MK-194T`, `JSY-MK-194G` (25 measurements / second)
+- `JSY-MK-163T` (AC, TTL interface)
+- `JSY-MK-193` second channel (AC, RS485 interface)
+- `JSY-MK-194T` and `JSY-MK-194G` second channel (AC, TTL interface)
+- `JSY-MK-227` and `JSY-MK-229` (AC and DC, RS485 interface)
 - Remote JSY through **UDP** (20 measurements / second)
 - Remote JSY through **ESP-Now** (🚧)
 
 **3-Phase**:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly 3EM`, etc)
-- `JSY-MK-333`
+- `JSY-MK-333` and `JSY-MK-333G` (AC, RS485 interface)
 - Remote JSY through **UDP**
 - Remote JSY through **ESP-Now** (🚧)
 
