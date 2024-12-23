@@ -124,10 +124,11 @@ void Mycila::RouterOutput::applyTemperatureLimit() {
 }
 
 float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerToDivert) {
-  if (!isAutoDimmerEnabled())
+  if (!_dimmer->isEnabled() || !isAutoDimmerEnabled()) {
     return 0;
+  }
 
-  if (_dimmer->isEnabled() || isDimmerTemperatureLimitReached()) {
+  if (isDimmerTemperatureLimitReached()) {
     _dimmer->off();
     return 0;
   }
