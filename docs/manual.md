@@ -710,7 +710,7 @@ You can change the PID settings at runtime and the effect will appear immediatel
 - `Kp`: `0.3`
 - `Ki`: `0.6`
 - `Kd`: `0.1`
-- `Output Min`: `-1000`
+- `Output Min`: `-500`
 - `Output Max`: `5000`
 
 To reset the other values to their default value, just click on the validate / enter green button.
