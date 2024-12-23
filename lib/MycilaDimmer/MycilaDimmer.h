@@ -177,11 +177,15 @@ namespace Mycila {
 
       /**
        * Callback to be called when a zero-crossing event is detected.
-       * When using MycilaPulseAnalyzer library, this callback can be registered like this:
+       *
+       * - When using MycilaPulseAnalyzer library, this callback can be registered like this:
        *
        * pulseAnalyzer.onZeroCross(Mycila::Dimmer::onZeroCross);
+       *
+       * - When using your own ISR with the Robodyn ZCD,       you can call this method with delayUntilZero == 200 since the length of the ZCD pulse is about  400 us.
+       * - When using your own ISR with the ZCd from Daniel S, you can call this method with delayUntilZero == 550 since the length of the ZCD pulse is about 1100 us.
        */
-      static void onZeroCross(int16_t delay, void* args);
+      static void onZeroCross(int16_t delayUntilZero, void* args);
 
     private:
       bool _enabled = false;
@@ -191,7 +195,7 @@ namespace Mycila {
       float _dutyCycleLimit = 1;
       float _dutyCycleMin = 0;
       float _dutyCycleMax = 1;
-      uint16_t _delay = UINT16_MAX;  // this is the next firing delay to apply
+      uint16_t _delay = UINT16_MAX; // this is the next firing delay to apply
 
       uint16_t _lookupPhaseDelay(float dutyCycle);
 
