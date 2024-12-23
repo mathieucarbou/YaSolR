@@ -45,7 +45,7 @@
 #define YASOLR_ADMIN_USERNAME              "admin"
 #define YASOLR_DISPLAY_LINE_SIZE           21
 #define YASOLR_DISPLAY_LINES               5
-#define YASOLR_GRAPH_POINTS                120
+#define YASOLR_GRAPH_POINTS                60
 #define YASOLR_HIDDEN_PWD                  "********"
 #define YASOLR_MQTT_KEEPALIVE              60
 #define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
