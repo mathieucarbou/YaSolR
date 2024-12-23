@@ -46,6 +46,7 @@ Here are below some examples:
 
 - [The Recycler](#the-recycler): reuse your existing Shelly EM or Shelly 3EM to build a router
 - [The Minimalist](#the-minimalist): the cheapest and easiest to build
+- [The Elegant](#the-elegant): an improved version of the Minimalist using the new JSY-MK-194G integrated ZCD circuit
 - [The Adventurer](#the-adventurer): for people who want to mitigate the flaws of the Robodyn and do some improvements over the existing Robodyn
 - [The Elite](#the-elite): for people who want to use a Random SSR instead of a Robodyn to safely dim more power and have a better Zero-Cross Detection circuit
 - [The Professional](#the-professional): probably the best and safe solution out there but requires an additional power source

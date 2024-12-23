@@ -124,7 +124,7 @@ Keeping a dimmer `on` generates heat so a bypass relay can be installed to avoid
 
 #### Temperature (optional)
 
-Measuring the temperature of the water tanker is important to ve able to trigger automatic heating based on temperature thresholds, or stop the routing if the temperature i reached.
+Measuring the temperature of the water tanker is important to be able to trigger automatic heating based on temperature thresholds, or stop the routing if the temperature i reached.
 
 This can also be done:
 
