@@ -17,7 +17,7 @@
 static const ChartSize chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
 #endif
 
-int _historyX[YASOLR_GRAPH_POINTS] = {0};
+int8_t _historyX[YASOLR_GRAPH_POINTS] = {0};
 
 // statistics
 dash::StatisticValue<const char*> _appName(dashboard, YASOLR_LBL_001);
@@ -96,12 +96,12 @@ dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_070 ": " Y
 dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_051);
 #endif
 
-int _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
-dash::LineChart<int, int> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
-dash::AreaChart<int, int> _routedPowerHistory(dashboard, YASOLR_LBL_036 " (W)");
-dash::BarChart<int, int> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
+int16_t _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
+uint16_t _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
+uint8_t _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
+dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
+dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_036 " (W)");
+dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
 
 #ifdef APP_MODEL_OSS
 dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
@@ -285,20 +285,20 @@ dash::TextInputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
 dash::PushButtonCard _pidReset(dashboard, YASOLR_LBL_177);
 
 // input,output,error,pTerm,iTerm,dTerm,sum
-int _pidInputHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _pidOutputHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _pidErrorHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int _pidSumHistoryY[YASOLR_GRAPH_POINTS] = {0};
-dash::LineChart<int, int> _pidInputHistory(dashboard, YASOLR_LBL_170);
-dash::LineChart<int, int> _pidOutputHistory(dashboard, YASOLR_LBL_171);
-dash::LineChart<int, int> _pidErrorHistory(dashboard, YASOLR_LBL_172);
-dash::BarChart<int, int> _pidSumHistory(dashboard, YASOLR_LBL_173);
-dash::LineChart<int, int> _pidPTermHistory(dashboard, YASOLR_LBL_174);
-dash::LineChart<int, int> _pidITermHistory(dashboard, YASOLR_LBL_175);
-dash::LineChart<int, int> _pidDTermHistory(dashboard, YASOLR_LBL_176);
+int16_t _pidInputHistoryY[YASOLR_GRAPH_POINTS] = {0};
+int16_t _pidOutputHistoryY[YASOLR_GRAPH_POINTS] = {0};
+int16_t _pidErrorHistoryY[YASOLR_GRAPH_POINTS] = {0};
+int16_t _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+int16_t _pidSumHistoryY[YASOLR_GRAPH_POINTS] = {0};
+dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
+dash::LineChart<int8_t, int16_t> _pidOutputHistory(dashboard, YASOLR_LBL_171);
+dash::LineChart<int8_t, int16_t> _pidErrorHistory(dashboard, YASOLR_LBL_172);
+dash::BarChart<int8_t, int16_t> _pidSumHistory(dashboard, YASOLR_LBL_173);
+dash::LineChart<int8_t, int16_t> _pidPTermHistory(dashboard, YASOLR_LBL_174);
+dash::LineChart<int8_t, int16_t> _pidITermHistory(dashboard, YASOLR_LBL_175);
+dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_176);
 #endif
 
 void YaSolR::Website::initLayout() {
@@ -1299,10 +1299,9 @@ void YaSolR::Website::updateCharts() {
   router.getMeasurements(routerMetrics);
 
   // shift array
-  constexpr size_t shift = sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY);
-  memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], shift);
-  memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], shift);
-  memmove(&_routerTHDiHistoryY[0], &_routerTHDiHistoryY[1], shift);
+  memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY));
+  memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], sizeof(_routedPowerHistoryY) - sizeof(*_routedPowerHistoryY));
+  memmove(&_routerTHDiHistoryY[0], &_routerTHDiHistoryY[1], sizeof(_routerTHDiHistoryY) - sizeof(*_routerTHDiHistoryY));
 
   // set new value
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(gridMetrics.power);
@@ -1318,14 +1317,13 @@ void YaSolR::Website::updateCharts() {
 void YaSolR::Website::updatePID() {
 #ifdef APP_MODEL_PRO
   // shift array
-  constexpr size_t shift = sizeof(_pidInputHistoryY) - sizeof(*_pidInputHistoryY);
-  memmove(&_pidInputHistoryY[0], &_pidInputHistoryY[1], shift);
-  memmove(&_pidOutputHistoryY[0], &_pidOutputHistoryY[1], shift);
-  memmove(&_pidErrorHistoryY[0], &_pidErrorHistoryY[1], shift);
-  memmove(&_pidSumHistoryY[0], &_pidSumHistoryY[1], shift);
-  memmove(&_pidPTermHistoryY[0], &_pidPTermHistoryY[1], shift);
-  memmove(&_pidITermHistoryY[0], &_pidITermHistoryY[1], shift);
-  memmove(&_pidDTermHistoryY[0], &_pidDTermHistoryY[1], shift);
+  memmove(&_pidInputHistoryY[0], &_pidInputHistoryY[1], sizeof(_pidInputHistoryY) - sizeof(*_pidInputHistoryY));
+  memmove(&_pidOutputHistoryY[0], &_pidOutputHistoryY[1], sizeof(_pidOutputHistoryY) - sizeof(*_pidOutputHistoryY));
+  memmove(&_pidErrorHistoryY[0], &_pidErrorHistoryY[1], sizeof(_pidErrorHistoryY) - sizeof(*_pidErrorHistoryY));
+  memmove(&_pidSumHistoryY[0], &_pidSumHistoryY[1], sizeof(_pidSumHistoryY) - sizeof(*_pidSumHistoryY));
+  memmove(&_pidPTermHistoryY[0], &_pidPTermHistoryY[1], sizeof(_pidPTermHistoryY) - sizeof(*_pidPTermHistoryY));
+  memmove(&_pidITermHistoryY[0], &_pidITermHistoryY[1], sizeof(_pidITermHistoryY) - sizeof(*_pidITermHistoryY));
+  memmove(&_pidDTermHistoryY[0], &_pidDTermHistoryY[1], sizeof(_pidDTermHistoryY) - sizeof(*_pidDTermHistoryY));
 
   // set new values
   _pidInputHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getInput());
