@@ -17,7 +17,10 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   dashboardUpdateTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
+  ds18Task.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
+  networkConfigTask.setManager(coreTaskManager);
+  networkManagerTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);
@@ -28,19 +31,14 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   trialTask.setManager(coreTaskManager);
 #endif
 
-  // mqttTaskManager
-  haDiscoveryTask.setManager(mqttTaskManager);
-  mqttConfigTask.setManager(mqttTaskManager);
-  mqttPublishConfigTask.setManager(mqttTaskManager);
-  mqttPublishStaticTask.setManager(mqttTaskManager);
-  mqttPublishTask.setManager(mqttTaskManager);
-
-  // pioTaskManager
-  ds18Task.setManager(pioTaskManager);
-  networkConfigTask.setManager(pioTaskManager);
-  networkManagerTask.setManager(pioTaskManager);
-  pzemO1PairingTask.setManager(pioTaskManager);
-  pzemO2PairingTask.setManager(pioTaskManager);
+  // unsafeTaskManager
+  haDiscoveryTask.setManager(unsafeTaskManager);
+  mqttConfigTask.setManager(unsafeTaskManager);
+  mqttPublishConfigTask.setManager(unsafeTaskManager);
+  mqttPublishStaticTask.setManager(unsafeTaskManager);
+  mqttPublishTask.setManager(unsafeTaskManager);
+  pzemO1PairingTask.setManager(unsafeTaskManager);
+  pzemO2PairingTask.setManager(unsafeTaskManager);
 
   // jsyTaskManager
   jsyTask.setManager(jsyTaskManager);
@@ -59,9 +57,8 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // Mycila::TaskMonitor.addTask("wifi");                      // WiFI (stack size cannot be set)
   Mycila::TaskMonitor.addTask("mqtt_task");                  // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
   Mycila::TaskMonitor.addTask("async_tcp");                  // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
-  Mycila::TaskMonitor.addTask(pioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());    // YaSolR
-  Mycila::TaskMonitor.addTask(mqttTaskManager.getName());    // YaSolR
+  Mycila::TaskMonitor.addTask(unsafeTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(pzemTaskManager.getName());    // YaSolR
 });

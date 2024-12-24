@@ -8,8 +8,7 @@ Mycila::Task debugTask("Debug", [](void* params) {
   logger.info(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
   Mycila::TaskMonitor.log();
   coreTaskManager.log();
-  pioTaskManager.log();
-  mqttTaskManager.log();
+  unsafeTaskManager.log();
   jsyTaskManager.log();
   pzemTaskManager.log();
 });
