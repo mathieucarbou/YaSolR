@@ -71,7 +71,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject tasks = system["task"].to<JsonObject>();
       pioTaskManager.toJson(tasks[pioTaskManager.getName()].to<JsonObject>());
       coreTaskManager.toJson(tasks[coreTaskManager.getName()].to<JsonObject>());
-      routingTaskManager.toJson(tasks[routingTaskManager.getName()].to<JsonObject>());
+      // routingTaskManager.toJson(tasks[routingTaskManager.getName()].to<JsonObject>());
       jsyTaskManager.toJson(tasks[jsyTaskManager.getName()].to<JsonObject>());
       pzemTaskManager.toJson(tasks[pzemTaskManager.getName()].to<JsonObject>());
       mqttTaskManager.toJson(tasks[mqttTaskManager.getName()].to<JsonObject>());

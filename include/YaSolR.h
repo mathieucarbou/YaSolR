@@ -122,7 +122,7 @@ extern Mycila::Task jsyTask;
 extern Mycila::TaskManager pzemTaskManager;
 extern Mycila::Task pzemTask;
 
-extern Mycila::TaskManager routingTaskManager;
+// extern Mycila::TaskManager routingTaskManager;
 extern Mycila::Task routingTask;
 
 // Tasks alone without a manager

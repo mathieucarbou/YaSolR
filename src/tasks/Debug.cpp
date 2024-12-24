@@ -12,5 +12,5 @@ Mycila::Task debugTask("Debug", [](void* params) {
   mqttTaskManager.log();
   jsyTaskManager.log();
   pzemTaskManager.log();
-  routingTaskManager.log();
+  // routingTaskManager.log();
 });

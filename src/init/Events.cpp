@@ -393,7 +393,8 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
           break;
       }
       if (grid.updatePower()) {
-        routingTask.resume();
+        // routingTask.resume();
+        routingTask.forceRun();
       }
     }
   });
@@ -431,8 +432,8 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     switch (doc["model"].as<uint16_t>()) {
       case MYCILA_JSY_MK_1031:
-          // JSY1030 has no sign: it cannot be used to measure the grid
-          break;
+        // JSY1030 has no sign: it cannot be used to measure the grid
+        break;
 
       case MYCILA_JSY_MK_163:
       case MYCILA_JSY_MK_227:
@@ -481,7 +482,8 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
 
     if (grid.updatePower()) {
-      routingTask.resume();
+      // routingTask.resume();
+      routingTask.forceRun();
     }
   });
 });

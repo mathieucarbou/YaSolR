@@ -49,7 +49,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   pzemTask.setManager(pzemTaskManager);
 
   // routingTaskManager
-  routingTask.setManager(routingTaskManager);
+  // routingTask.setManager(routingTaskManager);
 
   // Router
   router.addOutput(output1);
@@ -65,7 +65,7 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   Mycila::TaskMonitor.addTask(pioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(mqttTaskManager.getName());    // YaSolR
-  Mycila::TaskMonitor.addTask(routingTaskManager.getName()); // YaSolR
+  // Mycila::TaskMonitor.addTask(routingTaskManager.getName()); // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(pzemTaskManager.getName());    // YaSolR
 });
