@@ -18,11 +18,11 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   debugTask.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
-  safeBootTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);
   routerTask.setManager(coreTaskManager);
+  safeBootTask.setManager(coreTaskManager);
   zcdTask.setManager(coreTaskManager);
 #ifdef APP_MODEL_TRIAL
   trialTask.setManager(coreTaskManager);
@@ -31,14 +31,14 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   // mqttTaskManager
   haDiscoveryTask.setManager(mqttTaskManager);
   mqttConfigTask.setManager(mqttTaskManager);
-  mqttPublishTask.setManager(mqttTaskManager);
-  mqttPublishStaticTask.setManager(mqttTaskManager);
   mqttPublishConfigTask.setManager(mqttTaskManager);
+  mqttPublishStaticTask.setManager(mqttTaskManager);
+  mqttPublishTask.setManager(mqttTaskManager);
 
   // pioTaskManager
   ds18Task.setManager(pioTaskManager);
-  networkManagerTask.setManager(pioTaskManager);
   networkConfigTask.setManager(pioTaskManager);
+  networkManagerTask.setManager(pioTaskManager);
   pzemO1PairingTask.setManager(pioTaskManager);
   pzemO2PairingTask.setManager(pioTaskManager);
 
@@ -47,9 +47,6 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
 
   // pzemTaskManager
   pzemTask.setManager(pzemTaskManager);
-
-  // routingTaskManager
-  // routingTask.setManager(routingTaskManager);
 
   // Router
   router.addOutput(output1);
@@ -65,7 +62,6 @@ Mycila::Task initCoreTask("Init Core", [](void* params) {
   Mycila::TaskMonitor.addTask(pioTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(mqttTaskManager.getName());    // YaSolR
-  // Mycila::TaskMonitor.addTask(routingTaskManager.getName()); // YaSolR
   Mycila::TaskMonitor.addTask(jsyTaskManager.getName());     // YaSolR
   Mycila::TaskMonitor.addTask(pzemTaskManager.getName());    // YaSolR
 });

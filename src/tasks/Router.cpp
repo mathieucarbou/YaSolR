@@ -19,3 +19,21 @@ Mycila::Task routerTask("Router", [](void* params) {
   output1.applyAutoBypass();
   output2.applyAutoBypass();
 });
+
+Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
+  if (router.isCalibrationRunning())
+    return;
+
+  if (!output1.isAutoDimmerEnabled() && !output2.isAutoDimmerEnabled())
+    return;
+
+  std::optional<float> voltage = grid.getVoltage();
+  const Mycila::ExpiringValue<float>& power = grid.power();
+
+  if (voltage.has_value() && power.isPresent()) {
+    router.divert(voltage.value(), power.get());
+    if (config.getBool(KEY_ENABLE_PID_VIEW)) {
+      dashboardUpdateTask.requestEarlyRun();
+    }
+  }
+});

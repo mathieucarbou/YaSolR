@@ -48,9 +48,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   // pzemTaskManager
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
 
-  // routingTaskManager
-  routingTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled()); });
-
   // Grid
   grid.localMetrics().setExpiration(10000);                             // local is fast
   grid.remoteMetrics().setExpiration(10000);                            // remote JSY is fast
