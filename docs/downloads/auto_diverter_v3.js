@@ -46,7 +46,7 @@ const CONFIG = {
     // PID Derivative Gain
     KD: 0.1,
     // Output Minimum (W)
-    OUT_MIN: -1000,
+    OUT_MIN: -500,
     // Output Maximum (W)
     OUT_MAX: 5000,
   },

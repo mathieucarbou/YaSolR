@@ -707,11 +707,16 @@ You can change the PID settings at runtime and the effect will appear immediatel
 - `Proportional Mode`: `On Input`
 - `Derivative Mode`: `On Error`
 - `Integral Correction`: `Advanced`
-- `Kp`: `0.3`
-- `Ki`: `0.6`
-- `Kd`: `0.1`
+- `Kp`: `0.1`
+- `Ki`: `0.2`
+- `Kd`: `0.05`
 - `Output Min`: `-500`
 - `Output Max`: `5000`
+
+Here are some other values that seem to work well depending on the load, ZCD module, etc:
+
+- `Kp`: `0.3`, `Ki`: `0.6`, `Kd`: `0.1`
+- `Kp`: `0.3`, `Ki`: `0.4`, `Kd`: `0.1`
 
 To reset the other values to their default value, just click on the validate / enter green button.
 
