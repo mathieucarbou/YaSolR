@@ -16,7 +16,7 @@ Mycila::Task dashboardInitTask("Dashboard Init", Mycila::TaskType::ONCE, [](void
 
 Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
   if (config.getBool(KEY_ENABLE_PID_VIEW)) {
-    website.updatePID();
+    // WebSocket
     if (wsDebugPID.count()) {
       AsyncWebSocketMessageBuffer* buffer = wsDebugPID.makeBuffer(256);
       snprintf(reinterpret_cast<char*>(buffer->get()),
@@ -43,6 +43,7 @@ Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
     }
   }
 
+  website.updatePID();
   website.updateCards();
   website.updateCharts();
   dashboard.sendUpdates();
