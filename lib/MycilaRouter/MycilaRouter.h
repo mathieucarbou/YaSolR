@@ -70,6 +70,8 @@ namespace Mycila {
 
       // get router theoretical metrics based on the dimmer states and the grid voltage
       void getMetrics(Metrics& metrics, float voltage) const;
+
+      // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
       void getMeasurements(Metrics& metrics) const;
 
     private:
