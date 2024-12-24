@@ -393,7 +393,6 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
           break;
       }
       if (grid.updatePower()) {
-        // routingTask.resume();
         routingTask.forceRun();
       }
     }
@@ -482,7 +481,6 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
 
     if (grid.updatePower()) {
-      // routingTask.resume();
       routingTask.forceRun();
     }
   });

@@ -30,7 +30,6 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
     // mqttPublishTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     pzemTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     // routerTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    // routingTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   } else {
     dashboardUpdateTask.disableProfiling();
     // debugTask.disableProfiling();
@@ -40,7 +39,6 @@ Mycila::Task initLoggingTask("Init Logging", [](void* params) {
     // mqttPublishTask.disableProfiling();
     pzemTask.disableProfiling();
     // routerTask.disableProfiling();
-    // routingTask.disableProfiling();
   }
 
   // Log execution time for some "ONCE" tasks

@@ -89,7 +89,6 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
       logger.debug(TAG, "Grid Power from MQTT: %f", p);
       grid.mqttPower().update(p);
       if (grid.updatePower()) {
-        // routingTask.resume();
         routingTask.forceRun();
       }
     });
