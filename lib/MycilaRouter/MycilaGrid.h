@@ -12,24 +12,21 @@
   #include <ArduinoJson.h>
 #endif
 
-// - filter to not trigger routing task on small power changes
-#ifndef MYCILA_GRID_POWER_DELTA_FILTER
-  #define MYCILA_GRID_POWER_DELTA_FILTER 1
-#endif
-
 namespace Mycila {
   class Grid {
     public:
       typedef struct {
-          float apparentPower = 0;
-          float current = 0;
-          float energy = 0;
-          float energyReturned = 0;
-          float frequency = 0;
-          float power = 0;
-          float powerFactor = 0;
-          float voltage = 0;
+          float apparentPower = NAN;
+          float current = NAN;
+          float energy = NAN;
+          float energyReturned = NAN;
+          float frequency = NAN;
+          float power = NAN;
+          float powerFactor = NAN;
+          float voltage = NAN;
       } Metrics;
+
+      // sources
 
       ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
       const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
@@ -37,14 +34,16 @@ namespace Mycila {
       ExpiringValue<Metrics>& remoteMetrics() { return _remoteMetrics; }
       const ExpiringValue<Metrics>& remoteMetrics() const { return _remoteMetrics; }
 
+      ExpiringValue<Metrics>& pzemMetrics() { return _pzemMetrics; }
+      const ExpiringValue<Metrics>& pzemMetrics() const { return _pzemMetrics; }
+
       ExpiringValue<float>& mqttPower() { return _mqttPower; }
       const ExpiringValue<float>& mqttPower() const { return _mqttPower; }
 
       ExpiringValue<float>& mqttVoltage() { return _mqttVoltage; }
       const ExpiringValue<float>& mqttVoltage() const { return _mqttVoltage; }
 
-      ExpiringValue<float>& pzemVoltage() { return _pzemVoltage; }
-      const ExpiringValue<float>& pzemVoltage() const { return _pzemVoltage; }
+      // available power
 
       ExpiringValue<float>& power() { return _power; }
       const ExpiringValue<float>& power() const { return _power; }
@@ -85,7 +84,7 @@ namespace Mycila {
         }
 
         // check if update is significant
-        if (abs(update - _power.get()) > MYCILA_GRID_POWER_DELTA_FILTER) {
+        if (update != _power.get()) {
           _power.update(update);
           return true;
         }
@@ -103,10 +102,24 @@ namespace Mycila {
           return _localMetrics.get().voltage;
         if (_remoteMetrics.isPresent() && _remoteMetrics.get().voltage > 0)
           return _remoteMetrics.get().voltage;
-        if (_pzemVoltage.isPresent() && _pzemVoltage.get() > 0)
-          return _pzemVoltage.get();
+        if (_pzemMetrics.isPresent() && _pzemMetrics.get().voltage > 0)
+          return _pzemMetrics.get().voltage;
         if (_mqttVoltage.isPresent() && _mqttVoltage.get() > 0)
           return _mqttVoltage.get();
+        return std::nullopt;
+      }
+
+      // get the grid frequency
+      // - if JSY are connected, they have priority
+      // - if JSY remote is connected, it has second priority
+      // - if PZEM is connected, it has third priority
+      std::optional<float> getFrequency() const {
+        if (_localMetrics.isPresent() && _localMetrics.get().frequency > 0)
+          return _localMetrics.get().frequency;
+        if (_remoteMetrics.isPresent() && _remoteMetrics.get().frequency > 0)
+          return _remoteMetrics.get().frequency;
+        if (_pzemMetrics.isPresent() && _pzemMetrics.get().frequency > 0)
+          return _pzemMetrics.get().frequency;
         return std::nullopt;
       }
 
@@ -115,8 +128,8 @@ namespace Mycila {
       bool getMeasurements(Metrics& metrics) const {
         if (_mqttPower.isPresent()) {
           metrics.power = _mqttPower.get();
-          metrics.voltage = getVoltage().value_or(0);
-          return true;
+          metrics.voltage = getVoltage().value_or(NAN);
+          metrics.frequency = getFrequency().value_or(NAN);
         }
 
         if (_remoteMetrics.isPresent()) {
@@ -181,6 +194,15 @@ namespace Mycila {
           remote["enabled"] = false;
         }
 
+        JsonObject pzem = root["source"]["pzem"].to<JsonObject>();
+        if (_remoteMetrics.isPresent()) {
+          remote["enabled"] = true;
+          remote["time"] = _pzemMetrics.getLastUpdateTime();
+          toJson(pzem, _pzemMetrics.get());
+        } else {
+          remote["enabled"] = false;
+        }
+
         JsonObject mqttPower = root["source"]["mqtt_power"].to<JsonObject>();
         if (_mqttPower.isPresent()) {
           mqttPower["enabled"] = true;
@@ -201,23 +223,31 @@ namespace Mycila {
       }
 
       static void toJson(const JsonObject& dest, const Metrics& metrics) {
-        dest["apparent_power"] = metrics.apparentPower;
-        dest["current"] = metrics.current;
-        dest["energy"] = metrics.energy;
-        dest["energy_returned"] = metrics.energyReturned;
-        dest["frequency"] = metrics.frequency;
-        dest["power"] = metrics.power;
-        dest["power_factor"] = metrics.powerFactor;
-        dest["voltage"] = metrics.voltage;
+        if (!isnanf(metrics.apparentPower))
+          dest["apparent_power"] = metrics.apparentPower;
+        if (!isnanf(metrics.current))
+          dest["current"] = metrics.current;
+        if (!isnanf(metrics.energy))
+          dest["energy"] = metrics.energy;
+        if (!isnanf(metrics.energyReturned))
+          dest["energy_returned"] = metrics.energyReturned;
+        if (!isnanf(metrics.frequency))
+          dest["frequency"] = metrics.frequency;
+        if (!isnanf(metrics.power))
+          dest["power"] = metrics.power;
+        if (!isnanf(metrics.powerFactor))
+          dest["power_factor"] = metrics.powerFactor;
+        if (!isnanf(metrics.voltage))
+          dest["voltage"] = metrics.voltage;
       }
 #endif
 
     private:
       ExpiringValue<Metrics> _localMetrics;
       ExpiringValue<Metrics> _remoteMetrics;
+      ExpiringValue<Metrics> _pzemMetrics;
       ExpiringValue<float> _mqttPower;
       ExpiringValue<float> _mqttVoltage;
-      ExpiringValue<float> _pzemVoltage;
       ExpiringValue<float> _power;
   };
 } // namespace Mycila

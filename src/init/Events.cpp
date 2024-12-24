@@ -330,13 +330,31 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
   pzemO1.setCallback([](const Mycila::PZEM::EventType eventType) {
     if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-      grid.pzemVoltage().update(pzemO1.data.voltage);
+      grid.pzemMetrics().update({
+        .apparentPower = NAN,
+        .current = NAN,
+        .energy = NAN,
+        .energyReturned = NAN,
+        .frequency = pzemO1.data.frequency,
+        .power = NAN,
+        .powerFactor = NAN,
+        .voltage = pzemO1.data.voltage,
+      });
     }
   });
 
   pzemO2.setCallback([](const Mycila::PZEM::EventType eventType) {
     if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-      grid.pzemVoltage().update(pzemO2.data.voltage);
+      grid.pzemMetrics().update({
+        .apparentPower = NAN,
+        .current = NAN,
+        .energy = NAN,
+        .energyReturned = NAN,
+        .frequency = pzemO2.data.frequency,
+        .power = NAN,
+        .powerFactor = NAN,
+        .voltage = pzemO2.data.voltage,
+      });
     }
   });
 
@@ -436,46 +454,47 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
       case MYCILA_JSY_MK_163:
       case MYCILA_JSY_MK_227:
-      case MYCILA_JSY_MK_229:
+      case MYCILA_JSY_MK_229: {
         grid.remoteMetrics().update({
-          .apparentPower = doc["apparent_power"].as<float>(),
-          .current = doc["current"].as<float>(),
-          .energy = doc["active_energy_imported"].as<float>(),
-          .energyReturned = doc["active_energy_returned"].as<float>(),
-          .frequency = doc["frequency"].as<float>(),
-          .power = doc["active_power"].as<float>(),
-          .powerFactor = doc["power_factor"].as<float>(),
-          .voltage = doc["voltage"].as<float>(),
+          .apparentPower = doc["apparent_power"].is<float>() ? doc["apparent_power"].as<float>() : NAN,
+          .current = doc["current"].is<float>() ? doc["current"].as<float>() : NAN,
+          .energy = doc["active_energy_imported"].is<float>() ? doc["active_energy_imported"].as<float>() : NAN,
+          .energyReturned = doc["active_energy_returned"].is<float>() ? doc["active_energy_returned"].as<float>() : NAN,
+          .power = doc["active_power"].is<float>() ? doc["active_power"].as<float>() : NAN,
+          .powerFactor = doc["power_factor"].is<float>() ? doc["power_factor"].as<float>() : NAN,
+          .voltage = doc["voltage"].is<float>() ? doc["voltage"].as<float>() : NAN,
         });
         break;
-
+      }
       case MYCILA_JSY_MK_193:
-      case MYCILA_JSY_MK_194:
+      case MYCILA_JSY_MK_194: {
+        JsonObject channel2 = doc["channel2"].as<JsonObject>();
         grid.remoteMetrics().update({
-          .apparentPower = doc["channel2"]["apparent_power"].as<float>(),
-          .current = doc["channel2"]["current"].as<float>(),
-          .energy = doc["channel2"]["active_energy_imported"].as<float>(),
-          .energyReturned = doc["channel2"]["active_energy_returned"].as<float>(),
-          .frequency = doc["aggregate"]["frequency"].as<float>(),
-          .power = doc["channel2"]["active_power"].as<float>(),
-          .powerFactor = doc["channel2"]["power_factor"].as<float>(),
-          .voltage = doc["channel2"]["voltage"].as<float>(),
+          .apparentPower = channel2["apparent_power"].is<float>() ? channel2["apparent_power"].as<float>() : NAN,
+          .current = channel2["current"].is<float>() ? channel2["current"].as<float>() : NAN,
+          .energy = channel2["active_energy_imported"].is<float>() ? channel2["active_energy_imported"].as<float>() : NAN,
+          .energyReturned = channel2["active_energy_returned"].is<float>() ? channel2["active_energy_returned"].as<float>() : NAN,
+          .frequency = channel2["frequency"].is<float>() ? channel2["frequency"].as<float>() : NAN,
+          .power = channel2["active_power"].is<float>() ? channel2["active_power"].as<float>() : NAN,
+          .powerFactor = channel2["power_factor"].is<float>() ? channel2["power_factor"].as<float>() : NAN,
+          .voltage = channel2["voltage"].is<float>() ? channel2["voltage"].as<float>() : NAN,
         });
         break;
-
-      case MYCILA_JSY_MK_333:
+      }
+      case MYCILA_JSY_MK_333: {
+        JsonObject aggregate = doc["aggregate"].as<JsonObject>();
         grid.remoteMetrics().update({
-          .apparentPower = doc["aggregate"]["apparent_power"].as<float>(),
-          .current = doc["aggregate"]["current"].as<float>(),
-          .energy = doc["aggregate"]["active_energy_imported"].as<float>(),
-          .energyReturned = doc["aggregate"]["active_energy_returned"].as<float>(),
-          .frequency = doc["aggregate"]["frequency"].as<float>(),
-          .power = doc["aggregate"]["active_power"].as<float>(),
-          .powerFactor = doc["aggregate"]["power_factor"].as<float>(),
-          .voltage = doc["aggregate"]["voltage"].as<float>(),
+          .apparentPower = aggregate["apparent_power"].is<float>() ? aggregate["apparent_power"].as<float>() : NAN,
+          .current = aggregate["current"].is<float>() ? aggregate["current"].as<float>() : NAN,
+          .energy = aggregate["active_energy_imported"].is<float>() ? aggregate["active_energy_imported"].as<float>() : NAN,
+          .energyReturned = aggregate["active_energy_returned"].is<float>() ? aggregate["active_energy_returned"].as<float>() : NAN,
+          .frequency = aggregate["frequency"].is<float>() ? aggregate["frequency"].as<float>() : NAN,
+          .power = aggregate["active_power"].is<float>() ? aggregate["active_power"].as<float>() : NAN,
+          .powerFactor = aggregate["power_factor"].is<float>() ? aggregate["power_factor"].as<float>() : NAN,
+          .voltage = aggregate["voltage"].is<float>() ? aggregate["voltage"].as<float>() : NAN,
         });
         break;
-
+      }
       default:
         break;
     }

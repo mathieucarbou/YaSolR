@@ -9,8 +9,8 @@ float detectGridFrequency() {
   Mycila::Grid::Metrics gridMetrics;
   grid.getMeasurements(gridMetrics);
 
-  float frequency = round(gridMetrics.frequency);
-  if (frequency)
+  float frequency = round(grid.getFrequency().value_or(NAN));
+  if (!isnanf(frequency) && frequency)
     return frequency;
 
   frequency = round(pzemO1.data.frequency);
