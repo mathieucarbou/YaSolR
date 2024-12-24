@@ -44,7 +44,7 @@
 // If enabled, you can monitor the actual frequency of the electrical network.
 // #define MONITOR_FREQUENCY
 
-#define FILTER_INT_PERIOD
+// #define FILTER_INT_PERIOD
 // #define THYRISTOR_ZCD
 
 /**

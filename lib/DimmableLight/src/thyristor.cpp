@@ -74,7 +74,7 @@ static uint16_t semiPeriodLength = 0;
 // Tune this parameters accordingly to your setup (electrical network, MCU, and ZC circuitry).
 // Values are expressed in microseconds.
 static const uint16_t startMargin = 200;
-static const uint16_t endMargin = 200;
+static const uint16_t endMargin = 500;
 
 // Merge Period represents the time span in which 2 (or more) very near delays are merged (the
 // higher ones are merged in the smaller one). This could be necessary for 2 main reasons:
@@ -100,7 +100,7 @@ static const uint16_t mergePeriod = 20;
 // Period in microseconds before the end of the semiperiod when an interrupt is triggered to
 // turn off all gate signals. This parameter doesn't have any effect if you enable
 // PREDEFINED_PULSE_LENGTH.
-static const uint16_t gateTurnOffTime = 100;
+static const uint16_t gateTurnOffTime = 300;
 
 static_assert(endMargin - gateTurnOffTime > mergePeriod, "endMargin must be greater than "
                                                          "(gateTurnOffTime + mergePeriod)");
@@ -723,7 +723,7 @@ void Thyristor::frequencyMonitorAlwaysOn(bool enable) {
 
     if (enable && !interruptEnabled) {
       interruptEnabled = true;
-#ifdef THYRISTOR_ZCDptEnabled = true;
+#ifdef THYRISTOR_ZCD
       attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, syncDir);
 #endif
     }
