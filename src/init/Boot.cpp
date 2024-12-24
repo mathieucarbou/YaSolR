@@ -102,9 +102,9 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_OUTPUT2_TIME_STOP, "06:00");
   config.configure(KEY_PID_D_MODE, "1");
   config.configure(KEY_PID_IC_MODE, "2");
-  config.configure(KEY_PID_KD, "0.1");
+  config.configure(KEY_PID_KD, "0.05");
   config.configure(KEY_PID_KI, "0.2");
-  config.configure(KEY_PID_KP, "0.05");
+  config.configure(KEY_PID_KP, "0.1");
   config.configure(KEY_PID_OUT_MAX, "5000");
   config.configure(KEY_PID_OUT_MIN, "-500");
   config.configure(KEY_PID_P_MODE, "2");
