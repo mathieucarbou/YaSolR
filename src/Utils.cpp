@@ -5,10 +5,6 @@
 #include <YaSolR.h>
 
 float detectGridFrequency() {
-  // first get res from the measurement tools
-  Mycila::Grid::Metrics gridMetrics;
-  grid.getMeasurements(gridMetrics);
-
   float frequency = round(grid.getFrequency().value_or(NAN));
   if (!isnanf(frequency) && frequency)
     return frequency;
