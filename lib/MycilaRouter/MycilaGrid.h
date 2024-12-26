@@ -43,16 +43,15 @@ namespace Mycila {
       ExpiringValue<float>& mqttVoltage() { return _mqttVoltage; }
       const ExpiringValue<float>& mqttVoltage() const { return _mqttVoltage; }
 
-      // available power
-
-      ExpiringValue<float>& power() { return _power; }
-      const ExpiringValue<float>& power() const { return _power; }
-
-      bool isConnected() const { return getVoltage().has_value(); }
-
       // called after having updated the values from MQTT, JSY and JSY Remote
       // returns true if the power has been updated and routing must be updated too
       bool updatePower();
+
+      bool isConnected() const { return getVoltage().has_value(); }
+
+      // available power
+      ExpiringValue<float>& getPower() { return _power; }
+      const ExpiringValue<float>& getPower() const { return _power; }
 
       // get the current grid voltage
       // - if JSY are connected, they have priority
