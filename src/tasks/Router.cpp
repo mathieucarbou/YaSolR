@@ -8,9 +8,8 @@ Mycila::Task calibrationTask("Calibration", [](void* params) { router.calibrate(
 
 Mycila::Task routerTask("Router", [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
-  const Mycila::ExpiringValue<float>& power = grid.power();
 
-  if (!voltage.has_value() || power.isAbsent())
+  if (!voltage.has_value() || grid.getPower().isAbsent())
     router.noDivert();
 
   output1.applyTemperatureLimit();
@@ -28,10 +27,9 @@ Mycila::Task routingTask("Routing", Mycila::TaskType::ONCE, [](void* params) {
     return;
 
   std::optional<float> voltage = grid.getVoltage();
-  const Mycila::ExpiringValue<float>& power = grid.power();
 
-  if (voltage.has_value() && power.isPresent()) {
-    router.divert(voltage.value(), power.get());
+  if (voltage.has_value() && grid.getPower().isPresent()) {
+    router.divert(voltage.value(), grid.getPower().get());
     if (config.getBool(KEY_ENABLE_PID_VIEW)) {
       dashboardUpdateTask.requestEarlyRun();
     }
