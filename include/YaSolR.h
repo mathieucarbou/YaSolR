@@ -56,20 +56,25 @@ extern AuthenticationMiddleware authMiddleware;
 extern LoggingMiddleware loggingMiddleware;
 extern ESPDash dashboard;
 
+extern Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 extern Mycila::Config config;
+extern Mycila::ESPConnect espConnect;
+extern Mycila::Grid grid;
+extern Mycila::Logger logger;
+extern Mycila::PID pidController;
+extern Mycila::Router router;
+extern Mycila::TrafficLight lights;
+
+// hardware
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
 extern Mycila::DS18 ds18O1;
 extern Mycila::DS18 ds18O2;
 extern Mycila::DS18 ds18Sys;
 extern Mycila::EasyDisplay display;
-extern Mycila::ESPConnect espConnect;
-extern Mycila::Grid grid;
 extern Mycila::HA::Discovery haDiscovery;
 extern Mycila::JSY jsy;
-extern Mycila::Logger logger;
 extern Mycila::MQTT mqtt;
-extern Mycila::PID pidController;
 extern Mycila::PulseAnalyzer pulseAnalyzer;
 extern Mycila::PZEM pzemO1;
 extern Mycila::PZEM pzemO2;
@@ -77,12 +82,10 @@ extern Mycila::Relay bypassRelayO1;
 extern Mycila::Relay bypassRelayO2;
 extern Mycila::Relay relay1;
 extern Mycila::Relay relay2;
-extern Mycila::Router router;
-extern Mycila::RouterOutput output1;
-extern Mycila::RouterOutput output2;
 extern Mycila::RouterRelay routerRelay1;
 extern Mycila::RouterRelay routerRelay2;
-extern Mycila::TrafficLight lights;
+extern Mycila::RouterOutput output1;
+extern Mycila::RouterOutput output2;
 
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task calibrationTask;
@@ -131,7 +134,5 @@ extern Mycila::Task initMqttSubscribersTask;
 extern Mycila::Task initRestApiTask;
 extern Mycila::Task initWebTask;
 extern Mycila::Task routingTask;
-
-extern Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 
 extern float detectGridFrequency();
