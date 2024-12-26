@@ -102,11 +102,9 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_ROUTER: {
-      Mycila::Grid::Metrics gridMetrics;
-      grid.getMeasurements(gridMetrics);
       Mycila::Router::Metrics routerMetrics;
       router.getMeasurements(routerMetrics);
-      display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(gridMetrics.power)));
+      display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(grid.getPower().orElse(0))));
       display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
       if (config.getLong(KEY_RELAY1_LOAD))
         display.home.printf(relay1.isOn() ? "Relay 1: on  %6ld W\n" : "Relay 1: off %6ld W\n", config.getLong(KEY_RELAY1_LOAD));

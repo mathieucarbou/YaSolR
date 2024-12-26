@@ -5,13 +5,13 @@
 #include <YaSolR.h>
 
 Mycila::Task relayTask("Relay", [](void* params) {
-  Mycila::Grid::Metrics gridMetrics;
-  grid.getMeasurements(gridMetrics);
+  if (grid.getPower().isAbsent())
+    return;
 
   Mycila::Router::Metrics routerMetrics;
   router.getMeasurements(routerMetrics);
 
-  float virtualGridPower = gridMetrics.power - routerMetrics.power;
+  float virtualGridPower = grid.getPower().get() - routerMetrics.power;
 
   if (routerRelay1.tryRelayStateAuto(true, virtualGridPower))
     return;

@@ -15,7 +15,7 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   grid.pzemMetrics().setExpiration(10000);                              // local is fast
   grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
   grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
-  grid.power().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);       // local is fast
+  grid.getPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);       // local is fast
 
   // Relays
   routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));

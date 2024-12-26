@@ -1292,9 +1292,6 @@ void YaSolR::Website::updateCards() {
 
 void YaSolR::Website::updateCharts() {
   // read last metrics
-  Mycila::Grid::Metrics gridMetrics;
-  grid.getMeasurements(gridMetrics);
-
   Mycila::Router::Metrics routerMetrics;
   router.getMeasurements(routerMetrics);
 
@@ -1304,7 +1301,7 @@ void YaSolR::Website::updateCharts() {
   memmove(&_routerTHDiHistoryY[0], &_routerTHDiHistoryY[1], sizeof(_routerTHDiHistoryY) - sizeof(*_routerTHDiHistoryY));
 
   // set new value
-  _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(gridMetrics.power);
+  _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(grid.getPower().orElse(0));
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.power);
   _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.thdi * 100);
 
