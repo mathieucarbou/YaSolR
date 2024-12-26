@@ -23,7 +23,7 @@ namespace YaSolR {
       void _boolConfig(dash::SwitchCard& card, const char* key) {
         card.onChange([key, &card, this](bool value) {
           config.setBool(key, value);
-          card.setValue(config.getBool(key) ? 1 : 0);
+          card.setValue(config.getBool(key));
           dashboard.refresh(card);
           dashboardInitTask.resume();
         });
@@ -165,9 +165,13 @@ namespace YaSolR {
       void _status(dash::FeedbackSwitchCard& card, const char* key, bool enabled, bool active = true, const char* err = "") {
         const bool configEnabled = config.getBool(key);
         card.setValue(configEnabled);
-        if (!configEnabled)
-          card.setFeedback(YASOLR_LBL_115, dash::Status::IDLE);
-        else if (!enabled)
+        if (!configEnabled) {
+          if (enabled) {
+            card.setFeedback(YASOLR_LBL_185, dash::Status::DANGER);
+          } else {
+            card.setFeedback(YASOLR_LBL_115, dash::Status::IDLE);
+          }
+        } else if (!enabled)
           card.setFeedback(YASOLR_LBL_124, dash::Status::DANGER);
         else if (!active)
           card.setFeedback(err, dash::Status::WARNING);
