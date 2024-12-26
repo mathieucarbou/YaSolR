@@ -481,8 +481,6 @@ This section allows to enable / disable some features of the router, and get som
 
 [![](assets/img/screenshots/hardware.jpeg)](assets/img/screenshots/hardware.jpeg)
 
-All these components are activated **live without the need to restart the router**.
-
 > ##### NOTE
 >
 > - `Output 1 Relay` / `Output 2 Relay`: these are the SSR or Electromechanical relays connected to the ESP32 and used whn you activate bypass mode.
@@ -493,6 +491,11 @@ All these components are activated **live without the need to restart the router
 >
 {: .block-note }
 
+> ##### IMPORTANT
+>
+> If you change one of these settings, please restart the device.
+{: .block-important }
+
 ### `Hardware Config` section
 
 This section allows to further configure some hardware settings and calibrate the resistance values of the loads.
@@ -501,7 +504,7 @@ This section allows to further configure some hardware settings and calibrate th
 
 > ##### IMPORTANT
 >
-> If you change one of these settings in the hardware section, please restart the corresponding hardware or the YaSolR device.
+> If you change one of these settings, please restart the device.
 {: .block-important }
 
 #### Grid Frequency
@@ -511,6 +514,11 @@ This section allows to further configure some hardware settings and calibrate th
 `Auto-detect` will automatically detect the grid frequency based on the connected measurement devices, or remote ones, or thanks to the pulse analyzer.
 It is recommended to leave the setting to `Auto-detect` unless you have a good reason to force it.
 The reason is that the grid utility frequency can change for example from 50Hz to 51Hz after a power failure in case a generator is installed.
+
+> ##### IMPORTANT
+>
+> If you change one of these settings, please restart the device.
+{: .block-important }
 
 #### Dimmer Range Remapping
 
@@ -542,6 +550,11 @@ Supported displays are any I2C OLED Display of type `SSD1307`, `SH1106`, `SH1107
 
 `SH1106` is recommended and has been extensively tested.
 
+> ##### IMPORTANT
+>
+> If you change one of these settings, please restart the device.
+{: .block-important }
+
 The display will look like a carousel with a maximum of 5 pages:
 
 - Global information
@@ -558,6 +571,11 @@ The display will look like a carousel with a maximum of 5 pages:
 - `Output 2 Relay Type (Bypass)`: the relay type for Output 2 Bypass: Normally Open (NO) or Normally Closed (NC).
 - `Relay 1 Type`: the relay type for Relay 1: Normally Open (NO) or Normally Closed (NC).
 - `Relay 2 Type`: the relay type for Relay 2: Normally Open (NO) or Normally Closed (NC).
+
+> ##### IMPORTANT
+>
+> If you change one of these settings, please restart the device.
+{: .block-important }
 
 #### Relay Automatic Control
 
@@ -583,8 +601,6 @@ You must use a SSR for that, because the relay will be switched on and off frequ
 {: .block-warning }
 
 > ##### TIP
->
-> - All these settings are applied immediately and do not require a restart
 >
 > - **For an EV charge control**: see [Virtual Grid Power / Compatibility with EV box](#virtual-grid-power--compatibility-with-ev-box)
 >
