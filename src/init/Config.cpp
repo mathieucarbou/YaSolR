@@ -31,7 +31,7 @@ Mycila::Task configTask("Config", [](void* params) {
   grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
   grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
   grid.getPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);    // local is fast
-  
+
   // PID Controller
   pidController.setReverse(false);
   pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
