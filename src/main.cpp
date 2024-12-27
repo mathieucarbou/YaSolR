@@ -52,9 +52,8 @@ YaSolR::Website website;
 
 void setup() {
   bootTask.forceRun();
-  initLoggingTask.forceRun();
-  initCoreTask.forceRun();
-  initConfigTask.forceRun();
+  loggingTask.forceRun();
+  configTask.forceRun();
   initEventsTask.forceRun();
   initWebTask.forceRun();
   initRestApiTask.forceRun();

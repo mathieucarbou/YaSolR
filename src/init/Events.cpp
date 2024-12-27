@@ -30,7 +30,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     const std::string key = k;
 
     if (key == KEY_ENABLE_DEBUG) {
-      initLoggingTask.forceRun();
+      loggingTask.forceRun();
 
     } else if (key == KEY_RELAY1_LOAD) {
       routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));

@@ -8,8 +8,8 @@ static const Mycila::TaskDoneCallback LOG_EXEC_TIME = [](const Mycila::Task& me,
   logger.debug(TAG, "Task '%s' finished in %" PRIu32 " us", me.getName(), elapsed);
 };
 
-Mycila::Task initLoggingTask("Init Logging", [](void* params) {
-  logger.info(TAG, "Initializing logging...");
+Mycila::Task loggingTask("Logging", [](void* params) {
+  logger.info(TAG, "Configuring logging...");
 
   const bool debug = config.getBool(KEY_ENABLE_DEBUG);
 

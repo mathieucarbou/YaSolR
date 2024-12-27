@@ -6,8 +6,23 @@
 
 #include <string>
 
-Mycila::Task initConfigTask("Init Config", [](void* params) {
-  logger.warn(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
+Mycila::Task configTask("Config", [](void* params) {
+  logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
+
+  // WDT
+  Mycila::TaskManager::configureWDT(10, true);
+
+  // Task Monitor
+  Mycila::TaskMonitor.begin();
+  // Mycila::TaskMonitor.addTask("arduino_events");            // Network (stack size cannot be set)
+  // Mycila::TaskMonitor.addTask("async_udp");                 // AsyncUDP (stack size cannot be set)
+  // Mycila::TaskMonitor.addTask("wifi");                      // WiFI (stack size cannot be set)
+  Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
+  Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
+  Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
+  Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
+  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
+  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
 
   // Grid
   grid.localMetrics().setExpiration(10000);                             // local is fast
@@ -15,11 +30,48 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   grid.pzemMetrics().setExpiration(10000);                              // local is fast
   grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
   grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
-  grid.getPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);       // local is fast
+  grid.getPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);    // local is fast
+  
+  // PID Controller
+  pidController.setReverse(false);
+  pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
+  pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.getLong(KEY_PID_D_MODE));
+  pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.getLong(KEY_PID_IC_MODE));
+  pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
+  pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
+  pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
 
-  // Relays
-  routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
-  routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
+  // NTP
+  Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+
+  // WebSerial
+#ifdef APP_MODEL_PRO
+  WebSerial.setID(Mycila::AppInfo.firmware.c_str());
+  WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
+  WebSerial.setInput(false);
+#endif
+  WebSerial.begin(&webServer, "/console");
+  logger.forwardTo(&WebSerial);
+
+  // Dashboard
+#ifdef APP_MODEL_PRO
+  dashboard.setTitle(Mycila::AppInfo.nameModel.c_str());
+#endif
+
+  // Network Manager
+  Mycila::ESPConnect::IPConfig ipConfig;
+  ipConfig.ip.fromString(config.get(KEY_NET_IP));
+  ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
+  ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));
+  ipConfig.dns.fromString(config.get(KEY_NET_DNS));
+  espConnect.setIPConfig(ipConfig);
+  espConnect.setAutoRestart(true);
+  espConnect.setBlocking(false);
+  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
+
+  //////////////
+  // HARDWARE //
+  //////////////
 
   // output1
   output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
@@ -46,19 +98,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
   output2.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT2_RESERVED_EXCESS) / 100;
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
-
-  // PID Controller
-
-  pidController.setReverse(false);
-  pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
-  pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.getLong(KEY_PID_D_MODE));
-  pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.getLong(KEY_PID_IC_MODE));
-  pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
-  pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
-  pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
-
-  // NTP
-  Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
 
   // Home Assistant Discovery
   haDiscovery.setDiscoveryTopic(config.getString(KEY_HA_DISCOVERY_TOPIC));
@@ -97,6 +136,10 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
   if (config.getBool(KEY_ENABLE_RELAY2))
     relay2.begin(config.getLong(KEY_PIN_RELAY2), config.isEqual(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
+  // Relays
+  routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
+  routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
+
   // Electricity: JSY
   if (config.getBool(KEY_ENABLE_JSY)) {
     jsy.begin(YASOLR_JSY_SERIAL, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
@@ -122,31 +165,6 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
     display.clearDisplay();
     display.setActive(true);
   }
-
-  // WebSerial
-#ifdef APP_MODEL_PRO
-  WebSerial.setID(Mycila::AppInfo.firmware.c_str());
-  WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
-  WebSerial.setInput(false);
-#endif
-  WebSerial.begin(&webServer, "/console");
-  logger.forwardTo(&WebSerial);
-
-  // Dashboard
-#ifdef APP_MODEL_PRO
-  dashboard.setTitle(Mycila::AppInfo.nameModel.c_str());
-#endif
-
-  // Network Manager
-  Mycila::ESPConnect::IPConfig ipConfig;
-  ipConfig.ip.fromString(config.get(KEY_NET_IP));
-  ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
-  ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));
-  ipConfig.dns.fromString(config.get(KEY_NET_DNS));
-  espConnect.setIPConfig(ipConfig);
-  espConnect.setAutoRestart(true);
-  espConnect.setBlocking(false);
-  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
 
   // Dimmers
   dimmerO1.setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
@@ -199,4 +217,44 @@ Mycila::Task initConfigTask("Init Config", [](void* params) {
 
   // pzemTaskManager
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
+
+  // coreTaskManager
+  calibrationTask.setManager(coreTaskManager);
+  carouselTask.setManager(coreTaskManager);
+  dashboardInitTask.setManager(coreTaskManager);
+  dashboardUpdateTask.setManager(coreTaskManager);
+  debugTask.setManager(coreTaskManager);
+  displayTask.setManager(coreTaskManager);
+  ds18Task.setManager(coreTaskManager);
+  lightsTask.setManager(coreTaskManager);
+  networkConfigTask.setManager(coreTaskManager);
+  networkManagerTask.setManager(coreTaskManager);
+  relayTask.setManager(coreTaskManager);
+  resetTask.setManager(coreTaskManager);
+  restartTask.setManager(coreTaskManager);
+  routerTask.setManager(coreTaskManager);
+  safeBootTask.setManager(coreTaskManager);
+  zcdTask.setManager(coreTaskManager);
+#ifdef APP_MODEL_TRIAL
+  trialTask.setManager(coreTaskManager);
+#endif
+
+  // unsafeTaskManager
+  haDiscoveryTask.setManager(unsafeTaskManager);
+  mqttConfigTask.setManager(unsafeTaskManager);
+  mqttPublishConfigTask.setManager(unsafeTaskManager);
+  mqttPublishStaticTask.setManager(unsafeTaskManager);
+  mqttPublishTask.setManager(unsafeTaskManager);
+  pzemO1PairingTask.setManager(unsafeTaskManager);
+  pzemO2PairingTask.setManager(unsafeTaskManager);
+
+  // jsyTaskManager
+  jsyTask.setManager(jsyTaskManager);
+
+  // pzemTaskManager
+  pzemTask.setManager(pzemTaskManager);
+
+  // Router
+  router.addOutput(output1);
+  router.addOutput(output2);
 });

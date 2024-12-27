@@ -125,11 +125,10 @@ extern Mycila::Task pzemTask;
 
 // Tasks alone without a manager
 extern Mycila::Task bootTask;
-extern Mycila::Task initConfigTask;
-extern Mycila::Task initCoreTask;
+extern Mycila::Task configTask;
 extern Mycila::Task initDashboard;
 extern Mycila::Task initEventsTask;
-extern Mycila::Task initLoggingTask;
+extern Mycila::Task loggingTask;
 extern Mycila::Task initMqttSubscribersTask;
 extern Mycila::Task initRestApiTask;
 extern Mycila::Task initWebTask;
