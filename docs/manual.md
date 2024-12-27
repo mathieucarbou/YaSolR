@@ -845,6 +845,8 @@ When using a remote JSY with the router, the following rules apply:
 - The voltage will always be read if possible from a connected JSY or PZEM, then from a remote JSY, then from MQTT.
 - The grid power will always be read first from MQTT, then from a remote JSY, then from a connected JSY.
 
+JSY Remote can be activated in the Hardware section by switching the button called **"JSY Remote"**.
+
 > ##### TIP
 >
 > JSY Remote app is automatically detected on the same network: you don't need to configure anything.
