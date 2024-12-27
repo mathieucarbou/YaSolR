@@ -30,7 +30,7 @@ namespace Mycila {
           float voltage = NAN;
       } Metrics;
 
-      Router(PID& pidController) : _pidController(&pidController) {}
+      explicit Router(PID& pidController) : _pidController(&pidController) {}
 
       void addOutput(RouterOutput& output) { _outputs.push_back(&output); }
       const std::vector<RouterOutput*>& getOutputs() const { return _outputs; }
