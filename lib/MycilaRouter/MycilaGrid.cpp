@@ -77,7 +77,7 @@ std::optional<float> Mycila::Grid::getFrequency() const {
 
 // get the current grid measurements
 // returns false if no measurements are available
-bool Mycila::Grid::getMeasurements(Metrics& metrics) const {
+bool Mycila::Grid::getGridMeasurements(Metrics& metrics) const {
   if (_mqttPower.isPresent()) {
     metrics.power = _mqttPower.get();
     metrics.voltage = getVoltage().value_or(NAN);
@@ -125,7 +125,7 @@ void Mycila::Grid::toJson(const JsonObject& root) const {
   }
 
   Metrics measurements;
-  getMeasurements(measurements);
+  getGridMeasurements(measurements);
   toJson(root["measurements"].to<JsonObject>(), measurements);
 
   JsonObject local = root["source"]["local"].to<JsonObject>();
@@ -147,7 +147,7 @@ void Mycila::Grid::toJson(const JsonObject& root) const {
   }
 
   JsonObject pzem = root["source"]["pzem"].to<JsonObject>();
-  if (_remoteMetrics.isPresent()) {
+  if (_pzemMetrics.isPresent()) {
     remote["enabled"] = true;
     remote["time"] = _pzemMetrics.getLastUpdateTime();
     toJson(pzem, _pzemMetrics.get());

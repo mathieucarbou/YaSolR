@@ -34,20 +34,6 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       jsy.toJson(root["jsy"].to<JsonObject>());
       espConnect.toJson(root["network"].to<JsonObject>());
 
-      // output 1
-      output1.toJson(root["output1"].to<JsonObject>(), voltage);
-      dimmerO1.dimmerToJson(root["output1"]["dimmer"].to<JsonObject>());
-      ds18O1.toJson(root["output1"]["ds18"].to<JsonObject>());
-      pzemO1.toJson(root["output1"]["pzem"].to<JsonObject>());
-      bypassRelayO1.toJson(root["output1"]["relay"].to<JsonObject>());
-
-      // output 2
-      output2.toJson(root["output2"].to<JsonObject>(), voltage);
-      dimmerO2.dimmerToJson(root["output2"]["dimmer"].to<JsonObject>());
-      ds18O2.toJson(root["output2"]["ds18"].to<JsonObject>());
-      pzemO2.toJson(root["output2"]["pzem"].to<JsonObject>());
-      bypassRelayO2.toJson(root["output2"]["relay"].to<JsonObject>());
-
       pidController.toJson(root["pid"].to<JsonObject>());
       pulseAnalyzer.toJson(root["pulse_analyzer"].to<JsonObject>());
 
@@ -57,6 +43,20 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
 
       // router
       router.toJson(root["router"].to<JsonObject>(), voltage);
+
+      // output 1
+      output1.toJson(root["router"]["output1"].to<JsonObject>(), voltage);
+      dimmerO1.dimmerToJson(root["router"]["output1"]["dimmer"].to<JsonObject>());
+      ds18O1.toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
+      pzemO1.toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
+      bypassRelayO1.toJson(root["router"]["output1"]["relay"].to<JsonObject>());
+
+      // output 2
+      output2.toJson(root["router"]["output2"].to<JsonObject>(), voltage);
+      dimmerO2.dimmerToJson(root["router"]["output2"]["dimmer"].to<JsonObject>());
+      ds18O2.toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
+      pzemO2.toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
+      bypassRelayO2.toJson(root["router"]["output2"]["relay"].to<JsonObject>());
 
       // system
       JsonObject system = root["system"].to<JsonObject>();
@@ -279,7 +279,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
       Mycila::Grid::Metrics metrics;
-      grid.getMeasurements(metrics);
+      grid.getGridMeasurements(metrics);
       Mycila::Grid::toJson(root, metrics);
       response->setLength();
       request->send(response);
@@ -359,7 +359,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       JsonObject root = response->getRoot();
 
       Mycila::Router::Metrics routerMeasurements;
-      router.getMeasurements(routerMeasurements);
+      router.getRouterMeasurements(routerMeasurements);
 
       root["lights"] = lights.toString();
       root["relay1"] = YASOLR_STATE(relay1.isOn());
@@ -378,7 +378,7 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
         json["temperature"] = output->temperature().orElse(0);
 
         Mycila::RouterOutput::Metrics outputMeasurements;
-        output->getMeasurements(outputMeasurements);
+        output->getOutputMeasurements(outputMeasurements);
         Mycila::RouterOutput::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
       }
 

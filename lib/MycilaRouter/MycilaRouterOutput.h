@@ -32,15 +32,15 @@ namespace Mycila {
       };
 
       typedef struct {
-          float apparentPower = 0;
-          float current = 0;
-          float dimmedVoltage = 0;
-          float energy = 0;
-          float power = 0;
-          float powerFactor = 0;
-          float resistance = 0;
-          float thdi = 0;
-          float voltage = 0;
+          float apparentPower = NAN;
+          float current = NAN;
+          float dimmedVoltage = NAN;
+          float energy = NAN;
+          float power = NAN;
+          float powerFactor = NAN;
+          float resistance = NAN;
+          float thdi = NAN;
+          float voltage = NAN;
       } Metrics;
 
       typedef struct {
@@ -103,9 +103,11 @@ namespace Mycila {
       // metrics
 
       // get output theoretical metrics based on the dimmer state and the grid voltage
-      void getDimmerMetrics(Metrics& metrics, float gridVoltage) const;
+      void getOutputMetrics(Metrics& metrics, float gridVoltage) const;
       // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
-      bool getMeasurements(Metrics& metrics) const;
+      bool getOutputMeasurements(Metrics& metrics) const;
+
+      float getOutputPower() const { return _pzem->isConnected() ? _pzem->data.activePower : 0; }
 
       // temperature
 

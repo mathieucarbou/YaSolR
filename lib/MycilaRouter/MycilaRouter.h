@@ -24,16 +24,22 @@ namespace Mycila {
           float current = 0;
           float energy = 0;
           float power = 0;
-          float powerFactor = 0;
-          float resistance = 0;
-          float thdi = 0;
-          float voltage = 0;
+          float powerFactor = NAN;
+          float resistance = NAN;
+          float thdi = NAN;
+          float voltage = NAN;
       } Metrics;
 
-      Router(PID& pidController, JSY& jsy) : _pidController(&pidController), _jsy(&jsy) {}
+      Router(PID& pidController) : _pidController(&pidController) {}
 
       void addOutput(RouterOutput& output) { _outputs.push_back(&output); }
       const std::vector<RouterOutput*>& getOutputs() const { return _outputs; }
+
+      ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
+      const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
+
+      ExpiringValue<Metrics>& remoteMetrics() { return _remoteMetrics; }
+      const ExpiringValue<Metrics>& remoteMetrics() const { return _remoteMetrics; }
 
       bool isRouting() const {
         for (const auto& output : _outputs) {
@@ -69,15 +75,16 @@ namespace Mycila {
 #endif
 
       // get router theoretical metrics based on the dimmer states and the grid voltage
-      void getMetrics(Metrics& metrics, float voltage) const;
+      void getRouterMetrics(Metrics& metrics, float voltage) const;
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
-      void getMeasurements(Metrics& metrics) const;
+      void getRouterMeasurements(Metrics& metrics) const;
 
     private:
       PID* _pidController;
-      JSY* _jsy;
       std::vector<RouterOutput*> _outputs;
+      ExpiringValue<Metrics> _localMetrics;
+      ExpiringValue<Metrics> _remoteMetrics;
 
       // calibration
       // 0: idle

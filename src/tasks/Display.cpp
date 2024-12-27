@@ -103,7 +103,7 @@ Mycila::Task displayTask("Display", [](void* params) {
 
     case DisplayKind::DISPLAY_ROUTER: {
       Mycila::Router::Metrics routerMetrics;
-      router.getMeasurements(routerMetrics);
+      router.getRouterMeasurements(routerMetrics);
       display.home.printf("Grid   Power: %5d W\n", static_cast<int>(round(grid.getPower().orElse(0))));
       display.home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
       if (config.getLong(KEY_RELAY1_LOAD))
@@ -118,11 +118,9 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT1: {
-      Mycila::RouterOutput::Metrics outputMetrics;
-      output1.getMeasurements(outputMetrics);
       display.home.printf("Output 1: %11.11s\n", output1.getStateName());
-      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
-      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output1.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(outputMetrics.power)));
+      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output1.config.calibratedResistance)));
+      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output1.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(output1.getOutputPower())));
       if (output1.temperature())
         display.home.printf("Temperature:  %4.1f ", output1.temperature().get());
       else
@@ -133,11 +131,9 @@ Mycila::Task displayTask("Display", [](void* params) {
     }
 
     case DisplayKind::DISPLAY_OUTPUT2: {
-      Mycila::RouterOutput::Metrics outputMetrics;
-      output2.getMeasurements(outputMetrics);
       display.home.printf("Output 2: %11.11s\n", output2.getStateName());
-      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(outputMetrics.resistance)));
-      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output2.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(outputMetrics.power)));
+      display.home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output2.config.calibratedResistance)));
+      display.home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output2.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(output2.getOutputPower())));
       if (output2.temperature())
         display.home.printf("Temperature:  %4.1f ", output2.temperature().get());
       else

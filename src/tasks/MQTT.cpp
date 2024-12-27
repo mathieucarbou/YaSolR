@@ -128,7 +128,7 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   }
 
   Mycila::Grid::Metrics gridMetrics;
-  grid.getMeasurements(gridMetrics);
+  grid.getGridMeasurements(gridMetrics);
   mqtt.publish(baseTopic + "/grid/apparent_power", std::to_string(gridMetrics.apparentPower));
   mqtt.publish(baseTopic + "/grid/current", std::to_string(gridMetrics.current));
   mqtt.publish(baseTopic + "/grid/energy", std::to_string(gridMetrics.energy));
@@ -141,17 +141,17 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   yield();
 
   Mycila::Router::Metrics routerMeasurements;
-  router.getMeasurements(routerMeasurements);
+  router.getRouterMeasurements(routerMeasurements);
   mqtt.publish(baseTopic + "/router/apparent_power", std::to_string(routerMeasurements.apparentPower));
   mqtt.publish(baseTopic + "/router/current", std::to_string(routerMeasurements.current));
   mqtt.publish(baseTopic + "/router/energy", std::to_string(routerMeasurements.energy));
   mqtt.publish(baseTopic + "/router/lights", lights.toString());
-  mqtt.publish(baseTopic + "/router/power_factor", std::to_string(routerMeasurements.powerFactor));
+  mqtt.publish(baseTopic + "/router/power_factor", isnan(routerMeasurements.powerFactor) ? "0" : std::to_string(routerMeasurements.powerFactor));
   mqtt.publish(baseTopic + "/router/power", std::to_string(routerMeasurements.power));
   mqtt.publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1.isOn()));
   mqtt.publish(baseTopic + "/router/relay2", YASOLR_STATE(relay2.isOn()));
   mqtt.publish(baseTopic + "/router/temperature", std::to_string(ds18Sys.getTemperature().value_or(0)));
-  mqtt.publish(baseTopic + "/router/thdi", std::to_string(routerMeasurements.thdi));
+  mqtt.publish(baseTopic + "/router/thdi", isnan(routerMeasurements.thdi) ? "0" : std::to_string(routerMeasurements.thdi));
   mqtt.publish(baseTopic + "/router/virtual_grid_power", std::to_string(gridMetrics.power - routerMeasurements.power));
   yield();
 

@@ -75,8 +75,8 @@ dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_037, "VA")
 dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_038);
 dash::EnergyCard<float, 2> _routerTHDi(dashboard, YASOLR_LBL_039, "%");
 dash::EnergyCard<float, 0> _routerVoltage(dashboard, YASOLR_LBL_040, "V");
-dash::EnergyCard<float, 0> _routerCurrent(dashboard, YASOLR_LBL_041, "A");
-dash::EnergyCard<float, 0> _routerResistance(dashboard, YASOLR_LBL_042, "Ω");
+dash::EnergyCard<float, 2> _routerCurrent(dashboard, YASOLR_LBL_041, "A");
+dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_042, "Ω");
 dash::EnergyCard<float, 3> _routerEnergy(dashboard, YASOLR_LBL_043, "kWh");
 dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
 dash::TemperatureCard<float, 2> _routerDS18State(dashboard, YASOLR_LBL_045);
@@ -126,8 +126,8 @@ dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA"
 dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
 dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
 dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
-dash::EnergyCard<float, 0> _output1Current(dashboard, YASOLR_LBL_057, "A");
-dash::EnergyCard<float, 0> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
+dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
+dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
 dash::EnergyCard<float, 3> _output1Energy(dashboard, YASOLR_LBL_059, "kWh");
 dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 dash::TextInputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
@@ -152,8 +152,8 @@ dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA"
 dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
 dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
 dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
-dash::EnergyCard<float, 0> _output2Current(dashboard, YASOLR_LBL_057, "A");
-dash::EnergyCard<float, 0> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
+dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
+dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
 dash::EnergyCard<float, 3> _output2Energy(dashboard, YASOLR_LBL_059, "kWh");
 dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 dash::TextInputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
@@ -1143,16 +1143,16 @@ void YaSolR::Website::initCards() {
 
 void YaSolR::Website::updateCards() {
   Mycila::Grid::Metrics gridMetrics;
-  grid.getMeasurements(gridMetrics);
+  grid.getGridMeasurements(gridMetrics);
 
   Mycila::Router::Metrics routerMetrics;
-  router.getMeasurements(routerMetrics);
+  router.getRouterMeasurements(routerMetrics);
 
   Mycila::RouterOutput::Metrics output1Measurements;
-  output1.getMeasurements(output1Measurements);
+  output1.getOutputMeasurements(output1Measurements);
 
   Mycila::RouterOutput::Metrics output2Measurements;
-  output2.getMeasurements(output2Measurements);
+  output2.getOutputMeasurements(output2Measurements);
 
   // stats
   Mycila::System::Memory memory;
@@ -1293,7 +1293,7 @@ void YaSolR::Website::updateCards() {
 void YaSolR::Website::updateCharts() {
   // read last metrics
   Mycila::Router::Metrics routerMetrics;
-  router.getMeasurements(routerMetrics);
+  router.getRouterMeasurements(routerMetrics);
 
   // shift array
   memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY));
@@ -1303,7 +1303,7 @@ void YaSolR::Website::updateCharts() {
   // set new value
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(grid.getPower().orElse(0));
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.power);
-  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.thdi * 100);
+  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = isnan(routerMetrics.thdi) ? 0 : round(routerMetrics.thdi * 100);
 
   // update charts
   _gridPowerHistory.setY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);

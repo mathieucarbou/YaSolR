@@ -23,71 +23,85 @@ extern Mycila::Logger logger;
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
   Metrics routerMeasurements;
-  getMeasurements(routerMeasurements);
+  getRouterMeasurements(routerMeasurements);
   toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
 
   Metrics Metrics;
-  getMetrics(Metrics, voltage);
+  getRouterMetrics(Metrics, voltage);
   toJson(root["metrics"].to<JsonObject>(), Metrics);
+
+  JsonObject local = root["source"]["local"].to<JsonObject>();
+  if (_localMetrics.isPresent()) {
+    local["enabled"] = true;
+    local["time"] = _localMetrics.getLastUpdateTime();
+    toJson(local, _localMetrics.get());
+  } else {
+    local["enabled"] = false;
+  }
+
+  JsonObject remote = root["source"]["remote"].to<JsonObject>();
+  if (_remoteMetrics.isPresent()) {
+    remote["enabled"] = true;
+    remote["time"] = _remoteMetrics.getLastUpdateTime();
+    toJson(remote, _remoteMetrics.get());
+  } else {
+    remote["enabled"] = false;
+  }
 }
 
 void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {
-  dest["apparent_power"] = metrics.apparentPower;
-  dest["current"] = metrics.current;
-  dest["energy"] = metrics.energy;
-  dest["power"] = metrics.power;
-  dest["power_factor"] = metrics.powerFactor;
-  dest["resistance"] = metrics.resistance;
-  dest["thdi"] = metrics.thdi;
-  dest["voltage"] = metrics.voltage;
+  if (!isnanf(metrics.apparentPower))
+    dest["apparent_power"] = metrics.apparentPower;
+  if (!isnanf(metrics.current))
+    dest["current"] = metrics.current;
+  if (!isnanf(metrics.energy))
+    dest["energy"] = metrics.energy;
+  if (!isnanf(metrics.power))
+    dest["power"] = metrics.power;
+  if (!isnanf(metrics.powerFactor))
+    dest["power_factor"] = metrics.powerFactor;
+  if (!isnanf(metrics.resistance))
+    dest["resistance"] = metrics.resistance;
+  if (!isnanf(metrics.thdi))
+    dest["thdi"] = metrics.thdi;
+  if (!isnanf(metrics.voltage))
+    dest["voltage"] = metrics.voltage;
 }
 #endif
 
 // get router theoretical metrics based on the dimmer states and the grid voltage
-void Mycila::Router::getMetrics(Metrics& metrics, float voltage) const {
+void Mycila::Router::getRouterMetrics(Metrics& metrics, float voltage) const {
   metrics.voltage = voltage;
 
   for (const auto& output : _outputs) {
     RouterOutput::Metrics outputMetrics;
-    output->getDimmerMetrics(outputMetrics, voltage);
+    output->getOutputMetrics(outputMetrics, voltage);
     metrics.energy += outputMetrics.energy;
     metrics.apparentPower += outputMetrics.apparentPower;
     metrics.current += outputMetrics.current;
     metrics.power += outputMetrics.power;
   }
 
-  metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
-  metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
-  metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
+  metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
+  metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
+  metrics.thdi = metrics.powerFactor == 0 ? NAN : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
 
-  if (!metrics.energy) {
-    switch (_jsy->data.model) {
-      case MYCILA_JSY_MK_1031:
-      case MYCILA_JSY_MK_163:
-      case MYCILA_JSY_MK_227:
-      case MYCILA_JSY_MK_229:
-      case MYCILA_JSY_MK_333:
-        // only 1 channel, and if connected is used to measure the grid so there is no way to measure the output
-        break;
-      case MYCILA_JSY_MK_193:
-      case MYCILA_JSY_MK_194:
-        metrics.energy = _jsy->data.channel1().activeEnergy; // imported + exported
-        break;
-      default:
-        break;
-    }
+  if (_localMetrics.isPresent()) {
+    metrics.energy = _localMetrics.get().energy;
+  } else if (_remoteMetrics.isPresent()) {
+    metrics.energy = _remoteMetrics.get().energy;
   }
 }
 
-void Mycila::Router::getMeasurements(Metrics& metrics) const {
+void Mycila::Router::getRouterMeasurements(Metrics& metrics) const {
   bool routing = false;
 
   for (size_t i = 0; i < _outputs.size(); i++) {
     // check if we have a PZEM output
     RouterOutput::Metrics pzemMetrics;
-    const bool pzem = _outputs[i]->getMeasurements(pzemMetrics);
+    const bool pzem = _outputs[i]->getOutputMeasurements(pzemMetrics);
 
-    // pzem output found, grave voltage and energy
+    // pzem output found: get voltage and energy
     if (pzem) {
       metrics.voltage = pzemMetrics.voltage;
       metrics.energy += pzemMetrics.energy;
@@ -102,40 +116,30 @@ void Mycila::Router::getMeasurements(Metrics& metrics) const {
       metrics.current += pzemMetrics.current;
       metrics.power += pzemMetrics.power;
 
-      metrics.powerFactor = metrics.apparentPower == 0 ? 0 : metrics.power / metrics.apparentPower;
-      metrics.resistance = metrics.current == 0 ? 0 : metrics.power / (metrics.current * metrics.current);
-      metrics.thdi = metrics.powerFactor == 0 ? 0 : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
+      metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
+      metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
+      metrics.thdi = metrics.powerFactor == 0 ? NAN : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
     }
   }
 
   // we found some pzem ? we are done
-  if (metrics.voltage)
+  if (metrics.voltage > 0)
     return;
 
-  if (_jsy->isConnected()) {
-    switch (_jsy->data.model) {
-      case MYCILA_JSY_MK_1031:
-      case MYCILA_JSY_MK_163:
-      case MYCILA_JSY_MK_227:
-      case MYCILA_JSY_MK_229:
-      case MYCILA_JSY_MK_333:
-        // only 1 channel, and if connected is used to measure the grid so there is no way to measure the output
-        break;
-      case MYCILA_JSY_MK_193:
-      case MYCILA_JSY_MK_194:
-        metrics.voltage = _jsy->data.channel1().voltage;
-        metrics.energy = _jsy->data.channel1().activeEnergy; // imported + exported
-        if (routing) {
-          metrics.apparentPower = _jsy->data.channel1().apparentPower;
-          metrics.current = _jsy->data.channel1().current;
-          metrics.power = abs(_jsy->data.channel1().activePower);
-          metrics.powerFactor = _jsy->data.channel1().powerFactor;
-          metrics.resistance = _jsy->data.channel1().resistance();
-          metrics.thdi = _jsy->data.channel1().thdi();
-        }
-        break;
-      default:
-        break;
+  // no pzem found, let's check if we have a local JSY or remote JSY
+  if (_localMetrics.isPresent()) {
+    if (routing) {
+      memcpy(&metrics, &_localMetrics.get(), sizeof(Metrics));
+    } else {
+      metrics.voltage = _localMetrics.get().voltage;
+      metrics.energy = _localMetrics.get().energy;
+    }
+  } else if (_remoteMetrics.isPresent()) {
+    if (routing) {
+      memcpy(&metrics, &_remoteMetrics.get(), sizeof(Metrics));
+    } else {
+      metrics.voltage = _remoteMetrics.get().voltage;
+      metrics.energy = _remoteMetrics.get().energy;
     }
   }
 }
@@ -181,11 +185,11 @@ void Mycila::Router::calibrate() {
       if (millis() - _calibrationStartTime > 5000) {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
         RouterOutput::Metrics outputMetrics;
-        _outputs[_calibrationOutputIndex]->getMeasurements(outputMetrics);
+        _outputs[_calibrationOutputIndex]->getOutputMeasurements(outputMetrics);
         float resistance = outputMetrics.resistance;
         if (resistance == 0) {
           Router::Metrics routerMetrics;
-          getMeasurements(routerMetrics);
+          getRouterMeasurements(routerMetrics);
           resistance = routerMetrics.resistance;
         }
 
@@ -202,11 +206,11 @@ void Mycila::Router::calibrate() {
       if (millis() - _calibrationStartTime > 5000) {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
         RouterOutput::Metrics outputMetrics;
-        _outputs[_calibrationOutputIndex]->getMeasurements(outputMetrics);
+        _outputs[_calibrationOutputIndex]->getOutputMeasurements(outputMetrics);
         float resistance = outputMetrics.resistance;
         if (resistance == 0) {
           Router::Metrics routerMetrics;
-          getMeasurements(routerMetrics);
+          getRouterMeasurements(routerMetrics);
           resistance = routerMetrics.resistance;
         }
 

@@ -18,6 +18,7 @@ Mycila::ESPConnect espConnect(webServer);
 Mycila::Grid grid;
 Mycila::Logger logger;
 Mycila::PID pidController;
+Mycila::Router router(pidController);
 Mycila::TrafficLight lights;
 
 // hardware
@@ -48,8 +49,6 @@ Mycila::TaskManager unsafeTaskManager("y-unsafe");
 Mycila::TaskManager pzemTaskManager("y-pzem");
 
 YaSolR::Website website;
-
-Mycila::Router router(pidController, jsy);
 
 void setup() {
   bootTask.forceRun();

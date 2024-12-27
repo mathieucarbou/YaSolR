@@ -314,6 +314,16 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
             .powerFactor = jsy.data.channel2().powerFactor,
             .voltage = jsy.data.channel2().voltage,
           });
+          router.localMetrics().update({
+            .apparentPower = jsy.data.channel1().apparentPower,
+            .current = jsy.data.channel1().current,
+            .energy = jsy.data.channel1().activeEnergy,
+            .power = jsy.data.channel1().activePower,
+            .powerFactor = jsy.data.channel1().powerFactor,
+            .resistance = jsy.data.channel1().resistance(),
+            .thdi = jsy.data.channel1().thdi(),
+            .voltage = jsy.data.channel1().voltage,
+          });
           break;
 
         case MYCILA_JSY_MK_333:
@@ -368,6 +378,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
 
     JsonDocument doc;
     deserializeMsgPack(doc, buffer + 5, size);
+    // serializeJsonPretty(doc, Serial);
 
     switch (doc["model"].as<uint16_t>()) {
       case MYCILA_JSY_MK_1031:
@@ -390,16 +401,25 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       }
       case MYCILA_JSY_MK_193:
       case MYCILA_JSY_MK_194: {
-        JsonObject channel2 = doc["channel2"].as<JsonObject>();
         grid.remoteMetrics().update({
-          .apparentPower = channel2["apparent_power"] | NAN,
-          .current = channel2["current"] | NAN,
-          .energy = channel2["active_energy_imported"] | NAN,
-          .energyReturned = channel2["active_energy_returned"] | NAN,
-          .frequency = channel2["frequency"] | NAN,
-          .power = channel2["active_power"] | NAN,
-          .powerFactor = channel2["power_factor"] | NAN,
-          .voltage = channel2["voltage"] | NAN,
+          .apparentPower = doc["channel2"]["apparent_power"] | NAN,
+          .current = doc["channel2"]["current"] | NAN,
+          .energy = doc["channel2"]["active_energy_imported"] | NAN,
+          .energyReturned = doc["channel2"]["active_energy_returned"] | NAN,
+          .frequency = doc["channel2"]["frequency"] | NAN,
+          .power = doc["channel2"]["active_power"] | NAN,
+          .powerFactor = doc["channel2"]["power_factor"] | NAN,
+          .voltage = doc["channel2"]["voltage"] | NAN,
+        });
+        router.remoteMetrics().update({
+          .apparentPower = doc["channel1"]["apparent_power"] | NAN,
+          .current = doc["channel1"]["current"] | NAN,
+          .energy = doc["channel1"]["active_energy"] | NAN,
+          .power = doc["channel1"]["active_power"] | NAN,
+          .powerFactor = doc["channel1"]["power_factor"] | NAN,
+          .resistance = doc["channel1"]["resistance"] | NAN,
+          .thdi = doc["channel1"]["thdi"] | NAN,
+          .voltage = doc["channel1"]["voltage"] | NAN,
         });
         break;
       }

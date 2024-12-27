@@ -59,24 +59,33 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   root["temperature"] = _temperature.orElse(0);
 
   Metrics outputMeasurements;
-  getMeasurements(outputMeasurements);
+  getOutputMeasurements(outputMeasurements);
   toJson(root["measurements"].to<JsonObject>(), outputMeasurements);
 
   Metrics dimmerMetrics;
-  getDimmerMetrics(dimmerMetrics, gridVoltage);
+  getOutputMetrics(dimmerMetrics, gridVoltage);
   toJson(root["metrics"].to<JsonObject>(), dimmerMetrics);
 }
 
 void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics) {
-  dest["apparent_power"] = metrics.apparentPower;
-  dest["current"] = metrics.current;
-  dest["energy"] = metrics.energy;
-  dest["power"] = metrics.power;
-  dest["power_factor"] = metrics.powerFactor;
-  dest["resistance"] = metrics.resistance;
-  dest["thdi"] = metrics.thdi;
-  dest["voltage"] = metrics.voltage;
-  dest["voltage_dimmed"] = metrics.dimmedVoltage;
+  if (!isnanf(metrics.apparentPower))
+    dest["apparent_power"] = metrics.apparentPower;
+  if (!isnanf(metrics.current))
+    dest["current"] = metrics.current;
+  if (!isnanf(metrics.dimmedVoltage))
+    dest["energy"] = metrics.energy;
+  if (!isnanf(metrics.power))
+    dest["power"] = metrics.power;
+  if (!isnanf(metrics.powerFactor))
+    dest["power_factor"] = metrics.powerFactor;
+  if (!isnanf(metrics.resistance))
+    dest["resistance"] = metrics.resistance;
+  if (!isnanf(metrics.thdi))
+    dest["thdi"] = metrics.thdi;
+  if (!isnanf(metrics.voltage))
+    dest["voltage"] = metrics.voltage;
+  if (!isnanf(metrics.dimmedVoltage))
+    dest["voltage_dimmed"] = metrics.dimmedVoltage;
 }
 #endif
 
@@ -273,7 +282,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
 // metrics
 
-void Mycila::RouterOutput::getDimmerMetrics(Metrics& metrics, float gridVoltage) const {
+void Mycila::RouterOutput::getOutputMetrics(Metrics& metrics, float gridVoltage) const {
   metrics.resistance = config.calibratedResistance;
   metrics.voltage = gridVoltage;
   metrics.energy = _pzem->data.activeEnergy;
@@ -287,19 +296,19 @@ void Mycila::RouterOutput::getDimmerMetrics(Metrics& metrics, float gridVoltage)
   metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
 }
 
-bool Mycila::RouterOutput::getMeasurements(Metrics& metrics) const {
+bool Mycila::RouterOutput::getOutputMeasurements(Metrics& metrics) const {
   if (!_pzem->isConnected())
     return false;
   metrics.voltage = _pzem->data.voltage;
   metrics.energy = _pzem->data.activeEnergy;
   if (getState() == State::OUTPUT_ROUTING) {
-    metrics.apparentPower = abs(_pzem->data.apparentPower);
-    metrics.current = abs(_pzem->data.current);
-    metrics.dimmedVoltage = abs(_pzem->data.dimmedVoltage());
-    metrics.power = abs(_pzem->data.activePower);
-    metrics.powerFactor = abs(_pzem->data.powerFactor);
-    metrics.resistance = abs(_pzem->data.resistance());
-    metrics.thdi = abs(_pzem->data.thdi(0));
+    metrics.apparentPower = _pzem->data.apparentPower;
+    metrics.current = _pzem->data.current;
+    metrics.dimmedVoltage = _pzem->data.dimmedVoltage();
+    metrics.power = _pzem->data.activePower;
+    metrics.powerFactor = _pzem->data.powerFactor;
+    metrics.resistance = _pzem->data.resistance();
+    metrics.thdi = _pzem->data.thdi();
   }
   return true;
 }

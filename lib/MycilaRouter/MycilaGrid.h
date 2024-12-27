@@ -68,7 +68,7 @@ namespace Mycila {
 
       // get the current grid measurements
       // returns false if no measurements are available
-      bool getMeasurements(Metrics& metrics) const;
+      bool getGridMeasurements(Metrics& metrics) const;
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const;

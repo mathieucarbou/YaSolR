@@ -9,7 +9,7 @@ Mycila::Task relayTask("Relay", [](void* params) {
     return;
 
   Mycila::Router::Metrics routerMetrics;
-  router.getMeasurements(routerMetrics);
+  router.getRouterMeasurements(routerMetrics);
 
   float virtualGridPower = grid.getPower().get() - routerMetrics.power;
 
