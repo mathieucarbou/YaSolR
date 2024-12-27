@@ -39,6 +39,7 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_ENABLE_DS18_SYSTEM, YASOLR_FALSE);
   config.configure(KEY_ENABLE_HA_DISCOVERY, YASOLR_FALSE);
   config.configure(KEY_ENABLE_JSY, YASOLR_FALSE);
+  config.configure(KEY_ENABLE_JSY_REMOTE, YASOLR_FALSE);
   config.configure(KEY_ENABLE_LIGHTS, YASOLR_FALSE);
   config.configure(KEY_ENABLE_MQTT, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE);

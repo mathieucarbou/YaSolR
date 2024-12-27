@@ -190,7 +190,7 @@
 #define YASOLR_LBL_184 "Redéfinition Min/Max Variateur Sortie 2"
 #define YASOLR_LBL_185 "Redémarrage requis!"
 #define YASOLR_LBL_186 "Détection valeur résistances"
-// #define YASOLR_LBL_187
+#define YASOLR_LBL_187 "JSY Remote"
 #define YASOLR_LBL_188 "Adresse IP statique"
 #define YASOLR_LBL_189 "Masque de sous-réseau"
 #define YASOLR_LBL_190 "Passerelle"

@@ -237,6 +237,7 @@ dash::FeedbackTextInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
 dash::Tab _hardwareEnableTab(dashboard, "\u2699 " YASOLR_LBL_126);
 dash::FeedbackSwitchCard _display(dashboard, YASOLR_LBL_127);
 dash::FeedbackSwitchCard _jsy(dashboard, YASOLR_LBL_128);
+dash::FeedbackSwitchCard _jsyRemote(dashboard, YASOLR_LBL_187);
 dash::FeedbackSwitchCard _led(dashboard, YASOLR_LBL_129);
 dash::FeedbackSwitchCard _mqtt(dashboard, YASOLR_LBL_095);
 dash::FeedbackSwitchCard _output1Dimmer(dashboard, YASOLR_LBL_131);
@@ -613,6 +614,7 @@ void YaSolR::Website::initLayout() {
 
   _display.setTab(_hardwareEnableTab);
   _jsy.setTab(_hardwareEnableTab);
+  _jsyRemote.setTab(_hardwareEnableTab);
   _led.setTab(_hardwareEnableTab);
   _mqtt.setTab(_hardwareEnableTab);
   _output1Dimmer.setTab(_hardwareEnableTab);
@@ -630,6 +632,7 @@ void YaSolR::Website::initLayout() {
 
   _boolConfig(_display, KEY_ENABLE_DISPLAY);
   _boolConfig(_jsy, KEY_ENABLE_JSY);
+  _boolConfig(_jsyRemote, KEY_ENABLE_JSY_REMOTE);
   _boolConfig(_led, KEY_ENABLE_LIGHTS);
   _boolConfig(_mqtt, KEY_ENABLE_MQTT);
   _boolConfig(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER);
@@ -1024,6 +1027,7 @@ void YaSolR::Website::initCards() {
   // Hardware
 
   _status(_display, KEY_ENABLE_DISPLAY, display.isEnabled());
+  _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp.connected());
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
   _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, bypassRelayO1.isEnabled());
   _status(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY, bypassRelayO2.isEnabled());

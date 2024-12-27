@@ -5,7 +5,6 @@
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
 
-AsyncUDP udp;
 AsyncWebServer webServer(80);
 AsyncWebSocket wsDebugPID("/ws/pid/csv");
 AuthenticationMiddleware authMiddleware;
@@ -21,7 +20,10 @@ Mycila::PID pidController;
 Mycila::Router router(pidController);
 Mycila::TrafficLight lights;
 
+YaSolR::Website website;
+
 // hardware
+AsyncUDP udp;
 Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
 Mycila::DS18 ds18O1;
@@ -42,13 +44,10 @@ Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);
 Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1, pzemO1);
 Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2, pzemO2);
-
 Mycila::TaskManager coreTaskManager("y-core");
 Mycila::TaskManager jsyTaskManager("y-jsy");
 Mycila::TaskManager unsafeTaskManager("y-unsafe");
 Mycila::TaskManager pzemTaskManager("y-pzem");
-
-YaSolR::Website website;
 
 void setup() {
   bootTask.forceRun();

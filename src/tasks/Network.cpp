@@ -36,7 +36,9 @@ Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* pa
   }
 
   // UDP Server
-  const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
-  logger.info(TAG, "Enable UDP Server on port %" PRIu16, udpPort);
-  udp.listen(udpPort);
+  if (config.getBool(KEY_ENABLE_JSY_REMOTE)) {
+    const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
+    logger.info(TAG, "Enable UDP Server on port %" PRIu16, udpPort);
+    udp.listen(udpPort);
+  }
 });

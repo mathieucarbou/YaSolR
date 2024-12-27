@@ -85,6 +85,7 @@
 #define KEY_ENABLE_DS18_SYSTEM         "ds18_sys_enable"
 #define KEY_ENABLE_HA_DISCOVERY        "ha_disco_enable"
 #define KEY_ENABLE_JSY                 "jsy_enable"
+#define KEY_ENABLE_JSY_REMOTE          "jsyr_enable"
 #define KEY_ENABLE_LIGHTS              "lights_enable"
 #define KEY_ENABLE_MQTT                "mqtt_enable"
 #define KEY_ENABLE_OUTPUT1_AUTO_BYPASS "o1_ab_enable"
