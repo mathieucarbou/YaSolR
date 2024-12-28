@@ -364,7 +364,9 @@ void yasolr_rest_api() {
       root["relay1"] = YASOLR_STATE(relay1.isOn());
       root["relay2"] = YASOLR_STATE(relay2.isOn());
       root["temperature"] = ds18Sys.getTemperature().value_or(0);
-      root["virtual_grid_power"] = grid.getPower().orElse(NAN) - routerMeasurements.power;
+      float virtual_grid_power = grid.getPower().orElse(NAN) - routerMeasurements.power;
+      if (!isnanf(virtual_grid_power))
+        root["virtual_grid_power"] = virtual_grid_power;
 
       Mycila::Router::toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
 
@@ -374,7 +376,10 @@ void yasolr_rest_api() {
         json["bypass"] = YASOLR_STATE(output->isBypassOn());
         json["dimmer"] = YASOLR_STATE(output->isDimmerOn());
         json["duty_cycle"] = output->getDimmerDutyCycle() * 100;
-        json["temperature"] = output->temperature().orElse(0);
+        float t = output->temperature().orElse(NAN);
+        if (!isnanf(t)) {
+          json["temperature"] = t;
+        }
 
         Mycila::RouterOutput::Metrics outputMeasurements;
         output->getOutputMeasurements(outputMeasurements);

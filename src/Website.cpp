@@ -1210,7 +1210,7 @@ void YaSolR::Website::updateCards() {
       _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
       break;
   }
-  _output1DS18State.setValue(output1.temperature().orElse(0.0f));
+  _output1DS18State.setValue(output1.temperature().orElse(NAN));
   _output1DimmerSlider.setValue(output1.getDimmerDutyCycle() * 100);
   _output1Bypass.setValue(output1.isBypassOn());
 
@@ -1232,7 +1232,7 @@ void YaSolR::Website::updateCards() {
       _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
       break;
   }
-  _output2DS18State.setValue(output2.temperature().orElse(0.0f));
+  _output2DS18State.setValue(output2.temperature().orElse(NAN));
   _output2DimmerSlider.setValue(output2.getDimmerDutyCycle() * 100);
   _output2Bypass.setValue(output2.isBypassOn());
 

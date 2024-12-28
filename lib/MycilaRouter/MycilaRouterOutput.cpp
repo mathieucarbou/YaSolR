@@ -56,7 +56,10 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   root["bypass"] = isBypassOn() ? "on" : "off";
   root["enabled"] = _dimmer->isEnabled();
   root["state"] = getStateName();
-  root["temperature"] = _temperature.orElse(0);
+  float t = _temperature.orElse(NAN);
+  if (!isnanf(t)) {
+    root["temperature"] = t;
+  }
 
   Metrics outputMeasurements;
   getOutputMeasurements(outputMeasurements);
