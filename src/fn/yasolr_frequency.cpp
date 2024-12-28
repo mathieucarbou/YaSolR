@@ -6,15 +6,15 @@
 
 float yasolr_frequency() {
   float frequency = round(grid.getFrequency().value_or(NAN));
-  if (!isnanf(frequency) && frequency)
+  if (frequency > 0)
     return frequency;
 
   frequency = round(pzemO1.data.frequency);
-  if (!isnanf(frequency) && frequency)
+  if (frequency > 0)
     return frequency;
 
   frequency = round(pzemO2.data.frequency);
-  if (!isnanf(frequency) && frequency)
+  if (frequency > 0)
     return frequency;
 
   frequency = config.getFloat(KEY_GRID_FREQUENCY);
