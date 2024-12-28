@@ -15,7 +15,6 @@ void yasolr_configure() {
   // Task Monitor
   Mycila::TaskMonitor.begin();
   // Mycila::TaskMonitor.addTask("arduino_events");            // Network (stack size cannot be set)
-  // Mycila::TaskMonitor.addTask("async_udp");                 // AsyncUDP (stack size cannot be set)
   // Mycila::TaskMonitor.addTask("wifi");                      // WiFI (stack size cannot be set)
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)

@@ -33,10 +33,5 @@ Mycila::Task networkStartTask("Network Start", Mycila::TaskType::ONCE, [](void* 
     mqttConfigTask.resume();
   }
 
-  // UDP Server
-  if (config.getBool(KEY_ENABLE_JSY_REMOTE)) {
-    const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
-    logger.info(TAG, "Enable UDP Server on port %" PRIu16, udpPort);
-    udp.listen(udpPort);
-  }
+  yasolr_start_jsy_remote_listener();
 });

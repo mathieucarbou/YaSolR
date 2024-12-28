@@ -4,6 +4,7 @@
  */
 #include <YaSolR.h>
 
+#include <MycilaUtilities.h>
 #include <YaSolRWebsite.h>
 
 #include <map>

@@ -1026,7 +1026,7 @@ void YaSolR::Website::initCards() {
   // Hardware
 
   _status(_display, KEY_ENABLE_DISPLAY, display.isEnabled());
-  _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp.connected());
+  _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp && udp->connected());
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
   _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, bypassRelayO1.isEnabled());
   _status(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY, bypassRelayO2.isEnabled());
@@ -1171,7 +1171,7 @@ void YaSolR::Website::updateCards() {
   _networkWiFiSignal.setValue(espConnect.getWiFiSignalQuality());
   _relay1SwitchCount.setValue(relay1.getSwitchCount());
   _relay2SwitchCount.setValue(relay2.getSwitchCount());
-  _udpMessageRateBuffer.setValue(udpMessageRateBuffer.rate());
+  _udpMessageRateBuffer.setValue(udpMessageRateBuffer ? udpMessageRateBuffer->rate() : 0);
   _time.setValue(Mycila::Time::getLocalStr());
   _uptime.setValue(Mycila::Time::toDHHMMSS(Mycila::System::getUptime()));
 #ifdef APP_MODEL_TRIAL

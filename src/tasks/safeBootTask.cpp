@@ -16,7 +16,8 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::TaskType::ONCE, [](void* params) {
   relay2.end();
   // stop blocking I/O tasks
   mqtt.end();
-  udp.close();
+  if (udp)
+    udp->close();
 #ifdef APP_MODEL_TRIAL
   Mycila::Trial.end();
 #endif

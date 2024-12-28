@@ -14,28 +14,32 @@
 #include <StreamString.h>
 
 #include <MycilaAppInfo.h>
+#include <MycilaCircularBuffer.h>
 #include <MycilaConfig.h>
-#include <MycilaDS18.h>
 #include <MycilaDimmer.h>
-#include <MycilaESPConnect.h>
+#include <MycilaDS18.h>
 #include <MycilaEasyDisplay.h>
+#include <MycilaESPConnect.h>
+#include <MycilaExpiringValue.h>
 #include <MycilaGrid.h>
 #include <MycilaHADiscovery.h>
 #include <MycilaJSY.h>
 #include <MycilaLogger.h>
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
+#include <MycilaPID.h>
 #include <MycilaPulseAnalyzer.h>
 #include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
 #include <MycilaRouter.h>
 #include <MycilaRouterOutput.h>
 #include <MycilaRouterRelay.h>
+#include <MycilaString.h>
 #include <MycilaSystem.h>
 #include <MycilaTaskManager.h>
 #include <MycilaTaskMonitor.h>
+#include <MycilaTime.h>
 #include <MycilaTrafficLight.h>
-#include <MycilaUtilities.h>
 
 #ifdef APP_MODEL_TRIAL
   #include <MycilaTrial.h>
@@ -56,7 +60,6 @@ extern AuthenticationMiddleware authMiddleware;
 extern LoggingMiddleware loggingMiddleware;
 extern ESPDash dashboard;
 
-extern Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 extern Mycila::Config config;
 extern Mycila::ESPConnect espConnect;
 extern Mycila::Grid grid;
@@ -66,7 +69,8 @@ extern Mycila::Router router;
 extern Mycila::TrafficLight lights;
 
 // hardware
-extern AsyncUDP udp;
+extern AsyncUDP* udp;
+extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
 extern Mycila::DS18 ds18O1;
@@ -83,10 +87,10 @@ extern Mycila::Relay bypassRelayO1;
 extern Mycila::Relay bypassRelayO2;
 extern Mycila::Relay relay1;
 extern Mycila::Relay relay2;
-extern Mycila::RouterRelay routerRelay1;
-extern Mycila::RouterRelay routerRelay2;
 extern Mycila::RouterOutput output1;
 extern Mycila::RouterOutput output2;
+extern Mycila::RouterRelay routerRelay1;
+extern Mycila::RouterRelay routerRelay2;
 
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task calibrationTask;
@@ -133,6 +137,8 @@ extern void yasolr_divert();
 extern void yasolr_http();
 extern void yasolr_event_listeners();
 extern void yasolr_rest_api();
+extern void yasolr_start_jsy();
+extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_mqtt_subscribers();
 
 enum class DisplayKind {

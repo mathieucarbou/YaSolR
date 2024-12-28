@@ -10,7 +10,6 @@ AuthenticationMiddleware authMiddleware;
 LoggingMiddleware loggingMiddleware;
 ESPDash dashboard = ESPDash(webServer, "/dashboard", false);
 
-Mycila::CircularBuffer<float, 50> udpMessageRateBuffer;
 Mycila::Config config;
 Mycila::ESPConnect espConnect(webServer);
 Mycila::Grid grid;
@@ -22,7 +21,6 @@ Mycila::TrafficLight lights;
 YaSolR::Website website;
 
 // hardware
-AsyncUDP udp;
 Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
 Mycila::DS18 ds18O1;
