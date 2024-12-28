@@ -853,13 +853,13 @@ void YaSolR::Website::initCards() {
 
   // output 1
 
-  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
-  const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY);
+  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && dimmerO1.isEnabled();
+  const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY) && bypassRelayO1.isEnabled();
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool output1TempEnabled = config.getBool(KEY_ENABLE_OUTPUT1_DS18) || config.isEmpty(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
-  const bool pzem1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_PZEM);
+  const bool output1TempEnabled = (config.getBool(KEY_ENABLE_OUTPUT1_DS18) && ds18O1.isEnabled()) || config.isEmpty(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
+  const bool pzem1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_PZEM) && pzemO1.isEnabled();
   const char* output1Days = config.get(KEY_OUTPUT1_DAYS);
 
   _output1DimmerAuto.setValue(autoDimmer1Activated);
@@ -899,13 +899,13 @@ void YaSolR::Website::initCards() {
 
   // output 2
 
-  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
-  const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY);
+  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && dimmerO2.isEnabled();
+  const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY) && bypassRelayO2.isEnabled();
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  const bool output2TempEnabled = config.getBool(KEY_ENABLE_OUTPUT2_DS18) || !config.isEmpty(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
-  const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM);
+  const bool output2TempEnabled = (config.getBool(KEY_ENABLE_OUTPUT2_DS18) && ds18O2.isEnabled()) || !config.isEmpty(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
+  const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM) && pzemO2.isEnabled();
   const char* output2Days = config.get(KEY_OUTPUT2_DAYS);
 
   _output2DimmerAuto.setValue(autoDimmer2Activated);
@@ -947,8 +947,8 @@ void YaSolR::Website::initCards() {
 
   const uint16_t load1 = config.getInt(KEY_RELAY1_LOAD);
   const uint16_t load2 = config.getInt(KEY_RELAY2_LOAD);
-  const bool relay1Enabled = config.getBool(KEY_ENABLE_RELAY1);
-  const bool relay2Enabled = config.getBool(KEY_ENABLE_RELAY2);
+  const bool relay1Enabled = config.getBool(KEY_ENABLE_RELAY1) && relay1.isEnabled();
+  const bool relay2Enabled = config.getBool(KEY_ENABLE_RELAY2) && relay2.isEnabled();
   _relaysTab.setDisplay(relay1Enabled || relay2Enabled);
   _relay1Switch.setDisplay(relay1Enabled && load1 <= 0);
   _relay1SwitchRO.setDisplay(relay1Enabled && load1 > 0);
