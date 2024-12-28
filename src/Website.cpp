@@ -283,7 +283,6 @@ dash::TextInputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 dash::TextInputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
 dash::TextInputCard<int> _pidOutMin(dashboard, YASOLR_LBL_164);
 dash::TextInputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
-dash::PushButtonCard _pidReset(dashboard, YASOLR_LBL_177);
 
 // input,output,error,pTerm,iTerm,dTerm,sum
 int16_t _pidInputHistoryY[YASOLR_GRAPH_POINTS] = {0};
@@ -742,9 +741,6 @@ void YaSolR::Website::initLayout() {
   _pidPTermHistory.setTab(_pidTab);
   _pidITermHistory.setTab(_pidTab);
   _pidDTermHistory.setTab(_pidTab);
-  _pidReset.setTab(_pidTab);
-
-  _pidReset.onPush([this]() { resetPID(); });
 
   _pidPMode.onChange([](const char* value) {
     if (strcmp(value, YASOLR_PID_P_MODE_1) == 0)
@@ -789,6 +785,8 @@ void YaSolR::Website::initLayout() {
 
   _pidView.onChange([this](bool value) {
     _pidView.setValue(value);
+    if (value)
+      resetPID();
     dashboard.refresh(_pidView);
     dashboardInitTask.resume();
   });
@@ -816,10 +814,7 @@ void YaSolR::Website::initLayout() {
       config.unset(KEY_PID_KD);
     _pidKd.setValue(config.getFloat(KEY_PID_KD));
     dashboard.refresh(_pidKd);
-
-    _pidView.setValue(false);
   });
-
 #endif
 }
 
@@ -1362,5 +1357,5 @@ void YaSolR::Website::resetPID() {
 }
 
 bool YaSolR::Website::pidCharts() const {
-  return _pidView.value();
+  return _pidView.optional().value_or(false);
 }

@@ -176,7 +176,7 @@
 #define YASOLR_LBL_174 "P Term (W)"
 #define YASOLR_LBL_175 "I Term (W)"
 #define YASOLR_LBL_176 "D Term (W)"
-#define YASOLR_LBL_177 "Chart Reset"
+// #define YASOLR_LBL_177
 #define YASOLR_LBL_178 YASOLR_LBL_083 " Information"
 #define YASOLR_LBL_179 "ZCD not started"
 #define YASOLR_LBL_180 "Not paired"

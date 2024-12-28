@@ -180,7 +180,7 @@
 #define YASOLR_LBL_174 "Terme P (W)"
 #define YASOLR_LBL_175 "Terme I (W)"
 #define YASOLR_LBL_176 "Terme D (W)"
-#define YASOLR_LBL_177 "Réinitialisation graphique"
+// #define YASOLR_LBL_177
 #define YASOLR_LBL_178 "Informations de debug"
 #define YASOLR_LBL_179 "ZCD non démarré"
 #define YASOLR_LBL_180 "Non associé"
