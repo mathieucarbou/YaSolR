@@ -9,6 +9,7 @@ Mycila::Task debugTask("Debug", [](void* params) {
   Mycila::TaskMonitor.log();
   coreTaskManager.log();
   unsafeTaskManager.log();
-  jsyTaskManager.log();
+  if (jsyTaskManager)
+    jsyTaskManager->log();
   pzemTaskManager.log();
 });

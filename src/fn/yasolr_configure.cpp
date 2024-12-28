@@ -20,7 +20,6 @@ void yasolr_configure() {
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
-  Mycila::TaskMonitor.addTask(jsyTaskManager.getName());    // YaSolR
   Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
 
   // Grid
@@ -139,13 +138,6 @@ void yasolr_configure() {
   routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
   routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
 
-  // Electricity: JSY
-  if (config.getBool(KEY_ENABLE_JSY)) {
-    jsy.begin(YASOLR_JSY_SERIAL, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
-    if (jsy.isEnabled() && jsy.getBaudRate() != jsy.getMaxAvailableBaudRate())
-      jsy.setBaudRate(jsy.getMaxAvailableBaudRate());
-  }
-
   // Electricity: PZEMs
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM))
     pzemO1.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
@@ -211,9 +203,6 @@ void yasolr_configure() {
   mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
 
-  // jsyTaskManager
-  jsyTask.setEnabledWhen([]() { return jsy.isEnabled(); });
-
   // pzemTaskManager
   pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
 
@@ -247,9 +236,6 @@ void yasolr_configure() {
   mqttPublishTask.setManager(unsafeTaskManager);
   pzemO1PairingTask.setManager(unsafeTaskManager);
   pzemO2PairingTask.setManager(unsafeTaskManager);
-
-  // jsyTaskManager
-  jsyTask.setManager(jsyTaskManager);
 
   // pzemTaskManager
   pzemTask.setManager(pzemTaskManager);

@@ -55,22 +55,40 @@
 
 #include <YaSolRDefines.h>
 
+// web server
 extern AsyncWebServer webServer;
 extern AuthenticationMiddleware authMiddleware;
 extern LoggingMiddleware loggingMiddleware;
 extern ESPDash dashboard;
 
+// config
 extern Mycila::Config config;
+
+// network
 extern Mycila::ESPConnect espConnect;
+
+// electricity
 extern Mycila::Grid grid;
+
+// logging
 extern Mycila::Logger logger;
+
+// router
 extern Mycila::PID pidController;
 extern Mycila::Router router;
+
+// system
 extern Mycila::TrafficLight lights;
 
-// hardware
+// remote jsy
 extern AsyncUDP* udp;
 extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
+
+// jsy
+extern Mycila::JSY* jsy;
+extern Mycila::Task* jsyTask;
+extern Mycila::TaskManager* jsyTaskManager;
+
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
 extern Mycila::DS18 ds18O1;
@@ -78,7 +96,6 @@ extern Mycila::DS18 ds18O2;
 extern Mycila::DS18 ds18Sys;
 extern Mycila::EasyDisplay display;
 extern Mycila::HA::Discovery haDiscovery;
-extern Mycila::JSY jsy;
 extern Mycila::MQTT mqtt;
 extern Mycila::PulseAnalyzer pulseAnalyzer;
 extern Mycila::PZEM pzemO1;
@@ -122,9 +139,6 @@ extern Mycila::Task mqttPublishStaticTask;
 extern Mycila::Task mqttPublishTask;
 extern Mycila::Task pzemO1PairingTask;
 extern Mycila::Task pzemO2PairingTask;
-
-extern Mycila::TaskManager jsyTaskManager;
-extern Mycila::Task jsyTask;
 
 extern Mycila::TaskManager pzemTaskManager;
 extern Mycila::Task pzemTask;

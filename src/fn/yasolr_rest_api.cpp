@@ -28,7 +28,8 @@ void yasolr_rest_api() {
       Mycila::AppInfo.toJson(root["app"].to<JsonObject>());
       config.toJson(root["config"].to<JsonObject>());
       grid.toJson(root["grid"].to<JsonObject>());
-      jsy.toJson(root["jsy"].to<JsonObject>());
+      if (jsy)
+        jsy->toJson(root["jsy"].to<JsonObject>());
       espConnect.toJson(root["network"].to<JsonObject>());
 
       pidController.toJson(root["pid"].to<JsonObject>());
@@ -67,7 +68,8 @@ void yasolr_rest_api() {
       // tasks
       JsonObject tasks = system["task"].to<JsonObject>();
       coreTaskManager.toJson(tasks[coreTaskManager.getName()].to<JsonObject>());
-      jsyTaskManager.toJson(tasks[jsyTaskManager.getName()].to<JsonObject>());
+      if (jsyTaskManager)
+        jsyTaskManager->toJson(tasks[jsyTaskManager->getName()].to<JsonObject>());
       pzemTaskManager.toJson(tasks[pzemTaskManager.getName()].to<JsonObject>());
       unsafeTaskManager.toJson(tasks[unsafeTaskManager.getName()].to<JsonObject>());
 

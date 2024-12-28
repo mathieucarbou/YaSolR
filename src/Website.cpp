@@ -486,7 +486,8 @@ void YaSolR::Website::initLayout() {
   _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
 
   _energyReset.onPush([]() {
-    jsy.resetEnergy();
+    if (jsy)
+      jsy->resetEnergy();
     pzemO1.resetEnergy();
     pzemO2.resetEnergy();
   });
@@ -848,7 +849,7 @@ void YaSolR::Website::initCards() {
   _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
 
 #ifdef APP_MODEL_PRO
-  const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY);
+  const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY) && jsy && jsy->isEnabled();
 
   // output 1
 
@@ -1279,7 +1280,7 @@ void YaSolR::Website::updateCards() {
 
   // Hardware
 
-  _status(_jsy, KEY_ENABLE_JSY, jsy.isEnabled(), jsy.isConnected(), YASOLR_LBL_110);
+  _status(_jsy, KEY_ENABLE_JSY, jsy && jsy->isEnabled(), jsy && jsy->isConnected(), YASOLR_LBL_110);
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : YASOLR_LBL_113);
   _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), pulseAnalyzer.isOnline(), pulseAnalyzer.isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
   _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1.isEnabled(), ds18O1.getLastTime() > 0, YASOLR_LBL_114);
