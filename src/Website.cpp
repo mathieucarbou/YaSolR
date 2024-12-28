@@ -1357,5 +1357,9 @@ void YaSolR::Website::resetPID() {
 }
 
 bool YaSolR::Website::pidCharts() const {
+#ifdef APP_MODEL_PRO
   return _pidView.optional().value_or(false);
+#else
+  return false;
+#endif
 }
