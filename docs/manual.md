@@ -763,39 +763,13 @@ Here are some basic links to start with, which talks about the code used under t
 - [Introducing Proportional On Measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/)
 - [Proportional on Measurement – The Code](http://brettbeauregard.com/blog/2017/06/proportional-on-measurement-the-code/)
 
-**PID Tuning through WebSocket**
-
-When `Real-time Data` is activated, a WebSocket endpoint is available at `/ws/pid/csv` and will stream all the PID data in real time in a `CSV` format when automatic dimmer control is activated.
-You can quickly show then and process then in `bash` with `websocat` by typing for example:
-
-```bash
-❯  websocat ws://192.168.125.123/ws/pid/csv
-pMode,dMode,icMode,rev,setpoint,kp,ki,kd,outMin,outMax,input,output,error,sum,pTerm,iTerm,dTerm
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,780.645,1109.700,19.355,1104.889,7.217,7.742,4.811
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,778.620,1114.453,21.380,1114.048,0.607,8.552,0.405
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,774.128,1126.643,25.872,1125.745,1.347,10.349,0.898
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,786.127,1125.294,13.873,1127.694,-3.600,5.549,-2.400
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,804.696,1116.531,-4.696,1120.245,-5.571,-1.878,-3.714
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,820.285,1104.337,-20.285,1107.455,-4.677,-8.114,-3.118
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,822.300,1097.527,-22.300,1097.930,-0.605,-8.920,-0.403
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,808.928,1101.045,-8.928,1098.370,4.012,-3.571,2.674
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,798.264,1104.396,1.736,1102.264,3.199,0.694,2.133
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,793.393,1107.342,6.607,1106.368,1.461,2.643,0.974
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,785.225,1116.361,14.775,1114.728,2.450,5.910,1.634
-2,1,2,0,800,0.300,0.400,0.200,-10000,10000,821.839,1087.686,-21.839,1095.008,-10.984,-8.736,-7.323
-```
-
-You can also stream this data directly to a command-line tool that will plot in real time the graphs.
-Example of such tools:
-
-- https://github.com/keithknott26/datadash
-- https://github.com/cactusdynamics/wesplot
-
 **Demo**
 
 Here is a demo of the real-time PID tuning in action:
 
 [![PID Tuning in YaSolR (Yet Another Solar Router)](https://img.youtube.com/vi/ygSpUxKYlUE/0.jpg)](https://www.youtube.com/watch?v=ygSpUxKYlUE "PID Tuning in YaSolR (Yet Another Solar Router)")
+
+Note: the WebSocket PID output was removed
 
 ### `Statistics` section
 
