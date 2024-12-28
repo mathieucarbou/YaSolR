@@ -6,7 +6,6 @@
 #include <YaSolRWebsite.h>
 
 AsyncWebServer webServer(80);
-AsyncWebSocket wsDebugPID("/ws/pid/csv");
 AuthenticationMiddleware authMiddleware;
 LoggingMiddleware loggingMiddleware;
 ESPDash dashboard = ESPDash(webServer, "/dashboard", false);

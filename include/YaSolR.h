@@ -52,7 +52,6 @@
 #include <YaSolRDefines.h>
 
 extern AsyncWebServer webServer;
-extern AsyncWebSocket wsDebugPID;
 extern AuthenticationMiddleware authMiddleware;
 extern LoggingMiddleware loggingMiddleware;
 extern ESPDash dashboard;

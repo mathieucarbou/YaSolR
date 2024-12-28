@@ -4,40 +4,10 @@
  */
 #include <YaSolR.h>
 #include <YaSolRWebsite.h>
-#include <cstdio>
 
 Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
-  if (website.pidCharts()) {
-    // WebSocket
-    if (wsDebugPID.count()) {
-      AsyncWebSocketMessageBuffer* buffer = wsDebugPID.makeBuffer(256);
-      snprintf(reinterpret_cast<char*>(buffer->get()),
-               256,
-               "%d,%d,%d,%d,%d,%.3f,%.3f,%.3f,%d,%d,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f,%.3f",
-               static_cast<int>(pidController.getProportionalMode()),
-               static_cast<int>(pidController.getDerivativeMode()),
-               static_cast<int>(pidController.getIntegralCorrectionMode()),
-               pidController.isReversed(),
-               static_cast<int>(pidController.getSetPoint()),
-               pidController.getKp(),
-               pidController.getKi(),
-               pidController.getKd(),
-               static_cast<int>(pidController.getOutputMin()),
-               static_cast<int>(pidController.getOutputMax()),
-               pidController.getInput(),
-               pidController.getOutput(),
-               pidController.getError(),
-               pidController.getSum(),
-               pidController.getPTerm(),
-               pidController.getITerm(),
-               pidController.getDTerm()); // NOLINT
-      wsDebugPID.textAll(buffer);
-    }
-
-    // Dashboard
+  if (website.pidCharts())
     website.updatePID();
-  }
-
   website.updateCards();
   website.updateCharts();
   dashboard.sendUpdates();
