@@ -10,7 +10,6 @@ Mycila::TaskManager* jsyTaskManager;
 
 void yasolr_start_jsy() {
   if (config.getBool(KEY_ENABLE_JSY)) {
-
     if (!jsy) {
       jsy = new Mycila::JSY();
 
