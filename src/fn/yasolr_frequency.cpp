@@ -4,7 +4,7 @@
  */
 #include <YaSolR.h>
 
-float detectGridFrequency() {
+float yasolr_frequency() {
   float frequency = round(grid.getFrequency().value_or(NAN));
   if (!isnanf(frequency) && frequency)
     return frequency;

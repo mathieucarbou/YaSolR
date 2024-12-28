@@ -6,7 +6,7 @@
 
 #include <string>
 
-Mycila::Task configTask("Config", [](void* params) {
+void yasolr_configure() {
   logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // WDT
@@ -184,8 +184,8 @@ Mycila::Task configTask("Config", [](void* params) {
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  carouselTask.setEnabled(display.isEnabled());
-  carouselTask.setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
+  displayCarouselTask.setEnabled(display.isEnabled());
+  displayCarouselTask.setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
   dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
@@ -220,14 +220,15 @@ Mycila::Task configTask("Config", [](void* params) {
 
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
-  carouselTask.setManager(coreTaskManager);
+  displayCarouselTask.setManager(coreTaskManager);
   dashboardInitTask.setManager(coreTaskManager);
   dashboardUpdateTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
   ds18Task.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
-  networkConfigTask.setManager(coreTaskManager);
+  loggingTask.setManager(coreTaskManager);
+  networkStartTask.setManager(coreTaskManager);
   networkManagerTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
   resetTask.setManager(coreTaskManager);
@@ -257,4 +258,6 @@ Mycila::Task configTask("Config", [](void* params) {
   // Router
   router.addOutput(output1);
   router.addOutput(output2);
-});
+
+  loggingTask.resume();
+};

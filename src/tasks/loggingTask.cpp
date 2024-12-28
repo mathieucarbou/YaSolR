@@ -8,17 +8,15 @@ static const Mycila::TaskDoneCallback LOG_EXEC_TIME = [](const Mycila::Task& me,
   logger.debug(TAG, "Task '%s' finished in %" PRIu32 " us", me.getName(), elapsed);
 };
 
-Mycila::Task loggingTask("Logging", [](void* params) {
+Mycila::Task loggingTask("Logging", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Configuring logging...");
 
   const bool debug = config.getBool(KEY_ENABLE_DEBUG);
 
-  loggingMiddleware.setEnabled(debug);
+  logger.setLevel(debug ? ARDUHAL_LOG_LEVEL_DEBUG : ARDUHAL_LOG_LEVEL_INFO);
+  esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));
 
-  if (debug) {
-    logger.setLevel(debug ? ARDUHAL_LOG_LEVEL_DEBUG : ARDUHAL_LOG_LEVEL_INFO);
-    esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));
-  }
+  loggingMiddleware.setEnabled(debug);
 
   if (debug) {
     // Enable profiling for some FOREVER tasks
@@ -52,9 +50,4 @@ Mycila::Task loggingTask("Logging", [](void* params) {
   pzemO1PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   pzemO2PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   relayTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-
-  if (!debug) {
-    logger.setLevel(debug ? ARDUHAL_LOG_LEVEL_DEBUG : ARDUHAL_LOG_LEVEL_INFO);
-    esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));
-  }
 });

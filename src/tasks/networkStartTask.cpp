@@ -8,9 +8,7 @@
   #include <ESPmDNS.h>
 #endif
 
-Mycila::Task networkManagerTask("ESPConnect", [](void* params) { espConnect.loop(); });
-
-Mycila::Task networkConfigTask("Network UP", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task networkStartTask("Network Start", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Enable Network Services");
 
   // Web server

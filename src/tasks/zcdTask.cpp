@@ -17,7 +17,7 @@ Mycila::Task zcdTask("ZCD", [](void* params) {
 
   // => ZCD switch turned on + Pulse Analyzer online
   if (!Thyristor::getSemiPeriod() || !dimmerO1.isEnabled() || !dimmerO2.isEnabled()) {
-    float frequency = detectGridFrequency();
+    float frequency = yasolr_frequency();
     uint16_t semiPeriod = 1000000 / 2 / frequency;
     logger.info(TAG, "Detected grid frequency: %.2f Hz", frequency);
 

@@ -4,12 +4,14 @@
  */
 #pragma once
 
+#include <AsyncJson.h>
 #include <AsyncUDP.h>
 #include <CRC.h>
 #include <ESPAsyncWebServer.h>
 #include <FastCRC32.h>
 #include <HardwareSerial.h>
 #include <LittleFS.h>
+#include <StreamString.h>
 
 #include <MycilaAppInfo.h>
 #include <MycilaConfig.h>
@@ -49,7 +51,6 @@
 
 #include <YaSolRDefines.h>
 
-extern AsyncUDP udp;
 extern AsyncWebServer webServer;
 extern AsyncWebSocket wsDebugPID;
 extern AuthenticationMiddleware authMiddleware;
@@ -66,6 +67,7 @@ extern Mycila::Router router;
 extern Mycila::TrafficLight lights;
 
 // hardware
+extern AsyncUDP udp;
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
 extern Mycila::DS18 ds18O1;
@@ -89,14 +91,15 @@ extern Mycila::RouterOutput output2;
 
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task calibrationTask;
-extern Mycila::Task carouselTask;
 extern Mycila::Task dashboardInitTask;
 extern Mycila::Task dashboardUpdateTask;
 extern Mycila::Task debugTask;
+extern Mycila::Task displayCarouselTask;
 extern Mycila::Task displayTask;
 extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
-extern Mycila::Task networkConfigTask;
+extern Mycila::Task loggingTask;
+extern Mycila::Task networkStartTask;
 extern Mycila::Task networkManagerTask;
 extern Mycila::Task relayTask;
 extern Mycila::Task resetTask;
@@ -123,15 +126,20 @@ extern Mycila::Task jsyTask;
 extern Mycila::TaskManager pzemTaskManager;
 extern Mycila::Task pzemTask;
 
-// Tasks alone without a manager
-extern Mycila::Task bootTask;
-extern Mycila::Task configTask;
-extern Mycila::Task initDashboard;
-extern Mycila::Task initEventsTask;
-extern Mycila::Task loggingTask;
-extern Mycila::Task initMqttSubscribersTask;
-extern Mycila::Task initRestApiTask;
-extern Mycila::Task initWebTask;
-extern Mycila::Task routingTask;
+// fn
+extern float yasolr_frequency();
+extern void yasolr_boot();
+extern void yasolr_configure();
+extern void yasolr_divert();
+extern void yasolr_http();
+extern void yasolr_event_listeners();
+extern void yasolr_rest_api();
+extern void yasolr_mqtt_subscribers();
 
-extern float detectGridFrequency();
+enum class DisplayKind {
+  DISPLAY_HOME = 1,
+  DISPLAY_NETWORK,
+  DISPLAY_ROUTER,
+  DISPLAY_OUTPUT1,
+  DISPLAY_OUTPUT2,
+};

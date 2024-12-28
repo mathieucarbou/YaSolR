@@ -100,7 +100,6 @@
 #define KEY_ENABLE_OUTPUT2_DS18        "o2_ds18_enable"
 #define KEY_ENABLE_OUTPUT2_PZEM        "o2_pzem_enable"
 #define KEY_ENABLE_OUTPUT2_RELAY       "o2_relay_enable"
-#define KEY_ENABLE_PID_VIEW            "pid_view_enable"
 #define KEY_ENABLE_RELAY1              "relay1_enable"
 #define KEY_ENABLE_RELAY2              "relay2_enable"
 #define KEY_ENABLE_ZCD                 "zcd_enable"

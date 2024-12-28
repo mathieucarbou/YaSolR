@@ -50,14 +50,17 @@ Mycila::TaskManager unsafeTaskManager("y-unsafe");
 Mycila::TaskManager pzemTaskManager("y-pzem");
 
 void setup() {
-  bootTask.forceRun();
-  loggingTask.forceRun();
-  configTask.forceRun();
-  initEventsTask.forceRun();
-  initWebTask.forceRun();
-  initRestApiTask.forceRun();
-  initMqttSubscribersTask.forceRun();
-  initDashboard.forceRun();
+  yasolr_boot();
+  yasolr_configure();
+  yasolr_event_listeners();
+  yasolr_http();
+  yasolr_rest_api();
+  yasolr_mqtt_subscribers();
+
+  logger.info(TAG, "Initializing dashboard");
+  website.initLayout();
+  website.initCards();
+  website.updateCards();
 
   assert(jsyTaskManager.asyncStart(512 * 6, 5, 0, 100, true));     // NOLINT
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));    // NOLINT

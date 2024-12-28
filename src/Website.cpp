@@ -744,10 +744,7 @@ void YaSolR::Website::initLayout() {
   _pidDTermHistory.setTab(_pidTab);
   _pidReset.setTab(_pidTab);
 
-  _pidReset.onPush([this]() {
-    resetPID();
-    updatePID();
-  });
+  _pidReset.onPush([this]() { resetPID(); });
 
   _pidPMode.onChange([](const char* value) {
     if (strcmp(value, YASOLR_PID_P_MODE_1) == 0)
@@ -786,10 +783,15 @@ void YaSolR::Website::initLayout() {
     dashboard.refresh(_pidICMode);
   });
 
-  _boolConfig(_pidView, KEY_ENABLE_PID_VIEW);
   _numConfig(_pidSetpoint, KEY_PID_SETPOINT);
   _numConfig(_pidOutMin, KEY_PID_OUT_MIN);
   _numConfig(_pidOutMax, KEY_PID_OUT_MAX);
+
+  _pidView.onChange([this](bool value) {
+    _pidView.setValue(value);
+    dashboard.refresh(_pidView);
+    dashboardInitTask.resume();
+  });
 
   _pidKp.onChange([](const std::optional<float> value) {
     if (value.has_value())
@@ -814,6 +816,8 @@ void YaSolR::Website::initLayout() {
       config.unset(KEY_PID_KD);
     _pidKd.setValue(config.getFloat(KEY_PID_KD));
     dashboard.refresh(_pidKd);
+
+    _pidView.setValue(false);
   });
 
 #endif
@@ -1087,8 +1091,6 @@ void YaSolR::Website::initCards() {
 
   // PID
 
-  const bool pidViewEnabled = config.getBool(KEY_ENABLE_PID_VIEW);
-  _pidView.setValue(pidViewEnabled);
   switch (config.getInt(KEY_PID_P_MODE)) {
     case 1:
       _pidPMode.setValue(YASOLR_PID_P_MODE_1);
@@ -1135,6 +1137,7 @@ void YaSolR::Website::initCards() {
   _pidOutMin.setValue(config.getInt(KEY_PID_OUT_MIN));
   _pidOutMax.setValue(config.getInt(KEY_PID_OUT_MAX));
 
+  const bool pidViewEnabled = pidCharts();
   _pidInputHistory.setDisplay(pidViewEnabled);
   _pidOutputHistory.setDisplay(pidViewEnabled);
   _pidErrorHistory.setDisplay(pidViewEnabled);
@@ -1168,7 +1171,7 @@ void YaSolR::Website::updateCards() {
   _deviceHeapUsage.setValue(memory.usage);
   _gridEnergy.setValue(gridMetrics.energy);
   _gridEnergyReturned.setValue(gridMetrics.energyReturned);
-  _gridFrequency.setValue(detectGridFrequency());
+  _gridFrequency.setValue(yasolr_frequency());
   _networkWiFiRSSI.setValue(espConnect.getWiFiRSSI());
   _networkWiFiSignal.setValue(espConnect.getWiFiSignalQuality());
   _relay1SwitchCount.setValue(relay1.getSwitchCount());
@@ -1356,4 +1359,8 @@ void YaSolR::Website::resetPID() {
   memset(_pidITermHistoryY, 0, sizeof(_pidITermHistoryY));
   memset(_pidDTermHistoryY, 0, sizeof(_pidDTermHistoryY));
 #endif
+}
+
+bool YaSolR::Website::pidCharts() const {
+  return _pidView.value();
 }

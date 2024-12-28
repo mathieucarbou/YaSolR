@@ -6,16 +6,8 @@
 #include <YaSolRWebsite.h>
 #include <cstdio>
 
-extern YaSolR::Website website;
-
-Mycila::Task dashboardInitTask("Dashboard Init", Mycila::TaskType::ONCE, [](void* params) {
-  website.initCards();
-  website.updateCards();
-  dashboard.sendUpdates();
-});
-
 Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
-  if (config.getBool(KEY_ENABLE_PID_VIEW)) {
+  if (website.pidCharts()) {
     // WebSocket
     if (wsDebugPID.count()) {
       AsyncWebSocketMessageBuffer* buffer = wsDebugPID.makeBuffer(256);
@@ -41,9 +33,11 @@ Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
                pidController.getDTerm()); // NOLINT
       wsDebugPID.textAll(buffer);
     }
+
+    // Dashboard
+    website.updatePID();
   }
 
-  website.updatePID();
   website.updateCards();
   website.updateCharts();
   dashboard.sendUpdates();

@@ -7,10 +7,8 @@
 
 #include <string>
 
-extern YaSolR::Website website;
-
-Mycila::Task initEventsTask("Init Events", [](void* params) {
-  logger.info(TAG, "Initializing Events");
+void yasolr_event_listeners() {
+  logger.info(TAG, "Initializing Event Listeners");
 
   mqtt.onConnect([](void) {
     logger.info(TAG, "MQTT connected!");
@@ -30,7 +28,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     const std::string key = k;
 
     if (key == KEY_ENABLE_DEBUG) {
-      loggingTask.forceRun();
+      loggingTask.resume();
 
     } else if (key == KEY_RELAY1_LOAD) {
       routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
@@ -138,7 +136,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
       logger.info(TAG, "PID Controller reconfigured!");
 
     } else if (key == KEY_DISPLAY_SPEED) {
-      carouselTask.setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
+      displayCarouselTask.setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {
       mqttPublishTask.setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS);
@@ -167,14 +165,14 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
         break;
       case Mycila::ESPConnect::State::AP_STARTED:
         logger.info(TAG, "Access Point %s started with IP address %s", espConnect.getWiFiSSID().c_str(), espConnect.getIPAddress().toString().c_str());
-        networkConfigTask.resume();
+        networkStartTask.resume();
         break;
       case Mycila::ESPConnect::State::NETWORK_CONNECTING:
         logger.info(TAG, "Connecting to network");
         break;
       case Mycila::ESPConnect::State::NETWORK_CONNECTED:
         logger.info(TAG, "Connected with IP address %s", espConnect.getIPAddress().toString().c_str());
-        networkConfigTask.resume();
+        networkStartTask.resume();
         break;
       case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
         logger.warn(TAG, "Unable to connect!");
@@ -343,7 +341,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
           break;
       }
       if (grid.updatePower()) {
-        routingTask.forceRun();
+        yasolr_divert();
       }
     }
   });
@@ -442,7 +440,7 @@ Mycila::Task initEventsTask("Init Events", [](void* params) {
     }
 
     if (grid.updatePower()) {
-      routingTask.forceRun();
+      yasolr_divert();
     }
   });
-});
+};

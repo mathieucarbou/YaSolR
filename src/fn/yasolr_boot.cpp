@@ -4,7 +4,7 @@
  */
 #include <YaSolR.h>
 
-Mycila::Task bootTask("Boot", [](void* params) {
+void yasolr_boot() {
   Serial.begin(YASOLR_SERIAL_BAUDRATE);
 #if ARDUINO_USB_CDC_ON_BOOT
   Serial.setTxTimeoutMs(0);
@@ -54,7 +54,6 @@ Mycila::Task bootTask("Boot", [](void* params) {
   config.configure(KEY_ENABLE_OUTPUT2_DS18, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT2_PZEM, YASOLR_FALSE);
   config.configure(KEY_ENABLE_OUTPUT2_RELAY, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_PID_VIEW, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY1, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY2, YASOLR_FALSE);
   config.configure(KEY_ENABLE_ZCD, YASOLR_FALSE);
@@ -140,4 +139,4 @@ Mycila::Task bootTask("Boot", [](void* params) {
   // pre-init logging
   logger.setLevel(config.getBool(KEY_ENABLE_DEBUG) ? ARDUHAL_LOG_LEVEL_DEBUG : ARDUHAL_LOG_LEVEL_INFO);
   esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));
-});
+};

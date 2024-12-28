@@ -18,6 +18,7 @@ namespace YaSolR {
       void updateCharts();
       void updatePID();
       void resetPID();
+      bool pidCharts() const;
 
     private:
       void _boolConfig(dash::SwitchCard& card, const char* key) {
@@ -181,3 +182,5 @@ namespace YaSolR {
 #endif
   };
 } // namespace YaSolR
+
+extern YaSolR::Website website;

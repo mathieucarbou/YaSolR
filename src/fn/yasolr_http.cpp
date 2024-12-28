@@ -4,8 +4,6 @@
  */
 #include <YaSolR.h>
 
-#include <AsyncJson.h>
-
 extern const uint8_t logo_png_gz_start[] asm("_binary__pio_data_logo_png_gz_start");
 extern const uint8_t logo_png_gz_end[] asm("_binary__pio_data_logo_png_gz_end");
 extern const uint8_t logo_icon_png_gz_start[] asm("_binary__pio_data_logo_icon_png_gz_start");
@@ -13,7 +11,7 @@ extern const uint8_t logo_icon_png_gz_end[] asm("_binary__pio_data_logo_icon_png
 extern const uint8_t config_html_gz_start[] asm("_binary__pio_data_config_html_gz_start");
 extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_end");
 
-Mycila::Task initWebTask("Init Web", [](void* params) {
+void yasolr_http() {
   logger.info(TAG, "Initializing HTTP Endpoints");
 
   loggingMiddleware.setOutput(Serial);
@@ -50,11 +48,6 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
     request->send(response);
   });
 
-  webServer.on("/ping", HTTP_GET, [](AsyncWebServerRequest* request) {
-    AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", "pong");
-    request->send(response);
-  });
-
   webServer
     .on("/config", HTTP_GET, [](AsyncWebServerRequest* request) {
       AsyncWebServerResponse* response = request->beginResponse(200, "text/html", config_html_gz_start, config_html_gz_end - config_html_gz_start);
@@ -78,4 +71,4 @@ Mycila::Task initWebTask("Init Web", [](void* params) {
     }
   });
   webServer.addHandler(&wsDebugPID);
-});
+};

@@ -6,7 +6,7 @@
 
 #include <string>
 
-Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
+void yasolr_mqtt_subscribers() {
   logger.info(TAG, "Initializing MQTT Subscribers");
 
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
@@ -89,7 +89,7 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
       logger.debug(TAG, "Grid Power from MQTT: %f", p);
       grid.mqttPower().update(p);
       if (grid.updatePower()) {
-        routingTask.forceRun();
+        yasolr_divert();
       }
     });
   }
@@ -126,4 +126,4 @@ Mycila::Task initMqttSubscribersTask("Init MQTT Subscribers", [](void* params) {
       output2.temperature().update(t);
     });
   }
-});
+};

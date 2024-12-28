@@ -4,16 +4,12 @@
  */
 #include <YaSolR.h>
 
-#include <AsyncJson.h>
-#include <StreamString.h>
 #include <YaSolRWebsite.h>
 
 #include <map>
 #include <string>
 
-extern YaSolR::Website website;
-
-Mycila::Task initRestApiTask("Init REST API", [](void* params) {
+void yasolr_rest_api() {
   logger.info(TAG, "Initializing REST API");
 
   // debug
@@ -407,4 +403,4 @@ Mycila::Task initRestApiTask("Init REST API", [](void* params) {
       response->setLength();
       request->send(response);
     });
-});
+};
