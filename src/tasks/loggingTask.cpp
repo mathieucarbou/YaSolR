@@ -22,7 +22,8 @@ Mycila::Task loggingTask("Logging", Mycila::TaskType::ONCE, [](void* params) {
     // Enable profiling for some FOREVER tasks
     dashboardUpdateTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     debugTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    ds18Task.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    if (ds18Task)
+      ds18Task->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     displayTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (jsyTask)
       jsyTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
@@ -31,7 +32,8 @@ Mycila::Task loggingTask("Logging", Mycila::TaskType::ONCE, [](void* params) {
   } else {
     dashboardUpdateTask.disableProfiling();
     debugTask.disableProfiling();
-    ds18Task.disableProfiling();
+    if (ds18Task)
+      ds18Task->disableProfiling();
     displayTask.disableProfiling();
     if (jsyTask)
       jsyTask->disableProfiling();
@@ -41,7 +43,8 @@ Mycila::Task loggingTask("Logging", Mycila::TaskType::ONCE, [](void* params) {
 
   // Log execution time for some "ONCE" tasks
   dashboardInitTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  ds18Task.setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  if (ds18Task)
+    ds18Task->setCallback(debug ? LOG_EXEC_TIME : nullptr);
   haDiscoveryTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   mqttConfigTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   mqttPublishConfigTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);

@@ -23,9 +23,6 @@ YaSolR::Website website;
 // hardware
 Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
-Mycila::DS18 ds18O1;
-Mycila::DS18 ds18O2;
-Mycila::DS18 ds18Sys;
 Mycila::EasyDisplay display(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 Mycila::HA::Discovery haDiscovery;
 Mycila::MQTT mqtt;
@@ -52,6 +49,7 @@ void setup() {
   yasolr_rest_api();
   yasolr_mqtt_subscribers();
   yasolr_start_jsy();
+  yasolr_start_ds18();
 
   logger.info(TAG, "Initializing dashboard");
   website.initLayout();

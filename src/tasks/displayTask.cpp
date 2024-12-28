@@ -107,8 +107,8 @@ Mycila::Task displayTask("Display", [](void* params) {
         display.home.printf("NTP Time:       %02u:%02u\n", timeInfo.tm_hour, timeInfo.tm_min);
       else
         display.home.printf("NTP Time:       --:--\n");
-      if (ds18Sys.isEnabled())
-        display.home.printf("Temperature:  %4.1f ", ds18Sys.getTemperature().value_or(0));
+      if (ds18Sys && ds18Sys->isEnabled())
+        display.home.printf("Temperature:  %4.1f ", ds18Sys->getTemperature().value_or(0));
       else
         display.home.printf("Temperature:  --.- ");
       display.home.printf("\xb0");

@@ -89,11 +89,14 @@ extern Mycila::JSY* jsy;
 extern Mycila::Task* jsyTask;
 extern Mycila::TaskManager* jsyTaskManager;
 
+// DS18
+extern Mycila::DS18* ds18O1;
+extern Mycila::DS18* ds18O2;
+extern Mycila::DS18* ds18Sys;
+extern Mycila::Task* ds18Task;
+
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
-extern Mycila::DS18 ds18O1;
-extern Mycila::DS18 ds18O2;
-extern Mycila::DS18 ds18Sys;
 extern Mycila::EasyDisplay display;
 extern Mycila::HA::Discovery haDiscovery;
 extern Mycila::MQTT mqtt;
@@ -116,7 +119,6 @@ extern Mycila::Task dashboardUpdateTask;
 extern Mycila::Task debugTask;
 extern Mycila::Task displayCarouselTask;
 extern Mycila::Task displayTask;
-extern Mycila::Task ds18Task;
 extern Mycila::Task lightsTask;
 extern Mycila::Task loggingTask;
 extern Mycila::Task networkStartTask;
@@ -148,12 +150,13 @@ extern float yasolr_frequency();
 extern void yasolr_boot();
 extern void yasolr_configure();
 extern void yasolr_divert();
-extern void yasolr_http();
 extern void yasolr_event_listeners();
-extern void yasolr_rest_api();
-extern void yasolr_start_jsy();
-extern void yasolr_start_jsy_remote_listener();
+extern void yasolr_http();
 extern void yasolr_mqtt_subscribers();
+extern void yasolr_rest_api();
+extern void yasolr_start_ds18();
+extern void yasolr_start_jsy_remote_listener();
+extern void yasolr_start_jsy();
 
 enum class DisplayKind {
   DISPLAY_HOME = 1,

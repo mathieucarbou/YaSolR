@@ -227,27 +227,6 @@ void yasolr_event_listeners() {
     mqttPublishTask.requestEarlyRun();
   });
 
-  ds18Sys.listen([](float temperature, bool changed) {
-    if (changed) {
-      logger.info(TAG, "Router Temperature changed to %.02f °C", temperature);
-      mqttPublishTask.requestEarlyRun();
-    }
-  });
-  ds18O1.listen([](float temperature, bool changed) {
-    output1.temperature().update(temperature);
-    if (changed) {
-      logger.info(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
-      mqttPublishTask.requestEarlyRun();
-    }
-  });
-  ds18O2.listen([](float temperature, bool changed) {
-    output2.temperature().update(temperature);
-    if (changed) {
-      logger.info(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
-      mqttPublishTask.requestEarlyRun();
-    }
-  });
-
   pzemO1.setCallback([](const Mycila::PZEM::EventType eventType) {
     if (eventType == Mycila::PZEM::EventType::EVT_READ) {
       grid.pzemMetrics().update({

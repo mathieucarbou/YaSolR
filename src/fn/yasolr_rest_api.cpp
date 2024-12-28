@@ -45,21 +45,24 @@ void yasolr_rest_api() {
       // output 1
       output1.toJson(root["router"]["output1"].to<JsonObject>(), voltage);
       dimmerO1.dimmerToJson(root["router"]["output1"]["dimmer"].to<JsonObject>());
-      ds18O1.toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
+      if (ds18O1)
+        ds18O1->toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
       pzemO1.toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
       bypassRelayO1.toJson(root["router"]["output1"]["relay"].to<JsonObject>());
 
       // output 2
       output2.toJson(root["router"]["output2"].to<JsonObject>(), voltage);
       dimmerO2.dimmerToJson(root["router"]["output2"]["dimmer"].to<JsonObject>());
-      ds18O2.toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
+      if (ds18O2)
+        ds18O2->toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
       pzemO2.toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
       bypassRelayO2.toJson(root["router"]["output2"]["relay"].to<JsonObject>());
 
       // system
       JsonObject system = root["system"].to<JsonObject>();
       Mycila::System::toJson(system);
-      ds18Sys.toJson(system["ds18"].to<JsonObject>());
+      if (ds18Sys)
+        ds18Sys->toJson(system["ds18"].to<JsonObject>());
       lights.toJson(system["leds"].to<JsonObject>());
 
       // stack
@@ -363,7 +366,11 @@ void yasolr_rest_api() {
       root["lights"] = lights.toString();
       root["relay1"] = YASOLR_STATE(relay1.isOn());
       root["relay2"] = YASOLR_STATE(relay2.isOn());
-      root["temperature"] = ds18Sys.getTemperature().value_or(0);
+      if (ds18Sys) {
+        float t = ds18Sys->getTemperature().value_or(NAN);
+        if (!isnanf(t))
+          root["temperature"] = t;
+      }
       float virtual_grid_power = grid.getPower().orElse(NAN) - routerMeasurements.power;
       if (!isnanf(virtual_grid_power))
         root["virtual_grid_power"] = virtual_grid_power;

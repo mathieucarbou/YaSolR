@@ -116,14 +116,6 @@ void yasolr_configure() {
   if (config.getBool(KEY_ENABLE_LIGHTS))
     lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
 
-  // DS18
-  if (config.getBool(KEY_ENABLE_DS18_SYSTEM))
-    ds18Sys.begin(config.getLong(KEY_PIN_ROUTER_DS18));
-  if (config.getBool(KEY_ENABLE_OUTPUT1_DS18))
-    ds18O1.begin(config.getLong(KEY_PIN_OUTPUT1_DS18));
-  if (config.getBool(KEY_ENABLE_OUTPUT2_DS18))
-    ds18O2.begin(config.getLong(KEY_PIN_OUTPUT2_DS18));
-
   // Electricity: Relays
   if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY))
     bypassRelayO1.begin(config.getLong(KEY_PIN_OUTPUT1_RELAY), config.isEqual(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
@@ -184,8 +176,6 @@ void yasolr_configure() {
   debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
   displayTask.setEnabled(display.isEnabled());
   displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  ds18Task.setEnabled(ds18Sys.isEnabled() || ds18O1.isEnabled() || ds18O2.isEnabled());
-  ds18Task.setInterval(10 * Mycila::TaskDuration::SECONDS);
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
@@ -213,7 +203,6 @@ void yasolr_configure() {
   dashboardUpdateTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
   displayTask.setManager(coreTaskManager);
-  ds18Task.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
   loggingTask.setManager(coreTaskManager);
   networkStartTask.setManager(coreTaskManager);

@@ -67,7 +67,8 @@ Mycila::Task mqttPublishTask("MQTT", [](void* params) {
   mqtt.publish(baseTopic + "/router/power", std::to_string(routerMeasurements.power));
   mqtt.publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1.isOn()));
   mqtt.publish(baseTopic + "/router/relay2", YASOLR_STATE(relay2.isOn()));
-  mqtt.publish(baseTopic + "/router/temperature", std::to_string(ds18Sys.getTemperature().value_or(0)));
+  if (ds18Sys)
+    mqtt.publish(baseTopic + "/router/temperature", std::to_string(ds18Sys->getTemperature().value_or(0)));
   mqtt.publish(baseTopic + "/router/thdi", isnan(routerMeasurements.thdi) ? "0" : std::to_string(routerMeasurements.thdi));
   mqtt.publish(baseTopic + "/router/virtual_grid_power", std::to_string(gridMetrics.power - routerMeasurements.power));
   yield();
