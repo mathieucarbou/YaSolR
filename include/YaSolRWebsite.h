@@ -12,7 +12,7 @@
 namespace YaSolR {
   class Website {
     public:
-      void initLayout();
+      void begin();
       void initCards();
       void updateCards();
       void updateCharts();

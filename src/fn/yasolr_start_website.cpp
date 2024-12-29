@@ -3,6 +3,7 @@
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
+#include <YaSolRWebsite.h>
 
 extern const uint8_t logo_png_gz_start[] asm("_binary__pio_data_logo_png_gz_start");
 extern const uint8_t logo_png_gz_end[] asm("_binary__pio_data_logo_png_gz_end");
@@ -11,7 +12,27 @@ extern const uint8_t logo_icon_png_gz_end[] asm("_binary__pio_data_logo_icon_png
 extern const uint8_t config_html_gz_start[] asm("_binary__pio_data_config_html_gz_start");
 extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_end");
 
-void yasolr_http() {
+AsyncWebServer webServer(80);
+AuthenticationMiddleware authMiddleware;
+LoggingMiddleware loggingMiddleware;
+ESPDash dashboard(webServer, "/dashboard", false);
+YaSolR::Website website;
+
+Mycila::Task dashboardInitTask("Dashboard Init", Mycila::TaskType::ONCE, [](void* params) {
+  website.initCards();
+  website.updateCards();
+  dashboard.sendUpdates();
+});
+
+Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
+  if (website.pidCharts())
+    website.updatePID();
+  website.updateCards();
+  website.updateCharts();
+  dashboard.sendUpdates();
+});
+
+void yasolr_start_website() {
   logger.info(TAG, "Initializing HTTP Endpoints");
 
   loggingMiddleware.setOutput(Serial);
@@ -62,4 +83,24 @@ void yasolr_http() {
       response->setLength();
       request->send(response);
     });
+
+#ifdef APP_MODEL_PRO
+  dashboard.setTitle(Mycila::AppInfo.nameModel.c_str());
+#endif
+  dashboard.onBeforeUpdate([](bool changes_only) {
+    if (!changes_only) {
+      logger.info(TAG, "Dashboard refresh requested");
+      website.initCards();
+    }
+  });
+
+  logger.info(TAG, "Initializing dashboard");
+  website.begin();
+
+  dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardInitTask.setManager(coreTaskManager);
+
+  dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
+  dashboardUpdateTask.setManager(coreTaskManager);
 };

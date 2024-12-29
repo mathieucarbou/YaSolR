@@ -148,13 +148,6 @@ void yasolr_event_listeners() {
     mqttPublishTask.requestEarlyRun();
   });
 
-  dashboard.onBeforeUpdate([](bool changes_only) {
-    if (!changes_only) {
-      logger.info(TAG, "Dashboard refresh requested");
-      website.initCards();
-    }
-  });
-
   espConnect.listen([](Mycila::ESPConnect::State previous, Mycila::ESPConnect::State state) {
     logger.debug(TAG, "NetworkState: %s => %s", espConnect.getStateName(previous), espConnect.getStateName(state));
     switch (state) {

@@ -51,11 +51,6 @@ void yasolr_configure() {
   WebSerial.begin(&webServer, "/console");
   logger.forwardTo(&WebSerial);
 
-  // Dashboard
-#ifdef APP_MODEL_PRO
-  dashboard.setTitle(Mycila::AppInfo.nameModel.c_str());
-#endif
-
   // Network Manager
   Mycila::ESPConnect::IPConfig ipConfig;
   ipConfig.ip.fromString(config.get(KEY_NET_IP));
@@ -143,9 +138,6 @@ void yasolr_configure() {
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
   debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
   networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
@@ -168,8 +160,6 @@ void yasolr_configure() {
 
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
-  dashboardInitTask.setManager(coreTaskManager);
-  dashboardUpdateTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
   loggingTask.setManager(coreTaskManager);
   networkStartTask.setManager(coreTaskManager);

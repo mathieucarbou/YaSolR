@@ -301,7 +301,7 @@ dash::LineChart<int8_t, int16_t> _pidITermHistory(dashboard, YASOLR_LBL_175);
 dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_176);
 #endif
 
-void YaSolR::Website::initLayout() {
+void YaSolR::Website::begin() {
   logger.debug(TAG, "Initializing layout");
 
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
@@ -817,6 +817,9 @@ void YaSolR::Website::initLayout() {
     dashboard.refresh(_pidKd);
   });
 #endif
+
+  initCards();
+  updateCards();
 }
 
 void YaSolR::Website::initCards() {

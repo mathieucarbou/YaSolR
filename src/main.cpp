@@ -3,12 +3,6 @@
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
-#include <YaSolRWebsite.h>
-
-AsyncWebServer webServer(80);
-AuthenticationMiddleware authMiddleware;
-LoggingMiddleware loggingMiddleware;
-ESPDash dashboard = ESPDash(webServer, "/dashboard", false);
 
 Mycila::Config config;
 Mycila::ESPConnect espConnect(webServer);
@@ -16,8 +10,6 @@ Mycila::Grid grid;
 Mycila::Logger logger;
 Mycila::PID pidController;
 Mycila::Router router(pidController);
-
-YaSolR::Website website;
 
 // hardware
 Mycila::Dimmer dimmerO1;
@@ -42,7 +34,6 @@ void setup() {
   yasolr_boot();
   yasolr_configure();
   yasolr_event_listeners();
-  yasolr_http();
   yasolr_rest_api();
   yasolr_mqtt_subscribers();
   yasolr_start_jsy();
@@ -50,11 +41,7 @@ void setup() {
   yasolr_start_display();
   yasolr_start_lights();
   yasolr_start_zcd();
-
-  logger.info(TAG, "Initializing dashboard");
-  website.initLayout();
-  website.initCards();
-  website.updateCards();
+  yasolr_start_website();
 
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));    // NOLINT
   assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false)); // NOLINT

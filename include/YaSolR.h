@@ -57,9 +57,10 @@
 
 // web server
 extern AsyncWebServer webServer;
-extern AuthenticationMiddleware authMiddleware;
 extern LoggingMiddleware loggingMiddleware;
 extern ESPDash dashboard;
+extern Mycila::Task dashboardInitTask;
+extern Mycila::Task dashboardUpdateTask;
 
 // config
 extern Mycila::Config config;
@@ -72,6 +73,8 @@ extern Mycila::Grid grid;
 
 // logging
 extern Mycila::Logger logger;
+extern Mycila::Task debugTask;
+extern Mycila::Task loggingTask;
 
 // router
 extern Mycila::PID pidController;
@@ -103,10 +106,17 @@ extern Mycila::Task* displayTask;
 // ZCD
 extern Mycila::PulseAnalyzer* pulseAnalyzer;
 
+// MQTT
+extern Mycila::MQTT mqtt;
+extern Mycila::HA::Discovery haDiscovery;
+extern Mycila::Task haDiscoveryTask;
+extern Mycila::Task mqttConfigTask;
+extern Mycila::Task mqttPublishConfigTask;
+extern Mycila::Task mqttPublishStaticTask;
+extern Mycila::Task mqttPublishTask;
+
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
-extern Mycila::HA::Discovery haDiscovery;
-extern Mycila::MQTT mqtt;
 extern Mycila::PZEM pzemO1;
 extern Mycila::PZEM pzemO2;
 extern Mycila::Relay bypassRelayO1;
@@ -120,10 +130,6 @@ extern Mycila::RouterRelay routerRelay2;
 
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task calibrationTask;
-extern Mycila::Task dashboardInitTask;
-extern Mycila::Task dashboardUpdateTask;
-extern Mycila::Task debugTask;
-extern Mycila::Task loggingTask;
 extern Mycila::Task networkStartTask;
 extern Mycila::Task networkManagerTask;
 extern Mycila::Task relayTask;
@@ -136,11 +142,6 @@ extern Mycila::Task trialTask;
 #endif
 
 extern Mycila::TaskManager unsafeTaskManager;
-extern Mycila::Task haDiscoveryTask;
-extern Mycila::Task mqttConfigTask;
-extern Mycila::Task mqttPublishConfigTask;
-extern Mycila::Task mqttPublishStaticTask;
-extern Mycila::Task mqttPublishTask;
 extern Mycila::Task pzemO1PairingTask;
 extern Mycila::Task pzemO2PairingTask;
 
@@ -153,7 +154,6 @@ extern void yasolr_boot();
 extern void yasolr_configure();
 extern void yasolr_divert();
 extern void yasolr_event_listeners();
-extern void yasolr_http();
 extern void yasolr_mqtt_subscribers();
 extern void yasolr_rest_api();
 extern void yasolr_start_display();
@@ -161,6 +161,7 @@ extern void yasolr_start_ds18();
 extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
 extern void yasolr_start_lights();
+extern void yasolr_start_website();
 extern void yasolr_start_zcd();
 
 enum class DisplayKind {
