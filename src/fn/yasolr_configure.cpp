@@ -20,7 +20,6 @@ void yasolr_configure() {
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
-  Mycila::TaskMonitor.addTask(pzemTaskManager.getName());   // YaSolR
 
   // Grid
   grid.localMetrics().setExpiration(10000);                             // local is fast
@@ -57,6 +56,9 @@ void yasolr_configure() {
   // HARDWARE //
   //////////////
 
+  router.localMetrics().setExpiration(10000); // local is fast
+  router.remoteMetrics().setExpiration(10000); // remote JSY is fast
+
   // output1
   output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
   output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -69,6 +71,7 @@ void yasolr_configure() {
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
   output1.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT1_RESERVED_EXCESS) / 100;
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
+  output1.localMetrics().setExpiration(10000); // local is fast
 
   // output2
   output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
@@ -82,6 +85,7 @@ void yasolr_configure() {
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
   output2.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT2_RESERVED_EXCESS) / 100;
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
+  output2.localMetrics().setExpiration(10000); // local is fast
 
   // Home Assistant Discovery
   haDiscovery.setDiscoveryTopic(config.getString(KEY_HA_DISCOVERY_TOPIC));
@@ -112,12 +116,6 @@ void yasolr_configure() {
   routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
   routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
 
-  // Electricity: PZEMs
-  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM))
-    pzemO1.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
-  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM))
-    pzemO2.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
-
   // Dimmers
   dimmerO1.setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
   dimmerO1.setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
@@ -144,9 +142,6 @@ void yasolr_configure() {
   mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
   mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
 
-  // pzemTaskManager
-  pzemTask.setEnabledWhen([]() { return (pzemO1.isEnabled() || pzemO2.isEnabled()) && pzemO1PairingTask.isPaused() && pzemO2PairingTask.isPaused(); });
-
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
   networkStartTask.setManager(coreTaskManager);
@@ -166,11 +161,6 @@ void yasolr_configure() {
   mqttPublishConfigTask.setManager(unsafeTaskManager);
   mqttPublishStaticTask.setManager(unsafeTaskManager);
   mqttPublishTask.setManager(unsafeTaskManager);
-  pzemO1PairingTask.setManager(unsafeTaskManager);
-  pzemO2PairingTask.setManager(unsafeTaskManager);
-
-  // pzemTaskManager
-  pzemTask.setManager(pzemTaskManager);
 
   // Router
   router.addOutput(output1);

@@ -68,6 +68,15 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   Metrics dimmerMetrics;
   getOutputMetrics(dimmerMetrics, gridVoltage);
   toJson(root["metrics"].to<JsonObject>(), dimmerMetrics);
+
+  JsonObject local = root["source"]["local"].to<JsonObject>();
+  if (_localMetrics.isPresent()) {
+    local["enabled"] = true;
+    local["time"] = _localMetrics.getLastUpdateTime();
+    toJson(local, _localMetrics.get());
+  } else {
+    local["enabled"] = false;
+  }
 }
 
 void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics) {
@@ -288,7 +297,8 @@ void Mycila::RouterOutput::applyAutoBypass() {
 void Mycila::RouterOutput::getOutputMetrics(Metrics& metrics, float gridVoltage) const {
   metrics.resistance = config.calibratedResistance;
   metrics.voltage = gridVoltage;
-  metrics.energy = _pzem->data.activeEnergy;
+  if (_localMetrics.isPresent())
+    metrics.energy = _localMetrics.get().energy;
   const float dutyCycle = getDimmerDutyCycleLive();
   const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
   metrics.power = dutyCycle * maxPower;
@@ -300,18 +310,18 @@ void Mycila::RouterOutput::getOutputMetrics(Metrics& metrics, float gridVoltage)
 }
 
 bool Mycila::RouterOutput::getOutputMeasurements(Metrics& metrics) const {
-  if (!_pzem->isConnected())
+  if (_localMetrics.isAbsent())
     return false;
-  metrics.voltage = _pzem->data.voltage;
-  metrics.energy = _pzem->data.activeEnergy;
+  metrics.voltage = _localMetrics.get().voltage;
+  metrics.energy = _localMetrics.get().energy;
   if (getState() == State::OUTPUT_ROUTING) {
-    metrics.apparentPower = _pzem->data.apparentPower;
-    metrics.current = _pzem->data.current;
-    metrics.dimmedVoltage = _pzem->data.dimmedVoltage();
-    metrics.power = _pzem->data.activePower;
-    metrics.powerFactor = _pzem->data.powerFactor;
-    metrics.resistance = _pzem->data.resistance();
-    metrics.thdi = _pzem->data.thdi();
+    metrics.apparentPower = _localMetrics.get().apparentPower;
+    metrics.current = _localMetrics.get().current;
+    metrics.dimmedVoltage = _localMetrics.get().dimmedVoltage;
+    metrics.power = _localMetrics.get().power;
+    metrics.powerFactor = _localMetrics.get().powerFactor;
+    metrics.resistance = _localMetrics.get().resistance;
+    metrics.thdi = _localMetrics.get().thdi;
   }
   return true;
 }

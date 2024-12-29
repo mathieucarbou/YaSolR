@@ -17,7 +17,8 @@ Mycila::Task loggingTask("Debug", [](void* params) {
   unsafeTaskManager.log();
   if (jsyTaskManager)
     jsyTaskManager->log();
-  pzemTaskManager.log();
+  if (pzemTaskManager)
+    pzemTaskManager->log();
 });
 
 void yasolr_start_logging() {
@@ -56,7 +57,9 @@ void yasolr_configure_logging() {
     if (jsyTask)
       jsyTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     mqttPublishTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    pzemTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    if (pzemTask)
+      pzemTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+
   } else {
     dashboardUpdateTask.disableProfiling();
     loggingTask.disableProfiling();
@@ -67,7 +70,8 @@ void yasolr_configure_logging() {
     if (jsyTask)
       jsyTask->disableProfiling();
     mqttPublishTask.disableProfiling();
-    pzemTask.disableProfiling();
+    if (pzemTask)
+      pzemTask->disableProfiling();
   }
 
   // Log execution time for some "ONCE" tasks
@@ -81,7 +85,9 @@ void yasolr_configure_logging() {
   mqttPublishTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   safeBootTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   loggingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  pzemO1PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  pzemO2PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  if (pzemO1PairingTask)
+    pzemO1PairingTask->setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  if (pzemO2PairingTask)
+    pzemO2PairingTask->setCallback(debug ? LOG_EXEC_TIME : nullptr);
   relayTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
 }

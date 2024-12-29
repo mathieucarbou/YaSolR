@@ -9,13 +9,17 @@ float yasolr_frequency() {
   if (frequency > 0)
     return frequency;
 
-  frequency = round(pzemO1.data.frequency);
-  if (frequency > 0)
-    return frequency;
+  if (pzemO1) {
+    frequency = round(pzemO1->data.frequency);
+    if (frequency > 0)
+      return frequency;
+  }
 
-  frequency = round(pzemO2.data.frequency);
-  if (frequency > 0)
-    return frequency;
+  if (pzemO2) {
+    frequency = round(pzemO2->data.frequency);
+    if (frequency > 0)
+      return frequency;
+  }
 
   frequency = config.getFloat(KEY_GRID_FREQUENCY);
   if (frequency)

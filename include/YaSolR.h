@@ -114,12 +114,12 @@ extern Mycila::Task mqttPublishStaticTask;
 extern Mycila::Task mqttPublishTask;
 
 // PZEM
-extern Mycila::PZEM pzemO1;
-extern Mycila::PZEM pzemO2;
-extern Mycila::Task pzemO1PairingTask;
-extern Mycila::Task pzemO2PairingTask;
-extern Mycila::Task pzemTask;
-extern Mycila::TaskManager pzemTaskManager;
+extern Mycila::PZEM* pzemO1;
+extern Mycila::PZEM* pzemO2;
+extern Mycila::Task* pzemO1PairingTask;
+extern Mycila::Task* pzemO2PairingTask;
+extern Mycila::Task* pzemTask;
+extern Mycila::TaskManager* pzemTaskManager;
 
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
@@ -162,6 +162,7 @@ extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
 extern void yasolr_start_lights();
 extern void yasolr_start_logging();
+extern void yasolr_start_pzem();
 extern void yasolr_start_rest_api();
 extern void yasolr_start_website();
 extern void yasolr_start_zcd();

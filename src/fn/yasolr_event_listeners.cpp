@@ -90,34 +90,4 @@ void yasolr_event_listeners() {
     logger.info(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
     mqttPublishTask.requestEarlyRun();
   });
-
-  pzemO1.setCallback([](const Mycila::PZEM::EventType eventType) {
-    if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-      grid.pzemMetrics().update({
-        .apparentPower = NAN,
-        .current = NAN,
-        .energy = NAN,
-        .energyReturned = NAN,
-        .frequency = pzemO1.data.frequency,
-        .power = NAN,
-        .powerFactor = NAN,
-        .voltage = pzemO1.data.voltage,
-      });
-    }
-  });
-
-  pzemO2.setCallback([](const Mycila::PZEM::EventType eventType) {
-    if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-      grid.pzemMetrics().update({
-        .apparentPower = NAN,
-        .current = NAN,
-        .energy = NAN,
-        .energyReturned = NAN,
-        .frequency = pzemO2.data.frequency,
-        .power = NAN,
-        .powerFactor = NAN,
-        .voltage = pzemO2.data.voltage,
-      });
-    }
-  });
 };

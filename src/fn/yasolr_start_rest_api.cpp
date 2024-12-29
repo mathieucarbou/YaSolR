@@ -47,7 +47,8 @@ void yasolr_start_rest_api() {
       dimmerO1.dimmerToJson(root["router"]["output1"]["dimmer"].to<JsonObject>());
       if (ds18O1)
         ds18O1->toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
-      pzemO1.toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
+      if (pzemO1)
+        pzemO1->toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
       bypassRelayO1.toJson(root["router"]["output1"]["relay"].to<JsonObject>());
 
       // output 2
@@ -55,7 +56,8 @@ void yasolr_start_rest_api() {
       dimmerO2.dimmerToJson(root["router"]["output2"]["dimmer"].to<JsonObject>());
       if (ds18O2)
         ds18O2->toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
-      pzemO2.toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
+      if (pzemO2)
+        pzemO2->toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
       bypassRelayO2.toJson(root["router"]["output2"]["relay"].to<JsonObject>());
 
       // system
@@ -73,7 +75,8 @@ void yasolr_start_rest_api() {
       coreTaskManager.toJson(tasks[coreTaskManager.getName()].to<JsonObject>());
       if (jsyTaskManager)
         jsyTaskManager->toJson(tasks[jsyTaskManager->getName()].to<JsonObject>());
-      pzemTaskManager.toJson(tasks[pzemTaskManager.getName()].to<JsonObject>());
+      if (pzemTaskManager)
+        pzemTaskManager->toJson(tasks[pzemTaskManager->getName()].to<JsonObject>());
       unsafeTaskManager.toJson(tasks[unsafeTaskManager.getName()].to<JsonObject>());
 
       // libs versions

@@ -6,7 +6,6 @@
 
 #include <MycilaDimmer.h>
 #include <MycilaExpiringValue.h>
-#include <MycilaPZEM004Tv3.h>
 #include <MycilaRelay.h>
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -32,11 +31,11 @@ namespace Mycila {
       };
 
       typedef struct {
-          float apparentPower = NAN;
-          float current = NAN;
-          float dimmedVoltage = NAN;
-          float energy = NAN;
-          float power = NAN;
+          float apparentPower = 0;
+          float current = 0;
+          float dimmedVoltage = 0;
+          float energy = 0;
+          float power = 0;
           float powerFactor = NAN;
           float resistance = NAN;
           float thdi = NAN;
@@ -58,11 +57,9 @@ namespace Mycila {
 
       RouterOutput(const char* name,
                    Dimmer& dimmer,
-                   Relay& relay,
-                   PZEM& pzem) : _name(name),
-                                 _dimmer(&dimmer),
-                                 _relay(&relay),
-                                 _pzem(&pzem) {}
+                   Relay& relay) : _name(name),
+                                   _dimmer(&dimmer),
+                                   _relay(&relay) {}
       // output
 
       State getState() const;
@@ -102,12 +99,19 @@ namespace Mycila {
 
       // metrics
 
+      ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
+      const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
+
       // get output theoretical metrics based on the dimmer state and the grid voltage
       void getOutputMetrics(Metrics& metrics, float gridVoltage) const;
       // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
       bool getOutputMeasurements(Metrics& metrics) const;
 
-      float getOutputPower() const { return _pzem->isConnected() ? _pzem->data.activePower : 0; }
+      std::optional<float> getOutputPower() const {
+        if (_localMetrics.isPresent() && _localMetrics.get().power > 0)
+          return _localMetrics.get().power;
+        return std::nullopt;
+      }
 
       // temperature
 
@@ -121,10 +125,10 @@ namespace Mycila {
       const char* _name;
       Dimmer* _dimmer;
       Relay* _relay;
-      PZEM* _pzem;
       bool _autoBypassEnabled = false;
       bool _bypassEnabled = false;
       ExpiringValue<float> _temperature;
+      ExpiringValue<Metrics> _localMetrics;
 
     private:
       void _setBypass(bool state, bool log = true);
