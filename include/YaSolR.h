@@ -167,11 +167,3 @@ extern void yasolr_start_rest_api();
 extern void yasolr_start_website();
 extern void yasolr_start_zcd();
 extern void yasolr_configure_logging();
-
-enum class DisplayKind {
-  DISPLAY_HOME = 1,
-  DISPLAY_NETWORK,
-  DISPLAY_ROUTER,
-  DISPLAY_OUTPUT1,
-  DISPLAY_OUTPUT2,
-};

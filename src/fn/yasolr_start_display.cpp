@@ -10,6 +10,14 @@ Mycila::EasyDisplay* display;
 Mycila::Task* displayCarouselTask;
 Mycila::Task* displayTask;
 
+enum class DisplayKind {
+  DISPLAY_HOME = 1,
+  DISPLAY_NETWORK,
+  DISPLAY_ROUTER,
+  DISPLAY_OUTPUT1,
+  DISPLAY_OUTPUT2,
+};
+
 void yasolr_start_display() {
   if (config.getBool(KEY_ENABLE_DISPLAY)) {
     assert(!display);
