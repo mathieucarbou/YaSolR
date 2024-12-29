@@ -68,7 +68,7 @@ extern Mycila::Config config;
 // network
 extern Mycila::ESPConnect espConnect;
 
-// electricity
+// grid electricity
 extern Mycila::Grid grid;
 
 // logging
@@ -164,4 +164,6 @@ extern void yasolr_start_rest_api();
 extern void yasolr_start_website();
 extern void yasolr_start_trial();
 extern void yasolr_start_zcd();
+extern void yasolr_start_grid();
+
 extern void yasolr_configure_logging();

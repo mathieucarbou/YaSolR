@@ -5,7 +5,6 @@
 #include <YaSolR.h>
 
 Mycila::ESPConnect espConnect(webServer);
-Mycila::Grid grid;
 Mycila::PID pidController;
 Mycila::Router router(pidController);
 
@@ -36,6 +35,7 @@ void setup() {
 
   yasolr_start_display();
   yasolr_start_ds18();
+  yasolr_start_grid();
   yasolr_start_jsy();
   yasolr_start_lights();
   yasolr_start_logging();

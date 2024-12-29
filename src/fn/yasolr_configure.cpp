@@ -9,9 +9,6 @@
 void yasolr_configure() {
   logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
-  // WDT
-  Mycila::TaskManager::configureWDT(10, true);
-
   // Task Monitor
   Mycila::TaskMonitor.begin();
   // Mycila::TaskMonitor.addTask("arduino_events");            // Network (stack size cannot be set)
@@ -20,14 +17,6 @@ void yasolr_configure() {
   Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
-
-  // Grid
-  grid.localMetrics().setExpiration(10000);                             // local is fast
-  grid.remoteMetrics().setExpiration(10000);                            // remote JSY is fast
-  grid.pzemMetrics().setExpiration(10000);                              // local is fast
-  grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
-  grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
-  grid.getPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);    // local is fast
 
   // PID Controller
   pidController.setReverse(false);
