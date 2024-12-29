@@ -4,6 +4,8 @@
  */
 #include <YaSolR.h>
 
+#include <string>
+
 Mycila::EasyDisplay* display;
 Mycila::Task* displayCarouselTask;
 Mycila::Task* displayTask;

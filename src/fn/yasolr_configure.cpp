@@ -112,10 +112,6 @@ void yasolr_configure() {
                     512,
                     [](const char* topic, const char* payload) { mqtt.publish(topic, payload, true); });
 
-  // Lights
-  if (config.getBool(KEY_ENABLE_LIGHTS))
-    lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
-
   // Electricity: Relays
   if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY))
     bypassRelayO1.begin(config.getLong(KEY_PIN_OUTPUT1_RELAY), config.isEqual(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
@@ -159,7 +155,6 @@ void yasolr_configure() {
   dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
   debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
-  lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
@@ -184,7 +179,6 @@ void yasolr_configure() {
   dashboardInitTask.setManager(coreTaskManager);
   dashboardUpdateTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
-  lightsTask.setManager(coreTaskManager);
   loggingTask.setManager(coreTaskManager);
   networkStartTask.setManager(coreTaskManager);
   networkManagerTask.setManager(coreTaskManager);

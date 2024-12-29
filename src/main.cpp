@@ -16,7 +16,6 @@ Mycila::Grid grid;
 Mycila::Logger logger;
 Mycila::PID pidController;
 Mycila::Router router(pidController);
-Mycila::TrafficLight lights;
 
 YaSolR::Website website;
 
@@ -50,6 +49,7 @@ void setup() {
   yasolr_start_jsy();
   yasolr_start_ds18();
   yasolr_start_display();
+  yasolr_start_lights();
 
   logger.info(TAG, "Initializing dashboard");
   website.initLayout();

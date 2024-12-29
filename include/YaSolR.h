@@ -121,7 +121,6 @@ extern Mycila::Task calibrationTask;
 extern Mycila::Task dashboardInitTask;
 extern Mycila::Task dashboardUpdateTask;
 extern Mycila::Task debugTask;
-extern Mycila::Task lightsTask;
 extern Mycila::Task loggingTask;
 extern Mycila::Task networkStartTask;
 extern Mycila::Task networkManagerTask;
@@ -156,10 +155,11 @@ extern void yasolr_event_listeners();
 extern void yasolr_http();
 extern void yasolr_mqtt_subscribers();
 extern void yasolr_rest_api();
+extern void yasolr_start_display();
 extern void yasolr_start_ds18();
 extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
-extern void yasolr_start_display();
+extern void yasolr_start_lights();
 
 enum class DisplayKind {
   DISPLAY_HOME = 1,
