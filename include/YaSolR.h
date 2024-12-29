@@ -141,9 +141,6 @@ extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
 extern Mycila::Task routerTask;
 extern Mycila::Task safeBootTask;
-#ifdef APP_MODEL_TRIAL
-extern Mycila::Task trialTask;
-#endif
 
 extern Mycila::TaskManager unsafeTaskManager;
 
@@ -165,5 +162,6 @@ extern void yasolr_start_logging();
 extern void yasolr_start_pzem();
 extern void yasolr_start_rest_api();
 extern void yasolr_start_website();
+extern void yasolr_start_trial();
 extern void yasolr_start_zcd();
 extern void yasolr_configure_logging();

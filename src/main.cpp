@@ -40,6 +40,7 @@ void setup() {
   yasolr_start_lights();
   yasolr_start_logging();
   yasolr_start_pzem();
+  yasolr_start_trial();
   yasolr_start_website();
   yasolr_start_zcd();
 

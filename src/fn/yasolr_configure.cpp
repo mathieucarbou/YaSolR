@@ -132,9 +132,6 @@ void yasolr_configure() {
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-#ifdef APP_MODEL_TRIAL
-  trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
-#endif
 
   // unsafeTaskManager
   mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
@@ -151,9 +148,6 @@ void yasolr_configure() {
   restartTask.setManager(coreTaskManager);
   routerTask.setManager(coreTaskManager);
   safeBootTask.setManager(coreTaskManager);
-#ifdef APP_MODEL_TRIAL
-  trialTask.setManager(coreTaskManager);
-#endif
 
   // unsafeTaskManager
   haDiscoveryTask.setManager(unsafeTaskManager);
