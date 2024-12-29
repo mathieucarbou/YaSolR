@@ -21,9 +21,6 @@ void yasolr_boot() {
   // system
   Mycila::System::init(true, "fs");
 
-  // trial
-#ifdef APP_MODEL_TRIAL
-  Mycila::Trial.begin();
-  Mycila::Trial.validate();
-#endif
+  // TWDT
+  Mycila::TaskManager::configureWDT(10, true);
 }
