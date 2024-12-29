@@ -43,9 +43,9 @@ Mycila::Task lightsTask("Lights", [](void* params) {
 });
 
 void yasolr_start_lights() {
-  lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
-  lightsTask.setManager(coreTaskManager);
-
   if (config.getBool(KEY_ENABLE_LIGHTS))
     lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
+
+  lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
+  lightsTask.setManager(coreTaskManager);
 };

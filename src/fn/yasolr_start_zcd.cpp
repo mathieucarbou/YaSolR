@@ -12,6 +12,7 @@ Mycila::Task* zcdTask;
 void yasolr_start_zcd() {
   if (config.getBool(KEY_ENABLE_ZCD)) {
     assert(!pulseAnalyzer);
+    assert(!zcdTask);
 
     pulseAnalyzer = new Mycila::PulseAnalyzer();
     pulseAnalyzer->onZeroCross(Mycila::Dimmer::onZeroCross);

@@ -11,8 +11,12 @@ Mycila::Task* ds18Task;
 
 void yasolr_start_ds18() {
   if (config.getBool(KEY_ENABLE_DS18_SYSTEM)) {
-    if (!ds18Sys) {
-      ds18Sys = new Mycila::DS18();
+    assert(!ds18Sys);
+
+    ds18Sys = new Mycila::DS18();
+    ds18Sys->begin(config.getLong(KEY_PIN_ROUTER_DS18));
+
+    if (ds18Sys->isEnabled()) {
       ds18Sys->listen([](float temperature, bool changed) {
         if (changed) {
           logger.info(TAG, "Router Temperature changed to %.02f °C", temperature);
@@ -20,12 +24,15 @@ void yasolr_start_ds18() {
         }
       });
     }
-    ds18Sys->begin(config.getLong(KEY_PIN_ROUTER_DS18));
   }
 
   if (config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
-    if (!ds18O1) {
-      ds18O1 = new Mycila::DS18();
+    assert(!ds18O1);
+
+    ds18O1 = new Mycila::DS18();
+    ds18O1->begin(config.getLong(KEY_PIN_OUTPUT1_DS18));
+
+    if (ds18O1->isEnabled()) {
       ds18O1->listen([](float temperature, bool changed) {
         output1.temperature().update(temperature);
         if (changed) {
@@ -34,12 +41,14 @@ void yasolr_start_ds18() {
         }
       });
     }
-    ds18O1->begin(config.getLong(KEY_PIN_OUTPUT1_DS18));
   }
 
   if (config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
-    if (!ds18O2) {
-      ds18O2 = new Mycila::DS18();
+    assert(!ds18O2);
+    ds18O2 = new Mycila::DS18();
+    ds18O2->begin(config.getLong(KEY_PIN_OUTPUT2_DS18));
+
+    if (ds18O2->isEnabled()) {
       ds18O2->listen([](float temperature, bool changed) {
         output2.temperature().update(temperature);
         if (changed) {
@@ -49,7 +58,6 @@ void yasolr_start_ds18() {
       });
       ds18O2 = new Mycila::DS18();
     }
-    ds18O2->begin(config.getLong(KEY_PIN_OUTPUT2_DS18));
   }
 
   if (ds18Sys || ds18O1 || ds18O2) {
