@@ -10,7 +10,7 @@ static const Mycila::TaskDoneCallback LOG_EXEC_TIME = [](const Mycila::Task& me,
 
 Mycila::Logger logger;
 
-Mycila::Task debugTask("Debug", [](void* params) {
+Mycila::Task loggingTask("Debug", [](void* params) {
   logger.info(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
   Mycila::TaskMonitor.log();
   coreTaskManager.log();
@@ -26,11 +26,12 @@ void yasolr_start_logging() {
   WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
   WebSerial.setInput(false);
 #endif
+
   WebSerial.begin(&webServer, "/console");
   logger.forwardTo(&WebSerial);
 
-  debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
-  debugTask.setManager(coreTaskManager);
+  loggingTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
+  loggingTask.setManager(coreTaskManager);
 };
 
 void yasolr_configure_logging() {
@@ -42,12 +43,12 @@ void yasolr_configure_logging() {
   esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));
 
   loggingMiddleware.setEnabled(debug);
-  debugTask.setEnabled(debug);
+  loggingTask.setEnabled(debug);
 
   if (debug) {
     // Enable profiling for some FOREVER tasks
     dashboardUpdateTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    debugTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    loggingTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (ds18Task)
       ds18Task->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (displayTask)
@@ -58,7 +59,7 @@ void yasolr_configure_logging() {
     pzemTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   } else {
     dashboardUpdateTask.disableProfiling();
-    debugTask.disableProfiling();
+    loggingTask.disableProfiling();
     if (ds18Task)
       ds18Task->disableProfiling();
     if (displayTask)
@@ -79,7 +80,7 @@ void yasolr_configure_logging() {
   mqttPublishStaticTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   mqttPublishTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   safeBootTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  debugTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  loggingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   pzemO1PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   pzemO2PairingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   relayTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
