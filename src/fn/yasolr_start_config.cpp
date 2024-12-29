@@ -4,10 +4,11 @@
  */
 #include <YaSolR.h>
 
+#include <string>
+
 Mycila::Config config;
 
 void yasolr_start_config() {
-
   // setup config system
   config.begin("YASOLR");
   config.configure(KEY_ADMIN_PASSWORD);

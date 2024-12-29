@@ -62,7 +62,7 @@ extern ESPDash dashboard;
 extern Mycila::Task dashboardInitTask;
 extern Mycila::Task dashboardUpdateTask;
 
-// config
+// onfig
 extern Mycila::Config config;
 
 // network
@@ -81,11 +81,11 @@ extern Mycila::Router router;
 // system
 extern Mycila::TrafficLight lights;
 
-// remote jsy
+// Remote JSY
 extern AsyncUDP* udp;
 extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
 
-// jsy
+// JSY
 extern Mycila::JSY* jsy;
 extern Mycila::Task* jsyTask;
 extern Mycila::TaskManager* jsyTaskManager;
@@ -113,10 +113,16 @@ extern Mycila::Task mqttPublishConfigTask;
 extern Mycila::Task mqttPublishStaticTask;
 extern Mycila::Task mqttPublishTask;
 
-extern Mycila::Dimmer dimmerO1;
-extern Mycila::Dimmer dimmerO2;
+// PZEM
 extern Mycila::PZEM pzemO1;
 extern Mycila::PZEM pzemO2;
+extern Mycila::Task pzemO1PairingTask;
+extern Mycila::Task pzemO2PairingTask;
+extern Mycila::Task pzemTask;
+extern Mycila::TaskManager pzemTaskManager;
+
+extern Mycila::Dimmer dimmerO1;
+extern Mycila::Dimmer dimmerO2;
 extern Mycila::Relay bypassRelayO1;
 extern Mycila::Relay bypassRelayO2;
 extern Mycila::Relay relay1;
@@ -140,11 +146,6 @@ extern Mycila::Task trialTask;
 #endif
 
 extern Mycila::TaskManager unsafeTaskManager;
-extern Mycila::Task pzemO1PairingTask;
-extern Mycila::Task pzemO2PairingTask;
-
-extern Mycila::TaskManager pzemTaskManager;
-extern Mycila::Task pzemTask;
 
 // fn
 extern float yasolr_frequency();
