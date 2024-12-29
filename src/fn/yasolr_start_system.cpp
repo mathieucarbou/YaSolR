@@ -27,4 +27,7 @@ void yasolr_start_system() {
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);
   safeBootTask.setManager(coreTaskManager);
+
+  Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
+  Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
 }
