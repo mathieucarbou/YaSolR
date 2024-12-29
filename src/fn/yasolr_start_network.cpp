@@ -25,10 +25,10 @@ Mycila::Task networkStartTask("Network Start", Mycila::TaskType::ONCE, [](void* 
     logger.info(TAG, "Enable mDNS");
     MDNS.addService("http", "tcp", 80);
 
-    // MQTT
-    mqttConfigTask.resume();
-
     yasolr_start_jsy_remote_listener();
+
+    if (mqttConnectTask)
+      mqttConnectTask->resume();
   }
 });
 

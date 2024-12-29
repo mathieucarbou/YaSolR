@@ -17,10 +17,10 @@
 #include <MycilaAppInfo.h>
 #include <MycilaCircularBuffer.h>
 #include <MycilaConfig.h>
-#include <MycilaDimmer.h>
 #include <MycilaDS18.h>
-#include <MycilaEasyDisplay.h>
+#include <MycilaDimmer.h>
 #include <MycilaESPConnect.h>
+#include <MycilaEasyDisplay.h>
 #include <MycilaExpiringValue.h>
 #include <MycilaGrid.h>
 #include <MycilaHADiscovery.h>
@@ -29,8 +29,8 @@
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
 #include <MycilaPID.h>
-#include <MycilaPulseAnalyzer.h>
 #include <MycilaPZEM004Tv3.h>
+#include <MycilaPulseAnalyzer.h>
 #include <MycilaRelay.h>
 #include <MycilaRouter.h>
 #include <MycilaRouterOutput.h>
@@ -68,6 +68,7 @@ extern Mycila::Config config;
 
 // Network
 extern Mycila::ESPConnect espConnect;
+extern Mycila::Task networkStartTask;
 
 // grid electricity
 extern Mycila::Grid grid;
@@ -103,13 +104,12 @@ extern Mycila::Task* displayTask;
 extern Mycila::PulseAnalyzer* pulseAnalyzer;
 
 // MQTT
-extern Mycila::MQTT mqtt;
-extern Mycila::HA::Discovery haDiscovery;
-extern Mycila::Task haDiscoveryTask;
-extern Mycila::Task mqttConfigTask;
-extern Mycila::Task mqttPublishConfigTask;
-extern Mycila::Task mqttPublishStaticTask;
-extern Mycila::Task mqttPublishTask;
+extern Mycila::MQTT* mqtt;
+extern Mycila::Task* mqttConnectTask;
+extern Mycila::Task* mqttPublishConfigTask;
+extern Mycila::Task* mqttPublishStaticTask;
+extern Mycila::Task* mqttPublishTask;
+extern Mycila::Task* haDiscoveryTask;
 
 // PZEM
 extern Mycila::PZEM* pzemO1;
@@ -150,7 +150,6 @@ extern void yasolr_boot();
 extern void yasolr_configure();
 extern void yasolr_divert();
 extern void yasolr_event_listeners();
-extern void yasolr_mqtt_subscribers();
 
 extern void yasolr_start_config();
 extern void yasolr_start_display();
@@ -160,6 +159,7 @@ extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
 extern void yasolr_start_lights();
 extern void yasolr_start_logging();
+extern void yasolr_start_mqtt();
 extern void yasolr_start_network();
 extern void yasolr_start_pzem();
 extern void yasolr_start_rest_api();

@@ -6,12 +6,8 @@
 
 Mycila::PID pidController;
 Mycila::Router router(pidController);
-
-// hardware
 Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
-Mycila::HA::Discovery haDiscovery;
-Mycila::MQTT mqtt;
 Mycila::Relay bypassRelayO1;
 Mycila::Relay bypassRelayO2;
 Mycila::Relay relay1;
@@ -28,7 +24,6 @@ void setup() {
   yasolr_configure();
   yasolr_event_listeners();
   yasolr_start_rest_api();
-  yasolr_mqtt_subscribers();
 
   yasolr_start_display();
   yasolr_start_ds18();
@@ -36,6 +31,7 @@ void setup() {
   yasolr_start_jsy();
   yasolr_start_lights();
   yasolr_start_logging();
+  yasolr_start_mqtt();
   yasolr_start_network();
   yasolr_start_pzem();
   yasolr_start_system();
@@ -46,7 +42,9 @@ void setup() {
   yasolr_configure_logging();
 
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));
-  assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false));
+
+  if (unsafeTaskManager.getSize())
+    assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false));
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());

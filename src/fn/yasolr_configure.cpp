@@ -9,13 +9,6 @@
 void yasolr_configure() {
   logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
-  // Task Monitor
-  // Mycila::TaskMonitor.addTask("arduino_events");            // Network (stack size cannot be set)
-  // Mycila::TaskMonitor.addTask("wifi");                      // WiFI (stack size cannot be set)
-  Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
-  Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
-  Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
-
   // PID Controller
   pidController.setReverse(false);
   pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
@@ -29,7 +22,7 @@ void yasolr_configure() {
   // HARDWARE //
   //////////////
 
-  router.localMetrics().setExpiration(10000); // local is fast
+  router.localMetrics().setExpiration(10000);  // local is fast
   router.remoteMetrics().setExpiration(10000); // remote JSY is fast
 
   // output1
@@ -44,7 +37,7 @@ void yasolr_configure() {
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
   output1.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT1_RESERVED_EXCESS) / 100;
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
-  output1.localMetrics().setExpiration(10000); // local is fast
+  output1.localMetrics().setExpiration(10000);                             // local is fast
 
   // output2
   output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
@@ -58,22 +51,7 @@ void yasolr_configure() {
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
   output2.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT2_RESERVED_EXCESS) / 100;
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
-  output2.localMetrics().setExpiration(10000); // local is fast
-
-  // Home Assistant Discovery
-  haDiscovery.setDiscoveryTopic(config.getString(KEY_HA_DISCOVERY_TOPIC));
-  haDiscovery.setWillTopic(config.getString(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC);
-  haDiscovery.begin({
-                      .id = Mycila::AppInfo.defaultMqttClientId,
-                      .name = Mycila::AppInfo.defaultSSID,
-                      .version = Mycila::AppInfo.version,
-                      .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
-                      .manufacturer = Mycila::AppInfo.manufacturer,
-                      .url = std::string("http://") + espConnect.getIPAddress().toString().c_str(),
-                    },
-                    config.get(KEY_MQTT_TOPIC),
-                    512,
-                    [](const char* topic, const char* payload) { mqtt.publish(topic, payload, true); });
+  output2.localMetrics().setExpiration(10000);                             // local is fast
 
   // Electricity: Relays
   if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY))
@@ -105,23 +83,10 @@ void yasolr_configure() {
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
 
-  // unsafeTaskManager
-  mqttPublishTask.setEnabledWhen([]() { return mqtt.isConnected(); });
-  mqttPublishTask.setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS);
-  mqttPublishStaticTask.setEnabledWhen([]() { return mqtt.isConnected(); });
-  mqttPublishConfigTask.setEnabledWhen([]() { return mqtt.isConnected(); });
-
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
   routerTask.setManager(coreTaskManager);
-
-  // unsafeTaskManager
-  haDiscoveryTask.setManager(unsafeTaskManager);
-  mqttConfigTask.setManager(unsafeTaskManager);
-  mqttPublishConfigTask.setManager(unsafeTaskManager);
-  mqttPublishStaticTask.setManager(unsafeTaskManager);
-  mqttPublishTask.setManager(unsafeTaskManager);
 
   // Router
   router.addOutput(output1);

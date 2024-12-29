@@ -223,9 +223,6 @@ void yasolr_start_config() {
       if (!config.getBool(KEY_ENABLE_AP_MODE))
         Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
-    } else if (key == KEY_HA_DISCOVERY_TOPIC) {
-      haDiscovery.setDiscoveryTopic(config.get(KEY_HA_DISCOVERY_TOPIC));
-
     } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_P_MODE || key == KEY_PID_D_MODE || key == KEY_PID_IC_MODE || key == KEY_PID_SETPOINT) {
       pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
       pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.getLong(KEY_PID_D_MODE));
@@ -240,12 +237,15 @@ void yasolr_start_config() {
         displayCarouselTask->setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {
-      mqttPublishTask.setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS);
+      if (mqttPublishTask)
+        mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS);
     }
 
     dashboardInitTask.resume();
-    mqttPublishConfigTask.resume();
-    mqttPublishTask.requestEarlyRun();
+    if (mqttPublishConfigTask)
+      mqttPublishConfigTask->resume();
+    if (mqttPublishTask)
+      mqttPublishTask->requestEarlyRun();
   });
 
   // pre-init logging

@@ -57,7 +57,8 @@ void yasolr_configure_logging() {
       displayTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (jsyTask)
       jsyTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    mqttPublishTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    if (mqttPublishTask)
+      mqttPublishTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (pzemTask)
       pzemTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
@@ -72,7 +73,8 @@ void yasolr_configure_logging() {
       displayTask->disableProfiling();
     if (jsyTask)
       jsyTask->disableProfiling();
-    mqttPublishTask.disableProfiling();
+    if (mqttPublishTask)
+      mqttPublishTask->disableProfiling();
     if (pzemTask)
       pzemTask->disableProfiling();
   }
@@ -81,11 +83,15 @@ void yasolr_configure_logging() {
   dashboardInitTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   if (ds18Task)
     ds18Task->setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  haDiscoveryTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  mqttConfigTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  mqttPublishConfigTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  mqttPublishStaticTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
-  mqttPublishTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  if (haDiscoveryTask)
+    haDiscoveryTask->setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  if (mqttPublishConfigTask)
+    mqttPublishConfigTask->setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  if (mqttPublishStaticTask)
+    mqttPublishStaticTask->setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  if (mqttPublishTask)
+    mqttPublishTask->setCallback(debug ? LOG_EXEC_TIME : nullptr);
+  networkStartTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   safeBootTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   loggingTask.setCallback(debug ? LOG_EXEC_TIME : nullptr);
   if (pzemO1PairingTask)

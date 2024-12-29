@@ -23,7 +23,8 @@ void yasolr_start_ds18() {
       ds18Sys->listen([](float temperature, bool changed) {
         if (changed) {
           logger.info(TAG, "Router Temperature changed to %.02f °C", temperature);
-          mqttPublishTask.requestEarlyRun();
+          if (mqttPublishTask)
+            mqttPublishTask->requestEarlyRun();
         }
       });
     }
@@ -41,7 +42,8 @@ void yasolr_start_ds18() {
         output1.temperature().update(temperature);
         if (changed) {
           logger.info(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
-          mqttPublishTask.requestEarlyRun();
+          if (mqttPublishTask)
+            mqttPublishTask->requestEarlyRun();
         }
       });
     }
@@ -59,7 +61,8 @@ void yasolr_start_ds18() {
         output2.temperature().update(temperature);
         if (changed) {
           logger.info(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
-          mqttPublishTask.requestEarlyRun();
+          if (mqttPublishTask)
+            mqttPublishTask->requestEarlyRun();
         }
       });
       ds18O2 = new Mycila::DS18();
