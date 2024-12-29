@@ -21,8 +21,6 @@ Mycila::RouterRelay routerRelay1(relay1);
 Mycila::RouterRelay routerRelay2(relay2);
 Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1);
 Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2);
-Mycila::TaskManager coreTaskManager("y-core");
-Mycila::TaskManager unsafeTaskManager("y-unsafe");
 
 void setup() {
   yasolr_boot();
@@ -39,7 +37,9 @@ void setup() {
   yasolr_start_jsy();
   yasolr_start_lights();
   yasolr_start_logging();
+  yasolr_start_network();
   yasolr_start_pzem();
+  yasolr_start_system();
   yasolr_start_trial();
   yasolr_start_website();
   yasolr_start_zcd();

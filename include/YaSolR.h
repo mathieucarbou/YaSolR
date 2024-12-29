@@ -62,11 +62,13 @@ extern ESPDash dashboard;
 extern Mycila::Task dashboardInitTask;
 extern Mycila::Task dashboardUpdateTask;
 
-// onfig
+// Config
 extern Mycila::Config config;
 
-// network
+// Network
 extern Mycila::ESPConnect espConnect;
+extern Mycila::Task networkStartTask;
+extern Mycila::Task networkManagerTask;
 
 // grid electricity
 extern Mycila::Grid grid;
@@ -77,9 +79,6 @@ extern Mycila::Logger logger;
 // router
 extern Mycila::PID pidController;
 extern Mycila::Router router;
-
-// system
-extern Mycila::TrafficLight lights;
 
 // Remote JSY
 extern AsyncUDP* udp;
@@ -121,6 +120,16 @@ extern Mycila::Task* pzemO2PairingTask;
 extern Mycila::Task* pzemTask;
 extern Mycila::TaskManager* pzemTaskManager;
 
+// Lights
+extern Mycila::TrafficLight lights;
+
+// System
+extern Mycila::Task resetTask;
+extern Mycila::Task restartTask;
+extern Mycila::Task safeBootTask;
+extern Mycila::TaskManager coreTaskManager;
+extern Mycila::TaskManager unsafeTaskManager;
+
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
 extern Mycila::Relay bypassRelayO1;
@@ -132,17 +141,9 @@ extern Mycila::RouterOutput output2;
 extern Mycila::RouterRelay routerRelay1;
 extern Mycila::RouterRelay routerRelay2;
 
-extern Mycila::TaskManager coreTaskManager;
 extern Mycila::Task calibrationTask;
-extern Mycila::Task networkStartTask;
-extern Mycila::Task networkManagerTask;
 extern Mycila::Task relayTask;
-extern Mycila::Task resetTask;
-extern Mycila::Task restartTask;
 extern Mycila::Task routerTask;
-extern Mycila::Task safeBootTask;
-
-extern Mycila::TaskManager unsafeTaskManager;
 
 // fn
 extern float yasolr_frequency();
@@ -155,15 +156,17 @@ extern void yasolr_mqtt_subscribers();
 extern void yasolr_start_config();
 extern void yasolr_start_display();
 extern void yasolr_start_ds18();
+extern void yasolr_start_grid();
 extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
 extern void yasolr_start_lights();
 extern void yasolr_start_logging();
+extern void yasolr_start_network();
 extern void yasolr_start_pzem();
 extern void yasolr_start_rest_api();
-extern void yasolr_start_website();
+extern void yasolr_start_system();
 extern void yasolr_start_trial();
+extern void yasolr_start_website();
 extern void yasolr_start_zcd();
-extern void yasolr_start_grid();
 
 extern void yasolr_configure_logging();

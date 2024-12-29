@@ -10,11 +10,9 @@ void yasolr_configure() {
   logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // Task Monitor
-  Mycila::TaskMonitor.begin();
   // Mycila::TaskMonitor.addTask("arduino_events");            // Network (stack size cannot be set)
   // Mycila::TaskMonitor.addTask("wifi");                      // WiFI (stack size cannot be set)
   Mycila::TaskMonitor.addTask("mqtt_task");                 // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
-  Mycila::TaskMonitor.addTask("async_tcp");                 // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
 
@@ -133,10 +131,7 @@ void yasolr_configure() {
   networkStartTask.setManager(coreTaskManager);
   networkManagerTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
-  resetTask.setManager(coreTaskManager);
-  restartTask.setManager(coreTaskManager);
   routerTask.setManager(coreTaskManager);
-  safeBootTask.setManager(coreTaskManager);
 
   // unsafeTaskManager
   haDiscoveryTask.setManager(unsafeTaskManager);

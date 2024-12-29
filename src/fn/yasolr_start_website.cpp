@@ -103,4 +103,6 @@ void yasolr_start_website() {
   dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   dashboardUpdateTask.setManager(coreTaskManager);
+
+  Mycila::TaskMonitor.addTask("async_tcp"); // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
 }

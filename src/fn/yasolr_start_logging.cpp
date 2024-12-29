@@ -47,7 +47,8 @@ void yasolr_configure_logging() {
   loggingTask.setEnabled(debug);
 
   if (debug) {
-    // Enable profiling for some FOREVER tasks
+    Mycila::TaskMonitor.begin();
+
     dashboardUpdateTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     loggingTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (ds18Task)
@@ -61,6 +62,8 @@ void yasolr_configure_logging() {
       pzemTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
   } else {
+    Mycila::TaskMonitor.end();
+
     dashboardUpdateTask.disableProfiling();
     loggingTask.disableProfiling();
     if (ds18Task)
