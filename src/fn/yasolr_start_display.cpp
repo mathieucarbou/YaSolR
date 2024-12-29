@@ -192,7 +192,7 @@ void yasolr_start_display() {
       }
     });
 
-    displayCarouselTask->setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
+    displayCarouselTask->setIntervalSupplier([]() { return config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS; });
     displayCarouselTask->setManager(coreTaskManager);
 
     displayTask->setInterval(500 * Mycila::TaskDuration::MILLISECONDS);

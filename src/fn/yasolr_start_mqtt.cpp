@@ -425,7 +425,7 @@ void yasolr_start_mqtt() {
     mqttPublishStaticTask->setManager(unsafeTaskManager);
 
     mqttPublishTask->setEnabledWhen([]() { return mqtt->isConnected(); });
-    mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS);
+    mqttPublishTask->setIntervalSupplier([]() { return config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS; });
     mqttPublishTask->setManager(unsafeTaskManager);
 
     Mycila::TaskMonitor.addTask("mqtt_task"); // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)

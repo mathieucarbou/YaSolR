@@ -68,12 +68,6 @@ void yasolr_configure() {
   routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
 
   // Dimmers
-  dimmerO1.setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
-  dimmerO1.setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
-  dimmerO1.setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
-  dimmerO2.setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
-  dimmerO2.setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
-  dimmerO2.setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
 
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });

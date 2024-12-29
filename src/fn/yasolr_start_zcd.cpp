@@ -44,10 +44,20 @@ void yasolr_start_zcd() {
 
         if (!dimmerO1.isEnabled() && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
           dimmerO1.begin(config.getLong(KEY_PIN_OUTPUT1_DIMMER), semiPeriod);
+          if (dimmerO1.isEnabled()) {
+            dimmerO1.setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
+            dimmerO1.setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
+            dimmerO1.setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
+          }
         }
 
         if (!dimmerO2.isEnabled() && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
           dimmerO2.begin(config.getLong(KEY_PIN_OUTPUT2_DIMMER), semiPeriod);
+          if (dimmerO2.isEnabled()) {
+            dimmerO2.setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
+            dimmerO2.setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
+            dimmerO2.setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
+          }
         }
       }
     });
