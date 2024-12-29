@@ -154,6 +154,7 @@ extern void yasolr_divert();
 extern void yasolr_event_listeners();
 extern void yasolr_mqtt_subscribers();
 
+extern void yasolr_start_config();
 extern void yasolr_start_display();
 extern void yasolr_start_ds18();
 extern void yasolr_start_jsy_remote_listener();

@@ -4,7 +4,6 @@
  */
 #include <YaSolR.h>
 
-Mycila::Config config;
 Mycila::ESPConnect espConnect(webServer);
 Mycila::Grid grid;
 Mycila::PID pidController;
@@ -31,6 +30,7 @@ Mycila::TaskManager pzemTaskManager("y-pzem");
 
 void setup() {
   yasolr_boot();
+  yasolr_start_config();
 
   yasolr_configure();
   yasolr_event_listeners();
