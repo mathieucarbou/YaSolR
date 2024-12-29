@@ -18,29 +18,36 @@ Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1);
 Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2);
 
 void setup() {
+  // boot
   yasolr_boot();
+  // config
   yasolr_init_config();
-
-  yasolr_configure();
-
+  // logging
+  yasolr_init_logging();
+  // system
+  yasolr_init_system();
+  // hardware
   yasolr_init_display();
   yasolr_init_ds18();
   yasolr_init_grid();
   yasolr_init_jsy();
+  yasolr_init_jsy_remote();
   yasolr_init_lights();
-  yasolr_init_logging();
   yasolr_init_mqtt();
   yasolr_init_network();
   yasolr_init_pzem();
-  yasolr_init_system();
   yasolr_init_trial();
   yasolr_init_web_server();
   yasolr_init_zcd();
-
+  // logging configuration
   yasolr_configure_logging();
 
+  yasolr_configure(); // TODO
+
+  // core task manager
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));
 
+  // task manager for long running tasks like mqtt / pzem
   if (unsafeTaskManager.getSize())
     assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false));
 

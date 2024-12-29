@@ -7,6 +7,40 @@
 
 #include <string>
 
+Mycila::Task calibrationTask("Calibration", [](void* params) { router.calibrate(); });
+
+Mycila::Task relayTask("Relay", [](void* params) {
+  if (grid.getPower().isAbsent())
+    return;
+
+  Mycila::Router::Metrics routerMetrics;
+  router.getRouterMeasurements(routerMetrics);
+
+  float virtualGridPower = grid.getPower().get() - routerMetrics.power;
+
+  if (routerRelay1.tryRelayStateAuto(true, virtualGridPower))
+    return;
+  if (routerRelay2.tryRelayStateAuto(true, virtualGridPower))
+    return;
+  if (routerRelay2.tryRelayStateAuto(false, virtualGridPower))
+    return;
+  if (routerRelay1.tryRelayStateAuto(false, virtualGridPower))
+    return;
+});
+
+Mycila::Task routerTask("Router", [](void* params) {
+  std::optional<float> voltage = grid.getVoltage();
+
+  if (!voltage.has_value() || grid.getPower().isAbsent())
+    router.noDivert();
+
+  output1.applyTemperatureLimit();
+  output2.applyTemperatureLimit();
+
+  output1.applyAutoBypass();
+  output2.applyAutoBypass();
+});
+
 void yasolr_divert() {
   if (router.isCalibrationRunning())
     return;

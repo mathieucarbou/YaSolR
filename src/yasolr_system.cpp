@@ -24,6 +24,8 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::TaskType::ONCE, [](void* params) {
 });
 
 void yasolr_init_system() {
+  logger.info(TAG, "Initialize system...");
+
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);
   safeBootTask.setManager(coreTaskManager);

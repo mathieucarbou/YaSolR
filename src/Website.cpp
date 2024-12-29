@@ -302,7 +302,7 @@ dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_176);
 #endif
 
 void YaSolR::Website::begin() {
-  logger.debug(TAG, "Initializing layout");
+  logger.info(TAG, "Initialize dashboard layout...");
 
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
     _historyX[i] = i - YASOLR_GRAPH_POINTS;
@@ -829,7 +829,7 @@ void YaSolR::Website::begin() {
 }
 
 void YaSolR::Website::initCards() {
-  logger.debug(TAG, "Initializing cards");
+  logger.debug(TAG, "Initialize dashboard cards...");
 
   // Statistics
 

@@ -16,7 +16,7 @@ void yasolr_boot() {
 
   // early logging
   logger.forwardTo(&Serial);
-  logger.info(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  logger.info(TAG, "Booting %s...", Mycila::AppInfo.nameModelVersion.c_str());
 
   // system
   Mycila::System::init(true, "fs");

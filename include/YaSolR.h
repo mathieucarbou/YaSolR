@@ -66,40 +66,51 @@ extern Mycila::Task dashboardUpdateTask;
 
 // Config
 extern Mycila::Config config;
+extern void yasolr_init_config();
 
 // Network
 extern Mycila::ESPConnect espConnect;
 extern Mycila::Task networkStartTask;
+extern void yasolr_init_network();
 
 // grid electricity
 extern Mycila::Grid grid;
+extern void yasolr_init_grid();
+extern float yasolr_frequency();
 
 // logging
 extern Mycila::Logger logger;
+extern void yasolr_init_logging();
+extern void yasolr_configure_logging();
 
 // router
 extern Mycila::PID pidController;
 extern Mycila::Router router;
 
-// Remote JSY
-extern AsyncUDP* udp;
-extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
-
 // JSY
 extern Mycila::JSY* jsy;
 extern Mycila::Task* jsyTask;
 extern Mycila::TaskManager* jsyTaskManager;
+extern void yasolr_init_jsy();
+
+// JSY Remote
+extern AsyncUDP* udp;
+extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
+extern Mycila::Task* jsyRemoteTask;
+extern void yasolr_init_jsy_remote();
 
 // DS18
 extern Mycila::DS18* ds18O1;
 extern Mycila::DS18* ds18O2;
 extern Mycila::DS18* ds18Sys;
 extern Mycila::Task* ds18Task;
+extern void yasolr_init_ds18();
 
 // Display
 extern Mycila::EasyDisplay* display;
 extern Mycila::Task* displayCarouselTask;
 extern Mycila::Task* displayTask;
+extern void yasolr_init_display();
 
 // ZCD
 extern Mycila::PulseAnalyzer* pulseAnalyzer;
@@ -111,6 +122,7 @@ extern Mycila::Task* mqttPublishConfigTask;
 extern Mycila::Task* mqttPublishStaticTask;
 extern Mycila::Task* mqttPublishTask;
 extern Mycila::Task* haDiscoveryTask;
+extern void yasolr_init_mqtt();
 
 // PZEM
 extern Mycila::PZEM* pzemO1;
@@ -119,9 +131,11 @@ extern Mycila::Task* pzemO1PairingTask;
 extern Mycila::Task* pzemO2PairingTask;
 extern Mycila::Task* pzemTask;
 extern Mycila::TaskManager* pzemTaskManager;
+extern void yasolr_init_pzem();
 
 // Lights
 extern Mycila::TrafficLight lights;
+extern void yasolr_init_lights();
 
 // System
 extern Mycila::Task resetTask;
@@ -129,6 +143,19 @@ extern Mycila::Task restartTask;
 extern Mycila::Task safeBootTask;
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::TaskManager unsafeTaskManager;
+extern void yasolr_boot();
+extern void yasolr_init_system();
+
+// Trial
+extern void yasolr_init_trial();
+
+// init
+extern void yasolr_init_web_server();
+extern void yasolr_init_zcd();
+
+// TODO
+extern void yasolr_divert();
+extern void yasolr_configure();
 
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
@@ -144,27 +171,3 @@ extern Mycila::RouterRelay routerRelay2;
 extern Mycila::Task calibrationTask;
 extern Mycila::Task relayTask;
 extern Mycila::Task routerTask;
-
-// fn
-extern float yasolr_frequency();
-extern void yasolr_boot();
-extern void yasolr_configure();
-extern void yasolr_divert();
-
-extern void yasolr_init_config();
-extern void yasolr_init_display();
-extern void yasolr_init_ds18();
-extern void yasolr_init_grid();
-extern void yasolr_init_jsy_remote_listener();
-extern void yasolr_init_jsy();
-extern void yasolr_init_lights();
-extern void yasolr_init_logging();
-extern void yasolr_init_mqtt();
-extern void yasolr_init_network();
-extern void yasolr_init_pzem();
-extern void yasolr_init_system();
-extern void yasolr_init_trial();
-extern void yasolr_init_web_server();
-extern void yasolr_init_zcd();
-
-extern void yasolr_configure_logging();

@@ -24,6 +24,8 @@ void yasolr_init_display() {
     assert(!displayCarouselTask);
     assert(!displayTask);
 
+    logger.info(TAG, "Initialize display...");
+
     display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 
     const std::string& displayType = config.getString(KEY_DISPLAY_TYPE);
@@ -34,8 +36,10 @@ void yasolr_init_display() {
     else if (displayType == "SH1106")
       display->begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
 
-    if (!display->isEnabled())
+    if (!display->isEnabled()) {
+      logger.error(TAG, "Display failed to initialize!");
       return;
+    }
 
     display->clearDisplay();
     display->setActive(true);

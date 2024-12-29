@@ -14,11 +14,15 @@ void yasolr_init_jsy() {
     assert(!jsyTask);
     assert(!jsyTaskManager);
 
+    logger.info(TAG, "Initialize JSY...");
+
     jsy = new Mycila::JSY();
     jsy->begin(YASOLR_JSY_SERIAL, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
 
-    if (!jsy->isEnabled())
+    if (!jsy->isEnabled()) {
+      logger.error(TAG, "JSY failed to initialize!");
       return;
+    }
 
     if (jsy->getBaudRate() != jsy->getMaxAvailableBaudRate())
       jsy->setBaudRate(jsy->getMaxAvailableBaudRate());

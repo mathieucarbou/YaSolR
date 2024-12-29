@@ -14,6 +14,8 @@ void yasolr_init_zcd() {
     assert(!pulseAnalyzer);
     assert(!zcdTask);
 
+    logger.info(TAG, "Initialize ZCD pulse analyzer...");
+
     pulseAnalyzer = new Mycila::PulseAnalyzer();
     pulseAnalyzer->onZeroCross(Mycila::Dimmer::onZeroCross);
     pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));

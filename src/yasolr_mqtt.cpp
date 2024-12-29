@@ -54,7 +54,7 @@ void connect() {
 }
 
 void subscribe() {
-  logger.info(TAG, "Initializing MQTT Subscribers");
+  logger.info(TAG, "Subscribing to MQTT topics...");
 
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
@@ -176,7 +176,7 @@ void subscribe() {
 }
 
 void publishConfig() {
-  logger.debug(TAG, "Publishing config to MQTT");
+  logger.info(TAG, "Publishing config to MQTT...");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   for (auto& key : config.keys()) {
@@ -188,7 +188,7 @@ void publishConfig() {
 }
 
 void publishStaticData() {
-  logger.debug(TAG, "Publishing static data to MQTT");
+  logger.info(TAG, "Publishing static data to MQTT...");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   mqtt->publish(baseTopic + "/system/app/manufacturer", Mycila::AppInfo.manufacturer, true);
@@ -397,7 +397,7 @@ void yasolr_init_mqtt() {
     assert(!mqttPublishStaticTask);
     assert(!mqttPublishTask);
 
-    logger.info(TAG, "Enable MQTT");
+    logger.info(TAG, "Initialize MQTT...");
 
     mqtt = new Mycila::MQTT();
     mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::TaskType::ONCE, [](void* params) { connect(); });

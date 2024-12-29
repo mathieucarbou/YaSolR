@@ -25,13 +25,13 @@ Mycila::ESPConnect espConnect(webServer);
 
 YaSolR::Website website;
 
-Mycila::Task dashboardInitTask("Dashboard Init", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task dashboardInitTask("Init Dashboard", Mycila::TaskType::ONCE, [](void* params) {
   website.initCards();
   website.updateCards();
   dashboard.sendUpdates();
 });
 
-Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
+Mycila::Task dashboardUpdateTask("Dashboard", [](void* params) {
   if (website.pidCharts())
     website.updatePID();
   website.updateCards();
@@ -82,7 +82,7 @@ void routes() {
 }
 
 void rest_api() {
-  logger.info(TAG, "Initializing REST API");
+  logger.info(TAG, "Initialize REST API...");
 
   // debug
 
@@ -496,7 +496,7 @@ void rest_api() {
 }
 
 void yasolr_init_web_server() {
-  logger.info(TAG, "Initializing Web Server");
+  logger.info(TAG, "Initialize web server...");
 
   // Middleware
 
@@ -522,7 +522,7 @@ void yasolr_init_web_server() {
 #endif
   dashboard.onBeforeUpdate([](bool changes_only) {
     if (!changes_only) {
-      logger.info(TAG, "Dashboard refresh requested");
+      logger.info(TAG, "Dashboard refresh requested!");
       website.initCards();
     }
   });

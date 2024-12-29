@@ -22,6 +22,11 @@ Mycila::Task loggingTask("Debug", [](void* params) {
 });
 
 void yasolr_init_logging() {
+  logger.info(TAG, "Initialize logging...");
+
+  logger.setLevel(config.getBool(KEY_ENABLE_DEBUG) ? ARDUHAL_LOG_LEVEL_DEBUG : ARDUHAL_LOG_LEVEL_INFO);
+  esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));
+
 #ifdef APP_MODEL_PRO
   WebSerial.setID(Mycila::AppInfo.firmware.c_str());
   WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());

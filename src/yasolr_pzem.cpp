@@ -12,6 +12,7 @@ Mycila::Task* pzemTask;
 Mycila::TaskManager* pzemTaskManager;
 
 void yasolr_init_pzem() {
+  logger.info(TAG, "Initialize PZEM...");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
@@ -79,6 +80,9 @@ void yasolr_init_pzem() {
         }
       });
       pzemO1PairingTask->setManager(unsafeTaskManager);
+
+    } else {
+      logger.error(TAG, "Failed to initialize PZEM for Output 1!");
     }
   }
 
@@ -147,6 +151,9 @@ void yasolr_init_pzem() {
         }
       });
       pzemO2PairingTask->setManager(unsafeTaskManager);
+
+    } else {
+      logger.error(TAG, "Failed to initialize PZEM for Output 2!");
     }
   }
 

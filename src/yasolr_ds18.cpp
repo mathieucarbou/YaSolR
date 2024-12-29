@@ -10,6 +10,7 @@ Mycila::DS18* ds18Sys;
 Mycila::Task* ds18Task;
 
 void yasolr_init_ds18() {
+  logger.info(TAG, "Initialize DS18 probes...");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_DS18_SYSTEM)) {
@@ -27,6 +28,8 @@ void yasolr_init_ds18() {
             mqttPublishTask->requestEarlyRun();
         }
       });
+    } else {
+      logger.error(TAG, "DS18 system probe failed to initialize!");
     }
   }
 
@@ -46,6 +49,8 @@ void yasolr_init_ds18() {
             mqttPublishTask->requestEarlyRun();
         }
       });
+    } else {
+      logger.error(TAG, "DS18 output 1 probe failed to initialize!");
     }
   }
 
@@ -66,6 +71,8 @@ void yasolr_init_ds18() {
         }
       });
       ds18O2 = new Mycila::DS18();
+    } else {
+      logger.error(TAG, "DS18 output 2 probe failed to initialize!");
     }
   }
 
