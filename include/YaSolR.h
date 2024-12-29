@@ -73,7 +73,6 @@ extern Mycila::Grid grid;
 
 // logging
 extern Mycila::Logger logger;
-extern Mycila::Task debugTask;
 
 // router
 extern Mycila::PID pidController;
@@ -154,7 +153,6 @@ extern void yasolr_configure();
 extern void yasolr_divert();
 extern void yasolr_event_listeners();
 extern void yasolr_mqtt_subscribers();
-extern void yasolr_rest_api();
 
 extern void yasolr_start_display();
 extern void yasolr_start_ds18();
@@ -162,6 +160,7 @@ extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
 extern void yasolr_start_lights();
 extern void yasolr_start_logging();
+extern void yasolr_start_rest_api();
 extern void yasolr_start_website();
 extern void yasolr_start_zcd();
 extern void yasolr_configure_logging();

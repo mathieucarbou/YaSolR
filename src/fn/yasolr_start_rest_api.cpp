@@ -5,12 +5,11 @@
 #include <YaSolR.h>
 
 #include <MycilaUtilities.h>
-#include <YaSolRWebsite.h>
 
 #include <map>
 #include <string>
 
-void yasolr_rest_api() {
+void yasolr_start_rest_api() {
   logger.info(TAG, "Initializing REST API");
 
   // debug

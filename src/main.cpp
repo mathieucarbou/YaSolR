@@ -34,7 +34,7 @@ void setup() {
 
   yasolr_configure();
   yasolr_event_listeners();
-  yasolr_rest_api();
+  yasolr_start_rest_api();
   yasolr_mqtt_subscribers();
 
   yasolr_start_display();
