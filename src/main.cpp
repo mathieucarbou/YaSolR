@@ -7,7 +7,6 @@
 Mycila::Config config;
 Mycila::ESPConnect espConnect(webServer);
 Mycila::Grid grid;
-Mycila::Logger logger;
 Mycila::PID pidController;
 Mycila::Router router(pidController);
 
@@ -32,16 +31,21 @@ Mycila::TaskManager pzemTaskManager("y-pzem");
 
 void setup() {
   yasolr_boot();
+
   yasolr_configure();
   yasolr_event_listeners();
   yasolr_rest_api();
   yasolr_mqtt_subscribers();
-  yasolr_start_jsy();
-  yasolr_start_ds18();
+
   yasolr_start_display();
+  yasolr_start_ds18();
+  yasolr_start_jsy();
   yasolr_start_lights();
-  yasolr_start_zcd();
+  yasolr_start_logging();
   yasolr_start_website();
+  yasolr_start_zcd();
+
+  yasolr_configure_logging();
 
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));    // NOLINT
   assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false)); // NOLINT

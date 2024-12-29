@@ -42,15 +42,6 @@ void yasolr_configure() {
   // NTP
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
 
-  // WebSerial
-#ifdef APP_MODEL_PRO
-  WebSerial.setID(Mycila::AppInfo.firmware.c_str());
-  WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());
-  WebSerial.setInput(false);
-#endif
-  WebSerial.begin(&webServer, "/console");
-  logger.forwardTo(&WebSerial);
-
   // Network Manager
   Mycila::ESPConnect::IPConfig ipConfig;
   ipConfig.ip.fromString(config.get(KEY_NET_IP));
@@ -138,8 +129,6 @@ void yasolr_configure() {
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
-  debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
   networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
@@ -160,8 +149,6 @@ void yasolr_configure() {
 
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
-  debugTask.setManager(coreTaskManager);
-  loggingTask.setManager(coreTaskManager);
   networkStartTask.setManager(coreTaskManager);
   networkManagerTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
@@ -188,6 +175,4 @@ void yasolr_configure() {
   // Router
   router.addOutput(output1);
   router.addOutput(output2);
-
-  loggingTask.resume();
 };

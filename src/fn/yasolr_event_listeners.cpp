@@ -28,7 +28,7 @@ void yasolr_event_listeners() {
     const std::string key = k;
 
     if (key == KEY_ENABLE_DEBUG) {
-      loggingTask.resume();
+      yasolr_configure_logging();
 
     } else if (key == KEY_RELAY1_LOAD) {
       routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
