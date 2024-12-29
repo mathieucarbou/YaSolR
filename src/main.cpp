@@ -19,23 +19,23 @@ Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2);
 
 void setup() {
   yasolr_boot();
-  yasolr_start_config();
+  yasolr_init_config();
 
   yasolr_configure();
 
-  yasolr_start_display();
-  yasolr_start_ds18();
-  yasolr_start_grid();
-  yasolr_start_jsy();
-  yasolr_start_lights();
-  yasolr_start_logging();
-  yasolr_start_mqtt();
-  yasolr_start_network();
-  yasolr_start_pzem();
-  yasolr_start_system();
-  yasolr_start_trial();
-  yasolr_start_web_server();
-  yasolr_start_zcd();
+  yasolr_init_display();
+  yasolr_init_ds18();
+  yasolr_init_grid();
+  yasolr_init_jsy();
+  yasolr_init_lights();
+  yasolr_init_logging();
+  yasolr_init_mqtt();
+  yasolr_init_network();
+  yasolr_init_pzem();
+  yasolr_init_system();
+  yasolr_init_trial();
+  yasolr_init_web_server();
+  yasolr_init_zcd();
 
   yasolr_configure_logging();
 

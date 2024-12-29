@@ -42,7 +42,7 @@ Mycila::Task lightsTask("Lights", [](void* params) {
   }
 });
 
-void yasolr_start_lights() {
+void yasolr_init_lights() {
   if (config.getBool(KEY_ENABLE_LIGHTS))
     lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
 

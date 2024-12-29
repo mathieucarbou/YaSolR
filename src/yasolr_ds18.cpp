@@ -9,7 +9,7 @@ Mycila::DS18* ds18O2;
 Mycila::DS18* ds18Sys;
 Mycila::Task* ds18Task;
 
-void yasolr_start_ds18() {
+void yasolr_init_ds18() {
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_DS18_SYSTEM)) {

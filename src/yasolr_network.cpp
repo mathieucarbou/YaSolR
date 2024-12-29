@@ -25,14 +25,14 @@ Mycila::Task networkStartTask("Network Start", Mycila::TaskType::ONCE, [](void* 
     logger.info(TAG, "Enable mDNS");
     MDNS.addService("http", "tcp", 80);
 
-    yasolr_start_jsy_remote_listener();
+    yasolr_init_jsy_remote_listener();
 
     if (mqttConnectTask)
       mqttConnectTask->resume();
   }
 });
 
-void yasolr_start_network() {
+void yasolr_init_network() {
   // NTP
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
 

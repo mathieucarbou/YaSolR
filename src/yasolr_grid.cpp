@@ -36,7 +36,7 @@ float yasolr_frequency() {
   return 0;
 }
 
-void yasolr_start_grid() {
+void yasolr_init_grid() {
   grid.localMetrics().setExpiration(10000);                             // local is fast
   grid.remoteMetrics().setExpiration(10000);                            // remote JSY is fast
   grid.pzemMetrics().setExpiration(10000);                              // local is fast

@@ -18,7 +18,7 @@ enum class DisplayKind {
   DISPLAY_OUTPUT2,
 };
 
-void yasolr_start_display() {
+void yasolr_init_display() {
   if (config.getBool(KEY_ENABLE_DISPLAY)) {
     assert(!display);
     assert(!displayCarouselTask);

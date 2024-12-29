@@ -8,7 +8,7 @@
 
 Mycila::Config config;
 
-void yasolr_start_config() {
+void yasolr_init_config() {
   // setup config system
   config.begin("YASOLR");
   config.configure(KEY_ADMIN_PASSWORD);

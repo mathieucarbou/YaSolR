@@ -495,7 +495,7 @@ void rest_api() {
     });
 }
 
-void yasolr_start_web_server() {
+void yasolr_init_web_server() {
   logger.info(TAG, "Initializing Web Server");
 
   // Middleware

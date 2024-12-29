@@ -8,7 +8,7 @@ Mycila::JSY* jsy;
 Mycila::Task* jsyTask;
 Mycila::TaskManager* jsyTaskManager;
 
-void yasolr_start_jsy() {
+void yasolr_init_jsy() {
   if (config.getBool(KEY_ENABLE_JSY)) {
     assert(!jsy);
     assert(!jsyTask);

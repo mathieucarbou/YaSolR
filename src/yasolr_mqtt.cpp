@@ -389,7 +389,7 @@ void haDiscovery() {
   haDiscovery.end();
 }
 
-void yasolr_start_mqtt() {
+void yasolr_init_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
     assert(!mqtt);
     assert(!mqttConnectTask);

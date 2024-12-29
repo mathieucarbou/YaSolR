@@ -23,7 +23,7 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::TaskType::ONCE, [](void* params) {
   Mycila::System::restartFactory("safeboot");
 });
 
-void yasolr_start_system() {
+void yasolr_init_system() {
   resetTask.setManager(coreTaskManager);
   restartTask.setManager(coreTaskManager);
   safeBootTask.setManager(coreTaskManager);

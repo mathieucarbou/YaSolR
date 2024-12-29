@@ -8,7 +8,7 @@
 Mycila::Task* trialTask;
 #endif
 
-void yasolr_start_trial() {
+void yasolr_init_trial() {
 #ifdef APP_MODEL_TRIAL
   Mycila::Trial.begin();
   Mycila::Trial.validate();

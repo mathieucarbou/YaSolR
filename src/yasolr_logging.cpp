@@ -21,7 +21,7 @@ Mycila::Task loggingTask("Debug", [](void* params) {
     pzemTaskManager->log();
 });
 
-void yasolr_start_logging() {
+void yasolr_init_logging() {
 #ifdef APP_MODEL_PRO
   WebSerial.setID(Mycila::AppInfo.firmware.c_str());
   WebSerial.setTitle((Mycila::AppInfo.name + " Web Console").c_str());

@@ -11,7 +11,7 @@ Mycila::Task* pzemO2PairingTask;
 Mycila::Task* pzemTask;
 Mycila::TaskManager* pzemTaskManager;
 
-void yasolr_start_pzem() {
+void yasolr_init_pzem() {
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {

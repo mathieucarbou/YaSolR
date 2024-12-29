@@ -9,7 +9,7 @@
 Mycila::PulseAnalyzer* pulseAnalyzer;
 Mycila::Task* zcdTask;
 
-void yasolr_start_zcd() {
+void yasolr_init_zcd() {
   if (config.getBool(KEY_ENABLE_ZCD)) {
     assert(!pulseAnalyzer);
     assert(!zcdTask);

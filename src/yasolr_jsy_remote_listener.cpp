@@ -105,7 +105,7 @@ void onData(AsyncUDPPacket packet) {
   }
 }
 
-void yasolr_start_jsy_remote_listener() {
+void yasolr_init_jsy_remote_listener() {
   if (config.getBool(KEY_ENABLE_JSY_REMOTE)) {
     logger.info(TAG, "Enable JSY Remote Listener");
 
