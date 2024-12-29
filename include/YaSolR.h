@@ -41,6 +41,7 @@
 #include <MycilaTaskMonitor.h>
 #include <MycilaTime.h>
 #include <MycilaTrafficLight.h>
+#include <MycilaUtilities.h>
 
 #ifdef APP_MODEL_TRIAL
   #include <MycilaTrial.h>
@@ -149,7 +150,6 @@ extern float yasolr_frequency();
 extern void yasolr_boot();
 extern void yasolr_configure();
 extern void yasolr_divert();
-extern void yasolr_event_listeners();
 
 extern void yasolr_start_config();
 extern void yasolr_start_display();
@@ -162,10 +162,9 @@ extern void yasolr_start_logging();
 extern void yasolr_start_mqtt();
 extern void yasolr_start_network();
 extern void yasolr_start_pzem();
-extern void yasolr_start_rest_api();
 extern void yasolr_start_system();
 extern void yasolr_start_trial();
-extern void yasolr_start_website();
+extern void yasolr_start_web_server();
 extern void yasolr_start_zcd();
 
 extern void yasolr_configure_logging();

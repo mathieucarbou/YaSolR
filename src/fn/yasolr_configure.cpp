@@ -3,8 +3,26 @@
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
 #include <YaSolR.h>
+#include <YaSolRWebsite.h>
 
 #include <string>
+
+void yasolr_divert() {
+  if (router.isCalibrationRunning())
+    return;
+
+  if (!output1.isAutoDimmerEnabled() && !output2.isAutoDimmerEnabled())
+    return;
+
+  std::optional<float> voltage = grid.getVoltage();
+
+  if (voltage.has_value() && grid.getPower().isPresent()) {
+    router.divert(voltage.value(), grid.getPower().get());
+    if (website.pidCharts()) {
+      dashboardUpdateTask.requestEarlyRun();
+    }
+  }
+}
 
 void yasolr_configure() {
   logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
@@ -85,4 +103,25 @@ void yasolr_configure() {
   // Router
   router.addOutput(output1);
   router.addOutput(output2);
+
+  bypassRelayO1.listen([](bool state) {
+    logger.info(TAG, "Output 1 Relay changed to %s", state ? "ON" : "OFF");
+    if (mqttPublishTask)
+      mqttPublishTask->requestEarlyRun();
+  });
+  bypassRelayO2.listen([](bool state) {
+    logger.info(TAG, "Output 2 Relay changed to %s", state ? "ON" : "OFF");
+    if (mqttPublishTask)
+      mqttPublishTask->requestEarlyRun();
+  });
+  relay1.listen([](bool state) {
+    logger.info(TAG, "Relay 1 changed to %s", state ? "ON" : "OFF");
+    if (mqttPublishTask)
+      mqttPublishTask->requestEarlyRun();
+  });
+  relay2.listen([](bool state) {
+    logger.info(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
+    if (mqttPublishTask)
+      mqttPublishTask->requestEarlyRun();
+  });
 }

@@ -22,8 +22,6 @@ void setup() {
   yasolr_start_config();
 
   yasolr_configure();
-  yasolr_event_listeners();
-  yasolr_start_rest_api();
 
   yasolr_start_display();
   yasolr_start_ds18();
@@ -36,7 +34,7 @@ void setup() {
   yasolr_start_pzem();
   yasolr_start_system();
   yasolr_start_trial();
-  yasolr_start_website();
+  yasolr_start_web_server();
   yasolr_start_zcd();
 
   yasolr_configure_logging();
