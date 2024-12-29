@@ -84,4 +84,4 @@ void yasolr_start_ds18() {
     ds18Task->setInterval(10 * Mycila::TaskDuration::SECONDS);
     ds18Task->setManager(coreTaskManager);
   }
-};
+}

@@ -126,4 +126,4 @@ void yasolr_mqtt_subscribers() {
       output2.temperature().update(t);
     });
   }
-};
+}

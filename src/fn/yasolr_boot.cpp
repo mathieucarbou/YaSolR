@@ -26,4 +26,4 @@ void yasolr_boot() {
   Mycila::Trial.begin();
   Mycila::Trial.validate();
 #endif
-};
+}

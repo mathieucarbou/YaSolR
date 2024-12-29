@@ -167,4 +167,4 @@ void yasolr_start_pzem() {
     assert(pzemTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
     Mycila::TaskMonitor.addTask(pzemTaskManager->getName());
   }
-};
+}

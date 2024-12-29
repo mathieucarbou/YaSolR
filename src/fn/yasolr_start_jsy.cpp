@@ -98,4 +98,4 @@ void yasolr_start_jsy() {
     assert(jsyTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
     Mycila::TaskMonitor.addTask(jsyTaskManager->getName());
   }
-};
+}

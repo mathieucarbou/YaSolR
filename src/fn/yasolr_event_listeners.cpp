@@ -90,4 +90,4 @@ void yasolr_event_listeners() {
     logger.info(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
     mqttPublishTask.requestEarlyRun();
   });
-};
+}

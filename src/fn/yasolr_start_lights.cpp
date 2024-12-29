@@ -48,4 +48,4 @@ void yasolr_start_lights() {
 
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   lightsTask.setManager(coreTaskManager);
-};
+}

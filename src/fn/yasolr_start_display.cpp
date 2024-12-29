@@ -198,4 +198,4 @@ void yasolr_start_display() {
     displayTask->setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
     displayTask->setManager(coreTaskManager);
   }
-};
+}

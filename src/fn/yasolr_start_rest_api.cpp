@@ -421,4 +421,4 @@ void yasolr_start_rest_api() {
       response->setLength();
       request->send(response);
     });
-};
+}

@@ -118,4 +118,4 @@ void yasolr_start_jsy_remote_listener() {
     logger.info(TAG, "Enable UDP Server on port %" PRIu16, udpPort);
     udp->listen(udpPort);
   }
-};
+}

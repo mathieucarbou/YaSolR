@@ -20,4 +20,4 @@ void yasolr_divert() {
       dashboardUpdateTask.requestEarlyRun();
     }
   }
-};
+}

@@ -159,4 +159,4 @@ void yasolr_configure() {
   // Router
   router.addOutput(output1);
   router.addOutput(output2);
-};
+}

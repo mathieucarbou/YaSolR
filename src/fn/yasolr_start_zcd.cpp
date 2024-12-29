@@ -55,4 +55,4 @@ void yasolr_start_zcd() {
     zcdTask->setManager(coreTaskManager);
     zcdTask->resume();
   }
-};
+}

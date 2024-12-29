@@ -251,4 +251,4 @@ void yasolr_start_config() {
   // pre-init logging
   logger.setLevel(config.getBool(KEY_ENABLE_DEBUG) ? ARDUHAL_LOG_LEVEL_DEBUG : ARDUHAL_LOG_LEVEL_INFO);
   esp_log_level_set("*", static_cast<esp_log_level_t>(logger.getLevel()));
-};
+}

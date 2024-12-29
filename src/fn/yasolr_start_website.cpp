@@ -103,4 +103,4 @@ void yasolr_start_website() {
   dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   dashboardUpdateTask.setManager(coreTaskManager);
-};
+}

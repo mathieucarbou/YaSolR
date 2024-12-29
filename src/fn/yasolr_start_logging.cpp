@@ -33,7 +33,7 @@ void yasolr_start_logging() {
 
   loggingTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
   loggingTask.setManager(coreTaskManager);
-};
+}
 
 void yasolr_configure_logging() {
   logger.info(TAG, "Configuring logging...");
