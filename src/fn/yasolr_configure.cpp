@@ -136,19 +136,6 @@ void yasolr_configure() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM))
     pzemO2.begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
 
-  // Display
-  if (config.getBool(KEY_ENABLE_DISPLAY)) {
-    const std::string& displayType = config.getString(KEY_DISPLAY_TYPE);
-    if (displayType == "SSD1306")
-      display.begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
-    else if (displayType == "SH1107")
-      display.begin(Mycila::EasyDisplayType::SH1107, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
-    else if (displayType == "SH1106")
-      display.begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
-    display.clearDisplay();
-    display.setActive(true);
-  }
-
   // Dimmers
   dimmerO1.setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
   dimmerO1.setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
@@ -167,15 +154,11 @@ void yasolr_configure() {
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  displayCarouselTask.setEnabled(display.isEnabled());
-  displayCarouselTask.setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
   dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   debugTask.setEnabledWhen([]() { return config.getBool(KEY_ENABLE_DEBUG); });
   debugTask.setInterval(20 * Mycila::TaskDuration::SECONDS);
-  displayTask.setEnabled(display.isEnabled());
-  displayTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
   lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
@@ -198,11 +181,9 @@ void yasolr_configure() {
 
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
-  displayCarouselTask.setManager(coreTaskManager);
   dashboardInitTask.setManager(coreTaskManager);
   dashboardUpdateTask.setManager(coreTaskManager);
   debugTask.setManager(coreTaskManager);
-  displayTask.setManager(coreTaskManager);
   lightsTask.setManager(coreTaskManager);
   loggingTask.setManager(coreTaskManager);
   networkStartTask.setManager(coreTaskManager);

@@ -95,9 +95,13 @@ extern Mycila::DS18* ds18O2;
 extern Mycila::DS18* ds18Sys;
 extern Mycila::Task* ds18Task;
 
+// Display
+extern Mycila::EasyDisplay* display;
+extern Mycila::Task* displayCarouselTask;
+extern Mycila::Task* displayTask;
+
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
-extern Mycila::EasyDisplay display;
 extern Mycila::HA::Discovery haDiscovery;
 extern Mycila::MQTT mqtt;
 extern Mycila::PulseAnalyzer pulseAnalyzer;
@@ -117,8 +121,6 @@ extern Mycila::Task calibrationTask;
 extern Mycila::Task dashboardInitTask;
 extern Mycila::Task dashboardUpdateTask;
 extern Mycila::Task debugTask;
-extern Mycila::Task displayCarouselTask;
-extern Mycila::Task displayTask;
 extern Mycila::Task lightsTask;
 extern Mycila::Task loggingTask;
 extern Mycila::Task networkStartTask;
@@ -157,6 +159,7 @@ extern void yasolr_rest_api();
 extern void yasolr_start_ds18();
 extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
+extern void yasolr_start_display();
 
 enum class DisplayKind {
   DISPLAY_HOME = 1,

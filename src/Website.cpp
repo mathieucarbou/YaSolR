@@ -1026,7 +1026,7 @@ void YaSolR::Website::initCards() {
 
   // Hardware
 
-  _status(_display, KEY_ENABLE_DISPLAY, display.isEnabled());
+  _status(_display, KEY_ENABLE_DISPLAY, display && display->isEnabled());
   _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp && udp->connected());
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
   _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, bypassRelayO1.isEnabled());

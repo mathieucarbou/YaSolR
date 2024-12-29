@@ -23,7 +23,6 @@ YaSolR::Website website;
 // hardware
 Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
-Mycila::EasyDisplay display(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 Mycila::HA::Discovery haDiscovery;
 Mycila::MQTT mqtt;
 Mycila::PulseAnalyzer pulseAnalyzer;
@@ -50,6 +49,7 @@ void setup() {
   yasolr_mqtt_subscribers();
   yasolr_start_jsy();
   yasolr_start_ds18();
+  yasolr_start_display();
 
   logger.info(TAG, "Initializing dashboard");
   website.initLayout();

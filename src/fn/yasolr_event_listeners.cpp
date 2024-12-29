@@ -136,7 +136,8 @@ void yasolr_event_listeners() {
       logger.info(TAG, "PID Controller reconfigured!");
 
     } else if (key == KEY_DISPLAY_SPEED) {
-      displayCarouselTask.setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
+      if (displayCarouselTask)
+        displayCarouselTask->setInterval(config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS);
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {
       mqttPublishTask.setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS);

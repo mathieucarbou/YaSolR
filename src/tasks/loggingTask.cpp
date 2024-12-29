@@ -24,7 +24,8 @@ Mycila::Task loggingTask("Logging", Mycila::TaskType::ONCE, [](void* params) {
     debugTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (ds18Task)
       ds18Task->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    displayTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    if (displayTask)
+      displayTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     if (jsyTask)
       jsyTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     mqttPublishTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
@@ -34,7 +35,8 @@ Mycila::Task loggingTask("Logging", Mycila::TaskType::ONCE, [](void* params) {
     debugTask.disableProfiling();
     if (ds18Task)
       ds18Task->disableProfiling();
-    displayTask.disableProfiling();
+    if (displayTask)
+      displayTask->disableProfiling();
     if (jsyTask)
       jsyTask->disableProfiling();
     mqttPublishTask.disableProfiling();
