@@ -7,7 +7,8 @@
 Mycila::Task safeBootTask("SafeBoot", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Restarting %s in SafeBoot mode...", Mycila::AppInfo.nameModelVersion.c_str());
   // stop electricity
-  pulseAnalyzer.end();
+  if (pulseAnalyzer)
+    pulseAnalyzer->end();
   dimmerO1.end();
   dimmerO2.end();
   bypassRelayO1.end();

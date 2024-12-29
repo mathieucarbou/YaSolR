@@ -1282,14 +1282,14 @@ void YaSolR::Website::updateCards() {
 
   _status(_jsy, KEY_ENABLE_JSY, jsy && jsy->isEnabled(), jsy && jsy->isConnected(), YASOLR_LBL_110);
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt.isEnabled(), mqtt.isConnected(), mqtt.getLastError() ? mqtt.getLastError() : YASOLR_LBL_113);
-  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), pulseAnalyzer.isOnline(), pulseAnalyzer.isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
+  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
   _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1 && ds18O1->isEnabled(), ds18O1 && ds18O1->getLastTime() > 0, YASOLR_LBL_114);
   _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1.isEnabled(), pzemO1.isConnected() && pzemO1.getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT1, pzemO1.isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
-  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), pulseAnalyzer.isOnline(), pulseAnalyzer.isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
+  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
   _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2 && ds18O2->isEnabled(), ds18O2 && ds18O2->getLastTime() > 0, YASOLR_LBL_114);
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2.isEnabled(), pzemO2.isConnected() && pzemO2.getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2.isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys && ds18Sys->isEnabled(), ds18Sys && ds18Sys->getLastTime() > 0, YASOLR_LBL_114);
-  _status(_zcd, KEY_ENABLE_ZCD, pulseAnalyzer.isEnabled(), pulseAnalyzer.isOnline(), YASOLR_LBL_110);
+  _status(_zcd, KEY_ENABLE_ZCD, pulseAnalyzer && pulseAnalyzer->isEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), YASOLR_LBL_110);
 #endif
 }
 

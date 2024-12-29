@@ -140,13 +140,6 @@ void yasolr_configure() {
   dimmerO2.setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
   dimmerO2.setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
 
-  // ZCD
-  if (config.getBool(KEY_ENABLE_ZCD)) {
-    pulseAnalyzer.onZeroCross(Mycila::Dimmer::onZeroCross);
-    pulseAnalyzer.begin(config.getLong(KEY_PIN_ZCD));
-    zcdTask.resume();
-  }
-
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
@@ -160,7 +153,6 @@ void yasolr_configure() {
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  zcdTask.setEnabled(pulseAnalyzer.isEnabled());
 #ifdef APP_MODEL_TRIAL
   trialTask.setInterval(30 * Mycila::TaskDuration::SECONDS);
 #endif
@@ -187,7 +179,6 @@ void yasolr_configure() {
   restartTask.setManager(coreTaskManager);
   routerTask.setManager(coreTaskManager);
   safeBootTask.setManager(coreTaskManager);
-  zcdTask.setManager(coreTaskManager);
 #ifdef APP_MODEL_TRIAL
   trialTask.setManager(coreTaskManager);
 #endif

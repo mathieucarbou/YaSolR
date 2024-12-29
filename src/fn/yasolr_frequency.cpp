@@ -21,9 +21,11 @@ float yasolr_frequency() {
   if (frequency)
     return frequency;
 
-  frequency = pulseAnalyzer.getNominalGridFrequency();
-  if (frequency)
-    return frequency;
+  if (pulseAnalyzer) {
+    frequency = pulseAnalyzer->getNominalGridFrequency();
+    if (frequency)
+      return frequency;
+  }
 
   return 0;
 }

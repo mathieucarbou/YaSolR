@@ -100,11 +100,13 @@ extern Mycila::EasyDisplay* display;
 extern Mycila::Task* displayCarouselTask;
 extern Mycila::Task* displayTask;
 
+// ZCD
+extern Mycila::PulseAnalyzer* pulseAnalyzer;
+
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
 extern Mycila::HA::Discovery haDiscovery;
 extern Mycila::MQTT mqtt;
-extern Mycila::PulseAnalyzer pulseAnalyzer;
 extern Mycila::PZEM pzemO1;
 extern Mycila::PZEM pzemO2;
 extern Mycila::Relay bypassRelayO1;
@@ -129,7 +131,6 @@ extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
 extern Mycila::Task routerTask;
 extern Mycila::Task safeBootTask;
-extern Mycila::Task zcdTask;
 #ifdef APP_MODEL_TRIAL
 extern Mycila::Task trialTask;
 #endif
@@ -160,6 +161,7 @@ extern void yasolr_start_ds18();
 extern void yasolr_start_jsy_remote_listener();
 extern void yasolr_start_jsy();
 extern void yasolr_start_lights();
+extern void yasolr_start_zcd();
 
 enum class DisplayKind {
   DISPLAY_HOME = 1,

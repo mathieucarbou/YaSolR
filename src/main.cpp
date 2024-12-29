@@ -24,7 +24,6 @@ Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
 Mycila::HA::Discovery haDiscovery;
 Mycila::MQTT mqtt;
-Mycila::PulseAnalyzer pulseAnalyzer;
 Mycila::PZEM pzemO1;
 Mycila::PZEM pzemO2;
 Mycila::Relay bypassRelayO1;
@@ -50,6 +49,7 @@ void setup() {
   yasolr_start_ds18();
   yasolr_start_display();
   yasolr_start_lights();
+  yasolr_start_zcd();
 
   logger.info(TAG, "Initializing dashboard");
   website.initLayout();
