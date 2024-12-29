@@ -8,6 +8,7 @@
 #include <AsyncUDP.h>
 #include <CRC.h>
 #include <ESPAsyncWebServer.h>
+#include <ESPmDNS.h>
 #include <FastCRC32.h>
 #include <HardwareSerial.h>
 #include <LittleFS.h>
@@ -67,8 +68,6 @@ extern Mycila::Config config;
 
 // Network
 extern Mycila::ESPConnect espConnect;
-extern Mycila::Task networkStartTask;
-extern Mycila::Task networkManagerTask;
 
 // grid electricity
 extern Mycila::Grid grid;

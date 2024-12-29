@@ -13,9 +13,13 @@ extern const uint8_t config_html_gz_start[] asm("_binary__pio_data_config_html_g
 extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_end");
 
 AsyncWebServer webServer(80);
+
 AuthenticationMiddleware authMiddleware;
 LoggingMiddleware loggingMiddleware;
+
 ESPDash dashboard(webServer, "/dashboard", false);
+Mycila::ESPConnect espConnect(webServer);
+
 YaSolR::Website website;
 
 Mycila::Task dashboardInitTask("Dashboard Init", Mycila::TaskType::ONCE, [](void* params) {
@@ -33,7 +37,9 @@ Mycila::Task dashboardUpdateTask("Dashboard Update", [](void* params) {
 });
 
 void yasolr_start_website() {
-  logger.info(TAG, "Initializing HTTP Endpoints");
+  logger.info(TAG, "Initializing Web Server");
+
+  // Middleware
 
   loggingMiddleware.setOutput(Serial);
 
@@ -46,6 +52,8 @@ void yasolr_start_website() {
   webServer.addMiddleware(&loggingMiddleware);
   webServer.addMiddleware(&authMiddleware);
 
+  // Rewrites
+
   webServer.rewrite("/dash/assets/logo/mini", "/logo-icon");
   webServer.rewrite("/dash/assets/logo/large", "/logo");
   webServer.rewrite("/dash/assets/logo", "/logo");
@@ -54,6 +62,8 @@ void yasolr_start_website() {
   webServer.rewrite("/wsl/logo/dark", "/logo");
   webServer.rewrite("/wsl/logo/light", "/logo");
   webServer.rewrite("/", "/dashboard").setFilter([](AsyncWebServerRequest* request) { return espConnect.getState() != Mycila::ESPConnect::State::PORTAL_STARTED; });
+
+  // Routes
 
   webServer.on("/logo-icon", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncWebServerResponse* response = request->beginResponse(200, "image/png", logo_icon_png_gz_start, logo_icon_png_gz_end - logo_icon_png_gz_start);
@@ -84,6 +94,8 @@ void yasolr_start_website() {
       request->send(response);
     });
 
+  // ESP-DASH
+
 #ifdef APP_MODEL_PRO
   dashboard.setTitle(Mycila::AppInfo.nameModel.c_str());
 #endif
@@ -94,8 +106,11 @@ void yasolr_start_website() {
     }
   });
 
-  logger.info(TAG, "Initializing dashboard");
+  // YaSolR
+
   website.begin();
+
+  // Tasks
 
   dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardInitTask.setManager(coreTaskManager);
@@ -103,6 +118,8 @@ void yasolr_start_website() {
   dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   dashboardUpdateTask.setManager(coreTaskManager);
+
+  // Task Monitor
 
   Mycila::TaskMonitor.addTask("async_tcp"); // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
 }

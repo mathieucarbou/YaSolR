@@ -4,7 +4,6 @@
  */
 #include <YaSolR.h>
 
-Mycila::ESPConnect espConnect(webServer);
 Mycila::PID pidController;
 Mycila::Router router(pidController);
 

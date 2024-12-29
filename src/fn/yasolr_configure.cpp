@@ -25,20 +25,6 @@ void yasolr_configure() {
   pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
   pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
 
-  // NTP
-  Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
-
-  // Network Manager
-  Mycila::ESPConnect::IPConfig ipConfig;
-  ipConfig.ip.fromString(config.get(KEY_NET_IP));
-  ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
-  ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));
-  ipConfig.dns.fromString(config.get(KEY_NET_DNS));
-  espConnect.setIPConfig(ipConfig);
-  espConnect.setAutoRestart(true);
-  espConnect.setBlocking(false);
-  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
-
   //////////////
   // HARDWARE //
   //////////////
@@ -114,7 +100,6 @@ void yasolr_configure() {
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
   relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
@@ -128,8 +113,6 @@ void yasolr_configure() {
 
   // coreTaskManager
   calibrationTask.setManager(coreTaskManager);
-  networkStartTask.setManager(coreTaskManager);
-  networkManagerTask.setManager(coreTaskManager);
   relayTask.setManager(coreTaskManager);
   routerTask.setManager(coreTaskManager);
 
