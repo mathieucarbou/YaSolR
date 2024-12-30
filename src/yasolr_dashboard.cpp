@@ -275,7 +275,7 @@ dash::SwitchCard _resistanceCalibration(dashboard, YASOLR_LBL_186);
 dash::Tab _pidTab(dashboard, "\u2699 " YASOLR_LBL_159);
 dash::SwitchCard _pidView(dashboard, YASOLR_LBL_169);
 dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
-dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_161, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2);
+dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_161, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2 "," YASOLR_PID_D_MODE_3);
 dash::DropdownCard<const char*> _pidICMode(dashboard, YASOLR_LBL_162, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
 dash::TextInputCard<int> _pidSetpoint(dashboard, YASOLR_LBL_163);
 dash::TextInputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
@@ -767,6 +767,8 @@ void YaSolR::Website::begin() {
       config.set(KEY_PID_D_MODE, "1");
     else if (strcmp(value, YASOLR_PID_D_MODE_2) == 0)
       config.set(KEY_PID_D_MODE, "2");
+    else if (strcmp(value, YASOLR_PID_D_MODE_3) == 0)
+      config.set(KEY_PID_D_MODE, "3");
     else
       config.unset(KEY_PID_D_MODE);
     _pidDMode.setValue(config.get(KEY_PID_D_MODE));

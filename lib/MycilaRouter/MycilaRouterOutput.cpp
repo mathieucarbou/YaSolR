@@ -149,6 +149,11 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
     return 0;
   }
 
+  if (availablePowerToDivert <= 0) {
+    _dimmer->off();
+    return 0;
+  }
+
   if (isDimmerTemperatureLimitReached()) {
     _dimmer->off();
     return 0;
@@ -167,7 +172,11 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
   _dimmer->setDutyCycle(dutyCycle);
 
   // returns the used power as per the dimmer state
-  return maxPower * getDimmerDutyCycleLive();
+  float used = maxPower * getDimmerDutyCycleLive();
+
+  // Serial.printf("Auto Divert %s: %.02f W => %.02f W %.02f%%\n", _name, availablePowerToDivert, used, dutyCycle * 100);
+
+  return used;
 }
 
 // bypass

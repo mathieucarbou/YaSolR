@@ -89,8 +89,8 @@ void yasolr_init_config() {
   config.configure(KEY_PID_KD, "0.05");
   config.configure(KEY_PID_KI, "0.2");
   config.configure(KEY_PID_KP, "0.1");
-  config.configure(KEY_PID_OUT_MAX, "5000");
-  config.configure(KEY_PID_OUT_MIN, "-500");
+  config.configure(KEY_PID_OUT_MAX, "4000");
+  config.configure(KEY_PID_OUT_MIN, "-300");
   config.configure(KEY_PID_P_MODE, "2");
   config.configure(KEY_PID_SETPOINT, "0");
   config.configure(KEY_PIN_DISPLAY_SCL, std::to_string(YASOLR_DISPLAY_CLOCK_PIN));

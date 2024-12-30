@@ -51,8 +51,9 @@
 #define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
 #define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
 #define YASOLR_MQTT_WILL_TOPIC             "/status"
-#define YASOLR_PID_D_MODE_1                YASOLR_PID_P_MODE_1
-#define YASOLR_PID_D_MODE_2                YASOLR_PID_P_MODE_2
+#define YASOLR_PID_D_MODE_1                "1: On Error"
+#define YASOLR_PID_D_MODE_2                "2: On Input"
+#define YASOLR_PID_D_MODE_3                "3: On Error Rate"
 #define YASOLR_PID_IC_MODE_0               "0: Off"
 #define YASOLR_PID_IC_MODE_1               "1: Clamp"
 #define YASOLR_PID_IC_MODE_2               "2: Advanced"
