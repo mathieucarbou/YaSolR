@@ -229,13 +229,16 @@ The output sections show the state of the outputs and the possibility to control
   Only available when the dimmer is not in automatic mode.
   Otherwise the dimmer level is displayed.
 - `Dimmer Duty Limiter`: Slider to limit the level of the dimmer in order to limit the routed power.
-- `Dimmer Temperature Limiter`: Temperature threshold when the dimmer will stop routing. This temperature can be different than the temperature used in auto bypass mode.
+- `Dimmer Temperature Limiter`: Temperature threshold when the dimmer will stop routing.
+  This temperature can be different than the temperature used in auto bypass mode.
+  A value of `0` means that the temperature limiter is disabled.
 - `Dimmer Automatic Control`: ON/OFF switch to select automatic routing mode or manual control of the dimmer.
   Resistance calibration step is required before using automatic mode.
 - `Excess Power Limiter (W)`: Allows to share the remaining grid excess to the second output.
   Only available in automatic mode.
   For example, if output 1 is set to `500 W`, then output 1 will take at most `500 W` of the grid excess.
   Output 2 will be dimmed with the remaining excess.
+  A value of `0` means that the excess power limiter is disabled.
 
 **Bypass Control:**
 
