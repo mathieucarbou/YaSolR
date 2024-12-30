@@ -726,8 +726,8 @@ You can change the PID settings at runtime and the effect will appear immediatel
 - `Kp`: `0.1`
 - `Ki`: `0.2`
 - `Kd`: `0.05`
-- `Output Min`: `-500`
-- `Output Max`: `5000`
+- `Output Min`: `-300`
+- `Output Max`: `4000`
 
 Here are some other values that seem to work well depending on the load, ZCD module, etc:
 
