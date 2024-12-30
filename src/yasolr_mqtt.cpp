@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 #include <string>
 
@@ -429,5 +429,13 @@ void yasolr_init_mqtt() {
     mqttPublishTask->setManager(unsafeTaskManager);
 
     Mycila::TaskMonitor.addTask("mqtt_task"); // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
+
+    if (config.getBool(KEY_ENABLE_DEBUG)) {
+      haDiscoveryTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+      mqttConnectTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+      mqttPublishConfigTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+      mqttPublishStaticTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+      mqttPublishTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    }
   }
 }

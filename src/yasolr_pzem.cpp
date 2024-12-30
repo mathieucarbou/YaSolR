@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 Mycila::PZEM* pzemO1;
 Mycila::PZEM* pzemO2;
@@ -80,6 +80,8 @@ void yasolr_init_pzem() {
         }
       });
       pzemO1PairingTask->setManager(unsafeTaskManager);
+      if (config.getBool(KEY_ENABLE_DEBUG))
+        pzemO1PairingTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
     } else {
       logger.error(TAG, "Failed to initialize PZEM for Output 1!");
@@ -151,6 +153,8 @@ void yasolr_init_pzem() {
         }
       });
       pzemO2PairingTask->setManager(unsafeTaskManager);
+      if (config.getBool(KEY_ENABLE_DEBUG))
+        pzemO2PairingTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
     } else {
       logger.error(TAG, "Failed to initialize PZEM for Output 2!");
@@ -159,6 +163,7 @@ void yasolr_init_pzem() {
 
   if (count) {
     pzemTaskManager = new Mycila::TaskManager("y-pzem");
+
     pzemTask = new Mycila::Task("PZEM", [](void* params) {
       if (pzemO1) {
         pzemO1->read();
@@ -171,7 +176,11 @@ void yasolr_init_pzem() {
     });
     pzemTask->setEnabledWhen([]() { return (!pzemO1PairingTask || pzemO1PairingTask->isPaused()) && (!pzemO2PairingTask || pzemO2PairingTask->isPaused()); });
     pzemTask->setManager(*pzemTaskManager);
+    if (config.getBool(KEY_ENABLE_DEBUG))
+      pzemTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+
     assert(pzemTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
+
     Mycila::TaskMonitor.addTask(pzemTaskManager->getName());
   }
 }

@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolRWebsite.h>
+#include <yasolr_dashboard.h>
 
 #include <string>
 #include <unordered_map>
@@ -967,13 +967,15 @@ void YaSolR::Website::initCards() {
 
   // management
 
+  const bool debug = config.getBool(KEY_ENABLE_DEBUG);
   _configBackup.setValue("/api/config/backup");
   _configRestore.setValue("/api/config/restore");
   _consoleLink.setValue("/console");
   _debugInfo.setValue("/api/debug");
-  _debugMode.setValue(config.getBool(KEY_ENABLE_DEBUG));
+  _debugMode.setValue(debug);
   _energyReset.setDisplay(jsyEnabled || pzem1Enabled || pzem2Enabled);
-  _debugInfo.setDisplay(config.getBool(KEY_ENABLE_DEBUG));
+  _consoleLink.setDisplay(debug);
+  _debugInfo.setDisplay(debug);
 
   // network
 

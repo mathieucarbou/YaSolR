@@ -2,8 +2,8 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
-#include <YaSolRWebsite.h>
+#include <yasolr.h>
+#include <yasolr_dashboard.h>
 
 #include <map>
 #include <string>
@@ -500,15 +500,16 @@ void yasolr_init_web_server() {
 
   // Middleware
 
-  loggingMiddleware.setOutput(Serial);
+  if (config.getBool(KEY_ENABLE_DEBUG)) {
+    loggingMiddleware.setOutput(Serial);
+    webServer.addMiddleware(&loggingMiddleware);
+  }
 
   authMiddleware.setAuthType(AsyncAuthType::AUTH_DIGEST);
   authMiddleware.setRealm("YaSolR");
   authMiddleware.setUsername(YASOLR_ADMIN_USERNAME);
   authMiddleware.setPassword(config.get(KEY_ADMIN_PASSWORD));
   authMiddleware.generateHash();
-
-  webServer.addMiddleware(&loggingMiddleware);
   webServer.addMiddleware(&authMiddleware);
 
   rewrites();
@@ -539,6 +540,11 @@ void yasolr_init_web_server() {
   dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
   dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   dashboardUpdateTask.setManager(coreTaskManager);
+
+  if (config.getBool(KEY_ENABLE_DEBUG)) {
+    dashboardUpdateTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    dashboardInitTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+  }
 
   // Task Monitor
 

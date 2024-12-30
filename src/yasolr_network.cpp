@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 Mycila::Task networkManagerTask("ESPConnect", [](void* params) { espConnect.loop(); });
 
@@ -106,6 +106,8 @@ void yasolr_init_network() {
   });
 
   networkStartTask.setManager(coreTaskManager);
+  if (config.getBool(KEY_ENABLE_DEBUG))
+    networkStartTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
   networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
   networkManagerTask.setManager(coreTaskManager);

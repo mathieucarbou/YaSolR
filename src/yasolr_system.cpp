@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 Mycila::TaskManager coreTaskManager("y-core");
 Mycila::TaskManager unsafeTaskManager("y-unsafe");

@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 AsyncUDP* udp;
 Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;

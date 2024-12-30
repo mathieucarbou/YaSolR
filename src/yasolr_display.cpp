@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 #include <string>
 
@@ -201,5 +201,7 @@ void yasolr_init_display() {
 
     displayTask->setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
     displayTask->setManager(coreTaskManager);
+    if (config.getBool(KEY_ENABLE_DEBUG))
+      displayTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   }
 }

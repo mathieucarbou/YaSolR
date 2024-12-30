@@ -4,7 +4,7 @@
  */
 #pragma once
 
-#include <YaSolR.h>
+#include <yasolr.h>
 
 #include <string>
 #include <unordered_map>

@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 Mycila::JSY* jsy;
 Mycila::Task* jsyTask;
@@ -96,10 +96,16 @@ void yasolr_init_jsy() {
     });
 
     // async task
+
     jsyTaskManager = new Mycila::TaskManager("y-jsy");
+
     jsyTask = new Mycila::Task("JSY", [](void* params) { jsy->read(); });
     jsyTask->setManager(*jsyTaskManager);
+    if (config.getBool(KEY_ENABLE_DEBUG))
+      jsyTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+
     assert(jsyTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
+
     Mycila::TaskMonitor.addTask(jsyTaskManager->getName());
   }
 }

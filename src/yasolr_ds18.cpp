@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 Mycila::DS18* ds18O1;
 Mycila::DS18* ds18O2;
@@ -93,5 +93,7 @@ void yasolr_init_ds18() {
     });
     ds18Task->setInterval(10 * Mycila::TaskDuration::SECONDS);
     ds18Task->setManager(coreTaskManager);
+    if (config.getBool(KEY_ENABLE_DEBUG))
+      ds18Task->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   }
 }

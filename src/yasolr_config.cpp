@@ -2,7 +2,7 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
+#include <yasolr.h>
 
 #include <string>
 
@@ -129,10 +129,7 @@ void yasolr_init_config() {
     logger.info(TAG, "'%s' => '%s'", k, newValue.c_str());
     const std::string key = k;
 
-    if (key == KEY_ENABLE_DEBUG) {
-      yasolr_configure_logging();
-
-    } else if (key == KEY_RELAY1_LOAD) {
+    if (key == KEY_RELAY1_LOAD) {
       routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
 
     } else if (key == KEY_RELAY2_LOAD) {

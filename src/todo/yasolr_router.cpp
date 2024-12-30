@@ -2,10 +2,23 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
-#include <YaSolRWebsite.h>
+#include <yasolr.h>
+#include <yasolr_dashboard.h>
 
 #include <string>
+
+Mycila::PID pidController;
+Mycila::Router router(pidController);
+Mycila::Dimmer dimmerO1;
+Mycila::Dimmer dimmerO2;
+Mycila::Relay bypassRelayO1;
+Mycila::Relay bypassRelayO2;
+Mycila::Relay relay1;
+Mycila::Relay relay2;
+Mycila::RouterRelay routerRelay1(relay1);
+Mycila::RouterRelay routerRelay2(relay2);
+Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1);
+Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2);
 
 Mycila::Task calibrationTask("Calibration", [](void* params) { router.calibrate(); });
 
@@ -58,7 +71,7 @@ void yasolr_divert() {
   }
 }
 
-void yasolr_configure() {
+void yasolr_init_router() {
   logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // PID Controller
@@ -119,21 +132,6 @@ void yasolr_configure() {
   routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
   routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
 
-  // Dimmers
-
-  // coreTaskManager
-  calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
-  calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
-  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
-  routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
-  routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-
-  // coreTaskManager
-  calibrationTask.setManager(coreTaskManager);
-  relayTask.setManager(coreTaskManager);
-  routerTask.setManager(coreTaskManager);
-
   // Router
   router.addOutput(output1);
   router.addOutput(output2);
@@ -158,4 +156,23 @@ void yasolr_configure() {
     if (mqttPublishTask)
       mqttPublishTask->requestEarlyRun();
   });
+
+  // coreTaskManager
+  calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
+  calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
+  calibrationTask.setManager(coreTaskManager);
+
+  relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
+  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
+  relayTask.setManager(coreTaskManager);
+
+  routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
+  routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
+  routerTask.setManager(coreTaskManager);
+
+  if (config.getBool(KEY_ENABLE_DEBUG)) {
+    calibrationTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    relayTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    routerTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+  }
 }

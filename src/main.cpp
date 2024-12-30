@@ -2,30 +2,14 @@
 /*
  * Copyright (C) 2023-2024 Mathieu Carbou
  */
-#include <YaSolR.h>
-
-Mycila::PID pidController;
-Mycila::Router router(pidController);
-Mycila::Dimmer dimmerO1;
-Mycila::Dimmer dimmerO2;
-Mycila::Relay bypassRelayO1;
-Mycila::Relay bypassRelayO2;
-Mycila::Relay relay1;
-Mycila::Relay relay2;
-Mycila::RouterRelay routerRelay1(relay1);
-Mycila::RouterRelay routerRelay2(relay2);
-Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1);
-Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2);
+#include <yasolr.h>
 
 void setup() {
-  // boot
-  yasolr_boot();
-  // config
-  yasolr_init_config();
-  // logging
-  yasolr_init_logging();
-  // system
-  yasolr_init_system();
+  yasolr_boot();         // boot sequence
+  yasolr_init_config();  // load configuration from NVS
+  yasolr_init_logging(); // init logging
+  yasolr_init_system();  // init system (safeboot, restart, reset, etc)
+
   // hardware
   yasolr_init_display();
   yasolr_init_ds18();
@@ -39,10 +23,9 @@ void setup() {
   yasolr_init_trial();
   yasolr_init_web_server();
   yasolr_init_zcd();
-  // logging configuration
-  yasolr_configure_logging();
 
-  yasolr_configure(); // TODO
+  // router
+  yasolr_init_router();
 
   // core task manager
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));
