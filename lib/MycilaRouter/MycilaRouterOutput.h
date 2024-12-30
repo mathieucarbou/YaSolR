@@ -52,7 +52,7 @@ namespace Mycila {
           std::string autoStartTime;
           std::string autoStopTime;
           std::string weekDays;
-          float reservedExcessPowerRatio = 1;
+          uint16_t excessPowerLimiter = 0;
       } Config;
 
       RouterOutput(const char* name,

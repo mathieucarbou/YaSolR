@@ -60,11 +60,11 @@ void yasolr_init_config() {
   config.configure(KEY_NTP_TIMEZONE, "Europe/Paris");
   config.configure(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS);
   config.configure(KEY_OUTPUT1_DIMMER_LIMIT, "100");
-  config.configure(KEY_OUTPUT1_DIMMER_STOP_TEMP, "0");
+  config.configure(KEY_OUTPUT1_DIMMER_TEMP_LIMITER, "0");
   config.configure(KEY_OUTPUT1_DIMMER_MAX, "100");
   config.configure(KEY_OUTPUT1_DIMMER_MIN, "0");
   config.configure(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
-  config.configure(KEY_OUTPUT1_RESERVED_EXCESS, "100");
+  config.configure(KEY_OUTPUT1_EXCESS_LIMITER, "0");
   config.configure(KEY_OUTPUT1_RESISTANCE, "0");
   config.configure(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT1_TEMPERATURE_START, "50");
@@ -73,11 +73,11 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT1_TIME_STOP, "06:00");
   config.configure(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS);
   config.configure(KEY_OUTPUT2_DIMMER_LIMIT, "100");
-  config.configure(KEY_OUTPUT2_DIMMER_STOP_TEMP, "0");
+  config.configure(KEY_OUTPUT2_DIMMER_TEMP_LIMITER, "0");
   config.configure(KEY_OUTPUT2_DIMMER_MAX, "100");
   config.configure(KEY_OUTPUT2_DIMMER_MIN, "0");
   config.configure(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
-  config.configure(KEY_OUTPUT2_RESERVED_EXCESS, "100");
+  config.configure(KEY_OUTPUT2_EXCESS_LIMITER, "0");
   config.configure(KEY_OUTPUT2_RESISTANCE, "0");
   config.configure(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT2_TEMPERATURE_START, "50");
@@ -154,8 +154,8 @@ void yasolr_init_config() {
     } else if (key == KEY_OUTPUT1_DIMMER_LIMIT) {
       dimmerO1.setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
 
-    } else if (key == KEY_OUTPUT1_DIMMER_STOP_TEMP) {
-      output1.config.dimmerTempLimit = config.getLong(KEY_OUTPUT1_DIMMER_STOP_TEMP);
+    } else if (key == KEY_OUTPUT1_DIMMER_TEMP_LIMITER) {
+      output1.config.dimmerTempLimit = config.getLong(KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_BYPASS) {
       output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
@@ -175,8 +175,8 @@ void yasolr_init_config() {
     } else if (key == KEY_OUTPUT1_DAYS) {
       output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
 
-    } else if (key == KEY_OUTPUT1_RESERVED_EXCESS) {
-      output1.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT1_RESERVED_EXCESS) / 100;
+    } else if (key == KEY_OUTPUT1_EXCESS_LIMITER) {
+      output1.config.excessPowerLimiter = config.getFloat(KEY_OUTPUT1_EXCESS_LIMITER);
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
       output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
@@ -191,8 +191,8 @@ void yasolr_init_config() {
     } else if (key == KEY_OUTPUT2_DIMMER_LIMIT) {
       dimmerO2.setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
 
-    } else if (key == KEY_OUTPUT2_DIMMER_STOP_TEMP) {
-      output2.config.dimmerTempLimit = config.getLong(KEY_OUTPUT2_DIMMER_STOP_TEMP);
+    } else if (key == KEY_OUTPUT2_DIMMER_TEMP_LIMITER) {
+      output2.config.dimmerTempLimit = config.getLong(KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_BYPASS) {
       output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -212,8 +212,8 @@ void yasolr_init_config() {
     } else if (key == KEY_OUTPUT2_DAYS) {
       output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
 
-    } else if (key == KEY_OUTPUT2_RESERVED_EXCESS) {
-      output2.config.reservedExcessPowerRatio = config.getFloat(KEY_OUTPUT2_RESERVED_EXCESS) / 100;
+    } else if (key == KEY_OUTPUT2_EXCESS_LIMITER) {
+      output2.config.excessPowerLimiter = config.getFloat(KEY_OUTPUT2_EXCESS_LIMITER);
 
     } else if (key == KEY_NTP_TIMEZONE) {
       Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));

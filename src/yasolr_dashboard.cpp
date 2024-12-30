@@ -132,7 +132,7 @@ dash::EnergyCard<float, 3> _output1Energy(dashboard, YASOLR_LBL_059, "kWh");
 dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 dash::TextInputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
 dash::SwitchCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
-dash::PercentageSliderCard _output1DimmerReservedExcess(dashboard, YASOLR_LBL_061);
+dash::TextInputCard<uint16_t> _output1DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
 dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
 dash::TextInputCard<uint8_t> _output1AutoStartTemp(dashboard, YASOLR_LBL_065);
 dash::TextInputCard<uint8_t> _output1AutoStoptTemp(dashboard, YASOLR_LBL_066);
@@ -158,7 +158,7 @@ dash::EnergyCard<float, 3> _output2Energy(dashboard, YASOLR_LBL_059, "kWh");
 dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 dash::TextInputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
 dash::SwitchCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
-dash::PercentageSliderCard _output2DimmerReservedExcess(dashboard, YASOLR_LBL_158);
+dash::TextInputCard<uint16_t> _output2DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
 dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
 dash::TextInputCard<uint8_t> _output2AutoStartTemp(dashboard, YASOLR_LBL_065);
 dash::TextInputCard<uint8_t> _output2AutoStoptTemp(dashboard, YASOLR_LBL_066);
@@ -413,7 +413,7 @@ void YaSolR::Website::begin() {
   _output1AutoStartWDays.setTab(_output1Tab);
   _output1AutoStoptTemp.setTab(_output1Tab);
   _output1AutoStoptTime.setTab(_output1Tab);
-  _output1DimmerReservedExcess.setTab(_output1Tab);
+  _output1DimmerExcessLimiter.setTab(_output1Tab);
   _output1DimmerDutyLimiter.setTab(_output1Tab);
   _output1DimmerTempLimiter.setTab(_output1Tab);
 
@@ -422,9 +422,9 @@ void YaSolR::Website::begin() {
   _daysConfig(_output1AutoStartWDays, KEY_OUTPUT1_DAYS);
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
-  _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_STOP_TEMP);
+  _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
+  _numConfig(_output1DimmerExcessLimiter, KEY_OUTPUT1_EXCESS_LIMITER);
   _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_LIMIT);
-  _sliderConfig(_output1DimmerReservedExcess, KEY_OUTPUT1_RESERVED_EXCESS);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
 
@@ -454,7 +454,7 @@ void YaSolR::Website::begin() {
   _output2AutoStartWDays.setTab(_output2Tab);
   _output2AutoStoptTemp.setTab(_output2Tab);
   _output2AutoStoptTime.setTab(_output2Tab);
-  _output2DimmerReservedExcess.setTab(_output2Tab);
+  _output2DimmerExcessLimiter.setTab(_output2Tab);
   _output2DimmerDutyLimiter.setTab(_output2Tab);
   _output2DimmerTempLimiter.setTab(_output2Tab);
 
@@ -463,9 +463,9 @@ void YaSolR::Website::begin() {
   _daysConfig(_output2AutoStartWDays, KEY_OUTPUT2_DAYS);
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
-  _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_STOP_TEMP);
+  _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
+  _numConfig(_output2DimmerExcessLimiter, KEY_OUTPUT2_EXCESS_LIMITER);
   _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_LIMIT);
-  _sliderConfig(_output2DimmerReservedExcess, KEY_OUTPUT2_RESERVED_EXCESS);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
 
@@ -874,9 +874,9 @@ void YaSolR::Website::initCards() {
   const char* output1Days = config.get(KEY_OUTPUT1_DAYS);
 
   _output1DimmerAuto.setValue(autoDimmer1Activated);
-  _output1DimmerReservedExcess.setValue(config.getInt(KEY_OUTPUT1_RESERVED_EXCESS));
+  _output1DimmerExcessLimiter.setValue(config.getInt(KEY_OUTPUT1_EXCESS_LIMITER));
   _output1DimmerDutyLimiter.setValue(config.getInt(KEY_OUTPUT1_DIMMER_LIMIT));
-  _output1DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT1_DIMMER_STOP_TEMP));
+  _output1DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT1_DIMMER_TEMP_LIMITER));
   _output1BypassAuto.setValue(autoBypass1Activated);
   _output1AutoStartWDays.setValue(strcmp(output1Days, YASOLR_WEEK_DAYS_EMPTY) == 0 ? "" : output1Days);
   _output1AutoStartTemp.setValue(config.getInt(KEY_OUTPUT1_TEMPERATURE_START));
@@ -898,7 +898,7 @@ void YaSolR::Website::initCards() {
   _output1Resistance.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
-  _output1DimmerReservedExcess.setDisplay(dimmer1Enabled && autoDimmer1Activated);
+  _output1DimmerExcessLimiter.setDisplay(dimmer1Enabled && autoDimmer1Activated);
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerTempLimiter.setDisplay(dimmer1Enabled && output1TempEnabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
@@ -920,9 +920,9 @@ void YaSolR::Website::initCards() {
   const char* output2Days = config.get(KEY_OUTPUT2_DAYS);
 
   _output2DimmerAuto.setValue(autoDimmer2Activated);
-  _output2DimmerReservedExcess.setValue(config.getInt(KEY_OUTPUT2_RESERVED_EXCESS));
+  _output2DimmerExcessLimiter.setValue(config.getInt(KEY_OUTPUT2_EXCESS_LIMITER));
   _output2DimmerDutyLimiter.setValue(config.getInt(KEY_OUTPUT2_DIMMER_LIMIT));
-  _output2DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT2_DIMMER_STOP_TEMP));
+  _output2DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT2_DIMMER_TEMP_LIMITER));
   _output2BypassAuto.setValue(autoBypass2Activated);
   _output2AutoStartWDays.setValue(strcmp(output2Days, YASOLR_WEEK_DAYS_EMPTY) == 0 ? "" : output2Days);
   _output2AutoStartTemp.setValue(config.getInt(KEY_OUTPUT2_TEMPERATURE_START));
@@ -944,7 +944,7 @@ void YaSolR::Website::initCards() {
   _output2Resistance.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
-  _output2DimmerReservedExcess.setDisplay(dimmer2Enabled && autoDimmer2Activated);
+  _output2DimmerExcessLimiter.setDisplay(dimmer2Enabled && autoDimmer2Activated);
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerTempLimiter.setDisplay(dimmer2Enabled && output2TempEnabled);
   _output2BypassAuto.setDisplay(bypass2Possible);

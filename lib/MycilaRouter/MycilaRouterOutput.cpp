@@ -162,16 +162,20 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
   // maximum power of the load based on the calibrated resistance value
   const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
 
-  // power allowed to be diverted to the load after applying the reserved excess power ratio
-  const float reservedPowerToDivert = constrain(availablePowerToDivert * config.reservedExcessPowerRatio, 0, maxPower);
+  // cap the power to divert to the load
+  float powerToDivert = constrain(availablePowerToDivert, 0, maxPower);
+
+  // apply the excess power limiter
+  if (config.excessPowerLimiter)
+    powerToDivert = constrain(powerToDivert, 0, config.excessPowerLimiter);
 
   // convert to a duty
-  const float dutyCycle = maxPower == 0 ? 0 : reservedPowerToDivert / maxPower;
+  const float dutyCycle = maxPower == 0 ? 0 : powerToDivert / maxPower;
 
   // try to apply duty
   _dimmer->setDutyCycle(dutyCycle);
 
-  // returns the used power as per the dimmer state
+  // returns the real used power as per the dimmer state
   float used = maxPower * getDimmerDutyCycleLive();
 
   // Serial.printf("Auto Divert %s: %.02f W => %.02f W %.02f%%\n", _name, availablePowerToDivert, used, dutyCycle * 100);
