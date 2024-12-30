@@ -275,13 +275,12 @@ The following settings are visible if `Bypass Automatic Control` is activated.
 - `Energy Reset`: Reset the energy stored in all devices (JSY and PZEM) of the router.
 - `Factory Reset`: Reset the router to factory settings and restart it.
 
-#### Logging
+#### Debug
 
-- `Debug`: Activate or deactivate debug logging (**restart required**)
 - `Debug Information`: Outputs useful debug information to give to support.
-  **Only available when `Debug` is activated.**
+  **Only available when `Debug` is activated in Hardware section.**
 - `Console`: Go to the Web Console page to see the logs
-  **Only available when `Debug` is activated.**
+  **Only available when `Debug` is activated in Hardware section.**
 
 If you need to record the logs during a long period of time to troubleshoot an issue, you can activate `Debug` and then stream the logs into a file using `websocat` from another computer.
 Make sure the computer won't g oto sleep!
