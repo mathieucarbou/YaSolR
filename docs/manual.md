@@ -277,10 +277,11 @@ The following settings are visible if `Bypass Automatic Control` is activated.
 
 #### Logging
 
-- `Debug`: Activate or deactivate debug logging.
+- `Debug`: Activate or deactivate debug logging (**restart required**)
 - `Debug Information`: Outputs useful debug information to give to support.
   **Only available when `Debug` is activated.**
 - `Console`: Go to the Web Console page to see the logs
+  **Only available when `Debug` is activated.**
 
 If you need to record the logs during a long period of time to troubleshoot an issue, you can activate `Debug` and then stream the logs into a file using `websocat` from another computer.
 Make sure the computer won't g oto sleep!
@@ -291,7 +292,7 @@ Make sure the computer won't g oto sleep!
 
 > ##### NOTE
 >
-> The special characters (like `??f??OO`) at the beginning of each line are normal.
+> The special characters (like `??f??OO`) at the beginning of each line are normal and can be ignored
 {: .block-note }
 
 ### `Network` section
