@@ -282,7 +282,8 @@ void publishData() {
   if (ds18Sys)
     mqtt->publish(baseTopic + "/router/temperature", std::to_string(ds18Sys->getTemperature().value_or(0)));
   mqtt->publish(baseTopic + "/router/thdi", isnan(routerMeasurements.thdi) ? "0" : std::to_string(routerMeasurements.thdi));
-  mqtt->publish(baseTopic + "/router/virtual_grid_power", std::to_string(gridMetrics.power - routerMeasurements.power));
+  float virtual_grid_power = gridMetrics.power - routerMeasurements.power;
+  mqtt->publish(baseTopic + "/router/virtual_grid_power", isnan(virtual_grid_power) ? "0" : std::to_string(virtual_grid_power));
   yield();
 
   for (const auto& output : router.getOutputs()) {
