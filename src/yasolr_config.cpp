@@ -238,7 +238,5 @@ void yasolr_init_config() {
     dashboardInitTask.resume();
     if (mqttPublishConfigTask)
       mqttPublishConfigTask->resume();
-    if (mqttPublishTask)
-      mqttPublishTask->requestEarlyRun();
   });
 }

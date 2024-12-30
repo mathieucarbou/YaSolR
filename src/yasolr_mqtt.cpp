@@ -401,9 +401,9 @@ void yasolr_init_mqtt() {
 
     mqtt = new Mycila::MQTT();
     mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::TaskType::ONCE, [](void* params) { connect(); });
-    mqttPublishConfigTask = new Mycila::Task("MQTT Config", Mycila::TaskType::ONCE, [](void* params) { publishConfig(); });
-    mqttPublishStaticTask = new Mycila::Task("MQTT Static", Mycila::TaskType::ONCE, [](void* params) { publishStaticData(); });
-    mqttPublishTask = new Mycila::Task("MQTT", [](void* params) { publishData(); });
+    mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::TaskType::ONCE, [](void* params) { publishConfig(); });
+    mqttPublishStaticTask = new Mycila::Task("MQTT Publish Static Data", Mycila::TaskType::ONCE, [](void* params) { publishStaticData(); });
+    mqttPublishTask = new Mycila::Task("MQTT Publish", [](void* params) { publishData(); });
     haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::TaskType::ONCE, [](void* params) { haDiscovery(); });
 
     mqtt->onConnect([](void) {

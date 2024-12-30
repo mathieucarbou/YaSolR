@@ -103,7 +103,6 @@ void yasolr_init_network() {
       default:
         break;
     }
-    dashboardInitTask.resume();
   });
 
   networkStartTask.setManager(coreTaskManager);

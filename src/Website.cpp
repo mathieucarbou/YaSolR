@@ -343,16 +343,17 @@ void YaSolR::Website::begin() {
       config.set(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_FALSE, false);
       config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
 
+      router.beginCalibration([]() {
+        config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(router.getOutputs()[0]->config.calibratedResistance, 2));
+        config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2));
+      });
+
+      // because we set false to trigger events
       dashboardInitTask.resume();
       if (mqttPublishConfigTask)
         mqttPublishConfigTask->resume();
       if (mqttPublishTask)
         mqttPublishTask->requestEarlyRun();
-
-      router.beginCalibration([]() {
-        config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(router.getOutputs()[0]->config.calibratedResistance, 2));
-        config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2));
-      });
     }
 
     _resistanceCalibration.setValue(router.isCalibrationRunning());

@@ -61,6 +61,9 @@ void yasolr_init_zcd() {
             dimmerO2.setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
           }
         }
+
+        // refresh dashboard when electricity is back
+        dashboardInitTask.resume();
       }
     });
 

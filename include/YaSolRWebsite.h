@@ -26,7 +26,6 @@ namespace YaSolR {
           config.setBool(key, value);
           card.setValue(config.getBool(key));
           dashboard.refresh(card);
-          dashboardInitTask.resume();
         });
       }
 
