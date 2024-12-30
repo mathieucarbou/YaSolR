@@ -179,7 +179,6 @@ dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
 dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
 dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
-dash::SwitchCard _debugMode(dashboard, YASOLR_LBL_083);
 dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
 dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
 
@@ -235,6 +234,7 @@ dash::FeedbackTextInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_139);
 dash::FeedbackTextInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
 
 dash::Tab _hardwareEnableTab(dashboard, "\u2699 " YASOLR_LBL_126);
+dash::FeedbackSwitchCard _debugMode(dashboard, YASOLR_LBL_083);
 dash::FeedbackSwitchCard _display(dashboard, YASOLR_LBL_127);
 dash::FeedbackSwitchCard _jsy(dashboard, YASOLR_LBL_128);
 dash::FeedbackSwitchCard _jsyRemote(dashboard, YASOLR_LBL_187);
@@ -482,13 +482,10 @@ void YaSolR::Website::begin() {
   _configRestore.setTab(_managementTab);
   _consoleLink.setTab(_managementTab);
   _debugInfo.setTab(_managementTab);
-  _debugMode.setTab(_managementTab);
   _safeBoot.setTab(_managementTab);
   _reset.setTab(_managementTab);
   _restart.setTab(_managementTab);
   _energyReset.setTab(_managementTab);
-
-  _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
 
   _energyReset.onPush([]() {
     if (jsy)
@@ -619,6 +616,7 @@ void YaSolR::Website::begin() {
 
   // Hardware
 
+  _debugMode.setTab(_hardwareEnableTab);
   _display.setTab(_hardwareEnableTab);
   _jsy.setTab(_hardwareEnableTab);
   _jsyRemote.setTab(_hardwareEnableTab);
@@ -637,6 +635,7 @@ void YaSolR::Website::begin() {
   _routerDS18.setTab(_hardwareEnableTab);
   _zcd.setTab(_hardwareEnableTab);
 
+  _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
   _boolConfig(_display, KEY_ENABLE_DISPLAY);
   _boolConfig(_jsy, KEY_ENABLE_JSY);
   _boolConfig(_jsyRemote, KEY_ENABLE_JSY_REMOTE);
@@ -967,15 +966,13 @@ void YaSolR::Website::initCards() {
 
   // management
 
-  const bool debug = config.getBool(KEY_ENABLE_DEBUG);
   _configBackup.setValue("/api/config/backup");
   _configRestore.setValue("/api/config/restore");
   _consoleLink.setValue("/console");
   _debugInfo.setValue("/api/debug");
-  _debugMode.setValue(debug);
   _energyReset.setDisplay(jsyEnabled || pzem1Enabled || pzem2Enabled);
-  _consoleLink.setDisplay(debug);
-  _debugInfo.setDisplay(debug);
+  _consoleLink.setDisplay(logger.isDebugEnabled());
+  _debugInfo.setDisplay(logger.isDebugEnabled());
 
   // network
 
@@ -1040,6 +1037,7 @@ void YaSolR::Website::initCards() {
 
   // Hardware
 
+  _status(_debugMode, KEY_ENABLE_DEBUG, logger.isDebugEnabled());
   _status(_display, KEY_ENABLE_DISPLAY, display && display->isEnabled());
   _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp && udp->connected());
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());

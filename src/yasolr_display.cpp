@@ -199,7 +199,7 @@ void yasolr_init_display() {
     displayCarouselTask->setIntervalSupplier([]() { return config.getLong(KEY_DISPLAY_SPEED) * Mycila::TaskDuration::SECONDS; });
     displayCarouselTask->setManager(coreTaskManager);
 
-    displayTask->setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
+    displayTask->setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
     displayTask->setManager(coreTaskManager);
     if (config.getBool(KEY_ENABLE_DEBUG))
       displayTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);

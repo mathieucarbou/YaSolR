@@ -173,6 +173,5 @@ void yasolr_init_router() {
   if (config.getBool(KEY_ENABLE_DEBUG)) {
     calibrationTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     relayTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    routerTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
   }
 }

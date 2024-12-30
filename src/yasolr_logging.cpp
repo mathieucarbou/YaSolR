@@ -40,8 +40,6 @@ void yasolr_init_logging() {
     loggingTask->setInterval(20 * Mycila::TaskDuration::SECONDS);
     loggingTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
     loggingTask->setManager(unsafeTaskManager);
-
-    Mycila::TaskMonitor.begin();
   } else {
     logger.setLevel(ARDUHAL_LOG_LEVEL_INFO);
     esp_log_level_set("*", static_cast<esp_log_level_t>(ARDUHAL_LOG_LEVEL_INFO));

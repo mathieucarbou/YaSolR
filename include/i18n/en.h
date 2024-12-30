@@ -125,7 +125,7 @@
 #define YASOLR_LBL_121 "PZEM (TX) Serial RX"
 #define YASOLR_LBL_122 "PZEM (RX) Serial TX"
 #define YASOLR_LBL_123 "Pending"
-#define YASOLR_LBL_124 "Not started"
+#define YASOLR_LBL_124 "Restart required / Failed to start"
 #define YASOLR_LBL_125 "Zero-Cross Detection"
 #define YASOLR_LBL_126 "Hardware"
 #define YASOLR_LBL_129 "LEDs"
