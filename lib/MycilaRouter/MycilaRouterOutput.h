@@ -55,7 +55,7 @@ namespace Mycila {
           uint16_t excessPowerLimiter = 0;
       } Config;
 
-      RouterOutput(const char* name) : _name(name) {}
+      explicit RouterOutput(const char* name) : _name(name) {}
       // output
 
       State getState() const;
