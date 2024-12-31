@@ -160,7 +160,7 @@ namespace Mycila {
        *
        * @param root: the JSON object to serialize to
        */
-      void dimmerToJson(const JsonObject& root) const {
+      void toJson(const JsonObject& root) const {
         const float angle = getPhaseAngle();
         root["enabled"] = isEnabled();
         root["state"] = isOn() ? "on" : "off";

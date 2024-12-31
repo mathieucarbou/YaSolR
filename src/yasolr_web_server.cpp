@@ -117,22 +117,20 @@ void rest_api() {
       router.toJson(root["router"].to<JsonObject>(), voltage);
 
       // output 1
-      output1.toJson(root["router"]["output1"].to<JsonObject>(), voltage);
-      dimmerO1.dimmerToJson(root["router"]["output1"]["dimmer"].to<JsonObject>());
+      if (output1)
+        output1->toJson(root["router"]["output1"].to<JsonObject>(), voltage);
       if (ds18O1)
         ds18O1->toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
       if (pzemO1)
         pzemO1->toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
-      bypassRelayO1.toJson(root["router"]["output1"]["relay"].to<JsonObject>());
 
       // output 2
-      output2.toJson(root["router"]["output2"].to<JsonObject>(), voltage);
-      dimmerO2.dimmerToJson(root["router"]["output2"]["dimmer"].to<JsonObject>());
+      if (output2)
+        output2->toJson(root["router"]["output2"].to<JsonObject>(), voltage);
       if (ds18O2)
         ds18O2->toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
       if (pzemO2)
         pzemO2->toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
-      bypassRelayO2.toJson(root["router"]["output2"]["relay"].to<JsonObject>());
 
       // system
       JsonObject system = root["system"].to<JsonObject>();
@@ -394,42 +392,52 @@ void rest_api() {
 
   webServer
     .on("/api/router/output1/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (request->hasParam("duty_cycle", true))
-        output1.setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
-      request->send(200);
+      if (output1 && request->hasParam("duty_cycle", true)) {
+        output1->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
+        request->send(200);
+      } else {
+        request->send(400);
+      }
     });
 
   webServer
     .on("/api/router/output2/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (request->hasParam("duty_cycle", true))
-        output2.setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
-      request->send(200);
+      if (output2 && request->hasParam("duty_cycle", true)) {
+        output2->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
+        request->send(200);
+      } else {
+        request->send(400);
+      }
     });
 
   // router bypass
 
   webServer
     .on("/api/router/output1/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (request->hasParam("state", true)) {
+      if (output1 && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
-          output1.setBypassOn();
+          output1->setBypassOn();
         else if (state == YASOLR_OFF)
-          output1.setBypassOff();
+          output1->setBypassOff();
+        request->send(200);
+      } else {
+        request->send(400);
       }
-      request->send(200);
     });
 
   webServer
     .on("/api/router/output2/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (request->hasParam("state", true)) {
+      if (output2 && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
-          output2.setBypassOn();
+          output2->setBypassOn();
         else if (state == YASOLR_OFF)
-          output2.setBypassOff();
+          output2->setBypassOff();
+        request->send(200);
+      } else {
+        request->send(400);
       }
-      request->send(200);
     });
 
   webServer

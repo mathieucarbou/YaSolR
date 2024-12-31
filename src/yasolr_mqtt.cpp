@@ -100,25 +100,31 @@ void subscribe() {
   // router
 
   mqtt->subscribe(baseTopic + "/router/output1/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
-    output1.setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
+    if (output1)
+      output1->setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
   });
 
   mqtt->subscribe(baseTopic + "/router/output2/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
-    output2.setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
+    if (output2)
+      output2->setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
   });
 
   mqtt->subscribe(baseTopic + "/router/output1/bypass/set", [](const std::string& topic, const std::string_view& payload) {
-    if (payload == YASOLR_ON)
-      output1.setBypassOn();
-    else if (payload == YASOLR_OFF)
-      output1.setBypassOff();
+    if (output1) {
+      if (payload == YASOLR_ON)
+        output1->setBypassOn();
+      else if (payload == YASOLR_OFF)
+        output1->setBypassOff();
+    }
   });
 
   mqtt->subscribe(baseTopic + "/router/output2/bypass/set", [](const std::string& topic, const std::string_view& payload) {
-    if (payload == YASOLR_ON)
-      output2.setBypassOn();
-    else if (payload == YASOLR_OFF)
-      output2.setBypassOff();
+    if (output2) {
+      if (payload == YASOLR_ON)
+        output2->setBypassOn();
+      else if (payload == YASOLR_OFF)
+        output2->setBypassOff();
+    }
   });
 
   // device
@@ -157,9 +163,11 @@ void subscribe() {
   if (output1TemperatureMQTTTopic[0] != '\0') {
     logger.info(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic);
     mqtt->subscribe(output1TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
-      float t = std::stof(std::string(payload));
-      logger.debug(TAG, "Output 1 Temperature from MQTT: %f", t);
-      output1.temperature().update(t);
+      if (output1) {
+        float t = std::stof(std::string(payload));
+        logger.debug(TAG, "Output 1 Temperature from MQTT: %f", t);
+        output1->temperature().update(t);
+      }
     });
   }
 
@@ -168,9 +176,11 @@ void subscribe() {
   if (output2TemperatureMQTTTopic[0] != '\0') {
     logger.info(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic);
     mqtt->subscribe(output2TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
-      float t = std::stof(std::string(payload));
-      logger.debug(TAG, "Output 2 Temperature from MQTT: %f", t);
-      output2.temperature().update(t);
+      if (output2) {
+        float t = std::stof(std::string(payload));
+        logger.debug(TAG, "Output 2 Temperature from MQTT: %f", t);
+        output2->temperature().update(t);
+      }
     });
   }
 }

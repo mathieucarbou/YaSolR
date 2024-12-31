@@ -145,8 +145,15 @@ void Mycila::Router::getRouterMeasurements(Metrics& metrics) const {
 }
 
 void Mycila::Router::beginCalibration(CalibrationCallback cb) {
-  if (_calibrationRunning)
+  if (_calibrationRunning) {
+    LOGW(TAG, "Calibration already running");
     return;
+  }
+
+  if (_outputs.empty()) {
+    LOGW(TAG, "No output to calibrate");
+    return;
+  }
 
   LOGI(TAG, "Starting calibration");
   _calibrationStep = 1;
@@ -155,7 +162,7 @@ void Mycila::Router::beginCalibration(CalibrationCallback cb) {
   _calibrationRunning = true;
 }
 
-void Mycila::Router::calibrate() {
+void Mycila::Router::continueCalibration() {
   if (!_calibrationRunning)
     return;
 

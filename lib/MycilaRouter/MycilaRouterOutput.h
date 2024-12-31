@@ -55,16 +55,13 @@ namespace Mycila {
           uint16_t excessPowerLimiter = 0;
       } Config;
 
-      RouterOutput(const char* name,
-                   Dimmer& dimmer,
-                   Relay& relay) : _name(name),
-                                   _dimmer(&dimmer),
-                                   _relay(&relay) {}
+      RouterOutput(const char* name) : _name(name) {}
       // output
 
       State getState() const;
       const char* getStateName() const;
       const char* getName() const { return _name; }
+      bool isOn() const { return isDimmerOn() || isBypassRelayOn(); }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float gridVoltage) const;
@@ -73,29 +70,39 @@ namespace Mycila {
 
       // dimmer
 
+      void beginDimmer(int8_t pin, uint16_t semiPeriod) { _dimmer.begin(pin, semiPeriod); }
+      bool isDimmerEnabled() const { return _dimmer.isEnabled(); }
       bool isAutoDimmerEnabled() const { return config.autoDimmer && config.calibratedResistance > 0 && !_autoBypassEnabled && !_bypassEnabled; }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
-      bool isDimmerOn() const { return _dimmer->isOn(); }
-      float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
-      float getDimmerDutyCycleLive() const { return _dimmer->getDutyCycleLive(); }
-      float getDimmerDutyCycleLimit() const { return _dimmer->getDutyCycleLimit(); }
+      bool isDimmerOn() const { return _dimmer.isOn(); }
+      float getDimmerDutyCycle() const { return _dimmer.getDutyCycle(); }
+      float getDimmerDutyCycleLive() const { return _dimmer.getDutyCycleLive(); }
+      float getDimmerDutyCycleLimit() const { return _dimmer.getDutyCycleLimit(); }
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0
       // At 100% power, duty == 1
       bool setDimmerDutyCycle(float dutyCycle);
       bool setDimmerOff() { return setDimmerDutyCycle(0); }
+      void setDimmerDutyCycleMin(float min) { _dimmer.setDutyCycleMin(min); }
+      void setDimmerDutyCycleMax(float max) { _dimmer.setDutyCycleMax(max); }
+      void setDimmerDutyCycleLimit(float limit) { _dimmer.setDutyCycleLimit(limit); }
       void applyTemperatureLimit();
 
       float autoDivert(float gridVoltage, float availablePowerToDivert);
 
       // bypass
 
+      void beginBypassRelay(const int8_t pin, const RelayType type = RelayType::NO, const bool state = false) { _relay.begin(pin, type, state); }
+      void listenBypassRelay(RelayStateCallback callback) { _relay.listen(callback); }
+      bool isBypassRelayEnabled() const { return _relay.isEnabled(); }
+      bool isBypassRelayOn() const { return _relay.isOn(); }
       bool isAutoBypassEnabled() const { return config.autoBypass; }
       bool isBypassOn() const { return _bypassEnabled; }
       bool setBypass(bool state);
       bool setBypassOn() { return setBypass(true); }
       bool setBypassOff() { return setBypass(false); }
       void applyAutoBypass();
+      uint64_t getBypassRelaySwitchCount() const { return _relay.getSwitchCount(); }
 
       // metrics
 
@@ -123,8 +130,8 @@ namespace Mycila {
 
     private:
       const char* _name;
-      Dimmer* _dimmer;
-      Relay* _relay;
+      Dimmer _dimmer;
+      Relay _relay;
       bool _autoBypassEnabled = false;
       bool _bypassEnabled = false;
       ExpiringValue<float> _temperature;

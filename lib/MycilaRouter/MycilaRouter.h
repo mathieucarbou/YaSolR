@@ -50,6 +50,15 @@ namespace Mycila {
         return false;
       }
 
+      bool isAutoDimmerEnabled() const {
+        for (const auto& output : _outputs) {
+          if (output->isAutoDimmerEnabled()) {
+            return true;
+          }
+        }
+        return false;
+      }
+
       void divert(float gridVoltage, float gridPower) {
         float powerToDivert = _pidController->compute(gridPower);
         for (const auto& output : _outputs) {
@@ -66,7 +75,7 @@ namespace Mycila {
 
       typedef std::function<void()> CalibrationCallback;
       void beginCalibration(CalibrationCallback cb = nullptr);
-      void calibrate();
+      void continueCalibration();
       bool isCalibrationRunning() const { return _calibrationRunning; }
 
 #ifdef MYCILA_JSON_SUPPORT

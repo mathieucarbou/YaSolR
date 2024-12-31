@@ -40,13 +40,13 @@ const char* Mycila::RouterOutput::getStateName() const { return StateNames[stati
 // output
 
 Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
-  if (!_dimmer->isEnabled() && !_relay->isEnabled())
+  if (!_dimmer.isEnabled() && !_relay.isEnabled())
     return State::OUTPUT_DISABLED;
   if (_autoBypassEnabled)
     return State::OUTPUT_BYPASS_AUTO;
   if (_bypassEnabled)
     return State::OUTPUT_BYPASS_MANUAL;
-  if (_dimmer->isOn())
+  if (_dimmer.isOn())
     return State::OUTPUT_ROUTING;
   return State::OUTPUT_IDLE;
 }
@@ -54,7 +54,7 @@ Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) const {
   root["bypass"] = isBypassOn() ? "on" : "off";
-  root["enabled"] = _dimmer->isEnabled();
+  root["enabled"] = _dimmer.isEnabled();
   root["state"] = getStateName();
   float t = _temperature.orElse(NAN);
   if (!isnanf(t)) {
@@ -77,6 +77,9 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   } else {
     local["enabled"] = false;
   }
+
+  _dimmer.toJson(root["dimmer"].to<JsonObject>());
+  _relay.toJson(root["relay"].to<JsonObject>());
 }
 
 void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics) {
@@ -120,9 +123,9 @@ bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
   }
 
   _setBypass(false);
-  _dimmer->setDutyCycle(dutyCycle);
+  _dimmer.setDutyCycle(dutyCycle);
 
-  LOGD(TAG, "Set Dimmer '%s' duty to %f", _name, _dimmer->getDutyCycle());
+  LOGD(TAG, "Set Dimmer '%s' duty to %f", _name, _dimmer.getDutyCycle());
 
   return true;
 }
@@ -134,28 +137,28 @@ void Mycila::RouterOutput::applyTemperatureLimit() {
   if (_bypassEnabled)
     return;
 
-  if (_dimmer->isOff())
+  if (_dimmer.isOff())
     return;
 
   if (isDimmerTemperatureLimitReached()) {
     LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
-    _dimmer->off();
+    _dimmer.off();
     return;
   }
 }
 
 float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerToDivert) {
-  if (!_dimmer->isEnabled() || !isAutoDimmerEnabled()) {
+  if (!_dimmer.isEnabled() || !isAutoDimmerEnabled()) {
     return 0;
   }
 
   if (availablePowerToDivert <= 0) {
-    _dimmer->off();
+    _dimmer.off();
     return 0;
   }
 
   if (isDimmerTemperatureLimitReached()) {
-    _dimmer->off();
+    _dimmer.off();
     return 0;
   }
 
@@ -173,7 +176,7 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
   const float dutyCycle = maxPower == 0 ? 0 : powerToDivert / maxPower;
 
   // try to apply duty
-  _dimmer->setDutyCycle(dutyCycle);
+  _dimmer.setDutyCycle(dutyCycle);
 
   // returns the real used power as per the dimmer state
   float used = maxPower * getDimmerDutyCycleLive();
@@ -293,11 +296,11 @@ void Mycila::RouterOutput::applyAutoBypass() {
   // auto bypass is enabled
 
   // relay is on ?
-  if (_relay->isOn())
+  if (_relay.isOn())
     return;
 
   // or relay is disabled and dimmer at full power to replace it ?
-  if (!_relay->isEnabled() && _dimmer->isOnAtFullPower())
+  if (!_relay.isEnabled() && _dimmer.isOnAtFullPower())
     return;
 
   // start bypass
@@ -344,13 +347,13 @@ bool Mycila::RouterOutput::getOutputMeasurements(Metrics& metrics) const {
 void Mycila::RouterOutput::_setBypass(bool state, bool log) {
   if (state) {
     // we want to activate bypass
-    if (_relay->isEnabled()) {
+    if (_relay.isEnabled()) {
       // we have a relay in-place: use it
-      _dimmer->off();
-      if (_relay->isOff()) {
+      _dimmer.off();
+      if (_relay.isOff()) {
         if (log)
           LOGD(TAG, "Turning Bypass Relay '%s' ON", _name);
-        _relay->setState(true);
+        _relay.setState(true);
       }
       _bypassEnabled = true;
 
@@ -358,21 +361,21 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
       // we don't have a relay: use the dimmer
       if (log)
         LOGD(TAG, "Turning Dimmer '%s' ON", _name);
-      _dimmer->on();
+      _dimmer.on();
       _bypassEnabled = true;
     }
   } else {
     // we want to deactivate bypass
-    if (_relay->isEnabled()) {
-      if (_relay->isOn()) {
+    if (_relay.isEnabled()) {
+      if (_relay.isOn()) {
         if (log)
           LOGD(TAG, "Turning Bypass Relay '%s' OFF", _name);
-        _relay->setState(false);
+        _relay.setState(false);
       }
     } else {
       if (log)
         LOGD(TAG, "Turning Dimmer '%s' OFF", _name);
-      _dimmer->off();
+      _dimmer.off();
     }
     _bypassEnabled = false;
   }

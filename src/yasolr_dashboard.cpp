@@ -131,8 +131,8 @@ dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
 dash::EnergyCard<float, 3> _output1Energy(dashboard, YASOLR_LBL_059, "kWh");
 dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 dash::TextInputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
-dash::SwitchCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
 dash::TextInputCard<uint16_t> _output1DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
+dash::SwitchCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
 dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
 dash::TextInputCard<uint8_t> _output1AutoStartTemp(dashboard, YASOLR_LBL_065);
 dash::TextInputCard<uint8_t> _output1AutoStoptTemp(dashboard, YASOLR_LBL_066);
@@ -157,8 +157,8 @@ dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
 dash::EnergyCard<float, 3> _output2Energy(dashboard, YASOLR_LBL_059, "kWh");
 dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 dash::TextInputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
-dash::SwitchCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
 dash::TextInputCard<uint16_t> _output2DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
+dash::SwitchCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
 dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
 dash::TextInputCard<uint8_t> _output2AutoStartTemp(dashboard, YASOLR_LBL_065);
 dash::TextInputCard<uint8_t> _output2AutoStoptTemp(dashboard, YASOLR_LBL_066);
@@ -313,14 +313,20 @@ void YaSolR::Website::begin() {
   _routedPowerHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
-  _outputBypassSwitch(_output1Bypass, output1);
-  _outputDimmerSlider(_output1DimmerSlider, output1);
+  if (output1) {
+    _outputBypassSwitch(_output1Bypass, *output1);
+    _outputDimmerSlider(_output1DimmerSlider, *output1);
+  }
 
-  _outputBypassSwitch(_output2Bypass, output2);
-  _outputDimmerSlider(_output2DimmerSlider, output2);
+  if (output2) {
+    _outputBypassSwitch(_output2Bypass, *output2);
+    _outputDimmerSlider(_output2DimmerSlider, *output2);
+  }
 
-  _relaySwitch(_relay1Switch, *relay1);
-  _relaySwitch(_relay2Switch, *relay2);
+  if (relay1)
+    _relaySwitch(_relay1Switch, *relay1);
+  if (relay2)
+    _relaySwitch(_relay2Switch, *relay2);
 
   _output1PZEMSync.onChange([](bool value) {
     pzemO1PairingTask->resume();
@@ -859,17 +865,31 @@ void YaSolR::Website::initCards() {
   _networkWiFiMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA));
   _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
 
+  if (!output1) {
+    _output1State.setFeedback("DISABLED", dash::Status::IDLE);
+    _output1DS18State.setValue(NAN);
+    _output1DimmerSlider.setValue(0);
+    _output1Bypass.setValue(false);
+  }
+
+  if (!output2) {
+    _output2State.setFeedback("DISABLED", dash::Status::IDLE);
+    _output2DS18State.setValue(NAN);
+    _output2DimmerSlider.setValue(0);
+    _output2Bypass.setValue(false);
+  }
+
 #ifdef APP_MODEL_PRO
   const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY) && jsy && jsy->isEnabled();
 
   // output 1
 
-  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && dimmerO1.isEnabled();
-  const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY) && bypassRelayO1.isEnabled();
+  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && output1 && output1->isDimmerEnabled();
+  const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY) && output1 && output1->isBypassRelayEnabled();
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool output1TempEnabled = (config.getBool(KEY_ENABLE_OUTPUT1_DS18) && ds18O1 && ds18O1->isEnabled()) || config.isEmpty(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
+  const bool output1TempEnabled = (config.getBool(KEY_ENABLE_OUTPUT1_DS18) && ds18O1 && ds18O1->isEnabled()) || !config.isEmpty(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   const bool pzem1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_PZEM) && pzemO1 && pzemO1->isEnabled();
   const char* output1Days = config.get(KEY_OUTPUT1_DAYS);
 
@@ -884,7 +904,7 @@ void YaSolR::Website::initCards() {
   _output1AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT1_TEMPERATURE_STOP));
   _output1AutoStoptTime.setValue(config.get(KEY_OUTPUT1_TIME_STOP));
 
-  _output1Tab.setDisplay(dimmer1Enabled || output1TempEnabled || output1RelayEnabled);
+  _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled);
   _output1DimmerSlider.setDisplay(dimmer1Enabled && !autoDimmer1Activated);
   _output1DimmerSliderRO.setDisplay(dimmer1Enabled && autoDimmer1Activated);
   _output1Bypass.setDisplay(bypass1Possible && !autoBypass1Activated);
@@ -898,7 +918,7 @@ void YaSolR::Website::initCards() {
   _output1Resistance.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
-  _output1DimmerExcessLimiter.setDisplay(dimmer1Enabled && autoDimmer1Activated);
+  _output1DimmerExcessLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerTempLimiter.setDisplay(dimmer1Enabled && output1TempEnabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
@@ -908,10 +928,23 @@ void YaSolR::Website::initCards() {
   _output1AutoStartTemp.setDisplay(bypass1Possible && autoBypass1Activated && output1TempEnabled);
   _output1AutoStoptTemp.setDisplay(bypass1Possible && autoBypass1Activated && output1TempEnabled);
 
+  if (!output1) {
+    _output1DimmerSliderRO.setValue(0);
+    _output1BypassRO.setFeedback("DISABLED", dash::Status::IDLE);
+    _output1Power.setValue(0);
+    _output1ApparentPower.setValue(0);
+    _output1PowerFactor.setValue(NAN);
+    _output1THDi.setValue(NAN);
+    _output1Voltage.setValue(0);
+    _output1Current.setValue(0);
+    _output1Resistance.setValue(NAN);
+    _output1Energy.setValue(0);
+  }
+
   // output 2
 
-  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && dimmerO2.isEnabled();
-  const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY) && bypassRelayO2.isEnabled();
+  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && output2 && output2->isDimmerEnabled();
+  const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY) && output2 && output2->isBypassRelayEnabled();
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -930,7 +963,7 @@ void YaSolR::Website::initCards() {
   _output2AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT2_TEMPERATURE_STOP));
   _output2AutoStoptTime.setValue(config.get(KEY_OUTPUT2_TIME_STOP));
 
-  _output2Tab.setDisplay(dimmer2Enabled || output2TempEnabled || output2RelayEnabled);
+  _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled);
   _output2DimmerSlider.setDisplay(dimmer2Enabled && !autoDimmer2Activated);
   _output2DimmerSliderRO.setDisplay(dimmer2Enabled && autoDimmer2Activated);
   _output2Bypass.setDisplay(bypass2Possible && !autoBypass2Activated);
@@ -944,7 +977,7 @@ void YaSolR::Website::initCards() {
   _output2Resistance.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
-  _output2DimmerExcessLimiter.setDisplay(dimmer2Enabled && autoDimmer2Activated);
+  _output2DimmerExcessLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerTempLimiter.setDisplay(dimmer2Enabled && output2TempEnabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
@@ -953,6 +986,19 @@ void YaSolR::Website::initCards() {
   _output2AutoStoptTime.setDisplay(bypass2Possible && autoBypass2Activated);
   _output2AutoStartTemp.setDisplay(bypass2Possible && autoBypass2Activated && output2TempEnabled);
   _output2AutoStoptTemp.setDisplay(bypass2Possible && autoBypass2Activated && output2TempEnabled);
+
+  if (!output2) {
+    _output2DimmerSliderRO.setValue(0);
+    _output2BypassRO.setFeedback("DISABLED", dash::Status::IDLE);
+    _output2Power.setValue(0);
+    _output2ApparentPower.setValue(0);
+    _output2PowerFactor.setValue(NAN);
+    _output2THDi.setValue(NAN);
+    _output2Voltage.setValue(0);
+    _output2Current.setValue(0);
+    _output2Resistance.setValue(NAN);
+    _output2Energy.setValue(0);
+  }
 
   // relays
 
@@ -1043,8 +1089,8 @@ void YaSolR::Website::initCards() {
   _status(_display, KEY_ENABLE_DISPLAY, display && display->isEnabled());
   _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp && udp->connected());
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
-  _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, bypassRelayO1.isEnabled());
-  _status(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY, bypassRelayO2.isEnabled());
+  _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, output1 && output1->isBypassRelayEnabled());
+  _status(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY, output2 && output2->isBypassRelayEnabled());
   _status(_relay1, KEY_ENABLE_RELAY1, relay1 && relay1->isEnabled());
   _status(_relay2, KEY_ENABLE_RELAY2, relay2 && relay2->isEnabled());
 
@@ -1162,20 +1208,11 @@ void YaSolR::Website::updateCards() {
   Mycila::Grid::Metrics gridMetrics;
   grid.getGridMeasurements(gridMetrics);
 
-  Mycila::Router::Metrics routerMetrics;
-  router.getRouterMeasurements(routerMetrics);
-
-  Mycila::RouterOutput::Metrics output1Measurements;
-  output1.getOutputMeasurements(output1Measurements);
-
-  Mycila::RouterOutput::Metrics output2Measurements;
-  output2.getOutputMeasurements(output2Measurements);
-
   // stats
   Mycila::System::Memory memory;
   Mycila::System::getMemory(memory);
-  _output1RelaySwitchCount.setValue(bypassRelayO1.getSwitchCount());
-  _output2RelaySwitchCount.setValue(bypassRelayO2.getSwitchCount());
+  _output1RelaySwitchCount.setValue(output1 ? output1->getBypassRelaySwitchCount() : 0);
+  _output2RelaySwitchCount.setValue(output2 ? output2->getBypassRelaySwitchCount() : 0);
   _deviceHeapTotal.setValue(memory.total);
   _deviceHeapUsed.setValue(memory.used);
   _deviceHeapUsage.setValue(memory.usage);
@@ -1195,6 +1232,9 @@ void YaSolR::Website::updateCards() {
 
   // home
 
+  Mycila::Router::Metrics routerMetrics;
+  router.getRouterMeasurements(routerMetrics);
+
   _routerPower.setValue(routerMetrics.power);
   _routerApparentPower.setValue(routerMetrics.apparentPower);
   _routerPowerFactor.setValue(routerMetrics.powerFactor);
@@ -1208,47 +1248,51 @@ void YaSolR::Website::updateCards() {
 
   // output 1
 
-  switch (output1.getState()) {
-    case Mycila::RouterOutput::State::OUTPUT_DISABLED:
-    case Mycila::RouterOutput::State::OUTPUT_IDLE:
-      _output1State.setFeedback(output1.getStateName(), dash::Status::IDLE);
-      break;
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_AUTO:
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_MANUAL:
-      _output1State.setFeedback(output1.getStateName(), dash::Status::WARNING);
-      break;
-    case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-      _output1State.setFeedback(output1.getStateName(), dash::Status::SUCCESS);
-      break;
-    default:
-      _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
-      break;
+  if (output1) {
+    switch (output1->getState()) {
+      case Mycila::RouterOutput::State::OUTPUT_DISABLED:
+      case Mycila::RouterOutput::State::OUTPUT_IDLE:
+        _output1State.setFeedback(output1->getStateName(), dash::Status::IDLE);
+        break;
+      case Mycila::RouterOutput::State::OUTPUT_BYPASS_AUTO:
+      case Mycila::RouterOutput::State::OUTPUT_BYPASS_MANUAL:
+        _output1State.setFeedback(output1->getStateName(), dash::Status::WARNING);
+        break;
+      case Mycila::RouterOutput::State::OUTPUT_ROUTING:
+        _output1State.setFeedback(output1->getStateName(), dash::Status::SUCCESS);
+        break;
+      default:
+        _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
+        break;
+    }
+    _output1DS18State.setValue(output1->temperature().orElse(NAN));
+    _output1DimmerSlider.setValue(output1->getDimmerDutyCycle() * 100);
+    _output1Bypass.setValue(output1->isBypassOn());
   }
-  _output1DS18State.setValue(output1.temperature().orElse(NAN));
-  _output1DimmerSlider.setValue(output1.getDimmerDutyCycle() * 100);
-  _output1Bypass.setValue(output1.isBypassOn());
 
   // output 2
 
-  switch (output2.getState()) {
-    case Mycila::RouterOutput::State::OUTPUT_DISABLED:
-    case Mycila::RouterOutput::State::OUTPUT_IDLE:
-      _output2State.setFeedback(output2.getStateName(), dash::Status::IDLE);
-      break;
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_AUTO:
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_MANUAL:
-      _output2State.setFeedback(output2.getStateName(), dash::Status::WARNING);
-      break;
-    case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-      _output2State.setFeedback(output2.getStateName(), dash::Status::SUCCESS);
-      break;
-    default:
-      _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
-      break;
+  if (output2) {
+    switch (output2->getState()) {
+      case Mycila::RouterOutput::State::OUTPUT_DISABLED:
+      case Mycila::RouterOutput::State::OUTPUT_IDLE:
+        _output2State.setFeedback(output2->getStateName(), dash::Status::IDLE);
+        break;
+      case Mycila::RouterOutput::State::OUTPUT_BYPASS_AUTO:
+      case Mycila::RouterOutput::State::OUTPUT_BYPASS_MANUAL:
+        _output2State.setFeedback(output2->getStateName(), dash::Status::WARNING);
+        break;
+      case Mycila::RouterOutput::State::OUTPUT_ROUTING:
+        _output2State.setFeedback(output2->getStateName(), dash::Status::SUCCESS);
+        break;
+      default:
+        _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
+        break;
+    }
+    _output2DS18State.setValue(output2->temperature().orElse(NAN));
+    _output2DimmerSlider.setValue(output2->getDimmerDutyCycle() * 100);
+    _output2Bypass.setValue(output2->isBypassOn());
   }
-  _output2DS18State.setValue(output2.temperature().orElse(NAN));
-  _output2DimmerSlider.setValue(output2.getDimmerDutyCycle() * 100);
-  _output2Bypass.setValue(output2.isBypassOn());
 
   // relay
 
@@ -1264,29 +1308,39 @@ void YaSolR::Website::updateCards() {
 #ifdef APP_MODEL_PRO
   // Output 1
 
-  _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleLive() * 100);
-  _output1BypassRO.setFeedback(YASOLR_STATE(output1.isBypassOn()), output1.isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
-  _output1Power.setValue(output1Measurements.power);
-  _output1ApparentPower.setValue(output1Measurements.apparentPower);
-  _output1PowerFactor.setValue(output1Measurements.powerFactor);
-  _output1THDi.setValue(output1Measurements.thdi * 100);
-  _output1Voltage.setValue(output1Measurements.dimmedVoltage);
-  _output1Current.setValue(output1Measurements.current);
-  _output1Resistance.setValue(output1Measurements.resistance);
-  _output1Energy.setValue(output1Measurements.energy);
+  if (output1) {
+    Mycila::RouterOutput::Metrics output1Measurements;
+    output1->getOutputMeasurements(output1Measurements);
+
+    _output1DimmerSliderRO.setValue(output1->getDimmerDutyCycleLive() * 100);
+    _output1BypassRO.setFeedback(YASOLR_STATE(output1->isBypassOn()), output1->isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
+    _output1Power.setValue(output1Measurements.power);
+    _output1ApparentPower.setValue(output1Measurements.apparentPower);
+    _output1PowerFactor.setValue(output1Measurements.powerFactor);
+    _output1THDi.setValue(output1Measurements.thdi * 100);
+    _output1Voltage.setValue(output1Measurements.dimmedVoltage);
+    _output1Current.setValue(output1Measurements.current);
+    _output1Resistance.setValue(output1Measurements.resistance);
+    _output1Energy.setValue(output1Measurements.energy);
+  }
 
   // output 2
 
-  _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleLive() * 100);
-  _output2BypassRO.setFeedback(YASOLR_STATE(output2.isBypassOn()), output2.isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
-  _output2Power.setValue(output2Measurements.power);
-  _output2ApparentPower.setValue(output2Measurements.apparentPower);
-  _output2PowerFactor.setValue(output2Measurements.powerFactor);
-  _output2THDi.setValue(output2Measurements.thdi * 100);
-  _output2Voltage.setValue(output2Measurements.dimmedVoltage);
-  _output2Current.setValue(output2Measurements.current);
-  _output2Resistance.setValue(output2Measurements.resistance);
-  _output2Energy.setValue(output2Measurements.energy);
+  if (output2) {
+    Mycila::RouterOutput::Metrics output2Measurements;
+    output2->getOutputMeasurements(output2Measurements);
+
+    _output2DimmerSliderRO.setValue(output2->getDimmerDutyCycleLive() * 100);
+    _output2BypassRO.setFeedback(YASOLR_STATE(output2->isBypassOn()), output2->isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
+    _output2Power.setValue(output2Measurements.power);
+    _output2ApparentPower.setValue(output2Measurements.apparentPower);
+    _output2PowerFactor.setValue(output2Measurements.powerFactor);
+    _output2THDi.setValue(output2Measurements.thdi * 100);
+    _output2Voltage.setValue(output2Measurements.dimmedVoltage);
+    _output2Current.setValue(output2Measurements.current);
+    _output2Resistance.setValue(output2Measurements.resistance);
+    _output2Energy.setValue(output2Measurements.energy);
+  }
 
   // relays
 
@@ -1297,10 +1351,10 @@ void YaSolR::Website::updateCards() {
 
   _status(_jsy, KEY_ENABLE_JSY, jsy && jsy->isEnabled(), jsy && jsy->isConnected(), YASOLR_LBL_110);
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt && mqtt->isEnabled(), mqtt && mqtt->isConnected(), mqtt && mqtt->getLastError() ? mqtt->getLastError() : YASOLR_LBL_113);
-  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, dimmerO1.isEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
+  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, output1 && output1->isDimmerEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
   _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1 && ds18O1->isEnabled(), ds18O1 && ds18O1->getLastTime() > 0, YASOLR_LBL_114);
   _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1 && pzemO1->isEnabled(), pzemO1 && pzemO1->isConnected() && pzemO1->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT1, pzemO1 && pzemO1->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
-  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, dimmerO2.isEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
+  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, output2 && output2->isDimmerEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
   _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2 && ds18O2->isEnabled(), ds18O2 && ds18O2->getLastTime() > 0, YASOLR_LBL_114);
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2 && pzemO2->isEnabled(), pzemO2 && pzemO2->isConnected() && pzemO2->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2 && pzemO2->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys && ds18Sys->isEnabled(), ds18Sys && ds18Sys->getLastTime() > 0, YASOLR_LBL_114);

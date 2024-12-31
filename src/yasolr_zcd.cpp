@@ -23,7 +23,7 @@ void yasolr_init_zcd() {
     if (!pulseAnalyzer->isEnabled())
       return;
 
-    zcdTask = new Mycila::Task("ZCD", [](void* params) {
+    zcdTask = new Mycila::Task("ZCD", Mycila::TaskType::ONCE, [](void* params) {
       // check if ZCD is online (connected to the grid)
       // this is required for dimmers to work
       if (!pulseAnalyzer->isOnline()) {
@@ -33,7 +33,7 @@ void yasolr_init_zcd() {
       }
 
       // => ZCD switch turned on + Pulse Analyzer online
-      if (!Thyristor::getSemiPeriod() || !dimmerO1.isEnabled() || !dimmerO2.isEnabled()) {
+      if (!Thyristor::getSemiPeriod() || (output1 && !output1->isDimmerEnabled()) || (output2 && !output2->isDimmerEnabled())) {
         float frequency = yasolr_frequency();
         uint16_t semiPeriod = 1000000 / 2 / frequency;
         logger.info(TAG, "Detected grid frequency: %.2f Hz", frequency);
@@ -44,21 +44,21 @@ void yasolr_init_zcd() {
           Thyristor::begin();
         }
 
-        if (!dimmerO1.isEnabled() && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
-          dimmerO1.begin(config.getLong(KEY_PIN_OUTPUT1_DIMMER), semiPeriod);
-          if (dimmerO1.isEnabled()) {
-            dimmerO1.setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
-            dimmerO1.setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
-            dimmerO1.setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
+        if (output1 && !output1->isDimmerEnabled() && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
+          output1->beginDimmer(config.getLong(KEY_PIN_OUTPUT1_DIMMER), semiPeriod);
+          if (output1->isDimmerEnabled()) {
+            output1->setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
+            output1->setDimmerDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
+            output1->setDimmerDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
           }
         }
 
-        if (!dimmerO2.isEnabled() && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
-          dimmerO2.begin(config.getLong(KEY_PIN_OUTPUT2_DIMMER), semiPeriod);
-          if (dimmerO2.isEnabled()) {
-            dimmerO2.setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
-            dimmerO2.setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
-            dimmerO2.setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
+        if (output2 && !output2->isDimmerEnabled() && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
+          output2->beginDimmer(config.getLong(KEY_PIN_OUTPUT2_DIMMER), semiPeriod);
+          if (output2->isDimmerEnabled()) {
+            output2->setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
+            output2->setDimmerDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
+            output2->setDimmerDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
           }
         }
 

@@ -21,12 +21,10 @@ void setup() {
   yasolr_init_network();
   yasolr_init_pzem();
   yasolr_init_relays();
+  yasolr_init_router();
   yasolr_init_trial();
   yasolr_init_web_server();
   yasolr_init_zcd();
-
-  // router
-  yasolr_init_router();
 
   // core task manager
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));

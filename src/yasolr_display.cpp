@@ -117,28 +117,32 @@ void yasolr_init_display() {
         }
 
         case DisplayKind::DISPLAY_OUTPUT1: {
-          display->home.printf("Output 1: %11.11s\n", output1.getStateName());
-          display->home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output1.config.calibratedResistance)));
-          display->home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output1.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(output1.getOutputPower().value_or(0))));
-          if (output1.temperature())
-            display->home.printf("Temperature:  %4.1f ", output1.temperature().get());
-          else
-            display->home.printf("Temperature:  --.- ");
-          display->home.printf("\xb0");
-          display->home.printf("C\n");
+          if (output1) {
+            display->home.printf("Output 1: %11.11s\n", (output1->getStateName()));
+            display->home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output1->config.calibratedResistance)));
+            display->home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output1->getDimmerDutyCycleLive() * 100)), static_cast<int>(round(output1->getOutputPower().value_or(0))));
+            if (output1 && output1->temperature())
+              display->home.printf("Temperature:  %4.1f ", output1->temperature().get());
+            else
+              display->home.printf("Temperature:  --.- ");
+            display->home.printf("\xb0");
+            display->home.printf("C\n");
+          }
           break;
         }
 
         case DisplayKind::DISPLAY_OUTPUT2: {
-          display->home.printf("Output 2: %11.11s\n", output2.getStateName());
-          display->home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output2.config.calibratedResistance)));
-          display->home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output2.getDimmerDutyCycleLive() * 100)), static_cast<int>(round(output2.getOutputPower().value_or(0))));
-          if (output2.temperature())
-            display->home.printf("Temperature:  %4.1f ", output2.temperature().get());
-          else
-            display->home.printf("Temperature:  --.- ");
-          display->home.printf("\xb0");
-          display->home.printf("C\n");
+          if (output2) {
+            display->home.printf("Output 2: %11.11s\n", output2->getStateName());
+            display->home.printf("Resistance: %4d Ohms\n", static_cast<int>(round(output2->config.calibratedResistance)));
+            display->home.printf("Dimmer: %3d %%  %4d W\n", static_cast<int>(round(output2->getDimmerDutyCycleLive() * 100)), static_cast<int>(round(output2->getOutputPower().value_or(0))));
+            if (output2->temperature())
+              display->home.printf("Temperature:  %4.1f ", output2->temperature().get());
+            else
+              display->home.printf("Temperature:  --.- ");
+            display->home.printf("\xb0");
+            display->home.printf("C\n");
+          }
           break;
         }
 
@@ -176,14 +180,14 @@ void yasolr_init_display() {
             displayTask->setData(reinterpret_cast<void*>(DisplayKind::DISPLAY_ROUTER));
             break;
           case DisplayKind::DISPLAY_ROUTER:
-            if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
+            if (output1) {
               displayTask->setData(reinterpret_cast<void*>(DisplayKind::DISPLAY_OUTPUT1));
               break;
             } else {
               [[fallthrough]];
             }
           case DisplayKind::DISPLAY_OUTPUT1:
-            if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
+            if (output2) {
               displayTask->setData(reinterpret_cast<void*>(DisplayKind::DISPLAY_OUTPUT2));
               break;
             } else {

@@ -33,17 +33,18 @@ void yasolr_init_pzem() {
             .powerFactor = NAN,
             .voltage = pzemO1->data.voltage,
           });
-          output1.localMetrics().update({
-            .apparentPower = pzemO1->data.apparentPower,
-            .current = pzemO1->data.current,
-            .dimmedVoltage = pzemO1->data.dimmedVoltage(),
-            .energy = pzemO1->data.activeEnergy,
-            .power = pzemO1->data.activePower,
-            .powerFactor = pzemO1->data.powerFactor,
-            .resistance = pzemO1->data.resistance(),
-            .thdi = pzemO1->data.thdi(),
-            .voltage = pzemO1->data.voltage,
-          });
+          if (output1)
+            output1->localMetrics().update({
+              .apparentPower = pzemO1->data.apparentPower,
+              .current = pzemO1->data.current,
+              .dimmedVoltage = pzemO1->data.dimmedVoltage(),
+              .energy = pzemO1->data.activeEnergy,
+              .power = pzemO1->data.activePower,
+              .powerFactor = pzemO1->data.powerFactor,
+              .resistance = pzemO1->data.resistance(),
+              .thdi = pzemO1->data.thdi(),
+              .voltage = pzemO1->data.voltage,
+            });
         }
       });
 
@@ -84,7 +85,7 @@ void yasolr_init_pzem() {
         pzemO1PairingTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
     } else {
-      logger.error(TAG, "Failed to initialize PZEM for Output 1!");
+      logger.error(TAG, "PZEM for Output 1 failed to initialize!");
       pzemO1->end();
       delete pzemO1;
       pzemO1 = nullptr;
@@ -109,17 +110,18 @@ void yasolr_init_pzem() {
             .powerFactor = NAN,
             .voltage = pzemO2->data.voltage,
           });
-          output2.localMetrics().update({
-            .apparentPower = pzemO2->data.apparentPower,
-            .current = pzemO2->data.current,
-            .dimmedVoltage = pzemO2->data.dimmedVoltage(),
-            .energy = pzemO2->data.activeEnergy,
-            .power = pzemO2->data.activePower,
-            .powerFactor = pzemO2->data.powerFactor,
-            .resistance = pzemO2->data.resistance(),
-            .thdi = pzemO2->data.thdi(),
-            .voltage = pzemO2->data.voltage,
-          });
+          if (output2)
+            output2->localMetrics().update({
+              .apparentPower = pzemO2->data.apparentPower,
+              .current = pzemO2->data.current,
+              .dimmedVoltage = pzemO2->data.dimmedVoltage(),
+              .energy = pzemO2->data.activeEnergy,
+              .power = pzemO2->data.activePower,
+              .powerFactor = pzemO2->data.powerFactor,
+              .resistance = pzemO2->data.resistance(),
+              .thdi = pzemO2->data.thdi(),
+              .voltage = pzemO2->data.voltage,
+            });
         }
       });
 
@@ -160,7 +162,7 @@ void yasolr_init_pzem() {
         pzemO2PairingTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
     } else {
-      logger.error(TAG, "Failed to initialize PZEM for Output 2!");
+      logger.error(TAG, "PZEM for Output 2 failed to initialize!");
       pzemO2->end();
       delete pzemO2;
       pzemO2 = nullptr;
