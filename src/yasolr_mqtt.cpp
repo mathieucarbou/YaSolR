@@ -73,27 +73,27 @@ void subscribe() {
   // relays
 
   mqtt->subscribe(baseTopic + "/router/relay1/set", [](const std::string& topic, const std::string_view& payload) {
-    if (relay1.isEnabled()) {
+    if (relay1 && relay1->isEnabled()) {
       const std::string_view state = payload.substr(0, payload.find("="));
       if (state.empty())
         return;
       if (state == YASOLR_ON)
-        routerRelay1.tryRelayState(true);
+        relay1->tryRelayState(true);
       else if (state == YASOLR_OFF)
-        routerRelay1.tryRelayState(false);
+        relay1->tryRelayState(false);
     }
   });
 
   mqtt->subscribe(baseTopic + "/router/relay2/set", [](const std::string& topic, const std::string_view& payload) {
-    if (relay2.isEnabled()) {
+    if (relay2 && relay2->isEnabled()) {
       const std::string_view state = payload.substr(0, payload.find("="));
       if (state.empty())
         return;
 
       if (state == YASOLR_ON)
-        routerRelay2.tryRelayState(true);
+        relay2->tryRelayState(true);
       else if (state == YASOLR_OFF)
-        routerRelay2.tryRelayState(false);
+        relay2->tryRelayState(false);
     }
   });
 
@@ -277,8 +277,10 @@ void publishData() {
   mqtt->publish(baseTopic + "/router/lights", lights.toString());
   mqtt->publish(baseTopic + "/router/power_factor", isnan(routerMeasurements.powerFactor) ? "0" : std::to_string(routerMeasurements.powerFactor));
   mqtt->publish(baseTopic + "/router/power", std::to_string(routerMeasurements.power));
-  mqtt->publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1.isOn()));
-  mqtt->publish(baseTopic + "/router/relay2", YASOLR_STATE(relay2.isOn()));
+  if (relay1)
+    mqtt->publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1->isOn()));
+  if (relay2)
+    mqtt->publish(baseTopic + "/router/relay2", YASOLR_STATE(relay2->isOn()));
   if (ds18Sys)
     mqtt->publish(baseTopic + "/router/temperature", std::to_string(ds18Sys->getTemperature().value_or(0)));
   mqtt->publish(baseTopic + "/router/thdi", isnan(routerMeasurements.thdi) ? "0" : std::to_string(routerMeasurements.thdi));

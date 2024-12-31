@@ -30,6 +30,9 @@ void yasolr_init_ds18() {
       });
     } else {
       logger.error(TAG, "DS18 system probe failed to initialize!");
+      ds18Sys->end();
+      delete ds18Sys;
+      ds18Sys = nullptr;
     }
   }
 
@@ -51,6 +54,9 @@ void yasolr_init_ds18() {
       });
     } else {
       logger.error(TAG, "DS18 output 1 probe failed to initialize!");
+      ds18O1->end();
+      delete ds18O1;
+      ds18O1 = nullptr;
     }
   }
 
@@ -73,6 +79,9 @@ void yasolr_init_ds18() {
       ds18O2 = new Mycila::DS18();
     } else {
       logger.error(TAG, "DS18 output 2 probe failed to initialize!");
+      ds18O2->end();
+      delete ds18O2;
+      ds18O2 = nullptr;
     }
   }
 

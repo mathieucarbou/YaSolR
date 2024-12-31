@@ -108,8 +108,10 @@ void rest_api() {
         pulseAnalyzer->toJson(root["pulse_analyzer"].to<JsonObject>());
 
       // relays
-      relay1.toJson(root["relay1"].to<JsonObject>());
-      relay2.toJson(root["relay2"].to<JsonObject>());
+      if (relay1)
+        relay1->toJson(root["relay1"].to<JsonObject>());
+      if (relay2)
+        relay2->toJson(root["relay2"].to<JsonObject>());
 
       // router
       router.toJson(root["router"].to<JsonObject>(), voltage);
@@ -366,24 +368,24 @@ void rest_api() {
 
   webServer
     .on("/api/router/relay1", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (relay1.isEnabled() && request->hasParam("state", true)) {
+      if (relay1 && relay1->isEnabled() && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
-          routerRelay1.tryRelayState(true);
+          relay1->tryRelayState(true);
         else if (state == YASOLR_OFF)
-          routerRelay1.tryRelayState(false);
+          relay1->tryRelayState(false);
       }
       request->send(200);
     });
 
   webServer
     .on("/api/router/relay2", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (relay2.isEnabled() && request->hasParam("state", true)) {
+      if (relay2 && relay2->isEnabled() && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
-          routerRelay2.tryRelayState(true);
+          relay2->tryRelayState(true);
         else if (state == YASOLR_OFF)
-          routerRelay2.tryRelayState(false);
+          relay2->tryRelayState(false);
       }
       request->send(200);
     });
@@ -439,8 +441,10 @@ void rest_api() {
       router.getRouterMeasurements(routerMeasurements);
 
       root["lights"] = lights.toString();
-      root["relay1"] = YASOLR_STATE(relay1.isOn());
-      root["relay2"] = YASOLR_STATE(relay2.isOn());
+      if (relay1)
+        root["relay1"] = YASOLR_STATE(relay1->isOn());
+      if (relay2)
+        root["relay2"] = YASOLR_STATE(relay2->isOn());
       if (ds18Sys) {
         float t = ds18Sys->getTemperature().value_or(NAN);
         if (!isnanf(t))

@@ -21,6 +21,9 @@ void yasolr_init_jsy() {
 
     if (!jsy->isEnabled()) {
       logger.error(TAG, "JSY failed to initialize!");
+      jsy->end();
+      delete jsy;
+      jsy = nullptr;
       return;
     }
 

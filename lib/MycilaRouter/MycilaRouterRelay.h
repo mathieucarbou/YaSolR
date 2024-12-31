@@ -13,6 +13,7 @@ namespace Mycila {
 
       void setLoad(uint16_t load) { _load = load; }
 
+      bool isEnabled() const { return _relay->isEnabled(); }
       bool isAutoRelayEnabled() const { return _relay->isEnabled() && _load > 0; }
 
       bool tryRelayState(bool state, uint32_t duration = 0);
@@ -20,6 +21,12 @@ namespace Mycila {
 
       bool isOn() const { return _relay->isOn(); }
       bool isOff() const { return _relay->isOff(); }
+
+      uint64_t getSwitchCount() const { return _relay->getSwitchCount(); }
+
+#ifdef MYCILA_JSON_SUPPORT
+      void toJson(const JsonObject& root) const { _relay->toJson(root); }
+#endif
 
     private:
       Mycila::Relay* _relay;

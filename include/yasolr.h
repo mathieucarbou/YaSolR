@@ -137,18 +137,19 @@ extern void yasolr_init_system();
 // Trial
 extern void yasolr_init_trial();
 
+// Relays
+extern Mycila::RouterRelay* relay1;
+extern Mycila::RouterRelay* relay2;
+extern void yasolr_init_relays();
+
 // router
 extern Mycila::Dimmer dimmerO1;
 extern Mycila::Dimmer dimmerO2;
 extern Mycila::PID pidController;
 extern Mycila::Relay bypassRelayO1;
 extern Mycila::Relay bypassRelayO2;
-extern Mycila::Relay relay1;
-extern Mycila::Relay relay2;
 extern Mycila::Router router;
 extern Mycila::RouterOutput output1;
 extern Mycila::RouterOutput output2;
-extern Mycila::RouterRelay routerRelay1;
-extern Mycila::RouterRelay routerRelay2;
 extern void yasolr_divert();
 extern void yasolr_init_router();

@@ -13,33 +13,10 @@ Mycila::Dimmer dimmerO1;
 Mycila::Dimmer dimmerO2;
 Mycila::Relay bypassRelayO1;
 Mycila::Relay bypassRelayO2;
-Mycila::Relay relay1;
-Mycila::Relay relay2;
-Mycila::RouterRelay routerRelay1(relay1);
-Mycila::RouterRelay routerRelay2(relay2);
 Mycila::RouterOutput output1("output1", dimmerO1, bypassRelayO1);
 Mycila::RouterOutput output2("output2", dimmerO2, bypassRelayO2);
 
 Mycila::Task calibrationTask("Calibration", [](void* params) { router.calibrate(); });
-
-Mycila::Task relayTask("Relay", [](void* params) {
-  if (grid.getPower().isAbsent())
-    return;
-
-  Mycila::Router::Metrics routerMetrics;
-  router.getRouterMeasurements(routerMetrics);
-
-  float virtualGridPower = grid.getPower().get() - routerMetrics.power;
-
-  if (routerRelay1.tryRelayStateAuto(true, virtualGridPower))
-    return;
-  if (routerRelay2.tryRelayStateAuto(true, virtualGridPower))
-    return;
-  if (routerRelay2.tryRelayStateAuto(false, virtualGridPower))
-    return;
-  if (routerRelay1.tryRelayStateAuto(false, virtualGridPower))
-    return;
-});
 
 Mycila::Task routerTask("Router", [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
@@ -123,14 +100,6 @@ void yasolr_init_router() {
     bypassRelayO1.begin(config.getLong(KEY_PIN_OUTPUT1_RELAY), config.isEqual(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
   if (config.getBool(KEY_ENABLE_OUTPUT2_RELAY))
     bypassRelayO2.begin(config.getLong(KEY_PIN_OUTPUT2_RELAY), config.isEqual(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
-  if (config.getBool(KEY_ENABLE_RELAY1))
-    relay1.begin(config.getLong(KEY_PIN_RELAY1), config.isEqual(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
-  if (config.getBool(KEY_ENABLE_RELAY2))
-    relay2.begin(config.getLong(KEY_PIN_RELAY2), config.isEqual(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
-
-  // Relays
-  routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
-  routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
 
   // Router
   router.addOutput(output1);
@@ -146,32 +115,16 @@ void yasolr_init_router() {
     if (mqttPublishTask)
       mqttPublishTask->requestEarlyRun();
   });
-  relay1.listen([](bool state) {
-    logger.info(TAG, "Relay 1 changed to %s", state ? "ON" : "OFF");
-    if (mqttPublishTask)
-      mqttPublishTask->requestEarlyRun();
-  });
-  relay2.listen([](bool state) {
-    logger.info(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
-    if (mqttPublishTask)
-      mqttPublishTask->requestEarlyRun();
-  });
 
   // coreTaskManager
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
   calibrationTask.setManager(coreTaskManager);
 
-  relayTask.setEnabledWhen([]() { return !router.isCalibrationRunning() && (routerRelay1.isAutoRelayEnabled() || routerRelay2.isAutoRelayEnabled()); });
-  relayTask.setInterval(7 * Mycila::TaskDuration::SECONDS);
-  relayTask.setManager(coreTaskManager);
-
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
   routerTask.setManager(coreTaskManager);
 
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
+  if (config.getBool(KEY_ENABLE_DEBUG))
     calibrationTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    relayTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-  }
 }

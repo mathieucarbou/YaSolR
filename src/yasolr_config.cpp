@@ -130,10 +130,12 @@ void yasolr_init_config() {
     const std::string key = k;
 
     if (key == KEY_RELAY1_LOAD) {
-      routerRelay1.setLoad(config.getLong(KEY_RELAY1_LOAD));
+      if (relay1)
+        relay1->setLoad(config.getLong(KEY_RELAY1_LOAD));
 
     } else if (key == KEY_RELAY2_LOAD) {
-      routerRelay2.setLoad(config.getLong(KEY_RELAY2_LOAD));
+      if (relay2)
+        relay2->setLoad(config.getLong(KEY_RELAY2_LOAD));
 
     } else if (key == KEY_OUTPUT1_RESISTANCE) {
       output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);

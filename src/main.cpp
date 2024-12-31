@@ -20,6 +20,7 @@ void setup() {
   yasolr_init_mqtt();
   yasolr_init_network();
   yasolr_init_pzem();
+  yasolr_init_relays();
   yasolr_init_trial();
   yasolr_init_web_server();
   yasolr_init_zcd();

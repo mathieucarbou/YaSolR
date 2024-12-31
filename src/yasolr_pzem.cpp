@@ -85,6 +85,9 @@ void yasolr_init_pzem() {
 
     } else {
       logger.error(TAG, "Failed to initialize PZEM for Output 1!");
+      pzemO1->end();
+      delete pzemO1;
+      pzemO1 = nullptr;
     }
   }
 
@@ -158,6 +161,9 @@ void yasolr_init_pzem() {
 
     } else {
       logger.error(TAG, "Failed to initialize PZEM for Output 2!");
+      pzemO2->end();
+      delete pzemO2;
+      pzemO2 = nullptr;
     }
   }
 

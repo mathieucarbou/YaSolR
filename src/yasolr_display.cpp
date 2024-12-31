@@ -38,6 +38,9 @@ void yasolr_init_display() {
 
     if (!display->isEnabled()) {
       logger.error(TAG, "Display failed to initialize!");
+      display->end();
+      delete display;
+      display = nullptr;
       return;
     }
 
@@ -103,13 +106,13 @@ void yasolr_init_display() {
           display->home.printf("Grid   Power: %5d W\n", static_cast<int>(round(grid.getPower().orElse(0))));
           display->home.printf("Routed Power: %5d W\n", static_cast<int>(round(routerMetrics.power)));
           if (config.getLong(KEY_RELAY1_LOAD))
-            display->home.printf(relay1.isOn() ? "Relay 1: on  %6ld W\n" : "Relay 1: off %6ld W\n", config.getLong(KEY_RELAY1_LOAD));
+            display->home.printf(relay1 && relay1->isOn() ? "Relay 1: on  %6ld W\n" : "Relay 1: off %6ld W\n", config.getLong(KEY_RELAY1_LOAD));
           else
-            display->home.printf(relay1.isOn() ? "Relay 1: on\n" : "Relay 1: off\n");
+            display->home.printf(relay1 && relay1->isOn() ? "Relay 1: on\n" : "Relay 1: off\n");
           if (config.getLong(KEY_RELAY2_LOAD))
-            display->home.printf(relay2.isOn() ? "Relay 2: on  %6ld W\n" : "Relay 2: off %6ld W\n", config.getLong(KEY_RELAY2_LOAD));
+            display->home.printf(relay2 && relay2->isOn() ? "Relay 2: on  %6ld W\n" : "Relay 2: off %6ld W\n", config.getLong(KEY_RELAY2_LOAD));
           else
-            display->home.printf(relay2.isOn() ? "Relay 2: on\n" : "Relay 2: off\n");
+            display->home.printf(relay2 && relay2->isOn() ? "Relay 2: on\n" : "Relay 2: off\n");
           break;
         }
 
