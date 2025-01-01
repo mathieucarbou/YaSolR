@@ -4,8 +4,6 @@
  */
 #pragma once
 
-#include <MycilaGrid.h>
-#include <MycilaJSY.h>
 #include <MycilaPID.h>
 #include <MycilaRouterOutput.h>
 
@@ -99,6 +97,8 @@ namespace Mycila {
       // 0: idle
       // 1: prepare
       // 2: output 1 50%
+      // 3: output 1 100%
+      // 4: cleanup
       uint8_t _calibrationStep = 0;
       uint32_t _calibrationStartTime = 0;
       size_t _calibrationOutputIndex = 0;
