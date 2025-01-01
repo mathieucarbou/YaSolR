@@ -4,7 +4,6 @@
  */
 #include <MycilaRouterOutput.h>
 
-#include <MycilaNTP.h>
 #include <MycilaTime.h>
 
 #include <string>
@@ -213,15 +212,6 @@ void Mycila::RouterOutput::applyAutoBypass() {
   }
 
   // time checks
-
-  if (!NTP.isSynced()) {
-    if (_autoBypassEnabled) {
-      LOGW(TAG, "NTP not available: stopping Auto Bypass '%s'", _name);
-      _autoBypassEnabled = false;
-      _setBypass(false);
-    }
-    return;
-  }
 
   struct tm timeInfo;
   if (!getLocalTime(&timeInfo, 5)) {
