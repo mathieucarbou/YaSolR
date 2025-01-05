@@ -10,6 +10,16 @@ void Setup_UxIx2() {
 void LectureUxIx2() {  //Ecriture et Lecture port série du JSY-MK-194  .
 
   int i, j;
+
+  if (RAZ_JSY) {  //RAZ Message proposé par F6AAM
+    byte msg_send[] = { 0x01, 0x10, 0x00, 0x0C, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0xF3, 0xFA };
+    // Envoi commande raz sur le JSY-MK_194T
+    for (i = 0; i < 13; i++) {
+      MySerial.write(msg_send[i]);
+    }
+    RAZ_JSY = false;
+  }
+
   byte msg_send[] = { 0x01, 0x03, 0x00, 0x48, 0x00, 0x0E, 0x44, 0x18 };
   // Demande Info sur le Serial port 2 (Modbus RTU)
   for (i = 0; i < 8; i++) {
@@ -88,7 +98,7 @@ void LectureUxIx2() {  //Ecriture et Lecture port série du JSY-MK-194  .
     filtre_puissance();
     EnergieActiveValide = true;
     Pva_valide = true;
-    PuissanceRecue=true; //Reset du Watchdog à chaque trame du module JSY-MK-194 reçue
+    PuissanceRecue = true;  //Reset du Watchdog à chaque trame du module JSY-MK-194 reçue
     if (cptLEDyellow > 30) {
       cptLEDyellow = 4;
     }

@@ -6,7 +6,6 @@ const char *ExportHtml = R"====(
   <html><head><meta charset="UTF-8">
   <link rel="stylesheet" href="commun.css">
   <style>
-    body{color:white;}
     .Zone{width:100%;border 1px solid grey;border-radius:10px;margin-top:10px;background-color:rgba(30,30,30,0.3);} 
     .boldT{text-align:left;font-weight:bold;padding:10px;}
     .form {margin:auto;padding:10px;display: table;text-align:left;width:100%;}
@@ -19,7 +18,7 @@ const char *ExportHtml = R"====(
     .Bparametres{border:inset 10px azure;}
     .Bexport{border:inset 4px azure;}
   </style>
-  <script src="/ParaRouteurJS"></script>
+  
   </head>
   <body onload="Init();">
     <div id='lesOnglets'></div>
@@ -53,11 +52,13 @@ const char *ExportHtml = R"====(
               <div class='cell'><input type='file' name='fichier_para_' id="fichier_para_"  class='bouton' accept='.json'></div>
               <input type='submit' value='Mettre à jour'  class='bouton'>
             </div>
+            <div class="lds-dual-ring" id="attente"></div>
           </div>
         </form>
     </div>
-     <script>
-          
+    
+    <script>
+        var BordsInverse=[".Bparametres",".Bexport"]; 
         function Init(){
           SetHautBas();
           LoadParaRouteur();
@@ -65,12 +66,14 @@ const char *ExportHtml = R"====(
         }
         
         function submit_para(event){
+          GID("attente").style="visibility: visible;";
           event.preventDefault(); //Pour Firefox
           var xhttp = new XMLHttpRequest();
           xhttp.onreadystatechange = function() { 
             if (this.readyState == 4 && this.status == 200) {
               var retour=this.responseText;
               console.log(retour);
+              GID("attente").style="visibility: hidden;";
             }         
           };
           const fileInput = GID("fichier_para_");
@@ -87,13 +90,17 @@ const char *ExportHtml = R"====(
           var conf="/export_file?ip=" + GID("ip_load").checked + "&para=" + GID("para_load").checked + "&action=" + GID("action_load").checked
           GID("adr_export").href= conf;
         }
-        function AdaptationSource(){
-         
+        function AdaptationSource(){};
+        function FinParaRouteur(){
+          GID("Bheure").style.display= (Horloge>1) ? "inline-block": "none";
+          LoadCouleurs();
         };
     </script>
     <br>
     <div id='pied'></div>
     <br>
+    <script src="/ParaRouteurJS"></script>
+    <script src="/CommunCouleurJS"></script>
 </body></html>
  
  )====";

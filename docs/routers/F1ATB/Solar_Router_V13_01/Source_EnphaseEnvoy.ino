@@ -1,4 +1,6 @@
-
+//***********************************
+//* Source EnPhase Envoy V5 ou V7   *
+//***********************************
 void Setup_Enphase() {
 
   //Obtention Session ID
@@ -6,7 +8,7 @@ void Setup_Enphase() {
   const char* server1Enphase = "enlighten.enphaseenergy.com";
   String Host = String(server1Enphase);
   String adrEnphase = "https://" + Host + "/login/login.json";
-  String requestBody = "user[email]=" + EnphaseUser + "&user[password]=" + urlEncode( EnphasePwd);
+  String requestBody = "user[email]=" + EnphaseUser + "&user[password]=" + urlEncode(EnphasePwd);
 
   if (EnphaseUser != "" && EnphasePwd != "") {
     Serial.println("Essai connexion  Enlighten server 1 pour obtention session_id!");
@@ -100,13 +102,7 @@ void Setup_Enphase() {
 void LectureEnphase() {  //Lecture des consommations
   int Num_portIQ = 443;
   String JsonEnPhase = "";
-  byte arr[4];
-  arr[0] = RMSextIP & 0xFF;          // 0x78
-  arr[1] = (RMSextIP >> 8) & 0xFF;   // 0x56
-  arr[2] = (RMSextIP >> 16) & 0xFF;  // 0x34
-  arr[3] = (RMSextIP >> 24) & 0xFF;  // 0x12
-  String host = String(arr[3]) + "." + String(arr[2]) + "." + String(arr[1]) + "." + String(arr[0]);
-
+  String host = IP2String(RMSextIP);
   if (TokenEnphase.length() > 50 && EnphaseUser != "") {  //Connexion por firmware V7
     if (millis() > 2592000000) {                          //Tout les 30 jours on recherche un nouveau Token
       Setup_Enphase();
@@ -142,7 +138,7 @@ void LectureEnphase() {  //Lecture des consommations
 
       clientSecu.stop();
     }
-  } else { // Conexion Envoy V5
+  } else {  // Connexion Envoy V5
     // Use WiFiClient class to create TCP connections http
     WiFiClient clientFirmV5;
     if (!clientFirmV5.connect(host.c_str(), 80)) {
@@ -151,7 +147,8 @@ void LectureEnphase() {  //Lecture des consommations
       return;
     }
     String url = "/ivp/meters/reports/consumption";
-    clientFirmV5.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Connection: close\r\n\r\n");;
+    clientFirmV5.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Connection: close\r\n\r\n");
+    ;
     unsigned long timeout = millis();
     while (clientFirmV5.available() == 0) {
       if (millis() - timeout > 5000) {
@@ -166,13 +163,13 @@ void LectureEnphase() {  //Lecture des consommations
     while (clientFirmV5.available() && (millis() - timeout < 5000)) {
       line = clientFirmV5.readStringUntil('\n');
       if (line == "\r") {
-          //Serial.println("headers received");
-          JsonEnPhase = "";
-        }
-        JsonEnPhase += line;
+        //Serial.println("headers received");
+        JsonEnPhase = "";
+      }
+      JsonEnPhase += line;
     }
   }
- 
+
   // On utilise pas la librairie ArduinoJson.h, pour décoder message Json, qui crache sur de grosses données
   String TotConso = PrefiltreJson("total-consumption", "cumulative", JsonEnPhase);
   PactConso_M = int(ValJson("actPower", TotConso));
@@ -195,11 +192,11 @@ void LectureEnphase() {  //Lecture des consommations
     PVAI_M_inst = 0;
     PVAS_M_inst = int(PvaReseau);
   }
-  Pva_valide=true;
+  Pva_valide = true;
   filtre_puissance();
   float PowerFactor = 0;
-  if ((PVA_M_moy ) != 0) {
-    PowerFactor = floor(100 * abs(Puissance_M_moy ) / PVA_M_moy ) / 100;
+  if ((PVA_M_moy) != 0) {
+    PowerFactor = floor(100 * abs(Puissance_M_moy) / PVA_M_moy) / 1.0;
     PowerFactor = min(PowerFactor, float(1));
   }
   PowerFactor_M = PowerFactor;
@@ -222,7 +219,7 @@ void LectureEnphase() {  //Lecture des consommations
   PactProd = PactConso_M - int(PactReseau);
   EnergieActiveValide = true;
   if (PactReseau != 0 || PvaReseau != 0) {
-    PuissanceRecue=true;  //Reset du Watchdog à chaque trame  reçue de la passerelle Envoy-S metered
+    PuissanceRecue = true;  //Reset du Watchdog à chaque trame  reçue de la passerelle Envoy-S metered
   }
   if (cptLEDyellow > 30) {
     cptLEDyellow = 4;
@@ -268,13 +265,13 @@ long LongJson(String nom, String Json) {  // Pour éviter des problèmes d'overf
   return val;
 }
 
-long myLongJson(String nom, String Json) {  // Alternative a LongJson au dessus pour extraire chez EDF nb jour Tempo  https://particulier.edf.fr/services/rest/referentiel/getNbTempoDays?TypeAlerte=TEMPO
+long myLongJson(String nom, String Json) {  // Alternative a LongJson au dessus pour extraire chez RTE nb jour Tempo  https://particulier.RTE.fr/services/rest/referentiel/getNbTempoDays?TypeAlerte=TEMPO
   int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");
   Json = Json.substring(p + 1);
-  int q = Json.indexOf(",");//<==== Recherche d'une virgule et non d'un point
-  if (q == -1) q = 999;  //  /<==== Ajout de ces 2 lignes pour que la ligne p = min(p, q); ci dessous donne le bon résultat
+  int q = Json.indexOf(",");  //<==== Recherche d'une virgule et non d'un point
+  if (q == -1) q = 999;       //  /<==== Ajout de ces 2 lignes pour que la ligne p = min(p, q); ci dessous donne le bon résultat
   p = Json.indexOf("}");
   p = min(p, q);
   long val = 0;
@@ -284,22 +281,22 @@ long myLongJson(String nom, String Json) {  // Alternative a LongJson au dessus 
   }
   return val;
 }
-unsigned long ULongJson(String nom, String Json) {  // Alternative a LongJson au dessus pour extraire chez EDF nb jour Tempo  https://particulier.edf.fr/services/rest/referentiel/getNbTempoDays?TypeAlerte=TEMPO
+unsigned long ULongJson(String nom, String Json) {  // Alternative a LongJson au dessus pour extraire chez RTE nb jour Tempo  https://particulier.RTE.fr/services/rest/referentiel/getNbTempoDays?TypeAlerte=TEMPO
   int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");
   Json = Json.substring(p + 1);
-  int q = Json.indexOf(",");//<==== Recherche d'une virgule et non d'un point
-  if (q == -1) q = 999;  //  /<==== Ajout de ces 2 lignes pour que la ligne p = min(p, q); ci dessous donne le bon résultat
+  int q = Json.indexOf(",");  //<==== Recherche d'une virgule et non d'un point
+  if (q == -1) q = 999;       //  /<==== Ajout de ces 2 lignes pour que la ligne p = min(p, q); ci dessous donne le bon résultat
   p = Json.indexOf("}");
   p = min(p, q);
   unsigned long val = 0;
   if (p > 0) {
     Json = Json.substring(0, p);
-    Json ="0000"  + Json;
-    int L=Json.length();
-    unsigned long y = (Json.substring(0, L-5)).toInt(); //Problème des valeurs signées dans un unsigned
-    unsigned long z = (Json.substring(L-5)).toInt();
+    Json = "0000" + Json;
+    int L = Json.length();
+    unsigned long y = (Json.substring(0, L - 5)).toInt();  //Problème des valeurs signées dans un unsigned
+    unsigned long z = (Json.substring(L - 5)).toInt();
     val = (y * 100000) + z;
   }
   return val;
@@ -320,7 +317,7 @@ int IntJson(String nom, String Json) {  // Pour éviter des problèmes d'overflo
   }
   return val;
 }
-byte  ByteJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
+byte ByteJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
   int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");
@@ -352,7 +349,7 @@ unsigned short UShortJson(String nom, String Json) {  // Pour éviter des probl�
   }
   return val;
 }
-unsigned short ShortJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
+short ShortJson(String nom, String Json) {  // Pour éviter des problèmes d'overflow
   int p = Json.indexOf(nom + "\":");
   Json = Json.substring(p);
   p = Json.indexOf(":");

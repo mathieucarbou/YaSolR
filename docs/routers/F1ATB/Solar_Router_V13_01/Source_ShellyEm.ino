@@ -11,13 +11,7 @@ void LectureShellyEm() {
 
   // Use WiFiClient class to create TCP connections
   WiFiClient clientESP_RMS;
-  byte arr[4];
-  arr[0] = RMSextIP & 0xFF;          // 0x78
-  arr[1] = (RMSextIP >> 8) & 0xFF;   // 0x56
-  arr[2] = (RMSextIP >> 16) & 0xFF;  // 0x34
-  arr[3] = (RMSextIP >> 24) & 0xFF;  // 0x12
-
-  String host = String(arr[3]) + "." + String(arr[2]) + "." + String(arr[1]) + "." + String(arr[0]);
+  String host = IP2String(RMSextIP);
   if (!clientESP_RMS.connect(host.c_str(), 80)) {
     StockMessage("connection to Shelly Em failed : " + host);
     delay(200);

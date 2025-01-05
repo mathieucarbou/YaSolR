@@ -3,13 +3,10 @@
 // **********************************************************
 const char *ConnectAP_Html = R"====(
 <!doctype html>
-<html><head><meta charset="UTF-8">
-    <script src="/ParaRouteurJS"></script>
+<html><head><meta charset="UTF-8">    
     <link rel="stylesheet" href="commun.css">
+    
     <style>
-      body {color:white;padding:4px;}
-      a:link {color:#ccf;text-decoration: none;}
-      a:visited {color:#ccf;text-decoration: none;}
       #form-passe {display: none;padding:10px;text-align:center;margin:auto;width:100%;}
       label,input,.dB {display: table-cell;padding:2px;text-align:left;font-size:120%;}
       .l0{display:table-row;margin:auto;background-color:#333;padding:2px;}
@@ -24,7 +21,7 @@ const char *ConnectAP_Html = R"====(
 </head>
 <body onload="init();">
 <div id='lesOnglets'></div>
-<h1 id="h1T">Routeur Solaire - RMS</h1><h4>Connexion au r&eacute;seau WIFI local</h4>
+<h1 id="h1T">Routeur Solaire - RMS</h1><h2>Connexion au r&eacute;seau WIFI local</h2>
 <div id="ListeWifi"></div><br><br>
 <div id="scanReseau">
     <input class='bouton' type='button' onclick="ScanWIFI();" value='Scan réseaux WIFI' >
@@ -41,7 +38,9 @@ const char *ConnectAP_Html = R"====(
 <div id="attente2">Attendez l'adresse IP attribuée à l'ESP 32</div>
 <br>
 <div id="pied"></div>
+
 <script>
+  var BordsInverse=[".Bparametres",".Bwifi"];
   function ScanWIFI(){
     GH("ListeWifi", "Patientez 2s");
     var xhttp = new XMLHttpRequest();
@@ -49,7 +48,7 @@ const char *ConnectAP_Html = R"====(
           if (this.readyState == 4 && this.status == 200) {
              var LesWifi=this.responseText;
              var Wifi=LesWifi.split(GS); 
-             var S="Sélectionnez un réseau Wifi<br><span class='fsize10'>Une nouvelle adresse IP sera probablement attribuée par la box gérant le réseau</span>";
+             var S="Sélectionnez un réseau Wifi<br><span class='fsize12'>Une nouvelle adresse IP sera probablement attribuée par la box gérant le réseau</span>";
              S +="<div class='tableWifi'>";
              for (var i=0;i<Wifi.length-1;i++) {
                 var wifi=Wifi[i].split(RS); 
@@ -60,7 +59,8 @@ const char *ConnectAP_Html = R"====(
                 S +="</div>";
               }
               S +="</div>";
-              S +="<div><span class='fsize10'>Ne sont visibles que les réseaux scannés à la mise sous tension de l'ESP32 ou apès un reset</span></div>";
+              S +="<div><span class='fsize12'>Ne sont visibles que les réseaux scannés à la mise sous tension de l'ESP32 ou après un reset</span></div>";
+              S +="<div><span class='fsize12'>Attention, l'adresse IP attribuée à l'ESP32 peut changer</span></div>";
              GH("ListeWifi", S);
           }         
         };
@@ -103,17 +103,20 @@ const char *ConnectAP_Html = R"====(
       GID("form-passe").style.display = "inline-block";
   }
   function init(){
-    
-    if (window.location.href.indexOf("192.168.4.1")==-1) {
           SetHautBas(); 
           LoadParaRouteur();         
           GID("lesOnglets").style.display = "block";
           GID("onglets2").style.display = "block";
           GID("pied").style.display = "flex";
           GID("h1T").style.display = "none";
-    }  
+          LoadCouleurs();
   }
   function AdaptationSource(){ };
+  function FinParaRouteur(){
+    GID("Bheure").style.display= (Horloge>1) ? "inline-block": "none";
+  };
 </script>
+<script src="/ParaRouteurJS"></script>
+<script src="/CommunCouleurJS"></script>
 </body></html>
 )====";

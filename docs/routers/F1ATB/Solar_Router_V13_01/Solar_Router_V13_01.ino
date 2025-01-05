@@ -1,4 +1,4 @@
-#define Version "11.17"
+#define Version "13.01"
 #define HOSTNAME "RMS-ESP32-"
 #define CLE_Rom_Init 912567899  //Valeur pour tester si ROM vierge ou pas. Un changement de valeur remet à zéro toutes les données. / Value to test whether blank ROM or not.
 
@@ -13,14 +13,14 @@
   - lecture des données du Linky (Linky)
   - module (JSY-MK-194T) intégrant une mesure de tension secteur et 2 sondes ampèmétriques (UxIx2)
   - module (JSY-MK-333) pour une installation triphasé
-  - Lecture passerelle Enphase - Envoy-S metered (firmware V5 et V7)
+  - Lecture passerelle Enphase - Envoy-S metered (firmware V5 et V7,V8)
   - Lecture avec Shelly Em
   - Lecture avec Shelly Pro Em
   - Lecture compteur SmartG 
   - Lecture via MQTT
   - Lecture depuis un autre ESP depuis une des sources citées plus haut
   
-  En option une mesure de température en interne (DS18B20), en externe ou via MQTT est possible.
+  En option une à 4 mesures de température en interne (DS18B20), en externe ou via MQTT est possible.
 
   Historique des versions
   - V9.00_RMS 
@@ -67,20 +67,57 @@
     Modification pour pouvoir faire des imports de paramètres avec Firefox
   - V11.17
     Compilation avec la nouvelle version 3.03 de la carte ESP32
-    Arrêt routage si température non valide
-              
+  - V11.18
+    Recherche de la couleur Tempo non plus chez EDF mais RTE (sauf pour senseur Linky)
+    Améliorations UxIx3
+  - V11.19
+    Nouvelle adresse de recherche Tempo chez  RTE (sauf pour senseur Linky) plus simple
+    Compilation avec la bibliothèque V3.0.4 pour l'ESP32
+  - V11.20
+    Compilation avec la bibliothèque V3.1.0-RC1 pour l'ESP32
+  - V12.00
+    Jusqu'à 4 capteurs de température DS18B20 ou extérieurs
+    Offset sur les températures si besoin de corriger les mesures
+    Rajout d'informations en sortie MQTT
+    Les Actions peuvent être conditionnées à l'état d'autres Actions sur le même ESP32 ou un distant
+    RAZ des historiques sur demande
+  - V12.01
+    Correction bug sur les dixièmes de degrés des températures
+  - V12.03
+    Corrections sur les multiplications et divisions de float par une constante
+  - V12.04
+    Mise à jour Shelly Em Pro
+    Clarification mise en page Actions
+  - V12.05
+    Correction bugs Duree_Relais dans Mqtt.ino et débordement micros() dans Source_UxI.ino 
+  - V12.06
+    Compilation avec une partition mémoire  NoFS  suite à comportement anormal du watchdog. 
+  - V13.00
+    Compilation à faire avec une partition mémoire  NoFS. 
+    Conditionnement Actions par d'autres actions différentes pour chaque tranche horaire.
+    Introduction Mot de passe/Clé d'accès pour modifier les paramètres ou actions
+    MQTT: un prefixe pour la déclaration et un autre pour la publication de l'état
+    Si Action inactive arrêt envoi commande Off sur relais distant.
+    Création d'une hysteresis sur les température si Tinf<Tsup
+    Choix de la connexion, WIFI avec Internet, WIFI sans internet ou pas de WIFI (mode AP)
+    Retrait du watchdog. Il ne fonctionne plus, sauf si on retire des lignes de code sur des sujets qui n'ont rien à voir. Problème occupation/débordement mémoire ? Pas clair.
+    Choix des couleurs sur les pages Web
+    Choix de l'horloge :internet,Linky,Interneou Secteur
+    Choix paramétrage en mode standard ou expert.
+  - V13.01
+    Mystère du watchdog qui fait planter les ESP esclaves après quelques minutes, bien que plus présent. Il faut lui dire de ne pas s'activer avec un esp_task_wdt_deinit(); en début de programme
+    RAZ du JSY-MK-194 quand on demande un RAZ dans la page paramètre
+    Enrichissement des messages MQTT pour l'option Linky avec les énergies par index.
+            
   
   Les détails sont disponibles sur / Details are available here:
   https://f1atb.fr  Section Domotique / Home Automation
 
-  F1ATB Juillet 2024 
+  F1ATB Janvier 2025
 
   GNU Affero General Public License (AGPL) / AGPL-3.0-or-later
 
-
-
 */
-
 
 //Librairies
 #include <WiFi.h>
@@ -88,7 +125,6 @@
 #include <ESPmDNS.h>
 #include <WebServer.h>
 #include <ArduinoOTA.h>    //Modification On The Air
-#include <esp_task_wdt.h>  //Pour un Watchdog
 #include <PubSubClient.h>  //Librairie pour la gestion Mqtt
 #include "EEPROM.h"        //Librairie pour le stockage en EEPROM historique quotidien
 #include "esp_sntp.h"
@@ -97,6 +133,7 @@
 #include "UrlEncode.h"
 #include <HardwareSerial.h>
 #include <Update.h>
+#include <esp_task_wdt.h>  //Pour deinitialiser le watchdog. Nécessaire pour les gros program en ROM. Mystère non élucidé
 
 //Program routines
 #include "pageHtmlBrute.h"
@@ -106,12 +143,11 @@
 #include "pageHtmlActions.h"
 #include "pageHtmlOTA.h"
 #include "pageHtmlExport.h"
+#include "pageHtmlHeure.h"
+#include "pageHtmlCouleurs.h"
 #include "Actions.h"
 
 
-//Watchdog de 180 secondes. Le systeme se Reset si pas de dialoque avec le LINKY ou JSY-MK-194T/333 ou Enphase-Envoy pendant 180s
-//Watchdog for 180 seconds. The system resets if no dialogue with the Linky or  JSY-MK-194T/333 or Enphase-Envoy for 180s
-#define WDT_TIMEOUT 180
 
 //PINS - GPIO
 
@@ -130,10 +166,13 @@
 #define pulseTriac_2 22
 #define zeroCross_2 23
 #define pinTemp 13  //Capteur température
+#define TEMPERATURE_PRECISION 12
 
 
 //Nombre Actions Max
-#define LesActionsLength 10
+#define LesActionsLength 10  //Ne pas toucher -Javascript connais pas
+//Nombre Routeurs réseau Max
+#define LesRouteursMax 8  //Ne pas toucher -Javascript connais pas
 //VARIABLES
 const char *ap_default_ssid;        // Mode Access point  IP: 192.168.4.1
 const char *ap_default_psk = NULL;  // Pas de mot de passe en AP,
@@ -143,11 +182,16 @@ unsigned long Cle_ROM;
 
 String ssid = "";
 String password = "";
+String CleAcces = "";
+String CleAccesRef = "";
 String Source = "UxI";
 String Source_data = "UxI";
 String SerialIn = "";
+String hostname = "";
 byte dhcpOn = 1;
-unsigned long IP_Fixe = 0;
+byte ModePara = 0;  //0 = Minimal, 1= Expert
+byte ModeWifi = 0;  //0 = Internet, 1= LAN only, 2 =AP pas de réseau
+byte Horloge = 0;   //0=Internet, 1=Linky, 2=Interne, 3=IT 10ms/triac, 4=IT 20ms
 unsigned long Gateway = 0;
 unsigned long masque = 4294967040;
 unsigned long dns = 0;
@@ -158,21 +202,22 @@ unsigned int MQTTPort = 1883;
 String MQTTUser = "User";
 String MQTTPwd = "password";
 String MQTTPrefix = "homeassistant";  // prefix obligatoire pour l'auto-discovery entre HA et Core-Mosquitto (par défaut c'est homeassistant)
+String MQTTPrefixEtat = "homeassistant";
 String MQTTdeviceName = "routeur_rms";
 String TopicP = "PuissanceMaison";
-String TopicT = "TemperatureMQTT";
-unsigned long IPtemp = 0;
 byte subMQTT = 0;
 String nomRouteur = "Routeur - RMS";
 String nomSondeFixe = "Données seconde sonde";
 String nomSondeMobile = "Données Maison";
-String nomTemperature = "Température";
+String Couleurs = "";  // Couleurs pages web
 byte WifiSleep = 1;
-byte pSerial = 2;  //Choix Pin port serie
-byte pTriac = 2;   //Choix Pin Triac
-String Source_Temp = "tempNo";
+byte pSerial = 2;              //Choix Pin port serie
+byte pTriac = 2;               //Choix Pin Triac
+String ES = String((char)27);  //ESC Separator
+String FS = String((char)28);  //File Separator
 String GS = String((char)29);  //Group Separator
 String RS = String((char)30);  //Record Separator
+String US = String((char)31);  //Unit Separator
 String MessageH[10];
 int idxMessage = 0;
 int P_cent_EEPROM;
@@ -221,28 +266,30 @@ float PVA_T_moy, PVA_M_moy;
 float EASfloat = 0;
 float EAIfloat = 0;
 int PactConso_M, PactProd;
-int tabPw_Maison_5mn[600];  //Puissance Active:Soutiré-Injecté toutes les 5mn
-int tabPw_Triac_5mn[600];
-int tabTemperature_5mn[600];
-int tabPw_Maison_2s[300];   //Puissance Active: toutes les 2s
-int tabPw_Triac_2s[300];    //Puissance Triac: toutes les 2s
-int tabPva_Maison_2s[300];  //Puissance Active: toutes les 2s
-int tabPva_Triac_2s[300];
-int tabPulseSinusOn[101];
-int tabPulseSinusTotal[101];
-int tab_histo_ouverture[LesActionsLength][600];
-int IdxStock2s = 0;
-int IdxStockPW = 0;
+int16_t tabPw_Maison_5mn[600];  //Puissance Active:Soutiré-Injecté toutes les 5mn
+int16_t tabPw_Triac_5mn[600];
+int16_t tabTemperature_5mn[4][600];
+int16_t tabPw_Maison_2s[300];   //Puissance Active: toutes les 2s
+int16_t tabPw_Triac_2s[300];    //Puissance Triac: toutes les 2s
+int16_t tabPva_Maison_2s[300];  //Puissance Active: toutes les 2s
+int16_t tabPva_Triac_2s[300];
+int8_t tabPulseSinusOn[101];
+int8_t tabPulseSinusTotal[101];
+int8_t tab_histo_ouverture[LesActionsLength][600];
+int16_t IdxStock2s = 0;
+int16_t IdxStockPW = 0;
 float PmaxReseau = 36000;  //Puissance Max pour eviter des débordements
 bool LissageLong = false;
 bool Pva_valide = false;
 int RXD2, TXD2;  //Port serie
 int pulseTriac, zeroCross;
+bool erreurTriac = false;
 
 //Parameters for JSY-MK-194T module
 byte ByteArray[130];
 long LesDatas[14];
 int Sens_1, Sens_2;
+bool RAZ_JSY = false;
 
 
 //Parameters for JSY-MK-333 module triphasé
@@ -267,8 +314,20 @@ float COSphiS = 1;
 float COSphiI = 1;
 long TlastEASTvalide = 0;
 long TlastEAITvalide = 0;
-String LTARF = "";  //Option tarifaire EDF
-String STGE = "";   //Status Tempo uniquement EDF
+String LTARF = "";  //Option tarifaire RTE
+String STGE = "";   //Status Tempo uniquement RTE
+String NGTF = "";   //Calendrier tarifaire
+String JourLinky = "";
+long EASF01 = 0;
+long EASF02 = 0;
+long EASF03 = 0;
+long EASF04 = 0;
+long EASF05 = 0;
+long EASF06 = 0;
+long EASF07 = 0;
+long EASF08 = 0;
+long EASF09 = 0;
+long EASF10 = 0;
 
 //Paramètres for Enphase-Envoy-Smetered
 String TokenEnphase = "";
@@ -296,10 +355,9 @@ float PwMQTT = 0;
 float PvaMQTT = 0;
 float PfMQTT = 1;
 
-//Paramètres pour EDF
-String DateEDF = "";  //an-mois-jour
-byte TempoEDFon = 0;
-int LastHeureEDF = -1;
+//Paramètres pour RTE
+byte TempoRTEon = 0;
+int LastHeureRTE = -1;
 int LTARFbin = 0;  //Code binaire  des tarifs
 
 
@@ -321,11 +379,11 @@ unsigned long previousTimer2sMillis;
 unsigned long previousOverProdMillis;
 unsigned long previousLEDsMillis;
 unsigned long previousActionMillis;
+unsigned long previousActionExterneMillis;
 unsigned long previousTempMillis;
 unsigned long previousLoop;
 unsigned long previousETX;
 unsigned long PeriodeProgMillis = 1000;
-unsigned long T0_seconde = 0;
 unsigned long T_On_seconde = 0;
 float previousLoopMin = 1000;
 float previousLoopMax = 0;
@@ -337,15 +395,17 @@ float previousTimeRMSMoy = 0;
 unsigned long previousMQTTenvoiMillis;
 unsigned long previousMQTTMillis;
 unsigned long LastPwMQTTMillis = 0;
+unsigned long PeriodeMQTTMillis = 500;
 
 //Actions et Triac(action 0)
 float RetardF[LesActionsLength];  //Floating value of retard
-float H_Ouvre[LesActionsLength];  //Heure equivalente ouverture depuis 6h
 //Variables in RAM for interruptions
 volatile unsigned long lastIT = 0;
-volatile int IT10ms = 0;     //Interruption avant deglitch
-volatile int IT10ms_in = 0;  //Interruption apres deglitch
-volatile int ITmode = 0;     //IT exerne Triac ou interne
+volatile int16_t IT10ms = 0;        //Interruption avant deglitch
+volatile int16_t IT10ms_in = 0;     //Interruption apres deglitch
+volatile int16_t ITmode = 0;        //IT exerne Triac ou interne
+volatile unsigned short CptIT = 0;  //Compeur IT Triac ou 20ms;
+volatile unsigned short StepIT = 1;
 hw_timer_t *timer = NULL;
 hw_timer_t *timer10ms = NULL;
 
@@ -369,17 +429,29 @@ HardwareSerial MySerial(2);
 const char *ntpServer1 = "fr.pool.ntp.org";
 const char *ntpServer2 = "time.nist.gov";
 String DATE = "";
-String DateCeJour = "";
-bool DATEvalid = false;
-int HeureCouranteDeci = 0;
-int idxPromDuJour = 0;
+String DateCeJour = "";  //Plus utilisé depuis V13
+bool HeureValide = false;
+int16_t HeureCouranteDeci = 0;
+int16_t idxPromDuJour = 0;
+int16_t Int_Heure = 0;  //Heure interne
+int16_t Int_Minute = 0;
+int16_t Int_Seconde = 0;
+unsigned short Int_Last_10Millis = 0;
+
 
 //Température Capteur DS18B20
 OneWire oneWire(pinTemp);
 DallasTemperature ds18b20(&oneWire);
-float temperature = -127;  // La valeur vaut -127 quand la sonde DS18B20 n'est pas présente
-bool ds18b20_Init = false;
-int TemperatureValide = 0;
+float temperature[4];  // 4 canaux max de températurre
+int offsetTemp[4];     //erreur *100
+int TemperatureValide[4];
+byte canalTempExterne[4];
+byte refTempIP[4];
+int Nbr_DS18B20 = 0;
+String Source_Temp[4];
+String nomTemperature[4];
+String TopicT[4];
+String AllTemp = "";
 
 
 //MQTT
@@ -390,14 +462,24 @@ bool Discovered = false;
 //WIFI
 int WIFIbug = 0;
 WiFiClientSecure clientSecu;
-WiFiClientSecure clientSecuEDF;
+WiFiClientSecure clientSecuRTE;
 String Liste_AP = "";
 
+// Routeurs du réseau
+unsigned long RMS_IP[LesRouteursMax];  //RMS_IP[0] = adresse IP de cet ESP32
+String RMS_Nom[LesRouteursMax];
+bool RMS_Actif[LesRouteursMax];
+int RMS_Noms_idx = 0;
+int RMS_Datas_idx = 0;
+
+//Adressage IP coeur0 et coeur1
+byte arrIP[4];
 
 //Multicoeur - Processeur 0 - Collecte données RMS local ou distant
 TaskHandle_t Task1;
 esp_err_t ESP32_ERROR;
 bool PuissanceRecue = false;
+int PuissanceValide = 5;
 
 //Interruptions, Current Zero Crossing from Triac device and Internal Timer
 //*************************************************************************
@@ -408,20 +490,22 @@ void IRAM_ATTR onTimer10ms() {  //Interruption interne toutes 10ms
 }
 
 
-// Interruption du Triac Signal Zc, toutes les 10ms
+// Interruption du Triac Signal Zc, toutes les 10ms si Triac, toutes les 20ms si systeme redressement secteur
 void IRAM_ATTR currentNull() {
   IT10ms = IT10ms + 1;
+
   if ((millis() - lastIT) > 2) {  // to avoid glitch detection during 2ms
-    ITmode = ITmode + 2;
+    ITmode = ITmode + 3;
     if (ITmode > 5) ITmode = 5;
     IT10ms_in = IT10ms_in + 1;
     lastIT = millis();
-    if (ITmode > 0) GestionIT_10ms();  //IT synchrone avec le secteur signal Zc
+    if (ITmode > 0) GestionIT_10ms();  //IT synchrone avec le secteur signal Zc toutes les 10ms
   }
 }
 
 
 void GestionIT_10ms() {
+  CptIT = CptIT + StepIT;
   for (int i = 0; i < NbActions; i++) {
     switch (Actif[i]) {  //valeur en RAM
       case 0:            //Inactif
@@ -478,23 +562,7 @@ void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
 
-
-  //Watchdog initialisation
-  esp_task_wdt_deinit();
-  // Initialisation de la structure de configuration pour la WDT
-  esp_task_wdt_config_t wdt_config = {
-    .timeout_ms = WDT_TIMEOUT * 1000,                 // Convertir le temps en millisecondes
-    .idle_core_mask = (1 << portNUM_PROCESSORS) - 1,  // Bitmask of all cores, https://github.com/espressif/esp-idf/blob/v5.2.2/examples/system/task_watchdog/main/task_watchdog_example_main.c
-    .trigger_panic = true                             // Enable panic to restart ESP32
-  };
-  // Initialisation de la WDT avec la structure de configuration
-  ESP32_ERROR = esp_task_wdt_init(&wdt_config);
-  Serial.println("Dernier Reset : " + String(esp_err_to_name(ESP32_ERROR)));
-  esp_task_wdt_add(NULL);  //add current thread to WDT watch
-  esp_task_wdt_reset();
-  delay(1);  //VERY VERY IMPORTANT for Watchdog Reset
-
-
+  esp_task_wdt_deinit();  // ARRET nécessaire du Watchdog bien que non utilisé ! Mystère
 
   for (int i = 0; i < LesActionsLength; i++) {
     LesActions[i] = Action(i);  //Creation objets
@@ -519,7 +587,7 @@ void setup() {
     target = float(I) / 100.0;
     for (int T = 20; T < 101; T++) {
       for (int N = 0; N <= T; N++) {
-        if (T % 2 == 1 || N % 2 == 0) {  // Valeurs impair du total ou pulses pairs pour éviter courant continu
+        if (T % 2 == 1 || N % 2 == 0) {  // Valeurs impaires du total ou pulses pairs pour éviter courant continu
           vrai = float(N) / float(T);
           erreur = abs(vrai - target);
           if (erreur < 0.004) {
@@ -532,26 +600,28 @@ void setup() {
       }
     }
   }
-
+  for (int i = 0; i < LesRouteursMax; i++) {
+    RMS_IP[i] = 0;  //IP du reseau
+  }
   init_puissance();
+  InitTemperature();
   //Liste Wifi à faire avant connexion à un AP. Necessaire depuis biblio ESP32 3.0.1
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
   Liste_WIFI();
 
-
   Serial.print("Version : ");
   Serial.println(Version);
   // Configure WIFI
   // **************
-  String hostname(HOSTNAME);
+  hostname = String(HOSTNAME);
   uint32_t chipId = 0;
   for (int i = 0; i < 17; i = i + 8) {
     chipId |= ((ESP.getEfuseMac() >> (40 - i)) & 0xff) << i;
   }
   hostname += String(chipId);  //Add chip ID to hostname
-  WiFi.hostname(hostname);
   Serial.println(hostname);
+  WiFi.hostname(hostname);
   ap_default_ssid = (const char *)hostname.c_str();
   // Check WiFi connection
   // ... check mode
@@ -563,6 +633,8 @@ void setup() {
   WiFi.setScanMethod(WIFI_ALL_CHANNEL_SCAN);
 
   INIT_EEPROM();
+
+
   //Lecture Clé pour identifier si la ROM a déjà été initialisée
   Cle_ROM = CLE_Rom_Init;
   unsigned long Rcle = LectureCle();
@@ -574,7 +646,6 @@ void setup() {
   } else {
     RAZ_Histo_Conso();
   }
-
   //Triac init
   if (pTriac > 0) {
     pulseTriac = pulseTriac_2;
@@ -583,7 +654,7 @@ void setup() {
       pulseTriac = pulseTriac_1;
       zeroCross = zeroCross_1;
     }
-    pinMode(zeroCross, INPUT_PULLDOWN);
+    pinMode(zeroCross, INPUT_PULLUP);
     pinMode(pulseTriac, OUTPUT);
     digitalWrite(pulseTriac, LOW);  //Stop Triac
   } else {
@@ -593,84 +664,81 @@ void setup() {
   Gpio[0] = pulseTriac;
   LesActions[0].Gpio = pulseTriac;
 
-  //Heure / Hour . A Mettre en priorité avant WIFI (exemple ESP32 Simple Time)
-  //External timer to obtain the Hour and reset Watt Hour every day at 0h
-  sntp_set_time_sync_notification_cb(time_sync_notification);
-  //sntp_servermode_dhcp(1);   Déprecié
-  esp_sntp_servermode_dhcp(true);                                                        //Option
-  configTzTime("CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00", ntpServer1, ntpServer2);  //Voir Time-Zone: https://sites.google.com/a/usapiens.com/opnode/time-zones
 
-
+  if (Horloge == 0) {  //heure par Internet}
+    //Heure / Hour . A Mettre en priorité avant WIFI (exemple ESP32 Simple Time)
+    //External timer to obtain the Hour and reset Watt Hour every day at 0h
+    sntp_set_sync_interval(10800000);  //Synchro toutes les 3h
+    sntp_set_time_sync_notification_cb(time_sync_notification);
+    //sntp_servermode_dhcp(1);   Déprecié
+    esp_sntp_servermode_dhcp(true);                                                        //Option
+    configTzTime("CET-1CEST-2,M3.5.0/02:00:00,M10.5.0/03:00:00", ntpServer1, ntpServer2);  //Voir Time-Zone:
+  }
 
   //WIFI
-  Serial.println("SSID:" + ssid);
-  Serial.println("Pass:" + password);
-  if (ssid.length() > 0) {
-    if (dhcpOn == 0) {  //Static IP
-      byte arr[4];
-      arr[0] = IP_Fixe & 0xFF;          // 0x78
-      arr[1] = (IP_Fixe >> 8) & 0xFF;   // 0x56
-      arr[2] = (IP_Fixe >> 16) & 0xFF;  // 0x34
-      arr[3] = (IP_Fixe >> 24) & 0xFF;  // 0x12
-      // Set your Static IP address
-      IPAddress local_IP(arr[3], arr[2], arr[1], arr[0]);
-      // Set your Gateway IP address
-      arr[0] = Gateway & 0xFF;          // 0x78
-      arr[1] = (Gateway >> 8) & 0xFF;   // 0x56
-      arr[2] = (Gateway >> 16) & 0xFF;  // 0x34
-      arr[3] = (Gateway >> 24) & 0xFF;  // 0x12
-      IPAddress gateway(arr[3], arr[2], arr[1], arr[0]);
-      // Set your masque/subnet IP address
-      arr[0] = masque & 0xFF;
-      arr[1] = (masque >> 8) & 0xFF;
-      arr[2] = (masque >> 16) & 0xFF;
-      arr[3] = (masque >> 24) & 0xFF;
-      IPAddress subnet(arr[3], arr[2], arr[1], arr[0]);
-      // Set your DNS IP address
-      arr[0] = dns & 0xFF;
-      arr[1] = (dns >> 8) & 0xFF;
-      arr[2] = (dns >> 16) & 0xFF;
-      arr[3] = (dns >> 24) & 0xFF;
-      IPAddress primaryDNS(arr[3], arr[2], arr[1], arr[0]);  //optional
-      IPAddress secondaryDNS(8, 8, 4, 4);                    //optional
-      if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
-        Serial.println("WIFI STA Failed to configure");
+  if (ModeWifi < 2) {
+    Serial.println("ssid:" + ssid);
+    Serial.println("password:" + password);
+    if (ssid.length() > 0) {
+      if (dhcpOn == 0) {  //Static IP
+        IP2String(RMS_IP[0]);
+        // Set youRMS_IP[0]c IP address
+        IPAddress local_IP(arrIP[3], arrIP[2], arrIP[1], arrIP[0]);
+        // Set your Gateway IP address
+        IP2String(Gateway);
+        IPAddress gateway(arrIP[3], arrIP[2], arrIP[1], arrIP[0]);
+        // Set your masque/subnet IP address
+        IP2String(masque);
+        IPAddress subnet(arrIP[3], arrIP[2], arrIP[1], arrIP[0]);
+        // Set your DNS IP address
+        IP2String(dns);
+        IPAddress primaryDNS(arrIP[3], arrIP[2], arrIP[1], arrIP[0]);  //optional
+        IPAddress secondaryDNS(8, 8, 4, 4);                            //optional
+        if (!WiFi.config(local_IP, gateway, subnet, primaryDNS, secondaryDNS)) {
+          Serial.println("WIFI STA Failed to configure");
+        }
       }
+      StockMessage("Wifi Begin : " + ssid);
+      WiFi.begin(ssid.c_str(), password.c_str());
+      WiFi.setSleep(WifiSleep);
+      while (WiFi.status() != WL_CONNECTED && (millis() - startMillis < 20000)) {  // Attente connexion au Wifi
+        Serial.write('.');
+        Gestion_LEDs();
+        Serial.print(WiFi.status());
+        delay(300);
+      }
+      Serial.println();
     }
-    StockMessage("Wifi Begin : " + ssid);
-    WiFi.begin(ssid.c_str(), password.c_str());
-    WiFi.setSleep(WifiSleep);
-    while (WiFi.status() != WL_CONNECTED && (millis() - startMillis < 20000)) {  // Attente connexion au Wifi
-      Serial.write('.');
-      Gestion_LEDs();
-      Serial.print(WiFi.status());
-      delay(300);
-    }
-    Serial.println();
   }
-  if (WiFi.status() == WL_CONNECTED) {
-    StockMessage("Connected IP address: " + WiFi.localIP().toString() + " or <a href='http://" + hostname + ".local' >" + hostname + ".local</a>");
+  if (WiFi.status() == WL_CONNECTED && ModeWifi < 2) {
+    RMS_IP[0] = String2IP(WiFi.localIP().toString());
+    StockMessage("Connecté, addresse IP : " + WiFi.localIP().toString() + " or <a href='http://" + hostname + ".local' >" + hostname + ".local</a>");
   } else {
-    StockMessage("Can not connect to WiFi station. Go into AP mode and STA mode.");
+    StockMessage("Pas de connexion WIFI. ESP32 en mode AP et STA.");
     // Go into software AP and STA modes.
     //WiFi.disconnect();
     delay(100);
     WiFi.mode(WIFI_AP_STA);
     delay(10);
     WiFi.softAP(ap_default_ssid, ap_default_psk);
-    Serial.print("Access Point Mode. IP address: ");
+    Serial.println("Access Point Mode : " + hostname);
+    Serial.print("IP address: ");
     Serial.println(WiFi.softAPIP());
+    Serial.println("Par le port série vous pouvez définir le WIFI à utiliser par l'ESP32 en tapant les 3 commandes ci-dessous en remplaçant xxx par la bonne valeur :");
+    Serial.println("ssid:xxx");
+    Serial.println("password:xxx");
+    Serial.println("restart");
   }
 
 
-  Init_Server();
 
+  Init_Server();
+  Liste_des_Noms();
 
   // Modification du programme par le Wifi  - OTA(On The Air)
   //***************************************************
   ArduinoOTA.setHostname((const char *)hostname.c_str());
   ArduinoOTA.begin();  //Mandatory
-
 
   //Adaptation à la Source
   Serial.println("Source : " + Source);
@@ -699,9 +767,7 @@ void setup() {
     if (Source == "UxIx2") {
       Setup_UxIx2();
     }
-    if (Source == "UxIx3") {
-      Setup_JSY333();
-    }
+
     if (Source == "Linky") {
       Setup_Linky();
     }
@@ -743,7 +809,7 @@ void setup() {
 
   //Timers
   previousWifiMillis = millis() - 25000;
-  previousHistoryMillis = millis() - 290000;
+  previousHistoryMillis = millis() - 280000;
   previousTimer2sMillis = millis();
   previousLoop = millis();
   previousTimeRMS = millis();
@@ -753,10 +819,9 @@ void setup() {
   previousOverProdMillis = millis();
   LastRMS_Millis = millis();
   previousActionMillis = millis();
-  previousTempMillis = millis() - 118000;
-
-  esp_task_wdt_reset();
-  delay(1);  //VERY VERY IMPORTANT for Watchdog Reset
+  previousActionExterneMillis = millis();
+  previousTempMillis = millis() - 110000;
+  if (Nbr_DS18B20 > 0) LectureTemperature();
 }
 
 /* **********************
@@ -765,8 +830,15 @@ void setup() {
    * ****************** *
    **********************
 */
-int cpt=0;
 void Task_LectureRMS(void *pvParameters) {
+
+  if (Source == "UxIx3") {
+    Setup_JSY333();            // init port série
+    delay(100);                // pour s'assurer que l'init du port série est ok coté module
+    PeriodeProgMillis = 1000;  // la première lecture aura lieu 1000ms plus tard
+    Requete_JSY333();          // requête initiale au module. La première lecture aura lieu PeriodeProgMillis =1000ms plus tard.
+                               // et les données seront déjà toutes dans le buffer de réception
+  }
   for (;;) {
     unsigned long tps = millis();
     float deltaT = float(tps - previousTimeRMS);
@@ -796,7 +868,7 @@ void Task_LectureRMS(void *pvParameters) {
         }
         if (Source == "UxIx3") {
           Lecture_JSY333();
-          PeriodeProgMillis = 600;
+          PeriodeProgMillis = 1000;
         }
         if (Source == "Linky") {
           LectureLinky();
@@ -834,7 +906,7 @@ void Task_LectureRMS(void *pvParameters) {
         LastRMS_Millis = millis();
         UpdatePmqtt();
       }
-    } 
+    }
     delay(2);
   }
 }
@@ -868,14 +940,17 @@ void loop() {
   //Archivage et envois des mesures périodiquement
   //**********************************************
   if (EnergieActiveValide) {
+
     if (tps - previousHistoryMillis >= 300000) {  //Historique consommation par pas de 5mn
       previousHistoryMillis = tps;
       tabPw_Maison_5mn[IdxStockPW] = PuissanceS_M - PuissanceI_M;
       tabPw_Triac_5mn[IdxStockPW] = PuissanceS_T - PuissanceI_T;
-      if (temperature > -20) {
-        tabTemperature_5mn[IdxStockPW] = int(temperature * 10);
-      } else {
-        tabTemperature_5mn[IdxStockPW] = 0;
+      for (int c = 0; c < 4; c++) {
+        if (temperature[c] > -50) {
+          tabTemperature_5mn[c][IdxStockPW] = int(temperature[c] * 10.0);
+        } else {
+          tabTemperature_5mn[c][IdxStockPW] = 0;
+        }
       }
 
 
@@ -911,7 +986,8 @@ void loop() {
       GestionOverproduction();
     }
   }
-  if (tps - previousMQTTMillis > 200) {
+  if (tps - previousMQTTMillis > PeriodeMQTTMillis) {
+
     previousMQTTMillis = tps;
     GestionMQTT();
   }
@@ -919,24 +995,38 @@ void loop() {
     previousLEDsMillis = tps;
     Gestion_LEDs();
   }
+  //Suivi action externes
+  if (tps - previousActionExterneMillis > 21001) {
+    previousActionExterneMillis = tps;
+    InfoActionExterne();
+  }
   //Actions forcées et température
   if (tps - previousActionMillis > 60000) {
     previousActionMillis = tps;
-
     for (int i = 0; i < NbActions; i++) {
       if (LesActions[i].tOnOff > 0) LesActions[i].tOnOff -= 1;
       if (LesActions[i].tOnOff < 0) LesActions[i].tOnOff += 1;
     }
   }
-  if (tps - previousTempMillis > 120001) {
+  if (tps - previousTempMillis > 60001) {
     previousTempMillis = tps;
     //Temperature
     LectureTemperature();
+    //Rafraichissement des noms si un a changé
+    for (int i = 0; i < LesRouteursMax; i++) {
+      RMS_Noms_idx = (RMS_Noms_idx + 1) % LesRouteursMax;
+      if (RMS_IP[RMS_Noms_idx] > 0) {
+        Liste_Noms(RMS_Noms_idx);
+        i = LesRouteursMax;
+      }
+    }
   }
-  //Vérification du WIFI
+  //Vérification du WIFI et de la puissance
   //********************
   if (tps - previousWifiMillis > 30000) {  //Test présence WIFI toutes les 30s et autres
     previousWifiMillis = tps;
+    JourHeureChange();
+    Serial.println("\nDate : " + DATE);
     if (WiFi.getMode() == WIFI_STA) {
       if (WiFi.waitForConnectResult(10000) != WL_CONNECTED) {
         StockMessage("WIFI Connection Failed! #" + String(WIFIbug));
@@ -944,36 +1034,18 @@ void loop() {
       } else {
         WIFIbug = 0;
       }
-
-
-
-
-      Serial.print("Niveau Signal WIFI:");
+      Serial.print("Niveau Signal WIFI :");
       Serial.println(WiFi.RSSI());
       Serial.print("IP address_: ");
       Serial.println(WiFi.localIP());
       Serial.print("WIFIbug : #");
       Serial.println(WIFIbug);
-      Serial.print("Puissance reçue : ");
-      String OK = "Non";
-      if (PuissanceRecue) OK = "Oui";
-      Serial.println(OK);
-      Serial.println("Charge Lecture RMS (coeur 0) en ms - Min : " + String(int(previousTimeRMSMin)) + " Moy : " + String(int(previousTimeRMSMoy)) + "  Max : " + String(int(previousTimeRMSMax)));
-      Serial.println("Charge Boucle générale (coeur 1) en ms - Min : " + String(int(previousLoopMin)) + " Moy : " + String(int(previousLoopMoy)) + "  Max : " + String(int(previousLoopMax)));
-      Serial.println("Mémoire RAM libre actuellement: "+ String(esp_get_free_internal_heap_size()) +" byte") ;
-      Serial.println("Mémoire RAM libre minimum: "+ String(esp_get_minimum_free_heap_size()) +" byte") ;
-      int T = int(millis() / 1000);
-      float DureeOn = float(T) / 3600;
-      Serial.println("ESP32 ON depuis : " + String(DureeOn) + " heures");
-
-      if (PuissanceRecue && WIFIbug < 5) {
-        PuissanceRecue = false;
-        esp_task_wdt_reset();
-        delay(1);  //VERY VERY IMPORTANT for Watchdog Reset to apply.
+      if (WIFIbug > 2880) {  //24h sans WIFI Reset
+        delay(5000);
+        ESP.restart();
       }
 
-      JourHeureChange();
-      Call_EDF_data();
+      Call_RTE_data();
       int Ltarf = 0;  //Code binaire Tarif
       if (LTARF.indexOf("PLEINE") >= 0) Ltarf += 1;
       if (LTARF.indexOf("CREUSE") >= 0) Ltarf += 2;
@@ -981,20 +1053,48 @@ void loop() {
       if (LTARF.indexOf("BLANC") >= 0) Ltarf += 8;
       if (LTARF.indexOf("ROUGE") >= 0) Ltarf += 16;
       LTARFbin = Ltarf;
-      //Test pulse Zc Triac
-      if (ITmode < 0 && pTriac > 0) StockMessage("Erreur : pas de signal Zc du gradateur/Triac");
+
     } else {
-      Serial.print("Access Point Mode. IP address: ");
+      Serial.println("Access Point Mode : " + hostname);
+      Serial.print("IP address: ");
       Serial.println(WiFi.softAPIP());
+      Serial.println("Par le port série vous pouvez définir le WIFI à utiliser par l'ESP32 en tapant les 3 commandes ci-dessous en remplaçant xxx par la bonne valeur :");
+      Serial.println("ssid:xxx");
+      Serial.println("password:xxx");
+      Serial.println("restart");
+    }
+    //Verification puissance reçue
+    Serial.print("Puissance reçue : ");
+    String OK = "Non";
+    if (PuissanceRecue) {
+      OK = "Oui";
+      PuissanceValide = 5;
+    }
+    if (PuissanceValide > 0) {
+      PuissanceValide = PuissanceValide - 1;
+    } else {
+      delay(5000);
+      ESP.restart();
+    }
+    Serial.println(OK);
+    Serial.println("Charge Lecture RMS (coeur 0) en ms - Min : " + String(int(previousTimeRMSMin)) + " Moy : " + String(int(previousTimeRMSMoy)) + "  Max : " + String(int(previousTimeRMSMax)));
+    Serial.println("Charge Boucle générale (coeur 1) en ms - Min : " + String(int(previousLoopMin)) + " Moy : " + String(int(previousLoopMoy)) + "  Max : " + String(int(previousLoopMax)));
+    Serial.println("Mémoire RAM libre actuellement: " + String(esp_get_free_internal_heap_size()) + " byte");
+    Serial.println("Mémoire RAM libre minimum: " + String(esp_get_minimum_free_heap_size()) + " byte");
+    float DureeOn = float(T_On_seconde) / 3600.0;
+    Serial.println("ESP32 ON depuis : " + String(DureeOn) + " heures");
+    //Test pulse Zc Triac
+    if (ITmode < 0 && pTriac > 0) {
+      if (!erreurTriac) StockMessage("Erreur : pas de signal Zc du gradateur/Triac");  //Pour ne pas répéter sans cesse
+      erreurTriac = true;
+    } else {
+      erreurTriac = false;
     }
   }
-  if ((tps - startMillis) > 240000 && WiFi.getMode() != WIFI_STA) {  //Connecté en  Access Point depuis 4mn. Pas normal
-    Serial.println("Pas connecté en WiFi mode Station. Redémarrage");
-    delay(5000);
-    ESP.restart();
-  }
+
   //Port Série
   LireSerial();
+  delay(1);
 }
 
 // ************
@@ -1005,28 +1105,45 @@ void GestionOverproduction() {
   float MaxTriacPw;
   float GainBoucle;
   int Type_En_Cours = 0;
+  int LeCanalTemp;
+  float laTemperature;
+  bool forceOff;
   bool lissage = false;
   //Puissance est la puissance en entrée de maison. >0 si soutire. <0 si injecte
   //Cas du Triac. Action 0
   float Puissance = float(PuissanceS_M - PuissanceI_M);
   if (NbActions == 0) LissageLong = true;  //Cas d'un capteur seul et actions déporté sur autre ESP
   for (int i = 0; i < NbActions; i++) {
-    Actif[i] = LesActions[i].Actif;                                                       //0=Inactif,1=Decoupe ou On/Off, 2=Multi, 3= Train
-    if (Actif[i] >= 2) lissage = true;                                                    //En RAM
-    Type_En_Cours = LesActions[i].TypeEnCours(HeureCouranteDeci, temperature, LTARFbin);  //0=NO,1=OFF,2=ON,3=PW,4=Triac
-    if (Actif[i] > 0 && Type_En_Cours > 1 && DATEvalid && (Source_Temp == "tempNo" || TemperatureValide > 0) ) {                                 // On ne traite plus le NO
+    Actif[i] = LesActions[i].Actif;     //0=Inactif,1=Decoupe ou On/Off, 2=Multi, 3= Train
+    if (Actif[i] >= 2) lissage = true;  //En RAM
+    forceOff = false;
+    LeCanalTemp = LesActions[i].CanalTempEnCours(HeureCouranteDeci);
+    float laTemperature = -120;
+    if (LeCanalTemp >= 0) {
+      if (TemperatureValide[LeCanalTemp] > 0) {  //La température de ce canal est valide
+        laTemperature = temperature[LeCanalTemp];
+      } else {
+        forceOff = true;
+      }
+    }
+    if (forceOff) {
+      Type_En_Cours = 1;  //  on arrete
+    } else {
+      Type_En_Cours = LesActions[i].TypeEnCours(HeureCouranteDeci, laTemperature, LTARFbin, Retard[i]);  //0=NO,1=OFF,2=ON,3=PW,4=Triac
+    }
+    if (Actif[i] > 0 && Type_En_Cours > 1) {  // On ne traite plus le NO
       if (Type_En_Cours == 2) {
         RetardF[i] = 0;
       } else {  // 3 ou 4
         SeuilPw = float(LesActions[i].Valmin(HeureCouranteDeci));
         MaxTriacPw = float(LesActions[i].Valmax(HeureCouranteDeci));
-        GainBoucle = float(LesActions[i].Reactivite);                            //Valeur stockée dans Port
-        if (Actif[i] == 1 && i > 0) {                                            //Les relais en On/Off
-          if (Puissance > MaxTriacPw) { RetardF[i] = 100; }                      //OFF
-          if (Puissance < SeuilPw) { RetardF[i] = 0; }                           //On
-        } else {                                                                 // le Triac ou les relais en sinus
-          RetardF[i] = RetardF[i] + 0.0001;                                      //On ferme très légèrement si pas de message reçu. Sécurité
-          RetardF[i] = RetardF[i] + (Puissance - SeuilPw) * GainBoucle / 10000;  // Gain de boucle de l'asservissement
+        GainBoucle = float(LesActions[i].Reactivite);                              //Valeur stockée dans Port
+        if (Actif[i] == 1 && i > 0) {                                              //Les relais en On/Off
+          if (Puissance > MaxTriacPw) { RetardF[i] = 100; }                        //OFF
+          if (Puissance < SeuilPw) { RetardF[i] = 0; }                             //On
+        } else {                                                                   // le Triac ou les relais en sinus
+          RetardF[i] = RetardF[i] + 0.0001;                                        //On ferme très légèrement si pas de message reçu. Sécurité
+          RetardF[i] = RetardF[i] + (Puissance - SeuilPw) * GainBoucle / 10000.0;  // Gain de boucle de l'asservissement
           if (RetardF[i] < 100 - MaxTriacPw) { RetardF[i] = 100 - MaxTriacPw; }
           if (ITmode < 0 && i == 0) RetardF[i] = 100;  //Triac pas possible sur synchro interne
         }
@@ -1073,7 +1190,7 @@ void InitGpioActions() {
 // ***********************************
 
 void EnergieQuotidienne() {
-  if (DATEvalid && Source != "Ext") {
+  if (HeureValide && Source != "Ext") {
     if (Energie_M_Soutiree < EAS_M_J0 || EAS_M_J0 == 0) {
       EAS_M_J0 = Energie_M_Soutiree;
     }
@@ -1094,14 +1211,14 @@ void EnergieQuotidienne() {
 }
 
 void H_Ouvre_Equivalent(unsigned long dt) {
-  float Dheure = float(dt) / 3600000;
+  float Dheure = float(dt) / 3600000.0;
   for (int i = 0; i < NbActions; i++) {
-    if (Actif[i] > 0) {                                   //valeur en RAM du Mode de regulation
-      if (i == 0 && Actif[i] == 1) {                      //Decoupe pour Triac
-        float teta = 6.28318 * (100 - RetardF[i]) / 100;  //2*PI integral sin²
-        H_Ouvre[i] += Dheure * (teta - sin(2 * teta) / 2) / 6.28318;
+    if (Actif[i] > 0) {                                       //valeur en RAM du Mode de regulation
+      if (i == 0 && Actif[i] == 1) {                          //Decoupe pour Triac
+        float teta = 6.28318 * (100.0 - RetardF[i]) / 100.0;  //2*PI integral sin²
+        LesActions[i].H_Ouvre += Dheure * (teta - sin(2.0 * teta) / 2.0) / 6.28318;
       } else {
-        H_Ouvre[i] += Dheure * (100 - RetardF[i]) / 100;
+        LesActions[i].H_Ouvre += Dheure * (100 - RetardF[i]) / 100.0;
       }
     }
   }
@@ -1111,12 +1228,12 @@ void H_Ouvre_Equivalent(unsigned long dt) {
 // * Heure DATE * -
 // **************
 void time_sync_notification(struct timeval *tv) {
-  Serial.println("Notification de l'heure ( time synchronization event ) ");
-  DATEvalid = true;
+  Serial.println("\nNotification de l'heure ( time synchronization event ) ");
+  HeureValide = true;
   Serial.print("Sync time in ms : ");
   Serial.println(sntp_get_sync_interval());
   JourHeureChange();
-  StockMessage("Réception de l'heure");
+  StockMessage("Réception de l'heure Internet");
 }
 
 

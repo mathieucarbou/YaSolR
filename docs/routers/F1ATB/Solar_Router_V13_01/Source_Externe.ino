@@ -6,20 +6,14 @@ void CallESP32_Externe() {
   String RMSExtDataB = "";
   String Gr[4];
   String data_[22];
- 
+
 
   // Use WiFiClient class to create TCP connections
   WiFiClient clientESP_RMS;
-  byte arr[4];
-  arr[0] = RMSextIP & 0xFF;          // 0x78
-  arr[1] = (RMSextIP >> 8) & 0xFF;   // 0x56
-  arr[2] = (RMSextIP >> 16) & 0xFF;  // 0x34
-  arr[3] = (RMSextIP >> 24) & 0xFF;  // 0x12
-
-  String host = String(arr[3]) + "." + String(arr[2]) + "." + String(arr[1]) + "." + String(arr[0]);
+  String host = IP2String(RMSextIP);
   if (!clientESP_RMS.connect(host.c_str(), 80)) {
-    
-    StockMessage("connection to ESP_RMS : " + host +" failed");
+
+    StockMessage("connection to ESP_RMS : " + host + " failed");
     delay(200);
     return;
   }
@@ -28,7 +22,7 @@ void CallESP32_Externe() {
   unsigned long timeout = millis();
   while (clientESP_RMS.available() == 0) {
     if (millis() - timeout > 5000) {
-      
+
       StockMessage("client ESP_RMS Timeout !" + host);
       clientESP_RMS.stop();
       return;
@@ -73,28 +67,28 @@ void CallESP32_Externe() {
           Source_data = data_[i];
           break;
         case 2:
-          if (TempoEDFon == 0) LTARF = data_[i];
+          if (TempoRTEon == 0) LTARF = data_[i];
           break;
         case 3:
-          if (TempoEDFon == 0) STGE = data_[i];
+          if (TempoRTEon == 0) STGE = data_[i];
           break;
         case 4:
           //Temperature non utilisé
           break;
         case 5:
-          Pva_valide=data_[i].toInt();
+          Pva_valide = data_[i].toInt();
           break;
         case 6:
           PuissanceS_M = PintMax(data_[i].toInt());
           break;
         case 7:
-          PuissanceI_M =  PintMax(data_[i].toInt());
+          PuissanceI_M = PintMax(data_[i].toInt());
           break;
         case 8:
-          PVAS_M =  PintMax(data_[i].toInt());
+          PVAS_M = PintMax(data_[i].toInt());
           break;
         case 9:
-          PVAI_M =  PintMax(data_[i].toInt());
+          PVAI_M = PintMax(data_[i].toInt());
           break;
         case 10:
           EnergieJour_M_Soutiree = data_[i].toInt();
@@ -107,9 +101,9 @@ void CallESP32_Externe() {
           break;
         case 13:
           Energie_M_Injectee = data_[i].toInt();
-          PuissanceRecue=true; //Reset du Watchdog à chaque trame du RMS reçue
+          PuissanceRecue = true;  //Reset du Watchdog à chaque trame du RMS reçue
           cptLEDyellow = 4;
-          EnergieActiveValide=true;
+          EnergieActiveValide = true;
           break;
         case 14:  //CAS UxIx2 avec une deuxieme sonde
           PuissanceS_T = data_[i].toInt();
@@ -136,7 +130,6 @@ void CallESP32_Externe() {
           Energie_T_Injectee = data_[i].toInt();
           break;
       }
-      
     }
     RMSExtDataB = "";
   }

@@ -28,7 +28,7 @@ void UpdatePmqtt() {
       PVAS_M_inst = 0;
     }
     PVAI_M_inst = 0;
-    EASfloat += Pw / 6000;               // Watt Hour,Every 600ms. Soutirée
+    EASfloat += Pw / 6000.0;               // Watt Hour,Every 600ms. Soutirée
     Energie_M_Soutiree = int(EASfloat);  // Watt Hour,Every 40ms. Soutirée
   } else {
     PuissanceS_M_inst = 0;
@@ -39,14 +39,14 @@ void UpdatePmqtt() {
       PVAI_M_inst = 0;
     }
     PVAS_M_inst = 0;
-    EAIfloat += -Pw / 6000;
+    EAIfloat += -Pw / 6000.0;
     Energie_M_Injectee = int(EAIfloat);
   }
 
   filtre_puissance();
 
   if (P_MQTT_Brute.indexOf("Pw") > 0) EnergieActiveValide = true;
-  if (millis() - LastPwMQTTMillis < 30000) PuissanceRecue=true;  //Reset du Watchdog si trame  MQTT reçue avec au minimum Pw récente
+  if (millis() - LastPwMQTTMillis < 30000) PuissanceRecue = true;  //Reset du Watchdog si trame  MQTT reçue avec au minimum Pw récente
 
   if (cptLEDyellow > 30) {
     cptLEDyellow = 4;

@@ -136,7 +136,7 @@ void LectureLinky() {  //Lecture port série du LINKY .
                   PowerFactor_M = COSphiS;
                 }
                 PuissanceS_M = PintMax(int(COSphiS * float(PVAS_M)));
-                Pva_valide=true;
+                Pva_valide = true;
               }
               if (code.indexOf("SINSTI") == 0) {  //Puissance apparente injectée
                 PVAI_M = PintMax(val.toInt());
@@ -148,12 +148,19 @@ void LectureLinky() {  //Lecture port série du LINKY .
                   PowerFactor_M = COSphiI;
                 }
                 PuissanceI_M = PintMax(int(COSphiI * float(PVAI_M)));
-                Pva_valide=true;
+                Pva_valide = true;
               }
             }
           }
           if (code.indexOf("DATE") == 0) {
-            PuissanceRecue=true;  //Reset du Watchdog à chaque trame du Linky reçue
+            PuissanceRecue = true;  //Reset du Watchdog à chaque trame du Linky reçue
+            if (Horloge == 1) {
+              JourLinky = val.substring(5, 7) + "/" + val.substring(3, 5) + "/" + val.substring(1, 3);
+              Int_Heure = val.substring(7, 9).toInt();
+              Int_Minute = val.substring(9, 11).toInt();
+              Int_Seconde = val.substring(11, 13).toInt();
+              HeureValide = true;
+            }
           }
           if (code.indexOf("URMS1") == 0) {
             Tension_M = val.toFloat();  //phase 1 uniquement
@@ -161,7 +168,7 @@ void LectureLinky() {  //Lecture port série du LINKY .
           if (code.indexOf("IRMS1") == 0) {
             Intensite_M = val.toFloat();  //Phase 1 uniquement
           }
-          if (TempoEDFon == 0) {  // On prend tarif sur Linky
+          if (TempoRTEon == 0) {  // On prend tarif sur Linky
             if (code.indexOf("LTARF") == 0) {
               LTARF = val;  //Option Tarifaire
               LTARF.trim();
@@ -172,6 +179,21 @@ void LectureLinky() {  //Lecture port série du LINKY .
               STGE = STGE.substring(1, 2);  //Tempo lendemain et jour sur 1 octet
             }
           }
+          if (code.indexOf("NGTF") == 0) {
+            NGTF = val;  //Calendrier Tarifaire
+            NGTF.trim();
+          }
+          if (code.indexOf("EASF01") == 0) EASF01 = val.toInt();
+          if (code.indexOf("EASF02") == 0) EASF02 = val.toInt();
+          if (code.indexOf("EASF03") == 0) EASF03 = val.toInt();
+          if (code.indexOf("EASF04") == 0) EASF04 = val.toInt();
+          if (code.indexOf("EASF05") == 0) EASF05 = val.toInt();
+          if (code.indexOf("EASF06") == 0) EASF06 = val.toInt();
+          if (code.indexOf("EASF07") == 0) EASF07 = val.toInt();
+          if (code.indexOf("EASF08") == 0) EASF08 = val.toInt();
+          if (code.indexOf("EASF09") == 0) EASF09 = val.toInt();
+          if (code.indexOf("EASF10") == 0) EASF10 = val.toInt();
+
         }
         break;
       default:

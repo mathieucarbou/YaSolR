@@ -11,9 +11,7 @@ const char *OtaHtml = R"====(
     #onglets2{display:block;}
     .Bparametres{border:inset 10px azure;}
     .Bota{border:inset 4px azure;}
-    body{color:white;}
   </style>
-  <script src="/ParaRouteurJS"></script>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
 
   </head>
@@ -33,10 +31,11 @@ const char *OtaHtml = R"====(
     </div>
     <div class="liste">
       <ul>
-        <li>1 - <a href='/Export' >Sauvegardez vos paramètres</a> sur le PC</li>
+        <li>1 - <a href='/Export' >Sauvegardez vos paramètres</a> sur le PC si la partie entière de la version change. Pas nécessaire si uniquement la partie décimale.</li>
         <li>2 - Téléchargez sur votre ordinateur, la version binaire du logiciel du routeur souhaitée <br>(Solar_Router_Vxx.xx.ino.bin) en cliquant dessus</li>
         <li>3 - Cliquez sur "Choisir un fichier" et sélectionnez ce binaire sur votre ordinateur</li>
         <li>4 - Cliquez sur "Mettre à jour"</li>
+        <li>5 - <a href='/Export' >Importez si besoin vos anciens paramètres</a> du PC </li>
       </ul>
     </div>
     <form method='POST' action='#' enctype='multipart/form-data' id='upload_form'>
@@ -44,7 +43,9 @@ const char *OtaHtml = R"====(
       <input class='bouton' type='submit' value='Mettre à jour'>
     </form>
     <div id='prg'>progression: 0%</div>
+    
     <script>
+          var BordsInverse=[".Bparametres",".Bota"];
           $('form').submit(function(e){
             e.preventDefault();
             var form = $('#upload_form')[0];
@@ -77,14 +78,20 @@ const char *OtaHtml = R"====(
         function Init(){
           SetHautBas();
           LoadParaRouteur();
+          LoadCouleurs();
         }
         function AdaptationSource(){
           setTimeout('GH("Version_actu", GID("version").innerHTML)',1000);
+        };
+        function FinParaRouteur(){
+          GID("Bheure").style.display= (Horloge>1) ? "inline-block": "none";
         };
     </script>
     <br>
     <div id='pied'></div>
     <br>
+    <script src="/ParaRouteurJS"></script>
+    <script src="/CommunCouleurJS"></script>
 </body></html>
  
  )====";

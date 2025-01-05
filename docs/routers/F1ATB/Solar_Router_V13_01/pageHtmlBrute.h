@@ -15,19 +15,15 @@ const char *PageBrute = R"====(
     .VA { background-color:#dfd;}
     .Hz,.Enph { background-color:#eeb;}
     .titre{background-color:#ccc; text-align: center;font-weight: bold;}
-    .foot { color:white;}
-    #date,#dateLinky { color:white;}
-    #DataLinky,#dataSmartG,#dataShellyEm,#dataUxIx3,#dataPmqtt {border:10px inset azure; background-color:white;margin:auto;padding:4px;text-align:left;overflow:hidden;display:inline-block;}
-    #tableau,#DataESP32,#tableauLinky,#tableauEnphase { background-color:white;display:inline-block;margin:auto;padding:4px;}
-    table {border:10px inset azure;}
+    .dataIn{text-align:left;overflow:hidden;}
     td { text-align: left;padding:4px;}
     #LED{position:absolute;top:4px;left:4px;width:0px;height:0px;border:5px solid red;border-radius:5px;}
     .Bbrut{border:inset 8px azure;}
     .dispT{display:none;}
     .ce { text-align: center;position:relative;}
-    svg { border:10px inset azure;background: linear-gradient(#333,#666,#333);}
+    svg { border:10px inset azure;}
     #infoUxIx2,#infoUxIx3,#infoUxI,#infoLinky,#infoEnphase,#infoSmartG,#infoShellyEm,#infoPmqtt{display:none;}
-    #donneeDistante{font-size:50%;color:white;text-align:center;margin-bottom:10px;display:none;}
+    #donneeDistante{font-size:50%;text-align:center;margin-bottom:10px;display:none;}
   </style>
   </head>
   <body  onload='SetHautBas();LoadParaRouteur();' >
@@ -35,48 +31,49 @@ const char *PageBrute = R"====(
     <div id="lesOnglets"></div>
     <div id='date'>Date</div><br><br>
     <div id='infoUxI'>
-      <div class='foot' >Tension et Courant sur 20ms</div>
-      <div  class='ce'><h3 style='position:absolute;top:20px;right:40px;'><span style='color:red;'>_<span id='Ueff'></span><small> V</small></span>
-      <span style='color:lightgreen;'> _<span id='Ieff'></span><small> A</small></span><br>
-      <span style='color:white;'> <small>Facteur de puissance : <span id='cosphi'></span></small></span></h3><p id='SVG'></p></div>
+      <div >Tension et Courant sur 20ms</div>
+      <div  class='ce'><h3 style='position:absolute;top:20px;right:40px;'><span id='Ueff'></span>
+      <span id='Ieff'></span><br>
+      <span id='cosphi'></span></h3><p id='SVG'></p></div>
     </div>
     <div id='infoUxIx2'>
-      <br><br><div class='foot' >Donn&eacute;es brutes capteur JSY-MK-194T</div>
-      <div id='tableau'></div>
+      <br><br><div>Donn&eacute;es brutes capteur JSY-MK-194T</div>
+      <div id='tableau' class='tableau'></div>
     </div>
     <div id='infoUxIx3'>
-      <div class='foot' >Donn&eacute;es brutes capteur JSY-MK-333</div>
-      <div id='dataUxIx3'></div>
+      <div>Donn&eacute;es brutes capteur JSY-MK-333</div>
+      <div id='dataUxIx3' class='tableau dataIn'></div>
     </div>
     <div id='infoEnphase'>
-      <br><br><div class='foot' >Donn&eacute;es Enphase Envoy-S Metered</div>
-      <div id='tableauEnphase'></div>
+      <br><br><div>Donn&eacute;es Enphase Envoy-S Metered</div>
+      <div id='tableauEnphase' class='tableau'></div>
     </div>
     <div id='infoSmartG'>
-      <div class='foot' >Donn&eacute;es SmartGateways</div>
-      <div id='dataSmartG'></div>
+      <div>Donn&eacute;es SmartGateways</div>
+      <div id='dataSmartG' class='tableau dataIn'></div>
     </div>
     <div id='infoShellyEm'>
-      <div class='foot' >Donn&eacute;es Shelly Em </div>
-      <div id='dataShellyEm'></div>
+      <div>Donn&eacute;es Shelly Em </div>
+      <div id='dataShellyEm' class='tableau dataIn'></div>
     </div>
     <div id='infoPmqtt'>
-      <div class='foot' >Données puissances recues par MQTT</div>
-      <div id='dataPmqtt'></div>
+      <div>Données puissances recues par MQTT</div>
+      <div id='dataPmqtt' class='tableau dataIn'></div>
     </div>
     <div id='infoLinky'>
       <div id='dateLinky'></div>
-      <div id='tableauLinky'></div>
-      <br><br><div class='foot' >Donn&eacute;es brutes Linky en mode standard</div>
-      <div><div id='DataLinky' ></div></div>
+      <div id='tableauLinky' class='tableau'></div>
+      <br><br><div>Donn&eacute;es brutes Linky en mode standard</div>
+      <div><div id='DataLinky' class='tableau dataIn' ></div></div>
     </div>
     <div id="donneeDistante">Données distantes</div>
-    <div class='foot' >Donn&eacute;es ESP32</div>
-    <div><div id='DataESP32' ></div></div><br>
+    <div>Donn&eacute;es ESP32</div>
+    <div><div id='DataESP32' class='tableau'></div></div><br>
     <div id='pied'></div>
+    <script src="/ParaRouteurJS"></script>
     <script src='BruteJS'></script>
     <script src='BruteJS2'></script>
-    <script src="/ParaRouteurJS"></script>
+    <script src="/CommunCouleurJS"></script>
     <br></body></html>
 )====";
 
@@ -84,7 +81,7 @@ const char *PageBruteJS = R"====(
        var InitFait=false;
        var IdxMessage=0;
        var MessageLinky='';
-
+       var BordsInverse=[".Bbrut"];
        const M=[]; //Pour UxIx2
        M.push(['Tension_M','Tension efficace','V','V']);
        M.push(['Intensite_M','Courant efficace','A','A']);
@@ -195,23 +192,30 @@ const char *PageBruteJS = R"====(
               if (LaSource=='Ext') LaSource="Externe ("+Source_data+")<br>" +int2ip(RMSextIP);
               S+='<tr><td>ESP On depuis :</td><td>'+H+'</td></tr>';
               S+='<tr><td>Source des mesures :</td><td>'+LaSource+'</td></tr>';
-              S+='<tr><td>Niveau WiFi :</td><td>'+message[1]+' dBm</td></tr>';
-              S+="<tr><td>Point d'acc&egrave;s WiFi :</td><td>"+message[2]+'</td></tr>';
-              S+='<tr><td>Adresse MAC ESP32 :</td><td>'+message[3]+'</td></tr>';
-              S+='<tr><td>R&eacute;seau WiFi :</td><td>'+message[4]+'</td></tr>';
-              S+='<tr><td>Adresse IP ESP32 :</td><td>'+message[5]+'</td></tr>';
-              S+='<tr><td>Adresse passerelle :</td><td>'+message[6]+'</td></tr>';
-              S+='<tr><td>Masque du r&eacute;seau :</td><td>'+message[7]+'</td></tr>';
+              if (ModeWifi<2){
+                S+='<tr><td>Niveau WiFi :</td><td>'+message[1]+' dBm</td></tr>';
+                S+="<tr><td>Point d'acc&egrave;s WiFi :</td><td>"+message[2]+'</td></tr>';
+                S+='<tr><td>Adresse MAC ESP32 :</td><td>'+message[3]+'</td></tr>';
+                S+='<tr><td>R&eacute;seau WiFi :</td><td>'+message[4]+'</td></tr>';
+                S+='<tr><td>Adresse IP ESP32 :</td><td>'+message[5]+'</td></tr>';
+                S+='<tr><td>Adresse passerelle :</td><td>'+message[6]+'</td></tr>';
+                S+='<tr><td>Masque du r&eacute;seau :</td><td>'+message[7]+'</td></tr>';
+              } else {
+                S+="<tr><td>Adresse IP ESP32 (Point d'Accès) :</td><td>192.168.4.1</td></tr>";
+              }
               S+='<tr><td>Charge coeur 0 (Lecture Puissance) Min, Moy, Max :</td><td>'+message[8]+' ms</td></tr>';
               S+='<tr><td>Charge coeur 1 (Calcul + Wifi) Min, Moy, Max :</td><td>'+message[9]+' ms</td></tr>';
               S+='<tr><td>Espace mémoire EEPROM utilisé :</td><td>'+message[10]+' %</td></tr>';
               S+='<tr><td>Mémoire RAM libre actuellement :</td><td>'+message[11]+' octet</td></tr>';
               S+='<tr><td>Mémoire RAM libre minimum :</td><td>'+message[12]+' octet</td></tr>';
               S+="<tr><td>Nombre d'interruptions en 15ms du Gradateur (signal Zc) : Filtrés/Brutes :</td><td>"+message[13]+'</td></tr>';
-              S+='<tr><td>Synchronisation 10ms au Secteur ou asynchrone horloge ESP32</td><td>'+message[14]+'</td></tr>';
+              S+='<tr><td>Synchronisation au Secteur ou asynchrone horloge ESP32</td><td>'+message[14]+'</td></tr>';
+              var Stemp=message[15];
+              if (message[15]>0) Stemp +='<span class="fsize10">' + message[16] +'</span>';
+              S+="<tr><td>Nombre de capteurs de température DS18B20 :</td><td>"+Stemp+'</td></tr>';
               S +='<tr><td style="text-align:center;"><strong>Messages</strong></td><td></td></tr>';
               for (var i=0;i<10;i++){
-                S +='<tr><td>'+message[15+i]+'</td><td></td></tr>';
+                S +='<tr><td>'+message[17+i]+'</td><td></td></tr>';
               }
               S+='</table>';
               GH('DataESP32', S);             
@@ -221,6 +225,11 @@ const char *PageBruteJS = R"====(
         };
         xhttp.open('GET', 'ajax_dataESP32', true);
         xhttp.send();
+       }
+       function FinParaRouteur(){
+        LoadCouleurs();
+        LoadData();
+        LoadDataESP32();
        }
 )====";
 
@@ -238,14 +247,16 @@ const char *PageBruteJS2 = R"====(
             Source_data=G0[1];
             if (Source_data == "UxI"){
               GID('infoUxI').style.display="block";
-              GH('Ueff',parseInt(G0[2],10));
-              GH('Ieff',G0[3]);
-              GH('cosphi',G0[4]);
+              GH('Ueff',"<span style='color:#" + Koul[Coul_W][3] + ";'>_" +parseInt(G0[2],10) + "<small> V</small></span>");
+              GH('Ieff',"<span style='color:#" + Koul[Coul_VA][3] + ";'> _" + G0[3] + "<small> A</small></span>");
+              GH('cosphi',"<span style='color:#"+Koul[Coul_Graphe][1] +";'> <small>Facteur de puissance : " + G0[4]+ "</small></span>");
               var volt=groupes[1].split(RS);
               var amp=groupes[2].split(RS);
-              var S= "<svg height='400' width='1000' >";
-              S += "<line x1='0' y1='400' x2='0' y2='0' style='stroke:rgb(0,0,0);stroke-width:2' />";
-              S += "<line x1='0' y1='197' x2='1000' y2='197' style='stroke:rgb(0,0,0);stroke-width:2' />";
+              var cT="#"+Koul[Coul_Graphe][1];
+              var style='background:linear-gradient(#' + Koul[Coul_Graphe][5] +',#' + Koul[Coul_Graphe][3] +',#' + Koul[Coul_Graphe][5] +');border-color:#' +Koul[Coul_Tab][5]+';' ;  
+              var S= "<svg height='400' width='1000'  style='"+style+ "' >";
+              S += "<line x1='0' y1='400' x2='0' y2='0' style='stroke:" + cT +";stroke-width:2' />";
+              S += "<line x1='0' y1='197' x2='1000' y2='197' style='stroke:" + cT +";stroke-width:2' />";
               var  Vmax = 500;
               var Imax = 500;
               for (var i = 0; i < 100; i++) {
@@ -259,14 +270,14 @@ const char *PageBruteJS2 = R"====(
                 var X = 10 * i;
                 S += X + ',' + Y + ' ';
               }
-              S += "' style='fill:none;stroke:red;stroke-width:6' />";
+              S += "' style='fill:none;stroke:#" + Koul[Coul_W][3] + ";stroke-width:6' />";
               S += "<polyline points='";
               for (var i = 0; i < 100; i++) {
                 var Y = 197 - 185 * amp[i] / Imax;
                 var X = 10 * i;
                 S += X + ',' + Y + ' ';
               }
-              S += "' style='fill:none;stroke:lightgreen;stroke-width:6' />";
+              S += "' style='fill:none;stroke:#" + Koul[Coul_VA][3] + ";stroke-width:6' />";
               S += "</svg>";
               GH('SVG',S);
             }
@@ -373,8 +384,8 @@ const char *PageBruteJS2 = R"====(
               }
               IdxMessage=groupes[2];
             }
-            
-             setTimeout('LoadData();',2000);
+            setCouleur();
+            setTimeout('LoadData();',2000);
           }  
         };
         xhttp.open('GET', 'ajax_dataRMS?idx='+IdxMessage, true);
@@ -393,7 +404,7 @@ const char *PageBruteJS2 = R"====(
         if(Source=="Ext"){
           GID("donneeDistante").style.display="block";
         }
-        LoadData();LoadDataESP32();
+        
       }
 )====";
 
