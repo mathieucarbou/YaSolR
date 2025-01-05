@@ -23,20 +23,26 @@ void yasolr_init_zcd() {
     if (!pulseAnalyzer->isEnabled())
       return;
 
-    zcdTask = new Mycila::Task("ZCD", Mycila::TaskType::ONCE, [](void* params) {
+    zcdTask = new Mycila::Task("ZCD", [](void* params) {
       // check if ZCD is online (connected to the grid)
       // this is required for dimmers to work
       if (!pulseAnalyzer->isOnline()) {
-        logger.debug(TAG, "No electricity detected by ZCD module");
-        zcdTask->resume(2 * Mycila::TaskDuration::SECONDS); // retry in 2 seconds
+        logger.warn(TAG, "No electricity detected by ZCD module");
         return;
       }
 
       // => ZCD switch turned on + Pulse Analyzer online
       if (!Thyristor::getSemiPeriod() || (output1 && !output1->isDimmerEnabled()) || (output2 && !output2->isDimmerEnabled())) {
         float frequency = yasolr_frequency();
-        uint16_t semiPeriod = 1000000 / 2 / frequency;
+
+        if (!frequency) {
+          logger.warn(TAG, "No electricity detected by ZCD module");
+          return;
+        }
+
+        const uint16_t semiPeriod = 1000000 / 2 / frequency;
         logger.info(TAG, "Detected grid frequency: %.2f Hz", frequency);
+        zcdTask->setEnabled(false);
 
         if (!Thyristor::getSemiPeriod()) {
           logger.info(TAG, "Starting Thyristor with semi-period: %" PRIu16 " us", semiPeriod);
@@ -64,10 +70,13 @@ void yasolr_init_zcd() {
 
         // refresh dashboard when electricity is back
         dashboardInitTask.resume();
+
+      } else {
+        zcdTask->setEnabled(false);
       }
     });
 
+    zcdTask->setInterval(2 * Mycila::TaskDuration::SECONDS);
     zcdTask->setManager(coreTaskManager);
-    zcdTask->resume();
   }
 }
