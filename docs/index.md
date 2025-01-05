@@ -32,18 +32,17 @@ YaSolR is one of the **most optimized and powerful** Open-Source Solar Router fi
 - **3-Phase** support with JSY-333, Shelly or MQTT
 - **Custom dimmer library** optimized for ESP32 (🚧)
 - **Dimmer range remapping** like Shelly Dimmers
-- **Frequency auto-detection** (support any frequency: not only 50/60Hz)
+- **Frequency auto-detection** supports 50/60Hz
 - **Harmonics** can be lowered to comply with regulations thanks to several settings
-- **Independent or Sequential Outputs**
+- **Independent or Sequential Outputs** with grid excess sharing
 - **PID Controller** optimized and customizable
 - **PID Tuning** web interface
 - **Precise Power Calibration**
 - **Precise Zero-Cross Detection with ZC pulse analysis**
 - **RMT Peripheral** used for DS18 readings
 - **SafeBoot** partition for recovery and system update
-- **SSL/TLS MQTT Support**
-- **Up to 20 measurements / second** with a remote JSY
-- **Up to 25 measurements / second** with a local JSY
+- **SSL/TLS MQTT Support** with embedded root certificates
+- **Up to 20-25 measurements / second** with a local or even a remote JSY
 
 This is a big **Open-Source** project following **best development practices**.
 YaSolR is:
@@ -52,41 +51,33 @@ YaSolR is:
 - **easy to use** with one of the **best easy-to-use and responsive Web Interface**, **REST** API and **MQTT** API
 - compatible with **Home Assistant** and other home automation systems (Auto Discovery)
 - compatible with **EV Charging Box** like OpenEVSE
-- compatible with **remote** dimmer, relay, temperature, measurement (**ESP-Now** / **UDP**)
+- supports **remote** temperature and measurement
 - compatible with **many hardware components**:
-  - ESP32 Dev Kit boards
-  - ESP32 S3 Dev Kit boards
-  - ESP32s boards
-  - WIPI 3 boards
-  - Denky D4 boards
-  - Lilygo T Eth Lite S3 boards (**Ethernet support**)
-  - WT32-ETH01 boards (**Ethernet support**)
-  - Olimex ESP32-POE boards (**Ethernet support**)
-  - Olimex ESP32 Gateway boards (**Ethernet support**)
-  - Random and Zero-Cross SSR
-  - Standalone Zero-Cross Detection modules
+  - ESP32: Dev Kit boards, S3 Dev Kit boards, ESP32s, WIPI 3, Denky D4, Lilygo T Eth Lite S3 boards (**Ethernet support**), WT32-ETH01 boards (**Ethernet support**), Olimex ESP32-POE boards (**Ethernet support**), Olimex ESP32 Gateway boards (**Ethernet support**)
+  - Random (async) and Zero-Cross (sync) Solid State Relays
   - Robodyn 24A / 40A
   - Voltage Regulators (Loncont LSA or LCTC)
+  - Many Zero-Cross Detection modules (JSY-MK-194G, Pulse ZCD, BM1Z102FJ, etc)
   - DS18 Temperature Sensors
   - etc
 
 ## Detailed Features
 
-+ [Routing Outputs](#routing-outputs)
+- [Outputs](#outputs)
   - [Dimmer (required)](#dimmer-required)
   - [Bypass Relay (optional)](#bypass-relay-optional)
   - [Temperature (optional)](#temperature-optional)
   - [Measurement device (optional)](#measurement-device-optional)
   - [Additional Output Features](#additional-output-features)
-+ [Grid Power Measurement](#grid-power-measurement)
-+ [Relays](#relays)
-+ [Monitoring and Management](#monitoring-and-management)
-+ [MQTT, REST API and Home Automation Systems](#mqtt-rest-api-and-home-automation-systems)
-+ [Online / Offline modes](#online--offline-modes)
-+ [PID Control and Tuning](#pid-control-and-tuning)
-+ [Virtual Excess and EV Charger Compatibility](#virtual-excess-and-ev-charger-compatibility)
+- [Grid Power Measurement](#grid-power-measurement)
+- [Relays](#relays)
+- [Monitoring and Management](#monitoring-and-management)
+- [MQTT, REST API and Home Automation Systems](#mqtt-rest-api-and-home-automation-systems)
+- [Online / Offline modes](#online--offline-modes)
+- [PID Control and Tuning](#pid-control-and-tuning)
+- [Virtual Excess and EV Charger Compatibility](#virtual-excess-and-ev-charger-compatibility)
 
-### Routing Outputs
+### Outputs
 
 YaSolR supports up to 2 outputs.
 A routing output is connected to a resistive load and controls its power by dimming the voltage.
@@ -103,13 +94,10 @@ Each output is composed of the following components:
 A dimmer controls the power sent to the load.
 Example of supported dimmers:
 
-| Dimmer Type                                                            | `Phase Control` | `Burst Fire Control` (🚧) |
-| :--------------------------------------------------------------------- | :-------------: | :-----------------------: |
-| **Robodyn 24A**<br> ![](./assets/img/hardware/Robodyn_24A.jpeg)        |       ✅        |            ✅             |
-| **Robodyn 40A**<br> ![](./assets/img/hardware/Robodyn_40A.jpeg)        |       ✅        |            ✅             |
-| **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg)          |       ✅        |            ✅             |
-| **Zero-Cross SSR** (🚧)<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) |       ❌        |            ✅             |
-| **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg)  |       ✅        |            ✅             |
+|                           | **Robodyn 24A**<br> ![](./assets/img/hardware/Robodyn_24A.jpeg) | **Robodyn 40A**<br> ![](./assets/img/hardware/Robodyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
+| :------------------------ | :-------------------------------------------------------------: | :-------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :-------------------------------------------------------------------: |
+| `Phase Control`           |                               ✅                                |                               ✅                                |                              ✅                               |                                ❌                                 |                                  ✅                                   |
+| `Burst Fire Control` (🚧) |                               ✅                                |                               ✅                                |                              ✅                               |                                ✅                                 |                                  ✅                                   |
 
 #### Bypass Relay (optional)
 
@@ -118,9 +106,14 @@ Keeping a dimmer `on` generates heat so a bypass relay can be installed to avoid
 
 **If a bypass relay is installed, the dimmer will be used instead and will be set to 0-100% to simulate the relay.**
 
+Here are the supported bypass relays:
+
 |                      Electromagnetic Relay                       |                      Zero-Cross SSR                      |                      Random SSR                      |
 | :--------------------------------------------------------------: | :------------------------------------------------------: | :--------------------------------------------------: |
 | ![Electromagnetic Relay](./assets/img/hardware/DIN_2_Relay.jpeg) | ![Zero-Cross SSR](./assets/img/hardware/SSR_40A_DA.jpeg) | ![Random SSR](./assets/img/hardware/Random_SSR.jpeg) |
+
+Note that the electromagnetic relay above is interesting because it has both a NO and NC contacts.
+So the NC contact (closed when relay is in default open position) can be connected to the dimmer and used to prevent any power to go through the dimmer when the bypass relay is on.
 
 #### Temperature (optional)
 
@@ -142,11 +135,12 @@ Each output supports an optional measurement device to measure the power routed 
 Here is a list of all supported devices:
 
 - `JSY-MK-193` **first channel** (AC, RS485 interface)
-- `JSY-MK-194T` and `JSY-MK-194G` first channel (AC, TTL interface)
+- `JSY-MK-194T` and `JSY-MK-194G` **first channel** (AC, TTL interface)
 - `PZEM-004T V3`
-- Remote JSY through **UDP** (20 measurements / second) with [MycilaJSY Remote UDp Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy)
+- Remote JSY through **UDP** with [MycilaJSY UDP Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy) (as fast as a local JSY!)
+- Remote JSY through **ESP-Now** (🚧) (as fast as a local JSY!)
 
-|                     PZEM-004T V3                      |     JSY    |
+|                     PZEM-004T V3                      |                           JSY                            |
 | :---------------------------------------------------: | :------------------------------------------------------: |
 | ![PZEM-004T V3](./assets/img/hardware/PZEM-004T.jpeg) | ![JSY-MK-194T](./assets/img/hardware/JSY-MK-194T_2.jpeg) |
 
@@ -154,9 +148,8 @@ Here is a list of all supported devices:
 
 - `Bypass Automatic Control` / `Manual Control`: Automatically force a heating as needed based on days, hours, temperature range, or control it manually
 - `Dimmer Automatic Control` / `Manual Control`: Automatically send the grid excess to the resistive load through the dimmer (or manually control the dimmer yourself if disabled)
-- `Independent or Sequential Outputs with Grid Excess Sharing`: Outputs are sequential by default (second output activated after first one at 100%).
+- `Excess Power Limiter (W)` for Independent or Sequential Outputs: Outputs are sequential by default (second output activated after first one at 100%).
   **Independent outputs are also supported** thanks to the sharing feature to split the excess between outputs.
-  This feature is available in `Dimmer Automatic Control` mode.
 - `Dimmer Duty Limiter`: Set a limit to the dimmer power to avoid routing too much power
 - `Dimmer Temperature Limiter`: Set a limit to the dimmer to stop it when a temperature is reached. This temperature can be different than the temperature used in auto bypass mode.
 - `Statistics`: Harmonic information, power factor, energy, routed power, etc
@@ -175,17 +168,17 @@ YaSolR supports many ways to measure the grid power and voltage:
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
 - `JSY-MK-163T` (AC, TTL interface)
 - `JSY-MK-193` **second channel** (AC, RS485 interface)
-- `JSY-MK-194T` and `JSY-MK-194G` second channel (AC, TTL interface)
+- `JSY-MK-194T` and `JSY-MK-194G` **second channel** (AC, TTL interface)
 - `JSY-MK-227` and `JSY-MK-229` (AC and DC, RS485 interface)
-- Remote JSY through **UDP** (20 measurements / second) with [MycilaJSY Remote UDp Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy)
-- Remote JSY through **ESP-Now** (🚧)
+- Remote JSY through **UDP** with [MycilaJSY UDP Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy) (as fast as a local JSY!)
+- Remote JSY through **ESP-Now** (🚧) (as fast as a local JSY!)
 
 **3-Phase**:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly 3EM`, etc)
 - `JSY-MK-333` and `JSY-MK-333G` (AC, RS485 interface)
-- Remote JSY through **UDP**
-- Remote JSY through **ESP-Now** (🚧)
+- Remote JSY through **UDP** with [MycilaJSY UDP Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy) (as fast as a local JSY!)
+- Remote JSY through **ESP-Now** (🚧) (as fast as a local JSY!)
 
 ### Relays
 
@@ -197,24 +190,18 @@ YaSolR supports up to 2 relays to control external resistive loads or contactors
 
 ### Monitoring and Management
 
-**Dashboard**:
-
 - `Charts`: Live charts (grid power, routed power, THDi, PID tuning, etc)
-- `Health`: configuration mistakes are detected as much as possible and issues displayed when a component was found to not properly work.
-- `Languages (i18n)`: en / fr
-- `LEDs`: Support LEDs for visual alerts
-- `Manual Override`: Override anything remotely (MQTT, REST, Website)
-- `GPIO`: A GPIO section shows the view of configured pins and activated pins, to report issues, duplications or invalid pins.
-- `Restart`, `Factory Reset`, `Config Backup & Restore`, `Debug Logging`
-- `Statistics`: Harmonic information, power factor, energy, routed power, grid power, grid frequency and voltage, etc
-- `Web console`: View ESP logs live from a Web interface
-- `Web OTA Firmware Update`: Update firmware through the Web interface
-
-**Hardware**:
-
 - `Display`: Support I2C OLED Display (`SSD1307`, `SH1106`, `SH1107`)
+- `GPIO`: A GPIO section shows the view of configured pins and activated pins, to report issues, duplications or invalid pins.
+- `Health`: configuration mistakes are detected as much as possible and issues displayed when a component was found to not properly work.
+- `Translation`: en / fr
+- `LEDs`: Support LEDs for visual alerts
 - `Push Button`: Support a push button to restart the device
-- `Temperature Sensor`: Support a temperature rensor for the router box (`DS18B20`)
+- `Restart`, `Factory Reset`, `Config Backup & Restore`, `Debug Mode`, etc
+- `Statistics`: Harmonic information, power factor, energy, routed power, grid power, grid frequency and voltage, etc
+- `system Temperature Sensor`: Support a temperature sensor for the router box (`DS18B20`)
+- `Web console`: View ESP logs live from a Web interface
+- `Web OTA Firmware Update`: Update firmware through a Web interface (with SafeBoot recovery partition)
 
 ### MQTT, REST API and Home Automation Systems
 
