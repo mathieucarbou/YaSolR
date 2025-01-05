@@ -807,6 +807,14 @@ The JSY is used to measure:
 The JSY can be replaced by MQTT, reading the power and voltage from MQTT topics.
 See [MQTT as a Grid Source](#mqtt-as-a-grid-source).
 
+**Wiring:**
+
+- Channel 1 (CT1): all the router outputs should go through it
+- Channel 2 (CT2): the grid should go through it
+
+Reason is that on some JSY, channel 1 is a tore on the board while channel 2 is always a clamp.
+This is easier to put a clamp around the grid wire.
+
 ### JSY (remote)
 
 JSY can also be replaced with a remote JSY **without any impact on routing speed**.
@@ -823,6 +831,14 @@ When using a remote JSY with the router, the following rules apply:
 - The grid power will always be read first from MQTT, then from a remote JSY, then from a connected JSY.
 
 JSY Remote can be activated in the Hardware section by switching the button called **"JSY Remote"**.
+
+**Wiring:**
+
+- Channel 1 (CT1): all the router outputs should go through it
+- Channel 2 (CT2): the grid should go through it
+
+Reason is that on some JSY, channel 1 is a tore on the board while channel 2 is always a clamp.
+This is easier to put a clamp around the grid wire.
 
 > ##### TIP
 >

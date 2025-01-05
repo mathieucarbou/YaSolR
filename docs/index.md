@@ -141,9 +141,10 @@ This can also be done:
 Each output supports an optional measurement device to measure the power routed to the load.
 Here is a list of all supported devices:
 
-- `JSY-MK-193` first channel (AC, RS485 interface)
+- `JSY-MK-193` **first channel** (AC, RS485 interface)
 - `JSY-MK-194T` and `JSY-MK-194G` first channel (AC, TTL interface)
 - `PZEM-004T V3`
+- Remote JSY through **UDP** (20 measurements / second) with [MycilaJSY Remote UDp Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy)
 
 |                     PZEM-004T V3                      |     JSY    |
 | :---------------------------------------------------: | :------------------------------------------------------: |
@@ -173,10 +174,10 @@ YaSolR supports many ways to measure the grid power and voltage:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
 - `JSY-MK-163T` (AC, TTL interface)
-- `JSY-MK-193` second channel (AC, RS485 interface)
+- `JSY-MK-193` **second channel** (AC, RS485 interface)
 - `JSY-MK-194T` and `JSY-MK-194G` second channel (AC, TTL interface)
 - `JSY-MK-227` and `JSY-MK-229` (AC and DC, RS485 interface)
-- Remote JSY through **UDP** (20 measurements / second)
+- Remote JSY through **UDP** (20 measurements / second) with [MycilaJSY Remote UDp Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy)
 - Remote JSY through **ESP-Now** (🚧)
 
 **3-Phase**:
