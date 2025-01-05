@@ -16,8 +16,9 @@ namespace Mycila {
       bool isEnabled() const { return _relay->isEnabled(); }
       bool isAutoRelayEnabled() const { return _relay->isEnabled() && _load > 0; }
 
-      bool tryRelayState(bool state, uint32_t duration = 0);
-      bool tryRelayStateAuto(bool state, float virtualGridPower);
+      bool trySwitchRelay(bool state, uint32_t duration = 0);
+
+      bool autoSwitch(float virtualGridPower);
 
       bool isOn() const { return _relay->isOn(); }
       bool isOff() const { return _relay->isOff(); }

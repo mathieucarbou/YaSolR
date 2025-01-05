@@ -78,9 +78,9 @@ void subscribe() {
       if (state.empty())
         return;
       if (state == YASOLR_ON)
-        relay1->tryRelayState(true);
+        relay1->trySwitchRelay(true);
       else if (state == YASOLR_OFF)
-        relay1->tryRelayState(false);
+        relay1->trySwitchRelay(false);
     }
   });
 
@@ -91,9 +91,9 @@ void subscribe() {
         return;
 
       if (state == YASOLR_ON)
-        relay2->tryRelayState(true);
+        relay2->trySwitchRelay(true);
       else if (state == YASOLR_OFF)
-        relay2->tryRelayState(false);
+        relay2->trySwitchRelay(false);
     }
   });
 

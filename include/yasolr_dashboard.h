@@ -58,7 +58,7 @@ namespace YaSolR {
 
       void _relaySwitch(dash::SwitchCard& card, Mycila::RouterRelay& relay) {
         card.onChange([&card, &relay, this](bool value) {
-          relay.tryRelayState(value);
+          relay.trySwitchRelay(value);
           card.setValue(relay.isOn());
           dashboard.refresh(card);
         });

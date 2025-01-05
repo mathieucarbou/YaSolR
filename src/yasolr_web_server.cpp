@@ -369,9 +369,9 @@ void rest_api() {
       if (relay1 && relay1->isEnabled() && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
-          relay1->tryRelayState(true);
+          relay1->trySwitchRelay(true);
         else if (state == YASOLR_OFF)
-          relay1->tryRelayState(false);
+          relay1->trySwitchRelay(false);
       }
       request->send(200);
     });
@@ -381,9 +381,9 @@ void rest_api() {
       if (relay2 && relay2->isEnabled() && request->hasParam("state", true)) {
         std::string state = request->getParam("state", true)->value().c_str();
         if (state == YASOLR_ON)
-          relay2->tryRelayState(true);
+          relay2->trySwitchRelay(true);
         else if (state == YASOLR_OFF)
-          relay2->tryRelayState(false);
+          relay2->trySwitchRelay(false);
       }
       request->send(200);
     });

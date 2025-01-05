@@ -20,14 +20,14 @@ extern Mycila::Logger logger;
 
 #ifndef MYCILA_RELAY_TOLERANCE
   // in percentage
-  // => 30W for a tri-phase 3000W resistance
-  // => 21W for a tri-phase 2100W resistance
-  #define MYCILA_RELAY_TOLERANCE 0.03
+  // => 50W for a tri-phase 3000W resistance (1000W per phase)
+  // => 35W for a tri-phase 2100W resistance (700W per phase)
+  #define MYCILA_RELAY_TOLERANCE 0.05
 #endif
 
 #define TAG "RELAY"
 
-bool Mycila::RouterRelay::tryRelayState(bool state, uint32_t duration) {
+bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
   if (!_relay->isEnabled())
     return false;
 
@@ -44,20 +44,26 @@ bool Mycila::RouterRelay::tryRelayState(bool state, uint32_t duration) {
   return true;
 }
 
-bool Mycila::RouterRelay::tryRelayStateAuto(bool state, float virtualGridPower) {
+bool Mycila::RouterRelay::autoSwitch(float virtualGridPower) {
   if (!isAutoRelayEnabled())
     return false;
 
-  if (state && _relay->isOff() && virtualGridPower + _load <= -_load * MYCILA_RELAY_TOLERANCE) {
-    LOGI(TAG, "Auto-Switching relay on pin %u ON: virtual grid power is %.2f W", _relay->getPin(), virtualGridPower);
-    _relay->setState(true);
-    return true;
+  if (_relay->isOff()) {
+    if (virtualGridPower + _load <= -_load * MYCILA_RELAY_TOLERANCE) {
+      LOGI(TAG, "Auto-Switching relay on pin %u ON: virtual grid power is %.2f W", _relay->getPin(), virtualGridPower);
+      _relay->setState(true);
+      return true;
+    }
+    return false;
   }
 
-  if (!state && _relay->isOn() && virtualGridPower >= _load * MYCILA_RELAY_TOLERANCE) {
-    LOGI(TAG, "Auto-Switching relay on pin %u OFF: virtual grid power is %.2f W", _relay->getPin(), virtualGridPower);
-    _relay->setState(false);
-    return true;
+  if (_relay->isOn()) {
+    if (virtualGridPower >= _load * MYCILA_RELAY_TOLERANCE) {
+      LOGI(TAG, "Auto-Switching relay on pin %u OFF: virtual grid power is %.2f W", _relay->getPin(), virtualGridPower);
+      _relay->setState(false);
+      return true;
+    }
+    return false;
   }
 
   return false;

@@ -75,13 +75,10 @@ void yasolr_init_relays() {
 
       float virtualGridPower = grid.getPower().get() - routerMetrics.power;
 
-      if (relay1 && relay1->tryRelayStateAuto(true, virtualGridPower))
+      if (relay1 && relay1->autoSwitch(virtualGridPower))
         return;
-      if (relay2 && relay2->tryRelayStateAuto(true, virtualGridPower))
-        return;
-      if (relay2 && relay2->tryRelayStateAuto(false, virtualGridPower))
-        return;
-      if (relay1 && relay1->tryRelayStateAuto(false, virtualGridPower))
+
+      if (relay2 && relay2->autoSwitch(virtualGridPower))
         return;
     });
 
