@@ -889,7 +889,7 @@ void YaSolR::Website::initCards() {
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool output1TempEnabled = (config.getBool(KEY_ENABLE_OUTPUT1_DS18) && ds18O1 && ds18O1->isEnabled()) || !config.isEmpty(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
+  const bool output1TempEnabled = output1 && !output1->temperature().neverUpdated();
   const bool pzem1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_PZEM) && pzemO1 && pzemO1->isEnabled();
   const char* output1Days = config.get(KEY_OUTPUT1_DAYS);
 
@@ -904,7 +904,7 @@ void YaSolR::Website::initCards() {
   _output1AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT1_TEMPERATURE_STOP));
   _output1AutoStoptTime.setValue(config.get(KEY_OUTPUT1_TIME_STOP));
 
-  _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled);
+  _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled || output1TempEnabled);
   _output1DimmerSlider.setDisplay(dimmer1Enabled && !autoDimmer1Activated);
   _output1DimmerSliderRO.setDisplay(dimmer1Enabled && autoDimmer1Activated);
   _output1Bypass.setDisplay(bypass1Possible && !autoBypass1Activated);
@@ -948,7 +948,7 @@ void YaSolR::Website::initCards() {
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  const bool output2TempEnabled = (config.getBool(KEY_ENABLE_OUTPUT2_DS18) && ds18O2 && ds18O2->isEnabled()) || !config.isEmpty(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
+  const bool output2TempEnabled = output2 && !output2->temperature().neverUpdated();
   const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM) && pzemO2 && pzemO2->isEnabled();
   const char* output2Days = config.get(KEY_OUTPUT2_DAYS);
 
@@ -963,7 +963,7 @@ void YaSolR::Website::initCards() {
   _output2AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT2_TEMPERATURE_STOP));
   _output2AutoStoptTime.setValue(config.get(KEY_OUTPUT2_TIME_STOP));
 
-  _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled);
+  _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled || output2TempEnabled);
   _output2DimmerSlider.setDisplay(dimmer2Enabled && !autoDimmer2Activated);
   _output2DimmerSliderRO.setDisplay(dimmer2Enabled && autoDimmer2Activated);
   _output2Bypass.setDisplay(bypass2Possible && !autoBypass2Activated);

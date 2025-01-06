@@ -45,8 +45,14 @@ void yasolr_init_ds18() {
     if (ds18O1->isEnabled()) {
       count++;
       ds18O1->listen([](float temperature, bool changed) {
-        if (output1)
-          output1->temperature().update(temperature);
+        if (output1) {
+          // update the temperature in the output
+          if (!output1->temperature().update(temperature).has_value()) {
+            // if this is the first time we get the temperature, we can trigger the dashboard init task
+            dashboardInitTask.resume();
+          }
+        }
+
         if (changed) {
           logger.info(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
           if (mqttPublishTask)
@@ -70,8 +76,14 @@ void yasolr_init_ds18() {
     if (ds18O2->isEnabled()) {
       count++;
       ds18O2->listen([](float temperature, bool changed) {
-        if (output2)
-          output2->temperature().update(temperature);
+        if (output2) {
+          // update the temperature in the output
+          if (!output2->temperature().update(temperature).has_value()) {
+            // if this is the first time we get the temperature, we can trigger the dashboard init task
+            dashboardInitTask.resume();
+          }
+        }
+
         if (changed) {
           logger.info(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
           if (mqttPublishTask)
