@@ -15,6 +15,22 @@
 
 #ifdef APP_MODEL_PRO
 static const ChartSize chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
+
+// tabs icons:
+// https://en.wikipedia.org/wiki/List_of_Unicode_characters#Miscellaneous_Symbols
+// https://en.wikipedia.org/wiki/List_of_Unicode_characters#Dingbats
+
+// tabs are declared early in order to have the smallest IDs that never change
+dash::Tab _output1Tab(dashboard, "\u2600 " YASOLR_LBL_046);
+dash::Tab _output2Tab(dashboard, "\u2600 " YASOLR_LBL_070);
+dash::Tab _relaysTab(dashboard, "\u2600 " YASOLR_LBL_071);
+dash::Tab _managementTab(dashboard, "\u2764 " YASOLR_LBL_078);
+dash::Tab _networkConfigTab(dashboard, "\u2728 " YASOLR_LBL_087);
+dash::Tab _mqttConfigTab(dashboard, "\u2728 " YASOLR_LBL_095);
+dash::Tab _pinConfigTab(dashboard, "\u21C6 " YASOLR_LBL_108);
+dash::Tab _hardwareEnableTab(dashboard, "\u2699 " YASOLR_LBL_126);
+dash::Tab _hardwareConfigTab(dashboard, "\u2699 " YASOLR_LBL_140);
+dash::Tab _pidTab(dashboard, "\u2699 " YASOLR_LBL_159);
 #endif
 
 int8_t _historyX[YASOLR_GRAPH_POINTS] = {0};
@@ -111,11 +127,6 @@ dash::SwitchCard _resistanceCalibration(dashboard, YASOLR_LBL_186);
 #endif
 
 #ifdef APP_MODEL_PRO
-// tabs icons:
-// https://en.wikipedia.org/wiki/List_of_Unicode_characters#Miscellaneous_Symbols
-// https://en.wikipedia.org/wiki/List_of_Unicode_characters#Dingbats
-
-dash::Tab _output1Tab(dashboard, "\u2600 " YASOLR_LBL_046);
 dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_047);
 dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
 dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
@@ -141,7 +152,6 @@ dash::TextInputCard<const char*> _output1AutoStartTime(dashboard, YASOLR_LBL_067
 dash::TextInputCard<const char*> _output1AutoStoptTime(dashboard, YASOLR_LBL_068);
 dash::WeekCard<const char*> _output1AutoStartWDays(dashboard, YASOLR_LBL_069);
 
-dash::Tab _output2Tab(dashboard, "\u2600 " YASOLR_LBL_070);
 dash::FeedbackCard<const char*> _output2State(dashboard, YASOLR_LBL_047);
 dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
 dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
@@ -167,13 +177,11 @@ dash::TextInputCard<const char*> _output2AutoStartTime(dashboard, YASOLR_LBL_067
 dash::TextInputCard<const char*> _output2AutoStoptTime(dashboard, YASOLR_LBL_068);
 dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_069);
 
-dash::Tab _relaysTab(dashboard, "\u2600 " YASOLR_LBL_071);
 dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
 dash::FeedbackCard<const char*> _relay1SwitchRO(dashboard, YASOLR_LBL_074);
 dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
 dash::FeedbackCard<const char*> _relay2SwitchRO(dashboard, YASOLR_LBL_077);
 
-dash::Tab _managementTab(dashboard, "\u2764 " YASOLR_LBL_078);
 dash::LinkCard<const char*> _configBackup(dashboard, YASOLR_LBL_079);
 dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_080, ".txt");
 dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
@@ -183,7 +191,6 @@ dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
 dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
 dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
 
-dash::Tab _networkConfigTab(dashboard, "\u2728 " YASOLR_LBL_087);
 dash::PasswordCard _adminPwd(dashboard, YASOLR_LBL_088, YASOLR_HIDDEN_PWD);
 dash::TextInputCard<const char*> _ntpServer(dashboard, YASOLR_LBL_089);
 dash::AsyncDropdownCard<const char*> _ntpTimezone(dashboard, YASOLR_LBL_090, "/timezones");
@@ -196,7 +203,6 @@ dash::TextInputCard<const char*> _gateway(dashboard, YASOLR_LBL_190);
 dash::TextInputCard<const char*> _dnsServer(dashboard, YASOLR_LBL_191);
 dash::SwitchCard _apMode(dashboard, YASOLR_LBL_094);
 
-dash::Tab _mqttConfigTab(dashboard, "\u2728 " YASOLR_LBL_095);
 dash::TextInputCard<const char*> _mqttServer(dashboard, YASOLR_LBL_096);
 dash::TextInputCard<uint16_t> _mqttPort(dashboard, YASOLR_LBL_097);
 dash::TextInputCard<const char*> _mqttUser(dashboard, YASOLR_LBL_098);
@@ -213,7 +219,6 @@ dash::TextInputCard<const char*> _mqttGridPower(dashboard, YASOLR_LBL_107);
 dash::TextInputCard<const char*> _mqttTempO1(dashboard, YASOLR_LBL_181);
 dash::TextInputCard<const char*> _mqttTempO2(dashboard, YASOLR_LBL_182);
 
-dash::Tab _pinConfigTab(dashboard, "\u21C6 " YASOLR_LBL_108);
 dash::FeedbackTextInputCard<int32_t> _pinDisplayClock(dashboard, YASOLR_LBL_111);
 dash::FeedbackTextInputCard<int32_t> _pinDisplayData(dashboard, YASOLR_LBL_112);
 dash::FeedbackTextInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
@@ -234,7 +239,6 @@ dash::FeedbackTextInputCard<int32_t> _pinRelay2(dashboard, YASOLR_LBL_077);
 dash::FeedbackTextInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_139);
 dash::FeedbackTextInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
 
-dash::Tab _hardwareEnableTab(dashboard, "\u2699 " YASOLR_LBL_126);
 dash::FeedbackSwitchCard _debugMode(dashboard, YASOLR_LBL_083);
 dash::FeedbackSwitchCard _display(dashboard, YASOLR_LBL_127);
 dash::FeedbackSwitchCard _jsy(dashboard, YASOLR_LBL_128);
@@ -254,7 +258,6 @@ dash::FeedbackSwitchCard _relay2(dashboard, YASOLR_LBL_077);
 dash::FeedbackSwitchCard _routerDS18(dashboard, YASOLR_LBL_139);
 dash::FeedbackSwitchCard _zcd(dashboard, YASOLR_LBL_125);
 
-dash::Tab _hardwareConfigTab(dashboard, "\u2699 " YASOLR_LBL_140);
 dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
 dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
 dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
@@ -266,7 +269,7 @@ dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 dash::FeedbackTextInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
 dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_150, "NO,NC");
 dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_184, 0, 100, 1, "%");
-dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_193, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_SSR_RANDOM "," YASOLR_DIMMER_SSR_SYNC "," YASOLR_DIMMER_TRIAC);
+dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_194, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_SSR_RANDOM "," YASOLR_DIMMER_SSR_SYNC "," YASOLR_DIMMER_TRIAC);
 dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
 dash::FeedbackTextInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_146);
 dash::SwitchCard _resistanceCalibration(dashboard, YASOLR_LBL_186);
@@ -276,7 +279,6 @@ dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
 dash::TextInputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_152, "NO,NC");
 
-dash::Tab _pidTab(dashboard, "\u2699 " YASOLR_LBL_159);
 dash::SwitchCard _pidView(dashboard, YASOLR_LBL_169);
 dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
 dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_161, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2 "," YASOLR_PID_D_MODE_3);
@@ -893,9 +895,10 @@ void YaSolR::Website::initCards() {
 
   // output 1
 
-  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && output1 && output1->isDimmerOnline();
+  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && output1 && output1->isDimmerEnabled();
+  const bool dimmer1Online = dimmer1Enabled && output1->isDimmerOnline();
   const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY) && output1 && output1->isBypassRelayEnabled();
-  const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
+  const bool bypass1Possible = dimmer1Online || output1RelayEnabled;
   const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   const bool output1TempEnabled = output1 && !output1->temperature().neverUpdated();
@@ -914,18 +917,18 @@ void YaSolR::Website::initCards() {
   _output1AutoStoptTime.setValue(config.get(KEY_OUTPUT1_TIME_STOP));
 
   _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled || output1TempEnabled);
-  _output1DimmerSlider.setDisplay(dimmer1Enabled && !autoDimmer1Activated);
+  _output1DimmerSlider.setDisplay(dimmer1Online && !autoDimmer1Activated);
   _output1DimmerSliderRO.setDisplay(dimmer1Enabled && autoDimmer1Activated);
   _output1Bypass.setDisplay(bypass1Possible && !autoBypass1Activated);
   _output1BypassRO.setDisplay(bypass1Possible && autoBypass1Activated);
-  _output1Power.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1ApparentPower.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1PowerFactor.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1THDi.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1Voltage.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1Current.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1Resistance.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1Energy.setDisplay(dimmer1Enabled && pzem1Enabled);
+  _output1Power.setDisplay(dimmer1Online && pzem1Enabled);
+  _output1ApparentPower.setDisplay(dimmer1Online && pzem1Enabled);
+  _output1PowerFactor.setDisplay(dimmer1Online && pzem1Enabled);
+  _output1THDi.setDisplay(dimmer1Online && pzem1Enabled);
+  _output1Voltage.setDisplay(dimmer1Online && pzem1Enabled);
+  _output1Current.setDisplay(dimmer1Online && pzem1Enabled);
+  _output1Resistance.setDisplay(dimmer1Online && pzem1Enabled);
+  _output1Energy.setDisplay(dimmer1Online && pzem1Enabled);
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
   _output1DimmerExcessLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
@@ -952,9 +955,10 @@ void YaSolR::Website::initCards() {
 
   // output 2
 
-  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && output2 && output2->isDimmerOnline();
+  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && output2 && output2->isDimmerEnabled();
+  const bool dimmer2Online = dimmer2Enabled && output2->isDimmerOnline();
   const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY) && output2 && output2->isBypassRelayEnabled();
-  const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
+  const bool bypass2Possible = dimmer2Online || output2RelayEnabled;
   const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
   const bool output2TempEnabled = output2 && !output2->temperature().neverUpdated();
@@ -973,18 +977,18 @@ void YaSolR::Website::initCards() {
   _output2AutoStoptTime.setValue(config.get(KEY_OUTPUT2_TIME_STOP));
 
   _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled || output2TempEnabled);
-  _output2DimmerSlider.setDisplay(dimmer2Enabled && !autoDimmer2Activated);
+  _output2DimmerSlider.setDisplay(dimmer2Online && !autoDimmer2Activated);
   _output2DimmerSliderRO.setDisplay(dimmer2Enabled && autoDimmer2Activated);
   _output2Bypass.setDisplay(bypass2Possible && !autoBypass2Activated);
   _output2BypassRO.setDisplay(bypass2Possible && autoBypass2Activated);
-  _output2Power.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2ApparentPower.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2PowerFactor.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2THDi.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2Voltage.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2Current.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2Resistance.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2Energy.setDisplay(dimmer2Enabled && pzem2Enabled);
+  _output2Power.setDisplay(dimmer2Online && pzem2Enabled);
+  _output2ApparentPower.setDisplay(dimmer2Online && pzem2Enabled);
+  _output2PowerFactor.setDisplay(dimmer2Online && pzem2Enabled);
+  _output2THDi.setDisplay(dimmer2Online && pzem2Enabled);
+  _output2Voltage.setDisplay(dimmer2Online && pzem2Enabled);
+  _output2Current.setDisplay(dimmer2Online && pzem2Enabled);
+  _output2Resistance.setDisplay(dimmer2Online && pzem2Enabled);
+  _output2Energy.setDisplay(dimmer2Online && pzem2Enabled);
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
   _output2DimmerExcessLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
@@ -1122,12 +1126,12 @@ void YaSolR::Website::initCards() {
   _displayType.setValue(config.get(KEY_DISPLAY_TYPE));
   _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));
   _output1RelayType.setValue(config.get(KEY_OUTPUT1_RELAY_TYPE));
-  _output1ResistanceInput.setStatus(_output1ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER);
   _output1ResistanceInput.setValue(config.getFloat(KEY_OUTPUT1_RESISTANCE));
+  _output1ResistanceInput.setStatus(_output1ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
   _output2DimmerType.setValue(config.get(KEY_OUTPUT2_DIMMER_TYPE));
   _output2RelayType.setValue(config.get(KEY_OUTPUT2_RELAY_TYPE));
-  _output2ResistanceInput.setStatus(_output2ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER);
   _output2ResistanceInput.setValue(config.getFloat(KEY_OUTPUT2_RESISTANCE));
+  _output2ResistanceInput.setStatus(_output2ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
   _relay1Load.setValue(load1);
   _relay1Type.setValue(config.get(KEY_RELAY1_TYPE));
   _relay2Load.setValue(load2);
@@ -1140,12 +1144,10 @@ void YaSolR::Website::initCards() {
   _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _output1DimmerMapper.setDisplay(dimmer1Enabled);
-  _output1DimmerType.setDisplay(dimmer1Enabled);
   _output1PZEMSync.setDisplay(pzem1Enabled);
   _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
   _output1ResistanceInput.setDisplay(dimmer1Enabled);
   _output2DimmerMapper.setDisplay(dimmer2Enabled);
-  _output2DimmerType.setDisplay(dimmer2Enabled);
   _output2PZEMSync.setDisplay(pzem2Enabled);
   _output2RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
   _output2ResistanceInput.setDisplay(dimmer2Enabled);
@@ -1153,10 +1155,10 @@ void YaSolR::Website::initCards() {
   _relay1Type.setDisplay(relay1Enabled);
   _relay2Load.setDisplay(relay2Enabled);
   _relay2Type.setDisplay(relay2Enabled);
-  _resistanceCalibration.setDisplay((dimmer1Enabled && jsyEnabled) ||
-                                    (dimmer1Enabled && pzem1Enabled) ||
-                                    (dimmer2Enabled && jsyEnabled) ||
-                                    (dimmer2Enabled && pzem2Enabled));
+  _resistanceCalibration.setDisplay((dimmer1Online && jsyEnabled) ||
+                                    (dimmer1Online && pzem1Enabled) ||
+                                    (dimmer2Online && jsyEnabled) ||
+                                    (dimmer2Online && pzem2Enabled));
 
   // PID
 
