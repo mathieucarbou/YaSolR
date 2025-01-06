@@ -27,6 +27,7 @@ namespace Mycila {
       const std::string buildBranch;
       const std::string buildHash;
       const std::string buildDate;
+      const std::string buildBoard;
       const std::string defaultHostname;
       const std::string defaultMqttClientId;
       const std::string defaultSSID;

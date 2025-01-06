@@ -9,9 +9,7 @@ Import("env")
 
 def do_main():
     # hash
-    ret = subprocess.run(
-        ["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE, text=True, check=False
-    )  # Uses any tags
+    ret = subprocess.run(["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE, text=True, check=False)  # Uses any tags
     full_hash = ret.stdout.strip()
     short_hash = full_hash[:7]
 
@@ -66,16 +64,14 @@ def do_main():
             f'const char* __COMPILED_BUILD_HASH__ = "{short_hash}";\n'
             f'const char* __COMPILED_BUILD_NAME__ = "{env["PIOENV"]}";\n'
             f'const char* __COMPILED_BUILD_TIMESTAMP__ = "{datetime.now(timezone.utc).isoformat()}";\n'
+            f'const char* __COMPILED_BUILD_BOARD__ = "{env.get("BOARD")}";\n'
         )
-        sys.stderr.write(
-            f"version.py: APP_VERSION: {version[1:] if tagPattern.match(version)  else version}\n"
-        )
+        sys.stderr.write(f"version.py: APP_VERSION: {version[1:] if tagPattern.match(version)  else version}\n")
         sys.stderr.write(f"version.py: BUILD_BRANCH: {branch}\n")
         sys.stderr.write(f"version.py: BUILD_HASH: {short_hash}\n")
         sys.stderr.write(f"version.py: BUILD_NAME: {env['PIOENV']}\n")
-        sys.stderr.write(
-            f"version.py: BUILD_TIMESTAMP: {datetime.now(timezone.utc).isoformat()}\n"
-        )
+        sys.stderr.write(f"version.py: BUILD_TIMESTAMP: {datetime.now(timezone.utc).isoformat()}\n")
+        sys.stderr.write(f"version.py: BUILD_BOARD: {env.get('BOARD')}\n")
 
     env.AppendUnique(PIOBUILDFILES=[constantFile])
 

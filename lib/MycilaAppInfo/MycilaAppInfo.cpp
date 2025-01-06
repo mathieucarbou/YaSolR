@@ -34,6 +34,7 @@ extern const char* __COMPILED_BUILD_BRANCH__;
 extern const char* __COMPILED_BUILD_HASH__;
 extern const char* __COMPILED_BUILD_NAME__;
 extern const char* __COMPILED_BUILD_TIMESTAMP__;
+extern const char* __COMPILED_BUILD_BOARD__;
 
 Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr()),
                                        name(APP_NAME),
@@ -46,6 +47,7 @@ Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr()),
                                        buildBranch(__COMPILED_BUILD_BRANCH__),
                                        buildHash(__COMPILED_BUILD_HASH__),
                                        buildDate(__COMPILED_BUILD_TIMESTAMP__),
+                                       buildBoard(__COMPILED_BUILD_BOARD__),
                                        defaultHostname(Mycila::string::toLowerCase(name + "-" + id)),
                                        defaultMqttClientId(Mycila::string::toLowerCase(name + "_" + id)),
                                        defaultSSID(name + "-" + id),
@@ -53,6 +55,7 @@ Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr()),
                                        trial(firmware.find("trial") != std::string::npos) {}
 
 void Mycila::AppInfoClass::toJson(const JsonObject& root) const {
+  root["build_board"] = buildBoard;
   root["build_date"] = buildDate;
   root["build_hash"] = buildHash;
   root["debug"] = debug;
