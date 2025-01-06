@@ -33,7 +33,6 @@ dash::StatisticValue<float, 2> _deviceHeapUsage(dashboard, YASOLR_LBL_008);
 dash::StatisticValue<size_t> _deviceHeapUsed(dashboard, YASOLR_LBL_009);
 dash::StatisticValue<const char*> _deviceID(dashboard, YASOLR_LBL_010);
 dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011);
-dash::StatisticValue<uint16_t> _deviceRev(dashboard, YASOLR_LBL_012);
 
 dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
 dash::StatisticValue<const char*> _firmwareBuildTimestamp(dashboard, YASOLR_LBL_014);
@@ -851,7 +850,6 @@ void YaSolR::Website::initCards() {
   _deviceCores.setValue(ESP.getChipCores());
   _deviceID.setValue(Mycila::AppInfo.id.c_str());
   _deviceModel.setValue(ESP.getChipModel());
-  _deviceRev.setValue(ESP.getChipRevision());
   _firmwareBuildHash.setValue(Mycila::AppInfo.buildHash.c_str());
   _firmwareBuildTimestamp.setValue(Mycila::AppInfo.buildDate.c_str());
   _firmwareFilename.setValue(Mycila::AppInfo.firmware.c_str());
