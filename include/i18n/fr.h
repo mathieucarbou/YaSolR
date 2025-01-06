@@ -158,7 +158,7 @@
 #define YASOLR_LBL_152 "Relais 2: Type de relais"
 #define YASOLR_LBL_153 "Dupliqué"
 #define YASOLR_LBL_154 "Invalide"
-#define YASOLR_LBL_155 "Entrée uniquement"
+#define YASOLR_LBL_155 "Entrée"
 #define YASOLR_LBL_156 "E/S"
 #define YASOLR_LBL_157 "JSY Remote UDP: Débit (msg/s)"
 // #define YASOLR_LBL_158

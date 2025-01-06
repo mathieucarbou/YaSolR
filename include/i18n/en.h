@@ -154,7 +154,7 @@
 #define YASOLR_LBL_152 YASOLR_LBL_077 " Type"
 #define YASOLR_LBL_153 "Duplicate"
 #define YASOLR_LBL_154 "Invalid"
-#define YASOLR_LBL_155 "Input Only"
+#define YASOLR_LBL_155 "Input"
 #define YASOLR_LBL_156 "I/O"
 #define YASOLR_LBL_157 YASOLR_LBL_128 " Remote UDP (msg/s)"
 // #define YASOLR_LBL_158
