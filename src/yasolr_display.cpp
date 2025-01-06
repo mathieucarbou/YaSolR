@@ -44,6 +44,13 @@ void yasolr_init_display() {
       return;
     }
 
+#ifdef U8G2_USE_DYNAMIC_ALLOC
+    display->u8g2().setBufferPtr(new uint8_t[display->u8g2().getBufferSize()]);
+    display->u8g2().initDisplay();
+    display->u8g2().clearDisplay();
+    display->u8g2().setPowerSave(0);
+#endif
+
     display->clearDisplay();
     display->setActive(true);
 
