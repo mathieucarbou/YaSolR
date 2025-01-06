@@ -207,7 +207,8 @@ Here are below what you can add to upgrade your router:
 ### Remote JSY
 
 Here are the components below to build a remote JSY and install the [Sender](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP) .ino file on a it.
-This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP **at a rate of 20 messages per second**.
+This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP.
+The reading rate is about **20-25 messages per second** and sending rate is 3 messages per second (because the JSY exposes 3 new measurements every second).
 
 ![](https://github.com/mathieucarbou/MycilaJSY/assets/61346/3066bf12-31d5-45de-9303-d810f14731d0)
 

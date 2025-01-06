@@ -819,7 +819,8 @@ This is easier to put a clamp around the grid wire.
 
 JSY can also be replaced with a remote JSY **without any impact on routing speed**.
 You can install the [Sender](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP) .ino file on a ESP32 and connect it to the JSY.
-This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP **at a rate of 20 messages per second**.
+This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP.
+The reading rate is about **20-25 messages per second** and sending rate is 3 messages per second (because the JSY exposes 3 new measurements every second).
 
 ![](https://github.com/mathieucarbou/MycilaJSY/assets/61346/3066bf12-31d5-45de-9303-d810f14731d0)
 
