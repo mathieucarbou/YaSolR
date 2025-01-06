@@ -48,8 +48,10 @@ dash::StatisticValue<const char*> _networkHostname(dashboard, YASOLR_LBL_019);
 dash::StatisticValue<const char*> _networkInterface(dashboard, YASOLR_LBL_020);
 dash::StatisticValue _networkAPIP(dashboard, YASOLR_LBL_021);
 dash::StatisticValue _networkAPMAC(dashboard, YASOLR_LBL_022);
+#ifdef ESPCONNECT_ETH_SUPPORT
 dash::StatisticValue _networkEthIP(dashboard, YASOLR_LBL_023);
 dash::StatisticValue _networkEthMAC(dashboard, YASOLR_LBL_024);
+#endif
 dash::StatisticValue _networkWiFiIP(dashboard, YASOLR_LBL_025);
 dash::StatisticValue _networkWiFiMAC(dashboard, YASOLR_LBL_026);
 dash::StatisticValue _networkWiFiSSID(dashboard, YASOLR_LBL_027);
@@ -855,13 +857,15 @@ void YaSolR::Website::initCards() {
   _firmwareFilename.setValue(Mycila::AppInfo.firmware.c_str());
   _networkAPIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::AP).toString().c_str());
   _networkAPMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP));
-  _networkEthIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
-  _networkEthMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).empty() ? std::string("N/A") : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH));
   _networkHostname.setValue(Mycila::AppInfo.defaultHostname.c_str());
   _networkInterface.setValue(mode == Mycila::ESPConnect::Mode::AP ? "AP" : (mode == Mycila::ESPConnect::Mode::STA ? "WiFi" : (mode == Mycila::ESPConnect::Mode::ETH ? "Ethernet" : "")));
   _networkWiFiIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
   _networkWiFiMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA));
   _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
+#ifdef ESPCONNECT_ETH_SUPPORT
+  _networkEthIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
+  _networkEthMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).empty() ? std::string("N/A") : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH));
+#endif
 
   if (!output1) {
     _output1State.setFeedback("DISABLED", dash::Status::IDLE);
