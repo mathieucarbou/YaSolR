@@ -15,8 +15,8 @@ Mycila::RouterOutput* output1 = nullptr;
 Mycila::RouterOutput* output2 = nullptr;
 
 // ZCD
-Mycila::TriacDimmer* triacDimmer1 = nullptr;
-Mycila::TriacDimmer* triacDimmer2 = nullptr;
+Mycila::ZeroCrossDimmer* zcDimmer1 = nullptr;
+Mycila::ZeroCrossDimmer* zcDimmer2 = nullptr;
 Mycila::PulseAnalyzer* pulseAnalyzer = nullptr;
 Mycila::Task* zcdTask = nullptr;
 
@@ -43,8 +43,11 @@ Mycila::Task routerTask("Router", [](void* params) {
 
 // functions
 
-bool isTriacBased(const char* type) {
-  return strcmp(type, YASOLR_DIMMER_LSA_PWM) == 0 || strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 || strcmp(type, YASOLR_DIMMER_SSR_RANDOM) == 0 || strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
+bool isZeroCrossBased(const char* type) {
+  return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
+         strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
+         strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
+         strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
 }
 
 Mycila::Dimmer* createDimmer1(uint16_t semiPeriod) {
@@ -52,24 +55,24 @@ Mycila::Dimmer* createDimmer1(uint16_t semiPeriod) {
     const char* type = config.get(KEY_OUTPUT1_DIMMER_TYPE);
     Mycila::Dimmer* dimmer = nullptr;
 
-    if (isTriacBased(type)) {
+    if (isZeroCrossBased(type)) {
       logger.info(TAG, "Initializing Output 1 dimmer type: %s", type);
 
-      triacDimmer1 = new Mycila::TriacDimmer();
-      triacDimmer1->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT1_DIMMER));
-      triacDimmer1->setSemiPeriod(semiPeriod);
-      triacDimmer1->begin();
+      zcDimmer1 = new Mycila::ZeroCrossDimmer();
+      zcDimmer1->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT1_DIMMER));
+      zcDimmer1->setSemiPeriod(semiPeriod);
+      zcDimmer1->begin();
 
-      if (triacDimmer1->isEnabled()) {
-        triacDimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
-        triacDimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
-        triacDimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
-        dimmer = triacDimmer1;
+      if (zcDimmer1->isEnabled()) {
+        zcDimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
+        zcDimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
+        zcDimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
+        dimmer = zcDimmer1;
 
       } else {
         logger.error(TAG, "Output 1 Dimmer failed to initialize!");
-        delete triacDimmer1;
-        triacDimmer1 = nullptr;
+        delete zcDimmer1;
+        zcDimmer1 = nullptr;
       }
 
     } else {
@@ -87,24 +90,24 @@ Mycila::Dimmer* createDimmer2(uint16_t semiPeriod) {
     const char* type = config.get(KEY_OUTPUT2_DIMMER_TYPE);
     Mycila::Dimmer* dimmer = nullptr;
 
-    if (isTriacBased(type)) {
+    if (isZeroCrossBased(type)) {
       logger.info(TAG, "Initializing Output 2 dimmer type: %s", type);
 
-      triacDimmer2 = new Mycila::TriacDimmer();
-      triacDimmer2->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT2_DIMMER));
-      triacDimmer2->setSemiPeriod(semiPeriod);
-      triacDimmer2->begin();
+      zcDimmer2 = new Mycila::ZeroCrossDimmer();
+      zcDimmer2->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT2_DIMMER));
+      zcDimmer2->setSemiPeriod(semiPeriod);
+      zcDimmer2->begin();
 
-      if (triacDimmer2->isEnabled()) {
-        triacDimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
-        triacDimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
-        triacDimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
-        dimmer = triacDimmer2;
+      if (zcDimmer2->isEnabled()) {
+        zcDimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
+        zcDimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
+        zcDimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
+        dimmer = zcDimmer2;
 
       } else {
         logger.error(TAG, "Output 2 Dimmer failed to initialize!");
-        delete triacDimmer2;
-        triacDimmer2 = nullptr;
+        delete zcDimmer2;
+        zcDimmer2 = nullptr;
       }
 
     } else {
@@ -270,21 +273,7 @@ void yasolr_init_router() {
   initOutput1(semiPeriod);
   initOutput2(semiPeriod);
 
-  // Do we need a ZCD ?
-
-  if (config.getBool(KEY_ENABLE_ZCD)) {
-    pulseAnalyzer = new Mycila::PulseAnalyzer();
-    pulseAnalyzer->onZeroCross(Mycila::TriacDimmer::onZeroCross);
-    pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
-
-    if (!pulseAnalyzer->isEnabled()) {
-      logger.error(TAG, "ZCD Pulse Analyzer failed to initialize!");
-      delete pulseAnalyzer;
-      pulseAnalyzer = nullptr;
-    }
-  }
-
-  // Tasks
+  // Routing Tasks
 
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
@@ -296,69 +285,82 @@ void yasolr_init_router() {
   if (config.getBool(KEY_ENABLE_DEBUG))
     calibrationTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
-  // ZCD Task that will keep the grid semi-period in sync with the dimmers
-  if (pulseAnalyzer || triacDimmer1 || triacDimmer2) {
-    logger.info(TAG, "Initialize ZCD sync...");
+  // Do we need a ZCD ?
 
-    zcdTask = new Mycila::Task("ZCD", [](void* params) {
-      // check if ZCD is online (connected to the grid)
-      // this is required for dimmers to work
-      if (pulseAnalyzer->isOnline()) {
-        if (!Thyristor::getSemiPeriod() || (triacDimmer1 && !triacDimmer1->getSemiPeriod()) || (triacDimmer2 && !triacDimmer2->getSemiPeriod())) {
-          const float frequency = yasolr_frequency();
-          const uint16_t semiPeriod = frequency ? 1000000 / 2 / frequency : 0;
+  if (config.getBool(KEY_ENABLE_ZCD)) {
+    pulseAnalyzer = new Mycila::PulseAnalyzer();
+    pulseAnalyzer->onZeroCross(Mycila::ZeroCrossDimmer::onZeroCross);
+    pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
 
-          if (semiPeriod) {
-            logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
+    if (pulseAnalyzer->isEnabled()) {
+      // ZCD Task that will keep the grid semi-period in sync with the dimmers
+      logger.info(TAG, "Initialize ZCD sync task...");
 
-            if (!Thyristor::getSemiPeriod()) {
-              logger.info(TAG, "Starting Thyristor...");
-              Thyristor::setSemiPeriod(semiPeriod);
-              Thyristor::begin();
+      zcdTask = new Mycila::Task("ZCD", [](void* params) {
+        // check if ZCD is online (connected to the grid)
+        // this is required for dimmers to work
+        if (pulseAnalyzer->isOnline()) {
+          if (!Thyristor::getSemiPeriod() || (zcDimmer1 && !zcDimmer1->getSemiPeriod()) || (zcDimmer2 && !zcDimmer2->getSemiPeriod())) {
+            const float frequency = yasolr_frequency();
+            const uint16_t semiPeriod = frequency ? 1000000 / 2 / frequency : 0;
+
+            if (semiPeriod) {
+              logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
+
+              if (!Thyristor::getSemiPeriod()) {
+                logger.info(TAG, "Starting Thyristor...");
+                Thyristor::setSemiPeriod(semiPeriod);
+                Thyristor::begin();
+              }
+
+              if (zcDimmer1 && !zcDimmer1->getSemiPeriod()) {
+                zcDimmer1->setSemiPeriod(semiPeriod);
+                zcDimmer1->off();
+              }
+
+              if (zcDimmer2 && !zcDimmer2->getSemiPeriod()) {
+                zcDimmer2->setSemiPeriod(semiPeriod);
+                zcDimmer2->off();
+              }
+
+              dashboardInitTask.resume();
+            }
+          }
+
+        } else {
+          if (Thyristor::getSemiPeriod() || (zcDimmer1 && zcDimmer1->getSemiPeriod()) || (zcDimmer2 && zcDimmer2->getSemiPeriod())) {
+            logger.warn(TAG, "No electricity detected by ZCD module");
+
+            if (Thyristor::getSemiPeriod()) {
+              logger.info(TAG, "Stopping Thyristor...");
+              Thyristor::setSemiPeriod(0);
+              Thyristor::end();
             }
 
-            if (triacDimmer1 && !triacDimmer1->getSemiPeriod()) {
-              triacDimmer1->setSemiPeriod(semiPeriod);
-              triacDimmer1->off();
+            if (zcDimmer1 && zcDimmer1->getSemiPeriod()) {
+              logger.info(TAG, "Setting dimmer 1 semi-period to 0");
+              zcDimmer1->setSemiPeriod(0);
             }
 
-            if (triacDimmer2 && !triacDimmer2->getSemiPeriod()) {
-              triacDimmer2->setSemiPeriod(semiPeriod);
-              triacDimmer2->off();
+            if (zcDimmer2 && zcDimmer2->getSemiPeriod()) {
+              logger.info(TAG, "Setting dimmer 2 semi-period to 0");
+              zcDimmer2->setSemiPeriod(0);
             }
 
             dashboardInitTask.resume();
           }
         }
+      });
 
-      } else {
-        if (Thyristor::getSemiPeriod() || (triacDimmer1 && triacDimmer1->getSemiPeriod()) || (triacDimmer2 && triacDimmer2->getSemiPeriod())) {
-          logger.warn(TAG, "No electricity detected by ZCD module");
+      zcdTask->setInterval(2 * Mycila::TaskDuration::SECONDS);
+      zcdTask->setManager(coreTaskManager);
+      if (config.getBool(KEY_ENABLE_DEBUG))
+        zcdTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
-          if (Thyristor::getSemiPeriod()) {
-            logger.info(TAG, "Stopping Thyristor...");
-            Thyristor::setSemiPeriod(0);
-            Thyristor::end();
-          }
-
-          if (triacDimmer1 && triacDimmer1->getSemiPeriod()) {
-            logger.info(TAG, "Setting dimmer 1 semi-period to 0");
-            triacDimmer1->setSemiPeriod(0);
-          }
-
-          if (triacDimmer2 && triacDimmer2->getSemiPeriod()) {
-            logger.info(TAG, "Setting dimmer 2 semi-period to 0");
-            triacDimmer2->setSemiPeriod(0);
-          }
-
-          dashboardInitTask.resume();
-        }
-      }
-    });
-
-    zcdTask->setInterval(2 * Mycila::TaskDuration::SECONDS);
-    zcdTask->setManager(coreTaskManager);
-    if (config.getBool(KEY_ENABLE_DEBUG))
-      zcdTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    } else {
+      logger.error(TAG, "ZCD Pulse Analyzer failed to initialize!");
+      delete pulseAnalyzer;
+      pulseAnalyzer = nullptr;
+    }
   }
 }

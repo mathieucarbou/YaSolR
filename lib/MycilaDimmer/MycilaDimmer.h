@@ -177,9 +177,9 @@ namespace Mycila {
       virtual void _applyDutyCycle(float mappedDutyCycle) {}
   };
 
-  class TriacDimmer : public Dimmer {
+  class ZeroCrossDimmer : public Dimmer {
     public:
-      virtual ~TriacDimmer() { end(); }
+      virtual ~ZeroCrossDimmer() { end(); }
 
       /**
        * @brief Set the GPIO pin to use for the dimmer

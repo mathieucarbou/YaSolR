@@ -44,13 +44,14 @@
 
 #define YASOLR_ADMIN_USERNAME              "admin"
 #define YASOLR_DIMMER_LSA_GP8211S          "LSA + DAC GP8211S (DFR1071)"
-#define YASOLR_DIMMER_LSA_GP8403           "LSA + DAC GP8403 (DFR0971)"
-#define YASOLR_DIMMER_LSA_GP8413           "LSA + DAC GP8413 (DFR1073)"
-#define YASOLR_DIMMER_LSA_PWM              "LSA + PWM->Analog"
-#define YASOLR_DIMMER_ROBODYN              "Robodyn 24A / 40A"
-#define YASOLR_DIMMER_SSR_RANDOM           "SSR Random"
-#define YASOLR_DIMMER_SSR_SYNC             "SSR Sync (Zero-Cross)"
-#define YASOLR_DIMMER_TRIAC                "Triac / Thyristor"
+#define YASOLR_DIMMER_LSA_GP8403           "LSA + DAC GP8403  (DFR0971)"
+#define YASOLR_DIMMER_LSA_GP8413           "LSA + DAC GP8413  (DFR1073)"
+#define YASOLR_DIMMER_LSA_PWM              "LSA + PWM->Analog 0-10V"
+#define YASOLR_DIMMER_LSA_PWM_ZCD          "LSA + PWM->Analog 0-10V + ZCD"
+#define YASOLR_DIMMER_RANDOM_SSR           "Random SSR + ZCD"
+#define YASOLR_DIMMER_ROBODYN              "Robodyn 24/40A (Triac + ZCD)"
+#define YASOLR_DIMMER_TRIAC                "Triac + ZCD"
+#define YASOLR_DIMMER_ZC_SSR               "Zero-crossing SSR"
 #define YASOLR_DISPLAY_LINE_SIZE           21
 #define YASOLR_DISPLAY_LINES               5
 #define YASOLR_GRAPH_POINTS                60

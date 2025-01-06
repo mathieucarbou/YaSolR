@@ -264,12 +264,12 @@ dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,1
 dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_149, "NO,NC");
 dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_193, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_SSR_RANDOM "," YASOLR_DIMMER_SSR_SYNC "," YASOLR_DIMMER_TRIAC);
+dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_193, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 dash::FeedbackTextInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
 dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_150, "NO,NC");
 dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_184, 0, 100, 1, "%");
-dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_194, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_SSR_RANDOM "," YASOLR_DIMMER_SSR_SYNC "," YASOLR_DIMMER_TRIAC);
+dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_194, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
 dash::FeedbackTextInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_146);
 dash::SwitchCard _resistanceCalibration(dashboard, YASOLR_LBL_186);
