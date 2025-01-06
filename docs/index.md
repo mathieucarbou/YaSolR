@@ -53,12 +53,12 @@ YaSolR is:
 - compatible with **EV Charging Box** like OpenEVSE
 - supports **remote** temperature and measurement
 - compatible with **many hardware components**:
+  - DS18 Temperature Sensors
   - ESP32: Dev Kit boards, S3 Dev Kit boards, ESP32s, WIPI 3, Denky D4, Lilygo T Eth Lite S3 boards (**Ethernet support**), WT32-ETH01 boards (**Ethernet support**), Olimex ESP32-POE boards (**Ethernet support**), Olimex ESP32 Gateway boards (**Ethernet support**)
+  - Many Zero-Cross Detection modules (JSY-MK-194G, Pulse ZCD, BM1Z102FJ, etc)
   - Random (async) and Zero-Cross (sync) Solid State Relays
   - Robodyn 24A / 40A
   - Voltage Regulators (Loncont LSA or LCTC)
-  - Many Zero-Cross Detection modules (JSY-MK-194G, Pulse ZCD, BM1Z102FJ, etc)
-  - DS18 Temperature Sensors
   - etc
 
 ## Detailed Features
@@ -98,6 +98,18 @@ Example of supported dimmers:
 | :------------------------ | :-------------------------------------------------------------: | :-------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :-------------------------------------------------------------------: |
 | `Phase Control`           |                               ✅                                |                               ✅                                |                              ✅                               |                                ❌                                 |                                  ✅                                   |
 | `Burst Fire Control` (🚧) |                               ✅                                |                               ✅                                |                              ✅                               |                                ✅                                 |                                  ✅                                   |
+
+All the supported dimmer types:
+
+- LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (🚧)
+- LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (🚧)
+- LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073) (🚧)
+- LSA / LCTC Voltage Regulators + PWM->Analog
+- Robodyn 24A / 40A
+- SSR Random
+- SSR Sync (Zero-Cross) (🚧)
+- Triac / Thyristor
+
 
 #### Bypass Relay (optional)
 

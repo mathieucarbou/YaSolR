@@ -29,6 +29,7 @@ description: Manual
   - [`Hardware Config` section](#hardware-config-section)
     - [Grid Frequency](#grid-frequency)
     - [Dimmer Range Remapping](#dimmer-range-remapping)
+    - [Dimmer Type](#dimmer-type)
     - [Display](#display)
     - [Relay Types](#relay-types)
     - [Relay Automatic Control](#relay-automatic-control)
@@ -541,6 +542,21 @@ This can be used for example to limit the power output of a dimmer, or to remap 
 For example, if you set the range to `10-80%, then the new 0 will match a duty cycle of 10% and the new full power (100%) will match a duty cycle of 80%.
 
 Read more about how to calibrate a voltage regulator in the [Voltage Regulators](#voltage-regulators-lsa-lctc-etc) section.
+
+#### Dimmer Type
+
+YaSolR supports all these dimmer types:
+
+- LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071)
+- LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971)
+- LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)
+- LSA / LCTC Voltage Regulators + PWM->Analog
+- Robodyn 24A / 40A
+- SSR Random"
+- SSR Sync (Zero-Cross)
+- Triac / Thyristor
+
+You need to select the correct dimmer type for your hardware and then restart YaSolR.
 
 #### Display
 
