@@ -884,7 +884,7 @@ void YaSolR::Website::initCards() {
 
   // output 1
 
-  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && output1 && output1->isDimmerEnabled();
+  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && output1 && output1->isDimmerOnline();
   const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY) && output1 && output1->isBypassRelayEnabled();
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -943,7 +943,7 @@ void YaSolR::Website::initCards() {
 
   // output 2
 
-  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && output2 && output2->isDimmerEnabled();
+  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && output2 && output2->isDimmerOnline();
   const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY) && output2 && output2->isBypassRelayEnabled();
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
@@ -1351,10 +1351,10 @@ void YaSolR::Website::updateCards() {
 
   _status(_jsy, KEY_ENABLE_JSY, jsy && jsy->isEnabled(), jsy && jsy->isConnected(), YASOLR_LBL_110);
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt && mqtt->isEnabled(), mqtt && mqtt->isConnected(), mqtt && mqtt->getLastError() ? mqtt->getLastError() : YASOLR_LBL_113);
-  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, output1 && output1->isDimmerEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
+  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, output1 && output1->isDimmerEnabled(), output1 && output1->isDimmerOnline(), YASOLR_LBL_110);
   _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1 && ds18O1->isEnabled(), ds18O1 && ds18O1->getLastTime() > 0, YASOLR_LBL_114);
   _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1 && pzemO1->isEnabled(), pzemO1 && pzemO1->isConnected() && pzemO1->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT1, pzemO1 && pzemO1->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
-  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, output2 && output2->isDimmerEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), pulseAnalyzer && pulseAnalyzer->isEnabled() ? YASOLR_LBL_110 : YASOLR_LBL_179);
+  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, output2 && output2->isDimmerEnabled(), output2 && output2->isDimmerOnline(), YASOLR_LBL_110);
   _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2 && ds18O2->isEnabled(), ds18O2 && ds18O2->getLastTime() > 0, YASOLR_LBL_114);
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2 && pzemO2->isEnabled(), pzemO2 && pzemO2->isConnected() && pzemO2->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2 && pzemO2->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys && ds18Sys->isEnabled(), ds18Sys && ds18Sys->getLastTime() > 0, YASOLR_LBL_114);

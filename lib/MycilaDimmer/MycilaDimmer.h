@@ -11,54 +11,20 @@
 #include <esp32-hal-gpio.h>
 #include <thyristor.h>
 
-/**
- * Optional resolution, 15bits max
- */
-#ifndef MYCILA_DIMMER_RESOLUTION
-  #define MYCILA_DIMMER_RESOLUTION 12
-#endif
-
-#ifndef MYCILA_DIMMER_MAX_COUNT
-  #define MYCILA_DIMMER_MAX_COUNT 1
-#endif
-
 namespace Mycila {
   class Dimmer {
     public:
-      Dimmer() {}
-      ~Dimmer() { end(); }
+      virtual ~Dimmer() {};
 
-      /**
-       * @brief Enable a dimmer on a specific GPIO pin
-       *
-       * @param pin: the GPIO pin to use for the dimmer
-       *
-       * @warning Dimmer won't be enabled if pin is invalid
-       * @warning Dimmer won't be activated until the ZCD is enabled
-       */
-      void begin(int8_t pin, uint16_t semiPeriod);
+      virtual void begin() = 0;
+      virtual void end() = 0;
 
-      /**
-       * @brief Disable the dimmer
-       *
-       * @warning Dimmer won't be destroyed but won't turn on anymore even is a duty cycle is set.
-       */
-      void end();
+      virtual bool isOnline() const = 0;
 
       /**
        * @brief Check if the dimmer is enabled
        */
       bool isEnabled() const { return _enabled; }
-
-      /**
-       * @brief Get the GPIO pin used for the dimmer
-       */
-      gpio_num_t getPin() const { return _pin; }
-
-      /**
-       * @brief Get the semi-period of the dimmer in us
-       */
-      uint16_t getSemiPeriod() const { return _semiPeriod; }
 
       /**
        * @brief Turn on the dimmer at full power
@@ -90,14 +56,26 @@ namespace Mycila {
        *
        * @param dutyCycle: the power duty cycle in the range [0.0, 1.0]
        */
-      void setDutyCycle(float dutyCycle);
+      void setDutyCycle(float dutyCycle) {
+        // apply limit and save the wanted duty cycle.
+        // it wil only be applied when dimmer will be on
+        _dutyCycle = constrain(dutyCycle, 0, _dutyCycleLimit);
+        if (_enabled) {
+          // duty remapping (equivalent to Shelly Dimmer remapping feature)
+          _applyDutyCycle(_dutyCycleMin + _dutyCycle * (_dutyCycleMax - _dutyCycleMin));
+        }
+      }
 
       /**
        * @brief Set the power duty cycle limit of the dimmer. The duty cycle will be clamped to this limit.
        *
        * @param limit: the power duty cycle limit in the range [0.0, 1.0]
        */
-      void setDutyCycleLimit(float limit);
+      void setDutyCycleLimit(float limit) {
+        _dutyCycleLimit = constrain(limit, 0, 1);
+        if (_dutyCycle > _dutyCycleLimit)
+          setDutyCycle(_dutyCycleLimit);
+      }
 
       /**
        * @brief Duty remapping (equivalent to Shelly Dimmer remapping feature).
@@ -105,7 +83,10 @@ namespace Mycila {
        *
        * @param min: Set the new "0" value for the power duty cycle. The duty cycle in the range [0.0, 1.0] will be remapped to [min, max].
        */
-      void setDutyCycleMin(float min);
+      void setDutyCycleMin(float min) {
+        _dutyCycleMin = constrain(min, 0, _dutyCycleMax);
+        setDutyCycle(_dutyCycle);
+      }
 
       /**
        * @brief Duty remapping (equivalent to Shelly Dimmer remapping feature).
@@ -113,7 +94,10 @@ namespace Mycila {
        *
        * @param max: Set the new "1" value for the power duty cycle. The duty cycle in the range [0.0, 1.0] will be remapped to [min, max].
        */
-      void setDutyCycleMax(float max);
+      void setDutyCycleMax(float max) {
+        _dutyCycleMax = constrain(max, _dutyCycleMin, 1);
+        setDutyCycle(_dutyCycle);
+      }
 
       /**
        * @brief Get the power duty cycle configured for the dimmer
@@ -140,6 +124,100 @@ namespace Mycila {
        */
       float getDutyCycleMax() const { return _dutyCycleMax; }
 
+#ifdef MYCILA_JSON_SUPPORT
+      /**
+       * @brief Serialize Dimmer information to a JSON object
+       *
+       * @param root: the JSON object to serialize to
+       */
+      virtual void toJson(const JsonObject& root) const {
+        root["enabled"] = isEnabled();
+        root["online"] = isOnline();
+        root["state"] = isOn() ? "on" : "off";
+        root["duty_cycle"] = getDutyCycle();
+        root["duty_cycle_limit"] = getDutyCycleLimit();
+        root["duty_cycle_min"] = getDutyCycleMin();
+        root["duty_cycle_max"] = getDutyCycleMax();
+      }
+#endif
+
+    protected:
+      bool _enabled = false;
+      float _dutyCycle = 0;
+      float _dutyCycleLimit = 1;
+      float _dutyCycleMin = 0;
+      float _dutyCycleMax = 1;
+      virtual void _applyDutyCycle(float mappedDutyCycle) = 0;
+  };
+
+  class VirtualDimmer : public Dimmer {
+    public:
+      virtual ~VirtualDimmer() { end(); }
+
+      virtual void begin() { _enabled = true; }
+      virtual void end() { _enabled = false; }
+      virtual bool isOnline() const { return _enabled && _online; }
+      void setOnline(bool online) { _online = online; }
+
+#ifdef MYCILA_JSON_SUPPORT
+      /**
+       * @brief Serialize Dimmer information to a JSON object
+       *
+       * @param root: the JSON object to serialize to
+       */
+      virtual void toJson(const JsonObject& root) const {
+        // call parent
+        Dimmer::toJson(root);
+        root["type"] = "virtual";
+      }
+#endif
+
+    protected:
+      bool _online = false;
+      virtual void _applyDutyCycle(float mappedDutyCycle) {}
+  };
+
+  class TriacDimmer : public Dimmer {
+    public:
+      virtual ~TriacDimmer() { end(); }
+
+      /**
+       * @brief Set the GPIO pin to use for the dimmer
+       */
+      void setPin(gpio_num_t pin) { _pin = pin; }
+
+      /**
+       * @brief Set the semi-period of the dimmer in us
+       */
+      void setSemiPeriod(uint16_t semiPeriod) { _semiPeriod = semiPeriod; }
+
+      /**
+       * @brief Enable a dimmer on a specific GPIO pin
+       *
+       * @warning Dimmer won't be enabled if pin is invalid
+       * @warning Dimmer won't be activated until the ZCD is enabled
+       */
+      virtual void begin();
+
+      /**
+       * @brief Disable the dimmer
+       *
+       * @warning Dimmer won't be destroyed but won't turn on anymore even is a duty cycle is set.
+       */
+      virtual void end();
+
+      virtual bool isOnline() const { return _enabled && _semiPeriod; }
+
+      /**
+       * @brief Get the GPIO pin used for the dimmer
+       */
+      gpio_num_t getPin() const { return _pin; }
+
+      /**
+       * @brief Get the semi-period of the dimmer in us
+       */
+      uint16_t getSemiPeriod() const { return _semiPeriod; }
+
       /**
        * @brief Get the firing delay in us of the dimmer in the range [0, semi-period]
        * At 0% power, delay is equal to the semi-period: the dimmer is kept off
@@ -160,18 +238,15 @@ namespace Mycila {
        *
        * @param root: the JSON object to serialize to
        */
-      void toJson(const JsonObject& root) const {
+      virtual void toJson(const JsonObject& root) const {
+        // call parent
+        Dimmer::toJson(root);
         const float angle = getPhaseAngle();
-        root["enabled"] = isEnabled();
-        root["state"] = isOn() ? "on" : "off";
         root["angle_d"] = angle * RAD_TO_DEG;
         root["angle"] = angle;
         root["delay"] = getFiringDelay();
-        root["duty_cycle"] = getDutyCycle();
-        root["duty_cycle_limit"] = getDutyCycleLimit();
-        root["duty_cycle_min"] = getDutyCycleMin();
-        root["duty_cycle_max"] = getDutyCycleMax();
         root["semi_period"] = getSemiPeriod();
+        root["type"] = "triac";
       }
 #endif
 
@@ -187,14 +262,12 @@ namespace Mycila {
        */
       static void onZeroCross(int16_t delayUntilZero, void* args);
 
+    protected:
+      virtual void _applyDutyCycle(float mappedDutyCycle);
+
     private:
-      bool _enabled = false;
       gpio_num_t _pin = GPIO_NUM_NC;
       uint16_t _semiPeriod = 0;
-      float _dutyCycle = 0;
-      float _dutyCycleLimit = 1;
-      float _dutyCycleMin = 0;
-      float _dutyCycleMax = 1;
       uint16_t _delay = UINT16_MAX; // this is the next firing delay to apply
 
       uint16_t _lookupPhaseDelay(float dutyCycle);

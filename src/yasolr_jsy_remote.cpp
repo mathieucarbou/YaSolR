@@ -4,9 +4,9 @@
  */
 #include <yasolr.h>
 
-AsyncUDP* udp;
+AsyncUDP* udp = nullptr;
 Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
-Mycila::Task* jsyRemoteTask;
+Mycila::Task* jsyRemoteTask = nullptr;
 
 void onData(AsyncUDPPacket packet) {
   // buffer[0] == MYCILA_UDP_MSG_TYPE_JSY_DATA (1)

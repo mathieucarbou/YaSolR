@@ -9,13 +9,13 @@
 extern const uint8_t ca_certs_bundle_start[] asm("_binary__pio_data_cacerts_bin_start");
 extern const uint8_t ca_certs_bundle_end[] asm("_binary__pio_data_cacerts_bin_end");
 
-Mycila::MQTT* mqtt;
-Mycila::Task* mqttConnectTask;
-Mycila::Task* mqttPublishConfigTask;
-Mycila::Task* mqttPublishStaticTask;
-Mycila::Task* mqttPublishTask;
+Mycila::MQTT* mqtt = nullptr;
+Mycila::Task* mqttConnectTask = nullptr;
+Mycila::Task* mqttPublishConfigTask = nullptr;
+Mycila::Task* mqttPublishStaticTask = nullptr;
+Mycila::Task* mqttPublishTask = nullptr;
 
-Mycila::Task* haDiscoveryTask;
+Mycila::Task* haDiscoveryTask = nullptr;
 
 void connect() {
   mqtt->end();

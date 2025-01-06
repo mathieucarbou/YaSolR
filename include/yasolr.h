@@ -102,10 +102,6 @@ extern void yasolr_init_ds18();
 extern Mycila::EasyDisplay* display;
 extern void yasolr_init_display();
 
-// ZCD
-extern Mycila::PulseAnalyzer* pulseAnalyzer;
-extern void yasolr_init_zcd();
-
 // MQTT
 extern Mycila::MQTT* mqtt;
 extern Mycila::Task* mqttConnectTask;
@@ -144,6 +140,7 @@ extern void yasolr_init_relays();
 
 // router
 extern Mycila::PID pidController;
+extern Mycila::PulseAnalyzer* pulseAnalyzer;
 extern Mycila::Router router;
 extern Mycila::RouterOutput* output1;
 extern Mycila::RouterOutput* output2;

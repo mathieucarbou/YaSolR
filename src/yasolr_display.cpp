@@ -6,9 +6,9 @@
 
 #include <string>
 
-Mycila::EasyDisplay* display;
-Mycila::Task* displayCarouselTask;
-Mycila::Task* displayTask;
+Mycila::EasyDisplay* display = nullptr;
+Mycila::Task* displayCarouselTask = nullptr;
+Mycila::Task* displayTask = nullptr;
 
 enum class DisplayKind {
   DISPLAY_HOME = 1,

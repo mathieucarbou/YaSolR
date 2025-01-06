@@ -24,7 +24,6 @@ void setup() {
   yasolr_init_router();
   yasolr_init_trial();
   yasolr_init_web_server();
-  yasolr_init_zcd();
 
   // core task manager
   assert(coreTaskManager.asyncStart(512 * 8, 1, 1, 100, true));

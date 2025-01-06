@@ -182,7 +182,7 @@
 #define YASOLR_LBL_176 "Terme D (W)"
 // #define YASOLR_LBL_177
 #define YASOLR_LBL_178 "Informations de debug"
-#define YASOLR_LBL_179 "ZCD non démarré"
+// #define YASOLR_LBL_179
 #define YASOLR_LBL_180 "Non associé"
 #define YASOLR_LBL_181 "Topic MQTT pour la température sortie 1"
 #define YASOLR_LBL_182 "Topic MQTT pour la température sortie 2"

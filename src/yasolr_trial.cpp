@@ -5,7 +5,7 @@
 #include <yasolr.h>
 
 #ifdef APP_MODEL_TRIAL
-Mycila::Task* trialTask;
+Mycila::Task* trialTask = nullptr;
 #endif
 
 void yasolr_init_trial() {

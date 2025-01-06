@@ -4,10 +4,10 @@
  */
 #include <yasolr.h>
 
-Mycila::DS18* ds18O1;
-Mycila::DS18* ds18O2;
-Mycila::DS18* ds18Sys;
-Mycila::Task* ds18Task;
+Mycila::DS18* ds18O1 = nullptr;
+Mycila::DS18* ds18O2 = nullptr;
+Mycila::DS18* ds18Sys = nullptr;
+Mycila::Task* ds18Task = nullptr;
 
 void yasolr_init_ds18() {
   logger.info(TAG, "Initialize DS18 probes...");

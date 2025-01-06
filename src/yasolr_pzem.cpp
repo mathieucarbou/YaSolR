@@ -4,12 +4,12 @@
  */
 #include <yasolr.h>
 
-Mycila::PZEM* pzemO1;
-Mycila::PZEM* pzemO2;
-Mycila::Task* pzemO1PairingTask;
-Mycila::Task* pzemO2PairingTask;
-Mycila::Task* pzemTask;
-Mycila::TaskManager* pzemTaskManager;
+Mycila::PZEM* pzemO1 = nullptr;
+Mycila::PZEM* pzemO2 = nullptr;
+Mycila::Task* pzemO1PairingTask = nullptr;
+Mycila::Task* pzemO2PairingTask = nullptr;
+Mycila::Task* pzemTask = nullptr;
+Mycila::TaskManager* pzemTaskManager = nullptr;
 
 void yasolr_init_pzem() {
   logger.info(TAG, "Initialize PZEM...");

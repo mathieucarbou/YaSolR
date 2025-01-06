@@ -5,9 +5,9 @@
 #include <yasolr.h>
 #include <yasolr_dashboard.h>
 
-Mycila::RouterRelay* relay1;
-Mycila::RouterRelay* relay2;
-Mycila::Task* relayTask;
+Mycila::RouterRelay* relay1 = nullptr;
+Mycila::RouterRelay* relay2 = nullptr;
+Mycila::Task* relayTask = nullptr;
 
 void yasolr_init_relays() {
   logger.info(TAG, "Initialize relays...");
