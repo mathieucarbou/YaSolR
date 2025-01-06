@@ -43,6 +43,14 @@
 // default settings
 
 #define YASOLR_ADMIN_USERNAME              "admin"
+#define YASOLR_DIMMER_LSA_GP8211S          "LSA + DAC GP8211S (DFR1071)"
+#define YASOLR_DIMMER_LSA_GP8403           "LSA + DAC GP8403 (DFR0971)"
+#define YASOLR_DIMMER_LSA_GP8413           "LSA + DAC GP8413 (DFR1073)"
+#define YASOLR_DIMMER_LSA_PWM              "LSA + PWM->Analog"
+#define YASOLR_DIMMER_ROBODYN              "Robodyn 24A / 40A"
+#define YASOLR_DIMMER_SSR_RANDOM           "SSR Random"
+#define YASOLR_DIMMER_SSR_SYNC             "SSR Sync (Zero-Cross)"
+#define YASOLR_DIMMER_TRIAC                "Triac / Thyristor"
 #define YASOLR_DISPLAY_LINE_SIZE           21
 #define YASOLR_DISPLAY_LINES               5
 #define YASOLR_GRAPH_POINTS                60
@@ -132,8 +140,9 @@
 #define KEY_OUTPUT1_DIMMER_MAX             "o1_dim_max"
 #define KEY_OUTPUT1_DIMMER_MIN             "o1_dim_min"
 #define KEY_OUTPUT1_DIMMER_TEMP_LIMITER    "o1_dim_max_t"
-#define KEY_OUTPUT1_RELAY_TYPE             "o1_relay_type"
+#define KEY_OUTPUT1_DIMMER_TYPE            "o1_dim_type"
 #define KEY_OUTPUT1_EXCESS_LIMITER         "o1_excess_limit"
+#define KEY_OUTPUT1_RELAY_TYPE             "o1_relay_type"
 #define KEY_OUTPUT1_RESISTANCE             "o1_resistance"
 #define KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC "o1_temp_mqtt"
 #define KEY_OUTPUT1_TEMPERATURE_START      "o1_temp_start"
@@ -145,8 +154,9 @@
 #define KEY_OUTPUT2_DIMMER_MAX             "o2_dim_max"
 #define KEY_OUTPUT2_DIMMER_MIN             "o2_dim_min"
 #define KEY_OUTPUT2_DIMMER_TEMP_LIMITER    "o2_dim_max_t"
-#define KEY_OUTPUT2_RELAY_TYPE             "o2_relay_type"
+#define KEY_OUTPUT2_DIMMER_TYPE            "o2_dim_type"
 #define KEY_OUTPUT2_EXCESS_LIMITER         "o2_excess_limit"
+#define KEY_OUTPUT2_RELAY_TYPE             "o2_relay_type"
 #define KEY_OUTPUT2_RESISTANCE             "o2_resistance"
 #define KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC "o2_temp_mqtt"
 #define KEY_OUTPUT2_TEMPERATURE_START      "o2_temp_start"

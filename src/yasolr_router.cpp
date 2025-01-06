@@ -43,48 +43,78 @@ Mycila::Task routerTask("Router", [](void* params) {
 
 // functions
 
+bool isTriacBased(const char* type) {
+  return strcmp(type, YASOLR_DIMMER_LSA_PWM) == 0 || strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 || strcmp(type, YASOLR_DIMMER_SSR_RANDOM) == 0 || strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
+}
+
 Mycila::Dimmer* createDimmer1(uint16_t semiPeriod) {
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
-    triacDimmer1 = new Mycila::TriacDimmer();
-    triacDimmer1->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT1_DIMMER));
-    triacDimmer1->setSemiPeriod(semiPeriod);
-    triacDimmer1->begin();
+    const char* type = config.get(KEY_OUTPUT1_DIMMER_TYPE);
+    Mycila::Dimmer* dimmer = nullptr;
 
-    if (triacDimmer1->isEnabled()) {
-      triacDimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
-      triacDimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
-      triacDimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
+    if (isTriacBased(type)) {
+      logger.info(TAG, "Initializing Output 1 dimmer type: %s", type);
+
+      triacDimmer1 = new Mycila::TriacDimmer();
+      triacDimmer1->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT1_DIMMER));
+      triacDimmer1->setSemiPeriod(semiPeriod);
+      triacDimmer1->begin();
+
+      if (triacDimmer1->isEnabled()) {
+        triacDimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
+        triacDimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
+        triacDimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
+        dimmer = triacDimmer1;
+
+      } else {
+        logger.error(TAG, "Output 1 Dimmer failed to initialize!");
+        delete triacDimmer1;
+        triacDimmer1 = nullptr;
+      }
 
     } else {
-      logger.error(TAG, "Output 1 Dimmer failed to initialize!");
-      delete triacDimmer1;
-      triacDimmer1 = nullptr;
+      logger.error(TAG, "Output 1 Dimmer type not supported: %s", type);
     }
+
+    return dimmer;
   }
 
-  return triacDimmer1;
+  return nullptr;
 }
 
 Mycila::Dimmer* createDimmer2(uint16_t semiPeriod) {
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
-    triacDimmer2 = new Mycila::TriacDimmer();
-    triacDimmer2->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT2_DIMMER));
-    triacDimmer2->setSemiPeriod(semiPeriod);
-    triacDimmer2->begin();
+    const char* type = config.get(KEY_OUTPUT2_DIMMER_TYPE);
+    Mycila::Dimmer* dimmer = nullptr;
 
-    if (triacDimmer2->isEnabled()) {
-      triacDimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
-      triacDimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
-      triacDimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
+    if (isTriacBased(type)) {
+      logger.info(TAG, "Initializing Output 2 dimmer type: %s", type);
+
+      triacDimmer2 = new Mycila::TriacDimmer();
+      triacDimmer2->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT2_DIMMER));
+      triacDimmer2->setSemiPeriod(semiPeriod);
+      triacDimmer2->begin();
+
+      if (triacDimmer2->isEnabled()) {
+        triacDimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
+        triacDimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
+        triacDimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
+        dimmer = triacDimmer2;
+
+      } else {
+        logger.error(TAG, "Output 2 Dimmer failed to initialize!");
+        delete triacDimmer2;
+        triacDimmer2 = nullptr;
+      }
 
     } else {
-      logger.error(TAG, "Output 2 Dimmer failed to initialize!");
-      delete triacDimmer2;
-      triacDimmer2 = nullptr;
+      logger.error(TAG, "Output 2 Dimmer type not supported: %s", type);
     }
+
+    return dimmer;
   }
 
-  return triacDimmer2;
+  return nullptr;
 }
 
 Mycila::Relay* createBypassRelay1() {
@@ -267,29 +297,32 @@ void yasolr_init_router() {
     calibrationTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
   // ZCD Task that will keep the grid semi-period in sync with the dimmers
-  if (pulseAnalyzer && (triacDimmer1 || triacDimmer2)) {
+  if (pulseAnalyzer || triacDimmer1 || triacDimmer2) {
     logger.info(TAG, "Initialize ZCD sync...");
 
     zcdTask = new Mycila::Task("ZCD", [](void* params) {
       // check if ZCD is online (connected to the grid)
       // this is required for dimmers to work
       if (pulseAnalyzer->isOnline()) {
-        if (!Thyristor::getSemiPeriod()) {
+        if (!Thyristor::getSemiPeriod() || (triacDimmer1 && !triacDimmer1->getSemiPeriod()) || (triacDimmer2 && !triacDimmer2->getSemiPeriod())) {
           const float frequency = yasolr_frequency();
           const uint16_t semiPeriod = frequency ? 1000000 / 2 / frequency : 0;
 
           if (semiPeriod) {
             logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
 
-            Thyristor::setSemiPeriod(semiPeriod);
-            Thyristor::begin();
+            if (!Thyristor::getSemiPeriod()) {
+              logger.info(TAG, "Starting Thyristor...");
+              Thyristor::setSemiPeriod(semiPeriod);
+              Thyristor::begin();
+            }
 
-            if (triacDimmer1) {
+            if (triacDimmer1 && !triacDimmer1->getSemiPeriod()) {
               triacDimmer1->setSemiPeriod(semiPeriod);
               triacDimmer1->off();
             }
 
-            if (triacDimmer2) {
+            if (triacDimmer2 && !triacDimmer2->getSemiPeriod()) {
               triacDimmer2->setSemiPeriod(semiPeriod);
               triacDimmer2->off();
             }
@@ -299,26 +332,26 @@ void yasolr_init_router() {
         }
 
       } else {
-        if (Thyristor::getSemiPeriod()) {
+        if (Thyristor::getSemiPeriod() || (triacDimmer1 && triacDimmer1->getSemiPeriod()) || (triacDimmer2 && triacDimmer2->getSemiPeriod())) {
           logger.warn(TAG, "No electricity detected by ZCD module");
 
           if (Thyristor::getSemiPeriod()) {
-            logger.info(TAG, "Stopping Thyristor");
+            logger.info(TAG, "Stopping Thyristor...");
             Thyristor::setSemiPeriod(0);
             Thyristor::end();
-
-            if (triacDimmer1) {
-              logger.info(TAG, "Setting dimmer 1 semi-period to 0");
-              triacDimmer1->setSemiPeriod(0);
-            }
-
-            if (triacDimmer2) {
-              logger.info(TAG, "Setting dimmer 2 semi-period to 0");
-              triacDimmer2->setSemiPeriod(0);
-            }
-
-            dashboardInitTask.resume();
           }
+
+          if (triacDimmer1 && triacDimmer1->getSemiPeriod()) {
+            logger.info(TAG, "Setting dimmer 1 semi-period to 0");
+            triacDimmer1->setSemiPeriod(0);
+          }
+
+          if (triacDimmer2 && triacDimmer2->getSemiPeriod()) {
+            logger.info(TAG, "Setting dimmer 2 semi-period to 0");
+            triacDimmer2->setSemiPeriod(0);
+          }
+
+          dashboardInitTask.resume();
         }
       }
     });

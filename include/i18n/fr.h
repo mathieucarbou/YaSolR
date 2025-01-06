@@ -53,7 +53,7 @@
 #define YASOLR_LBL_047 "État"
 #define YASOLR_LBL_048 "Température"
 #define YASOLR_LBL_049 "Supprimer le certificat serveur"
-#define YASOLR_LBL_050 "variateur"
+#define YASOLR_LBL_050 "Variateur"
 #define YASOLR_LBL_051 "Marche forcée"
 #define YASOLR_LBL_052 "Puissance"
 #define YASOLR_LBL_053 "Puissance Apparente"
@@ -65,7 +65,7 @@
 #define YASOLR_LBL_059 "Énergie"
 #define YASOLR_LBL_060 "Routage automatique"
 #define YASOLR_LBL_061 "Limite de surplus (W)"
-#define YASOLR_LBL_062 "Limitation du dimmer"
+#define YASOLR_LBL_062 "Limitation du variateur"
 #define YASOLR_LBL_063 "Température de consigne d'arrêt du routage (°C)"
 #define YASOLR_LBL_064 "Marche forcée automatique"
 #define YASOLR_LBL_065 "Température de démarrage de la marche forcée (°C)"
@@ -196,8 +196,8 @@
 #define YASOLR_LBL_190 "Passerelle"
 #define YASOLR_LBL_191 "Serveur DNS"
 #define YASOLR_LBL_192 "Micro-contrôleur: Raison du reboot"
-// #define YASOLR_LBL_193
-// #define YASOLR_LBL_194
+#define YASOLR_LBL_193 "Sortie 1: Type de variateur"
+#define YASOLR_LBL_194 "Sortie 2: Type de variateur"
 // #define YASOLR_LBL_195
 // #define YASOLR_LBL_196
 // #define YASOLR_LBL_197

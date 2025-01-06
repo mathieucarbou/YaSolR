@@ -241,37 +241,40 @@ dash::FeedbackSwitchCard _jsy(dashboard, YASOLR_LBL_128);
 dash::FeedbackSwitchCard _jsyRemote(dashboard, YASOLR_LBL_187);
 dash::FeedbackSwitchCard _led(dashboard, YASOLR_LBL_129);
 dash::FeedbackSwitchCard _mqtt(dashboard, YASOLR_LBL_095);
+dash::FeedbackSwitchCard _output1Relay(dashboard, YASOLR_LBL_134);
 dash::FeedbackSwitchCard _output1Dimmer(dashboard, YASOLR_LBL_131);
 dash::FeedbackSwitchCard _output1DS18(dashboard, YASOLR_LBL_132);
 dash::FeedbackSwitchCard _output1PZEM(dashboard, YASOLR_LBL_133);
-dash::FeedbackSwitchCard _output1Relay(dashboard, YASOLR_LBL_134);
+dash::FeedbackSwitchCard _output2Relay(dashboard, YASOLR_LBL_138);
 dash::FeedbackSwitchCard _output2Dimmer(dashboard, YASOLR_LBL_135);
 dash::FeedbackSwitchCard _output2DS18(dashboard, YASOLR_LBL_136);
 dash::FeedbackSwitchCard _output2PZEM(dashboard, YASOLR_LBL_137);
-dash::FeedbackSwitchCard _output2Relay(dashboard, YASOLR_LBL_138);
 dash::FeedbackSwitchCard _relay1(dashboard, YASOLR_LBL_074);
 dash::FeedbackSwitchCard _relay2(dashboard, YASOLR_LBL_077);
 dash::FeedbackSwitchCard _routerDS18(dashboard, YASOLR_LBL_139);
 dash::FeedbackSwitchCard _zcd(dashboard, YASOLR_LBL_125);
 
 dash::Tab _hardwareConfigTab(dashboard, "\u2699 " YASOLR_LBL_140);
-dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
 dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
 dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
-dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
-dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_152, "NO,NC");
-dash::TextInputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
-dash::TextInputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
+dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_149, "NO,NC");
-dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_150, "NO,NC");
 dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_184, 0, 100, 1, "%");
+dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_193, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_SSR_RANDOM "," YASOLR_DIMMER_SSR_SYNC "," YASOLR_DIMMER_TRIAC);
 dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
-dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
 dash::FeedbackTextInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
+dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_150, "NO,NC");
+dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_184, 0, 100, 1, "%");
+dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_193, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_SSR_RANDOM "," YASOLR_DIMMER_SSR_SYNC "," YASOLR_DIMMER_TRIAC);
+dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
 dash::FeedbackTextInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_146);
 dash::SwitchCard _resistanceCalibration(dashboard, YASOLR_LBL_186);
+
+dash::TextInputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
+dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
+dash::TextInputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
+dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_152, "NO,NC");
 
 dash::Tab _pidTab(dashboard, "\u2699 " YASOLR_LBL_159);
 dash::SwitchCard _pidView(dashboard, YASOLR_LBL_169);
@@ -663,22 +666,24 @@ void YaSolR::Website::begin() {
 
   // Hardware (config)
 
-  _gridFreq.setTab(_hardwareConfigTab);
   _displayRotation.setTab(_hardwareConfigTab);
-  _displayType.setTab(_hardwareConfigTab);
   _displaySpeed.setTab(_hardwareConfigTab);
-  _output1PZEMSync.setTab(_hardwareConfigTab);
-  _output2PZEMSync.setTab(_hardwareConfigTab);
-  _output1RelayType.setTab(_hardwareConfigTab);
-  _output2RelayType.setTab(_hardwareConfigTab);
-  _relay1Type.setTab(_hardwareConfigTab);
-  _relay2Type.setTab(_hardwareConfigTab);
-  _relay1Load.setTab(_hardwareConfigTab);
-  _relay2Load.setTab(_hardwareConfigTab);
-  _output1ResistanceInput.setTab(_hardwareConfigTab);
-  _output2ResistanceInput.setTab(_hardwareConfigTab);
+  _displayType.setTab(_hardwareConfigTab);
+  _gridFreq.setTab(_hardwareConfigTab);
   _output1DimmerMapper.setTab(_hardwareConfigTab);
+  _output1DimmerType.setTab(_hardwareConfigTab);
+  _output1PZEMSync.setTab(_hardwareConfigTab);
+  _output1RelayType.setTab(_hardwareConfigTab);
+  _output1ResistanceInput.setTab(_hardwareConfigTab);
   _output2DimmerMapper.setTab(_hardwareConfigTab);
+  _output2DimmerType.setTab(_hardwareConfigTab);
+  _output2PZEMSync.setTab(_hardwareConfigTab);
+  _output2RelayType.setTab(_hardwareConfigTab);
+  _output2ResistanceInput.setTab(_hardwareConfigTab);
+  _relay1Load.setTab(_hardwareConfigTab);
+  _relay1Type.setTab(_hardwareConfigTab);
+  _relay2Load.setTab(_hardwareConfigTab);
+  _relay2Type.setTab(_hardwareConfigTab);
   _resistanceCalibration.setTab(_hardwareConfigTab);
 
   _gridFreq.onChange([](const char* value) {
@@ -695,12 +700,14 @@ void YaSolR::Website::begin() {
   _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
+  _sliderConfig(_displaySpeed, KEY_DISPLAY_SPEED);
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
+  _textConfig(_output1DimmerType, KEY_OUTPUT1_DIMMER_TYPE);
   _textConfig(_output1RelayType, KEY_OUTPUT1_RELAY_TYPE);
+  _textConfig(_output2DimmerType, KEY_OUTPUT2_DIMMER_TYPE);
   _textConfig(_output2RelayType, KEY_OUTPUT2_RELAY_TYPE);
   _textConfig(_relay1Type, KEY_RELAY1_TYPE);
   _textConfig(_relay2Type, KEY_RELAY2_TYPE);
-  _sliderConfig(_displaySpeed, KEY_DISPLAY_SPEED);
 
   _output1ResistanceInput.onChange([](const std::optional<float> value) {
     if (value.has_value())
@@ -1110,38 +1117,42 @@ void YaSolR::Website::initCards() {
       break;
   }
 
-  _displayType.setValue(config.get(KEY_DISPLAY_TYPE));
-  _displaySpeed.setValue(config.getInt(KEY_DISPLAY_SPEED));
   _displayRotation.setValue(config.getInt(KEY_DISPLAY_ROTATION));
+  _displaySpeed.setValue(config.getInt(KEY_DISPLAY_SPEED));
+  _displayType.setValue(config.get(KEY_DISPLAY_TYPE));
+  _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));
   _output1RelayType.setValue(config.get(KEY_OUTPUT1_RELAY_TYPE));
-  _output2RelayType.setValue(config.get(KEY_OUTPUT2_RELAY_TYPE));
-  _relay1Type.setValue(config.get(KEY_RELAY1_TYPE));
-  _relay2Type.setValue(config.get(KEY_RELAY2_TYPE));
-  _relay1Load.setValue(load1);
-  _relay2Load.setValue(load2);
-  _output1ResistanceInput.setValue(config.getFloat(KEY_OUTPUT1_RESISTANCE));
   _output1ResistanceInput.setStatus(_output1ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER);
-  _output2ResistanceInput.setValue(config.getFloat(KEY_OUTPUT2_RESISTANCE));
+  _output1ResistanceInput.setValue(config.getFloat(KEY_OUTPUT1_RESISTANCE));
+  _output2DimmerType.setValue(config.get(KEY_OUTPUT2_DIMMER_TYPE));
+  _output2RelayType.setValue(config.get(KEY_OUTPUT2_RELAY_TYPE));
   _output2ResistanceInput.setStatus(_output2ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER);
+  _output2ResistanceInput.setValue(config.getFloat(KEY_OUTPUT2_RESISTANCE));
+  _relay1Load.setValue(load1);
+  _relay1Type.setValue(config.get(KEY_RELAY1_TYPE));
+  _relay2Load.setValue(load2);
+  _relay2Type.setValue(config.get(KEY_RELAY2_TYPE));
   _output1DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MIN)),
                                  static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MAX))});
   _output2DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MIN)),
                                  static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MAX))});
-  _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
-  _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _displayRotation.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
-  _relay1Load.setDisplay(relay1Enabled);
-  _relay2Load.setDisplay(relay2Enabled);
-  _output1ResistanceInput.setDisplay(dimmer1Enabled);
-  _output2ResistanceInput.setDisplay(dimmer2Enabled);
-  _output1PZEMSync.setDisplay(pzem1Enabled);
-  _output2PZEMSync.setDisplay(pzem2Enabled);
-  _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
-  _output2RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
-  _relay1Type.setDisplay(relay1Enabled);
-  _relay2Type.setDisplay(relay2Enabled);
+  _displaySpeed.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
+  _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _output1DimmerMapper.setDisplay(dimmer1Enabled);
+  _output1DimmerType.setDisplay(dimmer1Enabled);
+  _output1PZEMSync.setDisplay(pzem1Enabled);
+  _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
+  _output1ResistanceInput.setDisplay(dimmer1Enabled);
   _output2DimmerMapper.setDisplay(dimmer2Enabled);
+  _output2DimmerType.setDisplay(dimmer2Enabled);
+  _output2PZEMSync.setDisplay(pzem2Enabled);
+  _output2RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
+  _output2ResistanceInput.setDisplay(dimmer2Enabled);
+  _relay1Load.setDisplay(relay1Enabled);
+  _relay1Type.setDisplay(relay1Enabled);
+  _relay2Load.setDisplay(relay2Enabled);
+  _relay2Type.setDisplay(relay2Enabled);
   _resistanceCalibration.setDisplay((dimmer1Enabled && jsyEnabled) ||
                                     (dimmer1Enabled && pzem1Enabled) ||
                                     (dimmer2Enabled && jsyEnabled) ||

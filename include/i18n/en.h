@@ -148,8 +148,8 @@
 #define YASOLR_LBL_146 YASOLR_LBL_070 " Resistance (Ω)"
 #define YASOLR_LBL_147 YASOLR_LBL_046 " PZEM Pairing"
 #define YASOLR_LBL_148 YASOLR_LBL_070 " PZEM Pairing"
-#define YASOLR_LBL_149 YASOLR_LBL_046 " Relay Type (Bypass)"
-#define YASOLR_LBL_150 YASOLR_LBL_070 " Relay Type (Bypass)"
+#define YASOLR_LBL_149 YASOLR_LBL_046 " Bypass Relay Type"
+#define YASOLR_LBL_150 YASOLR_LBL_070 " Bypass Relay Type"
 #define YASOLR_LBL_151 YASOLR_LBL_074 " Type"
 #define YASOLR_LBL_152 YASOLR_LBL_077 " Type"
 #define YASOLR_LBL_153 "Duplicate"
@@ -185,7 +185,7 @@
 #define YASOLR_LBL_183 YASOLR_LBL_046 " Dimmer Min/Max Remapping"
 #define YASOLR_LBL_184 YASOLR_LBL_070 " Dimmer Min/Max Remapping"
 #define YASOLR_LBL_185 "Restart required!"
-#define YASOLR_LBL_186 "Resistance Value Detection"
+#define YASOLR_LBL_186 "Output Resistance Calibration"
 #define YASOLR_LBL_187 "JSY Remote"
 #define YASOLR_LBL_030 "Relay: " YASOLR_LBL_046 " Bypass Relay Switch Count"
 #define YASOLR_LBL_031 "Relay: " YASOLR_LBL_070 " Bypass Relay Switch Count"
@@ -196,8 +196,8 @@
 #define YASOLR_LBL_190 "Gateway"
 #define YASOLR_LBL_191 "DNS Server"
 #define YASOLR_LBL_192 "Device: Reboot Reason"
-// #define YASOLR_LBL_193
-// #define YASOLR_LBL_194
+#define YASOLR_LBL_193 YASOLR_LBL_046 " Dimmer Type"
+#define YASOLR_LBL_194 YASOLR_LBL_070 " Dimmer Type"
 // #define YASOLR_LBL_195
 // #define YASOLR_LBL_196
 // #define YASOLR_LBL_197
