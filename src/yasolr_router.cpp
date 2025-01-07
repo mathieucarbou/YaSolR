@@ -50,7 +50,7 @@ bool isZeroCrossBased(const char* type) {
          strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
 }
 
-Mycila::Dimmer* createDimmer1(uint16_t semiPeriod) {
+Mycila::Dimmer* createDimmer1() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
     const char* type = config.get(KEY_OUTPUT1_DIMMER_TYPE);
     Mycila::Dimmer* dimmer = nullptr;
@@ -60,13 +60,9 @@ Mycila::Dimmer* createDimmer1(uint16_t semiPeriod) {
 
       zcDimmer1 = new Mycila::ZeroCrossDimmer();
       zcDimmer1->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT1_DIMMER));
-      zcDimmer1->setSemiPeriod(semiPeriod);
       zcDimmer1->begin();
 
       if (zcDimmer1->isEnabled()) {
-        zcDimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
-        zcDimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
-        zcDimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
         dimmer = zcDimmer1;
 
       } else {
@@ -85,7 +81,7 @@ Mycila::Dimmer* createDimmer1(uint16_t semiPeriod) {
   return nullptr;
 }
 
-Mycila::Dimmer* createDimmer2(uint16_t semiPeriod) {
+Mycila::Dimmer* createDimmer2() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
     const char* type = config.get(KEY_OUTPUT2_DIMMER_TYPE);
     Mycila::Dimmer* dimmer = nullptr;
@@ -95,13 +91,9 @@ Mycila::Dimmer* createDimmer2(uint16_t semiPeriod) {
 
       zcDimmer2 = new Mycila::ZeroCrossDimmer();
       zcDimmer2->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT2_DIMMER));
-      zcDimmer2->setSemiPeriod(semiPeriod);
       zcDimmer2->begin();
 
       if (zcDimmer2->isEnabled()) {
-        zcDimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
-        zcDimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
-        zcDimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
         dimmer = zcDimmer2;
 
       } else {
@@ -169,18 +161,23 @@ Mycila::Relay* createBypassRelay2() {
 }
 
 void initOutput1(uint16_t semiPeriod) {
-  Mycila::Dimmer* dimmer1 = createDimmer1(semiPeriod);
-  Mycila::Relay* bypassRelay1 = createBypassRelay1();
+  Mycila::Dimmer* dimmer = createDimmer1();
+  Mycila::Relay* bypassRelay = createBypassRelay1();
 
   // output 1 is only a bypass relay ?
-  if (!dimmer1 && bypassRelay1) {
+  if (!dimmer && bypassRelay) {
     logger.warn(TAG, "Output 1 has no dimmer and is only a bypass relay");
     // we do not call begin so that the virtual dimmer remains disabled
-    dimmer1 = new Mycila::VirtualDimmer();
+    dimmer = new Mycila::VirtualDimmer();
   }
 
-  if (dimmer1) {
-    output1 = new Mycila::RouterOutput("output1", *dimmer1, bypassRelay1);
+  if (dimmer) {
+    output1 = new Mycila::RouterOutput("output1", *dimmer, bypassRelay);
+
+    dimmer->setSemiPeriod(semiPeriod);
+    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
+    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
+    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
 
     output1->config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
     output1->config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -200,18 +197,23 @@ void initOutput1(uint16_t semiPeriod) {
 }
 
 void initOutput2(uint16_t semiPeriod) {
-  Mycila::Dimmer* dimmer2 = createDimmer2(semiPeriod);
-  Mycila::Relay* bypassRelay2 = createBypassRelay2();
+  Mycila::Dimmer* dimmer = createDimmer2();
+  Mycila::Relay* bypassRelay = createBypassRelay2();
 
   // output 2 is only a bypass relay ?
-  if (!dimmer2 && bypassRelay2) {
+  if (!dimmer && bypassRelay) {
     logger.warn(TAG, "Output 2 has no dimmer and is only a bypass relay");
     // we do not call begin so that the virtual dimmer remains disabled
-    dimmer2 = new Mycila::VirtualDimmer();
+    dimmer = new Mycila::VirtualDimmer();
   }
 
-  if (dimmer2) {
-    output2 = new Mycila::RouterOutput("output2", *dimmer2, bypassRelay2);
+  if (dimmer) {
+    output2 = new Mycila::RouterOutput("output2", *dimmer, bypassRelay);
+
+    dimmer->setSemiPeriod(semiPeriod);
+    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
+    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
+    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
 
     output2->config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
     output2->config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
