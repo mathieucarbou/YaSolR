@@ -71,7 +71,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V4](../downloads/auto_diverter_v4.js)**: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. `EXCESS_POWER_LIMIT` can also be used to limit an output power to a specific value.
 
-- **[Shelly Solar Diverter Script V5](../downloads/auto_diverter_v4.js)**: Introduced a LUT to more closely match the voltage and current sine wave when computing the dimmer duty cycle to apply to the LSA
+- **[Shelly Solar Diverter Script V5](../downloads/auto_diverter_v5.js)**: Introduced a LUT to more closely match the voltage and current sine wave when computing the dimmer duty cycle to apply to the LSA
 
 ## Hardware
 
