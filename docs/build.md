@@ -13,6 +13,9 @@ description: Build
   - [The Adventurer](#the-adventurer)
   - [The Elite](#the-elite)
   - [The Professional](#the-professional)
+    - [Using a PWM to Analog Converter and ZCD](#using-a-pwm-to-analog-converter-and-zcd)
+    - [Using a PWM to Analog Converter only](#using-a-pwm-to-analog-converter-only)
+    - [Using a DAC only](#using-a-dac-only)
   - [Possible Upgrades](#possible-upgrades)
   - [Remote JSY](#remote-jsy)
   - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter)
@@ -58,7 +61,11 @@ Here are below some examples:
 
 Reuse your existing Shelly EM or Shelly 3EM to build a router!
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |                          Shelly EM or 3EM                           |
+- Robodyn is used for the dimming (phase control)
+- Robodyn is used for the Zero-Cross Detection
+- Shelly EM or MQTT is used to measure the grid power and voltage
+
+|                              ESP32                               |                       Robodyn AC Dimmer 40A/800V                       |                          Shelly EM or 3EM                           |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :-----------------------------------------------------------------: |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Shelly_EM.png" style="width:150px"> |
 
@@ -83,7 +90,11 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 
 The _Minimalist_ build uses inexpensive and easy to use components to start a router.
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 40A/800V                       |             JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333           |
+- Robodyn is used for the dimming (phase control)
+- Robodyn is used for the Zero-Cross Detection
+- Grid power measurement can be done with a JSY (local or remote) or MQTT
+
+|                              ESP32                               |                       Robodyn AC Dimmer 40A/800V                       |             JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333           |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -104,7 +115,11 @@ The _Minimalist_ build uses inexpensive and easy to use components to start a ro
 
 This is an improved version of the _Minimalist_ build using the new JSY-MK-194G which has an integrated ZCD.
 
-|                              ESP32-DevKitC                               |                       Random Solid State Relay                        |             JSY-MK-194G                   |
+- A Random SSR is used for the dimming (phase control)
+- JSY-MK-194G (local) is used for the Zero-Cross Detection
+- JSY-MK-194G (local) is used to measure the grid power and voltage
+
+|                              ESP32                               |                       Random Solid State Relay                        |             JSY-MK-194G                   |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :----------------------------------------------------------------------: |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194G_3.jpeg" style="width:150px"> |
 
@@ -125,7 +140,11 @@ The _Adventurer_ build is for people who are able to mitigate the flaws of the R
 The TRIAC can be changed to a BTA40-800B RD91 fixed directly on the heat sink, and the heat sink can be upgraded.
 See the [Robodyn](#robodyn) section for more information.
 
-|                              ESP32-DevKitC                               |                       Robodyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+- A custom TRIAC is used for the dimming (phase control)
+- Robodyn is used for the Zero-Cross Detection
+- Grid power measurement can be done with a JSY (local or remote) or MQTT
+
+|                              ESP32                               |                       Robodyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :------------------------------------------------------------------: | :-------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_24A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -147,14 +166,17 @@ See the [Robodyn](#robodyn) section for more information.
 
 The _Elite_ build is for people who want to use a Random SSR instead of a Robodyn to safely dim more power and have a better Zero-Cross Detection circuit more more precising routing.
 
-|                              ESP32-DevKitC                               |                       Random Solid State Relay                        |                              Heat Sink                               |                  Zero-Cross Detection Module                   | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+- A Random SSR is used for the dimming (phase control)
+- A dedicated ZCD circuit is used for the Zero-Cross Detection (it can be the JSY-MK-194G)
+- Grid power measurement can be done with a JSY (local or remote) or MQTT
+
+|                              ESP32                               |                       Random Solid State Relay                        |                              Heat Sink                               |                  Zero-Cross Detection Module                   | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :------------------------------------------------------------------: | :------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
-The **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR directly without the need of an external ZCD module.
-
 > ##### TIP
 >
+> - The **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR directly without the need of an external ZCD module.
 > - Dedicated ZCD circuit with a good pulse
 > - Dedicated Random SSR (models up to 100A)
 > - Supports **Phase Control** and **Burst mode**
@@ -171,25 +193,84 @@ The **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR dire
 
 The _Professional_ build uses a Voltage Regulator to control the power routing.
 This is probably the best reliable and efficient solution, but it is more complex to setup and wire.
-It requires an additional 12V power supply.
+Voltage regulators like the LSA or LCTC have an integrated ZCD circuit to trigger at the right time based on the input voltage control.
 
-|                              ESP32-DevKitC                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
-| :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+There are multiple ways to control a voltage regulator with YaSolR.
 
 > ##### TIP
 >
 > - Dedicated hardware supporting high loads
 > - Supports **Phase Control** and **Burst mode**
 > - Heat sink are bigger and better quality: bigger models are also available
-> - All the components can be easily attached onto a DIN rail
 {: .block-tip }
 
 > ##### WARNING
 >
-> - Requires an additional 12V power supply (e.g. Mean Well HDR-15-15 12V DC)
 > - Bypass mode will use the dimmer set at 100% power
 {: .block-warning }
+
+#### Using a PWM to Analog Converter and ZCD
+
+This option is a good upgrade to a Robodyn or SSR since it reuses the same components and just replaces the dimmer part with the LSA.
+It even reuses the existing ZCD circuit, and a dimmer implementation based on a ZCD, as usual, like for the Robodyn or Random SSR.
+As such, the LSA behavior is controlled exactly like a Robodyn or SSR would be controlled.
+
+- A voltage regulator (LSA or LCTC) is used for the dimming (phase control)
+- A dedicated **ZCD circuit** is used for the Zero-Cross Detection (it can be the JSY-MK-194G)
+- Grid power measurement can be done with a JSY (local or remote) or MQTT
+- A PWM to Analog Converter is used to control the voltage regulator (**requires a 12V input**)
+
+|                              ESP32                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+| :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
+| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+
+> ##### WARNING
+>
+> - Requires an additional 12V power supply (e.g. Mean Well HDR-15-15 12V DC)
+{: .block-warning }
+
+#### Using a PWM to Analog Converter only
+
+(🚧)
+
+This solution skips the need to have a dedicated ZCD and uses a specific implementation in YaSolR which is specific to this PWM to Analog Converter.
+
+- A voltage regulator (LSA or LCTC) is used for the dimming (phase control)
+- Grid power measurement can be done with a JSY (local or remote) or MQTT
+- A PWM to Analog Converter is used to control the voltage regulator (**requires a 12V input**)
+
+|                              ESP32                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+| :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
+| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+
+> ##### WARNING
+>
+> - Requires an additional 12V power supply (e.g. Mean Well HDR-15-15 12V DC)
+{: .block-warning }
+
+#### Using a DAC only
+
+(🚧)
+
+**Definitely the BEST solution out there**
+
+This solution skips the need to have a dedicated ZCD and uses a specific implementation in YaSolR which is specific to a DFrobot DAC.
+
+The big advantage of a DAC module is that is allows to control a LSA directly without the need of an external 12V supply like for the PWM to Analog Converter, and it also does not need a ZCD module.
+
+- A voltage regulator (LSA or LCTC) is used for the dimming (phase control)
+- Grid power measurement can be done with a JSY (local or remote) or MQTT
+- A DAC is used to control the voltage regulator: DFR0971 (GP8403), DFR1073 (GP8413), DFR1071 (GP8211S)
+
+|                              ESP32                               |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+| :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
+| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/DFR0971.jpg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+
+> ##### TIP
+>
+> - No ZCD circuit required
+> - No additional 12V power supply required
+{: .block-tip }
 
 ### Possible Upgrades
 
@@ -214,7 +295,7 @@ The reading rate is about **20-25 messages per second** and sending rate is 3 me
 
 You can look in the [JSY project](https://mathieu.carbou.me/MycilaJSY/) to find more information about how to setup remote JSY and the supported protocols.
 
-|                        Mean Well HDR-15-5 5V DC                        |                              ESP32-DevKitC                               | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+|                        Mean Well HDR-15-5 5V DC                        |                              ESP32                               | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | ------------------------------------------------------------------------ |
 | <img src="./assets/img/hardware/DIN_HDR-15-5.jpeg" style="width:80px"> | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
@@ -423,6 +504,7 @@ If you are interested in one, please have a look at the availabilities in the [P
 | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px">                     | [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Burst mode**                                                                                                                                                                                                                                                                                               |
 | <img src="./assets/img/hardware/LCTC_Voltage_Regulator_220V_40A.jpeg" style="width:150px"> | [LCTC Voltage Regulator 220V / 40A](https://fr.aliexpress.com/item/1005005008018888.html) or [more models without heat sink but 60A, 80A, etc](https://fr.aliexpress.com/item/20000003997748.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Burst mode**                                                                                                                                                                   |
 | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px">                     | [3.3V PWM Signal to 0-10V Convertor ](https://fr.aliexpress.com/item/1005004859012736.html) or [this link](https://fr.aliexpress.com/item/1005006859312414.html) or [this link](https://fr.aliexpress.com/item/1005007211285500.html) or [this link](https://fr.aliexpress.com/item/1005006822631244.html). Required to use the voltage regulators to convert the ESP32 pulse signal on 3.3V to an analogic output from 0-10V (external 12V power supply required) |
+| <img src="./assets/img/hardware/DFR0971.jpg" style="width:150px">                          | [DAC: DFR0971 (based on GP8403), DFR1073 (based on GP8413), DFR1071 (based on GP8211S)](https://www.dfrobot.com/blog-13458.html) |
 | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px">                   | [Heat Sink 10-60A for Voltage Regulators](https://fr.aliexpress.com/item/1005001541419957.html) or [this link](https://fr.aliexpress.com/item/32823649189.html) or [this link](https://fr.aliexpress.com/item/1005003670939186.html) or [this link](https://fr.aliexpress.com/item/1005001541419957.html)                                                                                                                                                                                                                                                                                                                                                                |
 
 ### Electromagnetic Relay

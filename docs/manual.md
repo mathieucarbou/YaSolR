@@ -547,14 +547,19 @@ Read more about how to calibrate a voltage regulator in the [Voltage Regulators]
 
 YaSolR supports all these dimmer types:
 
-- LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071)
-- LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971)
-- LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)
-- LSA / LCTC Voltage Regulators + PWM->Analog
-- Robodyn 24A / 40A
-- SSR Random"
-- SSR Sync (Zero-Cross)
-- Triac / Thyristor
+All the supported dimmer types:
+
+- Zero-Cross Detection based:
+  - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
+  - Random Solid State Relay + ZCD
+  - Robodyn 24/40A
+  - Triac + ZCD
+- PWM based:
+  - LSA / LCTC Voltage Regulators + PWM->Analog (🚧)
+- DAC based:
+  - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (🚧)
+  - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (🚧)
+  - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073) (🚧)
 
 You need to select the correct dimmer type for your hardware and then restart YaSolR.
 
@@ -952,7 +957,7 @@ We can see that updating the slider in YasolR will change the current going out 
 
 This could even be tweaked further: ideally, the pink line should match the blue line.
 
-Here, the pink line triggers AFTER the blue line at 10%, which means that the voltage going to the LSA input is not high enough when teh duty cycle is low.
+Here, the pink line triggers AFTER the blue line at 10%, which means that the voltage going to the LSA input is not high enough when the duty cycle is low.
 The pink line triggers BEFORE the blue line at 90%, which means that the voltage going to the LSA input is too high when the duty cycle in YaSolR is at 90%.
 
 Note: using the `Dimmer Range Remapping` feature won't fix that: this is a calibration that has to be done on conversion board and or by adjusting the HDR-15-12 voltage.

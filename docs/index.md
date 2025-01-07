@@ -101,15 +101,17 @@ Example of supported dimmers:
 
 All the supported dimmer types:
 
-- LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (🚧)
-- LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (🚧)
-- LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073) (🚧)
-- LSA / LCTC Voltage Regulators + PWM->Analog
-- Robodyn 24A / 40A
-- SSR Random
-- SSR Sync (Zero-Cross) (🚧)
-- Triac / Thyristor
-
+- Zero-Cross Detection based:
+  - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
+  - Random Solid State Relay + ZCD
+  - Robodyn 24/40A
+  - Triac + ZCD
+- PWM based:
+  - LSA / LCTC Voltage Regulators + PWM->Analog (🚧)
+- DAC based:
+  - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (🚧)
+  - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (🚧)
+  - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073) (🚧)
 
 #### Bypass Relay (optional)
 
