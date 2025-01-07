@@ -6,6 +6,9 @@
  * CHANGELOG
  * 
  * - v1: Initial version
+ * - v2: Fix: Shelly Dimmer does not accept floats anymore (see here), which might create a max routing inaccuracy of 1% of the nominal load
+ * - v3: Updated PID parameters (see here and here to have more info about how to tune the PID controller)
+ * - v4: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. EXCESS_POWER_LIMIT can also be used to limit an output power to a specific value.
  * 
  * ======================================
  */

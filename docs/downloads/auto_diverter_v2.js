@@ -6,6 +6,7 @@
  * CHANGELOG
  * 
  * - v1: Initial version
+ * - v2: Fix: Shelly Dimmer does not accept floats anymore (see here), which might create a max routing inaccuracy of 1% of the nominal load
  * 
  * ======================================
  */
