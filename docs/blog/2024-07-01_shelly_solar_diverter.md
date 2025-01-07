@@ -69,6 +69,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V3](../downloads/auto_diverter_v3.js)**: Updated PID parameters ([see here](https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194) and [here](https://yasolr.carbou.me/manual#pid-controller-section) to have more info about how to tune the PID controller)
 
+- **[Shelly Solar Diverter Script V4](../downloads/auto_diverter_v4.js)**: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. `EXCESS_POWER_LIMIT` can also be used to limit an output power to a specific value.
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
@@ -174,32 +176,34 @@ const CONFIG = {
     // PID Proportional Gain
     KP: 0.3,
     // PID Integral Gain
-    KI: 0.3,
+    // Also try with 0.4, 0.5, 0.6
+    // See: https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
+    KI: 0.4,
     // PID Derivative Gain
     KD: 0.1,
     // Output Minimum (W)
-    OUT_MIN: -10000,
+    OUT_MIN: -300,
     // Output Maximum (W)
-    OUT_MAX: 10000,
+    OUT_MAX: 5000,
   },
   DIMMERS: {
     "192.168.125.98": {
       // Resistance (in Ohm) of the load connecter to the dimmer + voltage regulator
       // 0 will disable the dimmer
-      RESISTANCE: 24,
-      // Percentage of the remaining excess power that will be assigned to this dimmer
-      // The remaining percentage will be given to the next dimmers
-      RESERVED_EXCESS_PERCENT: 100,
+      RESISTANCE: 28.11,
+      // Maximum excess power to reserve to this load.
+      // The remaining power will be given to the next dimmers
+      EXCESS_POWER_LIMIT: 0,
       // Set whether the Shelly EM with this script will be used to control the bypass relay to force a heating
       // When set to true, if you activate remotely the bypass to force a heating, then the script will detect it and turn the dimmer off
-      BYPASS_CONTROLLED_BY_EM: true,
+      BYPASS_CONTROLLED_BY_EM: true
     },
-    "192.168.125.97": {
-      RESISTANCE: 0,
-      RESERVED_EXCESS_PERCENT: 100,
-      BYPASS_CONTROLLED_BY_EM: false,
-    },
-  },
+    // "192.168.125.99": {
+    //   RESISTANCE: 0,
+    //   EXCESS_POWER_LIMIT: 0,
+    //   BYPASS_CONTROLLED_BY_EM: false
+    // }
+  }
 };
 ```
 
@@ -221,24 +225,22 @@ Let's say you have 3 dimmers with this configuration:
 DIMMERS: {
   "192.168.125.93": {
     RESISTANCE: 53,
-    RESERVED_EXCESS_PERCENT: 50,
+    EXCESS_POWER_LIMIT: 200,
   },
   "192.168.125.94": {
     RESISTANCE: 53,
-    RESERVED_EXCESS_PERCENT: 25,
+    EXCESS_POWER_LIMIT: 200,
   },
   "192.168.125.95": {
     RESISTANCE: 53,
-    RESERVED_EXCESS_PERCENT: 100,
+    EXCESS_POWER_LIMIT: 0,
   }
 }
 ```
 
-When you'll have 3000W of excess:
-
-- the first one will take up to 50% of it (1500 W), but it will only take 1000 W because of the resistance. So 2000 W remains.
-- the second one 25% of the remaining (500 W)
-- the third one will take the remaining 1000 W
+- the first one will take up to 200W
+- the second one 200W (if some excess power is left)
+- the third one will take the remaining power (if any left)
 
 ### Start / Stop Automatic Divert
 
@@ -278,17 +280,17 @@ http://192.168.125.92/script/1/status
       "KP": 0.3,
       "KI": 0.3,
       "KD": 0.1,
-      "OUT_MIN": -10000,
+      "OUT_MIN": -300,
       "OUT_MAX": 10000
     },
     "DIMMERS": {
       "192.168.125.98": {
         "RESISTANCE": 24,
-        "RESERVED_EXCESS_PERCENT": 100
+        "EXCESS_POWER_LIMIT": 200
       },
       "192.168.125.97": {
         "RESISTANCE": 0,
-        "RESERVED_EXCESS_PERCENT": 100
+        "EXCESS_POWER_LIMIT": 0
       }
     }
   },
