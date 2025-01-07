@@ -50,7 +50,7 @@ A router can also schedule some forced heating of the water tank to ensure the w
 
 - **Unlimited dimmers (output)**
 - **PID Controller**
-- **Excess sharing amongst dimmers with percentages**
+- **Excess sharing amongst dimmers**
 - **Bypass (force heating)** and automatically turn the dimmer off
 - **Plus all the power of the Shelly ecosystem (rules, schedules, automations, etc)**
 
@@ -70,6 +70,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 - **[Shelly Solar Diverter Script V3](../downloads/auto_diverter_v3.js)**: Updated PID parameters ([see here](https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194) and [here](https://yasolr.carbou.me/manual#pid-controller-section) to have more info about how to tune the PID controller)
 
 - **[Shelly Solar Diverter Script V4](../downloads/auto_diverter_v4.js)**: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. `EXCESS_POWER_LIMIT` can also be used to limit an output power to a specific value.
+
+- **[Shelly Solar Diverter Script V5](../downloads/auto_diverter_v4.js)**: Introduced a LUT to more closely match the voltage and current sine wave when computing the dimmer duty cycle to apply to the LSA
 
 ## Hardware
 
@@ -131,7 +133,7 @@ Also, this central place allows to control the 1, 2 or more dimmers remotely.
 ### Shelly Dimmer Setup
 
 - Set static IP addresses
-- Use the min/max settings to remap the 0-100% to match the voltage regulator. In the case of the LSA and LCTC, I found that **I had to remap to 10%-80%.**
+- Use the min/max settings to remap the 0-100% to match the voltage regulator. In the case of the LSA and LCTC, I found that **I had to remap to 8%-75%.**
 
 ### Shelly Pro EM 50 Setup
 
