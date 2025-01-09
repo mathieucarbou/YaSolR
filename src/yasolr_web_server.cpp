@@ -17,8 +17,8 @@ extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_
 
 AsyncWebServer webServer(80);
 
-AuthenticationMiddleware authMiddleware;
-LoggingMiddleware loggingMiddleware;
+AsyncAuthenticationMiddleware authMiddleware;
+AsyncLoggingMiddleware loggingMiddleware;
 
 ESPDash dashboard(webServer, "/dashboard", false);
 Mycila::ESPConnect espConnect(webServer);
