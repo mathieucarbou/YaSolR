@@ -1145,10 +1145,12 @@ void YaSolR::Website::initCards() {
   _displayType.setDisplay(config.getBool(KEY_ENABLE_DISPLAY));
   _output1DimmerMapper.setDisplay(dimmer1Enabled);
   _output1PZEMSync.setDisplay(pzem1Enabled);
+  _output1DimmerType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_DIMMER));
   _output1RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
   _output1ResistanceInput.setDisplay(dimmer1Enabled);
   _output2DimmerMapper.setDisplay(dimmer2Enabled);
   _output2PZEMSync.setDisplay(pzem2Enabled);
+  _output2DimmerType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_DIMMER));
   _output2RelayType.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
   _output2ResistanceInput.setDisplay(dimmer2Enabled);
   _relay1Load.setDisplay(relay1Enabled);
