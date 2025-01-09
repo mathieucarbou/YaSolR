@@ -426,6 +426,8 @@ void yasolr_init_mqtt() {
       mqttPublishConfigTask->resume();
     });
 
+    subscribe();
+
     mqttConnectTask->setManager(unsafeTaskManager);
 
     haDiscoveryTask->setManager(unsafeTaskManager);
