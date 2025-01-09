@@ -32,4 +32,15 @@ void yasolr_init_system() {
 
   Mycila::TaskMonitor.addTask(coreTaskManager.getName());   // YaSolR
   Mycila::TaskMonitor.addTask(unsafeTaskManager.getName()); // YaSolR
+
+  // Mycila::TaskMonitor.addTask("arduino_events"); // used bt non controlable
+  // Mycila::TaskMonitor.addTask("https_ota_task"); // unused
+  // Mycila::TaskMonitor.addTask("i2c_slave_task");
+  // Mycila::TaskMonitor.addTask("loopTask"); // killed
+  // Mycila::TaskMonitor.addTask("msc_disk"); // unused
+  // Mycila::TaskMonitor.addTask("spp_tx"); // unused
+  // Mycila::TaskMonitor.addTask("toneTask"); // unused
+  // Mycila::TaskMonitor.addTask("uart_event_task"); // unused
+  // Mycila::TaskMonitor.addTask("usbd"); // unused
+  // Mycila::TaskMonitor.addTask("Zigbee_main"); // unused
 }
