@@ -75,6 +75,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V6](../downloads/auto_diverter_v6.js)**: Added `USE_POWER_LUT` config to switch between linear dimming and LUT based dimming. v6 includes both code from v4 and v5.
 
+- **[Shelly Solar Diverter Script V7](../downloads/auto_diverter_v7.js)**: Reworked the routing script to improve teh internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
@@ -135,7 +137,17 @@ Also, this central place allows to control the 1, 2 or more dimmers remotely.
 ### Shelly Dimmer Setup
 
 - Set static IP addresses
-- Use the min/max settings to remap the 0-100% to match the voltage regulator. In the case of the LSA and LCTC, I found that **I had to remap to 8%-75%.**
+- Set **Operation mode** to 1-10V
+- Set **Min brightness** on toggle" to 0
+- Use **Min/max brightness** to remap the 0-100% to match the voltage regulator. In the case of the LSA and LCTC, I found that **I had to remap to 7% - 85%.**
+
+**IMPORTANT**
+
+After calibration, you need to test the dimmer.
+- At 0% and 1%: you should see 0W sent to the resistance
+- At 1%, you should start seeing some watts sent to the resistance
+
+**This is very important to make sure that no load goes to the resistance at 1%!**
 
 ### Shelly Pro EM 50 Setup
 
@@ -157,9 +169,16 @@ Edit the `CONFIG` object and pay attention to the values, especially the resista
 ```javascript
 const CONFIG = {
   // Debug mode
-  DEBUG: 1,
+  DEBUG: 0,
   // Grid Power Read Interval (s)
   READ_INTERVAL_S: 1,
+  // grid semi-period in micro-seconds
+  SEMI_PERIOD: 10000,
+  // If set to true, the calculation of the dimmer duty cycle will be done based on a power matching LUT table which considers the voltage and current sine wave.
+  // This should be more precise than a linear dimming.
+  // You can try it and set it to false to compare the results, there is no harm in that!
+  USE_POWER_LUT: true,
+  // PID
   PID: {
     // Reverse
     REVERSE: false,
@@ -192,11 +211,12 @@ const CONFIG = {
     // Output Maximum (W)
     OUT_MAX: 5000,
   },
+  // DIMMER LIST
   DIMMERS: {
     "192.168.125.98": {
       // Resistance (in Ohm) of the load connecter to the dimmer + voltage regulator
       // 0 will disable the dimmer
-      RESISTANCE: 28.11,
+      RESISTANCE: 24.37,
       // Maximum excess power to reserve to this load.
       // The remaining power will be given to the next dimmers
       EXCESS_POWER_LIMIT: 0,
