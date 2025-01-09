@@ -144,6 +144,8 @@ Also, this central place allows to control the 1, 2 or more dimmers remotely.
 - Start the script
 - Activate `Run on startup`
 
+**The second clamp measuring the router output is optional! You can use it to measure the solar power if you want, it is not used by the script.**
+
 ## How to use
 
 ### Configuration
