@@ -178,6 +178,10 @@ const CONFIG = {
   // This should be more precise than a linear dimming.
   // You can try it and set it to false to compare the results, there is no harm in that!
   USE_POWER_LUT: true,
+  // If the dimmer is running at 0-1% for this duration, it will be turned off automatically.
+  // This duration should be long enough in order to not turn off the internal dimmer relay too often
+  // The value is in milliseconds, the default is 5 minutes.
+  DIMMER_TURN_OFF_DELAY: 5 * 60 * 1000,
   // PID
   PID: {
     // Reverse
@@ -206,9 +210,10 @@ const CONFIG = {
     KI: 0.4,
     // PID Derivative Gain
     KD: 0.1,
-    // Output Minimum (W)
+    // Output Minimum (W): should be below the SETPOINT value, like 300W below.
     OUT_MIN: -300,
-    // Output Maximum (W)
+    // Output Maximum (W): should be above the nominal power of the load.
+    // I set below, the the available power to divert will be limited to this value globally for all dimmers.
     OUT_MAX: 5000,
   },
   // DIMMER LIST
