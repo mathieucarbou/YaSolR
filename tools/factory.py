@@ -42,36 +42,38 @@ def generateFactooryImage(source, target, env):
     fs_image = env.subst("$BUILD_DIR/littlefs.bin")
 
     safeboot_offset = 0x10000
-    safeboot_image = ""
+    safeboot_image = env.GetProjectOption("custom_safeboot_file", "")
 
-    safeboot_project = env.GetProjectOption("custom_safeboot_dir", "")
-    if safeboot_project != "":
-        status(
-            "Building SafeBoot image for board %s from %s"
-            % (env.get("BOARD"), safeboot_project)
-        )
-        if not os.path.isdir(safeboot_project):
-            raise Exception("SafeBoot project not found: %s" % safeboot_project)
-        env.Execute(
-            "SAFEBOOT_BOARD=%s pio run -e safeboot -d %s" % (env.get("BOARD"), safeboot_project)
-        )
-        safeboot_image = join(safeboot_project, ".pio/build/safeboot/firmware.bin")
-        if not os.path.isfile(safeboot_image):
-            raise Exception("SafeBoot image not found: %s" % safeboot_image)
-
-    safeboot_url = env.GetProjectOption("custom_safeboot_url", "")
-    if safeboot_url != "":
-        safeboot_image = env.subst("$BUILD_DIR/safeboot.bin")
-        if not os.path.isfile(safeboot_image):
+    if safeboot_image == "":
+        safeboot_project = env.GetProjectOption("custom_safeboot_dir", "")
+        if safeboot_project != "":
             status(
-                "Downloading SafeBoot image from %s to %s"
-                % (safeboot_url, safeboot_image)
+                "Building SafeBoot image for board %s from %s"
+                % (env.get("BOARD"), safeboot_project)
             )
-            response = requests.get(safeboot_url)
-            if response.status_code != 200:
-                raise Exception("Download error: %d" % response.status_code)
-            with open(safeboot_image, "wb") as file:
-                file.write(response.content)
+            if not os.path.isdir(safeboot_project):
+                raise Exception("SafeBoot project not found: %s" % safeboot_project)
+            env.Execute(
+                "SAFEBOOT_BOARD=%s pio run -e safeboot -d %s" % (env.get("BOARD"), safeboot_project)
+            )
+            safeboot_image = join(safeboot_project, ".pio/build/safeboot/firmware.bin")
+            if not os.path.isfile(safeboot_image):
+                raise Exception("SafeBoot image not found: %s" % safeboot_image)
+
+    if safeboot_image == "":
+        safeboot_url = env.GetProjectOption("custom_safeboot_url", "")
+        if safeboot_url != "":
+            safeboot_image = env.subst("$BUILD_DIR/safeboot.bin")
+            if not os.path.isfile(safeboot_image):
+                status(
+                    "Downloading SafeBoot image from %s to %s"
+                    % (safeboot_url, safeboot_image)
+                )
+                response = requests.get(safeboot_url)
+                if response.status_code != 200:
+                    raise Exception("Download error: %d" % response.status_code)
+                with open(safeboot_image, "wb") as file:
+                    file.write(response.content)
 
     if fs_offset != 0:
         status("Building File System image")
@@ -121,10 +123,13 @@ def generateFactooryImage(source, target, env):
         status(f" -   {sect_adr} | {sect_file}")
         cmd += [sect_adr, sect_file]
 
-    if safeboot_image != "" and os.path.isfile(safeboot_image):
-        app_offset = 0xB0000
-        status(f" -  {hex(safeboot_offset)} | {safeboot_image}")
-        cmd += [hex(safeboot_offset), safeboot_image]
+    if safeboot_image != "":
+        if os.path.isfile(safeboot_image):
+            app_offset = 0xB0000
+            status(f" -  {hex(safeboot_offset)} | {safeboot_image}")
+            cmd += [hex(safeboot_offset), safeboot_image]
+        else:
+            raise Exception("SafeBoot image not found: %s" % safeboot_image)
 
     status(f" -  {hex(app_offset)} | {app_image}")
     cmd += [hex(app_offset), app_image]

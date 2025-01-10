@@ -13,7 +13,7 @@ def status(msg):
 
 def critical(msg):
     """Print critical message to stderr"""
-    sys.stderr.write("factory.py: ")
+    sys.stderr.write("data.py: ")
     sys.stderr.write(msg)
     sys.stderr.write("\n")
 
