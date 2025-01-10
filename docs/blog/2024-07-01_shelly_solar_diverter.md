@@ -29,6 +29,7 @@ _I've put the YaSolR project in pause for a few days to work on this very cool a
   - [Several dimmers](#several-dimmers)
   - [Excess sharing amongst dimmers](#excess-sharing-amongst-dimmers)
   - [Start / Stop Automatic Divert](#start--stop-automatic-divert)
+  - [Creating a Auto Divert Virtual Switch to control the script remotely](#creating-a-auto-divert-virtual-switch-to-control-the-script-remotely)
   - [Solar Diverter Status](#solar-diverter-status)
   - [PID Control and Tuning](#pid-control-and-tuning)
 - [Future Improvements](#future-improvements)
@@ -287,7 +288,35 @@ http://192.168.125.92/rpc/Script.Stop?id=1
 - `192.168.125.92` begin the Shelly EM 50 static IP address.
 - `1` being the script ID as seen in the Shelly interface
 
-![](../assets/img/screenshots/shelly_script_id.jpeg)
+[![](../assets/img/screenshots/shelly_script_id.jpeg) ](../assets/img/screenshots/shelly_script_id.jpeg)
+
+### Creating a Auto Divert Virtual Switch to control the script remotely
+
+It is possible to create a virtual switch called `Auto Divert` in the Shelly App to control the start / stop of teh script.
+
+- Activate the addons
+- Create a new virtual switch addon
+
+[![](../assets/img/screenshots/Shelly_Pro_EM_Addon.png) ](../assets/img/screenshots/Shelly_Pro_EM_Addon.png)
+
+- Then add actions to this addon
+
+[![](../assets/img/screenshots/Shelly_Pro_EM_Addon_AutoDivert.png) ](../assets/img/screenshots/Shelly_Pro_EM_Addon_AutoDivert.png)
+[![](../assets/img/screenshots/Shelly_Pro_EM_Addon_Action_Details.png) ](../assets/img/screenshots/Shelly_Pro_EM_Addon_Action_Details.png)
+
+- The actions can also be set in the actions section if needed
+
+[![](../assets/img/screenshots/Shelly_Pro_EM_Actions.png) ](../assets/img/screenshots/Shelly_Pro_EM_Actions.png)
+
+Once done, the virtual switch appears in green in the Shelly App and you can also see its definition in the Shelly App (the steps above can also be done from teh Shelly App).
+
+| [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) | [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) 
+
+If you have Home Assistant, it will automatically discover the new virtual switch and add it to the Shelly EM Device:
+
+[![](../assets/img/screenshots/Shelly_Pro_EM_Home_Assistant.png) ](../assets/img/screenshots/Shelly_Pro_EM_Home_Assistant.png)
+
+Here, Auto Divert can start and stop the divert script and Bypass Relay controls the dry contact relay of the EM to force a heating.
 
 ### Solar Diverter Status
 
