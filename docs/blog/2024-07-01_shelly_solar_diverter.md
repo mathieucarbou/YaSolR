@@ -146,7 +146,7 @@ Also, this central place allows to control the 1, 2 or more dimmers remotely.
 
 After calibration, you need to test the dimmer.
 - At 0% and 1%: you should see 0W sent to the resistance
-- At 1%, you should start seeing some watts sent to the resistance
+- At 2% and more, you should start seeing some watts sent to the resistance
 
 **This is very important to make sure that no load goes to the resistance at 1%!**
 
