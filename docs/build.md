@@ -485,6 +485,10 @@ Please note that the **JSY-MK-194G has an integrated ZCD** and can be used with 
 I often have some spare ZCD modules since I do some batch ordering on PCbWay.
 If you are interested in one, please have a look at the availabilities in the [Pro](pro#zero-cross-detection-modules) page.
 
+Also, **do not forget that ZCD circuits are already included in Robodyn (or other brands) dimmer boards!** So a good idea is to use such board but only for teh ZCd module.
+For example, on AliExpress, you can buy a cheap Robodyn dimmer board for 3 euros with an included ZCD circuit (https://fr.aliexpress.com/item/32802025086.html).
+This ZCD circuit won't be as good as a specialized one, but it can be enough for most cases.
+
 > ##### TIP
 >
 > If you have access to a 3D printer, you can also [print the DIN Rail mounts](https://www.thingiverse.com/thing:4185585).
