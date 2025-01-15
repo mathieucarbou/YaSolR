@@ -36,7 +36,7 @@ description: Build
   - [Temperature Sensors, LEDs, Buttons, Displays](#temperature-sensors-leds-buttons-displays)
   - [Mounting Accessories](#mounting-accessories)
 - [Default GPIO pinout per board](#default-gpio-pinout-per-board)
-- [Pictures of some routers](#pictures-of-some-routers)
+- [Wiring](#wiring)
 
 ## Build Examples
 
@@ -603,6 +603,6 @@ The website display the pinout configured, the pinout layout that is live at run
 
 [![](./assets/img/screenshots/gpio.jpeg)](./assets/img/screenshots/gpio.jpeg)
 
-## Pictures of some routers
+## Wiring
 
 > _TO BE COMPLETED_
