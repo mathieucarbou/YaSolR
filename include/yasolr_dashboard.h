@@ -129,15 +129,14 @@ namespace YaSolR {
         });
       }
 
-      void _textConfig(dash::TextInputCard<const char*>& card, const char* key) {
+      void _textConfig(dash::TextInputCard<std::string>& card, const char* key) {
         card.onChange([key, &card](const std::optional<std::string>& value) {
           if (value.has_value()) {
             config.set(key, value.value());
-            card.setValue(config.get(key));
           } else {
             config.unset(key);
-            card.removeValue();
           }
+          card.setValue(config.get(key));
           dashboard.refresh(card);
         });
       }
