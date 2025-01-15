@@ -78,6 +78,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V7](../downloads/auto_diverter_v7.js)**: Reworked the routing script to improve teh internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
 
+- **[Shelly Solar Diverter Script V8](../downloads/auto_diverter_v8.js)**: Set OUT_MIN to -1000W by default to avoid teh PID to trigger routing when the grid consumption drops near 0W in the morning for example if a load is turned off.
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
