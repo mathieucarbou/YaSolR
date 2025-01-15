@@ -1127,11 +1127,11 @@ void YaSolR::Website::initCards() {
   _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));
   _output1RelayType.setValue(config.get(KEY_OUTPUT1_RELAY_TYPE));
   _output1ResistanceInput.setValue(config.getFloat(KEY_OUTPUT1_RESISTANCE));
-  _output1ResistanceInput.setStatus(_output1ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
+  _output1ResistanceInput.setStatus(_output1ResistanceInput.value() > 0 ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
   _output2DimmerType.setValue(config.get(KEY_OUTPUT2_DIMMER_TYPE));
   _output2RelayType.setValue(config.get(KEY_OUTPUT2_RELAY_TYPE));
   _output2ResistanceInput.setValue(config.getFloat(KEY_OUTPUT2_RESISTANCE));
-  _output2ResistanceInput.setStatus(_output2ResistanceInput.value() ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
+  _output2ResistanceInput.setStatus(_output2ResistanceInput.value() > 0 ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
   _relay1Load.setValue(load1);
   _relay1Type.setValue(config.get(KEY_RELAY1_TYPE));
   _relay2Load.setValue(load2);

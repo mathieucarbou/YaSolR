@@ -193,8 +193,8 @@ void Mycila::Router::continueCalibration() {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
         RouterOutput::Metrics outputMetrics;
         _outputs[_calibrationOutputIndex]->getOutputMeasurements(outputMetrics);
-        float resistance = outputMetrics.resistance;
-        if (resistance == 0) {
+        float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
+        if (!resistance) {
           Router::Metrics routerMetrics;
           getRouterMeasurements(routerMetrics);
           resistance = routerMetrics.resistance;
@@ -214,8 +214,8 @@ void Mycila::Router::continueCalibration() {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
         RouterOutput::Metrics outputMetrics;
         _outputs[_calibrationOutputIndex]->getOutputMeasurements(outputMetrics);
-        float resistance = outputMetrics.resistance;
-        if (resistance == 0) {
+        float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
+        if (!resistance) {
           Router::Metrics routerMetrics;
           getRouterMeasurements(routerMetrics);
           resistance = routerMetrics.resistance;
