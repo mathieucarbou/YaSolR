@@ -366,7 +366,7 @@ When setting a static IP, the router will try to connect to the WiFi with the st
 
 > ##### IMPORTANT
 >
-> - MQTT must be restarted to apply the changes.
+> - The device must be restarted to apply the changes.
 >
 > - SSL/TLS is supported by default and you should not need to install any server certificate.
 >
