@@ -216,7 +216,7 @@ void yasolr_init_display() {
     });
 
     // refresh each 500ms if scrolling speed is 1 second, else 1 second
-    displayTask->setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
+    displayTask->setInterval(1000 * Mycila::TaskDuration::MILLISECONDS);
     displayTask->setManager(coreTaskManager);
     if (config.getBool(KEY_ENABLE_DEBUG))
       displayTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
