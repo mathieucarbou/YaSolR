@@ -193,8 +193,8 @@ function calculatePID(input) {
     print(scriptName, ":", "Input:", input, "W, Error:", error, "W, dError:", dError, "W");
   }
 
-  let peTerm = PID.KP * error;
-  let pmTerm = PID.KP * dInput;
+  let peTerm = PID.kp * error;
+  let pmTerm = PID.kp * dInput;
   switch (CONFIG.PID.P_MODE) {
     case "error":
       pmTerm = 0;
@@ -214,36 +214,36 @@ function calculatePID(input) {
   PID.pTerm = peTerm - pmTerm;
 
   // iTerm
-  PID.iTerm = PID.KI * error;
+  PID.iTerm = PID.ki * error;
 
   if (CONFIG.DEBUG > 1) {
     print(scriptName, ":", "pTerm:", PID.pTerm, "W, iTerm:", PID.iTerm, "W");
   }
 
   // anti-windup
-  if (CONFIG.PID.IC_MODE == "advanced" && PID.KI) {
-    const iTermOut = PID.pTerm + PID.KI * (PID.iTerm + error);
-    if ((iTermOut > PID.OUT_MAX && dError > 0) || (iTermOut < PID.OUT_MIN && dError < 0)) {
-      _iTerm = constrain(iTermOut, -PID.OUT_MAX, PID.OUT_MAX);
+  if (CONFIG.PID.IC_MODE == "advanced" && PID.ki) {
+    const iTermOut = PID.pTerm + PID.ki * (PID.iTerm + error);
+    if ((iTermOut > PID.out_max && dError > 0) || (iTermOut < PID.out_min && dError < 0)) {
+      _iTerm = constrain(iTermOut, -PID.out_max, PID.out_max);
     }
   }
 
   // integral sum
-  PID.sum = CONFIG.PID.IC_MODE == "off" ? (PID.sum + PID.iTerm - pmTerm) : constrain(PID.sum + PID.iTerm - pmTerm, PID.OUT_MIN, PID.OUT_MAX);
+  PID.sum = CONFIG.PID.IC_MODE == "off" ? (PID.sum + PID.iTerm - pmTerm) : constrain(PID.sum + PID.iTerm - pmTerm, PID.out_min, PID.out_max);
 
   // dTerm
   switch (CONFIG.PID.D_MODE) {
     case "error":
-      PID.dTerm = PID.KD * dError;
+      PID.dTerm = PID.kd * dError;
       break;
     case "input":
-      PID.dTerm = -PID.KD * dInput;
+      PID.dTerm = -PID.kd * dInput;
       break;
     default:
       return PID.output;
   }
 
-  PID.output = constrain(PID.sum + peTerm + PID.dTerm, PID.OUT_MIN, PID.OUT_MAX);
+  PID.output = constrain(PID.sum + peTerm + PID.dTerm, PID.out_min, PID.out_max);
 
   PID.input = input;
   PID.error = error;
@@ -358,35 +358,33 @@ function onSwitchGetStatus(result, errCode, errMessage, data) {
   callDimmers(throttleReadPower);
 }
 
-function divert() {
-  let mode = "";
-
+function divert(gridVoltage, gridPower) {
   if (Math.abs(DIVERT.gridPower - CONFIG.PID.SETPOINT) < CONFIG.PID.HIGH_LOW_SWITCH) {
-    mode = "LOW";
-    PID.KP = CONFIG.PID.LOW.KP;
-    PID.KI = CONFIG.PID.LOW.KI;
-    PID.KD = CONFIG.PID.LOW.KD;
-    PID.OUT_MIN = CONFIG.PID.LOW.OUT_MIN;
-    PID.OUT_MAX = CONFIG.PID.LOW.OUT_MAX;
+    PID.mode = "LOW";
+    PID.kp = CONFIG.PID.LOW.KP;
+    PID.ki = CONFIG.PID.LOW.KI;
+    PID.kd = CONFIG.PID.LOW.KD;
+    PID.out_min = CONFIG.PID.LOW.OUT_MIN;
+    PID.out_max = CONFIG.PID.LOW.OUT_MAX;
   } else {
-    mode = "HIGH";
-    PID.KP = CONFIG.PID.HIGH.KP;
-    PID.KI = CONFIG.PID.HIGH.KI;
-    PID.KD = CONFIG.PID.HIGH.KD;
-    PID.OUT_MIN = CONFIG.PID.HIGH.OUT_MIN;
-    PID.OUT_MAX = CONFIG.PID.HIGH.OUT_MAX;
+    PID.mode = "HIGH";
+    PID.kp = CONFIG.PID.HIGH.KP;
+    PID.ki = CONFIG.PID.HIGH.KI;
+    PID.kd = CONFIG.PID.HIGH.KD;
+    PID.out_min = CONFIG.PID.HIGH.OUT_MIN;
+    PID.out_max = CONFIG.PID.HIGH.OUT_MAX;
   }
 
-  let availablePowerToDivert = calculatePID(DIVERT.gridPower);
+  let availablePowerToDivert = calculatePID(gridPower);
 
   if (CONFIG.DEBUG > 0)
-    print(scriptName, ":", "Grid:", DIVERT.gridVoltage, "V,", DIVERT.gridPower, "W => To divert:", availablePowerToDivert, "W");
+    print(scriptName, ":", "Grid:", gridVoltage, "V,", gridPower, "W => To divert:", availablePowerToDivert, "W");
 
   for (let ip in DIVERT.dimmers) {
     const dimmer = DIVERT.dimmers[ip];
 
     // calculate powerToDivert
-    dimmer.maxPower = DIVERT.gridVoltage * DIVERT.gridVoltage / CONFIG.DIMMERS[ip].RESISTANCE;
+    dimmer.maxPower = gridVoltage * gridVoltage / CONFIG.DIMMERS[ip].RESISTANCE;
     dimmer.powerToDivert = constrain(availablePowerToDivert, 0, dimmer.maxPower);
     if (CONFIG.DIMMERS[ip].EXCESS_POWER_LIMIT > 0)
       dimmer.powerToDivert = constrain(dimmer.powerToDivert, 0, CONFIG.DIMMERS[ip].EXCESS_POWER_LIMIT);
@@ -397,16 +395,16 @@ function divert() {
 
     // derive abstract (not real measured) metrics
     dimmer.powerFactor = Math.sqrt(dimmer.dutyCycle);
-    dimmer.dimmedVoltage = dimmer.powerFactor * DIVERT.gridVoltage;
+    dimmer.dimmedVoltage = dimmer.powerFactor * gridVoltage;
     dimmer.current = dimmer.dimmedVoltage / CONFIG.DIMMERS[ip].RESISTANCE;
-    dimmer.apparentPower = dimmer.current * DIVERT.gridVoltage;
+    dimmer.apparentPower = dimmer.current * gridVoltage;
     dimmer.thdi = dimmer.dutyCycle === 0 ? 0 : Math.sqrt(1 / dimmer.dutyCycle - 1);
     dimmer.rpc = "pending";
 
     availablePowerToDivert -= dimmer.powerToDivert;
 
     if (CONFIG.DEBUG > 0)
-      print(scriptName, ":", "Dimmer:", ip, " => ", dimmer.powerToDivert, "W,", dimmer.dutyCycle, "%", "PID mode: ", mode);
+      print(scriptName, ":", "Dimmer:", ip, " => ", dimmer.powerToDivert, "W,", dimmer.dutyCycle, "%", "PID mode: ", PID.mode);
   }
 
   Shelly.call("Switch.GetStatus", { id: 0 }, onSwitchGetStatus);
@@ -420,9 +418,10 @@ function onEM1GetStatus(result, errCode, errMessage, data) {
   }
   if (CONFIG.DEBUG > 1)
     print(scriptName, ":", "EM1.GetStatus:", JSON.stringify(result));
+  // exposes grid power and voltage to HTTP API endpoint and other parts of this script
   DIVERT.gridVoltage = result.voltage;
   DIVERT.gridPower = result.act_power;
-  divert();
+  divert(result.voltage, result.act_power);
 }
 
 function readPower() {
