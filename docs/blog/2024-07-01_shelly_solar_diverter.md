@@ -80,6 +80,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V8](../downloads/auto_diverter_v8.js)**: Set OUT_MIN to -1000W by default to avoid teh PID to trigger routing when the grid consumption drops near 0W in the morning for example if a load is turned off.
 
+- **[Shelly Solar Diverter Script V9](../downloads/auto_diverter_v9.js)**: Implemented ability to switch PID parameters when the grid power is near the setpoint. This is useful to avoid the PID to overreact when the grid power is near the setpoint. The script will switch between HIGH and LOW PID parameters when the grid power is within a certain range of the setpoint. This is controlled by the HIGH_LOW_SWITCH parameter.
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)

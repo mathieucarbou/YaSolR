@@ -13,7 +13,7 @@
  * - v6: Added USE_POWER_LUT config to switch between linear dimming and LUT based dimming. v6 includes both code from v4 and v5.
  * - v7: Reworked the routing script to improve teh internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
  * - v8: Set OUT_MIN to -1000W by default to avoid teh PID to trigger routing when the grid consumption drops near 0W in the morning for example if a load is turned off.
- * - v9: in progress...
+ * - v9: Implemented ability to switch PID parameters when the grid power is near the setpoint. This is useful to avoid the PID to overreact when the grid power is near the setpoint. The script will switch between HIGH and LOW PID parameters when the grid power is within a certain range of the setpoint. This is controlled by the HIGH_LOW_SWITCH parameter.
  * ======================================
  */
 const scriptName = "auto_diverter";
@@ -58,19 +58,32 @@ const CONFIG = {
     IC_MODE: "advanced",
     // Target Grid Power (W)
     SETPOINT: 0,
-    // PID Proportional Gain
-    // Also try with 0.1, 0.2, 0.3
-    KP: 0.2,
-    // PID Integral Gain
-    // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
-    KI: 0.4,
-    // PID Derivative Gain = keep it low
-    KD: 0.05,
-    // Output Minimum (W): should be below the SETPOINT value, like 300W below.
-    OUT_MIN: -1000,
-    // Output Maximum (W): should be above the nominal power of the load.
-    // I set below, the the available power to divert will be limited to this value globally for all dimmers.
-    OUT_MAX: 5000,
+    // At which power to switch between HIGH and LOW PID parameters
+    HIGH_LOW_SWITCH: 200,
+    // PID Parameters to use when grid power is far away from setpoint
+    HIGH: {
+      // PID Proportional Gain
+      // Also try with 0.1, 0.2, 0.3
+      KP: 0.2,
+      // PID Integral Gain
+      // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
+      KI: 0.4,
+      // PID Derivative Gain = keep it low
+      KD: 0.05,
+      // Output Minimum (W): should be below the SETPOINT value, like 300W below.
+      OUT_MIN: -1000,
+      // Output Maximum (W): should be above the nominal power of the load.
+      // I set below, the the available power to divert will be limited to this value globally for all dimmers.
+      OUT_MAX: 5000,
+    },
+    // PID Parameters to use when grid power is near the setpoint
+    LOW: {
+      KP: 0.1,
+      KI: 0.2,
+      KD: 0.05,
+      OUT_MIN: -1000,
+      OUT_MAX: 5000,
+    }
   },
   // DIMMER LIST
   DIMMERS: {
@@ -180,8 +193,8 @@ function calculatePID(input) {
     print(scriptName, ":", "Input:", input, "W, Error:", error, "W, dError:", dError, "W");
   }
 
-  let peTerm = CONFIG.PID.KP * error;
-  let pmTerm = CONFIG.PID.KP * dInput;
+  let peTerm = PID.KP * error;
+  let pmTerm = PID.KP * dInput;
   switch (CONFIG.PID.P_MODE) {
     case "error":
       pmTerm = 0;
@@ -201,36 +214,36 @@ function calculatePID(input) {
   PID.pTerm = peTerm - pmTerm;
 
   // iTerm
-  PID.iTerm = CONFIG.PID.KI * error;
+  PID.iTerm = PID.KI * error;
 
   if (CONFIG.DEBUG > 1) {
     print(scriptName, ":", "pTerm:", PID.pTerm, "W, iTerm:", PID.iTerm, "W");
   }
 
   // anti-windup
-  if (CONFIG.PID.IC_MODE == "advanced" && CONFIG.PID.KI) {
-    const iTermOut = PID.pTerm + CONFIG.PID.KI * (PID.iTerm + error);
-    if ((iTermOut > CONFIG.PID.OUT_MAX && dError > 0) || (iTermOut < CONFIG.PID.OUT_MIN && dError < 0)) {
-      _iTerm = constrain(iTermOut, -CONFIG.PID.OUT_MAX, CONFIG.PID.OUT_MAX);
+  if (CONFIG.PID.IC_MODE == "advanced" && PID.KI) {
+    const iTermOut = PID.pTerm + PID.KI * (PID.iTerm + error);
+    if ((iTermOut > PID.OUT_MAX && dError > 0) || (iTermOut < PID.OUT_MIN && dError < 0)) {
+      _iTerm = constrain(iTermOut, -PID.OUT_MAX, PID.OUT_MAX);
     }
   }
 
   // integral sum
-  PID.sum = CONFIG.PID.IC_MODE == "off" ? (PID.sum + PID.iTerm - pmTerm) : constrain(PID.sum + PID.iTerm - pmTerm, CONFIG.PID.OUT_MIN, CONFIG.PID.OUT_MAX);
+  PID.sum = CONFIG.PID.IC_MODE == "off" ? (PID.sum + PID.iTerm - pmTerm) : constrain(PID.sum + PID.iTerm - pmTerm, PID.OUT_MIN, PID.OUT_MAX);
 
   // dTerm
   switch (CONFIG.PID.D_MODE) {
     case "error":
-      PID.dTerm = CONFIG.PID.KD * dError;
+      PID.dTerm = PID.KD * dError;
       break;
     case "input":
-      PID.dTerm = -CONFIG.PID.KD * dInput;
+      PID.dTerm = -PID.KD * dInput;
       break;
     default:
       return PID.output;
   }
 
-  PID.output = constrain(PID.sum + peTerm + PID.dTerm, CONFIG.PID.OUT_MIN, CONFIG.PID.OUT_MAX);
+  PID.output = constrain(PID.sum + peTerm + PID.dTerm, PID.OUT_MIN, PID.OUT_MAX);
 
   PID.input = input;
   PID.error = error;
@@ -346,6 +359,24 @@ function onSwitchGetStatus(result, errCode, errMessage, data) {
 }
 
 function divert() {
+  let mode = "";
+
+  if (Math.abs(DIVERT.gridPower - CONFIG.PID.SETPOINT) < CONFIG.PID.HIGH_LOW_SWITCH) {
+    mode = "LOW";
+    PID.KP = CONFIG.PID.LOW.KP;
+    PID.KI = CONFIG.PID.LOW.KI;
+    PID.KD = CONFIG.PID.LOW.KD;
+    PID.OUT_MIN = CONFIG.PID.LOW.OUT_MIN;
+    PID.OUT_MAX = CONFIG.PID.LOW.OUT_MAX;
+  } else {
+    mode = "HIGH";
+    PID.KP = CONFIG.PID.HIGH.KP;
+    PID.KI = CONFIG.PID.HIGH.KI;
+    PID.KD = CONFIG.PID.HIGH.KD;
+    PID.OUT_MIN = CONFIG.PID.HIGH.OUT_MIN;
+    PID.OUT_MAX = CONFIG.PID.HIGH.OUT_MAX;
+  }
+
   let availablePowerToDivert = calculatePID(DIVERT.gridPower);
 
   if (CONFIG.DEBUG > 0)
@@ -375,7 +406,7 @@ function divert() {
     availablePowerToDivert -= dimmer.powerToDivert;
 
     if (CONFIG.DEBUG > 0)
-      print(scriptName, ":", "Dimmer:", ip, " => ", dimmer.powerToDivert, "W,", dimmer.dutyCycle, "%");
+      print(scriptName, ":", "Dimmer:", ip, " => ", dimmer.powerToDivert, "W,", dimmer.dutyCycle, "%", "PID mode: ", mode);
   }
 
   Shelly.call("Switch.GetStatus", { id: 0 }, onSwitchGetStatus);
