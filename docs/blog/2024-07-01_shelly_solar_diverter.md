@@ -149,6 +149,7 @@ Also, this central place allows to control the 1, 2 or more dimmers remotely.
 **IMPORTANT**
 
 After calibration, you need to test the dimmer.
+
 - At 0% and 1%: you should see 0W sent to the resistance
 - At 2% and more, you should start seeing some watts sent to the resistance
 
@@ -235,7 +236,7 @@ const CONFIG = {
       KD: 0.05,
       OUT_MIN: -1000,
       OUT_MAX: 5000,
-    }
+    },
   },
   // DIMMER LIST
   DIMMERS: {
@@ -248,14 +249,14 @@ const CONFIG = {
       EXCESS_POWER_LIMIT: 0,
       // Set whether the Shelly EM with this script will be used to control the bypass relay to force a heating
       // When set to true, if you activate remotely the bypass to force a heating, then the script will detect it and turn the dimmer off
-      BYPASS_CONTROLLED_BY_EM: true
+      BYPASS_CONTROLLED_BY_EM: true,
     },
     // "192.168.125.99": {
     //   RESISTANCE: 0,
     //   EXCESS_POWER_LIMIT: 0,
     //   BYPASS_CONTROLLED_BY_EM: false
     // }
-  }
+  },
 };
 ```
 
@@ -330,7 +331,7 @@ It is possible to create a virtual switch called `Auto Divert` in the Shelly App
 
 Once done, the virtual switch appears in green in the Shelly App and you can also see its definition in the Shelly App (the steps above can also be done from teh Shelly App).
 
-| [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) | [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) 
+| [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) | [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png)
 
 If you have Home Assistant, it will automatically discover the new virtual switch and add it to the Shelly EM Device:
 
@@ -349,28 +350,38 @@ http://192.168.125.92/script/1/status
 ```json
 {
   "config": {
-    "DEBUG": 2,
+    "DEBUG": 1,
     "READ_INTERVAL_S": 1,
+    "SEMI_PERIOD": 10000,
+    "USE_POWER_LUT": true,
+    "DIMMER_TURN_OFF_DELAY": 300000,
     "PID": {
       "REVERSE": false,
       "P_MODE": "input",
       "D_MODE": "error",
       "IC_MODE": "advanced",
       "SETPOINT": 0,
-      "KP": 0.3,
-      "KI": 0.3,
-      "KD": 0.1,
-      "OUT_MIN": -300,
-      "OUT_MAX": 10000
+      "HIGH_LOW_SWITCH": 200,
+      "HIGH": {
+        "KP": 0.2,
+        "KI": 0.4,
+        "KD": 0.05,
+        "OUT_MIN": -1000,
+        "OUT_MAX": 5000
+      },
+      "LOW": {
+        "KP": 0.1,
+        "KI": 0.2,
+        "KD": 0.05,
+        "OUT_MIN": -1000,
+        "OUT_MAX": 5000
+      }
     },
     "DIMMERS": {
       "192.168.125.98": {
-        "RESISTANCE": 24,
-        "EXCESS_POWER_LIMIT": 200
-      },
-      "192.168.125.97": {
-        "RESISTANCE": 0,
-        "EXCESS_POWER_LIMIT": 0
+        "RESISTANCE": 24.37,
+        "EXCESS_POWER_LIMIT": 0,
+        "BYPASS_CONTROLLED_BY_EM": true
       }
     }
   },
@@ -381,23 +392,33 @@ http://192.168.125.92/script/1/status
     "pTerm": 0,
     "iTerm": 0,
     "dTerm": 0,
-    "sum": 0
+    "sum": 0,
+    "mode": "LOW",
+    "kp": 0.1,
+    "ki": 0.2,
+    "kd": 0.05,
+    "out_min": -1000,
+    "out_max": 5000
   },
   "divert": {
-    "lastTime": 1720281498691.629,
+    "lastTime": 1737027370748.083,
     "dimmers": {
       "192.168.125.98": {
-        "divertPower": 0,
-        "maximumPower": 2263.98374999999,
+        "powerToDivert": 0,
+        "maxPower": 2246.86089454247,
         "dutyCycle": 0,
+        "firingDelay": 10000,
         "powerFactor": 0,
         "dimmedVoltage": 0,
         "current": 0,
         "apparentPower": 0,
         "thdi": 0,
-        "rpc": "success"
+        "rpc": "pending",
+        "lastActivation": 0
       }
-    }
+    },
+    "gridVoltage": 234,
+    "gridPower": 0
   }
 }
 ```
