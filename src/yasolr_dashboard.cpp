@@ -14,7 +14,7 @@
 #endif
 
 #ifdef APP_MODEL_PRO
-static const ChartSize chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
+static const dash::Widget::Size chartSize = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
 
 // tabs icons:
 // https://en.wikipedia.org/wiki/List_of_Unicode_characters#Miscellaneous_Symbols
