@@ -110,13 +110,17 @@ namespace YaSolR {
 
       void _passwordConfig(dash::PasswordCard& card, const char* key) {
         card.onChange([key, &card, this](const std::optional<const char*>& value) {
-          if (value.has_value()) {
-            config.set(key, value.value());
-            card.setValue(value.value()); // will be replaced by stars
-          } else {
-            config.unset(key);
-            card.removeValue();
-          }
+          config.set(key, value.value_or(""));
+          card.setValue(config.get(key));
+          dashboard.refresh(card);
+        });
+      }
+
+      void _textConfig(dash::TextInputCard<const char*>& card, const char* key) {
+        card.onChange([key, &card](const std::optional<const char*>& value) {
+          config.set(key, value.value_or(""));
+          card.setValue(""); // force refresh of pointer
+          card.setValue(config.get(key));
           dashboard.refresh(card);
         });
       }
@@ -124,18 +128,6 @@ namespace YaSolR {
       void _textConfig(dash::DropdownCard<const char*>& card, const char* key) {
         card.onChange([key, &card](const char* value) {
           config.set(key, value);
-          card.setValue(config.get(key));
-          dashboard.refresh(card);
-        });
-      }
-
-      void _textConfig(dash::TextInputCard<std::string>& card, const char* key) {
-        card.onChange([key, &card](const std::optional<std::string>& value) {
-          if (value.has_value()) {
-            config.set(key, value.value());
-          } else {
-            config.unset(key);
-          }
           card.setValue(config.get(key));
           dashboard.refresh(card);
         });
