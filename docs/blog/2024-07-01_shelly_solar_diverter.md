@@ -188,6 +188,9 @@ const CONFIG = {
   // The value is in milliseconds, the default is 5 minutes.
   DIMMER_TURN_OFF_DELAY: 5 * 60 * 1000,
   // PID
+  // More information for tuning:
+  // - https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
+  // - https://yasolr.carbou.me/manual#pid-controller-section
   PID: {
     // Reverse
     REVERSE: false,
@@ -207,19 +210,32 @@ const CONFIG = {
     IC_MODE: "advanced",
     // Target Grid Power (W)
     SETPOINT: 0,
-    // PID Proportional Gain
-    KP: 0.3,
-    // PID Integral Gain
-    // Also try with 0.4, 0.5, 0.6
-    // See: https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
-    KI: 0.4,
-    // PID Derivative Gain
-    KD: 0.1,
-    // Output Minimum (W): should be below the SETPOINT value, like 300W below.
-    OUT_MIN: -300,
-    // Output Maximum (W): should be above the nominal power of the load.
-    // I set below, the the available power to divert will be limited to this value globally for all dimmers.
-    OUT_MAX: 5000,
+    // At which power to switch between HIGH and LOW PID parameters
+    HIGH_LOW_SWITCH: 200,
+    // PID Parameters to use when grid power is far away from setpoint
+    HIGH: {
+      // PID Proportional Gain
+      // Also try with 0.1, 0.2, 0.3
+      KP: 0.2,
+      // PID Integral Gain
+      // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
+      KI: 0.4,
+      // PID Derivative Gain = keep it low
+      KD: 0.05,
+      // Output Minimum (W): should be below the SETPOINT value, like 300W below.
+      OUT_MIN: -1000,
+      // Output Maximum (W): should be above the nominal power of the load.
+      // I set below, the the available power to divert will be limited to this value globally for all dimmers.
+      OUT_MAX: 5000,
+    },
+    // PID Parameters to use when grid power is near the setpoint
+    LOW: {
+      KP: 0.1,
+      KI: 0.2,
+      KD: 0.05,
+      OUT_MIN: -1000,
+      OUT_MAX: 5000,
+    }
   },
   // DIMMER LIST
   DIMMERS: {
