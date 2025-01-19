@@ -32,8 +32,8 @@ Mycila::Task dashboardInitTask("Init Dashboard", Mycila::TaskType::ONCE, [](void
 });
 
 Mycila::Task dashboardUpdateTask("Dashboard", [](void* params) {
-  if (website.pidCharts())
-    website.updatePID();
+  if (website.realTimePIDEnabled())
+    website.updatePIDCharts();
   website.updateCards();
   website.updateCharts();
   dashboard.sendUpdates();

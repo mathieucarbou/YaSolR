@@ -162,6 +162,10 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
     return 0;
   }
 
+  if (isnan(config.calibratedResistance) || config.calibratedResistance <= 0) {
+    return 0;
+  }
+
   // maximum power of the load based on the calibrated resistance value
   const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
 

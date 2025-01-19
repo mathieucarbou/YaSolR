@@ -243,7 +243,7 @@ void yasolr_divert() {
 
   if (voltage.has_value() && grid.getPower().isPresent()) {
     router.divert(voltage.value(), grid.getPower().get());
-    if (website.pidCharts()) {
+    if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }
   }

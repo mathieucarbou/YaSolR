@@ -43,7 +43,7 @@ namespace Mycila {
       } Metrics;
 
       typedef struct {
-          float calibratedResistance = 0;
+          float calibratedResistance = NAN;
           bool autoDimmer = false;
           uint8_t dimmerTempLimit = 0;
           bool autoBypass = false;

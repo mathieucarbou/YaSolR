@@ -16,9 +16,9 @@ namespace YaSolR {
       void initCards();
       void updateCards();
       void updateCharts();
-      void updatePID();
-      void resetPID();
-      bool pidCharts() const;
+      void updatePIDCharts();
+      void resetPIDCharts();
+      bool realTimePIDEnabled() const;
 
     private:
       void _boolConfig(dash::SwitchCard& card, const char* key) {
@@ -86,6 +86,19 @@ namespace YaSolR {
         });
       }
 
+      template <uint8_t Precision>
+      void _numConfig(dash::TextInputCard<float, Precision>& card, const char* key) {
+        card.onChange([key, &card](const std::optional<float>& value) {
+          if (value.has_value()) {
+            config.set(key, dash::to_string<float, Precision>(value.value()));
+          } else {
+            config.unset(key);
+          }
+          card.setValue(config.getFloat(key));
+          dashboard.refresh(card);
+        });
+      }
+
       template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
       void _numConfig(dash::DropdownCard<T>& card, const char* key) {
         card.onChange([key, &card](const T& value) {
@@ -95,15 +108,28 @@ namespace YaSolR {
         });
       }
 
-      void _pinConfig(dash::FeedbackTextInputCard<int32_t>& card, const char* key) {
-        card.onChange([key, &card, this](const std::optional<int32_t> value) {
+      template <uint8_t Precision>
+      void _numConfig(dash::FeedbackTextInputCard<float, Precision>& card, const char* key) {
+        card.onChange([key, &card](const std::optional<float>& value) {
+          if (value.has_value()) {
+            config.set(key, dash::to_string<float, Precision>(value.value()));
+          } else {
+            config.unset(key);
+          }
+          card.setValue(config.getFloat(key));
+          dashboard.refresh(card);
+        });
+      }
+
+      template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
+      void _numConfig(dash::FeedbackTextInputCard<T>& card, const char* key) {
+        card.onChange([key, &card, this](const std::optional<T> value) {
           if (value.has_value()) {
             config.set(key, std::to_string(value.value()));
           } else {
             config.unset(key);
           }
           card.setValue(config.getInt(key));
-          initCards();
           dashboard.refresh(card);
         });
       }
@@ -129,6 +155,15 @@ namespace YaSolR {
         card.onChange([key, &card](const char* value) {
           config.set(key, value);
           card.setValue(config.get(key));
+          dashboard.refresh(card);
+        });
+      }
+
+      void _rangeConfig(dash::RangeSliderCard<uint8_t>& card, const char* keyMin, const char* keyMax) {
+        card.onChange([keyMin, keyMax, &card](const dash::Range<uint8_t>& range) {
+          config.set(keyMin, std::to_string(range.low()));
+          config.set(keyMax, std::to_string(range.high()));
+          card.setValue({static_cast<uint8_t>(config.getInt(keyMin)), static_cast<uint8_t>(config.getInt(keyMax))});
           dashboard.refresh(card);
         });
       }
