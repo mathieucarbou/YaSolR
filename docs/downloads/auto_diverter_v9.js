@@ -38,7 +38,7 @@ const CONFIG = {
   // PID
   // More information for tuning:
   // - https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
-  // - https://yasolr.carbou.me/manual#pid-controller-section
+  // - https://yasolr.carbou.me/manual#pid
   PID: {
     // Reverse
     REVERSE: false,

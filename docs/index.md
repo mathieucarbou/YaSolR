@@ -15,7 +15,7 @@ It supports most hardware used in routers like:
 
 If you already have a Solar Router at home based on ESP32, built by yourself or someone else, there is a good chance that YaSolR will be compatible.
 
-| [![](./assets/img/screenshots/overview.jpeg)](./assets/img/screenshots/overview.jpeg) | [![](./assets/img/screenshots/output1.jpeg)](./assets/img/screenshots/output1.jpeg) |
+| [![](./assets/img/screenshots/app-overview.jpeg)](./assets/img/screenshots/app-overview.jpeg) | [![](./assets/img/screenshots/app-output.jpeg)](./assets/img/screenshots/app-output.jpeg) |
 
 YaSolR **is a software** that will run on your Solar Router.
 

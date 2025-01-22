@@ -68,7 +68,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V2](../downloads/auto_diverter_v2.js)**: Fix: Shelly Dimmer does not accept floats anymore ([see here](https://forum-photovoltaique.fr/viewtopic.php?p=794582#p794582)), which might create a max routing inaccuracy of 1% of the nominal load
 
-- **[Shelly Solar Diverter Script V3](../downloads/auto_diverter_v3.js)**: Updated PID parameters ([see here](https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194) and [here](https://yasolr.carbou.me/manual#pid-controller-section) to have more info about how to tune the PID controller)
+- **[Shelly Solar Diverter Script V3](../downloads/auto_diverter_v3.js)**: Updated PID parameters ([see here](https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194) and [here](https://yasolr.carbou.me/manual#pid) to have more info about how to tune the PID controller)
 
 - **[Shelly Solar Diverter Script V4](../downloads/auto_diverter_v4.js)**: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. `EXCESS_POWER_LIMIT` can also be used to limit an output power to a specific value.
 
@@ -191,7 +191,7 @@ const CONFIG = {
   // PID
   // More information for tuning:
   // - https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
-  // - https://yasolr.carbou.me/manual#pid-controller-section
+  // - https://yasolr.carbou.me/manual#pid
   PID: {
     // Reverse
     REVERSE: false,
@@ -436,7 +436,7 @@ You may need to use Home Assistant or Jeedom depending on what you need to do be
 
 The script uses a complex PID controller that can be tuned to really obtain a very good routing precision.
 The algorithm used and default parameters are the same as in the YaSolr project.
-You will find a lot of information in the [YaSolR manual](/manual#pid-controller-section).
+You will find a lot of information in the [YaSolR manual](/manual#pid).
 
 ## Future Improvements
 
