@@ -15,8 +15,8 @@ void yasolr_init_logging() {
     logger.setLevel(ARDUHAL_LOG_LEVEL_DEBUG);
     esp_log_level_set("*", static_cast<esp_log_level_t>(ARDUHAL_LOG_LEVEL_DEBUG));
 
-#ifdef APP_MODEL_PRO
     webSerial = new WebSerial();
+#ifdef APP_MODEL_PRO
     webSerial->setID(Mycila::AppInfo.firmware.c_str());
     webSerial->setTitle((Mycila::AppInfo.name + " Web Console").c_str());
     webSerial->setInput(false);
