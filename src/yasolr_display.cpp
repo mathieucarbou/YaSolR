@@ -114,14 +114,14 @@ void yasolr_init_display() {
             break;
           }
           case 5: {
-            display->home.printf("Grid   P: %9d W", static_cast<int>(round(grid.getPower().orElse(0))));
+            display->home.printf("Grid   P: %9d W", static_cast<int>(std::round(grid.getPower().orElse(0))));
             wrote = true;
             break;
           }
           case 6: {
             Mycila::Router::Metrics routerMetrics;
             router.getRouterMeasurements(routerMetrics);
-            display->home.printf("Router P: %9d W", static_cast<int>(round(routerMetrics.power)));
+            display->home.printf("Router P: %9d W", static_cast<int>(std::round(routerMetrics.power)));
             wrote = true;
             break;
           }
@@ -143,7 +143,7 @@ void yasolr_init_display() {
           }
           case 9: {
             if (output1 && output1->isDimmerEnabled()) {
-              display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(round(output1->getDimmerDutyCycleLive() * 100)));
+              display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(std::round(output1->getDimmerDutyCycleLive() * 100.0f)));
               wrote = true;
             }
             break;
@@ -166,7 +166,7 @@ void yasolr_init_display() {
           }
           case 12: {
             if (output2 && output2->isDimmerEnabled()) {
-              display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(round(output2->getDimmerDutyCycleLive() * 100)));
+              display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(std::round(output2->getDimmerDutyCycleLive() * 100.0f)));
               wrote = true;
             }
             break;

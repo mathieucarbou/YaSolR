@@ -151,15 +151,15 @@ void yasolr_init_config() {
 
     } else if (key == KEY_OUTPUT1_DIMMER_MIN) {
       if (output1)
-        output1->setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
+        output1->setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
 
     } else if (key == KEY_OUTPUT1_DIMMER_MAX) {
       if (output1)
-        output1->setDimmerDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
+        output1->setDimmerDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
 
     } else if (key == KEY_OUTPUT1_DIMMER_LIMIT) {
       if (output1)
-        output1->setDimmerDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
+        output1->setDimmerDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
 
     } else if (key == KEY_OUTPUT1_DIMMER_TEMP_LIMITER) {
       if (output1)
@@ -205,15 +205,15 @@ void yasolr_init_config() {
 
     } else if (key == KEY_OUTPUT2_DIMMER_MIN) {
       if (output2)
-        output2->setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
+        output2->setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
 
     } else if (key == KEY_OUTPUT2_DIMMER_MAX) {
       if (output2)
-        output2->setDimmerDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
+        output2->setDimmerDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
 
     } else if (key == KEY_OUTPUT2_DIMMER_LIMIT) {
       if (output2)
-        output2->setDimmerDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
+        output2->setDimmerDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
 
     } else if (key == KEY_OUTPUT2_DIMMER_TEMP_LIMITER) {
       if (output2)

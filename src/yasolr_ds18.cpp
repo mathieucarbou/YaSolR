@@ -17,7 +17,7 @@ void yasolr_init_ds18() {
     assert(!ds18Sys);
 
     ds18Sys = new Mycila::DS18();
-    ds18Sys->begin(config.getLong(KEY_PIN_ROUTER_DS18));
+    ds18Sys->begin(config.getLong(KEY_PIN_ROUTER_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
 
     if (ds18Sys->isEnabled()) {
       count++;
@@ -40,7 +40,7 @@ void yasolr_init_ds18() {
     assert(!ds18O1);
 
     ds18O1 = new Mycila::DS18();
-    ds18O1->begin(config.getLong(KEY_PIN_OUTPUT1_DS18));
+    ds18O1->begin(config.getLong(KEY_PIN_OUTPUT1_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
 
     if (ds18O1->isEnabled()) {
       count++;
@@ -71,7 +71,7 @@ void yasolr_init_ds18() {
     assert(!ds18O2);
 
     ds18O2 = new Mycila::DS18();
-    ds18O2->begin(config.getLong(KEY_PIN_OUTPUT2_DS18));
+    ds18O2->begin(config.getLong(KEY_PIN_OUTPUT2_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
 
     if (ds18O2->isEnabled()) {
       count++;

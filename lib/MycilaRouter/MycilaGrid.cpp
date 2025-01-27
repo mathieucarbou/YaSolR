@@ -19,12 +19,12 @@ bool Mycila::Grid::updatePower() {
     update = _localMetrics.get().power;
   }
 
-  if (isnan(update) && _power.neverUpdated()) {
+  if (std::isnan(update) && _power.neverUpdated()) {
     return false;
   }
 
   // all became unavailable ?
-  if (isnan(update)) {
+  if (std::isnan(update)) {
     _power.reset();
     return true;
   }
@@ -175,21 +175,21 @@ void Mycila::Grid::toJson(const JsonObject& root) const {
 }
 
 void Mycila::Grid::toJson(const JsonObject& dest, const Metrics& metrics) {
-  if (!isnanf(metrics.apparentPower))
+  if (!std::isnan(metrics.apparentPower))
     dest["apparent_power"] = metrics.apparentPower;
-  if (!isnanf(metrics.current))
+  if (!std::isnan(metrics.current))
     dest["current"] = metrics.current;
-  if (!isnanf(metrics.energy))
+  if (!std::isnan(metrics.energy))
     dest["energy"] = metrics.energy;
-  if (!isnanf(metrics.energyReturned))
+  if (!std::isnan(metrics.energyReturned))
     dest["energy_returned"] = metrics.energyReturned;
-  if (!isnanf(metrics.frequency))
+  if (!std::isnan(metrics.frequency))
     dest["frequency"] = metrics.frequency;
-  if (!isnanf(metrics.power))
+  if (!std::isnan(metrics.power))
     dest["power"] = metrics.power;
-  if (!isnanf(metrics.powerFactor))
+  if (!std::isnan(metrics.powerFactor))
     dest["power_factor"] = metrics.powerFactor;
-  if (!isnanf(metrics.voltage))
+  if (!std::isnan(metrics.voltage))
     dest["voltage"] = metrics.voltage;
 }
 #endif

@@ -56,7 +56,7 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   root["enabled"] = isDimmerOnline();
   root["state"] = getStateName();
   float t = _temperature.orElse(NAN);
-  if (!isnanf(t)) {
+  if (!std::isnan(t)) {
     root["temperature"] = t;
   }
 
@@ -83,23 +83,23 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
 }
 
 void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics) {
-  if (!isnanf(metrics.apparentPower))
+  if (!std::isnan(metrics.apparentPower))
     dest["apparent_power"] = metrics.apparentPower;
-  if (!isnanf(metrics.current))
+  if (!std::isnan(metrics.current))
     dest["current"] = metrics.current;
-  if (!isnanf(metrics.dimmedVoltage))
+  if (!std::isnan(metrics.dimmedVoltage))
     dest["energy"] = metrics.energy;
-  if (!isnanf(metrics.power))
+  if (!std::isnan(metrics.power))
     dest["power"] = metrics.power;
-  if (!isnanf(metrics.powerFactor))
+  if (!std::isnan(metrics.powerFactor))
     dest["power_factor"] = metrics.powerFactor;
-  if (!isnanf(metrics.resistance))
+  if (!std::isnan(metrics.resistance))
     dest["resistance"] = metrics.resistance;
-  if (!isnanf(metrics.thdi))
+  if (!std::isnan(metrics.thdi))
     dest["thdi"] = metrics.thdi;
-  if (!isnanf(metrics.voltage))
+  if (!std::isnan(metrics.voltage))
     dest["voltage"] = metrics.voltage;
-  if (!isnanf(metrics.dimmedVoltage))
+  if (!std::isnan(metrics.dimmedVoltage))
     dest["voltage_dimmed"] = metrics.dimmedVoltage;
 }
 #endif
@@ -162,7 +162,7 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
     return 0;
   }
 
-  if (isnan(config.calibratedResistance) || config.calibratedResistance <= 0) {
+  if (std::isnan(config.calibratedResistance) || config.calibratedResistance <= 0) {
     return 0;
   }
 
@@ -313,11 +313,11 @@ void Mycila::RouterOutput::getOutputMetrics(Metrics& metrics, float gridVoltage)
   const float dutyCycle = getDimmerDutyCycleLive();
   const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
   metrics.power = dutyCycle * maxPower;
-  metrics.powerFactor = sqrt(dutyCycle);
+  metrics.powerFactor = std::sqrt(dutyCycle);
   metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
   metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
   metrics.apparentPower = metrics.current * metrics.voltage;
-  metrics.thdi = dutyCycle == 0 ? 0 : sqrt(1 / dutyCycle - 1);
+  metrics.thdi = dutyCycle == 0 ? 0 : std::sqrt(1 / dutyCycle - 1);
 }
 
 bool Mycila::RouterOutput::getOutputMeasurements(Metrics& metrics) const {

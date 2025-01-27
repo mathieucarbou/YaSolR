@@ -175,9 +175,9 @@ void initOutput1(uint16_t semiPeriod) {
     output1 = new Mycila::RouterOutput("output1", *dimmer, bypassRelay);
 
     dimmer->setSemiPeriod(semiPeriod);
-    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100);
-    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100);
-    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100);
+    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
+    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
+    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
 
     output1->config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
     output1->config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -211,9 +211,9 @@ void initOutput2(uint16_t semiPeriod) {
     output2 = new Mycila::RouterOutput("output2", *dimmer, bypassRelay);
 
     dimmer->setSemiPeriod(semiPeriod);
-    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100);
-    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100);
-    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100);
+    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
+    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
+    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
 
     output2->config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
     output2->config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
@@ -270,7 +270,7 @@ void yasolr_init_router() {
   // Do we have a user defined frequency?
 
   const float frequency = config.getFloat(KEY_GRID_FREQUENCY);
-  const uint16_t semiPeriod = frequency ? 1000000 / 2 / frequency : 0;
+  const uint16_t semiPeriod = frequency ? 500000.0f / frequency : 0;
 
   initOutput1(semiPeriod);
   initOutput2(semiPeriod);
@@ -304,7 +304,7 @@ void yasolr_init_router() {
         if (pulseAnalyzer->isOnline()) {
           if (!Thyristor::getSemiPeriod() || (zcDimmer1 && !zcDimmer1->getSemiPeriod()) || (zcDimmer2 && !zcDimmer2->getSemiPeriod())) {
             const float frequency = yasolr_frequency();
-            const uint16_t semiPeriod = frequency ? 1000000 / 2 / frequency : 0;
+            const uint16_t semiPeriod = frequency ? 500000.0f / frequency : 0;
 
             if (semiPeriod) {
               logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);

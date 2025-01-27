@@ -22,7 +22,7 @@ extern Mycila::Logger logger;
   // in percentage
   // => 50W for a tri-phase 3000W resistance (1000W per phase)
   // => 35W for a tri-phase 2100W resistance (700W per phase)
-  #define MYCILA_RELAY_TOLERANCE 0.05
+  #define MYCILA_RELAY_TOLERANCE 0.05f
 #endif
 
 #define TAG "RELAY"

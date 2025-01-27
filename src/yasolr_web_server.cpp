@@ -393,7 +393,7 @@ void rest_api() {
   webServer
     .on("/api/router/output1/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (output1 && request->hasParam("duty_cycle", true)) {
-        output1->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
+        output1->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100.0f);
         request->send(200);
       } else {
         request->send(400);
@@ -403,7 +403,7 @@ void rest_api() {
   webServer
     .on("/api/router/output2/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
       if (output2 && request->hasParam("duty_cycle", true)) {
-        output2->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100);
+        output2->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100.0f);
         request->send(200);
       } else {
         request->send(400);
@@ -455,11 +455,11 @@ void rest_api() {
         root["relay2"] = YASOLR_STATE(relay2->isOn());
       if (ds18Sys) {
         float t = ds18Sys->getTemperature().value_or(NAN);
-        if (!isnanf(t))
+        if (!std::isnan(t))
           root["temperature"] = t;
       }
       float virtual_grid_power = grid.getPower().orElse(NAN) - routerMeasurements.power;
-      if (!isnanf(virtual_grid_power))
+      if (!std::isnan(virtual_grid_power))
         root["virtual_grid_power"] = virtual_grid_power;
 
       Mycila::Router::toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
@@ -469,9 +469,9 @@ void rest_api() {
         json["state"] = output->getStateName();
         json["bypass"] = YASOLR_STATE(output->isBypassOn());
         json["dimmer"] = YASOLR_STATE(output->isDimmerOn());
-        json["duty_cycle"] = output->getDimmerDutyCycle() * 100;
+        json["duty_cycle"] = output->getDimmerDutyCycle() * 100.0f;
         float t = output->temperature().orElse(NAN);
-        if (!isnanf(t)) {
+        if (!std::isnan(t)) {
           json["temperature"] = t;
         }
 

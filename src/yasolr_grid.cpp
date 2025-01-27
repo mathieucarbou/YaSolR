@@ -7,18 +7,18 @@
 Mycila::Grid grid;
 
 float yasolr_frequency() {
-  float frequency = round(grid.getFrequency().value_or(NAN));
+  float frequency = std::round(grid.getFrequency().value_or(NAN));
   if (frequency > 0)
     return frequency;
 
   if (pzemO1) {
-    frequency = round(pzemO1->data.frequency);
+    frequency = std::round(pzemO1->data.frequency);
     if (frequency > 0)
       return frequency;
   }
 
   if (pzemO2) {
-    frequency = round(pzemO2->data.frequency);
+    frequency = std::round(pzemO2->data.frequency);
     if (frequency > 0)
       return frequency;
   }

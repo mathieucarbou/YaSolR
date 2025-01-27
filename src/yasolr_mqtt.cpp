@@ -101,12 +101,12 @@ void subscribe() {
 
   mqtt->subscribe(baseTopic + "/router/output1/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
     if (output1)
-      output1->setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
+      output1->setDimmerDutyCycle(std::stof(std::string(payload)) / 100.0f);
   });
 
   mqtt->subscribe(baseTopic + "/router/output2/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
     if (output2)
-      output2->setDimmerDutyCycle(std::stof(std::string(payload)) / 100);
+      output2->setDimmerDutyCycle(std::stof(std::string(payload)) / 100.0f);
   });
 
   mqtt->subscribe(baseTopic + "/router/output1/bypass/set", [](const std::string& topic, const std::string_view& payload) {
@@ -285,7 +285,7 @@ void publishData() {
   mqtt->publish(baseTopic + "/router/current", std::to_string(routerMeasurements.current));
   mqtt->publish(baseTopic + "/router/energy", std::to_string(routerMeasurements.energy));
   mqtt->publish(baseTopic + "/router/lights", lights.toString());
-  mqtt->publish(baseTopic + "/router/power_factor", isnan(routerMeasurements.powerFactor) ? "0" : std::to_string(routerMeasurements.powerFactor));
+  mqtt->publish(baseTopic + "/router/power_factor", std::isnan(routerMeasurements.powerFactor) ? "0" : std::to_string(routerMeasurements.powerFactor));
   mqtt->publish(baseTopic + "/router/power", std::to_string(routerMeasurements.power));
   if (relay1)
     mqtt->publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1->isOn()));
@@ -293,9 +293,9 @@ void publishData() {
     mqtt->publish(baseTopic + "/router/relay2", YASOLR_STATE(relay2->isOn()));
   if (ds18Sys)
     mqtt->publish(baseTopic + "/router/temperature", std::to_string(ds18Sys->getTemperature().value_or(0)));
-  mqtt->publish(baseTopic + "/router/thdi", isnan(routerMeasurements.thdi) ? "0" : std::to_string(routerMeasurements.thdi));
+  mqtt->publish(baseTopic + "/router/thdi", std::isnan(routerMeasurements.thdi) ? "0" : std::to_string(routerMeasurements.thdi));
   float virtual_grid_power = gridMetrics.power - routerMeasurements.power;
-  mqtt->publish(baseTopic + "/router/virtual_grid_power", isnan(virtual_grid_power) ? "0" : std::to_string(virtual_grid_power));
+  mqtt->publish(baseTopic + "/router/virtual_grid_power", std::isnan(virtual_grid_power) ? "0" : std::to_string(virtual_grid_power));
   yield();
 
   for (const auto& output : router.getOutputs()) {
@@ -303,7 +303,7 @@ void publishData() {
     mqtt->publish(outputTopic + "/state", output->getStateName());
     mqtt->publish(outputTopic + "/bypass", YASOLR_STATE(output->isBypassOn()));
     mqtt->publish(outputTopic + "/dimmer", YASOLR_STATE(output->isDimmerOn()));
-    mqtt->publish(outputTopic + "/duty_cycle", std::to_string(output->getDimmerDutyCycle() * 100));
+    mqtt->publish(outputTopic + "/duty_cycle", std::to_string(output->getDimmerDutyCycle() * 100.0f));
     mqtt->publish(outputTopic + "/temperature", std::to_string(output->temperature().orElse(0)));
     yield();
   }

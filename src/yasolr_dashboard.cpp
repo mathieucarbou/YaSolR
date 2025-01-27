@@ -1409,7 +1409,7 @@ void YaSolR::Website::updateCards() {
   _routerPower.setValue(routerMetrics.power);
   _routerApparentPower.setValue(routerMetrics.apparentPower);
   _routerPowerFactor.setValue(routerMetrics.powerFactor);
-  _routerTHDi.setValue(routerMetrics.thdi * 100);
+  _routerTHDi.setValue(routerMetrics.thdi * 100.0f);
   _routerVoltage.setValue(gridMetrics.voltage);
   _routerCurrent.setValue(routerMetrics.current);
   _routerResistance.setValue(routerMetrics.resistance);
@@ -1438,7 +1438,7 @@ void YaSolR::Website::updateCards() {
         break;
     }
     _output1DS18State.setValue(output1->temperature().orElse(NAN));
-    _output1DimmerSlider.setValue(output1->getDimmerDutyCycle() * 100);
+    _output1DimmerSlider.setValue(output1->getDimmerDutyCycle() * 100.0f);
     _output1Bypass.setValue(output1->isBypassOn());
   }
 
@@ -1460,7 +1460,7 @@ void YaSolR::Website::updateCards() {
         break;
     }
     _output2DS18State.setValue(output2->temperature().orElse(NAN));
-    _output2DimmerSlider.setValue(output2->getDimmerDutyCycle() * 100);
+    _output2DimmerSlider.setValue(output2->getDimmerDutyCycle() * 100.0f);
     _output2Bypass.setValue(output2->isBypassOn());
   }
 
@@ -1476,11 +1476,11 @@ void YaSolR::Website::updateCards() {
     Mycila::RouterOutput::Metrics output1Measurements;
     output1->getOutputMeasurements(output1Measurements);
 
-    _output1DimmerSliderRO.setValue(output1->getDimmerDutyCycleLive() * 100);
+    _output1DimmerSliderRO.setValue(output1->getDimmerDutyCycleLive() * 100.0f);
     _output1Power.setValue(output1Measurements.power);
     _output1ApparentPower.setValue(output1Measurements.apparentPower);
     _output1PowerFactor.setValue(output1Measurements.powerFactor);
-    _output1THDi.setValue(output1Measurements.thdi * 100);
+    _output1THDi.setValue(output1Measurements.thdi * 100.0f);
     _output1Voltage.setValue(output1Measurements.dimmedVoltage);
     _output1Current.setValue(output1Measurements.current);
     _output1Resistance.setValue(output1Measurements.resistance);
@@ -1494,11 +1494,11 @@ void YaSolR::Website::updateCards() {
     Mycila::RouterOutput::Metrics output2Measurements;
     output2->getOutputMeasurements(output2Measurements);
 
-    _output2DimmerSliderRO.setValue(output2->getDimmerDutyCycleLive() * 100);
+    _output2DimmerSliderRO.setValue(output2->getDimmerDutyCycleLive() * 100.0f);
     _output2Power.setValue(output2Measurements.power);
     _output2ApparentPower.setValue(output2Measurements.apparentPower);
     _output2PowerFactor.setValue(output2Measurements.powerFactor);
-    _output2THDi.setValue(output2Measurements.thdi * 100);
+    _output2THDi.setValue(output2Measurements.thdi * 100.0f);
     _output2Voltage.setValue(output2Measurements.dimmedVoltage);
     _output2Current.setValue(output2Measurements.current);
     _output2Resistance.setValue(output2Measurements.resistance);
@@ -1541,9 +1541,9 @@ void YaSolR::Website::updateCharts() {
   memmove(&_routerTHDiHistoryY[0], &_routerTHDiHistoryY[1], sizeof(_routerTHDiHistoryY) - sizeof(*_routerTHDiHistoryY));
 
   // set new value
-  _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(grid.getPower().orElse(0));
-  _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = round(routerMetrics.power);
-  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = isnan(routerMetrics.thdi) ? 0 : round(routerMetrics.thdi * 100);
+  _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().orElse(0));
+  _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routerMetrics.power);
+  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = std::isnan(routerMetrics.thdi) ? 0 : std::round(routerMetrics.thdi * 100.0f);
 
   // update charts
   _gridPowerHistory.setY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
@@ -1563,13 +1563,13 @@ void YaSolR::Website::updatePIDCharts() {
   memmove(&_pidDTermHistoryY[0], &_pidDTermHistoryY[1], sizeof(_pidDTermHistoryY) - sizeof(*_pidDTermHistoryY));
 
   // set new values
-  _pidInputHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getInput());
-  _pidOutputHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getOutput());
-  _pidErrorHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getError());
-  _pidSumHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getSum());
-  _pidPTermHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getPTerm());
-  _pidITermHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getITerm());
-  _pidDTermHistoryY[YASOLR_GRAPH_POINTS - 1] = round(pidController.getDTerm());
+  _pidInputHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getInput());
+  _pidOutputHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getOutput());
+  _pidErrorHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getError());
+  _pidSumHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getSum());
+  _pidPTermHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getPTerm());
+  _pidITermHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getITerm());
+  _pidDTermHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getDTerm());
 
   // update charts
   _pidInputHistory.setY(_pidInputHistoryY, YASOLR_GRAPH_POINTS);

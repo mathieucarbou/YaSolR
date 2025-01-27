@@ -52,6 +52,7 @@
 #define YASOLR_DIMMER_ROBODYN              "Robodyn 24A / 40A"
 #define YASOLR_DIMMER_TRIAC                "Triac + ZCD"
 #define YASOLR_DIMMER_ZC_SSR               "Zero-crossing Solid State Relay"
+#define YASOLR_DS18_SEARCH_MAX_RETRY       30
 #define YASOLR_GRAPH_POINTS                60
 #define YASOLR_HIDDEN_PWD                  "********"
 #define YASOLR_MQTT_KEEPALIVE              60

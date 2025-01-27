@@ -40,8 +40,8 @@ namespace YaSolR {
 
       void _outputDimmerSlider(dash::SliderCard<float, 2>& card, Mycila::RouterOutput& output) {
         card.onChange([&card, &output, this](float value) {
-          output.setDimmerDutyCycle(value / 100);
-          card.setValue(output.getDimmerDutyCycle() * 100);
+          output.setDimmerDutyCycle(value / 100.0f);
+          card.setValue(output.getDimmerDutyCycle() * 100.0f);
           dashboard.refresh(card);
           dashboardUpdateTask.requestEarlyRun();
         });

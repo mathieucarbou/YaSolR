@@ -50,21 +50,21 @@ void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
 }
 
 void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {
-  if (!isnanf(metrics.apparentPower))
+  if (!std::isnan(metrics.apparentPower))
     dest["apparent_power"] = metrics.apparentPower;
-  if (!isnanf(metrics.current))
+  if (!std::isnan(metrics.current))
     dest["current"] = metrics.current;
-  if (!isnanf(metrics.energy))
+  if (!std::isnan(metrics.energy))
     dest["energy"] = metrics.energy;
-  if (!isnanf(metrics.power))
+  if (!std::isnan(metrics.power))
     dest["power"] = metrics.power;
-  if (!isnanf(metrics.powerFactor))
+  if (!std::isnan(metrics.powerFactor))
     dest["power_factor"] = metrics.powerFactor;
-  if (!isnanf(metrics.resistance))
+  if (!std::isnan(metrics.resistance))
     dest["resistance"] = metrics.resistance;
-  if (!isnanf(metrics.thdi))
+  if (!std::isnan(metrics.thdi))
     dest["thdi"] = metrics.thdi;
-  if (!isnanf(metrics.voltage))
+  if (!std::isnan(metrics.voltage))
     dest["voltage"] = metrics.voltage;
 }
 #endif
@@ -84,7 +84,7 @@ void Mycila::Router::getRouterMetrics(Metrics& metrics, float voltage) const {
 
   metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
   metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-  metrics.thdi = metrics.powerFactor == 0 ? NAN : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
+  metrics.thdi = metrics.powerFactor == 0 ? NAN : std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
 
   if (_localMetrics.isPresent()) {
     metrics.energy = _localMetrics.get().energy;
@@ -118,7 +118,7 @@ void Mycila::Router::getRouterMeasurements(Metrics& metrics) const {
 
       metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
       metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-      metrics.thdi = metrics.powerFactor == 0 ? NAN : sqrt(1 / (metrics.powerFactor * metrics.powerFactor) - 1);
+      metrics.thdi = metrics.powerFactor == 0 ? NAN : std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
     }
   }
 

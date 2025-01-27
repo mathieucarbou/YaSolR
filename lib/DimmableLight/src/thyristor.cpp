@@ -667,7 +667,7 @@ float Thyristor::getFrequency() {
   if (semiPeriodLength == 0) {
     return 0;
   }
-  return 1000000 / 2 / (float)(semiPeriodLength);
+  return 500000.0f / (float)(semiPeriodLength);
 }
 
 uint16_t Thyristor::getSemiPeriod() {
@@ -685,7 +685,7 @@ void Thyristor::setFrequency(float frequency) {
     return;
   }
 
-  semiPeriodLength = 1000000 / 2 / frequency;
+  semiPeriodLength = 500000.0f / frequency;
 }
 void Thyristor::setSemiPeriod(uint16_t semiPeriod) {
   semiPeriodLength = semiPeriod;
