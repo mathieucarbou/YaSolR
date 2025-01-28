@@ -83,7 +83,7 @@ void Mycila::Router::getRouterMetrics(Metrics& metrics, float voltage) const {
 
   metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
   metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-  metrics.thdi = metrics.powerFactor == 0 ? NAN : std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
+  metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
 
   if (_localMetrics.isPresent()) {
     metrics.energy = _localMetrics.get().energy;
@@ -117,7 +117,7 @@ void Mycila::Router::getRouterMeasurements(Metrics& metrics) const {
 
       metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
       metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-      metrics.thdi = metrics.powerFactor == 0 ? NAN : std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
+      metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
     }
   }
 

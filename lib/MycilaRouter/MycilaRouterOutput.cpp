@@ -316,7 +316,7 @@ void Mycila::RouterOutput::getOutputMetrics(Metrics& metrics, float gridVoltage)
   metrics.dimmedVoltage = metrics.powerFactor * metrics.voltage;
   metrics.current = metrics.resistance == 0 ? 0 : metrics.dimmedVoltage / metrics.resistance;
   metrics.apparentPower = metrics.current * metrics.voltage;
-  metrics.thdi = dutyCycle == 0 ? 0 : std::sqrt(1 / dutyCycle - 1);
+  metrics.thdi = dutyCycle == 0 ? 0 : 100.0f * std::sqrt(1 / dutyCycle - 1);
 }
 
 bool Mycila::RouterOutput::getOutputMeasurements(Metrics& metrics) const {
