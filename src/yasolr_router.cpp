@@ -15,16 +15,16 @@ Mycila::RouterOutput* output1 = nullptr;
 Mycila::RouterOutput* output2 = nullptr;
 
 // ZCD
-Mycila::ZeroCrossDimmer* zcDimmer1 = nullptr;
-Mycila::ZeroCrossDimmer* zcDimmer2 = nullptr;
 Mycila::PulseAnalyzer* pulseAnalyzer = nullptr;
-Mycila::Task* zcdTask = nullptr;
+static Mycila::ZeroCrossDimmer* zcDimmer1 = nullptr;
+static Mycila::ZeroCrossDimmer* zcDimmer2 = nullptr;
+static Mycila::Task* zcdTask = nullptr;
 
 // tasks
 
-Mycila::Task calibrationTask("Calibration", [](void* params) { router.continueCalibration(); });
+static Mycila::Task calibrationTask("Calibration", [](void* params) { router.continueCalibration(); });
 
-Mycila::Task routerTask("Router", [](void* params) {
+static Mycila::Task routerTask("Router", [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
 
   if (!voltage.has_value() || grid.getPower().isAbsent())
@@ -43,14 +43,14 @@ Mycila::Task routerTask("Router", [](void* params) {
 
 // functions
 
-bool isZeroCrossBased(const char* type) {
+static bool isZeroCrossBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
          strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
          strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
 }
 
-Mycila::Dimmer* createDimmer1() {
+static Mycila::Dimmer* createDimmer1() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
     const char* type = config.get(KEY_OUTPUT1_DIMMER_TYPE);
     Mycila::Dimmer* dimmer = nullptr;
@@ -81,7 +81,7 @@ Mycila::Dimmer* createDimmer1() {
   return nullptr;
 }
 
-Mycila::Dimmer* createDimmer2() {
+static Mycila::Dimmer* createDimmer2() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
     const char* type = config.get(KEY_OUTPUT2_DIMMER_TYPE);
     Mycila::Dimmer* dimmer = nullptr;
@@ -112,7 +112,7 @@ Mycila::Dimmer* createDimmer2() {
   return nullptr;
 }
 
-Mycila::Relay* createBypassRelay1() {
+static Mycila::Relay* createBypassRelay1() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY)) {
     Mycila::Relay* relay = new Mycila::Relay();
     relay->begin(config.getLong(KEY_PIN_OUTPUT1_RELAY), config.isEqual(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
@@ -136,7 +136,7 @@ Mycila::Relay* createBypassRelay1() {
   return nullptr;
 }
 
-Mycila::Relay* createBypassRelay2() {
+static Mycila::Relay* createBypassRelay2() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_RELAY)) {
     Mycila::Relay* relay = new Mycila::Relay();
     relay->begin(config.getLong(KEY_PIN_OUTPUT2_RELAY), config.isEqual(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
@@ -160,7 +160,7 @@ Mycila::Relay* createBypassRelay2() {
   return nullptr;
 }
 
-void initOutput1(uint16_t semiPeriod) {
+static void initOutput1(uint16_t semiPeriod) {
   Mycila::Dimmer* dimmer = createDimmer1();
   Mycila::Relay* bypassRelay = createBypassRelay1();
 
@@ -196,7 +196,7 @@ void initOutput1(uint16_t semiPeriod) {
   }
 }
 
-void initOutput2(uint16_t semiPeriod) {
+static void initOutput2(uint16_t semiPeriod) {
   Mycila::Dimmer* dimmer = createDimmer2();
   Mycila::Relay* bypassRelay = createBypassRelay2();
 

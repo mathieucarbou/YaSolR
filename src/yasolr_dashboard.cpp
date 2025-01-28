@@ -21,353 +21,353 @@ static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .
 // https://en.wikipedia.org/wiki/List_of_Unicode_characters#Dingbats
 
 // tabs are declared early in order to have the smallest IDs that never change
-dash::Tab _output1Tab(dashboard, "\u26A1 " YASOLR_LBL_046);
-dash::Tab _output2Tab(dashboard, "\u26A1 " YASOLR_LBL_070);
-dash::Tab _relaysTab(dashboard, "\u26A1 " YASOLR_LBL_071);
-dash::Tab _pidTab(dashboard, "\u2672 " YASOLR_LBL_159);
-dash::Tab _networkTab(dashboard, "\u2601 " YASOLR_LBL_087);
-dash::Tab _ntpTab(dashboard, "\u23F2 " YASOLR_LBL_158);
-dash::Tab _mqttTab(dashboard, "\u21C6 " YASOLR_LBL_095);
-dash::Tab _gpioTab(dashboard, "\u26EC " YASOLR_LBL_108);
-dash::Tab _hardwareConfigTab(dashboard, "\u23DA " YASOLR_LBL_177);
-dash::Tab _output1ConfigTab(dashboard, "\u2699 " YASOLR_LBL_138);
-dash::Tab _output2ConfigTab(dashboard, "\u2699 " YASOLR_LBL_139);
-dash::Tab _systemTab(dashboard, "\u26EB " YASOLR_LBL_078);
-dash::Tab _debugTab(dashboard, "\u2757 " YASOLR_LBL_083);
+static dash::Tab _output1Tab(dashboard, "\u26A1 " YASOLR_LBL_046);
+static dash::Tab _output2Tab(dashboard, "\u26A1 " YASOLR_LBL_070);
+static dash::Tab _relaysTab(dashboard, "\u26A1 " YASOLR_LBL_071);
+static dash::Tab _pidTab(dashboard, "\u2672 " YASOLR_LBL_159);
+static dash::Tab _networkTab(dashboard, "\u2601 " YASOLR_LBL_087);
+static dash::Tab _ntpTab(dashboard, "\u23F2 " YASOLR_LBL_158);
+static dash::Tab _mqttTab(dashboard, "\u21C6 " YASOLR_LBL_095);
+static dash::Tab _gpioTab(dashboard, "\u26EC " YASOLR_LBL_108);
+static dash::Tab _hardwareConfigTab(dashboard, "\u23DA " YASOLR_LBL_177);
+static dash::Tab _output1ConfigTab(dashboard, "\u2699 " YASOLR_LBL_138);
+static dash::Tab _output2ConfigTab(dashboard, "\u2699 " YASOLR_LBL_139);
+static dash::Tab _systemTab(dashboard, "\u26EB " YASOLR_LBL_078);
+static dash::Tab _debugTab(dashboard, "\u2757 " YASOLR_LBL_083);
 
 #endif
 
-int8_t _historyX[YASOLR_GRAPH_POINTS] = {0};
+static int8_t _historyX[YASOLR_GRAPH_POINTS] = {0};
 
 // statistics
 
-dash::StatisticValue<const char*> _appName(dashboard, YASOLR_LBL_001);
-dash::StatisticValue<const char*> _appModel(dashboard, YASOLR_LBL_002);
-dash::StatisticValue<const char*> _appVersion(dashboard, YASOLR_LBL_003);
-dash::StatisticValue<const char*> _appManufacturer(dashboard, YASOLR_LBL_004);
-dash::StatisticValue<uint32_t> _deviceBootCount(dashboard, YASOLR_LBL_005);
-dash::StatisticValue<const char*> _deviceBootReason(dashboard, YASOLR_LBL_192);
-dash::StatisticValue<uint8_t> _deviceCores(dashboard, YASOLR_LBL_006);
-dash::StatisticValue<size_t> _deviceHeapTotal(dashboard, YASOLR_LBL_007);
-dash::StatisticValue<float, 2> _deviceHeapUsage(dashboard, YASOLR_LBL_008);
-dash::StatisticValue<size_t> _deviceHeapUsed(dashboard, YASOLR_LBL_009);
-dash::StatisticValue<const char*> _deviceID(dashboard, YASOLR_LBL_010);
-dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011);
-dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
-dash::StatisticValue<const char*> _firmwareBuildTimestamp(dashboard, YASOLR_LBL_014);
-dash::StatisticValue<const char*> _firmwareFilename(dashboard, YASOLR_LBL_015);
-dash::StatisticValue<float, 3> _gridEnergy(dashboard, YASOLR_LBL_016);
-dash::StatisticValue<float, 3> _gridEnergyReturned(dashboard, YASOLR_LBL_017);
-dash::StatisticValue<float, 0> _gridFrequency(dashboard, YASOLR_LBL_018);
-dash::StatisticValue<float, 2> _udpMessageRateBuffer(dashboard, YASOLR_LBL_157);
-dash::StatisticValue<const char*> _networkHostname(dashboard, YASOLR_LBL_019);
-dash::StatisticValue<const char*> _networkInterface(dashboard, YASOLR_LBL_020);
-dash::StatisticValue _networkAPIP(dashboard, YASOLR_LBL_021);
-dash::StatisticValue _networkAPMAC(dashboard, YASOLR_LBL_022);
-dash::StatisticValue _networkEthIP(dashboard, YASOLR_LBL_023);
-dash::StatisticValue _networkEthMAC(dashboard, YASOLR_LBL_024);
-dash::StatisticValue _networkWiFiIP(dashboard, YASOLR_LBL_025);
-dash::StatisticValue _networkWiFiMAC(dashboard, YASOLR_LBL_026);
-dash::StatisticValue _networkWiFiSSID(dashboard, YASOLR_LBL_027);
-dash::StatisticValue<int8_t> _networkWiFiRSSI(dashboard, YASOLR_LBL_028);
-dash::StatisticValue<int8_t> _networkWiFiSignal(dashboard, YASOLR_LBL_029);
-dash::StatisticValue<uint64_t> _output1RelaySwitchCount(dashboard, YASOLR_LBL_030);
-dash::StatisticValue<uint64_t> _output2RelaySwitchCount(dashboard, YASOLR_LBL_031);
-dash::StatisticValue<uint64_t> _relay1SwitchCount(dashboard, YASOLR_LBL_032);
-dash::StatisticValue<uint64_t> _relay2SwitchCount(dashboard, YASOLR_LBL_033);
-dash::StatisticValue _time(dashboard, YASOLR_LBL_034);
-dash::StatisticValue _uptime(dashboard, YASOLR_LBL_035);
+static dash::StatisticValue<const char*> _appName(dashboard, YASOLR_LBL_001);
+static dash::StatisticValue<const char*> _appModel(dashboard, YASOLR_LBL_002);
+static dash::StatisticValue<const char*> _appVersion(dashboard, YASOLR_LBL_003);
+static dash::StatisticValue<const char*> _appManufacturer(dashboard, YASOLR_LBL_004);
+static dash::StatisticValue<uint32_t> _deviceBootCount(dashboard, YASOLR_LBL_005);
+static dash::StatisticValue<const char*> _deviceBootReason(dashboard, YASOLR_LBL_192);
+static dash::StatisticValue<uint8_t> _deviceCores(dashboard, YASOLR_LBL_006);
+static dash::StatisticValue<size_t> _deviceHeapTotal(dashboard, YASOLR_LBL_007);
+static dash::StatisticValue<float, 2> _deviceHeapUsage(dashboard, YASOLR_LBL_008);
+static dash::StatisticValue<size_t> _deviceHeapUsed(dashboard, YASOLR_LBL_009);
+static dash::StatisticValue<const char*> _deviceID(dashboard, YASOLR_LBL_010);
+static dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011);
+static dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
+static dash::StatisticValue<const char*> _firmwareBuildTimestamp(dashboard, YASOLR_LBL_014);
+static dash::StatisticValue<const char*> _firmwareFilename(dashboard, YASOLR_LBL_015);
+static dash::StatisticValue<float, 3> _gridEnergy(dashboard, YASOLR_LBL_016);
+static dash::StatisticValue<float, 3> _gridEnergyReturned(dashboard, YASOLR_LBL_017);
+static dash::StatisticValue<float, 0> _gridFrequency(dashboard, YASOLR_LBL_018);
+static dash::StatisticValue<float, 2> _udpMessageRateBuffer(dashboard, YASOLR_LBL_157);
+static dash::StatisticValue<const char*> _networkHostname(dashboard, YASOLR_LBL_019);
+static dash::StatisticValue<const char*> _networkInterface(dashboard, YASOLR_LBL_020);
+static dash::StatisticValue _networkAPIP(dashboard, YASOLR_LBL_021);
+static dash::StatisticValue _networkAPMAC(dashboard, YASOLR_LBL_022);
+static dash::StatisticValue _networkEthIP(dashboard, YASOLR_LBL_023);
+static dash::StatisticValue _networkEthMAC(dashboard, YASOLR_LBL_024);
+static dash::StatisticValue _networkWiFiIP(dashboard, YASOLR_LBL_025);
+static dash::StatisticValue _networkWiFiMAC(dashboard, YASOLR_LBL_026);
+static dash::StatisticValue _networkWiFiSSID(dashboard, YASOLR_LBL_027);
+static dash::StatisticValue<int8_t> _networkWiFiRSSI(dashboard, YASOLR_LBL_028);
+static dash::StatisticValue<int8_t> _networkWiFiSignal(dashboard, YASOLR_LBL_029);
+static dash::StatisticValue<uint64_t> _output1RelaySwitchCount(dashboard, YASOLR_LBL_030);
+static dash::StatisticValue<uint64_t> _output2RelaySwitchCount(dashboard, YASOLR_LBL_031);
+static dash::StatisticValue<uint64_t> _relay1SwitchCount(dashboard, YASOLR_LBL_032);
+static dash::StatisticValue<uint64_t> _relay2SwitchCount(dashboard, YASOLR_LBL_033);
+static dash::StatisticValue _time(dashboard, YASOLR_LBL_034);
+static dash::StatisticValue _uptime(dashboard, YASOLR_LBL_035);
 
 #ifdef APP_MODEL_TRIAL
-dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time");
+static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time");
 #endif
 
 // home
 
-dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
-dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_037, "VA");
-dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_038);
-dash::EnergyCard<float, 2> _routerTHDi(dashboard, YASOLR_LBL_039, "%");
-dash::EnergyCard<float, 0> _routerVoltage(dashboard, YASOLR_LBL_040, "V");
-dash::EnergyCard<float, 2> _routerCurrent(dashboard, YASOLR_LBL_041, "A");
-dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_042, "Ω");
-dash::EnergyCard<float, 3> _routerEnergy(dashboard, YASOLR_LBL_043, "kWh");
-dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
-dash::TemperatureCard<float, 2> _routerDS18State(dashboard, YASOLR_LBL_045);
+static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
+static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_037, "VA");
+static dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_038);
+static dash::EnergyCard<float, 2> _routerTHDi(dashboard, YASOLR_LBL_039, "%");
+static dash::EnergyCard<float, 0> _routerVoltage(dashboard, YASOLR_LBL_040, "V");
+static dash::EnergyCard<float, 2> _routerCurrent(dashboard, YASOLR_LBL_041, "A");
+static dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_042, "Ω");
+static dash::EnergyCard<float, 3> _routerEnergy(dashboard, YASOLR_LBL_043, "kWh");
+static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
+static dash::TemperatureCard<float, 2> _routerDS18State(dashboard, YASOLR_LBL_045);
 
 #ifdef APP_MODEL_OSS
-dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
-dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
-dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_046);
-dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_048);
-dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
-dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_051);
-dash::FeedbackCard<const char*> _output2State(dashboard, YASOLR_LBL_070);
-dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_048);
-dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
-dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_051);
+static dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
+static dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
+static dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_046);
+static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_048);
+static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
+static dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_051);
+static dash::FeedbackCard<const char*> _output2State(dashboard, YASOLR_LBL_070);
+static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_048);
+static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
+static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_051);
 #endif
 
-int16_t _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
-uint16_t _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
-uint8_t _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
-dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
-dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_036 " (W)");
-dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
+static int16_t _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static uint16_t _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static uint8_t _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
+static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_036 " (W)");
+static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
 
 #ifdef APP_MODEL_OSS
-dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
-dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
-dash::SwitchCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
-dash::SwitchCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
+static dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
+static dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
+static dash::SwitchCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
+static dash::SwitchCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
 #endif
 
 #ifdef APP_MODEL_PRO
 // tab: output 1
 
-dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_047);
-dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
-dash::SwitchCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
-dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
-dash::ProgressCard<float, 2> _output1DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
-dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_052, "W");
-dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
-dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
-dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
-dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
-dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
-dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
-dash::EnergyCard<float, 3> _output1Energy(dashboard, YASOLR_LBL_059, "kWh");
-dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
-dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_051);
-dash::FeedbackCard<const char*> _output1BypassRO(dashboard, YASOLR_LBL_051);
+static dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_047);
+static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
+static dash::SwitchCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
+static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
+static dash::ProgressCard<float, 2> _output1DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
+static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_052, "W");
+static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
+static dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
+static dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
+static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
+static dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
+static dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
+static dash::EnergyCard<float, 3> _output1Energy(dashboard, YASOLR_LBL_059, "kWh");
+static dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
+static dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_051);
+static dash::FeedbackCard<const char*> _output1BypassRO(dashboard, YASOLR_LBL_051);
 
 // tab: output 2
 
-dash::FeedbackCard<const char*> _output2State(dashboard, YASOLR_LBL_047);
-dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
-dash::SwitchCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
-dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
-dash::ProgressCard<float, 2> _output2DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
-dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_052, "W");
-dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
-dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
-dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
-dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
-dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
-dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
-dash::EnergyCard<float, 3> _output2Energy(dashboard, YASOLR_LBL_059, "kWh");
-dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
-dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
-dash::FeedbackCard<const char*> _output2BypassRO(dashboard, YASOLR_LBL_051);
+static dash::FeedbackCard<const char*> _output2State(dashboard, YASOLR_LBL_047);
+static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
+static dash::SwitchCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
+static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
+static dash::ProgressCard<float, 2> _output2DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
+static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_052, "W");
+static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
+static dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
+static dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
+static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
+static dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
+static dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
+static dash::EnergyCard<float, 3> _output2Energy(dashboard, YASOLR_LBL_059, "kWh");
+static dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
+static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
+static dash::FeedbackCard<const char*> _output2BypassRO(dashboard, YASOLR_LBL_051);
 
 // tab: relays
 
-dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
-dash::FeedbackCard<const char*> _relay1SwitchRO(dashboard, YASOLR_LBL_074);
-dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
-dash::FeedbackCard<const char*> _relay2SwitchRO(dashboard, YASOLR_LBL_077);
+static dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
+static dash::FeedbackCard<const char*> _relay1SwitchRO(dashboard, YASOLR_LBL_074);
+static dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
+static dash::FeedbackCard<const char*> _relay2SwitchRO(dashboard, YASOLR_LBL_077);
 
 // tab: system
 
-dash::LinkCard<const char*> _configBackup(dashboard, YASOLR_LBL_079);
-dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_080, ".txt");
-dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
-dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
+static dash::LinkCard<const char*> _configBackup(dashboard, YASOLR_LBL_079);
+static dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_080, ".txt");
+static dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
+static dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
 
 // tab: debug
 
-dash::FeedbackSwitchCard _debugMode(dashboard, YASOLR_LBL_083);
-dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
-dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
-dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
-dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
+static dash::FeedbackSwitchCard _debugMode(dashboard, YASOLR_LBL_083);
+static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
+static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
+static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
+static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 
 // tab: network
 
-dash::PasswordCard _adminPwd(dashboard, YASOLR_LBL_088, YASOLR_HIDDEN_PWD);
-dash::TextInputCard<const char*> _wifiSSID(dashboard, YASOLR_LBL_092);
-dash::PasswordCard _wifiPwd(dashboard, YASOLR_LBL_093, YASOLR_HIDDEN_PWD);
-dash::SwitchCard _apMode(dashboard, YASOLR_LBL_094);
-dash::TextInputCard<const char*> _staticIP(dashboard, YASOLR_LBL_188);
-dash::TextInputCard<const char*> _subnetMask(dashboard, YASOLR_LBL_189);
-dash::TextInputCard<const char*> _gateway(dashboard, YASOLR_LBL_190);
-dash::TextInputCard<const char*> _dnsServer(dashboard, YASOLR_LBL_191);
+static dash::PasswordCard _adminPwd(dashboard, YASOLR_LBL_088, YASOLR_HIDDEN_PWD);
+static dash::TextInputCard<const char*> _wifiSSID(dashboard, YASOLR_LBL_092);
+static dash::PasswordCard _wifiPwd(dashboard, YASOLR_LBL_093, YASOLR_HIDDEN_PWD);
+static dash::SwitchCard _apMode(dashboard, YASOLR_LBL_094);
+static dash::TextInputCard<const char*> _staticIP(dashboard, YASOLR_LBL_188);
+static dash::TextInputCard<const char*> _subnetMask(dashboard, YASOLR_LBL_189);
+static dash::TextInputCard<const char*> _gateway(dashboard, YASOLR_LBL_190);
+static dash::TextInputCard<const char*> _dnsServer(dashboard, YASOLR_LBL_191);
 
 // tab: ntp
 
-dash::TextInputCard<const char*> _ntpServer(dashboard, YASOLR_LBL_089);
-dash::AsyncDropdownCard<const char*> _ntpTimezone(dashboard, YASOLR_LBL_090, "/timezones");
-dash::TimeSyncCard _ntpSync(dashboard, YASOLR_LBL_091);
+static dash::TextInputCard<const char*> _ntpServer(dashboard, YASOLR_LBL_089);
+static dash::AsyncDropdownCard<const char*> _ntpTimezone(dashboard, YASOLR_LBL_090, "/timezones");
+static dash::TimeSyncCard _ntpSync(dashboard, YASOLR_LBL_091);
 
 // tab: mqtt
 
-dash::FeedbackSwitchCard _mqtt(dashboard, YASOLR_LBL_095);
-dash::TextInputCard<const char*> _mqttServer(dashboard, YASOLR_LBL_096);
-dash::TextInputCard<uint16_t> _mqttPort(dashboard, YASOLR_LBL_097);
-dash::TextInputCard<const char*> _mqttUser(dashboard, YASOLR_LBL_098);
-dash::PasswordCard _mqttPwd(dashboard, YASOLR_LBL_099, YASOLR_HIDDEN_PWD);
-dash::SwitchCard _mqttSecured(dashboard, YASOLR_LBL_100);
-dash::FileUploadCard _mqttServerCert(dashboard, YASOLR_LBL_101, ".pem");
-dash::PushButtonCard _mqttServerCertDelete(dashboard, YASOLR_LBL_049);
-dash::TextInputCard<const char*> _mqttTopic(dashboard, YASOLR_LBL_103);
-dash::SliderCard<uint8_t> _mqttPublishInterval(dashboard, YASOLR_LBL_102, 1, 30, 1, "s");
-dash::SeparatorCard<const char*> _mqttSep1(dashboard, YASOLR_LBL_179);
-dash::TextInputCard<const char*> _mqttGridVoltage(dashboard, YASOLR_LBL_106);
-dash::TextInputCard<const char*> _mqttGridPower(dashboard, YASOLR_LBL_044);
-dash::TextInputCard<const char*> _mqttTempO1(dashboard, YASOLR_LBL_181);
-dash::TextInputCard<const char*> _mqttTempO2(dashboard, YASOLR_LBL_182);
-dash::FeedbackSwitchCard _haDiscovery(dashboard, YASOLR_LBL_104);
-dash::TextInputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
+static dash::FeedbackSwitchCard _mqtt(dashboard, YASOLR_LBL_095);
+static dash::TextInputCard<const char*> _mqttServer(dashboard, YASOLR_LBL_096);
+static dash::TextInputCard<uint16_t> _mqttPort(dashboard, YASOLR_LBL_097);
+static dash::TextInputCard<const char*> _mqttUser(dashboard, YASOLR_LBL_098);
+static dash::PasswordCard _mqttPwd(dashboard, YASOLR_LBL_099, YASOLR_HIDDEN_PWD);
+static dash::SwitchCard _mqttSecured(dashboard, YASOLR_LBL_100);
+static dash::FileUploadCard _mqttServerCert(dashboard, YASOLR_LBL_101, ".pem");
+static dash::PushButtonCard _mqttServerCertDelete(dashboard, YASOLR_LBL_049);
+static dash::TextInputCard<const char*> _mqttTopic(dashboard, YASOLR_LBL_103);
+static dash::SliderCard<uint8_t> _mqttPublishInterval(dashboard, YASOLR_LBL_102, 1, 30, 1, "s");
+static dash::SeparatorCard<const char*> _mqttSep1(dashboard, YASOLR_LBL_179);
+static dash::TextInputCard<const char*> _mqttGridVoltage(dashboard, YASOLR_LBL_106);
+static dash::TextInputCard<const char*> _mqttGridPower(dashboard, YASOLR_LBL_044);
+static dash::TextInputCard<const char*> _mqttTempO1(dashboard, YASOLR_LBL_181);
+static dash::TextInputCard<const char*> _mqttTempO2(dashboard, YASOLR_LBL_182);
+static dash::FeedbackSwitchCard _haDiscovery(dashboard, YASOLR_LBL_104);
+static dash::TextInputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
 
 // tab: pid
 
-int16_t _pidInputHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int16_t _pidOutputHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int16_t _pidErrorHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int16_t _pidSumHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int16_t _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-dash::SwitchCard _pidView(dashboard, YASOLR_LBL_169);
-dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
-dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_161, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2 "," YASOLR_PID_D_MODE_3);
-dash::DropdownCard<const char*> _pidICMode(dashboard, YASOLR_LBL_162, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
-dash::TextInputCard<int> _pidSetpoint(dashboard, YASOLR_LBL_163);
-dash::TextInputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
-dash::TextInputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
-dash::TextInputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
-dash::TextInputCard<int> _pidOutMin(dashboard, YASOLR_LBL_164);
-dash::TextInputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
-dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
-dash::LineChart<int8_t, int16_t> _pidOutputHistory(dashboard, YASOLR_LBL_171);
-dash::LineChart<int8_t, int16_t> _pidErrorHistory(dashboard, YASOLR_LBL_172);
-dash::BarChart<int8_t, int16_t> _pidSumHistory(dashboard, YASOLR_LBL_173);
-dash::LineChart<int8_t, int16_t> _pidPTermHistory(dashboard, YASOLR_LBL_174);
-dash::LineChart<int8_t, int16_t> _pidITermHistory(dashboard, YASOLR_LBL_175);
-dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_176);
+static int16_t _pidInputHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static int16_t _pidOutputHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static int16_t _pidErrorHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static int16_t _pidSumHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static int16_t _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
+static dash::SwitchCard _pidView(dashboard, YASOLR_LBL_169);
+static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
+static dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_161, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2 "," YASOLR_PID_D_MODE_3);
+static dash::DropdownCard<const char*> _pidICMode(dashboard, YASOLR_LBL_162, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+static dash::TextInputCard<int> _pidSetpoint(dashboard, YASOLR_LBL_163);
+static dash::TextInputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
+static dash::TextInputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
+static dash::TextInputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
+static dash::TextInputCard<int> _pidOutMin(dashboard, YASOLR_LBL_164);
+static dash::TextInputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
+static dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
+static dash::LineChart<int8_t, int16_t> _pidOutputHistory(dashboard, YASOLR_LBL_171);
+static dash::LineChart<int8_t, int16_t> _pidErrorHistory(dashboard, YASOLR_LBL_172);
+static dash::BarChart<int8_t, int16_t> _pidSumHistory(dashboard, YASOLR_LBL_173);
+static dash::LineChart<int8_t, int16_t> _pidPTermHistory(dashboard, YASOLR_LBL_174);
+static dash::LineChart<int8_t, int16_t> _pidITermHistory(dashboard, YASOLR_LBL_175);
+static dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_176);
 
 // tab: gpio
 
-dash::SeparatorCard<const char*> _gpioTitle(dashboard, YASOLR_LBL_126);
-dash::SeparatorCard<const char*> _gpioSep1(dashboard, YASOLR_LBL_046);
-dash::FeedbackTextInputCard<int32_t> _pinDimmerO1(dashboard, YASOLR_LBL_050);
-dash::FeedbackTextInputCard<int32_t> _pinRelayO1(dashboard, YASOLR_LBL_134);
-dash::FeedbackTextInputCard<int32_t> _pinDS18O1(dashboard, YASOLR_LBL_132);
-dash::SeparatorCard<const char*> _gpioSep2(dashboard, YASOLR_LBL_070);
-dash::FeedbackTextInputCard<int32_t> _pinDimmerO2(dashboard, YASOLR_LBL_050);
-dash::FeedbackTextInputCard<int32_t> _pinRelayO2(dashboard, YASOLR_LBL_134);
-dash::FeedbackTextInputCard<int32_t> _pinDS18O2(dashboard, YASOLR_LBL_132);
-dash::SeparatorCard<const char*> _gpioSep3(dashboard, YASOLR_LBL_071);
-dash::FeedbackTextInputCard<int32_t> _pinRelay1(dashboard, YASOLR_LBL_074);
-dash::FeedbackTextInputCard<int32_t> _pinRelay2(dashboard, YASOLR_LBL_077);
-dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_012);
-dash::FeedbackTextInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
-dash::FeedbackTextInputCard<int32_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
-dash::FeedbackTextInputCard<int32_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
-dash::FeedbackTextInputCard<int32_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
-dash::FeedbackTextInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
-dash::SeparatorCard<const char*> _gpioSep5(dashboard, YASOLR_LBL_078);
-dash::FeedbackTextInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_132);
-dash::FeedbackTextInputCard<int32_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
-dash::FeedbackTextInputCard<int32_t> _pinLEDYellow(dashboard, YASOLR_LBL_120);
-dash::FeedbackTextInputCard<int32_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
-dash::FeedbackTextInputCard<int32_t> _pinDisplayClock(dashboard, YASOLR_LBL_111);
-dash::FeedbackTextInputCard<int32_t> _pinDisplayData(dashboard, YASOLR_LBL_112);
+static dash::SeparatorCard<const char*> _gpioTitle(dashboard, YASOLR_LBL_126);
+static dash::SeparatorCard<const char*> _gpioSep1(dashboard, YASOLR_LBL_046);
+static dash::FeedbackTextInputCard<int32_t> _pinDimmerO1(dashboard, YASOLR_LBL_050);
+static dash::FeedbackTextInputCard<int32_t> _pinRelayO1(dashboard, YASOLR_LBL_134);
+static dash::FeedbackTextInputCard<int32_t> _pinDS18O1(dashboard, YASOLR_LBL_132);
+static dash::SeparatorCard<const char*> _gpioSep2(dashboard, YASOLR_LBL_070);
+static dash::FeedbackTextInputCard<int32_t> _pinDimmerO2(dashboard, YASOLR_LBL_050);
+static dash::FeedbackTextInputCard<int32_t> _pinRelayO2(dashboard, YASOLR_LBL_134);
+static dash::FeedbackTextInputCard<int32_t> _pinDS18O2(dashboard, YASOLR_LBL_132);
+static dash::SeparatorCard<const char*> _gpioSep3(dashboard, YASOLR_LBL_071);
+static dash::FeedbackTextInputCard<int32_t> _pinRelay1(dashboard, YASOLR_LBL_074);
+static dash::FeedbackTextInputCard<int32_t> _pinRelay2(dashboard, YASOLR_LBL_077);
+static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_012);
+static dash::FeedbackTextInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
+static dash::FeedbackTextInputCard<int32_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
+static dash::FeedbackTextInputCard<int32_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
+static dash::FeedbackTextInputCard<int32_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
+static dash::FeedbackTextInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
+static dash::SeparatorCard<const char*> _gpioSep5(dashboard, YASOLR_LBL_078);
+static dash::FeedbackTextInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_132);
+static dash::FeedbackTextInputCard<int32_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
+static dash::FeedbackTextInputCard<int32_t> _pinLEDYellow(dashboard, YASOLR_LBL_120);
+static dash::FeedbackTextInputCard<int32_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
+static dash::FeedbackTextInputCard<int32_t> _pinDisplayClock(dashboard, YASOLR_LBL_111);
+static dash::FeedbackTextInputCard<int32_t> _pinDisplayData(dashboard, YASOLR_LBL_112);
 
 // tab: hardware
 
 // grid
-dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_107);
-dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-dash::FeedbackSwitchCard _jsy(dashboard, YASOLR_LBL_128);
-dash::FeedbackSwitchCard _jsyRemote(dashboard, YASOLR_LBL_187);
-dash::FeedbackSwitchCard _zcd(dashboard, YASOLR_LBL_125);
+static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_107);
+static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
+static dash::FeedbackSwitchCard _jsy(dashboard, YASOLR_LBL_128);
+static dash::FeedbackSwitchCard _jsyRemote(dashboard, YASOLR_LBL_187);
+static dash::FeedbackSwitchCard _zcd(dashboard, YASOLR_LBL_125);
 
 // output 1 dimmer
-dash::FeedbackSwitchCard _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
-dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
-dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-dash::FeedbackSwitchCard _output1PZEM(dashboard, YASOLR_LBL_133);
-dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
+static dash::FeedbackSwitchCard _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
+static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
+static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
+static dash::FeedbackSwitchCard _output1PZEM(dashboard, YASOLR_LBL_133);
+static dash::SwitchCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 1 bypass relay
-dash::FeedbackSwitchCard _output1Relay(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
-dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
+static dash::FeedbackSwitchCard _output1Relay(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
+static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 1 ds18
-dash::FeedbackSwitchCard _output1DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
+static dash::FeedbackSwitchCard _output1DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
 
 // output 2 dimmer
-dash::FeedbackSwitchCard _output2Dimmer(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
-dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
-dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-dash::FeedbackSwitchCard _output2PZEM(dashboard, YASOLR_LBL_133);
-dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
+static dash::FeedbackSwitchCard _output2Dimmer(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
+static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
+static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
+static dash::FeedbackSwitchCard _output2PZEM(dashboard, YASOLR_LBL_133);
+static dash::SwitchCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
 
 // output 2 bypass relay
-dash::FeedbackSwitchCard _output2Relay(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
-dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
+static dash::FeedbackSwitchCard _output2Relay(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
+static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 2 ds18
-dash::FeedbackSwitchCard _output2DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
+static dash::FeedbackSwitchCard _output2DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
 
 // relay1
-dash::FeedbackSwitchCard _relay1(dashboard, YASOLR_LBL_074);
-dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
-dash::TextInputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
+static dash::FeedbackSwitchCard _relay1(dashboard, YASOLR_LBL_074);
+static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
+static dash::TextInputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
 
 // relay2
-dash::FeedbackSwitchCard _relay2(dashboard, YASOLR_LBL_077);
-dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
-dash::TextInputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
+static dash::FeedbackSwitchCard _relay2(dashboard, YASOLR_LBL_077);
+static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
+static dash::TextInputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 
 // router ds18
-dash::FeedbackSwitchCard _routerDS18(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_132);
+static dash::FeedbackSwitchCard _routerDS18(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_132);
 
 // router led
-dash::FeedbackSwitchCard _led(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_129);
+static dash::FeedbackSwitchCard _led(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_129);
 
 // display
-dash::FeedbackSwitchCard _display(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_127);
-dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
-dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
-dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
+static dash::FeedbackSwitchCard _display(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_127);
+static dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
+static dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
+static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
 
 // tab: output 1 config
 
-dash::SeparatorCard<const char*> _output1ConfigSep0(dashboard, YASOLR_LBL_140);
-dash::FeedbackTextInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
-dash::SwitchCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
-dash::SeparatorCard<const char*> _output1ConfigSep1(dashboard, YASOLR_LBL_136);
-dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
-dash::TextInputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
-dash::TextInputCard<uint16_t> _output1DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
-dash::SeparatorCard<const char*> _output1ConfigSep2(dashboard, YASOLR_LBL_137);
-dash::TextInputCard<uint8_t> _output1AutoStartTemp(dashboard, YASOLR_LBL_065);
-dash::TextInputCard<uint8_t> _output1AutoStoptTemp(dashboard, YASOLR_LBL_066);
-dash::TextInputCard<const char*> _output1AutoStartTime(dashboard, YASOLR_LBL_067);
-dash::TextInputCard<const char*> _output1AutoStoptTime(dashboard, YASOLR_LBL_068);
-dash::WeekCard<const char*> _output1AutoStartWDays(dashboard, YASOLR_LBL_069);
+static dash::SeparatorCard<const char*> _output1ConfigSep0(dashboard, YASOLR_LBL_140);
+static dash::FeedbackTextInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
+static dash::SwitchCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::SeparatorCard<const char*> _output1ConfigSep1(dashboard, YASOLR_LBL_136);
+static dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
+static dash::TextInputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
+static dash::TextInputCard<uint16_t> _output1DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
+static dash::SeparatorCard<const char*> _output1ConfigSep2(dashboard, YASOLR_LBL_137);
+static dash::TextInputCard<uint8_t> _output1AutoStartTemp(dashboard, YASOLR_LBL_065);
+static dash::TextInputCard<uint8_t> _output1AutoStoptTemp(dashboard, YASOLR_LBL_066);
+static dash::TextInputCard<const char*> _output1AutoStartTime(dashboard, YASOLR_LBL_067);
+static dash::TextInputCard<const char*> _output1AutoStoptTime(dashboard, YASOLR_LBL_068);
+static dash::WeekCard<const char*> _output1AutoStartWDays(dashboard, YASOLR_LBL_069);
 
 // tab: output 2 config
 
-dash::SeparatorCard<const char*> _output2ConfigSep0(dashboard, YASOLR_LBL_140);
-dash::FeedbackTextInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_145);
-dash::SwitchCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
-dash::SeparatorCard<const char*> _output2ConfigSep1(dashboard, YASOLR_LBL_136);
-dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
-dash::TextInputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
-dash::TextInputCard<uint16_t> _output2DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
-dash::SeparatorCard<const char*> _output2ConfigSep2(dashboard, YASOLR_LBL_137);
-dash::TextInputCard<uint8_t> _output2AutoStartTemp(dashboard, YASOLR_LBL_065);
-dash::TextInputCard<uint8_t> _output2AutoStoptTemp(dashboard, YASOLR_LBL_066);
-dash::TextInputCard<const char*> _output2AutoStartTime(dashboard, YASOLR_LBL_067);
-dash::TextInputCard<const char*> _output2AutoStoptTime(dashboard, YASOLR_LBL_068);
-dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_069);
+static dash::SeparatorCard<const char*> _output2ConfigSep0(dashboard, YASOLR_LBL_140);
+static dash::FeedbackTextInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_145);
+static dash::SwitchCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::SeparatorCard<const char*> _output2ConfigSep1(dashboard, YASOLR_LBL_136);
+static dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
+static dash::TextInputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
+static dash::TextInputCard<uint16_t> _output2DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
+static dash::SeparatorCard<const char*> _output2ConfigSep2(dashboard, YASOLR_LBL_137);
+static dash::TextInputCard<uint8_t> _output2AutoStartTemp(dashboard, YASOLR_LBL_065);
+static dash::TextInputCard<uint8_t> _output2AutoStoptTemp(dashboard, YASOLR_LBL_066);
+static dash::TextInputCard<const char*> _output2AutoStartTime(dashboard, YASOLR_LBL_067);
+static dash::TextInputCard<const char*> _output2AutoStoptTime(dashboard, YASOLR_LBL_068);
+static dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_069);
 #endif
 
-void _onChangeResistanceCalibration(bool value) {
+static void _onChangeResistanceCalibration(bool value) {
   if (value && !router.isCalibrationRunning()) {
     config.set(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
     config.set(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);

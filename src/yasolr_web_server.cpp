@@ -16,13 +16,11 @@ extern const uint8_t config_html_gz_start[] asm("_binary__pio_data_config_html_g
 extern const uint8_t config_html_gz_end[] asm("_binary__pio_data_config_html_gz_end");
 
 AsyncWebServer webServer(80);
-
-AsyncAuthenticationMiddleware authMiddleware;
-AsyncLoggingMiddleware loggingMiddleware;
-
 ESPDash dashboard(webServer, "/dashboard", false);
 Mycila::ESPConnect espConnect(webServer);
 
+static AsyncAuthenticationMiddleware authMiddleware;
+static AsyncLoggingMiddleware loggingMiddleware;
 YaSolR::Website website;
 
 Mycila::Task dashboardInitTask("Init Dashboard", Mycila::TaskType::ONCE, [](void* params) {

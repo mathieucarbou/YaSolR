@@ -5,8 +5,9 @@
 #include <yasolr.h>
 
 Mycila::Logger logger;
-Mycila::Task* loggingTask = nullptr;
-WebSerial* webSerial = nullptr;
+
+static Mycila::Task* loggingTask = nullptr;
+static WebSerial* webSerial = nullptr;
 
 void yasolr_init_logging() {
   logger.info(TAG, "Initialize logging...");

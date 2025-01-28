@@ -4,9 +4,9 @@
  */
 #include <yasolr.h>
 
-Mycila::Task networkManagerTask("ESPConnect", [](void* params) { espConnect.loop(); });
+static Mycila::Task networkManagerTask("ESPConnect", [](void* params) { espConnect.loop(); });
 
-Mycila::Task networkStartTask("Network Start", Mycila::TaskType::ONCE, [](void* params) {
+static Mycila::Task networkStartTask("Network Start", Mycila::TaskType::ONCE, [](void* params) {
   logger.info(TAG, "Enable Network Services...");
 
   // Web server

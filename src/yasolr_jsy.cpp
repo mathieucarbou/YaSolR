@@ -5,8 +5,9 @@
 #include <yasolr.h>
 
 Mycila::JSY* jsy = nullptr;
-Mycila::Task* jsyTask = nullptr;
 Mycila::TaskManager* jsyTaskManager = nullptr;
+
+static Mycila::Task* jsyTask = nullptr;
 
 void yasolr_init_jsy() {
   if (config.getBool(KEY_ENABLE_JSY)) {

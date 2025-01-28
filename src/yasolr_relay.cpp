@@ -7,7 +7,8 @@
 
 Mycila::RouterRelay* relay1 = nullptr;
 Mycila::RouterRelay* relay2 = nullptr;
-Mycila::Task* relayTask = nullptr;
+
+static Mycila::Task* relayTask = nullptr;
 
 void yasolr_init_relays() {
   logger.info(TAG, "Initialize relays...");

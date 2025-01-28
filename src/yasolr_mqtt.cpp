@@ -15,9 +15,9 @@ Mycila::Task* mqttPublishConfigTask = nullptr;
 Mycila::Task* mqttPublishStaticTask = nullptr;
 Mycila::Task* mqttPublishTask = nullptr;
 
-Mycila::Task* haDiscoveryTask = nullptr;
+static Mycila::Task* haDiscoveryTask = nullptr;
 
-void connect() {
+static void connect() {
   mqtt->end();
 
   bool secured = config.getBool(KEY_MQTT_SECURED);
@@ -53,7 +53,7 @@ void connect() {
   mqtt->begin(mqttConfig);
 }
 
-void subscribe() {
+static void subscribe() {
   logger.info(TAG, "Subscribing to MQTT topics...");
 
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
@@ -185,7 +185,7 @@ void subscribe() {
   }
 }
 
-void publishConfig() {
+static void publishConfig() {
   logger.info(TAG, "Publishing config to MQTT...");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
@@ -197,7 +197,7 @@ void publishConfig() {
   }
 }
 
-void publishStaticData() {
+static void publishStaticData() {
   logger.info(TAG, "Publishing static data to MQTT...");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
@@ -228,7 +228,7 @@ void publishStaticData() {
   yield();
 }
 
-void publishData() {
+static void publishData() {
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   Mycila::System::Memory memory;
@@ -309,7 +309,7 @@ void publishData() {
   }
 }
 
-void haDiscovery() {
+static void haDiscovery() {
   logger.info(TAG, "Publishing Home Assistant Discovery configuration");
 
   Mycila::HA::Discovery haDiscovery;

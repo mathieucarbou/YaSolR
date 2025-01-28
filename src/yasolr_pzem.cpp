@@ -8,8 +8,9 @@ Mycila::PZEM* pzemO1 = nullptr;
 Mycila::PZEM* pzemO2 = nullptr;
 Mycila::Task* pzemO1PairingTask = nullptr;
 Mycila::Task* pzemO2PairingTask = nullptr;
-Mycila::Task* pzemTask = nullptr;
 Mycila::TaskManager* pzemTaskManager = nullptr;
+
+static Mycila::Task* pzemTask = nullptr;
 
 void yasolr_init_pzem() {
   logger.info(TAG, "Initialize PZEM...");

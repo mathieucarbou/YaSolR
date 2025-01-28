@@ -10,10 +10,10 @@
 #define YASOLR_DISPLAY_LINE_SIZE 21
 
 Mycila::EasyDisplay* display = nullptr;
-Mycila::Task* displayTask = nullptr;
 
-uint8_t startingInformation = 1;
-uint32_t lastDisplayUpdate = 0;
+static Mycila::Task* displayTask = nullptr;
+static uint8_t startingInformation = 1;
+static uint32_t lastDisplayUpdate = 0;
 
 void yasolr_init_display() {
   if (config.getBool(KEY_ENABLE_DISPLAY)) {
