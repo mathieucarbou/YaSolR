@@ -51,8 +51,8 @@ void onData(AsyncUDPPacket packet) {
       grid.remoteMetrics().update({
         .apparentPower = doc["apparent_power"] | NAN,
         .current = doc["current"] | NAN,
-        .energy = doc["active_energy_imported"] | NAN,
-        .energyReturned = doc["active_energy_returned"] | NAN,
+        .energy = doc["active_energy_imported"] | static_cast<uint32_t>(0),
+        .energyReturned = doc["active_energy_returned"] | static_cast<uint32_t>(0),
         .power = doc["active_power"] | NAN,
         .powerFactor = doc["power_factor"] | NAN,
         .voltage = doc["voltage"] | NAN,
@@ -64,8 +64,8 @@ void onData(AsyncUDPPacket packet) {
       grid.remoteMetrics().update({
         .apparentPower = doc["channel2"]["apparent_power"] | NAN,
         .current = doc["channel2"]["current"] | NAN,
-        .energy = doc["channel2"]["active_energy_imported"] | NAN,
-        .energyReturned = doc["channel2"]["active_energy_returned"] | NAN,
+        .energy = doc["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0),
+        .energyReturned = doc["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0),
         .frequency = doc["channel2"]["frequency"] | NAN,
         .power = doc["channel2"]["active_power"] | NAN,
         .powerFactor = doc["channel2"]["power_factor"] | NAN,
@@ -74,7 +74,7 @@ void onData(AsyncUDPPacket packet) {
       router.remoteMetrics().update({
         .apparentPower = doc["channel1"]["apparent_power"] | NAN,
         .current = doc["channel1"]["current"] | NAN,
-        .energy = doc["channel1"]["active_energy"] | NAN,
+        .energy = doc["channel1"]["active_energy"] | static_cast<uint32_t>(0),
         .power = doc["channel1"]["active_power"] | NAN,
         .powerFactor = doc["channel1"]["power_factor"] | NAN,
         .resistance = doc["channel1"]["resistance"] | NAN,
@@ -88,8 +88,8 @@ void onData(AsyncUDPPacket packet) {
       grid.remoteMetrics().update({
         .apparentPower = aggregate["apparent_power"] | NAN,
         .current = aggregate["current"] | NAN,
-        .energy = aggregate["active_energy_imported"] | NAN,
-        .energyReturned = aggregate["active_energy_returned"] | NAN,
+        .energy = aggregate["active_energy_imported"] | static_cast<uint32_t>(0),
+        .energyReturned = aggregate["active_energy_returned"] | static_cast<uint32_t>(0),
         .frequency = aggregate["frequency"] | NAN,
         .power = aggregate["active_power"] | NAN,
         .powerFactor = aggregate["power_factor"] | NAN,

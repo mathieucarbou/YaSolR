@@ -18,8 +18,8 @@ namespace Mycila {
       typedef struct {
           float apparentPower = NAN;
           float current = NAN;
-          float energy = NAN;
-          float energyReturned = NAN;
+          uint32_t energy = 0;
+          uint32_t energyReturned = 0;
           float frequency = NAN;
           float power = NAN;
           float powerFactor = NAN;

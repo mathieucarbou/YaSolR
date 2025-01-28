@@ -87,8 +87,7 @@ void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics
     dest["apparent_power"] = metrics.apparentPower;
   if (!std::isnan(metrics.current))
     dest["current"] = metrics.current;
-  if (!std::isnan(metrics.dimmedVoltage))
-    dest["energy"] = metrics.energy;
+  dest["energy"] = metrics.energy;
   if (!std::isnan(metrics.power))
     dest["power"] = metrics.power;
   if (!std::isnan(metrics.powerFactor))

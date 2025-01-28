@@ -56,9 +56,9 @@ static dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011)
 static dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
 static dash::StatisticValue<const char*> _firmwareBuildTimestamp(dashboard, YASOLR_LBL_014);
 static dash::StatisticValue<const char*> _firmwareFilename(dashboard, YASOLR_LBL_015);
-static dash::StatisticValue<float, 3> _gridEnergy(dashboard, YASOLR_LBL_016);
-static dash::StatisticValue<float, 3> _gridEnergyReturned(dashboard, YASOLR_LBL_017);
-static dash::StatisticValue<float, 0> _gridFrequency(dashboard, YASOLR_LBL_018);
+static dash::StatisticValue<uint32_t> _gridEnergy(dashboard, YASOLR_LBL_016);
+static dash::StatisticValue<uint32_t> _gridEnergyReturned(dashboard, YASOLR_LBL_017);
+static dash::StatisticValue<float, 1> _gridFrequency(dashboard, YASOLR_LBL_018);
 static dash::StatisticValue<float, 2> _udpMessageRateBuffer(dashboard, YASOLR_LBL_157);
 static dash::StatisticValue<const char*> _networkHostname(dashboard, YASOLR_LBL_019);
 static dash::StatisticValue<const char*> _networkInterface(dashboard, YASOLR_LBL_020);
@@ -91,7 +91,7 @@ static dash::EnergyCard<float, 2> _routerTHDi(dashboard, YASOLR_LBL_039, "%");
 static dash::EnergyCard<float, 0> _routerVoltage(dashboard, YASOLR_LBL_040, "V");
 static dash::EnergyCard<float, 2> _routerCurrent(dashboard, YASOLR_LBL_041, "A");
 static dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_042, "Ω");
-static dash::EnergyCard<float, 3> _routerEnergy(dashboard, YASOLR_LBL_043, "kWh");
+static dash::EnergyCard<uint32_t> _routerEnergy(dashboard, YASOLR_LBL_043, "Wh");
 static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
 static dash::TemperatureCard<float, 2> _routerDS18State(dashboard, YASOLR_LBL_045);
 
@@ -137,7 +137,7 @@ static dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
 static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
 static dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
-static dash::EnergyCard<float, 3> _output1Energy(dashboard, YASOLR_LBL_059, "kWh");
+static dash::EnergyCard<uint32_t> _output1Energy(dashboard, YASOLR_LBL_059, "Wh");
 static dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_051);
 static dash::FeedbackCard<const char*> _output1BypassRO(dashboard, YASOLR_LBL_051);
@@ -156,7 +156,7 @@ static dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
 static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
 static dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
-static dash::EnergyCard<float, 3> _output2Energy(dashboard, YASOLR_LBL_059, "kWh");
+static dash::EnergyCard<uint32_t> _output2Energy(dashboard, YASOLR_LBL_059, "Wh");
 static dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
 static dash::FeedbackCard<const char*> _output2BypassRO(dashboard, YASOLR_LBL_051);
@@ -1409,7 +1409,7 @@ void YaSolR::Website::updateCards() {
   _routerPower.setValue(routerMetrics.power);
   _routerApparentPower.setValue(routerMetrics.apparentPower);
   _routerPowerFactor.setValue(routerMetrics.powerFactor);
-  _routerTHDi.setValue(routerMetrics.thdi * 100.0f);
+  _routerTHDi.setValue(routerMetrics.thdi);
   _routerVoltage.setValue(gridMetrics.voltage);
   _routerCurrent.setValue(routerMetrics.current);
   _routerResistance.setValue(routerMetrics.resistance);
@@ -1480,7 +1480,7 @@ void YaSolR::Website::updateCards() {
     _output1Power.setValue(output1Measurements.power);
     _output1ApparentPower.setValue(output1Measurements.apparentPower);
     _output1PowerFactor.setValue(output1Measurements.powerFactor);
-    _output1THDi.setValue(output1Measurements.thdi * 100.0f);
+    _output1THDi.setValue(output1Measurements.thdi);
     _output1Voltage.setValue(output1Measurements.dimmedVoltage);
     _output1Current.setValue(output1Measurements.current);
     _output1Resistance.setValue(output1Measurements.resistance);
@@ -1498,7 +1498,7 @@ void YaSolR::Website::updateCards() {
     _output2Power.setValue(output2Measurements.power);
     _output2ApparentPower.setValue(output2Measurements.apparentPower);
     _output2PowerFactor.setValue(output2Measurements.powerFactor);
-    _output2THDi.setValue(output2Measurements.thdi * 100.0f);
+    _output2THDi.setValue(output2Measurements.thdi);
     _output2Voltage.setValue(output2Measurements.dimmedVoltage);
     _output2Current.setValue(output2Measurements.current);
     _output2Resistance.setValue(output2Measurements.resistance);
@@ -1543,7 +1543,7 @@ void YaSolR::Website::updateCharts() {
   // set new value
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().orElse(0));
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routerMetrics.power);
-  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = std::isnan(routerMetrics.thdi) ? 0 : std::round(routerMetrics.thdi * 100.0f);
+  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = std::isnan(routerMetrics.thdi) ? 0 : std::round(routerMetrics.thdi);
 
   // update charts
   _gridPowerHistory.setY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);

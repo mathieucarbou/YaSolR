@@ -153,11 +153,11 @@ namespace Mycila {
       uint16_t getFiringDelay() const { return _delay > _semiPeriod ? _semiPeriod : _delay; }
 
       /**
-       * @brief Get the phase angle in radians of the dimmer in the range [0, PI]
-       * At 0% power, the phase angle is equal to PI
+       * @brief Get the phase angle in degrees (°) of the dimmer in the range [0, 180]
+       * At 0% power, the phase angle is equal to 180
        * At 100% power, the phase angle is equal to 0
        */
-      float getPhaseAngle() const { return _delay >= _semiPeriod ? PI : PI * _delay / _semiPeriod; }
+      float getPhaseAngle() const { return _delay >= _semiPeriod ? 180 : 180 * _delay / _semiPeriod; }
 
 #ifdef MYCILA_JSON_SUPPORT
       /**
@@ -166,7 +166,6 @@ namespace Mycila {
        * @param root: the JSON object to serialize to
        */
       void toJson(const JsonObject& root) const {
-        const float angle = getPhaseAngle();
         root["type"] = type();
         root["enabled"] = isEnabled();
         root["online"] = isOnline();
@@ -177,8 +176,7 @@ namespace Mycila {
         root["duty_cycle_max"] = getDutyCycleMax();
         root["semi_period"] = getSemiPeriod();
         root["delay"] = getFiringDelay();
-        root["angle_d"] = angle * RAD_TO_DEG;
-        root["angle"] = angle;
+        root["angle"] = getPhaseAngle();
       }
 #endif
 

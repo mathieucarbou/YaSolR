@@ -27,8 +27,8 @@ void yasolr_init_pzem() {
           grid.pzemMetrics().update({
             .apparentPower = NAN,
             .current = NAN,
-            .energy = NAN,
-            .energyReturned = NAN,
+            .energy = 0,
+            .energyReturned = 0,
             .frequency = pzemO1->data.frequency,
             .power = NAN,
             .powerFactor = NAN,
@@ -104,8 +104,8 @@ void yasolr_init_pzem() {
           grid.pzemMetrics().update({
             .apparentPower = NAN,
             .current = NAN,
-            .energy = NAN,
-            .energyReturned = NAN,
+            .energy = 0,
+            .energyReturned = 0,
             .frequency = pzemO2->data.frequency,
             .power = NAN,
             .powerFactor = NAN,

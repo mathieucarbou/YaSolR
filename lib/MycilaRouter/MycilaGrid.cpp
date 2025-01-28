@@ -179,10 +179,8 @@ void Mycila::Grid::toJson(const JsonObject& dest, const Metrics& metrics) {
     dest["apparent_power"] = metrics.apparentPower;
   if (!std::isnan(metrics.current))
     dest["current"] = metrics.current;
-  if (!std::isnan(metrics.energy))
-    dest["energy"] = metrics.energy;
-  if (!std::isnan(metrics.energyReturned))
-    dest["energy_returned"] = metrics.energyReturned;
+  dest["energy"] = metrics.energy;
+  dest["energy_returned"] = metrics.energyReturned;
   if (!std::isnan(metrics.frequency))
     dest["frequency"] = metrics.frequency;
   if (!std::isnan(metrics.power))

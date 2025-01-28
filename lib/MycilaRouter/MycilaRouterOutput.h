@@ -34,7 +34,7 @@ namespace Mycila {
           float apparentPower = 0;
           float current = 0;
           float dimmedVoltage = 0;
-          float energy = 0;
+          uint32_t energy = 0;
           float power = 0;
           float powerFactor = NAN;
           float resistance = NAN;
