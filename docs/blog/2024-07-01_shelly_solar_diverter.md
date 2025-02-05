@@ -98,6 +98,13 @@ Some additional hardware are required depending on the installation.
 - A 25A relay or contactor for the bypass relay (to force a heating) for the water tank electric circuit
 - A protection box for the Shelly
 
+**IMPORTANT** / **WARNING**
+
+The Shelly dimmer should be a `0/1-10V` and the voltage must be `Current sourcing`, NOT `Current sinking`. 
+This is very important!
+
+Shelly also sells the [Shelly Pro Dimmer 0/1-10V PM](https://www.shelly.com/products/shelly-pro-dimmer-0-1-10v-pm) on DIN rail which is of type current sourcing 0/1-10V.
+
 ## Wiring
 
 ### Shelly Add-On + DS18B20
