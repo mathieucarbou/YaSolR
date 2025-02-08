@@ -49,8 +49,9 @@ static dash::StatisticValue<uint32_t> _deviceBootCount(dashboard, YASOLR_LBL_005
 static dash::StatisticValue<const char*> _deviceBootReason(dashboard, YASOLR_LBL_192);
 static dash::StatisticValue<uint8_t> _deviceCores(dashboard, YASOLR_LBL_006);
 static dash::StatisticValue<size_t> _deviceHeapTotal(dashboard, YASOLR_LBL_007);
-static dash::StatisticValue<float, 2> _deviceHeapUsage(dashboard, YASOLR_LBL_008);
 static dash::StatisticValue<size_t> _deviceHeapUsed(dashboard, YASOLR_LBL_009);
+static dash::StatisticValue<float, 2> _deviceHeapUsage(dashboard, YASOLR_LBL_008);
+static dash::StatisticValue<size_t> _deviceHeapMinFree(dashboard, YASOLR_LBL_149);
 static dash::StatisticValue<const char*> _deviceID(dashboard, YASOLR_LBL_010);
 static dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011);
 static dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
@@ -1386,8 +1387,9 @@ void YaSolR::Website::updateCards() {
   // statistics
 
   _deviceHeapTotal.setValue(memory.total);
-  _deviceHeapUsage.setValue(memory.usage);
   _deviceHeapUsed.setValue(memory.used);
+  _deviceHeapUsage.setValue(memory.usage);
+  _deviceHeapMinFree.setValue(memory.minimumFree);
   _gridEnergy.setValue(gridMetrics.energy);
   _gridEnergyReturned.setValue(gridMetrics.energyReturned);
   _gridFrequency.setValue(yasolr_frequency());
