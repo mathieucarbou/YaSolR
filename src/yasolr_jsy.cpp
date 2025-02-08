@@ -108,7 +108,7 @@ void yasolr_init_jsy() {
     if (config.getBool(KEY_ENABLE_DEBUG))
       jsyTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
-    assert(jsyTaskManager->asyncStart(512 * 5, 5, 0, 100, true));
+    assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
 
     Mycila::TaskMonitor.addTask(jsyTaskManager->getName());
   }
