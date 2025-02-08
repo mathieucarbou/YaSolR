@@ -7,26 +7,17 @@
 Mycila::Grid grid;
 
 float yasolr_frequency() {
-  float frequency = std::round(grid.getFrequency().value_or(NAN));
-  if (frequency > 0)
-    return frequency;
-
-  if (pzemO1) {
-    frequency = std::round(pzemO1->data.frequency);
-    if (frequency > 0)
-      return frequency;
-  }
-
-  if (pzemO2) {
-    frequency = std::round(pzemO2->data.frequency);
-    if (frequency > 0)
-      return frequency;
-  }
-
-  frequency = config.getFloat(KEY_GRID_FREQUENCY);
+  // 1. check if frequency is set in config
+  float frequency = config.getFloat(KEY_GRID_FREQUENCY);
   if (frequency)
     return frequency;
 
+  // 2. check if frequency is set from a measurement devices (PZEM, JSY, ...)
+  frequency = std::round(grid.getFrequency().value_or(NAN));
+  if (frequency > 0)
+    return frequency;
+
+  // 3. check if frequency is set in pulse analyzer
   if (pulseAnalyzer) {
     frequency = pulseAnalyzer->getNominalGridFrequency();
     if (frequency)
