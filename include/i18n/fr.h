@@ -149,7 +149,7 @@
 #define YASOLR_LBL_143 "Écran: Type"
 #define YASOLR_LBL_144 "Écran: Rotation (°)"
 #define YASOLR_LBL_145 "Résistance (Ω)"
-// #define YASOLR_LBL_146 "Sortie 2: Résistance (Ω)"
+#define YASOLR_LBL_146 "Fréquence du réseau inconnue"
 #define YASOLR_LBL_147 "Sortie 1: Association du PZEM"
 #define YASOLR_LBL_148 "Sortie 2: Association du Pairing"
 // #define YASOLR_LBL_149 "Sortie 1: Type de relais (marche forcée)"
