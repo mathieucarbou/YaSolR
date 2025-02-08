@@ -16,9 +16,10 @@ Mycila::RouterOutput* output2 = nullptr;
 
 // ZCD
 Mycila::PulseAnalyzer* pulseAnalyzer = nullptr;
-static Mycila::ZeroCrossDimmer* zcDimmer1 = nullptr;
-static Mycila::ZeroCrossDimmer* zcDimmer2 = nullptr;
-static Mycila::Task* zcdTask = nullptr;
+
+// Internal dimmers
+static Mycila::Dimmer* dimmer1 = nullptr;
+static Mycila::Dimmer* dimmer2 = nullptr;
 
 // tasks
 
@@ -41,6 +42,64 @@ static Mycila::Task routerTask("Router", [](void* params) {
   }
 });
 
+static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
+  float frequency = yasolr_frequency();
+  const uint16_t semiPeriod = frequency ? 500000.0f / frequency : 0;
+
+  if (semiPeriod) {
+    if (!Thyristor::getSemiPeriod() || (dimmer1 && !dimmer1->getSemiPeriod()) || (dimmer2 && !dimmer2->getSemiPeriod())) {
+      logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
+
+      if (!Thyristor::getSemiPeriod()) {
+        logger.info(TAG, "Starting Thyristor...");
+        Thyristor::setSemiPeriod(semiPeriod);
+        Thyristor::begin();
+      }
+
+      if (dimmer1 && !dimmer1->getSemiPeriod()) {
+        dimmer1->setSemiPeriod(semiPeriod);
+        dimmer1->off();
+      }
+
+      if (dimmer2 && !dimmer2->getSemiPeriod()) {
+        dimmer2->setSemiPeriod(semiPeriod);
+        dimmer2->off();
+      }
+
+      dashboardInitTask.resume();
+    } else {
+      Thyristor::setSemiPeriod(semiPeriod);
+      if (dimmer1)
+        dimmer1->setSemiPeriod(semiPeriod);
+      if (dimmer2)
+        dimmer2->setSemiPeriod(semiPeriod);
+    }
+
+  } else {
+    if (Thyristor::getSemiPeriod() || (dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
+      logger.warn(TAG, "No frequency detected!");
+
+      if (Thyristor::getSemiPeriod()) {
+        logger.info(TAG, "Stopping Thyristor...");
+        Thyristor::setSemiPeriod(0);
+        Thyristor::end();
+      }
+
+      if (dimmer1 && dimmer1->getSemiPeriod()) {
+        logger.info(TAG, "Setting dimmer 1 semi-period to 0");
+        dimmer1->setSemiPeriod(0);
+      }
+
+      if (dimmer2 && dimmer2->getSemiPeriod()) {
+        logger.info(TAG, "Setting dimmer 2 semi-period to 0");
+        dimmer2->setSemiPeriod(0);
+      }
+
+      dashboardInitTask.resume();
+    }
+  }
+});
+
 // functions
 
 static bool isZeroCrossBased(const char* type) {
@@ -50,134 +109,100 @@ static bool isZeroCrossBased(const char* type) {
          strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
 }
 
-static Mycila::Dimmer* createDimmer1() {
-  if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
-    const char* type = config.get(KEY_OUTPUT1_DIMMER_TYPE);
-    Mycila::Dimmer* dimmer = nullptr;
+static bool isPWMBased(const char* type) {
+  return strcmp(type, YASOLR_DIMMER_LSA_PWM) == 0;
+}
+
+static bool isDACBased(const char* type) {
+  return strcmp(type, YASOLR_DIMMER_LSA_GP8211S) == 0 ||
+         strcmp(type, YASOLR_DIMMER_LSA_GP8403) == 0 ||
+         strcmp(type, YASOLR_DIMMER_LSA_GP8413) == 0;
+}
+
+static Mycila::Dimmer* createDimmer(const char* keyEnable, const char* keyType, const char* keyPin) {
+  if (config.getBool(keyEnable)) {
+    const char* type = config.get(keyType);
+
+    logger.info(TAG, "Initializing dimmer type: %s...", type);
 
     if (isZeroCrossBased(type)) {
-      logger.info(TAG, "Initializing Output 1 dimmer type: %s", type);
+      Mycila::ZeroCrossDimmer* zcDimmer = new Mycila::ZeroCrossDimmer();
+      zcDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+      zcDimmer->begin();
 
-      zcDimmer1 = new Mycila::ZeroCrossDimmer();
-      zcDimmer1->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT1_DIMMER));
-      zcDimmer1->begin();
-
-      if (zcDimmer1->isEnabled()) {
-        dimmer = zcDimmer1;
+      if (zcDimmer->isEnabled()) {
+        return zcDimmer;
 
       } else {
-        logger.error(TAG, "Output 1 Dimmer failed to initialize!");
-        delete zcDimmer1;
-        zcDimmer1 = nullptr;
+        logger.error(TAG, "Dimmer failed to initialize!");
+        delete zcDimmer;
+        return nullptr;
       }
-
-    } else {
-      logger.error(TAG, "Output 1 Dimmer type not supported: %s", type);
     }
 
-    return dimmer;
+    if (isPWMBased(type)) {
+      Mycila::PWMDimmer* pwmDimmer = new Mycila::PWMDimmer();
+      pwmDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+      pwmDimmer->begin();
+
+      if (pwmDimmer->isEnabled()) {
+        return pwmDimmer;
+
+      } else {
+        logger.error(TAG, "Dimmer failed to initialize!");
+        delete pwmDimmer;
+        return nullptr;
+      }
+    }
+
+    logger.error(TAG, "Dimmer type not supported!");
+    return nullptr;
   }
 
   return nullptr;
 }
 
-static Mycila::Dimmer* createDimmer2() {
-  if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
-    const char* type = config.get(KEY_OUTPUT2_DIMMER_TYPE);
-    Mycila::Dimmer* dimmer = nullptr;
-
-    if (isZeroCrossBased(type)) {
-      logger.info(TAG, "Initializing Output 2 dimmer type: %s", type);
-
-      zcDimmer2 = new Mycila::ZeroCrossDimmer();
-      zcDimmer2->setPin((gpio_num_t)config.getInt(KEY_PIN_OUTPUT2_DIMMER));
-      zcDimmer2->begin();
-
-      if (zcDimmer2->isEnabled()) {
-        dimmer = zcDimmer2;
-
-      } else {
-        logger.error(TAG, "Output 2 Dimmer failed to initialize!");
-        delete zcDimmer2;
-        zcDimmer2 = nullptr;
-      }
-
-    } else {
-      logger.error(TAG, "Output 2 Dimmer type not supported: %s", type);
-    }
-
-    return dimmer;
-  }
-
-  return nullptr;
-}
-
-static Mycila::Relay* createBypassRelay1() {
-  if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY)) {
+static Mycila::Relay* createBypassRelay(const char* keyEnable, const char* keyType, const char* keyPin) {
+  if (config.getBool(keyEnable)) {
     Mycila::Relay* relay = new Mycila::Relay();
-    relay->begin(config.getLong(KEY_PIN_OUTPUT1_RELAY), config.isEqual(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+    relay->begin(config.getLong(keyPin), config.isEqual(keyType, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
     if (relay->isEnabled()) {
       relay->listen([](bool state) {
-        logger.info(TAG, "Output 1 Relay changed to %s", state ? "ON" : "OFF");
+        logger.info(TAG, "Output Relay changed to %s", state ? "ON" : "OFF");
         if (mqttPublishTask)
           mqttPublishTask->requestEarlyRun();
       });
+      return relay;
 
     } else {
       logger.error(TAG, "Output 1 Bypass Relay failed to initialize!");
       delete relay;
-      relay = nullptr;
+      return nullptr;
     }
-
-    return relay;
-  }
-
-  return nullptr;
-}
-
-static Mycila::Relay* createBypassRelay2() {
-  if (config.getBool(KEY_ENABLE_OUTPUT2_RELAY)) {
-    Mycila::Relay* relay = new Mycila::Relay();
-    relay->begin(config.getLong(KEY_PIN_OUTPUT2_RELAY), config.isEqual(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
-
-    if (relay->isEnabled()) {
-      relay->listen([](bool state) {
-        logger.info(TAG, "Output 2 Relay changed to %s", state ? "ON" : "OFF");
-        if (mqttPublishTask)
-          mqttPublishTask->requestEarlyRun();
-      });
-
-    } else {
-      logger.error(TAG, "Output 2 Bypass Relay failed to initialize!");
-      delete relay;
-      relay = nullptr;
-    }
-
-    return relay;
   }
 
   return nullptr;
 }
 
 static void initOutput1(uint16_t semiPeriod) {
-  Mycila::Dimmer* dimmer = createDimmer1();
-  Mycila::Relay* bypassRelay = createBypassRelay1();
+  dimmer1 = createDimmer(KEY_ENABLE_OUTPUT1_DIMMER, KEY_OUTPUT1_DIMMER_TYPE, KEY_PIN_OUTPUT1_DIMMER);
+  Mycila::Relay* bypassRelay = createBypassRelay(KEY_ENABLE_OUTPUT1_RELAY, KEY_OUTPUT1_RELAY_TYPE, KEY_PIN_OUTPUT1_RELAY);
 
   // output 1 is only a bypass relay ?
-  if (!dimmer && bypassRelay) {
+  if (!dimmer1 && bypassRelay) {
     logger.warn(TAG, "Output 1 has no dimmer and is only a bypass relay");
     // we do not call begin so that the virtual dimmer remains disabled
-    dimmer = new Mycila::VirtualDimmer();
+    dimmer1 = new Mycila::VirtualDimmer();
   }
 
-  if (dimmer) {
-    output1 = new Mycila::RouterOutput("output1", *dimmer, bypassRelay);
+  if (dimmer1) {
+    output1 = new Mycila::RouterOutput("output1", *dimmer1, bypassRelay);
 
-    dimmer->setSemiPeriod(semiPeriod);
-    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
-    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
-    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
+    dimmer1->setSemiPeriod(semiPeriod);
+    dimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
+    dimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
+    dimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
 
     output1->config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
     output1->config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -197,23 +222,23 @@ static void initOutput1(uint16_t semiPeriod) {
 }
 
 static void initOutput2(uint16_t semiPeriod) {
-  Mycila::Dimmer* dimmer = createDimmer2();
-  Mycila::Relay* bypassRelay = createBypassRelay2();
+  dimmer2 = createDimmer(KEY_ENABLE_OUTPUT2_DIMMER, KEY_OUTPUT2_DIMMER_TYPE, KEY_PIN_OUTPUT2_DIMMER);
+  Mycila::Relay* bypassRelay = createBypassRelay(KEY_ENABLE_OUTPUT2_RELAY, KEY_OUTPUT2_RELAY_TYPE, KEY_PIN_OUTPUT2_RELAY);
 
   // output 2 is only a bypass relay ?
-  if (!dimmer && bypassRelay) {
+  if (!dimmer2 && bypassRelay) {
     logger.warn(TAG, "Output 2 has no dimmer and is only a bypass relay");
     // we do not call begin so that the virtual dimmer remains disabled
-    dimmer = new Mycila::VirtualDimmer();
+    dimmer2 = new Mycila::VirtualDimmer();
   }
 
-  if (dimmer) {
-    output2 = new Mycila::RouterOutput("output2", *dimmer, bypassRelay);
+  if (dimmer2) {
+    output2 = new Mycila::RouterOutput("output2", *dimmer2, bypassRelay);
 
-    dimmer->setSemiPeriod(semiPeriod);
-    dimmer->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
-    dimmer->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
-    dimmer->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
+    dimmer2->setSemiPeriod(semiPeriod);
+    dimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
+    dimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
+    dimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
 
     output2->config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
     output2->config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
@@ -287,6 +312,11 @@ void yasolr_init_router() {
   if (config.getBool(KEY_ENABLE_DEBUG))
     calibrationTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
 
+  frequencyMonitorTask.setInterval(2000 * Mycila::TaskDuration::MILLISECONDS);
+  frequencyMonitorTask.setManager(coreTaskManager);
+  if (config.getBool(KEY_ENABLE_DEBUG))
+    frequencyMonitorTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+
   // Do we need a ZCD ?
 
   if (config.getBool(KEY_ENABLE_ZCD)) {
@@ -294,72 +324,7 @@ void yasolr_init_router() {
     pulseAnalyzer->onZeroCross(Mycila::ZeroCrossDimmer::onZeroCross);
     pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
 
-    if (pulseAnalyzer->isEnabled()) {
-      // ZCD Task that will keep the grid semi-period in sync with the dimmers
-      logger.info(TAG, "Initialize ZCD sync task...");
-
-      zcdTask = new Mycila::Task("ZCD", [](void* params) {
-        // check if ZCD is online (connected to the grid)
-        // this is required for dimmers to work
-        if (pulseAnalyzer->isOnline()) {
-          if (!Thyristor::getSemiPeriod() || (zcDimmer1 && !zcDimmer1->getSemiPeriod()) || (zcDimmer2 && !zcDimmer2->getSemiPeriod())) {
-            const float frequency = yasolr_frequency();
-            const uint16_t semiPeriod = frequency ? 500000.0f / frequency : 0;
-
-            if (semiPeriod) {
-              logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
-
-              if (!Thyristor::getSemiPeriod()) {
-                logger.info(TAG, "Starting Thyristor...");
-                Thyristor::setSemiPeriod(semiPeriod);
-                Thyristor::begin();
-              }
-
-              if (zcDimmer1 && !zcDimmer1->getSemiPeriod()) {
-                zcDimmer1->setSemiPeriod(semiPeriod);
-                zcDimmer1->off();
-              }
-
-              if (zcDimmer2 && !zcDimmer2->getSemiPeriod()) {
-                zcDimmer2->setSemiPeriod(semiPeriod);
-                zcDimmer2->off();
-              }
-
-              dashboardInitTask.resume();
-            }
-          }
-
-        } else {
-          if (Thyristor::getSemiPeriod() || (zcDimmer1 && zcDimmer1->getSemiPeriod()) || (zcDimmer2 && zcDimmer2->getSemiPeriod())) {
-            logger.warn(TAG, "No electricity detected by ZCD module");
-
-            if (Thyristor::getSemiPeriod()) {
-              logger.info(TAG, "Stopping Thyristor...");
-              Thyristor::setSemiPeriod(0);
-              Thyristor::end();
-            }
-
-            if (zcDimmer1 && zcDimmer1->getSemiPeriod()) {
-              logger.info(TAG, "Setting dimmer 1 semi-period to 0");
-              zcDimmer1->setSemiPeriod(0);
-            }
-
-            if (zcDimmer2 && zcDimmer2->getSemiPeriod()) {
-              logger.info(TAG, "Setting dimmer 2 semi-period to 0");
-              zcDimmer2->setSemiPeriod(0);
-            }
-
-            dashboardInitTask.resume();
-          }
-        }
-      });
-
-      zcdTask->setInterval(2 * Mycila::TaskDuration::SECONDS);
-      zcdTask->setManager(coreTaskManager);
-      if (config.getBool(KEY_ENABLE_DEBUG))
-        zcdTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-
-    } else {
+    if (!pulseAnalyzer->isEnabled()) {
       logger.error(TAG, "ZCD Pulse Analyzer failed to initialize!");
       delete pulseAnalyzer;
       pulseAnalyzer = nullptr;

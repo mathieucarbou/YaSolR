@@ -124,6 +124,11 @@ void Mycila::Grid::toJson(const JsonObject& root) const {
     root["voltage"] = voltage.value();
   }
 
+  std::optional<float> frequency = getFrequency();
+  if (frequency.has_value()) {
+    root["frequency"] = frequency.value();
+  }
+
   Metrics measurements;
   getGridMeasurements(measurements);
   toJson(root["measurements"].to<JsonObject>(), measurements);
