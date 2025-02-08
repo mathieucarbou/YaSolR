@@ -25,17 +25,17 @@ description: Manual
     - [MQTT API](#mqtt-api)
   - [GPIO](#gpio)
   - [Hardware](#hardware)
-    * [Nominal Grid Frequency](#nominal-grid-frequency)
-    * [JSY](#jsy)
-    * [JSY Remote](#jsy-remote)
-    * [Zero-Cross Detection](#zero-cross-detection)
-    * [Dimmer Type](#dimmer-type)
-    * [Dimmer Range Remapping](#dimmer-range-remapping)
-    * [PZEM Pairing](#pzem-pairing)
-    * [Relay Types](#relay-types)
-    * [Relay Automatic Control](#relay-automatic-control)
-    * [LEDs](#leds)
-    * [Display](#display)
+    - [Nominal Grid Frequency](#nominal-grid-frequency)
+    - [JSY](#jsy)
+    - [JSY Remote](#jsy-remote)
+    - [Zero-Cross Detection](#zero-cross-detection)
+    - [Dimmer Type](#dimmer-type)
+    - [Dimmer Range Remapping](#dimmer-range-remapping)
+    - [PZEM Pairing](#pzem-pairing)
+    - [Relay Types](#relay-types)
+    - [Relay Automatic Control](#relay-automatic-control)
+    - [LEDs](#leds)
+    - [Display](#display)
   - [Output 1 and 2 Config](#output-1-and-2-config)
     - [Resistance Calibration](#resistance-calibration)
     - [Dimmer Configuration](#dimmer-configuration)
@@ -467,6 +467,15 @@ Make sure to correctly configure all the hardware components you have connected 
 
 `Auto-detect` will automatically detect the grid frequency based on the connected measurement devices, or remote ones, or thanks to the pulse analyzer.
 It is recommended to leave the setting to `Auto-detect` unless you have a good reason to force it (no measurement device connected, etc).
+
+If you set it, frequency won't be detected from a measurement device, but will be forced to the value you set.
+
+> ##### NOTE
+>
+> It can happen that your grid frequency will be switched temporarily to a non standard value (like 51Hz) if a generator is used because of some repair, etc.
+> With automatic mode, YaSolR will detect this change and adapt the routing to the new frequency.
+>
+{: .block-note }
 
 #### JSY
 
