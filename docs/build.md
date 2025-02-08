@@ -13,9 +13,9 @@ description: Build
   - [The Adventurer](#the-adventurer)
   - [The Elite](#the-elite)
   - [The Professional](#the-professional)
-    - [Using a PWM to Analog Converter and ZCD](#using-a-pwm-to-analog-converter-and-zcd)
-    - [Using a PWM to Analog Converter only](#using-a-pwm-to-analog-converter-only)
-    - [Using a DAC only](#using-a-dac-only)
+    - [Voltage Regulator + PWM to Analog Converter + ZCD](#voltage-regulator--pwm-to-analog-converter--zcd)
+    - [Voltage Regulator + PWM to Analog Converter only](#voltage-regulator--pwm-to-analog-converter-only)
+    - [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
   - [Possible Upgrades](#possible-upgrades)
   - [Remote JSY](#remote-jsy)
   - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter)
@@ -209,7 +209,7 @@ There are multiple ways to control a voltage regulator with YaSolR.
 > - Bypass mode will use the dimmer set at 100% power
 {: .block-warning }
 
-#### Using a PWM to Analog Converter and ZCD
+#### Voltage Regulator + PWM to Analog Converter + ZCD
 
 This option is a good upgrade to a Robodyn or SSR since it reuses the same components and just replaces the dimmer part with the LSA.
 It even reuses the existing ZCD circuit, and a dimmer implementation based on a ZCD, as usual, like for the Robodyn or Random SSR.
@@ -229,7 +229,7 @@ As such, the LSA behavior is controlled exactly like a Robodyn or SSR would be c
 > - Requires an additional 12V power supply (e.g. Mean Well HDR-15-15 12V DC)
 {: .block-warning }
 
-#### Using a PWM to Analog Converter only
+#### Voltage Regulator + PWM to Analog Converter only
 
 (🚧)
 
@@ -248,7 +248,7 @@ This solution skips the need to have a dedicated ZCD and uses a specific impleme
 > - Requires an additional 12V power supply (e.g. Mean Well HDR-15-15 12V DC)
 {: .block-warning }
 
-#### Using a DAC only
+#### Voltage Regulator + DAC only
 
 (🚧)
 
