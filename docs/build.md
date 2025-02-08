@@ -231,8 +231,6 @@ As such, the LSA behavior is controlled exactly like a Robodyn or SSR would be c
 
 #### Voltage Regulator + PWM to Analog Converter only
 
-(🚧)
-
 This solution skips the need to have a dedicated ZCD and uses a specific implementation in YaSolR which is specific to this PWM to Analog Converter.
 
 - A voltage regulator (LSA or LCTC) is used for the dimming (phase control)

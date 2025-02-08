@@ -530,7 +530,12 @@ This is easier to put a clamp around the grid wire.
 #### Zero-Cross Detection
 
 The Zero-Cross Detection (ZCD) module is used to detect the zero-crossing of the grid voltage.
-It is required when you use a Robodynn, Random SSR, or voltage regulator with the PWM-Analog module.
+
+It is required with these types of dimmers:
+- LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
+- Random Solid State Relay + ZCD
+- Robodyn 24/40A
+- Triac + ZCD
 
 When activating `Zero-Cross Detection` in the hardware page, YaSolR will first start a pulse analyzer to grab some statistics about the pulse characteristics: period and length.
 This characteristics are used to fine-tune the TRIAC firing and they can be viewed in the dashboard, in the statistics section:
@@ -564,7 +569,7 @@ All the supported dimmer types:
   - Robodyn 24/40A
   - Triac + ZCD
 - PWM based:
-  - LSA / LCTC Voltage Regulators + PWM->Analog (🚧)
+  - LSA / LCTC Voltage Regulators + PWM->Analog
 - DAC based:
   - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (🚧)
   - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (🚧)

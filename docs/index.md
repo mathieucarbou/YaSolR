@@ -107,7 +107,7 @@ All the supported dimmer types:
   - Robodyn 24/40A
   - Triac + ZCD
 - PWM based:
-  - LSA / LCTC Voltage Regulators + PWM->Analog (🚧)
+  - LSA / LCTC Voltage Regulators + PWM->Analog
 - DAC based:
   - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (🚧)
   - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (🚧)
