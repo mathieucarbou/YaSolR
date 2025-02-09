@@ -84,9 +84,10 @@ void yasolr_init_relays() {
     });
 
     relayTask->setEnabledWhen([]() { return !router.isCalibrationRunning() && ((relay1 && relay1->isAutoRelayEnabled()) || (relay2 && relay2->isAutoRelayEnabled())); });
-    relayTask->setInterval(7 * Mycila::TaskDuration::SECONDS);
-    relayTask->setManager(coreTaskManager);
+    relayTask->setInterval(7000);
     if (config.getBool(KEY_ENABLE_DEBUG))
-      relayTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+      relayTask->enableProfiling();
+
+    coreTaskManager.addTask(*relayTask);
   }
 }

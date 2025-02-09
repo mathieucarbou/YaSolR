@@ -29,7 +29,7 @@ void setup() {
   assert(coreTaskManager.asyncStart(512 * 7, 5, 1, 100, true));
 
   // task manager for long running tasks like mqtt / pzem
-  if (unsafeTaskManager.getSize())
+  if (unsafeTaskManager.tasks())
     assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false));
 
   // STARTUP READY!

@@ -121,11 +121,12 @@ void yasolr_init_jsy_remote() {
 
     Mycila::TaskMonitor.addTask("async_udp"); // AsyncUDP (stack size cannot be set)
 
-    jsyRemoteTask = new Mycila::Task("JSY Remote", Mycila::TaskType::ONCE, [](void* params) {
+    jsyRemoteTask = new Mycila::Task("JSY Remote", Mycila::Task::Type::ONCE, [](void* params) {
       const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
       logger.info(TAG, "Enable JSY Remote Listener on port %..." PRIu16, udpPort);
       udp->listen(udpPort);
     });
-    jsyRemoteTask->setManager(coreTaskManager);
+
+    coreTaskManager.addTask(*jsyRemoteTask);
   }
 }

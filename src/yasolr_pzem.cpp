@@ -49,7 +49,7 @@ void yasolr_init_pzem() {
         }
       });
 
-      pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::TaskType::ONCE, [](void* params) {
+      pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::Task::Type::ONCE, [](void* params) {
         logger.info(TAG, "Pairing connected PZEM to Output 1...");
         pzemO1->end();
         pzemO1->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
@@ -81,9 +81,9 @@ void yasolr_init_pzem() {
             }
         }
       });
-      pzemO1PairingTask->setManager(unsafeTaskManager);
+      unsafeTaskManager.addTask(*pzemO1PairingTask);
       if (config.getBool(KEY_ENABLE_DEBUG))
-        pzemO1PairingTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+        pzemO1PairingTask->enableProfiling();
 
     } else {
       logger.error(TAG, "PZEM for Output 1 failed to initialize!");
@@ -126,7 +126,7 @@ void yasolr_init_pzem() {
         }
       });
 
-      pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::TaskType::ONCE, [](void* params) {
+      pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::Task::Type::ONCE, [](void* params) {
         logger.info(TAG, "Pairing connected PZEM to Output 2...");
         pzemO2->end();
         pzemO2->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
@@ -158,9 +158,9 @@ void yasolr_init_pzem() {
             }
         }
       });
-      pzemO2PairingTask->setManager(unsafeTaskManager);
+      unsafeTaskManager.addTask(*pzemO2PairingTask);
       if (config.getBool(KEY_ENABLE_DEBUG))
-        pzemO2PairingTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+        pzemO2PairingTask->enableProfiling();
 
     } else {
       logger.error(TAG, "PZEM for Output 2 failed to initialize!");
@@ -183,13 +183,15 @@ void yasolr_init_pzem() {
         yield();
       }
     });
-    pzemTask->setEnabledWhen([]() { return (!pzemO1PairingTask || pzemO1PairingTask->isPaused()) && (!pzemO2PairingTask || pzemO2PairingTask->isPaused()); });
-    pzemTask->setManager(*pzemTaskManager);
-    if (config.getBool(KEY_ENABLE_DEBUG))
-      pzemTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    pzemTask->setEnabledWhen([]() { return (!pzemO1PairingTask || pzemO1PairingTask->paused()) && (!pzemO2PairingTask || pzemO2PairingTask->paused()); });
+    pzemTaskManager->addTask(*pzemTask);
+
+    if (config.getBool(KEY_ENABLE_DEBUG)) {
+      pzemTaskManager->enableProfiling();
+    }
 
     assert(pzemTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
 
-    Mycila::TaskMonitor.addTask(pzemTaskManager->getName());
+    Mycila::TaskMonitor.addTask(pzemTaskManager->name());
   }
 }

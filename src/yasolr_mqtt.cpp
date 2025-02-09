@@ -420,11 +420,11 @@ void yasolr_init_mqtt() {
     logger.info(TAG, "Initialize MQTT...");
 
     mqtt = new Mycila::MQTT();
-    mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::TaskType::ONCE, [](void* params) { connect(); });
-    mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::TaskType::ONCE, [](void* params) { publishConfig(); });
-    mqttPublishStaticTask = new Mycila::Task("MQTT Publish Static Data", Mycila::TaskType::ONCE, [](void* params) { publishStaticData(); });
+    mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
+    mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, [](void* params) { publishConfig(); });
+    mqttPublishStaticTask = new Mycila::Task("MQTT Publish Static Data", Mycila::Task::Type::ONCE, [](void* params) { publishStaticData(); });
     mqttPublishTask = new Mycila::Task("MQTT Publish", [](void* params) { publishData(); });
-    haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::TaskType::ONCE, [](void* params) { haDiscovery(); });
+    haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::Task::Type::ONCE, [](void* params) { haDiscovery(); });
 
     mqtt->onConnect([](void) {
       logger.info(TAG, "MQTT connected!");
@@ -435,29 +435,26 @@ void yasolr_init_mqtt() {
 
     subscribe();
 
-    mqttConnectTask->setManager(unsafeTaskManager);
-
-    haDiscoveryTask->setManager(unsafeTaskManager);
     haDiscoveryTask->setEnabledWhen([]() { return mqtt->isConnected() && config.getBool(KEY_ENABLE_HA_DISCOVERY) && !config.isEmpty(KEY_HA_DISCOVERY_TOPIC); });
-
     mqttPublishConfigTask->setEnabledWhen([]() { return mqtt->isConnected(); });
-    mqttPublishConfigTask->setManager(unsafeTaskManager);
-
     mqttPublishStaticTask->setEnabledWhen([]() { return mqtt->isConnected(); });
-    mqttPublishStaticTask->setManager(unsafeTaskManager);
-
     mqttPublishTask->setEnabledWhen([]() { return mqtt->isConnected(); });
-    mqttPublishTask->setIntervalSupplier([]() { return config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * Mycila::TaskDuration::SECONDS; });
-    mqttPublishTask->setManager(unsafeTaskManager);
+    mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * 1000);
+
+    unsafeTaskManager.addTask(*mqttConnectTask);
+    unsafeTaskManager.addTask(*haDiscoveryTask);
+    unsafeTaskManager.addTask(*mqttPublishConfigTask);
+    unsafeTaskManager.addTask(*mqttPublishStaticTask);
+    unsafeTaskManager.addTask(*mqttPublishTask);
 
     Mycila::TaskMonitor.addTask("mqtt_task"); // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
 
     if (config.getBool(KEY_ENABLE_DEBUG)) {
-      haDiscoveryTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-      mqttConnectTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-      mqttPublishConfigTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-      mqttPublishStaticTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-      mqttPublishTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+      haDiscoveryTask->enableProfiling();
+      mqttConnectTask->enableProfiling();
+      mqttPublishConfigTask->enableProfiling();
+      mqttPublishStaticTask->enableProfiling();
+      mqttPublishTask->enableProfiling();
     }
   }
 }

@@ -101,15 +101,17 @@ void yasolr_init_jsy() {
 
     // async task
 
-    jsyTaskManager = new Mycila::TaskManager("y-jsy");
-
     jsyTask = new Mycila::Task("JSY", [](void* params) { jsy->read(); });
-    jsyTask->setManager(*jsyTaskManager);
-    if (config.getBool(KEY_ENABLE_DEBUG))
-      jsyTask->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+
+    jsyTaskManager = new Mycila::TaskManager("y-jsy");
+    jsyTaskManager->addTask(*jsyTask);
+
+    if (config.getBool(KEY_ENABLE_DEBUG)) {
+      jsyTaskManager->enableProfiling();
+    }
 
     assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
 
-    Mycila::TaskMonitor.addTask(jsyTaskManager->getName());
+    Mycila::TaskMonitor.addTask(jsyTaskManager->name());
   }
 }

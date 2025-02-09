@@ -115,9 +115,10 @@ void yasolr_init_ds18() {
         yield();
       }
     });
-    ds18Task->setInterval(10 * Mycila::TaskDuration::SECONDS);
-    ds18Task->setManager(unsafeTaskManager);
+    ds18Task->setInterval(10000);
     if (config.getBool(KEY_ENABLE_DEBUG))
-      ds18Task->enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+      ds18Task->enableProfiling();
+
+    unsafeTaskManager.addTask(*ds18Task);
   }
 }

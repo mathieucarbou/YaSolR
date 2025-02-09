@@ -23,7 +23,7 @@ static AsyncAuthenticationMiddleware authMiddleware;
 static AsyncLoggingMiddleware loggingMiddleware;
 YaSolR::Website website;
 
-Mycila::Task dashboardInitTask("Init Dashboard", Mycila::TaskType::ONCE, [](void* params) {
+Mycila::Task dashboardInitTask("Init Dashboard", Mycila::Task::Type::ONCE, [](void* params) {
   website.initCards();
   website.updateCards();
   dashboard.sendUpdates();
@@ -142,12 +142,12 @@ void rest_api() {
 
       // tasks
       JsonObject tasks = system["task"].to<JsonObject>();
-      coreTaskManager.toJson(tasks[coreTaskManager.getName()].to<JsonObject>());
+      coreTaskManager.toJson(tasks[coreTaskManager.name()].to<JsonObject>());
       if (jsyTaskManager)
-        jsyTaskManager->toJson(tasks[jsyTaskManager->getName()].to<JsonObject>());
+        jsyTaskManager->toJson(tasks[jsyTaskManager->name()].to<JsonObject>());
       if (pzemTaskManager)
-        pzemTaskManager->toJson(tasks[pzemTaskManager->getName()].to<JsonObject>());
-      unsafeTaskManager.toJson(tasks[unsafeTaskManager.getName()].to<JsonObject>());
+        pzemTaskManager->toJson(tasks[pzemTaskManager->name()].to<JsonObject>());
+      unsafeTaskManager.toJson(tasks[unsafeTaskManager.name()].to<JsonObject>());
 
       // libs versions
       JsonObject library = system["lib"].to<JsonObject>();
@@ -545,15 +545,16 @@ void yasolr_init_web_server() {
   // Tasks
 
   dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardInitTask.setManager(coreTaskManager);
 
   dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
-  dashboardUpdateTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  dashboardUpdateTask.setManager(coreTaskManager);
+  dashboardUpdateTask.setInterval(1000);
+
+  coreTaskManager.addTask(dashboardInitTask);
+  coreTaskManager.addTask(dashboardUpdateTask);
 
   if (config.getBool(KEY_ENABLE_DEBUG)) {
-    dashboardUpdateTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
-    dashboardInitTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    dashboardUpdateTask.enableProfiling();
+    dashboardInitTask.enableProfiling();
   }
 
   // Task Monitor

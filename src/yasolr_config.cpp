@@ -262,6 +262,9 @@ void yasolr_init_config() {
       pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
       pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
       logger.info(TAG, "PID Controller reconfigured!");
+
+    } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {
+      mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * 1000);
     }
 
     dashboardInitTask.resume();

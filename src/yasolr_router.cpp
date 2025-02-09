@@ -303,19 +303,18 @@ void yasolr_init_router() {
   // Routing Tasks
 
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
-  routerTask.setInterval(500 * Mycila::TaskDuration::MILLISECONDS);
-  routerTask.setManager(coreTaskManager);
+  routerTask.setInterval(500);
 
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
-  calibrationTask.setInterval(1 * Mycila::TaskDuration::SECONDS);
-  calibrationTask.setManager(coreTaskManager);
+  calibrationTask.setInterval(1000);
   if (config.getBool(KEY_ENABLE_DEBUG))
-    calibrationTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    calibrationTask.enableProfiling();
 
-  frequencyMonitorTask.setInterval(2000 * Mycila::TaskDuration::MILLISECONDS);
-  frequencyMonitorTask.setManager(coreTaskManager);
-  if (config.getBool(KEY_ENABLE_DEBUG))
-    frequencyMonitorTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+  frequencyMonitorTask.setInterval(2000);
+
+  coreTaskManager.addTask(routerTask);
+  coreTaskManager.addTask(calibrationTask);
+  coreTaskManager.addTask(frequencyMonitorTask);
 
   // Do we need a ZCD ?
 

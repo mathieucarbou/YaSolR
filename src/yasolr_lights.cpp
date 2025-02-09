@@ -7,17 +7,17 @@
 Mycila::TrafficLight lights;
 
 static Mycila::Task lightsTask("Lights", [](void* params) {
-  if (!safeBootTask.isPaused()) {
+  if (safeBootTask.scheduled()) {
     lights.setAllOn();
     return;
   }
 
-  if (!restartTask.isPaused()) {
+  if (restartTask.scheduled()) {
     lights.set(Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::ON);
     return;
   }
 
-  if (!resetTask.isPaused()) {
+  if (resetTask.scheduled()) {
     lights.set(Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::ON, Mycila::TrafficLight::State::ON);
     return;
   }
@@ -48,6 +48,7 @@ void yasolr_init_lights() {
   if (config.getBool(KEY_ENABLE_LIGHTS))
     lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
 
-  lightsTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
-  lightsTask.setManager(coreTaskManager);
+  lightsTask.setInterval(200);
+
+  coreTaskManager.addTask(lightsTask);
 }

@@ -426,13 +426,13 @@ void YaSolR::Website::begin() {
 
   _output1PZEMSync.onChange([](bool value) {
     pzemO1PairingTask->resume();
-    _output1PZEMSync.setValue(!pzemO1PairingTask->isPaused());
+    _output1PZEMSync.setValue(pzemO1PairingTask->scheduled());
     dashboard.refresh(_output1PZEMSync);
   });
 
   _output2PZEMSync.onChange([](bool value) {
     pzemO2PairingTask->resume();
-    _output2PZEMSync.setValue(!pzemO2PairingTask->isPaused());
+    _output2PZEMSync.setValue(pzemO2PairingTask->scheduled());
     dashboard.refresh(_output2PZEMSync);
   });
 
@@ -1466,8 +1466,8 @@ void YaSolR::Website::updateCards() {
     _output2Bypass.setValue(output2->isBypassOn());
   }
 
-  _output1PZEMSync.setValue(pzemO1PairingTask && !pzemO1PairingTask->isPaused());
-  _output2PZEMSync.setValue(pzemO2PairingTask && !pzemO2PairingTask->isPaused());
+  _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
+  _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
   _output1ResistanceCalibration.setValue(router.isCalibrationRunning());
   _output2ResistanceCalibration.setValue(router.isCalibrationRunning());
 

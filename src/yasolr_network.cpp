@@ -6,7 +6,7 @@
 
 static Mycila::Task networkManagerTask("ESPConnect", [](void* params) { espConnect.loop(); });
 
-static Mycila::Task networkStartTask("Network Start", Mycila::TaskType::ONCE, [](void* params) {
+static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, [](void* params) {
   logger.info(TAG, "Enable Network Services...");
 
   // Web server
@@ -105,10 +105,11 @@ void yasolr_init_network() {
     }
   });
 
-  networkStartTask.setManager(coreTaskManager);
   if (config.getBool(KEY_ENABLE_DEBUG))
-    networkStartTask.enableProfiling(10, Mycila::TaskTimeUnit::MILLISECONDS);
+    networkStartTask.enableProfiling();
 
-  networkManagerTask.setInterval(200 * Mycila::TaskDuration::MILLISECONDS);
-  networkManagerTask.setManager(coreTaskManager);
+  networkManagerTask.setInterval(200);
+
+  coreTaskManager.addTask(networkStartTask);
+  coreTaskManager.addTask(networkManagerTask);
 }
