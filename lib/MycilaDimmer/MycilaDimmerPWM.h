@@ -61,7 +61,7 @@ namespace Mycila {
 
     protected:
       virtual const char* type() const { return "pwm"; }
-      virtual bool apply();
+      virtual bool apply(float mappedDutyCycle);
 
     private:
       gpio_num_t _pin = GPIO_NUM_NC;

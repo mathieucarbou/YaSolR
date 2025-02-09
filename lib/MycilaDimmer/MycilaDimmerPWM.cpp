@@ -71,8 +71,8 @@ void Mycila::PWMDimmer::end() {
   digitalWrite(_pin, LOW);
 }
 
-bool Mycila::PWMDimmer::apply() {
-  uint32_t duty = _dutyCycle * ((1 << _resolution) - 1);
+bool Mycila::PWMDimmer::apply(float mappedDutyCycle) {
+  uint32_t duty = mappedDutyCycle * ((1 << _resolution) - 1);
   // LOGD(TAG, "Set PWM duty cycle on pin %" PRId8 " to %lu", _pin, duty);
   return ledcWrite(_pin, duty);
 }

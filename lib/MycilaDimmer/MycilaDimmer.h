@@ -83,7 +83,7 @@ namespace Mycila {
 
         _delay = _lookupFiringDelay(mappedDutyCycle);
 
-        return apply();
+        return apply(mappedDutyCycle);
       }
 
       /**
@@ -190,7 +190,7 @@ namespace Mycila {
 
       uint16_t _lookupFiringDelay(float dutyCycle);
 
-      virtual bool apply() = 0;
+      virtual bool apply(float mappedDutyCycle) = 0;
       virtual const char* type() const = 0;
   };
 
@@ -203,6 +203,6 @@ namespace Mycila {
 
     protected:
       virtual const char* type() const { return "virtual"; }
-      virtual bool apply() { return true; }
+      virtual bool apply(float mappedDutyCycle) { return true; }
   };
 } // namespace Mycila

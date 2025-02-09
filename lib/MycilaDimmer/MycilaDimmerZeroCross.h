@@ -51,7 +51,7 @@ namespace Mycila {
 
     protected:
       virtual const char* type() const { return "zero-cross"; }
-      virtual bool apply() {
+      virtual bool apply(float mappedDutyCycle) {
         _dimmer->setDelay(_delay);
         return true;
       }
