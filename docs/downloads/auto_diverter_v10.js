@@ -14,6 +14,7 @@
  * - v7: Reworked the routing script to improve teh internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
  * - v8: Set OUT_MIN to -1000W by default to avoid teh PID to trigger routing when the grid consumption drops near 0W in the morning for example if a load is turned off.
  * - v9: Implemented ability to switch PID parameters when the grid power is near the setpoint. This is useful to avoid the PID to overreact when the grid power is near the setpoint. The script will switch between HIGH and LOW PID parameters when the grid power is within a certain range of the setpoint. This is controlled by the HIGH_LOW_SWITCH parameter.
+ * - v10: Added support for MQTT as a grid source in order to read the grid power and voltage from an external source. This is useful when the script is installed on the dimmer itself and the grid power and voltage are read from MQTT. The script will subscribe to the MQTT topics defined in the configuration and will use the values to compute the power to divert. This setup does not require a Shelly EM Pro.
  * ======================================
  */
 const scriptName = "auto_diverter";
@@ -23,8 +24,20 @@ const scriptName = "auto_diverter";
 const CONFIG = {
   // Debug mode
   DEBUG: 0,
-  // Grid Power Read Interval (s)
-  READ_INTERVAL_S: 1,
+  // Configure the sources for the grid power and voltage.
+  // By default, the script will use a Shelly EM to read the grid power and voltage.
+  // But it can be installed directly on the dimmer and read the power and voltage from MQTT.
+  GRID_SOURCE: {
+    TYPE: "EM", // "EM" or "MQTT"
+
+    // Grid Read Interval (s) for power and voltage (only used when GRID_SOURCE.TYPE is "EM")
+    EM_READ_INTERVAL_S: 1,
+
+    // MQTT Topic for Grid Power (only used when GRID_SOURCE.TYPE is "MQTT")
+    MQTT_TOPIC_GRID_POWER: "homeassistant/states/sensor/grid_power/state",
+    // MQTT Topic for Grid Voltage (only used when GRID_SOURCE.TYPE is "MQTT")
+    MQTT_TOPIC_GRID_VOLTAGE: "homeassistant/states/sensor/grid_voltage/state",
+  },
   // grid semi-period in micro-seconds
   SEMI_PERIOD: 10000,
   // If set to true, the calculation of the dimmer duty cycle will be done based on a power matching LUT table which considers the voltage and current sine wave.
@@ -332,6 +345,11 @@ function callDimmers(cb) {
 }
 
 function onSwitchGetStatus(result, errCode, errMessage, data) {
+  if (errCode === 404) {
+    // Switch.GetStatus does not exist: we do not run on a EM.
+    errCode = 0;
+    result = { output: false };
+  }
   if (errCode) {
     print(scriptName, ":", "ERR onSwitchGetStatus:", errCode);
     throttleReadShellyEM();
@@ -430,12 +448,18 @@ function readShellyEM() {
 }
 
 function throttleReadShellyEM() {
+  if (CONFIG.GRID_SOURCE.TYPE !== "EM") {
+    // do nothing if we are not using a Shelly EM
+    // values are coming from MQTT
+    return;
+  }
   const now = Date.now();
+  const itvl = CONFIG.GRID_SOURCE.EM_READ_INTERVAL_S * 1000;
   const diff = now - DIVERT.lastReadTime;
-  if (diff > 1000) {
+  if (diff > itvl) {
     readShellyEM();
   } else {
-    Timer.set(1000 - diff, false, readShellyEM);
+    Timer.set(itvl - diff, false, readShellyEM);
   }
 }
 
@@ -459,5 +483,27 @@ function onHttpGetStatus(request, response) {
 validateConfig(function () {
   print(scriptName, ":", "Starting Shelly Solar Diverter...");
   HTTPServer.registerEndpoint("status", onHttpGetStatus);
-  throttleReadShellyEM();
+  if (CONFIG.GRID_SOURCE.TYPE === "EM") {
+    print(scriptName, ":", "Grid Source: Shelly EM");
+    throttleReadShellyEM();
+  } else if (CONFIG.GRID_SOURCE.TYPE === "MQTT") {
+    print(scriptName, ":", "Grid Source: MQTT");
+    MQTT.subscribe(CONFIG.GRID_SOURCE.MQTT_TOPIC_GRID_VOLTAGE, function (topic, message) {
+      if (CONFIG.DEBUG > 1) {
+        print(scriptName, ":", "MQTT:", topic, "=>", message);
+      }
+      DIVERT.gridVoltage = parseFloat(message);
+    });
+    MQTT.subscribe(CONFIG.GRID_SOURCE.MQTT_TOPIC_GRID_POWER, function (topic, message) {
+      if (CONFIG.DEBUG > 1) {
+        print(scriptName, ":", "MQTT:", topic, "=>", message);
+      }
+      DIVERT.gridPower = parseFloat(message);
+      if (DIVERT.gridVoltage) {
+        divert(DIVERT.gridVoltage, DIVERT.gridPower);
+      }
+    });
+  } else {
+    print(scriptName, ":", "ERR: Invalid Grid Source: ", CONFIG.GRID_SOURCE.TYPE);
+  }
 });

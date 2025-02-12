@@ -32,6 +32,7 @@ _I've put the YaSolR project in pause for a few days to work on this very cool a
   - [Creating a Auto Divert Virtual Switch to control the script remotely](#creating-a-auto-divert-virtual-switch-to-control-the-script-remotely)
   - [Solar Diverter Status](#solar-diverter-status)
   - [PID Control and Tuning](#pid-control-and-tuning)
+  - [MQTT Grid source](#mqtt-grid-source)
 - [Future Improvements](#future-improvements)
 - [Demos](#demos)
 - [Help and Support](#help-and-support)
@@ -82,13 +83,15 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V9](../downloads/auto_diverter_v9.js)**: Implemented ability to switch PID parameters when the grid power is near the setpoint. This is useful to avoid the PID to overreact when the grid power is near the setpoint. The script will switch between HIGH and LOW PID parameters when the grid power is within a certain range of the setpoint. This is controlled by the HIGH_LOW_SWITCH parameter.
 
+- **[Shelly Solar Diverter Script V10](../downloads/auto_diverter_v10.js)**: Added support for MQTT as a grid source in order to read the grid power and voltage from an external source. This is useful when the script is installed on the dimmer itself and the grid power and voltage are read from MQTT. The script will subscribe to the MQTT topics defined in the configuration and will use the values to compute the power to divert. This setup does not require a Shelly EM Pro.
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
 
-| [Shelly Pro EM - 50](https://www.shelly.com/fr/products/shop/proem-1x50a) | [Shelly Dimmer 0/1-10V PM Gen3](https://www.shelly.com/products/shelly-0-1-10v-dimmer-pm-gen3) | [Shelly Plus Add-On](https://www.shelly.com/fr/products/shop/shelly-plus-add-on) | [Temperature Sensor DS18B20](https://www.shelly.com/fr/products/shop/temperature-sensor-ds18B20) | Voltage Regulator<br>- [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html)<br>- [LCTC DTY-220V40P1](https://fr.aliexpress.com/item/1005005008018888.html) |
-| :-----------------------------------------------------------------------: | :-----------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|             ![](../assets/img/hardware/Shelly_Pro_EM_50.jpeg)             |                  ![](../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                   |                  ![](../assets/img/hardware/Shelly_Addon.jpeg)                   |                           ![](../assets/img/hardware/Shelly_DS18.jpeg)                           |                             ![](../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
+| [Shelly Pro EM - 50](https://www.shelly.com/fr/products/shop/proem-1x50a) (optional) | [Shelly Dimmer 0/1-10V PM Gen3](https://www.shelly.com/products/shelly-0-1-10v-dimmer-pm-gen3) | [Shelly Plus Add-On](https://www.shelly.com/fr/products/shop/shelly-plus-add-on) (optional) | [Temperature Sensor DS18B20](https://www.shelly.com/fr/products/shop/temperature-sensor-ds18B20) (optional) | Voltage Regulator<br>- [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html)<br>- [LCTC DTY-220V40P1](https://fr.aliexpress.com/item/1005005008018888.html) |
+| :----------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                  ![](../assets/img/hardware/Shelly_Pro_EM_50.jpeg)                   |                       ![](../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                       |                        ![](../assets/img/hardware/Shelly_Addon.jpeg)                        |                                ![](../assets/img/hardware/Shelly_DS18.jpeg)                                 |                             ![](../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
 
 Some additional hardware are required depending on the installation.
 **Please select the amperage according to your needs.**
@@ -100,7 +103,7 @@ Some additional hardware are required depending on the installation.
 
 **IMPORTANT** / **WARNING**
 
-The Shelly dimmer should be a `0/1-10V` and the voltage must be `Current sourcing`, NOT `Current sinking`. 
+The Shelly dimmer should be a `0/1-10V` and the voltage must be `Current sourcing`, NOT `Current sinking`.
 This is very important!
 
 Shelly also sells the [Shelly Pro Dimmer 0/1-10V PM](https://www.shelly.com/products/shelly-pro-dimmer-0-1-10v-pm) on DIN rail which is of type current sourcing 0/1-10V.
@@ -164,6 +167,8 @@ After calibration, you need to test the dimmer.
 
 ### Shelly Pro EM 50 Setup
 
+_Shelly Pro EM 50 is optional: th: script can be installed directly on the Shelly dimmer and use MQTT to read the power and voltage._
+
 - Set static IP address
 - Make sure to place the A clamp around the main phase entering the house in the right direction
 - Add the `Shelly Solar Diverter` script to the Shelly Pro EM
@@ -183,8 +188,20 @@ Edit the `CONFIG` object and pay attention to the values, especially the resista
 const CONFIG = {
   // Debug mode
   DEBUG: 0,
-  // Grid Power Read Interval (s)
-  READ_INTERVAL_S: 1,
+  // Configure the sources for the grid power and voltage.
+  // By default, the script will use a Shelly EM to read the grid power and voltage.
+  // But it can be installed directly on the dimmer and read the power and voltage from MQTT.
+  GRID_SOURCE: {
+    TYPE: "MQTT", // "EM" or "MQTT"
+
+    // Grid Read Interval (s) for power and voltage (only used when GRID_SOURCE.TYPE is "EM")
+    EM_READ_INTERVAL_S: 1,
+
+    // MQTT Topic for Grid Power (only used when GRID_SOURCE.TYPE is "MQTT")
+    MQTT_TOPIC_GRID_POWER: "homeassistant/states/sensor/grid_power/state",
+    // MQTT Topic for Grid Voltage (only used when GRID_SOURCE.TYPE is "MQTT")
+    MQTT_TOPIC_GRID_VOLTAGE: "homeassistant/states/sensor/grid_voltage/state",
+  },
   // grid semi-period in micro-seconds
   SEMI_PERIOD: 10000,
   // If set to true, the calculation of the dimmer duty cycle will be done based on a power matching LUT table which considers the voltage and current sine wave.
@@ -264,6 +281,25 @@ const CONFIG = {
     //   BYPASS_CONTROLLED_BY_EM: false
     // }
   },
+};
+
+// PID Controller
+
+let PID = {
+  // PID Input
+  input: 0,
+  // PID Output
+  output: 0,
+  // current error value
+  error: 0,
+  // Proportional Term
+  pTerm: 0,
+  // Integral Term
+  iTerm: 0,
+  // Derivative Term
+  dTerm: 0,
+  // Sum
+  sum: 0,
 };
 ```
 
@@ -444,6 +480,15 @@ You may need to use Home Assistant or Jeedom depending on what you need to do be
 The script uses a complex PID controller that can be tuned to really obtain a very good routing precision.
 The algorithm used and default parameters are the same as in the YaSolr project.
 You will find a lot of information in the [YaSolR manual](/manual#pid).
+
+### MQTT Grid source
+
+The script can be directly installed on the dimmer and read the grid power and voltage from MQTT.
+
+When doing that, some features are not available like using bypass mode. 
+The script can be installed though on a Shelly supporting a Switch if you want bypass mode to work.
+
+This setup is ideal for simple router setups with only 1 dimmer and 1 LSA.
 
 ## Future Improvements
 
