@@ -13,7 +13,7 @@ _I've put the YaSolR project in pause for a few days to work on this very cool a
 | [![](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg)](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg) | [![](../assets/img/screenshots/shelly_solar_diverter.jpeg)](../assets/img/screenshots/shelly_solar_diverter.jpeg) |
 
 - [What is a Solar Router / Diverter ?](#what-is-a-solar-router--diverter-)
-- [Shelly Solar Diverter](#shelly-solar-diverter-1)
+- [Shelly Solar Diverter](#shelly-solar-diverter-features)
 - [Download](#download)
 - [Hardware](#hardware)
 - [Wiring](#wiring)
@@ -167,7 +167,7 @@ After calibration, you need to test the dimmer.
 
 ### Shelly Pro EM 50 Setup
 
-_Shelly Pro EM 50 is optional: th: script can be installed directly on the Shelly dimmer and use MQTT to read the power and voltage._
+_Shelly Pro EM 50 is optional: the script can be installed directly on the Shelly dimmer and use MQTT to read the power and voltage._
 
 - Set static IP address
 - Make sure to place the A clamp around the main phase entering the house in the right direction
@@ -281,25 +281,6 @@ const CONFIG = {
     //   BYPASS_CONTROLLED_BY_EM: false
     // }
   },
-};
-
-// PID Controller
-
-let PID = {
-  // PID Input
-  input: 0,
-  // PID Output
-  output: 0,
-  // current error value
-  error: 0,
-  // Proportional Term
-  pTerm: 0,
-  // Integral Term
-  iTerm: 0,
-  // Derivative Term
-  dTerm: 0,
-  // Sum
-  sum: 0,
 };
 ```
 
@@ -480,6 +461,8 @@ You may need to use Home Assistant or Jeedom depending on what you need to do be
 The script uses a complex PID controller that can be tuned to really obtain a very good routing precision.
 The algorithm used and default parameters are the same as in the YaSolr project.
 You will find a lot of information in the [YaSolR manual](/manual#pid).
+
+The Shelly routeur having a slower feeback loop for measurements (each second for EM and could be more feom MQTT), it includes 2 PID configurations: one used when the grid excess is by default higher than 200W and another one when the excess is below. the advantage is to limit the over shoots of the PID and make it slowdown its corrections when around the setpoint.
 
 ### MQTT Grid source
 
