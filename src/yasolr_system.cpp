@@ -4,6 +4,8 @@
  */
 #include <yasolr.h>
 
+#include <esp_core_dump.h>
+
 Mycila::TaskManager coreTaskManager("y-core");
 Mycila::TaskManager unsafeTaskManager("y-unsafe");
 
@@ -25,6 +27,14 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params)
 
 void yasolr_init_system() {
   logger.info(TAG, "Initialize system...");
+
+  esp_reset_reason_t reason = esp_reset_reason();
+  if (reason == esp_reset_reason_t::ESP_RST_POWERON || reason == esp_reset_reason_t::ESP_RST_SW || reason == esp_reset_reason_t::ESP_RST_DEEPSLEEP) {
+    logger.info(TAG, "Erasing core dump...");
+    esp_core_dump_image_erase();
+  } else {
+    logger.error(TAG, "ESP32 resumed from a crash: please look at the core dump info!");
+  }
 
   coreTaskManager.addTask(resetTask);
   coreTaskManager.addTask(restartTask);

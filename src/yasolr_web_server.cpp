@@ -86,10 +86,6 @@ void rest_api() {
 
   webServer
     .on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
-      if (!config.getBool(KEY_ENABLE_DEBUG)) {
-        return request->send(404, "application/json", "{\"error\":\"Debug mode is disabled.\"}");
-      }
-
       AsyncJsonResponse* response = new AsyncJsonResponse();
       JsonObject root = response->getRoot();
       float voltage = grid.getVoltage().value_or(0);
