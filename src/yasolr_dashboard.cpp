@@ -175,13 +175,13 @@ static dash::LinkCard<const char*> _configBackup(dashboard, YASOLR_LBL_079);
 static dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_080, ".txt");
 static dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
 static dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
+static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
 
 // tab: debug
 
 static dash::FeedbackSwitchCard _debugMode(dashboard, YASOLR_LBL_083);
 static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
 static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
-static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
 static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 
 // tab: network
@@ -502,9 +502,11 @@ void YaSolR::Website::begin() {
   _configRestore.setTab(_systemTab);
   _restart.setTab(_systemTab);
   _safeBoot.setTab(_systemTab);
+  _reset.setTab(_systemTab);
 
   _restart.onPush([]() { restartTask.resume(); });
   _safeBoot.onPush([]() { safeBootTask.resume(); });
+  _reset.onPush([]() { resetTask.resume(); });
 
   // tab: debug
 
@@ -512,7 +514,6 @@ void YaSolR::Website::begin() {
   _debugInfo.setTab(_debugTab);
   _consoleLink.setTab(_debugTab);
   _energyReset.setTab(_debugTab);
-  _reset.setTab(_debugTab);
 
   _debugMode.setSize(FULL_SIZE);
 
@@ -526,8 +527,6 @@ void YaSolR::Website::begin() {
     if (pzemO2)
       pzemO2->resetEnergy();
   });
-
-  _reset.onPush([]() { resetTask.resume(); });
 
   // tab: network
 
@@ -1118,7 +1117,6 @@ void YaSolR::Website::initCards() {
 
   _debugInfo.setDisplay(debugEnabled);
   _consoleLink.setDisplay(debugEnabled);
-  _reset.setDisplay(debugEnabled);
   _energyReset.setDisplay(debugEnabled && (jsyEnabled || pzem1Enabled || pzem2Enabled));
 
   // tab: network
