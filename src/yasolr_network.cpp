@@ -71,7 +71,7 @@ void yasolr_init_network() {
         networkStartTask.resume();
         break;
       case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
-        logger.warn(TAG, "Unable to connect!");
+        logger.warn(TAG, "Unable to connect to any network!");
         break;
       case Mycila::ESPConnect::State::NETWORK_DISCONNECTED:
         logger.warn(TAG, "Disconnected!");
