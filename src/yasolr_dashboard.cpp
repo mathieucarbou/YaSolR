@@ -176,13 +176,13 @@ static dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_08
 static dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
 static dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
 static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
+static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 
 // tab: debug
 
 static dash::FeedbackSwitchCard _debugMode(dashboard, YASOLR_LBL_083);
 static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
 static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
-static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 
 // tab: network
 
@@ -503,22 +503,11 @@ void YaSolR::Website::begin() {
   _restart.setTab(_systemTab);
   _safeBoot.setTab(_systemTab);
   _reset.setTab(_systemTab);
+  _energyReset.setTab(_systemTab);
 
   _restart.onPush([]() { restartTask.resume(); });
   _safeBoot.onPush([]() { safeBootTask.resume(); });
   _reset.onPush([]() { resetTask.resume(); });
-
-  // tab: debug
-
-  _debugMode.setTab(_debugTab);
-  _debugInfo.setTab(_debugTab);
-  _consoleLink.setTab(_debugTab);
-  _energyReset.setTab(_debugTab);
-
-  _debugMode.setSize(FULL_SIZE);
-
-  _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
-
   _energyReset.onPush([]() {
     if (jsy)
       jsy->resetEnergy();
@@ -527,6 +516,16 @@ void YaSolR::Website::begin() {
     if (pzemO2)
       pzemO2->resetEnergy();
   });
+
+  // tab: debug
+
+  _debugMode.setTab(_debugTab);
+  _debugInfo.setTab(_debugTab);
+  _consoleLink.setTab(_debugTab);
+
+  _debugMode.setSize(FULL_SIZE);
+
+  _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
 
   // tab: network
 
@@ -1108,6 +1107,7 @@ void YaSolR::Website::initCards() {
 
   _configBackup.setValue("/api/config/backup");
   _configRestore.setValue("/api/config/restore");
+  _energyReset.setDisplay(jsyEnabled || pzem1Enabled || pzem2Enabled);
 
   // tab: debug
 
@@ -1117,7 +1117,6 @@ void YaSolR::Website::initCards() {
 
   _debugInfo.setDisplay(debugEnabled);
   _consoleLink.setDisplay(debugEnabled);
-  _energyReset.setDisplay(debugEnabled && (jsyEnabled || pzem1Enabled || pzem2Enabled));
 
   // tab: network
 
