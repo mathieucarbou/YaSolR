@@ -155,6 +155,12 @@ static Mycila::Dimmer* createDimmer(const char* keyEnable, const char* keyType, 
       }
     }
 
+    if(isDACBased(type)) {
+      // TODO: implement DAC based dimmer
+      logger.warn(TAG, "DAC based dimmer not implemented yet!");
+      return nullptr;
+    }
+
     logger.error(TAG, "Dimmer type not supported!");
     return nullptr;
   }
