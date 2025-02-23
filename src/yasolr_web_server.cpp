@@ -63,20 +63,18 @@ void routes() {
     request->send(response);
   });
 
-  webServer
-    .on("/config", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncWebServerResponse* response = request->beginResponse(200, "text/html", config_html_gz_start, config_html_gz_end - config_html_gz_start);
-      response->addHeader("Content-Encoding", "gzip");
-      request->send(response);
-    });
+  webServer.on("/config", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncWebServerResponse* response = request->beginResponse(200, "text/html", config_html_gz_start, config_html_gz_end - config_html_gz_start);
+    response->addHeader("Content-Encoding", "gzip");
+    request->send(response);
+  });
 
-  webServer
-    .on("/timezones", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncJsonResponse* response = new AsyncJsonResponse(true);
-      Mycila::NTP.timezonesToJsonArray(response->getRoot().as<JsonArray>());
-      response->setLength();
-      request->send(response);
-    });
+  webServer.on("/timezones", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncJsonResponse* response = new AsyncJsonResponse(true);
+    Mycila::NTP.timezonesToJsonArray(response->getRoot().as<JsonArray>());
+    response->setLength();
+    request->send(response);
+  });
 }
 
 void rest_api() {
@@ -84,106 +82,104 @@ void rest_api() {
 
   // debug
 
-  webServer
-    .on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncJsonResponse* response = new AsyncJsonResponse();
-      JsonObject root = response->getRoot();
-      float voltage = grid.getVoltage().value_or(0);
+  webServer.on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncJsonResponse* response = new AsyncJsonResponse();
+    JsonObject root = response->getRoot();
+    float voltage = grid.getVoltage().value_or(0);
 
-      Mycila::AppInfo.toJson(root["app"].to<JsonObject>());
-      config.toJson(root["config"].to<JsonObject>());
-      grid.toJson(root["grid"].to<JsonObject>());
-      if (jsy)
-        jsy->toJson(root["jsy"].to<JsonObject>());
-      espConnect.toJson(root["network"].to<JsonObject>());
+    Mycila::AppInfo.toJson(root["app"].to<JsonObject>());
+    config.toJson(root["config"].to<JsonObject>());
+    grid.toJson(root["grid"].to<JsonObject>());
+    if (jsy)
+      jsy->toJson(root["jsy"].to<JsonObject>());
+    espConnect.toJson(root["network"].to<JsonObject>());
 
-      pidController.toJson(root["pid"].to<JsonObject>());
-      if (pulseAnalyzer)
-        pulseAnalyzer->toJson(root["pulse_analyzer"].to<JsonObject>());
+    pidController.toJson(root["pid"].to<JsonObject>());
+    if (pulseAnalyzer)
+      pulseAnalyzer->toJson(root["pulse_analyzer"].to<JsonObject>());
 
-      // relays
-      if (relay1)
-        relay1->toJson(root["relay1"].to<JsonObject>());
-      if (relay2)
-        relay2->toJson(root["relay2"].to<JsonObject>());
+    // relays
+    if (relay1)
+      relay1->toJson(root["relay1"].to<JsonObject>());
+    if (relay2)
+      relay2->toJson(root["relay2"].to<JsonObject>());
 
-      // router
-      router.toJson(root["router"].to<JsonObject>(), voltage);
+    // router
+    router.toJson(root["router"].to<JsonObject>(), voltage);
 
-      // output 1
-      if (output1)
-        output1->toJson(root["router"]["output1"].to<JsonObject>(), voltage);
-      if (ds18O1)
-        ds18O1->toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
-      if (pzemO1)
-        pzemO1->toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
+    // output 1
+    if (output1)
+      output1->toJson(root["router"]["output1"].to<JsonObject>(), voltage);
+    if (ds18O1)
+      ds18O1->toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
+    if (pzemO1)
+      pzemO1->toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
 
-      // output 2
-      if (output2)
-        output2->toJson(root["router"]["output2"].to<JsonObject>(), voltage);
-      if (ds18O2)
-        ds18O2->toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
-      if (pzemO2)
-        pzemO2->toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
+    // output 2
+    if (output2)
+      output2->toJson(root["router"]["output2"].to<JsonObject>(), voltage);
+    if (ds18O2)
+      ds18O2->toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
+    if (pzemO2)
+      pzemO2->toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
 
-      // system
-      JsonObject system = root["system"].to<JsonObject>();
-      Mycila::System::toJson(system);
-      if (ds18Sys)
-        ds18Sys->toJson(system["ds18"].to<JsonObject>());
-      lights.toJson(system["leds"].to<JsonObject>());
+    // system
+    JsonObject system = root["system"].to<JsonObject>();
+    Mycila::System::toJson(system);
+    if (ds18Sys)
+      ds18Sys->toJson(system["ds18"].to<JsonObject>());
+    lights.toJson(system["leds"].to<JsonObject>());
 
-      // stack
-      Mycila::TaskMonitor.toJson(system["stack"].to<JsonObject>());
+    // stack
+    Mycila::TaskMonitor.toJson(system["stack"].to<JsonObject>());
 
-      // tasks
-      JsonObject tasks = system["task"].to<JsonObject>();
-      coreTaskManager.toJson(tasks[coreTaskManager.name()].to<JsonObject>());
-      if (jsyTaskManager)
-        jsyTaskManager->toJson(tasks[jsyTaskManager->name()].to<JsonObject>());
-      if (pzemTaskManager)
-        pzemTaskManager->toJson(tasks[pzemTaskManager->name()].to<JsonObject>());
-      unsafeTaskManager.toJson(tasks[unsafeTaskManager.name()].to<JsonObject>());
+    // tasks
+    JsonObject tasks = system["task"].to<JsonObject>();
+    coreTaskManager.toJson(tasks[coreTaskManager.name()].to<JsonObject>());
+    if (jsyTaskManager)
+      jsyTaskManager->toJson(tasks[jsyTaskManager->name()].to<JsonObject>());
+    if (pzemTaskManager)
+      pzemTaskManager->toJson(tasks[pzemTaskManager->name()].to<JsonObject>());
+    unsafeTaskManager.toJson(tasks[unsafeTaskManager.name()].to<JsonObject>());
 
-      // libs versions
-      JsonObject library = system["lib"].to<JsonObject>();
-      library["ArduinoJson"] = ARDUINOJSON_VERSION;
-      library["AsyncTCP"] = ASYNCTCP_VERSION;
-      library["CRC"] = CRC_LIB_VERSION;
-      library["ESPAsyncWebServer"] = ASYNCWEBSERVER_VERSION;
-      library["MycilaConfig"] = MYCILA_CONFIG_VERSION;
-      library["MycilaDS18"] = MYCILA_DS18_VERSION;
-      library["MycilaEasyDisplay"] = MYCILA_EASY_DISPLAY_VERSION;
-      library["MycilaESPConnect"] = ESPCONNECT_VERSION;
-      library["MycilaHADiscovery"] = MYCILA_HA_VERSION;
-      library["MycilaJSY"] = MYCILA_JSY_VERSION;
-      library["MycilaLogger"] = MYCILA_LOGGER_VERSION;
-      library["MycilaMQTT"] = MYCILA_MQTT_VERSION;
-      library["MycilaNTP"] = MYCILA_NTP_VERSION;
-      library["MycilaPulseAnalyzer"] = MYCILA_PULSE_VERSION;
-      library["MycilaPZEM004Tv3"] = MYCILA_PZEM_VERSION;
-      library["MycilaRelay"] = MYCILA_RELAY_VERSION;
-      library["MycilaSystem"] = MYCILA_SYSTEM_VERSION;
-      library["MycilaTaskManager"] = MYCILA_TASK_MANAGER_VERSION;
-      library["MycilaTaskMonitor"] = MYCILA_TASK_MONITOR_VERSION;
-      library["MycilaTrafficLight"] = MYCILA_TRAFFIC_LIGHT_VERSION;
-      library["MycilaUtilities"] = MYCILA_UTILITIES_VERSION;
+    // libs versions
+    JsonObject library = system["lib"].to<JsonObject>();
+    library["ArduinoJson"] = ARDUINOJSON_VERSION;
+    library["AsyncTCP"] = ASYNCTCP_VERSION;
+    library["CRC"] = CRC_LIB_VERSION;
+    library["ESPAsyncWebServer"] = ASYNCWEBSERVER_VERSION;
+    library["MycilaConfig"] = MYCILA_CONFIG_VERSION;
+    library["MycilaDS18"] = MYCILA_DS18_VERSION;
+    library["MycilaEasyDisplay"] = MYCILA_EASY_DISPLAY_VERSION;
+    library["MycilaESPConnect"] = ESPCONNECT_VERSION;
+    library["MycilaHADiscovery"] = MYCILA_HA_VERSION;
+    library["MycilaJSY"] = MYCILA_JSY_VERSION;
+    library["MycilaLogger"] = MYCILA_LOGGER_VERSION;
+    library["MycilaMQTT"] = MYCILA_MQTT_VERSION;
+    library["MycilaNTP"] = MYCILA_NTP_VERSION;
+    library["MycilaPulseAnalyzer"] = MYCILA_PULSE_VERSION;
+    library["MycilaPZEM004Tv3"] = MYCILA_PZEM_VERSION;
+    library["MycilaRelay"] = MYCILA_RELAY_VERSION;
+    library["MycilaSystem"] = MYCILA_SYSTEM_VERSION;
+    library["MycilaTaskManager"] = MYCILA_TASK_MANAGER_VERSION;
+    library["MycilaTaskMonitor"] = MYCILA_TASK_MONITOR_VERSION;
+    library["MycilaTrafficLight"] = MYCILA_TRAFFIC_LIGHT_VERSION;
+    library["MycilaUtilities"] = MYCILA_UTILITIES_VERSION;
 
-      response->setLength();
-      request->send(response);
-    });
+    response->setLength();
+    request->send(response);
+  });
 
   // config
 
-  webServer
-    .on("/api/config/backup", HTTP_GET, [](AsyncWebServerRequest* request) {
-      StreamString body;
-      body.reserve(4096);
-      config.backup(body);
-      AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", body);
-      response->addHeader("Content-Disposition", "attachment; filename=\"config.txt\"");
-      request->send(response);
-    });
+  webServer.on("/api/config/backup", HTTP_GET, [](AsyncWebServerRequest* request) {
+    StreamString body;
+    body.reserve(4096);
+    config.backup(body);
+    AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", body);
+    response->addHeader("Content-Disposition", "attachment; filename=\"config.txt\"");
+    request->send(response);
+  });
 
   webServer
     .on(
@@ -237,268 +233,251 @@ void rest_api() {
           request->_tempFile.close();
       });
 
-  webServer
-    .on("/api/config", HTTP_POST, [](AsyncWebServerRequest* request) {
-      std::map<const char*, std::string> settings;
-      for (size_t i = 0, max = request->params(); i < max; i++) {
-        const AsyncWebParameter* p = request->getParam(i);
-        if (p->isPost() && !p->isFile()) {
-          const char* keyRef = config.keyRef(p->name().c_str());
-          settings[keyRef] = p->value().c_str();
-        }
+  webServer.on("/api/config", HTTP_POST, [](AsyncWebServerRequest* request) {
+    std::map<const char*, std::string> settings;
+    for (size_t i = 0, max = request->params(); i < max; i++) {
+      const AsyncWebParameter* p = request->getParam(i);
+      if (p->isPost() && !p->isFile()) {
+        const char* keyRef = config.keyRef(p->name().c_str());
+        settings[keyRef] = p->value().c_str();
       }
-      request->send(200);
-      config.set(settings);
-    });
+    }
+    request->send(200);
+    config.set(settings);
+  });
 
-  webServer
-    .on("/api/config", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncJsonResponse* response = new AsyncJsonResponse(false);
-      config.toJson(response->getRoot());
-      response->setLength();
-      request->send(response);
-    });
+  webServer.on("/api/config", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncJsonResponse* response = new AsyncJsonResponse(false);
+    config.toJson(response->getRoot());
+    response->setLength();
+    request->send(response);
+  });
 
   // system
 
-  webServer
-    .on("/api/system/restart", HTTP_ANY, [](AsyncWebServerRequest* request) {
-      restartTask.resume();
-      request->send(200);
-    });
+  webServer.on("/api/system/restart", HTTP_ANY, [](AsyncWebServerRequest* request) {
+    restartTask.resume();
+    request->send(200);
+  });
 
-  webServer
-    .on("/api/system/safeboot", HTTP_ANY, [](AsyncWebServerRequest* request) {
-      safeBootTask.resume();
-      request->send(200);
-    });
+  webServer.on("/api/system/safeboot", HTTP_ANY, [](AsyncWebServerRequest* request) {
+    safeBootTask.resume();
+    request->send(200);
+  });
 
-  webServer
-    .on("/api/system/reset", HTTP_ANY, [](AsyncWebServerRequest* request) {
-      resetTask.resume();
-      request->send(200);
-    });
+  webServer.on("/api/system/reset", HTTP_ANY, [](AsyncWebServerRequest* request) {
+    resetTask.resume();
+    request->send(200);
+  });
 
-  webServer
-    .on("/api/system", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncJsonResponse* response = new AsyncJsonResponse();
-      JsonObject root = response->getRoot();
+  webServer.on("/api/system", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncJsonResponse* response = new AsyncJsonResponse();
+    JsonObject root = response->getRoot();
 
-      Mycila::System::Memory memory;
-      Mycila::System::getMemory(memory);
+    Mycila::System::Memory memory;
+    Mycila::System::getMemory(memory);
 
-      root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
-      root["app"]["model"] = Mycila::AppInfo.model;
-      root["app"]["name"] = Mycila::AppInfo.name;
-      root["app"]["version"] = Mycila::AppInfo.version;
+    root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
+    root["app"]["model"] = Mycila::AppInfo.model;
+    root["app"]["name"] = Mycila::AppInfo.name;
+    root["app"]["version"] = Mycila::AppInfo.version;
 
-      root["device"]["boots"] = Mycila::System::getBootCount();
-      root["device"]["cores"] = ESP.getChipCores();
-      root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
-      root["device"]["heap"]["total"] = memory.total;
-      root["device"]["heap"]["usage"] = memory.usage;
-      root["device"]["heap"]["used"] = memory.used;
-      root["device"]["id"] = Mycila::AppInfo.id;
-      root["device"]["model"] = ESP.getChipModel();
-      root["device"]["revision"] = ESP.getChipRevision();
-      root["device"]["uptime"] = Mycila::System::getUptime();
+    root["device"]["boots"] = Mycila::System::getBootCount();
+    root["device"]["cores"] = ESP.getChipCores();
+    root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
+    root["device"]["heap"]["total"] = memory.total;
+    root["device"]["heap"]["usage"] = memory.usage;
+    root["device"]["heap"]["used"] = memory.used;
+    root["device"]["id"] = Mycila::AppInfo.id;
+    root["device"]["model"] = ESP.getChipModel();
+    root["device"]["revision"] = ESP.getChipRevision();
+    root["device"]["uptime"] = Mycila::System::getUptime();
 
-      root["firmware"]["build"]["branch"] = Mycila::AppInfo.buildBranch;
-      root["firmware"]["build"]["hash"] = Mycila::AppInfo.buildHash;
-      root["firmware"]["build"]["timestamp"] = Mycila::AppInfo.buildDate;
-      root["firmware"]["debug"] = Mycila::AppInfo.debug;
-      root["firmware"]["filename"] = Mycila::AppInfo.firmware;
+    root["firmware"]["build"]["branch"] = Mycila::AppInfo.buildBranch;
+    root["firmware"]["build"]["hash"] = Mycila::AppInfo.buildHash;
+    root["firmware"]["build"]["timestamp"] = Mycila::AppInfo.buildDate;
+    root["firmware"]["debug"] = Mycila::AppInfo.debug;
+    root["firmware"]["filename"] = Mycila::AppInfo.firmware;
 
-      root["network"]["eth"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString();
-      root["network"]["eth"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
+    root["network"]["eth"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString();
+    root["network"]["eth"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
 
-      root["network"]["hostname"] = espConnect.getHostname();
-      root["network"]["ip_address"] = espConnect.getIPAddress().toString();
-      root["network"]["mac_address"] = espConnect.getMACAddress();
-      switch (espConnect.getMode()) {
-        case Mycila::ESPConnect::Mode::ETH:
-          root["network"]["mode"] = "eth";
-          break;
-        case Mycila::ESPConnect::Mode::STA:
-          root["network"]["mode"] = "wifi";
-          break;
-        case Mycila::ESPConnect::Mode::AP:
-          root["network"]["mode"] = "ap";
-          break;
-        default:
-          root["network"]["mode"] = "";
-          break;
-      }
+    root["network"]["hostname"] = espConnect.getHostname();
+    root["network"]["ip_address"] = espConnect.getIPAddress().toString();
+    root["network"]["mac_address"] = espConnect.getMACAddress();
+    switch (espConnect.getMode()) {
+      case Mycila::ESPConnect::Mode::ETH:
+        root["network"]["mode"] = "eth";
+        break;
+      case Mycila::ESPConnect::Mode::STA:
+        root["network"]["mode"] = "wifi";
+        break;
+      case Mycila::ESPConnect::Mode::AP:
+        root["network"]["mode"] = "ap";
+        break;
+      default:
+        root["network"]["mode"] = "";
+        break;
+    }
 
-      root["network"]["ntp"] = YASOLR_STATE(Mycila::NTP.isSynced());
+    root["network"]["ntp"] = YASOLR_STATE(Mycila::NTP.isSynced());
 
-      root["network"]["wifi"]["bssid"] = espConnect.getWiFiBSSID();
-      root["network"]["wifi"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString();
-      root["network"]["wifi"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA);
-      root["network"]["wifi"]["quality"] = espConnect.getWiFiSignalQuality();
-      root["network"]["wifi"]["rssi"] = espConnect.getWiFiRSSI();
-      root["network"]["wifi"]["ssid"] = espConnect.getWiFiSSID();
+    root["network"]["wifi"]["bssid"] = espConnect.getWiFiBSSID();
+    root["network"]["wifi"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString();
+    root["network"]["wifi"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA);
+    root["network"]["wifi"]["quality"] = espConnect.getWiFiSignalQuality();
+    root["network"]["wifi"]["rssi"] = espConnect.getWiFiRSSI();
+    root["network"]["wifi"]["ssid"] = espConnect.getWiFiSSID();
 
-      response->setLength();
-      request->send(response);
-    });
+    response->setLength();
+    request->send(response);
+  });
 
   // grid
 
-  webServer
-    .on("/api/grid", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncJsonResponse* response = new AsyncJsonResponse();
-      JsonObject root = response->getRoot();
-      Mycila::Grid::Metrics metrics;
-      grid.getGridMeasurements(metrics);
-      Mycila::Grid::toJson(root, metrics);
-      response->setLength();
-      request->send(response);
-    });
+  webServer.on("/api/grid", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncJsonResponse* response = new AsyncJsonResponse();
+    JsonObject root = response->getRoot();
+    Mycila::Grid::Metrics metrics;
+    grid.getGridMeasurements(metrics);
+    Mycila::Grid::toJson(root, metrics);
+    response->setLength();
+    request->send(response);
+  });
 
   // router relays
 
-  webServer
-    .on("/api/router/relay1", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (relay1 && relay1->isEnabled() && request->hasParam("state", true)) {
-        std::string state = request->getParam("state", true)->value().c_str();
-        if (state == YASOLR_ON)
-          relay1->trySwitchRelay(true);
-        else if (state == YASOLR_OFF)
-          relay1->trySwitchRelay(false);
-      }
-      request->send(200);
-    });
+  webServer.on("/api/router/relay1", HTTP_POST, [](AsyncWebServerRequest* request) {
+    if (relay1 && relay1->isEnabled() && request->hasParam("state", true)) {
+      std::string state = request->getParam("state", true)->value().c_str();
+      if (state == YASOLR_ON)
+        relay1->trySwitchRelay(true);
+      else if (state == YASOLR_OFF)
+        relay1->trySwitchRelay(false);
+    }
+    request->send(200);
+  });
 
-  webServer
-    .on("/api/router/relay2", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (relay2 && relay2->isEnabled() && request->hasParam("state", true)) {
-        std::string state = request->getParam("state", true)->value().c_str();
-        if (state == YASOLR_ON)
-          relay2->trySwitchRelay(true);
-        else if (state == YASOLR_OFF)
-          relay2->trySwitchRelay(false);
-      }
-      request->send(200);
-    });
+  webServer.on("/api/router/relay2", HTTP_POST, [](AsyncWebServerRequest* request) {
+    if (relay2 && relay2->isEnabled() && request->hasParam("state", true)) {
+      std::string state = request->getParam("state", true)->value().c_str();
+      if (state == YASOLR_ON)
+        relay2->trySwitchRelay(true);
+      else if (state == YASOLR_OFF)
+        relay2->trySwitchRelay(false);
+    }
+    request->send(200);
+  });
 
   // router dimmers
 
-  webServer
-    .on("/api/router/output1/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output1 && request->hasParam("duty_cycle", true)) {
-        output1->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100.0f);
-        request->send(200);
-      } else {
-        request->send(400);
-      }
-    });
+  webServer.on("/api/router/output1/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
+    if (output1 && request->hasParam("duty_cycle", true)) {
+      output1->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100.0f);
+      request->send(200);
+    } else {
+      request->send(400);
+    }
+  });
 
-  webServer
-    .on("/api/router/output2/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output2 && request->hasParam("duty_cycle", true)) {
-        output2->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100.0f);
-        request->send(200);
-      } else {
-        request->send(400);
-      }
-    });
+  webServer.on("/api/router/output2/dimmer", HTTP_POST, [](AsyncWebServerRequest* request) {
+    if (output2 && request->hasParam("duty_cycle", true)) {
+      output2->setDimmerDutyCycle(request->getParam("duty_cycle", true)->value().toFloat() / 100.0f);
+      request->send(200);
+    } else {
+      request->send(400);
+    }
+  });
 
   // router bypass
 
-  webServer
-    .on("/api/router/output1/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output1 && request->hasParam("state", true)) {
-        std::string state = request->getParam("state", true)->value().c_str();
-        if (state == YASOLR_ON)
-          output1->setBypassOn();
-        else if (state == YASOLR_OFF)
-          output1->setBypassOff();
-        request->send(200);
-      } else {
-        request->send(400);
-      }
-    });
+  webServer.on("/api/router/output1/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
+    if (output1 && request->hasParam("state", true)) {
+      std::string state = request->getParam("state", true)->value().c_str();
+      if (state == YASOLR_ON)
+        output1->setBypassOn();
+      else if (state == YASOLR_OFF)
+        output1->setBypassOff();
+      request->send(200);
+    } else {
+      request->send(400);
+    }
+  });
 
-  webServer
-    .on("/api/router/output2/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
-      if (output2 && request->hasParam("state", true)) {
-        std::string state = request->getParam("state", true)->value().c_str();
-        if (state == YASOLR_ON)
-          output2->setBypassOn();
-        else if (state == YASOLR_OFF)
-          output2->setBypassOff();
-        request->send(200);
-      } else {
-        request->send(400);
-      }
-    });
+  webServer.on("/api/router/output2/bypass", HTTP_POST, [](AsyncWebServerRequest* request) {
+    if (output2 && request->hasParam("state", true)) {
+      std::string state = request->getParam("state", true)->value().c_str();
+      if (state == YASOLR_ON)
+        output2->setBypassOn();
+      else if (state == YASOLR_OFF)
+        output2->setBypassOff();
+      request->send(200);
+    } else {
+      request->send(400);
+    }
+  });
 
-  webServer
-    .on("/api/router", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncJsonResponse* response = new AsyncJsonResponse();
-      JsonObject root = response->getRoot();
+  webServer.on("/api/router", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncJsonResponse* response = new AsyncJsonResponse();
+    JsonObject root = response->getRoot();
 
-      Mycila::Router::Metrics routerMeasurements;
-      router.getRouterMeasurements(routerMeasurements);
+    Mycila::Router::Metrics routerMeasurements;
+    router.getRouterMeasurements(routerMeasurements);
 
-      root["lights"] = lights.toString();
-      if (relay1)
-        root["relay1"] = YASOLR_STATE(relay1->isOn());
-      if (relay2)
-        root["relay2"] = YASOLR_STATE(relay2->isOn());
-      if (ds18Sys) {
-        float t = ds18Sys->getTemperature().value_or(NAN);
-        if (!std::isnan(t))
-          root["temperature"] = t;
-      }
-      float virtual_grid_power = grid.getPower().orElse(NAN) - routerMeasurements.power;
-      if (!std::isnan(virtual_grid_power))
-        root["virtual_grid_power"] = virtual_grid_power;
+    root["lights"] = lights.toString();
+    if (relay1)
+      root["relay1"] = YASOLR_STATE(relay1->isOn());
+    if (relay2)
+      root["relay2"] = YASOLR_STATE(relay2->isOn());
+    if (ds18Sys) {
+      float t = ds18Sys->getTemperature().value_or(NAN);
+      if (!std::isnan(t))
+        root["temperature"] = t;
+    }
+    float virtual_grid_power = grid.getPower().orElse(NAN) - routerMeasurements.power;
+    if (!std::isnan(virtual_grid_power))
+      root["virtual_grid_power"] = virtual_grid_power;
 
-      Mycila::Router::toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
+    Mycila::Router::toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
 
-      for (const auto& output : router.getOutputs()) {
-        JsonObject json = root[output->getName()].to<JsonObject>();
-        json["state"] = output->getStateName();
-        json["bypass"] = YASOLR_STATE(output->isBypassOn());
-        json["dimmer"] = YASOLR_STATE(output->isDimmerOn());
-        json["duty_cycle"] = output->getDimmerDutyCycle() * 100.0f;
-        float t = output->temperature().orElse(NAN);
-        if (!std::isnan(t)) {
-          json["temperature"] = t;
-        }
-
-        Mycila::RouterOutput::Metrics outputMeasurements;
-        output->getOutputMeasurements(outputMeasurements);
-        Mycila::RouterOutput::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
+    for (const auto& output : router.getOutputs()) {
+      JsonObject json = root[output->getName()].to<JsonObject>();
+      json["state"] = output->getStateName();
+      json["bypass"] = YASOLR_STATE(output->isBypassOn());
+      json["dimmer"] = YASOLR_STATE(output->isDimmerOn());
+      json["duty_cycle"] = output->getDimmerDutyCycle() * 100.0f;
+      float t = output->temperature().orElse(NAN);
+      if (!std::isnan(t)) {
+        json["temperature"] = t;
       }
 
-      response->setLength();
-      request->send(response);
-    });
+      Mycila::RouterOutput::Metrics outputMeasurements;
+      output->getOutputMeasurements(outputMeasurements);
+      Mycila::RouterOutput::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
+    }
 
-  webServer
-    .on("/api", HTTP_GET, [](AsyncWebServerRequest* request) {
-      AsyncJsonResponse* response = new AsyncJsonResponse();
-      JsonObject root = response->getRoot();
+    response->setLength();
+    request->send(response);
+  });
 
-      std::string base = "http://";
-      base += espConnect.getIPAddress().toString().c_str();
-      base += "/api";
+  webServer.on("/api", HTTP_GET, [](AsyncWebServerRequest* request) {
+    AsyncJsonResponse* response = new AsyncJsonResponse();
+    JsonObject root = response->getRoot();
 
-      root["config"] = base + "/config";
-      root["config/backup"] = base + "/config/backup";
-      if (config.getBool(KEY_ENABLE_DEBUG)) {
-        root["debug"] = base + "/debug";
-      }
-      root["grid"] = base + "/grid";
-      root["router"] = base + "/router";
-      root["system"] = base + "/system";
+    std::string base = "http://";
+    base += espConnect.getIPAddress().toString().c_str();
+    base += "/api";
 
-      response->setLength();
-      request->send(response);
-    });
+    root["config"] = base + "/config";
+    root["config/backup"] = base + "/config/backup";
+    root["debug"] = base + "/debug";
+    root["grid"] = base + "/grid";
+    root["router"] = base + "/router";
+    root["system"] = base + "/system";
+
+    response->setLength();
+    request->send(response);
+  });
 }
 
 void yasolr_init_web_server() {
