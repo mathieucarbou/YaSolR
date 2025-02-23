@@ -79,7 +79,6 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
     logger.warn(TAG, "Unknown grid frequency!");
 
     if (Thyristor::getSemiPeriod() || (dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
-
       if (Thyristor::getSemiPeriod()) {
         logger.info(TAG, "Stopping Thyristor...");
         Thyristor::setSemiPeriod(0);
