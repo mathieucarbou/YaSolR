@@ -10,7 +10,7 @@ static Mycila::Task* loggingTask = nullptr;
 static WebSerial* webSerial = nullptr;
 
 void yasolr_init_logging() {
-  logger.info(TAG, "Initialize logging...");
+  logger.info(TAG, "Initialize logging");
 
   if (config.getBool(KEY_ENABLE_DEBUG)) {
     logger.setLevel(ARDUHAL_LOG_LEVEL_DEBUG);

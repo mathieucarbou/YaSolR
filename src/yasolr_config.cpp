@@ -9,7 +9,7 @@
 Mycila::Config config;
 
 void yasolr_init_config() {
-  logger.info(TAG, "Configuring %s...", Mycila::AppInfo.nameModelVersion.c_str());
+  logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // setup config system
   config.begin("YASOLR");

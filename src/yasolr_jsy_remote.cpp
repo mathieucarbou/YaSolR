@@ -112,7 +112,7 @@ void yasolr_init_jsy_remote() {
     assert(!udpMessageRateBuffer);
     assert(!jsyRemoteTask);
 
-    logger.info(TAG, "Initialize JSY Remote...");
+    logger.info(TAG, "Initialize JSY Remote");
 
     udp = new AsyncUDP();
     udp->onPacket(onData);
@@ -123,7 +123,7 @@ void yasolr_init_jsy_remote() {
 
     jsyRemoteTask = new Mycila::Task("JSY Remote", Mycila::Task::Type::ONCE, [](void* params) {
       const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
-      logger.info(TAG, "Enable JSY Remote Listener on port %..." PRIu16, udpPort);
+      logger.info(TAG, "Enable JSY Remote Listener on port %" PRIu16, udpPort);
       udp->listen(udpPort);
     });
 

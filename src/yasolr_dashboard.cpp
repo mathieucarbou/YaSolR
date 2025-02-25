@@ -397,7 +397,7 @@ static void _onChangeResistanceCalibration(bool value) {
 }
 
 void YaSolR::Website::begin() {
-  logger.info(TAG, "Initialize dashboard layout...");
+  logger.info(TAG, "Initialize dashboard layout");
 
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
     _historyX[i] = i - YASOLR_GRAPH_POINTS;
@@ -915,7 +915,7 @@ void YaSolR::Website::begin() {
 }
 
 void YaSolR::Website::initCards() {
-  logger.debug(TAG, "Initialize dashboard cards...");
+  logger.debug(TAG, "Initialize dashboard cards");
 
   const Mycila::ESPConnect::Mode mode = espConnect.getMode();
 

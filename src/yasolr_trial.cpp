@@ -10,7 +10,7 @@ static Mycila::Task* trialTask = nullptr;
 
 void yasolr_init_trial() {
 #ifdef APP_MODEL_TRIAL
-  logger.info(TAG, "Initialize trial...");
+  logger.info(TAG, "Initialize trial");
 
   Mycila::Trial.begin();
   Mycila::Trial.validate();

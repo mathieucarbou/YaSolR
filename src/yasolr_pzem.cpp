@@ -13,7 +13,7 @@ Mycila::TaskManager* pzemTaskManager = nullptr;
 static Mycila::Task* pzemTask = nullptr;
 
 void yasolr_init_pzem() {
-  logger.info(TAG, "Initialize PZEM...");
+  logger.info(TAG, "Initialize PZEM");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
@@ -50,7 +50,7 @@ void yasolr_init_pzem() {
       });
 
       pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::Task::Type::ONCE, [](void* params) {
-        logger.info(TAG, "Pairing connected PZEM to Output 1...");
+        logger.info(TAG, "Pairing connected PZEM to Output 1");
         pzemO1->end();
         pzemO1->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
         switch (pzemO1->getDeviceAddress()) {
@@ -127,7 +127,7 @@ void yasolr_init_pzem() {
       });
 
       pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::Task::Type::ONCE, [](void* params) {
-        logger.info(TAG, "Pairing connected PZEM to Output 2...");
+        logger.info(TAG, "Pairing connected PZEM to Output 2");
         pzemO2->end();
         pzemO2->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
         switch (pzemO2->getDeviceAddress()) {

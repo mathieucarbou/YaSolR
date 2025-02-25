@@ -78,7 +78,7 @@ void routes() {
 }
 
 void rest_api() {
-  logger.info(TAG, "Initialize REST API...");
+  logger.info(TAG, "Initialize REST API");
 
   // debug
 
@@ -481,7 +481,7 @@ void rest_api() {
 }
 
 void yasolr_init_web_server() {
-  logger.info(TAG, "Initialize web server...");
+  logger.info(TAG, "Initialize web server");
 
   // Middleware
 

@@ -11,7 +11,7 @@ Mycila::DS18* ds18Sys = nullptr;
 static Mycila::Task* ds18Task = nullptr;
 
 void yasolr_init_ds18() {
-  logger.info(TAG, "Initialize DS18 probes...");
+  logger.info(TAG, "Initialize DS18 probes");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_DS18_SYSTEM)) {

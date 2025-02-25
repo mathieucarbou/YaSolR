@@ -20,7 +20,7 @@ void yasolr_init_display() {
     assert(!display);
     assert(!displayTask);
 
-    logger.info(TAG, "Initialize display...");
+    logger.info(TAG, "Initialize display");
 
     display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 

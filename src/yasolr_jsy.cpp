@@ -15,7 +15,7 @@ void yasolr_init_jsy() {
     assert(!jsyTask);
     assert(!jsyTaskManager);
 
-    logger.info(TAG, "Initialize JSY...");
+    logger.info(TAG, "Initialize JSY");
 
     jsy = new Mycila::JSY();
     jsy->begin(YASOLR_JSY_SERIAL, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));

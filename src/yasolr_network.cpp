@@ -7,10 +7,10 @@
 static Mycila::Task networkManagerTask("ESPConnect", [](void* params) { espConnect.loop(); });
 
 static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, [](void* params) {
-  logger.info(TAG, "Enable Network Services...");
+  logger.info(TAG, "Enable Network Services");
 
   // Web server
-  logger.info(TAG, "Enable Web Server...");
+  logger.info(TAG, "Enable Web Server");
   webServer.begin();
   webServer.onNotFound([](AsyncWebServerRequest* request) {
     request->send(404);
@@ -18,11 +18,11 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
 
   if (!config.getBool(KEY_ENABLE_AP_MODE)) {
     // NTP
-    logger.info(TAG, "Enable NTP...");
+    logger.info(TAG, "Enable NTP");
     Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
     // mDNS
-    logger.info(TAG, "Enable mDNS...");
+    logger.info(TAG, "Enable mDNS");
     MDNS.addService("http", "tcp", 80);
 
     if (jsyRemoteTask)
@@ -34,7 +34,7 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
 });
 
 void yasolr_init_network() {
-  logger.info(TAG, "Initialize networking...");
+  logger.info(TAG, "Initialize networking");
 
   // NTP
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
@@ -57,7 +57,7 @@ void yasolr_init_network() {
         logger.warn(TAG, "Disabled Network!");
         break;
       case Mycila::ESPConnect::State::AP_STARTING:
-        logger.info(TAG, "Starting Access Point %s...", espConnect.getAccessPointSSID().c_str());
+        logger.info(TAG, "Starting Access Point %s", espConnect.getAccessPointSSID().c_str());
         break;
       case Mycila::ESPConnect::State::AP_STARTED:
         logger.info(TAG, "Access Point %s started with IP address %s", espConnect.getWiFiSSID().c_str(), espConnect.getIPAddress().toString().c_str());
@@ -77,10 +77,10 @@ void yasolr_init_network() {
         logger.warn(TAG, "Disconnected!");
         break;
       case Mycila::ESPConnect::State::NETWORK_RECONNECTING:
-        logger.info(TAG, "Trying to reconnect...");
+        logger.info(TAG, "Trying to reconnect");
         break;
       case Mycila::ESPConnect::State::PORTAL_STARTING:
-        logger.info(TAG, "Starting Captive Portal %s for %" PRIu32 " seconds...", espConnect.getAccessPointSSID().c_str(), espConnect.getCaptivePortalTimeout());
+        logger.info(TAG, "Starting Captive Portal %s for %" PRIu32 " seconds", espConnect.getAccessPointSSID().c_str(), espConnect.getCaptivePortalTimeout());
         break;
       case Mycila::ESPConnect::State::PORTAL_STARTED:
         logger.info(TAG, "Captive Portal started at %s with IP address %s", espConnect.getWiFiSSID().c_str(), espConnect.getIPAddress().toString().c_str());

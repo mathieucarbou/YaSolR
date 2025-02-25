@@ -11,7 +11,7 @@ Mycila::RouterRelay* relay2 = nullptr;
 static Mycila::Task* relayTask = nullptr;
 
 void yasolr_init_relays() {
-  logger.info(TAG, "Initialize relays...");
+  logger.info(TAG, "Initialize relays");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_RELAY1)) {

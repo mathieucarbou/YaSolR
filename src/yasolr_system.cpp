@@ -21,16 +21,16 @@ Mycila::Task restartTask("Restart", Mycila::Task::Type::ONCE, [](void* params) {
 });
 
 Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params) {
-  logger.info(TAG, "Restarting %s in SafeBoot mode...", Mycila::AppInfo.nameModelVersion.c_str());
+  logger.info(TAG, "Restarting %s in SafeBoot mode", Mycila::AppInfo.nameModelVersion.c_str());
   Mycila::System::restartFactory("safeboot");
 });
 
 void yasolr_init_system() {
-  logger.info(TAG, "Initialize system...");
+  logger.info(TAG, "Initialize system");
 
   esp_reset_reason_t reason = esp_reset_reason();
   if (reason == esp_reset_reason_t::ESP_RST_POWERON || reason == esp_reset_reason_t::ESP_RST_SW || reason == esp_reset_reason_t::ESP_RST_DEEPSLEEP) {
-    logger.info(TAG, "Erasing core dump...");
+    logger.info(TAG, "Erasing core dump");
     esp_core_dump_image_erase();
   } else {
     logger.error(TAG, "ESP32 resumed from a crash: please look at the core dump info!");

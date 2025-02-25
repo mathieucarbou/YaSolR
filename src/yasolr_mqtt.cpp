@@ -48,13 +48,13 @@ static void connect() {
     }
   }
 
-  logger.info(TAG, "Connecting to MQTT broker %s://%s:%" PRIu16 "...", (secured ? "mqtts" : "mqtt"), mqttConfig.server.c_str(), mqttConfig.port);
+  logger.info(TAG, "Connecting to MQTT broker %s://%s:%" PRIu16 "", (secured ? "mqtts" : "mqtt"), mqttConfig.server.c_str(), mqttConfig.port);
   mqtt->setAsync(false);
   mqtt->begin(mqttConfig);
 }
 
 static void subscribe() {
-  logger.info(TAG, "Subscribing to MQTT topics...");
+  logger.info(TAG, "Subscribing to MQTT topics");
 
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
@@ -186,7 +186,7 @@ static void subscribe() {
 }
 
 static void publishConfig() {
-  logger.info(TAG, "Publishing config to MQTT...");
+  logger.info(TAG, "Publishing config to MQTT");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   for (auto& key : config.keys()) {
@@ -198,7 +198,7 @@ static void publishConfig() {
 }
 
 static void publishStaticData() {
-  logger.info(TAG, "Publishing static data to MQTT...");
+  logger.info(TAG, "Publishing static data to MQTT");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   mqtt->publish(baseTopic + "/system/app/manufacturer", Mycila::AppInfo.manufacturer, true);
@@ -417,7 +417,7 @@ void yasolr_init_mqtt() {
     assert(!mqttPublishStaticTask);
     assert(!mqttPublishTask);
 
-    logger.info(TAG, "Initialize MQTT...");
+    logger.info(TAG, "Initialize MQTT");
 
     mqtt = new Mycila::MQTT();
     mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
