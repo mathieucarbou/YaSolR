@@ -183,8 +183,8 @@
 
 // pinout configuration keys
 
-#define KEY_PIN_DISPLAY_SCL    "pin_disp_scl"
-#define KEY_PIN_DISPLAY_SDA    "pin_disp_sda"
+#define KEY_PIN_I2C_SCL        "pin_i2c_scl"
+#define KEY_PIN_I2C_SDA        "pin_i2c_sda"
 #define KEY_PIN_JSY_TX         "pin_jsy_tx"
 #define KEY_PIN_JSY_RX         "pin_jsy_rx"
 #define KEY_PIN_LIGHTS_GREEN   "pin_lights_g"
@@ -214,11 +214,11 @@
 #ifndef YASOLR_LIGHTS_RED_PIN
   #define YASOLR_LIGHTS_RED_PIN -1
 #endif
-#ifndef YASOLR_DISPLAY_CLOCK_PIN
-  #define YASOLR_DISPLAY_CLOCK_PIN SCL
+#ifndef YASOLR_I2C_SCL_PIN
+  #define YASOLR_I2C_SCL_PIN SCL
 #endif
-#ifndef YASOLR_DISPLAY_DATA_PIN
-  #define YASOLR_DISPLAY_DATA_PIN SDA
+#ifndef YASOLR_I2C_SDA_PIN
+  #define YASOLR_I2C_SDA_PIN SDA
 #endif
 #ifndef YASOLR_SYSTEM_TEMP_PIN
   #define YASOLR_SYSTEM_TEMP_PIN -1

@@ -26,11 +26,11 @@ void yasolr_init_display() {
 
     const std::string& displayType = config.getString(KEY_DISPLAY_TYPE);
     if (displayType == "SSD1306")
-      display->begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
+      display->begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
     else if (displayType == "SH1107")
-      display->begin(Mycila::EasyDisplayType::SH1107, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
+      display->begin(Mycila::EasyDisplayType::SH1107, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
     else if (displayType == "SH1106")
-      display->begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_DISPLAY_SCL), config.getLong(KEY_PIN_DISPLAY_SDA), config.getLong(KEY_DISPLAY_ROTATION));
+      display->begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
 
     if (!display->isEnabled()) {
       logger.error(TAG, "Display failed to initialize!");

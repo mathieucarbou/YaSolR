@@ -273,8 +273,8 @@ static dash::FeedbackTextInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL
 static dash::FeedbackTextInputCard<int32_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
 static dash::FeedbackTextInputCard<int32_t> _pinLEDYellow(dashboard, YASOLR_LBL_120);
 static dash::FeedbackTextInputCard<int32_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
-static dash::FeedbackTextInputCard<int32_t> _pinDisplayClock(dashboard, YASOLR_LBL_111);
-static dash::FeedbackTextInputCard<int32_t> _pinDisplayData(dashboard, YASOLR_LBL_112);
+static dash::FeedbackTextInputCard<int32_t> _pinI2CSCL(dashboard, YASOLR_LBL_111);
+static dash::FeedbackTextInputCard<int32_t> _pinI2CSDA(dashboard, YASOLR_LBL_112);
 
 // tab: hardware
 
@@ -311,7 +311,7 @@ static dash::FeedbackSwitchCard _output2Relay(dashboard, YASOLR_LBL_070 ": " YAS
 static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 2 ds18
-static dash::FeedbackSwitchCard _output2DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
+static dash::FeedbackSwitchCard _output2DS18(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
 
 // relay1
 static dash::FeedbackSwitchCard _relay1(dashboard, YASOLR_LBL_074);
@@ -721,8 +721,8 @@ void YaSolR::Website::begin() {
   _pinPZEMTX.setTab(_gpioTab);
   _pinZCD.setTab(_gpioTab);
   _gpioSep5.setTab(_gpioTab);
-  _pinDisplayClock.setTab(_gpioTab);
-  _pinDisplayData.setTab(_gpioTab);
+  _pinI2CSCL.setTab(_gpioTab);
+  _pinI2CSDA.setTab(_gpioTab);
   _pinDS18Router.setTab(_gpioTab);
   _pinLEDGreen.setTab(_gpioTab);
   _pinLEDRed.setTab(_gpioTab);
@@ -743,8 +743,8 @@ void YaSolR::Website::begin() {
   _numConfig(_pinPZEMRX, KEY_PIN_PZEM_RX);
   _numConfig(_pinPZEMTX, KEY_PIN_PZEM_TX);
   _numConfig(_pinZCD, KEY_PIN_ZCD);
-  _numConfig(_pinDisplayClock, KEY_PIN_DISPLAY_SCL);
-  _numConfig(_pinDisplayData, KEY_PIN_DISPLAY_SDA);
+  _numConfig(_pinI2CSCL, KEY_PIN_I2C_SCL);
+  _numConfig(_pinI2CSDA, KEY_PIN_I2C_SDA);
   _numConfig(_pinDS18Router, KEY_PIN_ROUTER_DS18);
   _numConfig(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN);
   _numConfig(_pinLEDRed, KEY_PIN_LIGHTS_RED);
@@ -1242,8 +1242,8 @@ void YaSolR::Website::initCards() {
   _pinout(_pinPZEMRX, KEY_PIN_PZEM_RX, pinout);
   _pinout(_pinPZEMTX, KEY_PIN_PZEM_TX, pinout);
   _pinout(_pinZCD, KEY_PIN_ZCD, pinout);
-  _pinout(_pinDisplayClock, KEY_PIN_DISPLAY_SCL, pinout);
-  _pinout(_pinDisplayData, KEY_PIN_DISPLAY_SDA, pinout);
+  _pinout(_pinI2CSCL, KEY_PIN_I2C_SCL, pinout);
+  _pinout(_pinI2CSDA, KEY_PIN_I2C_SDA, pinout);
   _pinout(_pinDS18Router, KEY_PIN_ROUTER_DS18, pinout);
   _pinout(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN, pinout);
   _pinout(_pinLEDRed, KEY_PIN_LIGHTS_RED, pinout);

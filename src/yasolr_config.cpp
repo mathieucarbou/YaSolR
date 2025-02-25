@@ -95,8 +95,8 @@ void yasolr_init_config() {
   config.configure(KEY_PID_OUT_MIN, "-300");
   config.configure(KEY_PID_P_MODE, "2");
   config.configure(KEY_PID_SETPOINT, "0");
-  config.configure(KEY_PIN_DISPLAY_SCL, std::to_string(YASOLR_DISPLAY_CLOCK_PIN));
-  config.configure(KEY_PIN_DISPLAY_SDA, std::to_string(YASOLR_DISPLAY_DATA_PIN));
+  config.configure(KEY_PIN_I2C_SCL, std::to_string(YASOLR_I2C_SCL_PIN));
+  config.configure(KEY_PIN_I2C_SDA, std::to_string(YASOLR_I2C_SDA_PIN));
   config.configure(KEY_PIN_JSY_RX, std::to_string(YASOLR_JSY_RX_PIN));
   config.configure(KEY_PIN_JSY_TX, std::to_string(YASOLR_JSY_TX_PIN));
   config.configure(KEY_PIN_LIGHTS_GREEN, std::to_string(YASOLR_LIGHTS_GREEN_PIN));

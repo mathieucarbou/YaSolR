@@ -51,7 +51,7 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
       logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
 
       if (!Thyristor::getSemiPeriod()) {
-        logger.info(TAG, "Starting Thyristor...");
+        logger.info(TAG, "Starting Thyristor");
         Thyristor::setSemiPeriod(semiPeriod);
         Thyristor::begin();
       }
@@ -80,7 +80,7 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
 
     if (Thyristor::getSemiPeriod() || (dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
       if (Thyristor::getSemiPeriod()) {
-        logger.info(TAG, "Stopping Thyristor...");
+        logger.info(TAG, "Stopping Thyristor");
         Thyristor::setSemiPeriod(0);
         Thyristor::end();
       }
@@ -119,53 +119,57 @@ static bool isDACBased(const char* type) {
          strcmp(type, YASOLR_DIMMER_LSA_GP8413) == 0;
 }
 
-static Mycila::Dimmer* createDimmer(const char* keyEnable, const char* keyType, const char* keyPin) {
-  if (config.getBool(keyEnable)) {
-    const char* type = config.get(keyType);
+static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyEnable, const char* keyType, const char* keyPin) {
+  if (!config.getBool(keyEnable))
+    return nullptr;
 
-    logger.info(TAG, "Initializing dimmer type: %s...", type);
+  Mycila::Dimmer* dimmer = nullptr;
+  const char* type = config.get(keyType);
 
-    if (isZeroCrossBased(type)) {
-      Mycila::ZeroCrossDimmer* zcDimmer = new Mycila::ZeroCrossDimmer();
-      zcDimmer->setPin((gpio_num_t)config.getInt(keyPin));
-      zcDimmer->begin();
+  logger.info(TAG, "Initializing dimmer %s for output %d", type, outputID);
 
-      if (zcDimmer->isEnabled()) {
-        return zcDimmer;
+  if (isZeroCrossBased(type)) {
+    Mycila::ZeroCrossDimmer* zcDimmer = new Mycila::ZeroCrossDimmer();
+    zcDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    dimmer = zcDimmer;
 
-      } else {
-        logger.error(TAG, "Dimmer failed to initialize!");
-        delete zcDimmer;
-        return nullptr;
-      }
+  } else if (isPWMBased(type)) {
+    Mycila::PWMDimmer* pwmDimmer = new Mycila::PWMDimmer();
+    pwmDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    dimmer = pwmDimmer;
+
+  } else if (isDACBased(type)) {
+    Wire.begin(config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_PIN_I2C_SCL));
+    Mycila::DFRobotDimmer* dfRobotDimmer = new Mycila::DFRobotDimmer();
+    dfRobotDimmer->setOutput(Mycila::DFRobotDimmer::Output::RANGE_0_10V);
+    dfRobotDimmer->setChannel(outputID - 1);
+    if (strcmp(type, YASOLR_DIMMER_LSA_GP8211S) == 0) {
+      dfRobotDimmer->setSKU(Mycila::DFRobotDimmer::SKU::DFR1071_GP8211S);
+    } else if (strcmp(type, YASOLR_DIMMER_LSA_GP8403) == 0) {
+      dfRobotDimmer->setSKU(Mycila::DFRobotDimmer::SKU::DFR0971_GP8403);
+    } else if (strcmp(type, YASOLR_DIMMER_LSA_GP8413) == 0) {
+      dfRobotDimmer->setSKU(Mycila::DFRobotDimmer::SKU::DFR1073_GP8413);
+    } else {
+      delete dfRobotDimmer;
+      dfRobotDimmer = nullptr;
     }
+    dimmer = dfRobotDimmer;
+  }
 
-    if (isPWMBased(type)) {
-      Mycila::PWMDimmer* pwmDimmer = new Mycila::PWMDimmer();
-      pwmDimmer->setPin((gpio_num_t)config.getInt(keyPin));
-      pwmDimmer->begin();
-
-      if (pwmDimmer->isEnabled()) {
-        return pwmDimmer;
-
-      } else {
-        logger.error(TAG, "Dimmer failed to initialize!");
-        delete pwmDimmer;
-        return nullptr;
-      }
-    }
-
-    if (isDACBased(type)) {
-      // TODO: implement DAC based dimmer
-      logger.warn(TAG, "DAC based dimmer not implemented yet!");
-      return nullptr;
-    }
-
-    logger.error(TAG, "Dimmer type not supported!");
+  if (!dimmer) {
+    logger.error(TAG, "Dimmer type not supported: %s", type);
     return nullptr;
   }
 
-  return nullptr;
+  dimmer->begin();
+
+  if (!dimmer->isEnabled()) {
+    logger.error(TAG, "Dimmer failed to initialize!");
+    delete dimmer;
+    dimmer = nullptr;
+  }
+
+  return dimmer;
 }
 
 static Mycila::Relay* createBypassRelay(const char* keyEnable, const char* keyType, const char* keyPin) {
@@ -192,7 +196,7 @@ static Mycila::Relay* createBypassRelay(const char* keyEnable, const char* keyTy
 }
 
 static void initOutput1(uint16_t semiPeriod) {
-  dimmer1 = createDimmer(KEY_ENABLE_OUTPUT1_DIMMER, KEY_OUTPUT1_DIMMER_TYPE, KEY_PIN_OUTPUT1_DIMMER);
+  dimmer1 = createDimmer(1, KEY_ENABLE_OUTPUT1_DIMMER, KEY_OUTPUT1_DIMMER_TYPE, KEY_PIN_OUTPUT1_DIMMER);
   Mycila::Relay* bypassRelay = createBypassRelay(KEY_ENABLE_OUTPUT1_RELAY, KEY_OUTPUT1_RELAY_TYPE, KEY_PIN_OUTPUT1_RELAY);
 
   // output 1 is only a bypass relay ?
@@ -228,7 +232,7 @@ static void initOutput1(uint16_t semiPeriod) {
 }
 
 static void initOutput2(uint16_t semiPeriod) {
-  dimmer2 = createDimmer(KEY_ENABLE_OUTPUT2_DIMMER, KEY_OUTPUT2_DIMMER_TYPE, KEY_PIN_OUTPUT2_DIMMER);
+  dimmer2 = createDimmer(2, KEY_ENABLE_OUTPUT2_DIMMER, KEY_OUTPUT2_DIMMER_TYPE, KEY_PIN_OUTPUT2_DIMMER);
   Mycila::Relay* bypassRelay = createBypassRelay(KEY_ENABLE_OUTPUT2_RELAY, KEY_OUTPUT2_RELAY_TYPE, KEY_PIN_OUTPUT2_RELAY);
 
   // output 2 is only a bypass relay ?
@@ -281,7 +285,7 @@ void yasolr_divert() {
 }
 
 void yasolr_init_router() {
-  logger.info(TAG, "Initialize router outputs...");
+  logger.info(TAG, "Initialize router outputs");
 
   // PID Controller
 
