@@ -6,6 +6,7 @@ description: Blog
 
 # Blog
 
+- [2025-02-27 - YaS☀️lR Solar Router](./blog/2025-02-27_yasolr_solar_router)
 - [2024-11-07 - JSY-MK-194G](./blog/2024-11-07_jsy_mk_194g)
 - [2024-09-05 - Home Assistant Solar Diverter / Router](./blog/2024-09-05_ha_diverter)
 - [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
