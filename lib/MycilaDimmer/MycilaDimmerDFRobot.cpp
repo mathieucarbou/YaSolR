@@ -95,15 +95,15 @@ bool Mycila::DFRobotDimmer::apply(float mappedDutyCycle) {
   duty = duty << (16 - resolution);
   switch (_channel) {
     case 0: {
-      uint8_t buffer[2] = {duty & 0xff, duty >> 8};
+      uint8_t buffer[2] = {uint8_t(duty & 0xff), uint8_t(duty >> 8)};
       return _send(0x02, buffer, 2) == 0;
     }
     case 1: {
-      uint8_t buffer[2] = {duty & 0xff, duty >> 8};
+      uint8_t buffer[2] = {uint8_t(duty & 0xff), uint8_t(duty >> 8)};
       return _send(0x04, buffer, 2) == 0;
     }
     case 2: {
-      uint8_t buffer[4] = {duty & 0xff, duty >> 8, duty & 0xff, duty >> 8};
+      uint8_t buffer[4] = {uint8_t(duty & 0xff), uint8_t(duty >> 8), uint8_t(duty & 0xff), uint8_t(duty >> 8)};
       return _send(0x02, buffer, 4) == 0;
     }
     default:
