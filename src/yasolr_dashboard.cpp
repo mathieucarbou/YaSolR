@@ -915,7 +915,7 @@ void YaSolR::Website::begin() {
 }
 
 void YaSolR::Website::initCards() {
-  logger.debug(TAG, "Initialize dashboard cards");
+  logger.info(TAG, "Initialize dashboard cards");
 
   const Mycila::ESPConnect::Mode mode = espConnect.getMode();
 
