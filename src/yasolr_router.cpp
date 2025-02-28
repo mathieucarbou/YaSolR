@@ -328,6 +328,10 @@ void yasolr_init_router() {
 
   // Do we need a ZCD ?
 
+  if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
+    config.setBool(KEY_ENABLE_ZCD, true);
+  }
+
   if (config.getBool(KEY_ENABLE_ZCD)) {
     pulseAnalyzer = new Mycila::PulseAnalyzer();
     pulseAnalyzer->onZeroCross(Mycila::ZeroCrossDimmer::onZeroCross);
