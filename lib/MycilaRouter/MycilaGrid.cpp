@@ -153,11 +153,11 @@ void Mycila::Grid::toJson(const JsonObject& root) const {
 
   JsonObject pzem = root["source"]["pzem"].to<JsonObject>();
   if (_pzemMetrics.isPresent()) {
-    remote["enabled"] = true;
-    remote["time"] = _pzemMetrics.getLastUpdateTime();
+    pzem["enabled"] = true;
+    pzem["time"] = _pzemMetrics.getLastUpdateTime();
     toJson(pzem, _pzemMetrics.get());
   } else {
-    remote["enabled"] = false;
+    pzem["enabled"] = false;
   }
 
   JsonObject mqttPower = root["source"]["mqtt_power"].to<JsonObject>();
