@@ -1417,7 +1417,7 @@ void YaSolR::Website::updateCards() {
   _routerDS18State.setValue(ds18Sys ? ds18Sys->getTemperature().value_or(0.0f) : 0);
 
   _relay1Switch.setValue(relay1 && relay1->isOn());
-  _relay2Switch.setValue(relay1 && relay2->isOn());
+  _relay2Switch.setValue(relay2 && relay2->isOn());
 
   if (output1) {
     switch (output1->getState()) {
