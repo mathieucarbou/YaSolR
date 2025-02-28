@@ -52,10 +52,7 @@ namespace Mycila {
       static void onZeroCross(int16_t delayUntilZero, void* args);
 
     protected:
-      virtual bool apply(float mappedDutyCycle) {
-        _dimmer->setDelay(_delay);
-        return true;
-      }
+      virtual bool apply(float mappedDutyCycle);
 
     private:
       gpio_num_t _pin = GPIO_NUM_NC;

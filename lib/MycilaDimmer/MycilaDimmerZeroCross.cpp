@@ -43,6 +43,11 @@ extern Mycila::Logger logger;
                                         (((1ULL << (gpio_num)) & SOC_GPIO_VALID_GPIO_MASK) != 0))
 #endif
 
+// Minimum delay to reach the voltage required for a gate current of 30mA.
+// delay_us = asin((gate_resistor * gate_current) / grid_volt_max) / pi * period_us
+// delay_us = asin((330 * 0.03) / 325) / pi * 10000 = 97us
+#define PHASE_DELAY_MIN_US (90)
+
 #define TAG "ZC_DIMMER"
 
 void Mycila::ZeroCrossDimmer::begin() {
@@ -80,4 +85,10 @@ void Mycila::ZeroCrossDimmer::end() {
 
 void ARDUINO_ISR_ATTR Mycila::ZeroCrossDimmer::onZeroCross(int16_t delayUntilZero, void* arg) {
   Thyristor::zero_cross_int(arg);
+}
+
+bool Mycila::ZeroCrossDimmer::apply(float mappedDutyCycle) {
+  //TODO: use PHASE_DELAY_MIN_US ?
+  _dimmer->setDelay(_delay);
+  return true;
 }

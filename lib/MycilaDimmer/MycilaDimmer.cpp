@@ -4,10 +4,6 @@
  */
 #include <MycilaDimmer.h>
 
-// Minimum delay to reach the voltage required for a gate current of 30mA.
-// delay_us = asin((gate_resistor * gate_current) / grid_volt_max) / pi * period_us
-// delay_us = asin((330 * 0.03) / 325) / pi * 10000 = 97us
-#define PHASE_DELAY_MIN_US (90)
 #define TABLE_PHASE_LEN    (80U)
 #define DIMMER_RESOLUTION  12
 
@@ -24,7 +20,7 @@ uint16_t Mycila::Dimmer::_lookupFiringDelay(float dutyCycle) {
     return UINT16_MAX;
 
   if (dutyCycle == 1)
-    return PHASE_DELAY_MIN_US;
+    return 0;
 
   uint32_t duty = dutyCycle * DIMMER_MAX;
   uint32_t slot = duty * TABLE_PHASE_SCALE + (TABLE_PHASE_SCALE >> 1);
