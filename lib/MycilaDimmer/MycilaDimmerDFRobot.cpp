@@ -89,18 +89,9 @@ void Mycila::DFRobotDimmer::end() {
   _delay = UINT16_MAX;
 }
 
-bool Mycila::DFRobotDimmer::apply(float mappedDutyCycle) {
-  // mappedDutyCycle is linear, use instead the _delay which comes from a power lUT
-  if (_delay == 0) {
-    mappedDutyCycle = 1.0f;
-  } else if (_delay >= _semiPeriod) {
-    mappedDutyCycle = 0.0f;
-  } else {
-    mappedDutyCycle = 1.0f - static_cast<float>(_delay) / static_cast<float>(_semiPeriod);
-  }
-
+bool Mycila::DFRobotDimmer::apply() {
   uint8_t resolution = getResolution();
-  uint16_t duty = mappedDutyCycle * ((1 << resolution) - 1);
+  uint16_t duty = getFiringRatio() * ((1 << resolution) - 1);
   duty = duty << (16 - resolution);
   switch (_channel) {
     case 0: {

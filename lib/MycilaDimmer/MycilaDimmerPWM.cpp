@@ -71,17 +71,8 @@ void Mycila::PWMDimmer::end() {
   digitalWrite(_pin, LOW);
 }
 
-bool Mycila::PWMDimmer::apply(float mappedDutyCycle) {
-  // mappedDutyCycle is linear, use instead the _delay which comes from a power lUT
-  if (_delay == 0) {
-    mappedDutyCycle = 1.0f;
-  } else if (_delay >= _semiPeriod) {
-    mappedDutyCycle = 0.0f;
-  } else {
-    mappedDutyCycle = 1.0f - static_cast<float>(_delay) / static_cast<float>(_semiPeriod);
-  }
-
-  uint32_t duty = mappedDutyCycle * ((1 << _resolution) - 1);
+bool Mycila::PWMDimmer::apply() {
+  uint32_t duty = getFiringRatio() * ((1 << _resolution) - 1);
   // LOGD(TAG, "Set PWM duty cycle on pin %" PRId8 " to %lu", _pin, duty);
   return ledcWrite(_pin, duty);
 }

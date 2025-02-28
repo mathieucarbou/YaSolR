@@ -87,7 +87,7 @@ void ARDUINO_ISR_ATTR Mycila::ZeroCrossDimmer::onZeroCross(int16_t delayUntilZer
   Thyristor::zero_cross_int(arg);
 }
 
-bool Mycila::ZeroCrossDimmer::apply(float mappedDutyCycle) {
+bool Mycila::ZeroCrossDimmer::apply() {
   //TODO: use PHASE_DELAY_MIN_US ?
   _dimmer->setDelay(_delay);
   return true;

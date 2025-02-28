@@ -92,7 +92,7 @@ namespace Mycila {
       virtual const char* type() const { return "dfrobot"; }
 
     protected:
-      virtual bool apply(float mappedDutyCycle);
+      virtual bool apply();
 
     private:
       SKU _sku = SKU::UNKNOWN;

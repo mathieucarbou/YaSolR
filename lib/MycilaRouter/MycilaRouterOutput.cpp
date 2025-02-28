@@ -45,7 +45,7 @@ Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
     return State::OUTPUT_BYPASS_AUTO;
   if (_bypassEnabled)
     return State::OUTPUT_BYPASS_MANUAL;
-  if (_dimmer->isOn() && isDimmerOnline())
+  if (_dimmer->isOn())
     return State::OUTPUT_ROUTING;
   return State::OUTPUT_IDLE;
 }

@@ -52,12 +52,12 @@ namespace Mycila {
       /**
        * @brief Check if the dimmer is off
        */
-      bool isOff() const { return getDutyCycle() <= getDutyCycleMin(); }
+      bool isOff() const { return !isOn(); }
 
       /**
        * @brief Check if the dimmer is on
        */
-      bool isOn() const { return getDutyCycle() > getDutyCycleMin(); }
+      bool isOn() const { return _enabled && _semiPeriod && _dutyCycle; }
 
       /**
        * @brief Check if the dimmer is on at full power
@@ -74,17 +74,14 @@ namespace Mycila {
         // It will only be applied when dimmer will be on.
         _dutyCycle = constrain(dutyCycle, 0, _dutyCycleLimit);
 
-        // remapping - like Shelly Dimmers
-        float mappedDutyCycle = _dutyCycleMin + _dutyCycle * (_dutyCycleMax - _dutyCycleMin);
-
-        if (!isOnline() && mappedDutyCycle) {
+        if (!isOnline() && _dutyCycle) {
           // when not connected to the grid, we only allow setting dimmer off
           return false;
         }
 
-        _delay = _lookupFiringDelay(mappedDutyCycle);
+        _delay = _lookupFiringDelay(getMappedDutyCycle());
 
-        return apply(mappedDutyCycle);
+        return apply();
       }
 
       /**
@@ -121,9 +118,14 @@ namespace Mycila {
       }
 
       /**
-       * @brief Get the power duty cycle configured for the dimmer
+       * @brief Get the power duty cycle configured for the dimmer by teh user
        */
       float getDutyCycle() const { return _dutyCycle; }
+
+      /**
+       * @brief Get the remapped power duty cycle in effect for the dimmer. This is the value that is actually applied to the dimmer.
+       */
+      float getMappedDutyCycle() const { return _dutyCycleMin + _dutyCycle * (_dutyCycleMax - _dutyCycleMin); }
 
       /**
        * @brief Get the runtime (live value) of the power duty cycle in effect for the dimmer. This is the value that is actually applied to the dimmer: if the dimmer is disabled, this value will be 0.
@@ -153,6 +155,20 @@ namespace Mycila {
       uint16_t getFiringDelay() const { return _delay > _semiPeriod ? _semiPeriod : _delay; }
 
       /**
+       * @brief Get the firing ratio of the dimmer in the range [0, 1]
+       * At 0% power, the ratio is equal to 0.
+       * At 100% power, the ratio is equal to 1.
+       * This is the ratio of the time the dimmer is on compared to the semi-period.
+       */
+      float getFiringRatio() const {
+        if (_semiPeriod == 0 || _delay >= _semiPeriod)
+          return 0.0f;
+        if (_delay == 0)
+          return 1.0f;
+        return 1.0f - static_cast<float>(_delay) / static_cast<float>(_semiPeriod);
+      }
+
+      /**
        * @brief Get the phase angle in degrees (°) of the dimmer in the range [0, 180]
        * At 0% power, the phase angle is equal to 180
        * At 100% power, the phase angle is equal to 0
@@ -169,14 +185,16 @@ namespace Mycila {
         root["type"] = type();
         root["enabled"] = isEnabled();
         root["online"] = isOnline();
+        root["semi_period"] = getSemiPeriod();
         root["state"] = isOn() ? "on" : "off";
         root["duty_cycle"] = getDutyCycle();
+        root["duty_cycle_mapped"] = getMappedDutyCycle();
         root["duty_cycle_limit"] = getDutyCycleLimit();
         root["duty_cycle_min"] = getDutyCycleMin();
         root["duty_cycle_max"] = getDutyCycleMax();
-        root["semi_period"] = getSemiPeriod();
-        root["delay"] = getFiringDelay();
         root["angle"] = getPhaseAngle();
+        root["firing_delay"] = getFiringDelay();
+        root["firing_ratio"] = getFiringRatio();
       }
 #endif
 
@@ -191,7 +209,7 @@ namespace Mycila {
 
       uint16_t _lookupFiringDelay(float dutyCycle);
 
-      virtual bool apply(float mappedDutyCycle) = 0;
+      virtual bool apply() = 0;
   };
 
   class VirtualDimmer : public Dimmer {
@@ -203,6 +221,6 @@ namespace Mycila {
       virtual const char* type() const { return "virtual"; }
 
     protected:
-      virtual bool apply(float mappedDutyCycle) { return true; }
+      virtual bool apply() { return true; }
   };
 } // namespace Mycila

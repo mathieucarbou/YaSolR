@@ -52,7 +52,7 @@ namespace Mycila {
       static void onZeroCross(int16_t delayUntilZero, void* args);
 
     protected:
-      virtual bool apply(float mappedDutyCycle);
+      virtual bool apply();
 
     private:
       gpio_num_t _pin = GPIO_NUM_NC;
