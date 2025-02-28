@@ -17,6 +17,7 @@ namespace Mycila {
 
       virtual void begin() = 0;
       virtual void end() = 0;
+      virtual const char* type() const = 0;
 
       /**
        * @brief Set the semi-period of the dimmer in us
@@ -191,7 +192,6 @@ namespace Mycila {
       uint16_t _lookupFiringDelay(float dutyCycle);
 
       virtual bool apply(float mappedDutyCycle) = 0;
-      virtual const char* type() const = 0;
   };
 
   class VirtualDimmer : public Dimmer {
@@ -200,9 +200,9 @@ namespace Mycila {
 
       virtual void begin() { _enabled = true; }
       virtual void end() { _enabled = false; }
+      virtual const char* type() const { return "virtual"; }
 
     protected:
-      virtual const char* type() const { return "virtual"; }
       virtual bool apply(float mappedDutyCycle) { return true; }
   };
 } // namespace Mycila

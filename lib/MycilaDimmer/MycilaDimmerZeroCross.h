@@ -37,6 +37,8 @@ namespace Mycila {
        */
       virtual void end();
 
+      virtual const char* type() const { return "zero-cross"; }
+
       /**
        * Callback to be called when a zero-crossing event is detected.
        *
@@ -50,7 +52,6 @@ namespace Mycila {
       static void onZeroCross(int16_t delayUntilZero, void* args);
 
     protected:
-      virtual const char* type() const { return "zero-cross"; }
       virtual bool apply(float mappedDutyCycle) {
         _dimmer->setDelay(_delay);
         return true;

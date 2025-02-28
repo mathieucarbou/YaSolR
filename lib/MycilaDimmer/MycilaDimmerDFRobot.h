@@ -89,8 +89,9 @@ namespace Mycila {
        */
       virtual void end();
 
+      virtual const char* type() const { return "dfrobot"; }
+
     protected:
-      virtual const char* type() const { return "dfr"; }
       virtual bool apply(float mappedDutyCycle);
 
     private:

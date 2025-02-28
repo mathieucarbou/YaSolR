@@ -59,8 +59,9 @@ namespace Mycila {
        */
       virtual void end();
 
-    protected:
       virtual const char* type() const { return "pwm"; }
+
+    protected:
       virtual bool apply(float mappedDutyCycle);
 
     private:
