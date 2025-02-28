@@ -7,3 +7,9 @@
 /logs
 /platformio-device-monitor*.log
 /data/*.gz
+
+/CMakelists.txt
+/dependencies.lock
+/sdkconfig.*
+/managed_components
+/.dummy
