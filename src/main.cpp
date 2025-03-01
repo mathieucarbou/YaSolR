@@ -26,7 +26,7 @@ void setup() {
   yasolr_init_web_server();
 
   // core task manager
-  assert(coreTaskManager.asyncStart(512 * 7, 5, 1, 100, true));
+  assert(coreTaskManager.asyncStart(512 * 6, 5, 1, 100, true));
 
   // task manager for long running tasks like mqtt / pzem
   if (unsafeTaskManager.tasks())
