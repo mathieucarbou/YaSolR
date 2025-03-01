@@ -8,6 +8,7 @@ Mycila::JSY* jsy = nullptr;
 Mycila::TaskManager* jsyTaskManager = nullptr;
 
 static Mycila::Task* jsyTask = nullptr;
+static Mycila::JSY::Data jsyData;
 
 void yasolr_init_jsy() {
   if (config.getBool(KEY_ENABLE_JSY)) {
@@ -31,9 +32,11 @@ void yasolr_init_jsy() {
     if (jsy->getBaudRate() != jsy->getMaxAvailableBaudRate())
       jsy->setBaudRate(jsy->getMaxAvailableBaudRate());
 
-    jsy->setCallback([](const Mycila::JSY::EventType eventType) {
-      if (eventType == Mycila::JSY::EventType::EVT_CHANGE) {
-        switch (jsy->data.model) {
+    jsy->setCallback([](const Mycila::JSY::EventType eventType, const Mycila::JSY::Data& data) {
+      if (jsyData != data) {
+        jsyData = data;
+
+        switch (data.model) {
           case MYCILA_JSY_MK_1031:
             // JSY1030 has no sign: it cannot be used to measure the grid
             break;
@@ -42,51 +45,51 @@ void yasolr_init_jsy() {
           case MYCILA_JSY_MK_227:
           case MYCILA_JSY_MK_229:
             grid.localMetrics().update({
-              .apparentPower = jsy->data.single().apparentPower,
-              .current = jsy->data.single().current,
-              .energy = jsy->data.single().activeEnergyImported,
-              .energyReturned = jsy->data.single().activeEnergyReturned,
-              .frequency = jsy->data.single().frequency,
-              .power = jsy->data.single().activePower,
-              .powerFactor = jsy->data.single().powerFactor,
-              .voltage = jsy->data.single().voltage,
+              .apparentPower = data.single().apparentPower,
+              .current = data.single().current,
+              .energy = data.single().activeEnergyImported,
+              .energyReturned = data.single().activeEnergyReturned,
+              .frequency = data.single().frequency,
+              .power = data.single().activePower,
+              .powerFactor = data.single().powerFactor,
+              .voltage = data.single().voltage,
             });
             break;
 
           case MYCILA_JSY_MK_193:
           case MYCILA_JSY_MK_194:
             grid.localMetrics().update({
-              .apparentPower = jsy->data.channel2().apparentPower,
-              .current = jsy->data.channel2().current,
-              .energy = jsy->data.channel2().activeEnergyImported,
-              .energyReturned = jsy->data.channel2().activeEnergyReturned,
-              .frequency = jsy->data.aggregate.frequency,
-              .power = jsy->data.channel2().activePower,
-              .powerFactor = jsy->data.channel2().powerFactor,
-              .voltage = jsy->data.channel2().voltage,
+              .apparentPower = data.channel2().apparentPower,
+              .current = data.channel2().current,
+              .energy = data.channel2().activeEnergyImported,
+              .energyReturned = data.channel2().activeEnergyReturned,
+              .frequency = data.aggregate.frequency,
+              .power = data.channel2().activePower,
+              .powerFactor = data.channel2().powerFactor,
+              .voltage = data.channel2().voltage,
             });
             router.localMetrics().update({
-              .apparentPower = jsy->data.channel1().apparentPower,
-              .current = jsy->data.channel1().current,
-              .energy = jsy->data.channel1().activeEnergy,
-              .power = jsy->data.channel1().activePower,
-              .powerFactor = jsy->data.channel1().powerFactor,
-              .resistance = jsy->data.channel1().resistance(),
-              .thdi = jsy->data.channel1().thdi(),
-              .voltage = jsy->data.channel1().voltage,
+              .apparentPower = data.channel1().apparentPower,
+              .current = data.channel1().current,
+              .energy = data.channel1().activeEnergy,
+              .power = data.channel1().activePower,
+              .powerFactor = data.channel1().powerFactor,
+              .resistance = data.channel1().resistance(),
+              .thdi = data.channel1().thdi(),
+              .voltage = data.channel1().voltage,
             });
             break;
 
           case MYCILA_JSY_MK_333:
             grid.localMetrics().update({
-              .apparentPower = jsy->data.aggregate.apparentPower,
-              .current = jsy->data.aggregate.current,
-              .energy = jsy->data.aggregate.activeEnergyImported,
-              .energyReturned = jsy->data.aggregate.activeEnergyReturned,
-              .frequency = jsy->data.aggregate.frequency,
-              .power = jsy->data.aggregate.activePower,
-              .powerFactor = jsy->data.aggregate.powerFactor,
-              .voltage = jsy->data.aggregate.voltage,
+              .apparentPower = data.aggregate.apparentPower,
+              .current = data.aggregate.current,
+              .energy = data.aggregate.activeEnergyImported,
+              .energyReturned = data.aggregate.activeEnergyReturned,
+              .frequency = data.aggregate.frequency,
+              .power = data.aggregate.activePower,
+              .powerFactor = data.aggregate.powerFactor,
+              .voltage = data.aggregate.voltage,
             });
             break;
 
@@ -110,7 +113,7 @@ void yasolr_init_jsy() {
       jsyTaskManager->enableProfiling();
     }
 
-    assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
+    assert(jsyTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
 
     Mycila::TaskMonitor.addTask(jsyTaskManager->name());
   }

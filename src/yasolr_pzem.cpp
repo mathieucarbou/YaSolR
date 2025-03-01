@@ -22,29 +22,29 @@ void yasolr_init_pzem() {
 
     if (pzemO1->isEnabled()) {
       count++;
-      pzemO1->setCallback([](const Mycila::PZEM::EventType eventType) {
+      pzemO1->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
         if (eventType == Mycila::PZEM::EventType::EVT_READ) {
           grid.pzemMetrics().update({
             .apparentPower = NAN,
             .current = NAN,
             .energy = 0,
             .energyReturned = 0,
-            .frequency = pzemO1->data.frequency,
+            .frequency = data.frequency,
             .power = NAN,
             .powerFactor = NAN,
-            .voltage = pzemO1->data.voltage,
+            .voltage = data.voltage,
           });
           if (output1)
             output1->localMetrics().update({
-              .apparentPower = pzemO1->data.apparentPower,
-              .current = pzemO1->data.current,
-              .dimmedVoltage = pzemO1->data.dimmedVoltage(),
-              .energy = pzemO1->data.activeEnergy,
-              .power = pzemO1->data.activePower,
-              .powerFactor = pzemO1->data.powerFactor,
-              .resistance = pzemO1->data.resistance(),
-              .thdi = pzemO1->data.thdi(),
-              .voltage = pzemO1->data.voltage,
+              .apparentPower = data.apparentPower,
+              .current = data.current,
+              .dimmedVoltage = data.dimmedVoltage(),
+              .energy = data.activeEnergy,
+              .power = data.activePower,
+              .powerFactor = data.powerFactor,
+              .resistance = data.resistance(),
+              .thdi = data.thdi(),
+              .voltage = data.voltage,
             });
         }
       });
@@ -99,29 +99,29 @@ void yasolr_init_pzem() {
 
     if (pzemO2->isEnabled()) {
       count++;
-      pzemO2->setCallback([](const Mycila::PZEM::EventType eventType) {
+      pzemO2->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
         if (eventType == Mycila::PZEM::EventType::EVT_READ) {
           grid.pzemMetrics().update({
             .apparentPower = NAN,
             .current = NAN,
             .energy = 0,
             .energyReturned = 0,
-            .frequency = pzemO2->data.frequency,
+            .frequency = data.frequency,
             .power = NAN,
             .powerFactor = NAN,
-            .voltage = pzemO2->data.voltage,
+            .voltage = data.voltage,
           });
           if (output2)
             output2->localMetrics().update({
-              .apparentPower = pzemO2->data.apparentPower,
-              .current = pzemO2->data.current,
-              .dimmedVoltage = pzemO2->data.dimmedVoltage(),
-              .energy = pzemO2->data.activeEnergy,
-              .power = pzemO2->data.activePower,
-              .powerFactor = pzemO2->data.powerFactor,
-              .resistance = pzemO2->data.resistance(),
-              .thdi = pzemO2->data.thdi(),
-              .voltage = pzemO2->data.voltage,
+              .apparentPower = data.apparentPower,
+              .current = data.current,
+              .dimmedVoltage = data.dimmedVoltage(),
+              .energy = data.activeEnergy,
+              .power = data.activePower,
+              .powerFactor = data.powerFactor,
+              .resistance = data.resistance(),
+              .thdi = data.thdi(),
+              .voltage = data.voltage,
             });
         }
       });
