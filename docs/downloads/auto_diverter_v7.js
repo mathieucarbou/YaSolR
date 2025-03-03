@@ -11,7 +11,7 @@
  * - v4: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. EXCESS_POWER_LIMIT can also be used to limit an output power to a specific value.
  * - v5: Introduced a 12-bits LUT to more closely match the voltage and current sine wave when computing the dimmer duty cycle to apply to the LSA
  * - v6: Added USE_POWER_LUT config to switch between linear dimming and LUT based dimming. v6 includes both code from v4 and v5.
- * - v7: Reworked the routing script to improve teh internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
+ * - v7: Reworked the routing script to improve the internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
  * 
  * ======================================
  */

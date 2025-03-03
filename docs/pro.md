@@ -57,7 +57,6 @@ Here are the availabilities below:
 | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :--------------: |
 | <img src="./assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)                                                                                                                  |   10 €    |        4         |
 | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure)                                                                                                       |   15 €    |        4         |
-| <img src="./assets/img/hardware/ZCD_2.jpeg" style="width:150px">            | [ZCD module from Rajkumar S](https://www.electronics-lab.com/project/ac-voltage-zero-cross-detector/) based on ROHM BM1Z102FJ dedicated Zero-Cross chip (no enclosure) and needs an [optocoupler](./build.md#zero-cross-detection-modules) |   25 €    |        7         |
 
 The price difference accounts for the quality, accuracy and features of these ZCD modules (see the author's pages for more details).
 

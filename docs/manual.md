@@ -574,7 +574,7 @@ All the supported dimmer types:
 - DAC based:
   - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071)
   - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971)
-  - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)s
+  - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)
 
 You need to select the correct dimmer type for your hardware and then restart YaSolR.
 

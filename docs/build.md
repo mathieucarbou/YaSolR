@@ -13,9 +13,9 @@ description: Build
   - [The Adventurer](#the-adventurer)
   - [The Elite](#the-elite)
   - [The Professional](#the-professional)
-    - [Voltage Regulator + PWM to Analog Converter + ZCD](#voltage-regulator--pwm-to-analog-converter--zcd)
-    - [Voltage Regulator + PWM to Analog Converter only](#voltage-regulator--pwm-to-analog-converter-only)
-    - [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
+    * [Voltage Regulator + PWM to Analog Converter + ZCD](#voltage-regulator--pwm-to-analog-converter--zcd)
+    * [Voltage Regulator + PWM to Analog Converter only](#voltage-regulator--pwm-to-analog-converter-only)
+    * [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
   - [Possible Upgrades](#possible-upgrades)
   - [Remote JSY](#remote-jsy)
   - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter)
@@ -37,6 +37,13 @@ description: Build
   - [Mounting Accessories](#mounting-accessories)
 - [Default GPIO pinout per board](#default-gpio-pinout-per-board)
 - [Wiring](#wiring)
+  - [How to wire RobotDyn dimmer](#how-to-wire-robotdyn-dimmer)
+  - [How to wire Random Solid State Relay dimmer](#how-to-wire-random-solid-state-relay-dimmer)
+  - [How to wire PWM controlled Voltage Regulator dimmer](#how-to-wire-pwm-controlled-voltage-regulator-dimmer)
+  - [How to wire DAC controlled Voltage Regulator dimmer](#how-to-wire-dac-controlled-voltage-regulator-dimmer)
+  - [How to wire Bypass Relay](#how-to-wire-bypass-relay)
+  - [How to wire JSY and PZEM](#how-to-wire-jsy-and-pzem)
+  - [How to wire accessories](#how-to-wire-accessories)
 
 ## Build Examples
 
@@ -53,9 +60,13 @@ Here are below some examples:
 - [The Adventurer](#the-adventurer): for people who want to mitigate the flaws of the RobotDyn and do some improvements over the existing RobotDyn
 - [The Elite](#the-elite): for people who want to use a Random SSR instead of a RobotDyn to safely dim more power and have a better Zero-Cross Detection circuit
 - [The Professional](#the-professional): probably the best and safe solution out there but requires an additional power source
+  * [Voltage Regulator + PWM to Analog Converter + ZCD](#voltage-regulator--pwm-to-analog-converter--zcd)
+  * [Voltage Regulator + PWM to Analog Converter only](#voltage-regulator--pwm-to-analog-converter-only)
+  * [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
 - [Possible Upgrades](#possible-upgrades): some additional components you can add to your router
 - [Remote JSY](#remote-jsy): a standalone application to place in your electrical panel to send the JSY metrics through UDP for remote installations
 - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter): a limited Solar Diverter / Router with Shelly devices and a voltage regulator
+- [Alternative: Home Assistant Solar Diverter](#alternative-home-assistant-solar-diverter)
 
 ### The Recycler
 
@@ -369,9 +380,10 @@ Here are some pros and cons of each phase control system:
 **Voltage Regulators:**
 
 Voltage regulators include a ZCD module and a phase control system which can be controlled in many ways.
-These are the best option, but complex to setup, wire and calibrate and require an additional 12V power supply.
+These are the best option: they are big and robust.
+But they require an additional module to control them with an ESP32.
 
-This is the option used in the [Shelly Solar Router](./blog/2024-07-01_shelly_solar_diverter).
+This is the option and also what is used in the [Shelly Solar Router](./blog/2024-07-01_shelly_solar_diverter).
 
 **Heat Sink:**
 
@@ -463,8 +475,8 @@ Links are provided for reference only, you can find them on other websites.
 
 | **Random and Zero-Cross SSR**                                           |                                                                                                                                                                                                                                                                                                                                          |
 | :---------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px">   | [LCTC Random Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://www.aliexpress.com/item/1005004084038828.html), ([Other LCTC vendor link](https://fr.aliexpress.com/item/1005004863817921.html)). Supports **Phase Control** and **Burst mode**, See [How to choose your SSR ?](#how-to-choose-your-ssr-) below |
-| <img src="./assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px">   | [Zero-Cross Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://fr.aliexpress.com/item/1005003216482476.html) Supports **Burst mode**, See [How to choose your SSR ?](#how-to-choose-your-ssr-) below                                                                                                            |
+| <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px">   | [LCTC Random Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://www.aliexpress.com/item/1005004084038828.html), ([Other LCTC vendor link](https://fr.aliexpress.com/item/1005004863817921.html)). Supports **Phase Control** and **Burst mode**, See [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-) below |
+| <img src="./assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px">   | [Zero-Cross Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://fr.aliexpress.com/item/1005003216482476.html) Supports **Burst mode**, See [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-) below                                                                                                            |
 | <img src="./assets/img/hardware/SSR_Heat_Sink.png" style="width:150px"> | [Heat Sink for SSR](https://fr.aliexpress.com/item/32739226601.html) (there are many more types available: take a big heat sink placed vertically)                                                                                                                                                                                       |
 
 ### Zero-Cross Detection Modules
@@ -475,13 +487,11 @@ Please note that the **JSY-MK-194G has an integrated ZCD** and can be used with 
 | :----------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px">           | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) and its [DIN Rail support](https://fr.aliexpress.com/item/4000272944733.html)                            |
 | <img src="./assets/img/hardware/ZCD_DIN_Rail.jpeg" style="width:150px">  | [UPM-01 DIN Rail Mount for PCB 72mm x 20mm](https://fr.aliexpress.com/item/4000272944733.html) for the ZCD module above to mount on DIN Rail. [Alternative link](https://fr.aliexpress.com/item/32276247838.html) |
-| <img src="./assets/img/hardware/ZCD_2.jpeg" style="width:150px">         | [ZCD module from Rajkumar S](https://www.electronics-lab.com/project/ac-voltage-zero-cross-detector/) which also needs an optocoupler                                                                             |
-| <img src="./assets/img/hardware/opto-isolator.jpeg" style="width:150px"> | [Optocoupler for ZCD module from Rajkumar S](https://aliexpress.com/item/1005003242672161.html)                                                                                                                   |
 
 I often have some spare ZCD modules since I do some batch ordering on PCbWay.
 If you are interested in one, please have a look at the availabilities in the [Pro](pro#zero-cross-detection-modules) page.
 
-Also, **do not forget that ZCD circuits are already included in RobotDyn (or other brands) dimmer boards!** So a good idea is to use such board but only for teh ZCd module.
+Also, **do not forget that ZCD circuits are already included in RobotDyn (or other brands) dimmer boards!** So a good idea is to use such board but only for the ZCd module.
 For example, on AliExpress, you can buy a cheap RobotDyn dimmer board for 3 euros with an included ZCD circuit (https://fr.aliexpress.com/item/32802025086.html).
 This ZCD circuit won't be as good as a specialized one, but it can be enough for most cases.
 
@@ -575,30 +585,100 @@ Here are below the default GPIO pinout for each board.
 | Light Feedback (Red)              |    15     |       15        |     15      |       -1       |       46       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | Light Feedback (Yellow)           |     2     |        2        |      2      |       -1       |       21       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #1 Bypass Relay            |    32     |       32        |     40      |       12       |       20       |      -1       |      -1           |      -1           |      -1           |      -1           |
-| OUTPUT #1 Dimmer (RobotDyn or SSR) |    25     |       25        |     37      |       2        |       19       |      -1       |      -1           |      -1           |      -1           |      -1           |
+| OUTPUT #1 Dimmer                  |    25     |       25        |     37      |       2        |       19       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #1 Temperature Sensor      |    18     |       18        |     18      |       15       |       3        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #2 Bypass Relay            |    33     |       33        |     33      |       -1       |       15       |      -1       |      -1           |      -1           |      -1           |      -1           |
-| OUTPUT #2 Dimmer (RobotDyn or SSR) |    26     |       26        |     36      |       -1       |       7        |      -1       |      -1           |      -1           |      -1           |      -1           |
+| OUTPUT #2 Dimmer                  |    26     |       26        |     36      |       -1       |       7        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #2 Temperature Sensor      |     5     |        5        |      5      |       -1       |       16       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | Push Button (restart)             |    EN     |       EN        |     EN      |       EN       |       EN       |      EN       |      EN           |      EN           |      EN           |      EN           |
 | RELAY #1                          |    13     |       13        |     13      |       14       |       5        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | RELAY #2                          |    12     |       12        |     12      |       -1       |       6        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | System Temperature Sensor         |     4     |        4        |      4      |       4        |       4        |      -1       |      -1           |      -1           |      -1           |      -1           |
-| ZCD (RobotDyn or ZCD Sync)         |    35     |       35        |     35      |       35       |       8        |      -1       |      -1           |      -1           |      -1           |      -1           |
+| ZCD (RobotDyn, ZCD, JSY-194G)     |    35     |       35        |     35      |       35       |       8        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | PZEM-004T v3 Serial1 RX           |    14     |       14        |     14      |       -1       |       -1       |      36       |      -1           |      26           |      26           |      25           |
 | PZEM-004T v3 Serial1 TX           |    27     |       27        |     11      |       -1       |       -1       |       4       |      -1           |      27           |      27           |      33           |
 
-- `-1` means not mapped (probably because the board does not have enough pins)
-
-**Minimal requirements:**
-
-- a pin configured to the ZCD system: either the ZC pin of the RobotDyn or any pin from any other ZC detection module
-- a pin configured to the Phase Control system: PSM pin for the RobotDyn or DC + side of the Random SSR
+`-1` means not mapped, either because this is not possible (for example some boards to not have enough UART to support at the same time JSY and PZEM), or because the mapping is just not defined by default and you need to go in YaSolR GPIO section to define to the pin you want.
 
 The website display the pinout configured, the pinout layout that is live at runtime and also displays some potential issues like duplicate pins or wrong pin configuration.
 
-[![](./assets/img/screenshots/gpio.jpeg)](./assets/img/screenshots/gpio.jpeg)
+[![](./assets/img/screenshots/app-gpio.jpeg)](./assets/img/screenshots/app-gpio.jpeg)
 
 ## Wiring
 
-> _TO BE COMPLETED_
+- [How to wire RobotDyn dimmer](#how-to-wire-robotdyn-dimmer)
+- [How to wire Random Solid State Relay dimmer](#how-to-wire-random-solid-state-relay-dimmer)
+- [How to wire PWM controlled Voltage Regulator dimmer](#how-to-wire-pwm-controlled-voltage-regulator-dimmer)
+- [How to wire DAC controlled Voltage Regulator dimmer](#how-to-wire-dac-controlled-voltage-regulator-dimmer)
+- [How to wire Bypass Relay](#how-to-wire-bypass-relay)
+- [How to wire JSY and PZEM](#how-to-wire-jsy-and-pzem)
+- [How to wire accessories](#how-to-wire-accessories)
+
+### How to wire RobotDyn dimmer
+
+The diagram below shows how to wire dimmers based on RobotDyn modules.
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_robotdyn.jpeg).
+
+[![](./assets/img/schemas/yasolr_robotdyn.jpeg)](https://app.cirkitdesigner.com/project/5a348c44-3e70-4ced-9420-75cbab118a30?view=interactive_preview)
+
+### How to wire Random Solid State Relay dimmer
+
+The diagram below shows how to wire dimmers based on Random Solid State Relay.
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_random_ssr.jpeg).
+
+[![](./assets/img/schemas/yasolr_random_ssr.jpeg)](https://app.cirkitdesigner.com/project/af394fa8-dc6e-4785-b0c6-e0a7136aa614?view=interactive_preview)
+
+### How to wire PWM controlled Voltage Regulator dimmer
+
+The diagram below shows how to wire the PWM->Analog 0-10V module to control a LSA or LCTC voltage regulator.
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_pwm_lsa.jpeg).
+
+[![](./assets/img/schemas/yasolr_pwm_lsa.jpeg)](https://app.cirkitdesigner.com/project/2ea2eb65-dc90-4cab-9349-3e484f2bdbce?view=interactive_preview)
+
+### How to wire DAC controlled Voltage Regulator dimmer
+
+The diagram below shows how to wire the DFRobot DAC to control a LSA or LCTC voltage regulator:
+
+- LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071)
+- LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971)
+- LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_dac_lsa.jpeg).
+
+[![](./assets/img/schemas/yasolr_dac_lsa.jpeg)](https://app.cirkitdesigner.com/project/0fa9e465-3e88-4420-91d8-cf95e1011474?view=interactive_preview)
+
+### How to wire Bypass Relay
+
+The diagram below shows how to wire the bypass relays to force heating through the relay and not using the dimmer for this output feature,
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_bypass_relay.jpeg).
+
+[![](./assets/img/schemas/yasolr_bypass_relay.jpeg)](https://app.cirkitdesigner.com/project/b62655da-245f-42e6-a682-452b8bcbe7d5?view=interactive_preview)
+
+### How to wire JSY and PZEM
+
+The diagram below shows how to wire the following optional YaSolR measurement devices and where to put the clamps:
+
+- PZE-004T v3
+- JSY
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_measurements.jpeg).
+
+[![](./assets/img/schemas/yasolr_measurements.jpeg)](https://app.cirkitdesigner.com/project/cb69313f-3fe0-441f-9db1-0ca880810543?view=interactive_preview)
+
+### How to wire accessories
+
+The diagram below shows how to wire the following optional YaSolR accessories:
+
+- push button
+- LEDs
+- temperature sensors for router, output 1 and output 2
+- external relays 1 and 2
+- screen
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_accessories.jpeg).
+
+[![](./assets/img/schemas/yasolr_accessories.jpeg)](https://app.cirkitdesigner.com/project/d937d685-6328-4653-80a8-f2ac8015baee?view=interactive_preview)

@@ -77,9 +77,9 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V6](../downloads/auto_diverter_v6.js)**: Added `USE_POWER_LUT` config to switch between linear dimming and LUT based dimming. v6 includes both code from v4 and v5.
 
-- **[Shelly Solar Diverter Script V7](../downloads/auto_diverter_v7.js)**: Reworked the routing script to improve teh internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
+- **[Shelly Solar Diverter Script V7](../downloads/auto_diverter_v7.js)**: Reworked the routing script to improve the internal relay lifespan inside the Shelly dimmer. This breaking change requires that you have configured the dimmer correctly according to the manual in order to have no power sent to the resistive load at 1%. You can use `DIMMER_TURN_OFF_DELAY` to control the dimmer timeout to turn it off.
 
-- **[Shelly Solar Diverter Script V8](../downloads/auto_diverter_v8.js)**: Set OUT_MIN to -1000W by default to avoid teh PID to trigger routing when the grid consumption drops near 0W in the morning for example if a load is turned off.
+- **[Shelly Solar Diverter Script V8](../downloads/auto_diverter_v8.js)**: Set OUT_MIN to -1000W by default to avoid the PID to trigger routing when the grid consumption drops near 0W in the morning for example if a load is turned off.
 
 - **[Shelly Solar Diverter Script V9](../downloads/auto_diverter_v9.js)**: Implemented ability to switch PID parameters when the grid power is near the setpoint. This is useful to avoid the PID to overreact when the grid power is near the setpoint. The script will switch between HIGH and LOW PID parameters when the grid power is within a certain range of the setpoint. This is controlled by the HIGH_LOW_SWITCH parameter.
 
@@ -339,7 +339,7 @@ http://192.168.125.92/rpc/Script.Stop?id=1
 
 ### Creating a Auto Divert Virtual Switch to control the script remotely
 
-It is possible to create a virtual switch called `Auto Divert` in the Shelly App to control the start / stop of teh script.
+It is possible to create a virtual switch called `Auto Divert` in the Shelly App to control the start / stop of the script.
 
 - Activate the addons
 - Create a new virtual switch addon
@@ -355,7 +355,7 @@ It is possible to create a virtual switch called `Auto Divert` in the Shelly App
 
 [![](../assets/img/screenshots/Shelly_Pro_EM_Actions.png) ](../assets/img/screenshots/Shelly_Pro_EM_Actions.png)
 
-Once done, the virtual switch appears in green in the Shelly App and you can also see its definition in the Shelly App (the steps above can also be done from teh Shelly App).
+Once done, the virtual switch appears in green in the Shelly App and you can also see its definition in the Shelly App (the steps above can also be done from the Shelly App).
 
 | [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) | [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png)
 
