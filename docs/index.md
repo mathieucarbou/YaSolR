@@ -57,7 +57,7 @@ YaSolR is:
   - ESP32: Dev Kit boards, S3 Dev Kit boards, ESP32s, WIPI 3, Denky D4, Lilygo T Eth Lite S3 boards (**Ethernet support**), WT32-ETH01 boards (**Ethernet support**), Olimex ESP32-POE boards (**Ethernet support**), Olimex ESP32 Gateway boards (**Ethernet support**)
   - Many Zero-Cross Detection modules (JSY-MK-194G, Pulse ZCD, BM1Z102FJ, etc)
   - Random (async) and Zero-Cross (sync) Solid State Relays
-  - Robodyn 24A / 40A
+  - RobotDyn 24A / 40A
   - Voltage Regulators (Loncont LSA or LCTC)
   - etc
 
@@ -94,7 +94,7 @@ Each output is composed of the following components:
 A dimmer controls the power sent to the load.
 Example of supported dimmers:
 
-|                           | **Robodyn 24A**<br> ![](./assets/img/hardware/Robodyn_24A.jpeg) | **Robodyn 40A**<br> ![](./assets/img/hardware/Robodyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
+|                           | **RobotDyn 24A**<br> ![](./assets/img/hardware/RobotDyn_24A.jpeg) | **RobotDyn 40A**<br> ![](./assets/img/hardware/RobotDyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
 | :------------------------ | :-------------------------------------------------------------: | :-------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :-------------------------------------------------------------------: |
 | `Phase Control`           |                               ✅                                |                               ✅                                |                              ✅                               |                                ❌                                 |                                  ✅                                   |
 | `Burst Fire Control` (🚧) |                               ✅                                |                               ✅                                |                              ✅                               |                                ✅                                 |                                  ✅                                   |
@@ -104,7 +104,7 @@ All the supported dimmer types:
 - Zero-Cross Detection based:
   - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
   - Random Solid State Relay + ZCD
-  - Robodyn 24/40A
+  - RobotDyn 24/40A
   - Triac + ZCD
 - PWM based:
   - LSA / LCTC Voltage Regulators + PWM->Analog

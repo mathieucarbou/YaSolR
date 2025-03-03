@@ -79,7 +79,7 @@ I do not provide a pre-assembled router for security reasons, standards, after-s
 
 - based on JSY-MK-194G (this JSY has a Zx pin to detect the Zero-Cross)
 - based on BM1Z102FJ
-- based on a short pulse like Robodyn or Daniel S.'s ZCD module on PCB Way
+- based on a short pulse like RobotDyn or Daniel S.'s ZCD module on PCB Way
 
 ### Measurement tools
 
@@ -96,7 +96,7 @@ I do not provide a pre-assembled router for security reasons, standards, after-s
 
 ### Dimmers supported in phase control with a module Zero-Cross
 
-- Robodyn 24/40A
+- RobotDyn 24/40A
 - Triac + Zero-Cross detection
 - SSR Random + Zero-Cross detection
 - LSA or LCTC voltage regulator + PWM->Analog 0-10V converter module + Zero-Cross detection

@@ -108,7 +108,7 @@ The reported routed voltage is  Router_Vrms = Grid_Vrms * sqrt(duty)
 The reported routed current is  Router_Irms = Router_Power / Router_Vrms
 The reported routed power factor is Router_PowerFactor = sqrt(duty)
 
-I use the MCPWM module of the ESP32 to drive a MOC3023 and BTA24-600CWRG . It's much more reliable and accurate since it doesn't require interrupt. It however requires a ZC detector with a good squared signal, not like those shitty Robodyn.
+I use the MCPWM module of the ESP32 to drive a MOC3023 and BTA24-600CWRG . It's much more reliable and accurate since it doesn't require interrupt. It however requires a ZC detector with a good squared signal, not like those shitty RobotDyn.
 
 I use the same kind of ZCD circuit you are mentioning but with modifications. I replaced the 1nF capacitor in front of the bridge rectifier by a 10nF to reduce the delay of the zero crossing. I also added a 10nF in parallel of the diode and reduced the 1k resistor to 330ohms to improve the triggering edge.
 

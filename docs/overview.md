@@ -10,7 +10,7 @@ description: Overview
 - [How a Solar Router work ?](#how-a-solar-router-work-)
   - [Zero-Cross Detection (ZCD)](#zero-cross-detection-zcd)
   - [The Importance of a good ZCD circuit](#the-importance-of-a-good-zcd-circuit)
-  - [Robodyn and Solid State Relay (SSR)](#robodyn-and-solid-state-relay-ssr)
+  - [RobotDyn and Solid State Relay (SSR)](#robotdyn-and-solid-state-relay-ssr)
 - [Phase Control](#phase-control)
   - [Harmonics](#harmonics)
 - [Burst Fire Control](#burst-fire-control)
@@ -36,7 +36,7 @@ A router is composed of 2 main pieces:
 
 1. **A bi-directional measurement system** that will detect the solar production excess and the home consumption in Watts: Linky TIC, Shelly EM, JSY, etc
 
-2. A **dimmer system** that will control the voltage and power sent to the resistance of the water tank to match the measured excess: Robodyn AC Dimmer, Random Solid State Relay, etc
+2. A **dimmer system** that will control the voltage and power sent to the resistance of the water tank to match the measured excess: RobotDyn AC Dimmer, Random Solid State Relay, etc
 
 The dimmer systems are usually based on TRIAC / Thyristors and are controlling the power through different methods:
 
@@ -44,7 +44,7 @@ The dimmer systems are usually based on TRIAC / Thyristors and are controlling t
 | :-----------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
 |                                       ![](assets/img/measurements/Oscillo_Dimmer_50.jpeg)                                       |                                                                                                    ![](assets/img/measurements/Burst_50.png)                                                                                                     |
 | In this mode, the TRIAC lets the current pass at a specific moment within the 2 semi-periods of 10 ms by "cutting" the sin wave |                                                    In this mode, the TRIAC is used like a rapid switch, to let pass a sequence of complete full periods or semi-periods without cutting them                                                     |
-|                                            **Used devices:**<br>Robodyn, Random SSR                                             |                                                                                             **Used devices:**<br>Robodyn, Random SSR, Zero-Cross SSR                                                                                             |
+|                                            **Used devices:**<br>RobotDyn, Random SSR                                             |                                                                                             **Used devices:**<br>RobotDyn, Random SSR, Zero-Cross SSR                                                                                             |
 |                  **Pros:**<br>More precise routing, can control exactly the right amount of power to let pass                   |                                                                                     **Pros:**<br>Easier to grasp and implement and does not create harmonics                                                                                     |
 |          **Cons:**<br>Can cause harmonics that can be difficult to filter out (but effect can be limited or mitigated)          | **Cons:**<br>Less precise routing because each complete period (or semi-period) lets the full power (or half power) pass, and can cause flickering (light bulbs that are close-by can blink because of the fast and successive current switches) |
 
@@ -53,14 +53,14 @@ Other algorithms exist, more or less complex but generally based on these 2 meth
 ### Zero-Cross Detection (ZCD)
 
 To know when to switch or cut the voltage wave, routers are using a **Zero-Cross Detection (ZCD) circuit** that will detect when the voltage curve crosses the Zero point (which is twice per period) and will send a pulse to the controller board.
-Here are below some examples of how a ZCD circuit works by looking at 2 different implementations: Robodyn and a more specific one from [Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html).
+Here are below some examples of how a ZCD circuit works by looking at 2 different implementations: RobotDyn and a more specific one from [Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html).
 
-|                                  **Dedicated ZCD circuit**                                   |                                           **Robodyn ZCD circuit**                                            |
+|                                  **Dedicated ZCD circuit**                                   |                                           **RobotDyn ZCD circuit**                                            |
 | :------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
-| [![ZCD](assets/img/measurements/Oscillo_ZCD.jpeg)](assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](assets/img/measurements/Oscillo_ZCD_Robodyn.jpeg)](assets/img/measurements/Oscillo_ZCD_Robodyn.jpeg) |
+| [![ZCD](assets/img/measurements/Oscillo_ZCD.jpeg)](assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
 
 When the AC voltage curve crosses the Zero point, the ZCD circuit sends a pulse (with a custom duration) to the controller board, which now knows that the voltage is at zero.
-The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or Robodyn) to activate it, based on the excess power, or if using burst fire control, to know when to let the current pass and for how many semi-periods.
+The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or RobotDyn) to activate it, based on the excess power, or if using burst fire control, to know when to let the current pass and for how many semi-periods.
 
 ### The Importance of a good ZCD circuit
 
@@ -73,32 +73,32 @@ This creates some waves instead of keeping the import and export at a near-0 lev
 
 These phenomena are not visible with a good ZCD module coupled with a Random SSR.
 
-The Robodyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the Robodyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
+The RobotDyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the RobotDyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
 
 Here is below a YaSolR screenshot of the Grid Power graph showing the effect of a bad ZCD module on the power consumption and import.
-On the lef side, the Robodyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
+On the lef side, the RobotDyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
 
-[![](assets/img/screenshots/robodyn-vs-zc-module-grid-power.jpeg)](assets/img/screenshots/robodyn-vs-zc-module-grid-power.jpeg)
+[![](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)
 
 Here is another example below of th YaSolR PID Tuning view showing the input value of the PID controller.
-The dedicated ZCD module was used, then I've switched (live) to a Robodyn ZCD module.
+The dedicated ZCD module was used, then I've switched (live) to a RobotDyn ZCD module.
 The update rate is high: 3 times per second.
 All the JSY measurements are captured and displayed.
-You can clearly see the flickering caused by the bad quality of the Robodyn ZCD pulses, which gets compensated just after by the PID controller.
+You can clearly see the flickering caused by the bad quality of the RobotDyn ZCD pulses, which gets compensated just after by the PID controller.
 
-[![](assets/img/screenshots/robodyn-vs-zc-module-pid-tuning.jpeg)](assets/img/screenshots/robodyn-vs-zc-module-pid-tuning.jpeg)
+[![](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)
 
-Lastly, here is a graph showing in Home Assistant the effect of the Robodyn ZCD on the dimmer output.
-The Robodyn ZCD was used form 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
+Lastly, here is a graph showing in Home Assistant the effect of the RobotDyn ZCD on the dimmer output.
+The RobotDyn ZCD was used form 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
 
-[![](assets/img/screenshots/robodyn-vs-zc-module-ha.jpeg)](assets/img/screenshots/robodyn-vs-zc-module-ha.jpeg)
+[![](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)
 
 You can read more about these issues here also:
 
 - [About dimmer boards](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards)
 - [Notes about specific architectures](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#esp32)
 
-### Robodyn and Solid State Relay (SSR)
+### RobotDyn and Solid State Relay (SSR)
 
 A Solid State Relay is a relay that does not have any moving parts and is based on a semiconductor.
 It can be turned on and off very fast.
@@ -118,8 +118,8 @@ SSR also have some specifications to take into account for the use of a Solar Ro
 - **Type of control**: DA: (DC Control AC)
 - **Control voltage**: 3.3V should be in the range (example: 3-32V DC)
 
-**Robodyn** is a device that includes both a ZCD circuit and a TRIAC, which makes it ideal for a Solar Router using Phase Control System.
-Using a Random SSR instead of the Robodyn is possible but will require the use of an additional ZCD circuit.
+**RobotDyn** is a device that includes both a ZCD circuit and a TRIAC, which makes it ideal for a Solar Router using Phase Control System.
+Using a Random SSR instead of the RobotDyn is possible but will require the use of an additional ZCD circuit.
 
 ## Phase Control
 
@@ -131,18 +131,18 @@ Here are 3 different views from an Owon VDS6104 oscilloscope of:
 
 1. The AC voltage at dimmer input (red)
 2. The ZCD pulse detected by the ESP32 board when the voltage crosses the Zero line (yellow)
-3. The control voltage of the random SSR (or Robodyn) that is sent from the ESP32 board. The TRIAC will let the current pass when the control voltage is >= 3.3V (blue)
+3. The control voltage of the random SSR (or RobotDyn) that is sent from the ESP32 board. The TRIAC will let the current pass when the control voltage is >= 3.3V (blue)
 4. The dimmed AC current at dimmer output (pink)
 
 |                       |                                      **Dimmer Duty 0.24%**                                      |                                         **Dimmer Duty 50%**                                         |                                     **Dimmer Duty 4090 / 4095**                                     |
 | :-------------------: | :---------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
-|      **Robodyn**      | [![](assets/img/measurements/Robodyn_duty_10.png)](assets/img/measurements/Robodyn_duty_10.png) | [![](assets/img/measurements/Robodyn_duty_2047.png)](assets/img/measurements/Robodyn_duty_2047.png) | [![](assets/img/measurements/Robodyn_duty_4090.png)](assets/img/measurements/Robodyn_duty_4090.png) |
+|      **RobotDyn**      | [![](assets/img/measurements/RobotDyn_duty_10.png)](assets/img/measurements/RobotDyn_duty_10.png) | [![](assets/img/measurements/RobotDyn_duty_2047.png)](assets/img/measurements/RobotDyn_duty_2047.png) | [![](assets/img/measurements/RobotDyn_duty_4090.png)](assets/img/measurements/RobotDyn_duty_4090.png) |
 | **Better ZCD Module** |     [![](assets/img/measurements/ZCD_duty_10.png)](assets/img/measurements/ZCD_duty_10.png)     |     [![](assets/img/measurements/ZCD_duty_2047.png)](assets/img/measurements/ZCD_duty_2047.png)     |     [![](assets/img/measurements/ZCD_duty_4090.png)](assets/img/measurements/ZCD_duty_4090.png)     |
 
 Dimmer at 50% matches the 90 degrees angle of the voltage curve, so the current is chopped at 50% of the period. This is when the harmonic level is the highest.
 We can clearly see the effect of the TRIAC on the voltage curve, and the resulting current curve, which is chopped at the wanted level.
 
-Robodyn as a poor ZCD signal.
+RobotDyn as a poor ZCD signal.
 If you can, take a better ZCD module.
 This will also help ZCD edge detection because the ESP32 is subject to [spurious interrupt issue](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue) when detecting ZCD edges.
 Hopefully this can be overcome by filtering out the noise in the code.

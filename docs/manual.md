@@ -535,7 +535,7 @@ It is required with these types of dimmers:
 
 - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
 - Random Solid State Relay + ZCD
-- Robodyn 24/40A
+- RobotDyn 24/40A
 - Triac + ZCD
 
 When activating `Zero-Cross Detection` in the hardware page, YaSolR will first start a pulse analyzer to grab some statistics about the pulse characteristics: period and length.
@@ -550,8 +550,8 @@ Note that if the electricity is not available when YaSolR starts, the pulse anal
 
 > ##### IMPORTANT
 >
-> - Robodyn includes a ZCD (its ZC pin).
-> - Robodyn has a very bad ZCD circuit. I strongly suggest you use a dedicated ZCD module instead.
+> - RobotDyn includes a ZCD (its ZC pin).
+> - RobotDyn has a very bad ZCD circuit. I strongly suggest you use a dedicated ZCD module instead.
 >   Please have a look at these blog articles on YaSolR website for more information:
 >   - [2024-07-24 - The Importance of a good ZCD circuit](./blog/2024-07-24_the_importance_of_a_good_zcd_circuit)
 >   - [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
@@ -567,7 +567,7 @@ All the supported dimmer types:
 - Zero-Cross Detection based:
   - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
   - Random Solid State Relay + ZCD
-  - Robodyn 24/40A
+  - RobotDyn 24/40A
   - Triac + ZCD
 - PWM based:
   - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V
@@ -896,7 +896,7 @@ So the router will take whatever is not used by the EV box.
 Using voltage regulators such as LSA or LCTC is possible with the help of a conversion board like the one listed in the [hardware page](./build#voltage-regulators).
 
 - The conversion board needs to be powered with a 12V DC input (you can use a Meanwell HDR-15-12 DIN rail for that, installed under a 2A breaker)
-- The GND and dimmer output of YaSolr must be connected to the PWM- and PWM+ of the conversion board instead of going to a SSR or Robodyn
+- The GND and dimmer output of YaSolr must be connected to the PWM- and PWM+ of the conversion board instead of going to a SSR or RobotDyn
 - The output GND (-) and A0 (+) of the conversion board must be connected to the LSA or LCTC voltage regulator, at the 0-10V analog input
 
 **How it works:**

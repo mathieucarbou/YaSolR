@@ -10,13 +10,13 @@ _Date: 2024-07-31_
 
 This article is a follow-up of the previous one: [The Importance of a good ZCD circuit](2024-07-24_the_importance_of_a_good_zcd_circuit).
 
-As a reminder of the [overview page](../overview#zero-cross-detection-zcd), here is an oscilloscope view of the pulses from a dedicated ZCD module and the Robodyn:
+As a reminder of the [overview page](../overview#zero-cross-detection-zcd), here is an oscilloscope view of the pulses from a dedicated ZCD module and the RobotDyn:
 
-|                                     **Dedicated ZCD circuit**                                      |                                              **Robodyn ZCD circuit**                                               |
+|                                     **Dedicated ZCD circuit**                                      |                                              **RobotDyn ZCD circuit**                                               |
 | :------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------: |
-| [![ZCD](../assets/img/measurements/Oscillo_ZCD.jpeg)](../assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](../assets/img/measurements/Oscillo_ZCD_Robodyn.jpeg)](../assets/img/measurements/Oscillo_ZCD_Robodyn.jpeg) |
+| [![ZCD](../assets/img/measurements/Oscillo_ZCD.jpeg)](../assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](../assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](../assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
 
-Robodyn has a very low quality pulse with a large rise time, and as such, it can create noise and false positives when detected by a MCU.
+RobotDyn has a very low quality pulse with a large rise time, and as such, it can create noise and false positives when detected by a MCU.
 
 Let's consider the following code executed each time the ESP32 would detect an edge. The code will output a 3.3V pulse on the GPIO `_pinOutput` for 1µs when the pulse is detected.
 
@@ -39,7 +39,7 @@ We can see that there is a 3us delay for the ESP32 to detect the rise, trigger t
 
 Now, look at what is happening with a low quality ZC pulse:
 
-[![](../assets/img/measurements/Oscillo_zc_robodyn_isr_output_delay.jpeg)](../assets/img/measurements/Oscillo_zc_robodyn_isr_output_delay.jpeg)
+[![](../assets/img/measurements/Oscillo_zc_robotdyn_isr_output_delay.jpeg)](../assets/img/measurements/Oscillo_zc_robotdyn_isr_output_delay.jpeg)
 
 The slow rise causes the ESP to detect a sequence of several ZC pulses until the ZC pulse voltage is high enough.
 

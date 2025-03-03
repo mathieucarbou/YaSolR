@@ -26,25 +26,25 @@ This creates some waves instead of keeping the import and export at a near-0 lev
 
 These phenomena are not visible with a good ZCD module coupled with a Random SSR.
 
-The Robodyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the Robodyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
+The RobotDyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the RobotDyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
 
 Here is below a YaSolR screenshot of the Grid Power graph showing the effect of a bad ZCD module on the power consumption and import.
-On the lef side, the Robodyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
+On the lef side, the RobotDyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
 
-[![](../assets/img/screenshots/robodyn-vs-zc-module-grid-power.jpeg)](../assets/img/screenshots/robodyn-vs-zc-module-grid-power.jpeg)
+[![](../assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)](../assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)
 
 Here is another example below of th YaSolR PID Tuning view showing the input value of the PID controller.
-The dedicated ZCD module was used, then I've switched (live) to a Robodyn ZCD module.
+The dedicated ZCD module was used, then I've switched (live) to a RobotDyn ZCD module.
 The update rate is high: 3 times per second.
 All the JSY measurements are captured and displayed.
-You can clearly see the flickering caused by the bad quality of the Robodyn ZCD pulses, which gets compensated just after by the PID controller.
+You can clearly see the flickering caused by the bad quality of the RobotDyn ZCD pulses, which gets compensated just after by the PID controller.
 
-[![](../assets/img/screenshots/robodyn-vs-zc-module-pid-tuning.jpeg)](../assets/img/screenshots/robodyn-vs-zc-module-pid-tuning.jpeg)
+[![](../assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)](../assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)
 
-Lastly, here is a graph showing in Home Assistant the effect of the Robodyn ZCD on the dimmer output.
-The Robodyn ZCD was used form 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
+Lastly, here is a graph showing in Home Assistant the effect of the RobotDyn ZCD on the dimmer output.
+The RobotDyn ZCD was used form 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
 
-[![](../assets/img/screenshots/robodyn-vs-zc-module-ha.jpeg)](../assets/img/screenshots/robodyn-vs-zc-module-ha.jpeg)
+[![](../assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)](../assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)
 
 You can read more about these issues here also:
 

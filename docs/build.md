@@ -22,12 +22,12 @@ description: Build
   - [Alternative: Home Assistant Solar Diverter](#alternative-home-assistant-solar-diverter)
 - [Selecting your Hardware](#selecting-your-hardware)
   - [ESP32 Boards](#esp32-boards)
-  - [Dimmers: Robodyn, Solid State Relay or Voltage Regulator ?](#dimmers-robodyn-solid-state-relay-or-voltage-regulator-)
+  - [Dimmers: RobotDyn, Solid State Relay or Voltage Regulator ?](#dimmers-robotdyn-solid-state-relay-or-voltage-regulator-)
   - [Relays: Solid State Relay or Electromagnetic Relay ?](#relays-solid-state-relay-or-electromagnetic-relay-)
   - [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-)
 - [Where to buy ?](#where-to-buy-)
   - [ESP32 Boards](#esp32-boards-1)
-  - [Robodyn](#robodyn)
+  - [RobotDyn](#robotdyn)
   - [Random and Zero-Cross SSR](#random-and-zero-cross-ssr)
   - [Zero-Cross Detection Modules](#zero-cross-detection-modules)
   - [Voltage Regulators](#voltage-regulators)
@@ -50,8 +50,8 @@ Here are below some examples:
 - [The Recycler](#the-recycler): reuse your existing Shelly EM or Shelly 3EM to build a router
 - [The Minimalist](#the-minimalist): the cheapest and easiest to build
 - [The Elegant](#the-elegant): an improved version of the Minimalist using the new JSY-MK-194G integrated ZCD circuit
-- [The Adventurer](#the-adventurer): for people who want to mitigate the flaws of the Robodyn and do some improvements over the existing Robodyn
-- [The Elite](#the-elite): for people who want to use a Random SSR instead of a Robodyn to safely dim more power and have a better Zero-Cross Detection circuit
+- [The Adventurer](#the-adventurer): for people who want to mitigate the flaws of the RobotDyn and do some improvements over the existing RobotDyn
+- [The Elite](#the-elite): for people who want to use a Random SSR instead of a RobotDyn to safely dim more power and have a better Zero-Cross Detection circuit
 - [The Professional](#the-professional): probably the best and safe solution out there but requires an additional power source
 - [Possible Upgrades](#possible-upgrades): some additional components you can add to your router
 - [Remote JSY](#remote-jsy): a standalone application to place in your electrical panel to send the JSY metrics through UDP for remote installations
@@ -61,27 +61,27 @@ Here are below some examples:
 
 Reuse your existing Shelly EM or Shelly 3EM to build a router!
 
-- Robodyn is used for the dimming (phase control)
-- Robodyn is used for the Zero-Cross Detection
+- RobotDyn is used for the dimming (phase control)
+- RobotDyn is used for the Zero-Cross Detection
 - Shelly EM or MQTT is used to measure the grid power and voltage
 
-|                              ESP32                               |                       Robodyn AC Dimmer 40A/800V                       |                          Shelly EM or 3EM                           |
+|                              ESP32                               |                       RobotDyn AC Dimmer 40A/800V                       |                          Shelly EM or 3EM                           |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :-----------------------------------------------------------------: |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Shelly_EM.png" style="width:150px"> |
+| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/RobotDyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Shelly_EM.png" style="width:150px"> |
 
 > ##### TIP
 >
-> - Robodyn includes Zero-Cross Detection circuit
+> - RobotDyn includes Zero-Cross Detection circuit
 > - Supports **Phase Control** and **Burst mode**
 > - Reuse your Shelly EM or 3EM and send through MQTT grid power and voltage
-> - You can also use a SSR and ZCD module instead of the Robodyn
+> - You can also use a SSR and ZCD module instead of the RobotDyn
 {: .block-tip }
 
 > ##### WARNING
 >
 > - Advised load not more than 2000W
-> - Robodyn has poor quality heat sink, soldering and Zero-Cross pulse
-> - Bypass mode will use the Robodyn dimmer at 100% power
+> - RobotDyn has poor quality heat sink, soldering and Zero-Cross pulse
+> - Bypass mode will use the RobotDyn dimmer at 100% power
 > - Not as precise as a JSY (MQTT delays)
 > - No local measurement in place to measure the routed power (statistics will be empty)
 {: .block-warning }
@@ -90,25 +90,25 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 
 The _Minimalist_ build uses inexpensive and easy to use components to start a router.
 
-- Robodyn is used for the dimming (phase control)
-- Robodyn is used for the Zero-Cross Detection
+- RobotDyn is used for the dimming (phase control)
+- RobotDyn is used for the Zero-Cross Detection
 - Grid power measurement can be done with a JSY (local or remote) or MQTT
 
-|                              ESP32                               |                       Robodyn AC Dimmer 40A/800V                       |             JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333           |
+|                              ESP32                               |                       RobotDyn AC Dimmer 40A/800V                       |             JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333           |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/RobotDyn_40A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 > ##### TIP
 >
-> - Robodyn includes Zero-Cross Detection circuit
+> - RobotDyn includes Zero-Cross Detection circuit
 > - Supports **Phase Control** and **Burst mode**
 {: .block-tip }
 
 > ##### WARNING
 >
 > - Advised load not more than 2000W
-> - Robodyn has poor quality heat sink, soldering and Zero-Cross pulse
-> - Bypass mode will use the Robodyn dimmer at 100% power
+> - RobotDyn has poor quality heat sink, soldering and Zero-Cross pulse
+> - Bypass mode will use the RobotDyn dimmer at 100% power
 {: .block-warning }
 
 ### The Elegant
@@ -131,40 +131,40 @@ This is an improved version of the _Minimalist_ build using the new JSY-MK-194G 
 
 > ##### WARNING
 >
-> - Bypass mode will use the Robodyn dimmer at 100% power
+> - Bypass mode will use the RobotDyn dimmer at 100% power
 {: .block-warning }
 
 ### The Adventurer
 
-The _Adventurer_ build is for people who are able to mitigate the flaws of the Robodyn 24A to improve it.
+The _Adventurer_ build is for people who are able to mitigate the flaws of the RobotDyn 24A to improve it.
 The TRIAC can be changed to a BTA40-800B RD91 fixed directly on the heat sink, and the heat sink can be upgraded.
-See the [Robodyn](#robodyn) section for more information.
+See the [RobotDyn](#robotdyn) section for more information.
 
 - A custom TRIAC is used for the dimming (phase control)
-- Robodyn is used for the Zero-Cross Detection
+- RobotDyn is used for the Zero-Cross Detection
 - Grid power measurement can be done with a JSY (local or remote) or MQTT
 
-|                              ESP32                               |                       Robodyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
+|                              ESP32                               |                       RobotDyn AC Dimmer 24A/600V                       |                              Heat Sink                               |                         Triac BTA40-800B RD91                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :------------------------------------------------------------------: | :-------------------------------------------------------------------: | ------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Robodyn_24A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/RobotDyn_24A.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 > ##### TIP
 >
-> - Robodyn includes Zero-Cross Detection circuit
+> - RobotDyn includes Zero-Cross Detection circuit
 > - Supports **Phase Control** and **Burst mode**
 {: .block-tip }
 
 > ##### WARNING
 >
 > - Advised load not more than 2000W
-> - Robodyn has poor quality heat sink, soldering and Zero-Cross pulse
-> - Bypass mode will use the Robodyn dimmer at 100% power
+> - RobotDyn has poor quality heat sink, soldering and Zero-Cross pulse
+> - Bypass mode will use the RobotDyn dimmer at 100% power
 > - Requires to unsolder the heat sink and triac and put a new triac on a new heat sink
 {: .block-warning }
 
 ### The Elite
 
-The _Elite_ build is for people who want to use a Random SSR instead of a Robodyn to safely dim more power and have a better Zero-Cross Detection circuit more more precising routing.
+The _Elite_ build is for people who want to use a Random SSR instead of a RobotDyn to safely dim more power and have a better Zero-Cross Detection circuit more more precising routing.
 
 - A Random SSR is used for the dimming (phase control)
 - A dedicated ZCD circuit is used for the Zero-Cross Detection (it can be the JSY-MK-194G)
@@ -211,9 +211,9 @@ There are multiple ways to control a voltage regulator with YaSolR.
 
 #### Voltage Regulator + PWM to Analog Converter + ZCD
 
-This option is a good upgrade to a Robodyn or SSR since it reuses the same components and just replaces the dimmer part with the LSA.
-It even reuses the existing ZCD circuit, and a dimmer implementation based on a ZCD, as usual, like for the Robodyn or Random SSR.
-As such, the LSA behavior is controlled exactly like a Robodyn or SSR would be controlled.
+This option is a good upgrade to a RobotDyn or SSR since it reuses the same components and just replaces the dimmer part with the LSA.
+It even reuses the existing ZCD circuit, and a dimmer implementation based on a ZCD, as usual, like for the RobotDyn or Random SSR.
+As such, the LSA behavior is controlled exactly like a RobotDyn or SSR would be controlled.
 
 - A voltage regulator (LSA or LCTC) is used for the dimming (phase control)
 - A dedicated **ZCD circuit** is used for the Zero-Cross Detection (it can be the JSY-MK-194G)
@@ -314,7 +314,7 @@ See this blog post for more information: [Home Assistant Solar Diverter](./blog/
 ## Selecting your Hardware
 
 - [ESP32 Boards](#esp32-boards)
-- [Dimmers: Robodyn, Solid State Relay or Voltage Regulator ?](#dimmers-robodyn-solid-state-relay-or-voltage-regulator-)
+- [Dimmers: RobotDyn, Solid State Relay or Voltage Regulator ?](#dimmers-robotdyn-solid-state-relay-or-voltage-regulator-)
 - [Relays: Solid State Relay or Electromagnetic Relay ?](#relays-solid-state-relay-or-electromagnetic-relay-)
 - [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-)
 
@@ -336,11 +336,11 @@ If yours in not listed, just ask: it may be possible to add it.
 | [TinyPICO](https://www.tinypico.com)                                                                                                                       |     3     |              |
 | [Denky D4](https://github.com/hallard/Denky-D4)                                                                                                            |     3     |              |
 
-### Dimmers: Robodyn, Solid State Relay or Voltage Regulator ?
+### Dimmers: RobotDyn, Solid State Relay or Voltage Regulator ?
 
 Here are some pros and cons of each phase control system:
 
-**Robodyn (TRIAC):**
+**RobotDyn (TRIAC):**
 
 - Pros:
   - cheap and easy to wire
@@ -376,10 +376,10 @@ This is the option used in the [Shelly Solar Router](./blog/2024-07-01_shelly_so
 **Heat Sink:**
 
 In any case, do not forget to correctly dissipate the heat of your Triac / SSR using an appropriate heat sink.
-Robodyn heat sink is not enough and require some tweaking (like adding a flan or de-soldering the triac and heat sink and put the triac on a bigger heat sink).
+RobotDyn heat sink is not enough and require some tweaking (like adding a flan or de-soldering the triac and heat sink and put the triac on a bigger heat sink).
 
 It is best to take a vertical heat sink for heat dissipation.
-In case of the Robodyn 40A, you can install it vertically.
+In case of the RobotDyn 40A, you can install it vertically.
 
 ### Relays: Solid State Relay or Electromagnetic Relay ?
 
@@ -405,14 +405,14 @@ In case of the Robodyn 40A, you can install it vertically.
 
 ### How to choose a Solid State Relay ?
 
-- Make sure you add a **heat sink** to the SSR or pick one with a heat sink, especially if you use a Random SSR instead of a Robodyn
+- Make sure you add a **heat sink** to the SSR or pick one with a heat sink, especially if you use a Random SSR instead of a RobotDyn
 - **Type of control**: DA: (DC Control AC)
 - **Control voltage**: 3.3V should be in the range (example: 3-32V DC)
 - Verify that the **output AC voltage** is in the range (example: 24-480V AC)
 - Verify the **SSR amperage**: usually, it should be 2-3 times the nominal current of your resistive load (example: 40A SSR for a 3000W resistance).
   For induction loads, it should be 4-7 times the nominal current.
 - **Zero Cross SSR** (which is the default for most SSR): for the bypass relay or external relays with resistive loads, or when using Burst modulation routing algorithm
-- **Random SSR**: if you chose to not use the Robodyn but a Random SSR for Phase Control, or external relays with inductive loads (pump, motors)
+- **Random SSR**: if you chose to not use the RobotDyn but a Random SSR for Phase Control, or external relays with inductive loads (pump, motors)
 
 ## Where to buy ?
 
@@ -420,7 +420,7 @@ Here is the non exhaustive list where to find some hardware to build your router
 Links are provided for reference only, you can find them on other websites.
 
 - [ESP32 Boards](#esp32-boards-1)
-- [Robodyn](#robodyn)
+- [RobotDyn](#robotdyn)
 - [Random and Zero-Cross SSR](#random-and-zero-cross-ssr)
 - [Zero-Cross Detection Modules](#zero-cross-detection-modules)
 - [Voltage Regulators](#voltage-regulators)
@@ -439,23 +439,23 @@ Links are provided for reference only, you can find them on other websites.
 | <img src="./assets/img/hardware/WT32-ETH01.jpeg" style="width:150px">        | [WT32-ETH01](https://fr.aliexpress.com/item/1005004436473683.html) v1.4 (Ethernet)                                                                        |
 | <img src="./assets/img/hardware/Pigtail_Antenna.jpeg" style="width:150px">   | [WiFi Pigtail Antenna](https://fr.aliexpress.com/item/32957527411.html) for ESP32 boards supporting external WiFi antenna                                 |
 
-### Robodyn
+### RobotDyn
 
 |                                                                        |                                                                                                                                                                                                           |
 | :--------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="./assets/img/hardware/Robodyn_24A.jpeg" style="width:150px"> | [Robodyn AC Dimmer 24A/600V](https://www.aliexpress.com/item/1005001965951718.html) Includes ZCD, supports **Phase Control** and **Burst mode**                                                           |
-| <img src="./assets/img/hardware/Robodyn_40A.jpeg" style="width:150px"> | [Robodyn AC Dimmer 40A/800V](https://fr.aliexpress.com/item/1005006211999051.html) Includes ZCD, supports **Phase Control** and **Burst mode**                                                            |
-| <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px">  | Triac BTA40-800B RD91 [here](https://fr.aliexpress.com/item/32892486601.html) or [here](https://fr.aliexpress.com/item/1005001762265497.html) if you want / need to replace the Triac inside your Robodyn |
+| <img src="./assets/img/hardware/RobotDyn_24A.jpeg" style="width:150px"> | [RobotDyn AC Dimmer 24A/600V](https://www.aliexpress.com/item/1005001965951718.html) Includes ZCD, supports **Phase Control** and **Burst mode**                                                           |
+| <img src="./assets/img/hardware/RobotDyn_40A.jpeg" style="width:150px"> | [RobotDyn AC Dimmer 40A/800V](https://fr.aliexpress.com/item/1005006211999051.html) Includes ZCD, supports **Phase Control** and **Burst mode**                                                            |
+| <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px">  | Triac BTA40-800B RD91 [here](https://fr.aliexpress.com/item/32892486601.html) or [here](https://fr.aliexpress.com/item/1005001762265497.html) if you want / need to replace the Triac inside your RobotDyn |
 | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px">   | [Heat Sink for Random SSR and Triac](https://fr.aliexpress.com/item/1005004879389236.html) (there are many more types available: take a big heat sink placed vertically)                                  |
 
 > ##### IMPORTANT
 >
-> 1. It is possible to switch the TRIAC of an original Robodyn AC Dimmer with a higher one, for example a [BTA40-800B BOITIER RD-91](https://fr.farnell.com/stmicroelectronics/bta40-800b/triac-40a-800v-boitier-rd-91/dp/9801731)<br/>
+> 1. It is possible to switch the TRIAC of an original RobotDyn AC Dimmer with a higher one, for example a [BTA40-800B BOITIER RD-91](https://fr.farnell.com/stmicroelectronics/bta40-800b/triac-40a-800v-boitier-rd-91/dp/9801731)<br/>
 >    Ref: [Triacs gradateurs pour routeur photovoltaïque](https://f1atb.fr/fr/triac-gradateur-pour-routeur-photovoltaique/).
 >
 > 2. The heat sink must be chosen according to the SSR / Triac. Here is a good video about the theory: [Calcul du dissipateur pour le triac d'un routeur](https://www.youtube.com/watch?v=_zAx1Q2IvJ8) (from Pierre)
 >
-> 3. Make sure to [improve the Robodyn wiring/soldering](https://sites.google.com/view/le-professolaire/routeur-professolaire)
+> 3. Make sure to [improve the RobotDyn wiring/soldering](https://sites.google.com/view/le-professolaire/routeur-professolaire)
 >
 {: .block-important }
 
@@ -481,8 +481,8 @@ Please note that the **JSY-MK-194G has an integrated ZCD** and can be used with 
 I often have some spare ZCD modules since I do some batch ordering on PCbWay.
 If you are interested in one, please have a look at the availabilities in the [Pro](pro#zero-cross-detection-modules) page.
 
-Also, **do not forget that ZCD circuits are already included in Robodyn (or other brands) dimmer boards!** So a good idea is to use such board but only for teh ZCd module.
-For example, on AliExpress, you can buy a cheap Robodyn dimmer board for 3 euros with an included ZCD circuit (https://fr.aliexpress.com/item/32802025086.html).
+Also, **do not forget that ZCD circuits are already included in RobotDyn (or other brands) dimmer boards!** So a good idea is to use such board but only for teh ZCd module.
+For example, on AliExpress, you can buy a cheap RobotDyn dimmer board for 3 euros with an included ZCD circuit (https://fr.aliexpress.com/item/32802025086.html).
 This ZCD circuit won't be as good as a specialized one, but it can be enough for most cases.
 
 > ##### TIP
@@ -551,7 +551,7 @@ This ZCD circuit won't be as good as a specialized one, but it can be enough for
 | <img src="./assets/img/hardware/jsy-enclosure.jpeg" style="width:150px">         | [3D Print enclosure for JSY-MK-194T](https://www.thingiverse.com/thing:6003867). You can screw it on an SSR DIN Rail to place your JSY on a DIN Rail in this enclosure.                                                                                                                                                                                                                                                    |
 | <img src="https://mathieu.carbou.me/MycilaJSY/jsy-box-3.jpeg" style="width:150px"> | [3D Print enclosure for JSY-MK-194G](https://mathieu.carbou.me/MycilaJSY/#boxes-and-3d-models). You can screw it on an SSR DIN Rail to place your JSY on a DIN Rail in this enclosure.                                                                                                                                                                                                                                                    |
 | <img src="./assets/img/hardware/DupontWire.jpeg" style="width:150px">            | [Dupont Cable Kit](https://fr.aliexpress.com/item/1699285992.html)                                                                                                                                                                                                                                                                                                                                                         |
-| <img src="./assets/img/hardware/RC_Snubber.jpeg" style="width:150px">            | [100 ohms 0.1uF RC Snubber](https://www.quintium.fr/shelly/168-shelly-rc-snubber.html) (for Robodyn AC dimmer and Random SSR: can be placed at dimmer output)                                                                                                                                                                                                                                                              |
+| <img src="./assets/img/hardware/RC_Snubber.jpeg" style="width:150px">            | [100 ohms 0.1uF RC Snubber](https://www.quintium.fr/shelly/168-shelly-rc-snubber.html) (for RobotDyn AC dimmer and Random SSR: can be placed at dimmer output)                                                                                                                                                                                                                                                              |
 
 ## Default GPIO pinout per board
 
@@ -575,16 +575,16 @@ Here are below the default GPIO pinout for each board.
 | Light Feedback (Red)              |    15     |       15        |     15      |       -1       |       46       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | Light Feedback (Yellow)           |     2     |        2        |      2      |       -1       |       21       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #1 Bypass Relay            |    32     |       32        |     40      |       12       |       20       |      -1       |      -1           |      -1           |      -1           |      -1           |
-| OUTPUT #1 Dimmer (Robodyn or SSR) |    25     |       25        |     37      |       2        |       19       |      -1       |      -1           |      -1           |      -1           |      -1           |
+| OUTPUT #1 Dimmer (RobotDyn or SSR) |    25     |       25        |     37      |       2        |       19       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #1 Temperature Sensor      |    18     |       18        |     18      |       15       |       3        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #2 Bypass Relay            |    33     |       33        |     33      |       -1       |       15       |      -1       |      -1           |      -1           |      -1           |      -1           |
-| OUTPUT #2 Dimmer (Robodyn or SSR) |    26     |       26        |     36      |       -1       |       7        |      -1       |      -1           |      -1           |      -1           |      -1           |
+| OUTPUT #2 Dimmer (RobotDyn or SSR) |    26     |       26        |     36      |       -1       |       7        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | OUTPUT #2 Temperature Sensor      |     5     |        5        |      5      |       -1       |       16       |      -1       |      -1           |      -1           |      -1           |      -1           |
 | Push Button (restart)             |    EN     |       EN        |     EN      |       EN       |       EN       |      EN       |      EN           |      EN           |      EN           |      EN           |
 | RELAY #1                          |    13     |       13        |     13      |       14       |       5        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | RELAY #2                          |    12     |       12        |     12      |       -1       |       6        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | System Temperature Sensor         |     4     |        4        |      4      |       4        |       4        |      -1       |      -1           |      -1           |      -1           |      -1           |
-| ZCD (Robodyn or ZCD Sync)         |    35     |       35        |     35      |       35       |       8        |      -1       |      -1           |      -1           |      -1           |      -1           |
+| ZCD (RobotDyn or ZCD Sync)         |    35     |       35        |     35      |       35       |       8        |      -1       |      -1           |      -1           |      -1           |      -1           |
 | PZEM-004T v3 Serial1 RX           |    14     |       14        |     14      |       -1       |       -1       |      36       |      -1           |      26           |      26           |      25           |
 | PZEM-004T v3 Serial1 TX           |    27     |       27        |     11      |       -1       |       -1       |       4       |      -1           |      27           |      27           |      33           |
 
@@ -592,8 +592,8 @@ Here are below the default GPIO pinout for each board.
 
 **Minimal requirements:**
 
-- a pin configured to the ZCD system: either the ZC pin of the Robodyn or any pin from any other ZC detection module
-- a pin configured to the Phase Control system: PSM pin for the Robodyn or DC + side of the Random SSR
+- a pin configured to the ZCD system: either the ZC pin of the RobotDyn or any pin from any other ZC detection module
+- a pin configured to the Phase Control system: PSM pin for the RobotDyn or DC + side of the Random SSR
 
 The website display the pinout configured, the pinout layout that is live at runtime and also displays some potential issues like duplicate pins or wrong pin configuration.
 
