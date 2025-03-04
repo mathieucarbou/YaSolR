@@ -28,21 +28,23 @@ Please go to the [overview](overview) page to know how a solar router works.
 
 YaSolR is one of the **most optimized and powerful** Open-Source Solar Router firmware available:
 
-- **12-bits resolution** with linear interpolation for a precise TRIAC control
+- **Reactivity and speed of measurements**: YaSolR is able to make a measurement every 42 ms, and **adjusts the routing at least 3 times per second.**
+- **PID**: YaSolR is the only router to use a **PID algorithm proportional to the measurements** to adjust the routing, which allows to control the corrections with more precision and avoids overshoots that cause oscillations, over-consumptions or over-excess.
+- **PID Tuning**: YaSolR offers a PID tuning screen to adjust the PID parameters in real time, without recompiling the code.
+- **Frequency**: YaSolR is able to autodetect and operate on a frequency of **50 Hz and 60 Hz**, but also on a frequency of 51 Hz (for example on an Enedis generator).
+- **Resolution**: YaSolR has a routing resolution of **12 bits** with linear interpolation, so is able to be precise to the nearest watt with a load of more than 4000W. Routers with such precision are rare. Most routers have a precision of 100 steps, or 30W for a load of 3000W.
+- **Zero-Cross Pulse Analysis**: YaSolR analyzes the pulses of the Zero-Cross circuit to detect the positions of the rising and falling edges, which allows to synchronize the triggering of the TRIAC as precisely as possible during the true zero crossing. Most ZC-based routers calculate a false trigger value from the rising edge of the pulse, which happens to be before the zero crossing.
+- **Hardware**: YaSolR is the only router that does not impose hardware and offers **wide compatibility**.
+- Supports the concept of **virtual grid power** which allows compatibility with a **second router or an EV charging station**
+- Phase control features: **dimmer remapping** (like Shelly Dimmer), **power limit**, etc.
+- **Bypass** (forced operation) according to schedule and / or temperature
+- **Simplicity**: YaSolR is one of the rare routers to **directly support the LSA voltage regulator** via a DAC, without the requirement of an external voltage
+- **Configurable**: YaSolR allows you to reconfigure your **GPIO** to be compatible with existing setups of the solar prof and F1ATB among others.
 - **3-Phase** support with JSY-333, Shelly or MQTT
-- **Custom dimmer library** optimized for ESP32 (🚧)
-- **Dimmer range remapping** like Shelly Dimmers
-- **Frequency auto-detection** supports 50/60Hz
 - **Harmonics** can be lowered to comply with regulations thanks to several settings
 - **Independent or Sequential Outputs** with grid excess sharing
-- **PID Controller** optimized and customizable
-- **PID Tuning** web interface
-- **Precise Power Calibration**
-- **Precise Zero-Cross Detection with ZC pulse analysis**
-- **RMT Peripheral** used for DS18 readings
-- **SafeBoot** partition for recovery and system update
 - **SSL/TLS MQTT Support** with embedded root certificates
-- **Up to 20-25 measurements / second** with a local or even a remote JSY
+- **Specialized libraries for dimmers, ZCD and measurements** optimized and written specifically for YaSolR ESP32
 
 This is a big **Open-Source** project following **best development practices**.
 YaSolR is:
@@ -59,7 +61,7 @@ YaSolR is:
   - Random (async) and Zero-Cross (sync) Solid State Relays
   - RobotDyn 24A / 40A
   - Voltage Regulators (Loncont LSA or LCTC)
-  - etc
+  - Many measurement tools (PZEM-004T v3, JSY-MK-333, JSY-MK-193, JSY-MK-194T, JSY-MK-194G, JSY-MK-163T, JSY-MK-227, JSY-MK-229, JSY Remote by UDP, MQTT)
 
 ## Detailed Features
 
