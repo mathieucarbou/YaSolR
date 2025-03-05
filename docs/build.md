@@ -44,6 +44,7 @@ description: Build
   - [How to wire Bypass Relay](#how-to-wire-bypass-relay)
   - [How to wire JSY and PZEM](#how-to-wire-jsy-and-pzem)
   - [How to wire accessories](#how-to-wire-accessories)
+  - [How to wire Random SSR with JSY-MK-194G ZCD](#how-to-wire-random-ssr-with-jsy-mk-194g-zcd)
 
 ## Build Examples
 
@@ -613,6 +614,7 @@ The website display the pinout configured, the pinout layout that is live at run
 - [How to wire Bypass Relay](#how-to-wire-bypass-relay)
 - [How to wire JSY and PZEM](#how-to-wire-jsy-and-pzem)
 - [How to wire accessories](#how-to-wire-accessories)
+- [How to wire Random SSR with JSY-MK-194G ZCD](#how-to-wire-random-ssr-with-jsy-mk-194g-zcd)
 
 ### How to wire RobotDyn dimmer
 
@@ -682,3 +684,11 @@ The diagram below shows how to wire the following optional YaSolR accessories:
 You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_accessories.jpeg).
 
 [![](./assets/img/schemas/yasolr_accessories.jpeg)](https://app.cirkitdesigner.com/project/d937d685-6328-4653-80a8-f2ac8015baee?view=interactive_preview)
+
+### How to wire Random SSR with JSY-MK-194G ZCD
+
+The diagram below shows how to wire the Elegant, which is composed of a Random SSR and a JSY-MK-194G which does both the measurement and the Zero-Cross Detection.
+
+You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_elegant.jpeg).
+
+[![](./assets/img/schemas/yasolr_measurements.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
