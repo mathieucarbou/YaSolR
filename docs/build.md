@@ -691,4 +691,4 @@ The diagram below shows how to wire the Elegant, which is composed of a Random S
 
 You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_elegant.jpeg).
 
-[![](./assets/img/schemas/yasolr_measurements.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
+[![](./assets/img/schemas/yasolr_elegant.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
