@@ -32,6 +32,8 @@ description: Manual
     - [Dimmer Type](#dimmer-type)
     - [Dimmer Range Remapping](#dimmer-range-remapping)
     - [PZEM Pairing](#pzem-pairing)
+    - [Bypass Relay](#bypass-relay)
+    - [Temperature Sensors](#temperature-sensors)
     - [Relay Types](#relay-types)
     - [Relay Automatic Control](#relay-automatic-control)
     - [LEDs](#leds)
@@ -46,8 +48,6 @@ description: Manual
     - [Web Console](#web-console)
   - [Statistics](#statistics)
 - [Additional Hardware Information](#additional-hardware-information)
-  - [Bypass Relay](#bypass-relay)
-  - [Temperature Sensors](#temperature-sensors)
   - [EV charging box compatibility with Virtual Grid Power](#ev-charging-box-compatibility-with-virtual-grid-power)
   - [Voltage Regulators (LSA, LCTC, etc)](#voltage-regulators-lsa-lctc-etc)
 - [Help and support](#help-and-support)
@@ -635,6 +635,30 @@ You can read more at:
 - [mathieucarbou/MycilaPZEM004Tv3](https://github.com/mathieucarbou/MycilaPZEM004Tv3)
 - [mandulaj/PZEM-004T-v30](https://github.com/mandulaj/PZEM-004T-v30)
 
+#### Bypass Relay
+
+Installing a relay for bypass is optional: if installed, the relay will be used to power the heater, and the dimmer will be set to 0.
+
+If not installed, when activating bypass mode, the dimmer will be used and set to 100%.
+The advantage is a simple setup, the drawbacks are:
+
+- the dimmer will heat up.
+- the power output of he dimmer counts as routed power so the routed power and energy will also contain the bypass power.
+
+In the `Hardware` section, `Output 1 Bypass Relay` and `Output 2 Bypass Relay` both specify if a relay is installed for the output, on top of the dimmer of course, and if it should be used when bypass is activated.
+If no relay is installed, the dimmer will be used and will be set to 100%. For each you can also select the relay: `Normally Open` or `Normally Closed`.
+
+#### Temperature Sensors
+
+The temperature sensors are used to monitor the water tank in order:
+
+- to trigger an automatic heating based on temperature levels (called **auto bypass**).
+- to stop the routing if the temperature is too high (called **temperature limiter**).
+
+Supported temperature sensor: `DS18B20`
+
+A temperature sensor can also be used to monitor the router box itself (`Overview` section).
+
 #### Relay Types
 
 - `Output 1 Bypass Relay Type`: the relay type for Output 1 Bypass: Normally Open (NO) or Normally Closed (NC).
@@ -850,32 +874,6 @@ This page shows a lot of statistics and information on the router.
 [![](assets/img/screenshots/app-statistics.jpeg)](assets/img/screenshots/app-statistics.jpeg)
 
 ## Additional Hardware Information
-
-### Bypass Relay
-
-Installing a relay for bypass is optional: if installed, the relay will be used to power the heater, and the dimmer will be set to 0.
-
-If not installed, when activating bypass mode, the dimmer will be used and set to 100%.
-The advantage is a simple setup, the drawbacks are:
-
-- the dimmer will heat up.
-- the power output of he dimmer counts as routed power so the routed power and energy will also contain the bypass power.
-
-In the `Hardware` section, `Output 1 Relay (Bypass)` and `Output 2 Relay (Bypass)` both specify if a relay is installed for the output, on top of the dimmer of course, and if it should be used when bypass is activated.
-If no relay is installed, the dimmer will be used and will be set to 100%.
-
-In the `Hardware Config` section, `Output 1 Relay Type (Bypass)` and `Output 2 Relay Type (Bypass)` are used to specify the type of the relay: `Normally Open` or `Normally Closed`.
-
-### Temperature Sensors
-
-The temperature sensors are used to monitor the water tank in order:
-
-- to trigger an automatic heating based on temperature levels (called **auto bypass**).
-- to stop the routing if the temperature is too high (called **temperature limiter**).
-
-Supported temperature sensor: `DS18B20`
-
-A temperature sensor can also be used to monitor the router box itself (`Overview` section).
 
 ### EV charging box compatibility with Virtual Grid Power
 
