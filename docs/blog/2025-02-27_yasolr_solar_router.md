@@ -92,7 +92,7 @@ I do not provide a pre-assembled router for security reasons, standards, after-s
 - JSY-MK-227
 - JSY-MK-229
 - JSY Remote by UDP
-- MQTT
+- MQTT (raw value, Shelly JSON)
 
 ### Dimmers supported in phase control with a module Zero-Cross
 

@@ -390,11 +390,35 @@ When setting a static IP, the router will try to connect with the static IP and 
 If is possible to listen to some MQTT topics to read the grid voltage, grid power and router output temperatures.
 
 - `Grid Voltage`: if set to a MQTT Topic, the router will listen to it to read the Grid voltage.
+  YaSolR supports raw values and JSON values like Shelly EM and 3EM.
   **Any measurement device (JSY or JSY Remote) will still have priority over MQTT**.
 - `Grid Power`: if set to a MQTT Topic, the router will listen to it to read the Grid power.
+  YaSolR supports raw values and JSON values like Shelly EM and 3EM.
   **It takes precedence over any other source, even a JSY connected to the device**.
 - `Output 1 Temperature`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 1
 - `Output 2 Temperature`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 2
+
+**Example of configuration with Shelly EM:**
+
+- Grid Voltage topic: `shellyproem50/status/em1:0`
+- Grid Power topic: `shellyproem50/status/em1:0`
+
+The Shelly sends this kind of data:
+
+```json
+{"id":1,"current":2.681,"voltage":236.7,"act_power":-607.3,"aprt_power":636.0,"pf":0.95,"freq":50.0,"calibration":"factory"}
+```
+
+**Example of configuration with Shelly 3EM:**
+
+- Grid Voltage topic: `shelly3em/status/em:0`
+- Grid Power topic: `shelly3em/status/em:0`
+
+The Shelly sends this kind of data:
+
+```json
+{"id":0,"a_current":0.132,"a_voltage":236.0,"a_act_power":3.9,"a_aprt_power":31.0,"a_pf":-0.53,"b_current":0.594,"b_voltage":236.4,"b_act_power":45.4,"b_aprt_power":140.3,"b_pf":-0.61,"c_current":0.368,"c_voltage":237.8,"c_act_power":54.3,"c_aprt_power":87.5,"c_pf":-0.72,"n_current":null,"total_current":1.094,"total_act_power":103.610,"total_aprt_power":258.799, "user_calibrated_phase":[]}
+```
 
 **The device must be restarted to apply the changes.**
 
