@@ -48,7 +48,7 @@ Thanks a lot!
 
 ### Zero-cross Detection modules
 
-I sometimes order batches of Zero-cross Detection modules from PCbWay for my testing and I have spare ones to resell at cost price.
+I sometimes order batches of Zero-cross Detection modules from PCBWay for my testing and I have spare ones to resell at cost price.
 If you are interested, please contact me.
 
 Here are the availabilities below:
@@ -57,8 +57,6 @@ Here are the availabilities below:
 | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :--------------: |
 | <img src="./assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)                                                                                                                  |   10 €    |        4         |
 | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure)                                                                                                       |   15 €    |        4         |
-
-The price difference accounts for the quality, accuracy and features of these ZCD modules (see the author's pages for more details).
 
 You can read more about how important a good ZCD module is in the [Blog](blogs).
 

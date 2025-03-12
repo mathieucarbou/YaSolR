@@ -489,7 +489,7 @@ Please note that the **JSY-MK-194G has an integrated ZCD** and can be used with 
 | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px">           | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) and its [DIN Rail support](https://fr.aliexpress.com/item/4000272944733.html)                            |
 | <img src="./assets/img/hardware/ZCD_DIN_Rail.jpeg" style="width:150px">  | [UPM-01 DIN Rail Mount for PCB 72mm x 20mm](https://fr.aliexpress.com/item/4000272944733.html) for the ZCD module above to mount on DIN Rail. [Alternative link](https://fr.aliexpress.com/item/32276247838.html) |
 
-I often have some spare ZCD modules since I do some batch ordering on PCbWay.
+I often have some spare ZCD modules since I do some batch ordering on PCBWay.
 If you are interested in one, please have a look at the availabilities in the [Pro](pro#zero-cross-detection-modules) page.
 
 Also, **do not forget that ZCD circuits are already included in RobotDyn (or other brands) dimmer boards!** So a good idea is to use such board but only for the ZCd module.
