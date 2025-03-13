@@ -22,6 +22,8 @@ Mycila::Task restartTask("Restart", Mycila::Task::Type::ONCE, [](void* params) {
 
 Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params) {
   logger.info(TAG, "Restarting %s in SafeBoot mode", Mycila::AppInfo.nameModelVersion.c_str());
+  // save current network configuration so that it can be restored and used by safeboot
+  espConnect.saveConfiguration();
   Mycila::System::restartFactory("safeboot");
 });
 

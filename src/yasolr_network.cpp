@@ -40,15 +40,17 @@ void yasolr_init_network() {
   Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
 
   // Network Manager
-  Mycila::ESPConnect::IPConfig ipConfig;
-  ipConfig.ip.fromString(config.get(KEY_NET_IP));
-  ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
-  ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));
-  ipConfig.dns.fromString(config.get(KEY_NET_DNS));
-  espConnect.setIPConfig(ipConfig);
+  Mycila::ESPConnect::Config espConnectConfig;
+  espConnectConfig.apMode = config.getBool(KEY_ENABLE_AP_MODE);
+  espConnectConfig.wifiSSID = config.getString(KEY_WIFI_SSID);
+  espConnectConfig.wifiPassword = config.getString(KEY_WIFI_PASSWORD);
+  espConnectConfig.ipConfig.ip.fromString(config.get(KEY_NET_IP));
+  espConnectConfig.ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
+  espConnectConfig.ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));
+  espConnectConfig.ipConfig.dns.fromString(config.get(KEY_NET_DNS));
   espConnect.setAutoRestart(true);
   espConnect.setBlocking(false);
-  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD), {config.get(KEY_WIFI_SSID), config.get(KEY_WIFI_PASSWORD), config.getBool(KEY_ENABLE_AP_MODE)});
+  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD), espConnectConfig);
 
   espConnect.listen([](Mycila::ESPConnect::State previous, Mycila::ESPConnect::State state) {
     logger.debug(TAG, "NetworkState: %s => %s", espConnect.getStateName(previous), espConnect.getStateName(state));
