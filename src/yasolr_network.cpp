@@ -68,6 +68,7 @@ void yasolr_init_network() {
         break;
       case Mycila::ESPConnect::State::NETWORK_CONNECTED:
         logger.info(TAG, "Connected with IP address %s", espConnect.getIPAddress().toString().c_str());
+        logger.info(TAG, "Hostname: %s", espConnect.getHostname().c_str());
         networkStartTask.resume();
         break;
       case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
