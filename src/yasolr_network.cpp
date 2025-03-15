@@ -69,8 +69,12 @@ void yasolr_init_network() {
         logger.info(TAG, "Connecting to network");
         break;
       case Mycila::ESPConnect::State::NETWORK_CONNECTED:
-        logger.info(TAG, "Connected with IP address %s", espConnect.getIPAddress().toString().c_str());
+        logger.info(TAG, "Connected to network!");
+        logger.info(TAG, "IP Address: %s", espConnect.getIPAddress().toString().c_str());
         logger.info(TAG, "Hostname: %s", espConnect.getHostname().c_str());
+        if (espConnect.getWiFiSSID().length()) {
+          logger.info(TAG, "WiFi SSID: %s", espConnect.getWiFiSSID().c_str());
+        }
         networkStartTask.resume();
         break;
       case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
