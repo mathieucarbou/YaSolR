@@ -109,13 +109,11 @@ To update the firmware through OTA, please follow these steps:
 
 [![](assets/img/screenshots/app-system.jpeg)](assets/img/screenshots/app-system.jpeg)
 
-3. Once in SafeBoot mode, the device will open an Access Point with the name `SafeBoot-xxxxxx`. You need to connect to this Access Point.
+3. Once in SafeBoot mode, the device will use your same YaSolR network settings (SSID, static IP address). Otherwise an Access Point with the name `SafeBoot-xxxxxx` that you can connect to.
 
 [![](assets/img/screenshots/safeboot-ssid.jpeg)](assets/img/screenshots/safeboot-ssid.jpeg)
 
-4. Once connected, open a browser and go to `http://192.168.4.1` and you will see the [ElegantOTA](https://github.com/ayushsharma82/ElegantOTA) page allowing you to update the firmware.
-
-[![](assets/img/screenshots/safeboot-ota.jpeg)](assets/img/screenshots/safeboot-ota.jpeg)
+4. Once connected, open a browser and go to `http://192.168.4.1` (or your configured YaSolR IP address) and you will a simple update page allowing you to upload the new firmware file.
 
 5. After the update is successful, the device will reboot in the updated YaSolR.
 
