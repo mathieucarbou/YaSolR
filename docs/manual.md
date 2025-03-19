@@ -609,7 +609,10 @@ You can see the full specifications of list of DFRobot DAC modules [here](https:
 - Pick one module between the DFR1071, DFR0971 or DFR1073, ideally the DFR1073 because it has 2 channels and 15 bits resolution and higher accuracy.
 - Connect the module to the router by using the I2C pins (SDA and SCL, same for the display)
 - For DFR0971 and DFR1073 (2-channel): Channel 1 is used for output 1 and channel 2 is used for output 2.
-- Leave the selectors on the module to the default position A2-A1-A0 at 0-0-0 (which means address: 0x58)
+- Leave the selectors on the module to the default position A2-A1-A0 at 0-0-0 (which means address: 0x58, their default address). 
+  **Pay attention to that: some modules come with another address configured!**
+
+[![https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp](https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp)](https://www.dfrobot.com/product-2613.html)
 
 #### Dimmer Range Remapping
 
