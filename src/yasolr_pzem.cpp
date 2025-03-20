@@ -16,7 +16,7 @@ void yasolr_init_pzem() {
   logger.info(TAG, "Initialize PZEM");
   uint8_t count = 0;
 
-  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM) && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
     pzemO1 = new Mycila::PZEM();
     pzemO1->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
 
@@ -93,7 +93,7 @@ void yasolr_init_pzem() {
     }
   }
 
-  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM) && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
     pzemO2 = new Mycila::PZEM();
     pzemO2->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
 
