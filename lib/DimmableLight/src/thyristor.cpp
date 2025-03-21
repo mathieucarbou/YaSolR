@@ -19,8 +19,8 @@
  ******************************************************************************/
 #include "thyristor.h"
 
-#include <MycilaCircularBuffer.h>
 #include <HardwareSerial.h>
+#include <MycilaCircularBuffer.h>
 
 #include <esp32-hal-gpio.h>
 
@@ -448,7 +448,7 @@ void Thyristor::zero_cross_int(void* arg) {
 
   // Turn on thyristors with 0 delay (always on)
   while (thyristorManaged < Thyristor::nThyristors && pinDelay[thyristorManaged].delay == 0) {
-    if(pinDelay[thyristorManaged].pin != 0xff) {
+    if (pinDelay[thyristorManaged].pin != 0xff) {
       digitalWrite(pinDelay[thyristorManaged].pin, HIGH);
     }
     thyristorManaged++;
@@ -523,6 +523,9 @@ void isr_selector() {
 }
 
 void Thyristor::setDelay(uint16_t newDelay) {
+  if (!semiPeriodLength)
+    return;
+
   if (newDelay > semiPeriodLength) {
     newDelay = semiPeriodLength;
   }
@@ -655,9 +658,9 @@ void Thyristor::begin() {
 }
 
 void Thyristor::end() {
-  #ifdef THYRISTOR_ZCD
+#ifdef THYRISTOR_ZCD
   detachInterrupt(digitalPinToInterrupt(syncPin));
-  #endif
+#endif
 #ifdef MONITOR_FREQUENCY
   queue.reset();
 #endif
@@ -723,9 +726,9 @@ void Thyristor::frequencyMonitorAlwaysOn(bool enable) {
 
     if (enable && !interruptEnabled) {
       interruptEnabled = true;
-#ifdef THYRISTOR_ZCD
+  #ifdef THYRISTOR_ZCD
       attachInterrupt(digitalPinToInterrupt(syncPin), zero_cross_int, syncDir);
-#endif
+  #endif
     }
     frequencyMonitorAlwaysEnabled = enable;
 
