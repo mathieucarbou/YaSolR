@@ -83,6 +83,7 @@ extern float yasolr_frequency();
 // logging
 extern Mycila::Logger logger;
 extern void yasolr_init_logging();
+extern void yasolr_configure_logging();
 
 // JSY
 extern Mycila::JSY* jsy;
@@ -130,7 +131,6 @@ extern Mycila::Task restartTask;
 extern Mycila::Task safeBootTask;
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::TaskManager unsafeTaskManager;
-extern void yasolr_boot();
 extern void yasolr_init_system();
 
 // Trial

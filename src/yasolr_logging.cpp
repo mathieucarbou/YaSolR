@@ -10,6 +10,21 @@ static Mycila::Task* loggingTask = nullptr;
 static WebSerial* webSerial = nullptr;
 
 void yasolr_init_logging() {
+  Serial.begin(YASOLR_SERIAL_BAUDRATE);
+#if ARDUINO_USB_CDC_ON_BOOT
+  Serial.setTxTimeoutMs(0);
+  delay(100);
+#else
+  while (!Serial)
+    yield();
+#endif
+
+  logger.redirectArduinoLogs();
+  logger.forwardTo(&Serial);
+  logger.info(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
+}
+
+void yasolr_configure_logging() {
   logger.info(TAG, "Initialize logging");
 
   if (config.getBool(KEY_ENABLE_DEBUG)) {
@@ -36,10 +51,11 @@ void yasolr_init_logging() {
         pzemTaskManager->log();
     });
 
-    loggingTask->setInterval(20000);
+    loggingTask->setInterval(30000);
     loggingTask->enableProfiling();
 
     unsafeTaskManager.addTask(*loggingTask);
+
   } else {
     logger.setLevel(ARDUHAL_LOG_LEVEL_INFO);
     esp_log_level_set("*", static_cast<esp_log_level_t>(ARDUHAL_LOG_LEVEL_INFO));

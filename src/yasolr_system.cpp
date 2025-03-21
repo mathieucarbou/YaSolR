@@ -28,6 +28,9 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params)
 });
 
 void yasolr_init_system() {
+  Mycila::System::init(true, "fs");
+  Mycila::TaskManager::configureWDT(10, true);
+
   logger.info(TAG, "Initialize system");
 
   esp_reset_reason_t reason = esp_reset_reason();

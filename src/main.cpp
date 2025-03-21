@@ -5,10 +5,10 @@
 #include <yasolr.h>
 
 void setup() {
-  yasolr_boot();         // boot sequence
-  yasolr_init_config();  // load configuration from NVS
-  yasolr_init_logging(); // init logging
-  yasolr_init_system();  // init system (safeboot, restart, reset, etc)
+  yasolr_init_logging();      // init logging
+  yasolr_init_system();       // init system (safeboot, restart, reset, etc)
+  yasolr_init_config();       // load configuration from NVS
+  yasolr_configure_logging(); // configure logging
 
   // hardware
   yasolr_init_display();
