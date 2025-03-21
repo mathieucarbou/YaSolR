@@ -36,10 +36,21 @@ void Mycila::DFRobotDimmer::begin() {
   LOGI(TAG, "Enable DFRobot Dimmer at address 0x%02x and channel %d", _deviceAddress, _channel);
 
   // check wire
-  _wire->beginTransmission(_deviceAddress);
-  int err = _wire->endTransmission();
-  if (err) {
-    LOGE(TAG, "Disable DFRobot Dimmer: TwoWire communication error: %d", err);
+  bool success = false;
+  for (int i = 0; i < 10; i++) {
+    _wire->beginTransmission(_deviceAddress);
+    int err = _wire->endTransmission();
+    if (err) {
+      LOGW(TAG, "DFRobot Dimmer: TwoWire communication error: %d", err);
+      delay(20);
+    } else {
+      success = true;
+      break;
+    }
+  }
+
+  if (!success) {
+    LOGE(TAG, "DFRobot Dimmer: TwoWire communication error: cannot communicate with device");
     return;
   }
 
