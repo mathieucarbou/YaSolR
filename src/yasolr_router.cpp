@@ -85,6 +85,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyEnable, con
   } else if (isDACBased(type)) {
     Wire.begin(config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_PIN_I2C_SCL));
     Mycila::DFRobotDimmer* dfRobotDimmer = new Mycila::DFRobotDimmer();
+    dfRobotDimmer->setWire(Wire);
     dfRobotDimmer->setOutput(Mycila::DFRobotDimmer::Output::RANGE_0_10V);
     dfRobotDimmer->setChannel(outputID - 1);
     if (strcmp(type, YASOLR_DIMMER_LSA_GP8211S) == 0) {
