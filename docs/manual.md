@@ -517,6 +517,12 @@ See [MQTT Topic Subscriptions](#mqtt-topic-subscriptions).
 Reason is that on some JSY, channel 1 is a tore on the board while channel 2 is always a clamp.
 This is easier to put a clamp around the grid wire.
 
+> ##### NOTE
+>
+> The JSY-194G labels are wrong for RX and TX, so for this JSY, connect the JSY RX to the board RX and the JSY TX to the board TX.
+>
+{: .block-note }
+
 #### JSY Remote
 
 JSY can also be replaced with a remote JSY **without any impact on routing speed**.
