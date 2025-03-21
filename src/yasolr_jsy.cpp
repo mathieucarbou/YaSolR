@@ -11,15 +11,22 @@ static Mycila::Task* jsyTask = nullptr;
 static Mycila::JSY::Data jsyData;
 
 void yasolr_init_jsy() {
-  if (config.getBool(KEY_ENABLE_JSY)) {
+  if (config.getBool(KEY_ENABLE_JSY) && config.getString(KEY_JSY_UART) != YASOLR_UART_NONE) {
     assert(!jsy);
     assert(!jsyTask);
     assert(!jsyTaskManager);
 
-    logger.info(TAG, "Initialize JSY");
+    logger.info(TAG, "Initialize JSY with UART %s", config.get(KEY_JSY_UART));
 
     jsy = new Mycila::JSY();
-    jsy->begin(YASOLR_JSY_SERIAL, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
+
+    if (config.getString(KEY_JSY_UART) == YASOLR_UART_1_NAME)
+      jsy->begin(Serial1, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
+
+#if SOC_UART_NUM > 2
+    if (config.getString(KEY_JSY_UART) == YASOLR_UART_2_NAME)
+      jsy->begin(Serial2, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
+#endif
 
     if (!jsy->isEnabled()) {
       logger.error(TAG, "JSY failed to initialize!");

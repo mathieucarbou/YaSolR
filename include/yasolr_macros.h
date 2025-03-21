@@ -73,8 +73,23 @@
 #define YASOLR_RELAY_TYPE_NC               "NC"
 #define YASOLR_RELAY_TYPE_NO               "NO"
 #define YASOLR_SERIAL_BAUDRATE             115200
+#define YASOLR_UART_1_NAME                 "Serial1"
+#define YASOLR_UART_2_NAME                 "Serial2"
+#define YASOLR_UART_NONE                   "N/A"
 #define YASOLR_WEEK_DAYS                   "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_WEEK_DAYS_EMPTY             "none"
+
+// UART
+
+#if SOC_UART_NUM > 2
+  #define YASOLR_UART_CHOICES YASOLR_UART_NONE "," YASOLR_UART_1_NAME "," YASOLR_UART_2_NAME
+  #define JSY_UART_DEFAULT    YASOLR_UART_2_NAME
+  #define PZEM_UART_DEFAULT   YASOLR_UART_1_NAME
+#else
+  #define YASOLR_UART_CHOICES YASOLR_UART_NONE "," YASOLR_UART_1_NAME
+  #define JSY_UART_DEFAULT    YASOLR_UART_1_NAME
+  #define PZEM_UART_DEFAULT   YASOLR_UART_NONE
+#endif
 
 // UDP communication
 
@@ -122,6 +137,7 @@
 #define KEY_GRID_POWER_MQTT_TOPIC          "grid_pow_mqtt"
 #define KEY_GRID_VOLTAGE_MQTT_TOPIC        "grid_volt_mqtt"
 #define KEY_HA_DISCOVERY_TOPIC             "ha_disco_topic"
+#define KEY_JSY_UART                       "jsy_uart"
 #define KEY_MQTT_PASSWORD                  "mqtt_pwd"
 #define KEY_MQTT_PORT                      "mqtt_port"
 #define KEY_MQTT_PUBLISH_INTERVAL          "mqtt_pub_itvl"
@@ -173,6 +189,7 @@
 #define KEY_PID_OUT_MIN                    "pid_out_min"
 #define KEY_PID_P_MODE                     "pid_pmode"
 #define KEY_PID_SETPOINT                   "pid_setpoint"
+#define KEY_PZEM_UART                      "pzem_uart"
 #define KEY_RELAY1_LOAD                    "relay1_load"
 #define KEY_RELAY1_TYPE                    "relay1_type"
 #define KEY_RELAY2_LOAD                    "relay2_load"
@@ -256,15 +273,9 @@
 #ifndef YASOLR_JSY_TX_PIN
   #define YASOLR_JSY_TX_PIN -1
 #endif
-#ifndef YASOLR_JSY_SERIAL
-  #define YASOLR_JSY_SERIAL Serial2
-#endif
 #ifndef YASOLR_PZEM_RX_PIN
   #define YASOLR_PZEM_RX_PIN -1
 #endif
 #ifndef YASOLR_PZEM_TX_PIN
   #define YASOLR_PZEM_TX_PIN -1
-#endif
-#ifndef YASOLR_PZEM_SERIAL
-  #define YASOLR_PZEM_SERIAL Serial1
 #endif

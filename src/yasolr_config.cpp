@@ -45,6 +45,7 @@ void yasolr_init_config() {
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
   config.configure(KEY_GRID_VOLTAGE_MQTT_TOPIC);
   config.configure(KEY_HA_DISCOVERY_TOPIC, MYCILA_HA_DISCOVERY_TOPIC);
+  config.configure(KEY_JSY_UART, JSY_UART_DEFAULT);
   config.configure(KEY_MQTT_PASSWORD);
   config.configure(KEY_MQTT_PORT, "1883");
   config.configure(KEY_MQTT_PUBLISH_INTERVAL, "5");
@@ -114,6 +115,7 @@ void yasolr_init_config() {
   config.configure(KEY_PIN_RELAY2, std::to_string(YASOLR_RELAY2_PIN));
   config.configure(KEY_PIN_ROUTER_DS18, std::to_string(YASOLR_SYSTEM_TEMP_PIN));
   config.configure(KEY_PIN_ZCD, std::to_string(YASOLR_ZCD_PIN));
+  config.configure(KEY_PZEM_UART, PZEM_UART_DEFAULT);
   config.configure(KEY_RELAY1_LOAD, "0");
   config.configure(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NO);
   config.configure(KEY_RELAY2_LOAD, "0");

@@ -13,12 +13,20 @@ Mycila::TaskManager* pzemTaskManager = nullptr;
 static Mycila::Task* pzemTask = nullptr;
 
 void yasolr_init_pzem() {
-  logger.info(TAG, "Initialize PZEM");
   uint8_t count = 0;
 
-  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM) && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
+  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM) && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && config.getString(KEY_PZEM_UART) != YASOLR_UART_NONE) {
+    logger.info(TAG, "Initialize Output 1 PZEM with UART %s", config.get(KEY_PZEM_UART));
+
     pzemO1 = new Mycila::PZEM();
-    pzemO1->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
+
+    if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+      pzemO1->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
+
+#if SOC_UART_NUM > 2
+    if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+      pzemO1->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
+#endif
 
     if (pzemO1->isEnabled()) {
       count++;
@@ -52,7 +60,15 @@ void yasolr_init_pzem() {
       pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::Task::Type::ONCE, [](void* params) {
         logger.info(TAG, "Pairing connected PZEM to Output 1");
         pzemO1->end();
-        pzemO1->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+
+        if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+          pzemO1->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+
+#if SOC_UART_NUM > 2
+        if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+          pzemO1->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+#endif
+
         switch (pzemO1->getDeviceAddress()) {
           case YASOLR_PZEM_ADDRESS_OUTPUT1:
             // already paired
@@ -93,9 +109,18 @@ void yasolr_init_pzem() {
     }
   }
 
-  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM) && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
+  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM) && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && config.getString(KEY_PZEM_UART) != YASOLR_UART_NONE) {
+    logger.info(TAG, "Initialize Output 2 PZEM with UART %s", config.get(KEY_PZEM_UART));
+
     pzemO2 = new Mycila::PZEM();
-    pzemO2->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
+
+    if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+      pzemO2->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
+
+#if SOC_UART_NUM > 2
+    if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+      pzemO2->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
+#endif
 
     if (pzemO2->isEnabled()) {
       count++;
@@ -129,7 +154,15 @@ void yasolr_init_pzem() {
       pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::Task::Type::ONCE, [](void* params) {
         logger.info(TAG, "Pairing connected PZEM to Output 2");
         pzemO2->end();
-        pzemO2->begin(YASOLR_PZEM_SERIAL, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+
+        if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+          pzemO2->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+
+#if SOC_UART_NUM > 2
+        if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+          pzemO2->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+#endif
+
         switch (pzemO2->getDeviceAddress()) {
           case YASOLR_PZEM_ADDRESS_OUTPUT2:
             // already paired

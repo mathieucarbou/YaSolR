@@ -263,11 +263,13 @@ static dash::SeparatorCard<const char*> _gpioSep3(dashboard, YASOLR_LBL_071);
 static dash::FeedbackTextInputCard<int32_t> _pinRelay1(dashboard, YASOLR_LBL_074);
 static dash::FeedbackTextInputCard<int32_t> _pinRelay2(dashboard, YASOLR_LBL_077);
 static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_012);
+static dash::FeedbackTextInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
+static dash::DropdownCard<const char*> _serialJsy(dashboard, YASOLR_LBL_150, YASOLR_UART_CHOICES);
 static dash::FeedbackTextInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
 static dash::FeedbackTextInputCard<int32_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
+static dash::DropdownCard<const char*> _serialPZEM(dashboard, YASOLR_LBL_152, YASOLR_UART_CHOICES);
 static dash::FeedbackTextInputCard<int32_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
 static dash::FeedbackTextInputCard<int32_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
-static dash::FeedbackTextInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
 static dash::SeparatorCard<const char*> _gpioSep5(dashboard, YASOLR_LBL_078);
 static dash::FeedbackTextInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_132);
 static dash::FeedbackTextInputCard<int32_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
@@ -715,8 +717,10 @@ void YaSolR::Website::begin() {
   _pinRelay1.setTab(_gpioTab);
   _pinRelay2.setTab(_gpioTab);
   _gpioSep4.setTab(_gpioTab);
+  _serialJsy.setTab(_gpioTab);
   _pinJsyRX.setTab(_gpioTab);
   _pinJsyTX.setTab(_gpioTab);
+  _serialPZEM.setTab(_gpioTab);
   _pinPZEMRX.setTab(_gpioTab);
   _pinPZEMTX.setTab(_gpioTab);
   _pinZCD.setTab(_gpioTab);
@@ -749,6 +753,9 @@ void YaSolR::Website::begin() {
   _numConfig(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN);
   _numConfig(_pinLEDRed, KEY_PIN_LIGHTS_RED);
   _numConfig(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW);
+
+  _textConfig(_serialJsy, KEY_JSY_UART);
+  _textConfig(_serialPZEM, KEY_PZEM_UART);
 
   // tab: hardware
 
@@ -1248,6 +1255,9 @@ void YaSolR::Website::initCards() {
   _pinout(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN, pinout);
   _pinout(_pinLEDRed, KEY_PIN_LIGHTS_RED, pinout);
   _pinout(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW, pinout);
+
+  _serialJsy.setValue(config.get(KEY_JSY_UART));
+  _serialPZEM.setValue(config.get(KEY_PZEM_UART));
 
   // tab: hardware
 
