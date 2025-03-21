@@ -879,8 +879,15 @@ It won't work if the water heater has already reached its threshold temperature.
 - `Debug`: Activate or deactivate the debug options (restart required).
 - `Debug Information`: Outputs useful debug information to give to support.
   **Only available when `Debug` is activated in Hardware section.**
+- `Startup Logs`: View startup logs when ESP32 starts. These logs are limited to 32 Kib.
 - `Console`: Go to the Web Console page to see the logs
   **Only available when `Debug` is activated in Hardware section.**
+
+> ##### WARNING
+>
+> Activating debug mode will slow down the startup and overall performance of the router because of the additional logs and flash access required.
+> Do not forget to only activate this option temporarily when troubleshooting an issue and deactivate it once finished.
+{: .block-warning }
 
 #### Saving logs
 
