@@ -5,12 +5,14 @@
 #include <yasolr.h>
 
 void setup() {
-  yasolr_init_logging();      // init logging
+  yasolr_init_logging(); // init logging
+
+  logger.info(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
   yasolr_init_system();       // init system (safeboot, restart, reset, etc)
   yasolr_init_config();       // load configuration from NVS
   yasolr_configure_logging(); // configure logging
 
-  // hardware
+  logger.info(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
   yasolr_init_display();
   yasolr_init_ds18();
   yasolr_init_grid();

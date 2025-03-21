@@ -28,10 +28,10 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params)
 });
 
 void yasolr_init_system() {
+  logger.info(TAG, "Initialize system");
+
   Mycila::System::init(true, "fs");
   Mycila::TaskManager::configureWDT(10, true);
-
-  logger.info(TAG, "Initialize system");
 
   esp_reset_reason_t reason = esp_reset_reason();
   if (reason == esp_reset_reason_t::ESP_RST_POWERON || reason == esp_reset_reason_t::ESP_RST_SW || reason == esp_reset_reason_t::ESP_RST_DEEPSLEEP) {
