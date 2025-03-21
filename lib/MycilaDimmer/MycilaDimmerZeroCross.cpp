@@ -59,7 +59,7 @@ void Mycila::ZeroCrossDimmer::begin() {
     return;
   }
 
-  LOGI(TAG, "Enable ZC Dimmer on pin %" PRId8 " with semi-period %" PRIu16 " us", _pin, _semiPeriod);
+  LOGI(TAG, "Enable Zero-Cross Dimmer on pin %" PRId8, _pin);
 
   pinMode(_pin, OUTPUT);
   digitalWrite(_pin, LOW);
@@ -88,7 +88,7 @@ void ARDUINO_ISR_ATTR Mycila::ZeroCrossDimmer::onZeroCross(int16_t delayUntilZer
 }
 
 bool Mycila::ZeroCrossDimmer::apply() {
-  //TODO: use PHASE_DELAY_MIN_US ?
+  // TODO: use PHASE_DELAY_MIN_US ?
   _dimmer->setDelay(_delay);
   return true;
 }

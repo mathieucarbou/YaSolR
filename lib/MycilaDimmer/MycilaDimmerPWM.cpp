@@ -44,7 +44,7 @@ void Mycila::PWMDimmer::begin() {
     return;
   }
 
-  LOGI(TAG, "Enable PWM Dimmer on pin %" PRId8 " with semi-period %" PRIu16 " us", _pin, _semiPeriod);
+  LOGI(TAG, "Enable PWM Dimmer on pin %" PRId8, _pin);
 
   pinMode(_pin, OUTPUT);
   digitalWrite(_pin, LOW);

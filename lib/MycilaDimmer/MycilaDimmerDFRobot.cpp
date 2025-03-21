@@ -33,7 +33,7 @@ void Mycila::DFRobotDimmer::begin() {
     return;
   }
 
-  LOGI(TAG, "Enable DFRobot Dimmer with semi-period %" PRIu16 " us at address 0x%02x and channel %d", getSemiPeriod(), _deviceAddress, _channel);
+  LOGI(TAG, "Enable DFRobot Dimmer at address 0x%02x and channel %d", _deviceAddress, _channel);
 
   // check wire
   _wire->beginTransmission(_deviceAddress);
