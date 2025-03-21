@@ -11,15 +11,11 @@
 
 Mycila::EasyDisplay* display = nullptr;
 
-static Mycila::Task* displayTask = nullptr;
 static uint8_t startingInformation = 1;
 static uint32_t lastDisplayUpdate = 0;
 
 void yasolr_init_display() {
   if (config.getBool(KEY_ENABLE_DISPLAY)) {
-    assert(!display);
-    assert(!displayTask);
-
     logger.info(TAG, "Initialize display");
 
     display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
@@ -42,7 +38,7 @@ void yasolr_init_display() {
 
     display->setActive(true);
 
-    displayTask = new Mycila::Task("Display", [](void* params) {
+    Mycila::Task* displayTask = new Mycila::Task("Display", [](void* params) {
       if (lastDisplayUpdate && millis() - lastDisplayUpdate < config.getLong(KEY_DISPLAY_SPEED) * 1000)
         return;
 

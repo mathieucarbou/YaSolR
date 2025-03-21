@@ -7,15 +7,10 @@
 Mycila::JSY* jsy = nullptr;
 Mycila::TaskManager* jsyTaskManager = nullptr;
 
-static Mycila::Task* jsyTask = nullptr;
 static Mycila::JSY::Data jsyData;
 
 void yasolr_init_jsy() {
   if (config.getBool(KEY_ENABLE_JSY) && config.getString(KEY_JSY_UART) != YASOLR_UART_NONE) {
-    assert(!jsy);
-    assert(!jsyTask);
-    assert(!jsyTaskManager);
-
     logger.info(TAG, "Initialize JSY with UART %s", config.get(KEY_JSY_UART));
 
     jsy = new Mycila::JSY();
@@ -111,7 +106,7 @@ void yasolr_init_jsy() {
 
     // async task
 
-    jsyTask = new Mycila::Task("JSY", [](void* params) { jsy->read(); });
+    Mycila::Task* jsyTask = new Mycila::Task("JSY", [](void* params) { jsy->read(); });
 
     jsyTaskManager = new Mycila::TaskManager("y-jsy");
     jsyTaskManager->addTask(*jsyTask);

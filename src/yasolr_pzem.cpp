@@ -10,8 +10,6 @@ Mycila::Task* pzemO1PairingTask = nullptr;
 Mycila::Task* pzemO2PairingTask = nullptr;
 Mycila::TaskManager* pzemTaskManager = nullptr;
 
-static Mycila::Task* pzemTask = nullptr;
-
 void yasolr_init_pzem() {
   uint8_t count = 0;
 
@@ -206,7 +204,7 @@ void yasolr_init_pzem() {
   if (count) {
     pzemTaskManager = new Mycila::TaskManager("y-pzem");
 
-    pzemTask = new Mycila::Task("PZEM", [](void* params) {
+    Mycila::Task* pzemTask = new Mycila::Task("PZEM", [](void* params) {
       if (pzemO1) {
         pzemO1->read();
         yield();

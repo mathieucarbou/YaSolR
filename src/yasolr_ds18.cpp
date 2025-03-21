@@ -8,15 +8,11 @@ Mycila::DS18* ds18O1 = nullptr;
 Mycila::DS18* ds18O2 = nullptr;
 Mycila::DS18* ds18Sys = nullptr;
 
-static Mycila::Task* ds18Task = nullptr;
-
 void yasolr_init_ds18() {
   logger.info(TAG, "Initialize DS18 probes");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_DS18_SYSTEM)) {
-    assert(!ds18Sys);
-
     ds18Sys = new Mycila::DS18();
     ds18Sys->begin(config.getLong(KEY_PIN_ROUTER_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
 
@@ -38,8 +34,6 @@ void yasolr_init_ds18() {
   }
 
   if (config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
-    assert(!ds18O1);
-
     ds18O1 = new Mycila::DS18();
     ds18O1->begin(config.getLong(KEY_PIN_OUTPUT1_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
 
@@ -69,8 +63,6 @@ void yasolr_init_ds18() {
   }
 
   if (config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
-    assert(!ds18O2);
-
     ds18O2 = new Mycila::DS18();
     ds18O2->begin(config.getLong(KEY_PIN_OUTPUT2_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
 
@@ -101,7 +93,7 @@ void yasolr_init_ds18() {
   }
 
   if (count) {
-    ds18Task = new Mycila::Task("DS18", [](void* params) {
+    Mycila::Task* ds18Task = new Mycila::Task("DS18", [](void* params) {
       if (ds18Sys) {
         ds18Sys->read();
         yield();

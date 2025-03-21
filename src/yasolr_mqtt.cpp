@@ -467,12 +467,6 @@ static void haDiscovery() {
 
 void yasolr_init_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
-    assert(!mqtt);
-    assert(!mqttConnectTask);
-    assert(!mqttPublishConfigTask);
-    assert(!mqttPublishStaticTask);
-    assert(!mqttPublishTask);
-
     logger.info(TAG, "Initialize MQTT");
 
     mqtt = new Mycila::MQTT();

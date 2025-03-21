@@ -108,10 +108,6 @@ void onData(AsyncUDPPacket packet) {
 
 void yasolr_init_jsy_remote() {
   if (config.getBool(KEY_ENABLE_JSY_REMOTE)) {
-    assert(!udp);
-    assert(!udpMessageRateBuffer);
-    assert(!jsyRemoteTask);
-
     logger.info(TAG, "Initialize JSY Remote");
 
     udp = new AsyncUDP();

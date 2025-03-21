@@ -8,15 +8,11 @@
 Mycila::RouterRelay* relay1 = nullptr;
 Mycila::RouterRelay* relay2 = nullptr;
 
-static Mycila::Task* relayTask = nullptr;
-
 void yasolr_init_relays() {
   logger.info(TAG, "Initialize relays");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_RELAY1)) {
-    assert(!relay1);
-
     Mycila::Relay* relay = new Mycila::Relay();
     relay->begin(config.getLong(KEY_PIN_RELAY1), config.isEqual(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
@@ -41,8 +37,6 @@ void yasolr_init_relays() {
   }
 
   if (config.getBool(KEY_ENABLE_RELAY2)) {
-    assert(!relay2);
-
     Mycila::Relay* relay = new Mycila::Relay();
     relay->begin(config.getLong(KEY_PIN_RELAY2), config.isEqual(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
 
@@ -67,7 +61,7 @@ void yasolr_init_relays() {
   }
 
   if (count) {
-    relayTask = new Mycila::Task("Relay", [](void* params) {
+    Mycila::Task* relayTask = new Mycila::Task("Relay", [](void* params) {
       if (grid.getPower().isAbsent())
         return;
 
