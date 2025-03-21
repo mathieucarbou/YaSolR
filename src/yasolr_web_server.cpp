@@ -472,6 +472,7 @@ void rest_api() {
     root["config/backup"] = base + "/config/backup";
     root["debug"] = base + "/debug";
     root["grid"] = base + "/grid";
+    root["logs"] = base + YASOLR_LOG_FILE;
     root["router"] = base + "/router";
     root["system"] = base + "/system";
 

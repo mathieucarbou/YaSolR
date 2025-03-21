@@ -182,6 +182,7 @@ static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 
 static dash::FeedbackSwitchCard _debugMode(dashboard, YASOLR_LBL_083);
 static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
+static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
 
 // tab: network
@@ -523,6 +524,7 @@ void YaSolR::Website::begin() {
 
   _debugMode.setTab(_debugTab);
   _debugInfo.setTab(_debugTab);
+  _startupLogs.setTab(_debugTab);
   _consoleLink.setTab(_debugTab);
 
   _debugMode.setSize(FULL_SIZE);
@@ -1120,9 +1122,11 @@ void YaSolR::Website::initCards() {
 
   _status(_debugMode, KEY_ENABLE_DEBUG, logger.isDebugEnabled());
   _debugInfo.setValue("/api/debug");
+  _startupLogs.setValue("/logs.txt");
   _consoleLink.setValue("/console");
 
   _debugInfo.setDisplay(debugEnabled);
+  _startupLogs.setDisplay(debugEnabled);
   _consoleLink.setDisplay(debugEnabled);
 
   // tab: network

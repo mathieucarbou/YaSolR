@@ -187,7 +187,7 @@
 #define YASOLR_LBL_181 "Température sortie 1"
 #define YASOLR_LBL_182 "Température sortie 2"
 #define YASOLR_LBL_183 "Redéfinition Min/Max"
-// #define YASOLR_LBL_184 "Redéfinition Min/Max Variateur Sortie 2"
+#define YASOLR_LBL_184 "Logs de démarrage"
 #define YASOLR_LBL_185 "Redémarrage requis!"
 #define YASOLR_LBL_186 "Détection valeur résistances"
 #define YASOLR_LBL_187 "JSY Remote"

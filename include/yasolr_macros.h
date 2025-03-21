@@ -55,6 +55,7 @@
 #define YASOLR_DS18_SEARCH_MAX_RETRY       30
 #define YASOLR_GRAPH_POINTS                60
 #define YASOLR_HIDDEN_PWD                  "********"
+#define YASOLR_LOG_FILE                    "/logs.txt"
 #define YASOLR_MQTT_KEEPALIVE              60
 #define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
 #define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"

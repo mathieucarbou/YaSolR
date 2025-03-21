@@ -187,7 +187,7 @@
 #define YASOLR_LBL_181 "Output 1 Temperature"
 #define YASOLR_LBL_182 "Output 2 Temperature"
 #define YASOLR_LBL_183 "Min/Max Remapping"
-// #define YASOLR_LBL_184 "Output 2 Dimmer Min/Max Remapping"
+#define YASOLR_LBL_184 "Startup Logs"
 #define YASOLR_LBL_185 "Restart required!"
 #define YASOLR_LBL_186 "Resistance Calibration"
 #define YASOLR_LBL_187 "JSY Remote"
