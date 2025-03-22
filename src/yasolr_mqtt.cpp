@@ -6,8 +6,8 @@
 
 #include <string>
 
-extern const uint8_t ca_certs_bundle_start[] asm("_binary__pio_data_cacerts_bin_start");
-extern const uint8_t ca_certs_bundle_end[] asm("_binary__pio_data_cacerts_bin_end");
+extern const uint8_t ca_certs_bundle_start[] asm("_binary__pio_embed_cacerts_bin_start");
+extern const uint8_t ca_certs_bundle_end[] asm("_binary__pio_embed_cacerts_bin_end");
 
 Mycila::MQTT* mqtt = nullptr;
 Mycila::Task* mqttConnectTask = nullptr;

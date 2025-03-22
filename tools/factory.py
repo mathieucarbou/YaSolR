@@ -38,7 +38,7 @@ def generateFactooryImage(source, target, env):
 
     # Set fs_offset = 0 to disable LittleFS image generation
     # Set fs_offset to the correct offset from the partition to generate a LittleFS image
-    fs_offset = 0
+    fs_offset = 0x3E0000
     fs_image = env.subst("$BUILD_DIR/littlefs.bin")
 
     safeboot_offset = 0x10000

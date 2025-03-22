@@ -33,7 +33,7 @@ try:
 except ImportError:
     env.Execute("$PYTHONEXE -m pip install cryptography")
 
-output_dir = ".pio/data"
+output_dir = ".pio/embed"
 quiet = False
 
 def download_cacert_file():

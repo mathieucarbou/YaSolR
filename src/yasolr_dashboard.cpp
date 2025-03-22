@@ -1122,7 +1122,7 @@ void YaSolR::Website::initCards() {
 
   _status(_debugMode, KEY_ENABLE_DEBUG, logger.isDebugEnabled());
   _debugInfo.setValue("/api/debug");
-  _startupLogs.setValue("/logs.txt");
+  _startupLogs.setValue("/api" YASOLR_LOG_FILE);
   _consoleLink.setValue("/console");
 
   _debugInfo.setDisplay(debugEnabled);
