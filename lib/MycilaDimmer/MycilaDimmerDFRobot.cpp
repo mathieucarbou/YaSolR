@@ -33,31 +33,53 @@ void Mycila::DFRobotDimmer::begin() {
     return;
   }
 
-  LOGI(TAG, "Enable DFRobot Dimmer at address 0x%02x and channel %d", _deviceAddress, _channel);
-
-  // check wire
-  bool success = false;
-  for (int i = 0; i < 10; i++) {
-    _wire->beginTransmission(_deviceAddress);
-    int err = _wire->endTransmission();
-    if (err) {
-      LOGW(TAG, "DFRobot Dimmer: TwoWire communication error: %d", err);
-      delay(20);
-    } else {
-      success = true;
-      break;
+  // sanity checks
+  if (_sku == SKU::DFR1071_GP8211S) {
+    if (_channel > 0) {
+      LOGW(TAG, "DFRobot DFR1071 (GP8211S) has only one channel: switching to channel 0");
+      _channel = 0;
     }
   }
 
-  if (!success) {
-    LOGE(TAG, "DFRobot Dimmer: TwoWire communication error: cannot communicate with device");
-    return;
+  // discovery
+  bool success = false;
+  if (_deviceAddress) {
+    LOGI(TAG, "Searching for DFRobot Dimmer @ 0x%02x...", _deviceAddress);
+    for (int i = 0; i < 5; i++) {
+      _wire->beginTransmission(_deviceAddress);
+      int err = _wire->endTransmission();
+      if (err) {
+        LOGW(TAG, "DFRobot Dimmer @ 0x%02x: TwoWire communication error: %d", _deviceAddress, err);
+        delay(10);
+      } else {
+        success = true;
+        break;
+      }
+    }
+
+  } else {
+    LOGI(TAG, "Searching for DFRobot Dimmer @ 0x58-0x5F (discovery)...");
+    for (uint8_t addr = 0x58; !success && addr <= 0x5F; addr++) {
+      for (int i = 0; i < 5; i++) {
+        _wire->beginTransmission(addr);
+        int err = _wire->endTransmission();
+        if (err) {
+          LOGW(TAG, "DFRobot Dimmer @ 0x%02x: TwoWire communication error: %d", addr, err);
+          delay(10);
+        } else {
+          _deviceAddress = addr;
+          success = true;
+          break;
+        }
+      }
+    }
   }
 
-  // fix channel
-  if (_channel > 0 && _sku == SKU::DFR1071_GP8211S) {
-    LOGW(TAG, "DFRobot DFR1071 (GP8211S) has only one channel: switching to channel 0");
-    _channel = 0;
+  if (success) {
+    LOGI(TAG, "Enable DFRobot Dimmer @ 0x%02x and channel %d", _deviceAddress, _channel);
+  } else {
+    LOGE(TAG, "DFRobot Dimmer: TwoWire communication error: cannot communicate with device");
+    return;
   }
 
   // set output

@@ -98,7 +98,7 @@ namespace Mycila {
       SKU _sku = SKU::UNKNOWN;
       Output _output = Output::RANGE_0_10V;
       TwoWire* _wire = &Wire;
-      uint8_t _deviceAddress = 0x58;
+      uint8_t _deviceAddress;
       uint8_t _channel = 0;
 
       uint8_t _send(uint8_t reg, uint8_t* buffer, size_t size);
