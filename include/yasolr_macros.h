@@ -280,3 +280,8 @@
 #ifndef YASOLR_PZEM_TX_PIN
   #define YASOLR_PZEM_TX_PIN -1
 #endif
+
+//Modbus TCP configuration keys
+#define KEY_ENABLE_MODBUS                  "modbus_enable"
+#define KEY_MODBUS_SERVER                  "modbus_server"
+#define KEY_MODBUS_PORT                    "modbus_port"

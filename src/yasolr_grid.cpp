@@ -24,6 +24,13 @@ float yasolr_frequency() {
       return frequency;
   }
 
+  
+  // 4. frequency from modbbus
+  if (MB) { 
+    return modbus_frequency;
+  }
+
+
   return 0;
 }
 
