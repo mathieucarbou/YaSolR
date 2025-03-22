@@ -101,6 +101,9 @@ namespace Mycila {
       uint8_t _deviceAddress;
       uint8_t _channel = 0;
 
-      uint8_t _send(uint8_t reg, uint8_t* buffer, size_t size);
+      uint8_t _sendDutyCycle(uint8_t address, uint16_t duty);
+      uint8_t _sendOutput(uint8_t address, Output output);
+      uint8_t _send(uint8_t address, uint8_t reg, uint8_t* buffer, size_t size);
+      uint8_t _test(uint8_t address);
   };
 } // namespace Mycila

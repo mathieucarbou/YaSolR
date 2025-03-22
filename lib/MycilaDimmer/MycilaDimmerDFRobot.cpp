@@ -41,70 +41,57 @@ void Mycila::DFRobotDimmer::begin() {
     }
   }
 
+  if (_channel > 2) {
+    LOGE(TAG, "Disable DFRobot Dimmer: invalid channel %d", _channel);
+    return;
+  }
+
   // discovery
-  bool success = false;
+  bool found = false;
   if (_deviceAddress) {
     LOGI(TAG, "Searching for DFRobot Dimmer @ 0x%02x...", _deviceAddress);
-    for (int i = 0; i < 5; i++) {
-      _wire->beginTransmission(_deviceAddress);
-      int err = _wire->endTransmission();
+    for (int i = 0; i < 3; i++) {
+      uint8_t err = _test(_deviceAddress);
       if (err) {
         LOGW(TAG, "DFRobot Dimmer @ 0x%02x: TwoWire communication error: %d", _deviceAddress, err);
         delay(10);
       } else {
-        success = true;
+        found = true;
         break;
       }
     }
 
   } else {
     LOGI(TAG, "Searching for DFRobot Dimmer @ 0x58-0x5F (discovery)...");
-    for (uint8_t addr = 0x58; !success && addr <= 0x5F; addr++) {
-      for (int i = 0; i < 5; i++) {
-        _wire->beginTransmission(addr);
-        int err = _wire->endTransmission();
+    for (uint8_t addr = 0x58; !found && addr <= 0x5F; addr++) {
+      for (int i = 0; i < 3; i++) {
+        uint8_t err = _test(addr);
         if (err) {
           LOGW(TAG, "DFRobot Dimmer @ 0x%02x: TwoWire communication error: %d", addr, err);
           delay(10);
         } else {
           _deviceAddress = addr;
-          success = true;
+          found = true;
           break;
         }
       }
     }
   }
 
-  if (success) {
+  if (found) {
     LOGI(TAG, "Enable DFRobot Dimmer @ 0x%02x and channel %d", _deviceAddress, _channel);
+  } else if (_deviceAddress) {
+    LOGW(TAG, "DFRobot Dimmer @ 0x%02x: Unable to communicate with device", _deviceAddress);
   } else {
-    LOGE(TAG, "DFRobot Dimmer: TwoWire communication error: cannot communicate with device");
-    return;
+    _deviceAddress = 0x58;
+    LOGW(TAG, "DFRobot Dimmer: Discovery failed! Using default address 0x58");
   }
 
   // set output
-  switch (_output) {
-    case Output::RANGE_0_5V: {
-      LOGI(TAG, "Set output range to 0-5V");
-      uint8_t data = 0x00;
-      uint8_t err = _send(0x01, &data, 1);
-      if (err) {
-        LOGE(TAG, "Disable DFRobot Dimmer: TwoWire communication error: %d", err);
-        return;
-      }
-      break;
-    }
-    case Output::RANGE_0_10V: {
-      LOGI(TAG, "Set output range to 0-10V");
-      uint8_t data = 0x11;
-      uint8_t err = _send(0x01, &data, 1);
-      if (err) {
-        LOGE(TAG, "Disable DFRobot Dimmer: TwoWire communication error: %d", err);
-        return;
-      }
-    }
-    default:
-      break;
+  uint8_t err = _sendOutput(_deviceAddress, _output);
+  if (err) {
+    LOGE(TAG, "Disable DFRobot Dimmer: Unable to set output voltage: TwoWire communication error: %d", err);
+    return;
   }
 
   _enabled = true;
@@ -123,32 +110,61 @@ void Mycila::DFRobotDimmer::end() {
 }
 
 bool Mycila::DFRobotDimmer::apply() {
-  uint8_t resolution = getResolution();
-  uint16_t duty = getFiringRatio() * ((1 << resolution) - 1);
-  duty = duty << (16 - resolution);
+  uint16_t duty = getFiringRatio() * ((1 << getResolution()) - 1);
+  return _sendDutyCycle(_deviceAddress, duty) == ESP_OK;
+}
+
+uint8_t Mycila::DFRobotDimmer::_sendDutyCycle(uint8_t address, uint16_t duty) {
+  duty = duty << (16 - getResolution());
   switch (_channel) {
     case 0: {
       uint8_t buffer[2] = {uint8_t(duty & 0xff), uint8_t(duty >> 8)};
-      return _send(0x02, buffer, 2) == 0;
+      return _send(address, 0x02, buffer, 2) == 0;
     }
     case 1: {
       uint8_t buffer[2] = {uint8_t(duty & 0xff), uint8_t(duty >> 8)};
-      return _send(0x04, buffer, 2) == 0;
+      return _send(address, 0x04, buffer, 2) == 0;
     }
     case 2: {
       uint8_t buffer[4] = {uint8_t(duty & 0xff), uint8_t(duty >> 8), uint8_t(duty & 0xff), uint8_t(duty >> 8)};
-      return _send(0x02, buffer, 4) == 0;
+      return _send(address, 0x02, buffer, 4) == 0;
     }
     default:
-      return false;
+      assert(false); // fail
+      return ESP_FAIL;
   }
 }
 
-uint8_t Mycila::DFRobotDimmer::_send(uint8_t reg, uint8_t* buffer, size_t size) {
-  _wire->beginTransmission(_deviceAddress);
+uint8_t Mycila::DFRobotDimmer::_sendOutput(uint8_t address, Output output) {
+  switch (output) {
+    case Output::RANGE_0_5V: {
+      LOGI(TAG, "Set output range to 0-5V");
+      uint8_t data = 0x00;
+      return _send(address, 0x01, &data, 1);
+    }
+    case Output::RANGE_0_10V: {
+      LOGI(TAG, "Set output range to 0-10V");
+      uint8_t data = 0x11;
+      return _send(address, 0x01, &data, 1);
+    }
+    default:
+      assert(false); // fail
+      return ESP_FAIL;
+  }
+}
+
+uint8_t Mycila::DFRobotDimmer::_send(uint8_t address, uint8_t reg, uint8_t* buffer, size_t size) {
+  _wire->beginTransmission(address);
   _wire->write(reg);
   for (uint16_t i = 0; i < size; i++) {
     _wire->write(buffer[i]);
   }
+  return _wire->endTransmission();
+}
+
+uint8_t Mycila::DFRobotDimmer::_test(uint8_t address) {
+  // return _sendDutyCycle(address, 0);
+  _wire->beginTransmission(address);
+  delayMicroseconds(100);
   return _wire->endTransmission();
 }
