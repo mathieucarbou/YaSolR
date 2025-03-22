@@ -124,6 +124,11 @@ void yasolr_init_config() {
   config.configure(KEY_WIFI_PASSWORD);
   config.configure(KEY_WIFI_SSID);
 
+  // Modbus Configuration
+  config.configure(KEY_ENABLE_MODBUS, YASOLR_TRUE);
+  config.configure(KEY_MODBUS_SERVER, "192.168.1.16");
+  config.configure(KEY_MODBUS_PORT, "502");
+
   config.listen([]() {
     logger.info(TAG, "Configuration restored!");
     restartTask.resume();

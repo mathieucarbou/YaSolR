@@ -149,3 +149,9 @@ extern Mycila::RouterOutput* output1;
 extern Mycila::RouterOutput* output2;
 extern void yasolr_divert();
 extern void yasolr_init_router();
+
+// MODBUS TCP
+#include <ModbusClientTCP.h>  
+extern void yasolr_init_modbus(); 
+extern ModbusClientTCP* MB;
+extern float modbus_frequency;
