@@ -144,6 +144,9 @@ void rest_api() {
       pzemTaskManager->toJson(tasks[pzemTaskManager->name()].to<JsonObject>());
     unsafeTaskManager.toJson(tasks[unsafeTaskManager.name()].to<JsonObject>());
 
+    if (victron)
+      victron->toJson(root["victron"].to<JsonObject>());
+
     // libs versions
     JsonObject library = system["lib"].to<JsonObject>();
     library["ArduinoJson"] = ARDUINOJSON_VERSION;
