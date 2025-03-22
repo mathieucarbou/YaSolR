@@ -45,10 +45,12 @@ static Mycila::Task lightsTask("Lights", [](void* params) {
 void yasolr_init_lights() {
   logger.info(TAG, "Initialize system lights");
 
-  if (config.getBool(KEY_ENABLE_LIGHTS))
+  if (config.getBool(KEY_ENABLE_LIGHTS)) {
     lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
+  }
+
+  lights.set(Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::ON, Mycila::TrafficLight::State::OFF);
 
   lightsTask.setInterval(200);
-
   coreTaskManager.addTask(lightsTask);
 }

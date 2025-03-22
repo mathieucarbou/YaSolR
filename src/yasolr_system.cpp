@@ -45,11 +45,6 @@ void yasolr_init_system() {
   coreTaskManager.addTask(restartTask);
   coreTaskManager.addTask(safeBootTask);
 
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
-    coreTaskManager.enableProfiling();
-    unsafeTaskManager.enableProfiling();
-  }
-
   Mycila::TaskMonitor.addTask(coreTaskManager.name());   // YaSolR
   Mycila::TaskMonitor.addTask(unsafeTaskManager.name()); // YaSolR
 

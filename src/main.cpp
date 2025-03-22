@@ -13,23 +13,31 @@ void setup() {
   yasolr_configure_logging(); // configure logging
 
   logger.info(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
-  yasolr_init_display();
+  yasolr_init_lights();
+  yasolr_init_trial();
+  // measurements
   yasolr_init_ds18();
-  yasolr_init_grid();
   yasolr_init_jsy();
   yasolr_init_jsy_remote();
-  yasolr_init_lights();
-  yasolr_init_mqtt();
-  yasolr_init_network();
   yasolr_init_pzem();
+  // router hardware
   yasolr_init_relays();
   yasolr_init_router();
-  yasolr_init_trial();
+  yasolr_init_grid();
+  // UI: display, web, mqtt, etc
+  yasolr_init_display();
   yasolr_init_web_server();
+  yasolr_init_mqtt();
+  // network
+  yasolr_init_network();
 
+  // profiling tasks ?
+  if (config.getBool(KEY_ENABLE_DEBUG)) {
+    coreTaskManager.enableProfiling();
+    unsafeTaskManager.enableProfiling();
+  }
   // core task manager
   assert(coreTaskManager.asyncStart(512 * 8, 5, 1, 100, true));
-
   // task manager for long running tasks like mqtt / pzem
   if (unsafeTaskManager.tasks())
     assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false));
