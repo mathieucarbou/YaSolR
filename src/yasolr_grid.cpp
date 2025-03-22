@@ -9,7 +9,7 @@ Mycila::Grid grid;
 float yasolr_frequency() {
   // 1. check if frequency is set in config
   float frequency = config.getFloat(KEY_GRID_FREQUENCY);
-  if (frequency)
+  if (frequency > 0)
     return frequency;
 
   // 2. check if frequency is set from a measurement devices (PZEM, JSY, ...)
@@ -20,7 +20,7 @@ float yasolr_frequency() {
   // 3. check if frequency is set in pulse analyzer
   if (pulseAnalyzer) {
     frequency = pulseAnalyzer->getNominalGridFrequency();
-    if (frequency)
+    if (frequency > 0)
       return frequency;
   }
 
