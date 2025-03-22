@@ -757,16 +757,17 @@ The LEDs are used to notify the user of some events like reset, restarts, router
 | `🟢 ⚫ 🔴` | `BEEP BEEP`      | `STARTED` + `OFFLINE`           |
 | `🟢 ⚫ ⚫` | `BEEP`           | `STARTED`                       |
 | `⚫ 🟡 🔴` | `BEEP BEEP BEEP` | `RESET`                         |
-| `⚫ 🟡 ⚫` |                  |                                 |
+| `⚫ 🟡 ⚫` |                  | `STARTING`                      |
 | `⚫ ⚫ 🔴` | `BEEP BEEP`      | `RESTART`                       |
 | `⚫ ⚫ ⚫` |                  | `OFF`                           |
 
-- `STARTED`: application started and WiFi or AP mode connected
+- `OFF`: application not working (power off)
 - `OFFLINE`: application disconnected from WiFi or disconnected from grid electricity
 - `POWER`: power allowed to be sent (either through relays or dimmer)
-- `RESTART`: application is restarting following a manual restart
 - `RESET`: application is restarting following a manual reset
-- `OFF`: application not working (power off)
+- `RESTART`: application is restarting following a manual restart
+- `STARTED`: application started and WiFi or AP mode connected
+- `STARTING`: application is booting
 
 #### Display
 
