@@ -872,6 +872,18 @@ It won't work if the water heater has already reached its threshold temperature.
 - `Restart in SafeBoot mode`: Restart YaSolR in SafeBoot mode to update through Web OTA the firmware
 - `Factory Reset`: Reset the router to factory settings and restart it.
 - `Energy Reset`: Reset the energy stored in all devices (JSY and PZEM) of the router.
+- `Update SafeBoot partition`: Update the SafeBoot recovery partition
+
+> ##### IMPORTANT
+>
+> YaSolR is composed of 2 partitions: the main partition (called `app`) and a SafeBoot recovery partition (called `safeboot`), which is used to update YaSolR application.
+> When updating through web (OTA) it is not possible to update the partition from which the application is currently running.
+> That is why YaSolR needs to restart in SafeBoot mode to update the main application partition.
+> And consequently, from YaSolR, it is possible to update this SafeBoot recovery partition.
+> 
+> Pay really attention when updating the recovery partition: 
+> if anything goes wrong, you will have to re-flash the complete FACTORY firmware and reconfigure everything (or restore a backup).
+{: .block-important }
 
 ### Debug
 
