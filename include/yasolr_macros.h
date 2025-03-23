@@ -73,6 +73,8 @@
 #define YASOLR_PZEM_ADDRESS_OUTPUT2        0x02
 #define YASOLR_RELAY_TYPE_NC               "NC"
 #define YASOLR_RELAY_TYPE_NO               "NO"
+#define YASOLR_SAFEBOOT_PARTITION_NAME     "safeboot" // See: https://github.com/mathieucarbou/MycilaSafeBoot
+#define YASOLR_SAFEBOOT_PARTITION_SIZE     655360     // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SERIAL_BAUDRATE             115200
 #define YASOLR_UART_1_NAME                 "Serial1"
 #define YASOLR_UART_2_NAME                 "Serial2"
