@@ -18,7 +18,7 @@ void yasolr_init_config() {
   config.configure(KEY_DISPLAY_SPEED, "3");
   config.configure(KEY_DISPLAY_TYPE, "SH1106");
   config.configure(KEY_ENABLE_AP_MODE, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_DEBUG, YASOLR_TRUE);
+  config.configure(KEY_ENABLE_DEBUG, YASOLR_FALSE);
   config.configure(KEY_ENABLE_DISPLAY, YASOLR_FALSE);
   config.configure(KEY_ENABLE_DS18_SYSTEM, YASOLR_FALSE);
   config.configure(KEY_ENABLE_HA_DISCOVERY, YASOLR_FALSE);
@@ -40,7 +40,7 @@ void yasolr_init_config() {
   config.configure(KEY_ENABLE_OUTPUT2_RELAY, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY1, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY2, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_ZCD, YASOLR_TRUE);
+  config.configure(KEY_ENABLE_ZCD, YASOLR_FALSE);
   config.configure(KEY_GRID_FREQUENCY, "0");
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
   config.configure(KEY_GRID_VOLTAGE_MQTT_TOPIC);
