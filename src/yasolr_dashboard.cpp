@@ -1386,23 +1386,40 @@ void YaSolR::Website::initCards() {
 }
 
 void YaSolR::Website::updateCards() {
-  Mycila::Grid::Metrics gridMetrics;
-  grid.getGridMeasurements(gridMetrics);
+  // metrics
 
-  Mycila::Router::Metrics routerMetrics;
-  router.getRouterMeasurements(routerMetrics);
+  Mycila::Grid::Metrics* gridMetrics = new Mycila::Grid::Metrics();
+  grid.getGridMeasurements(*gridMetrics);
+  _gridEnergy.setValue(gridMetrics->energy);
+  _gridEnergyReturned.setValue(gridMetrics->energyReturned);
+  _routerVoltage.setValue(gridMetrics->voltage);
+  _gridPower.setValue(gridMetrics->power);
+  delete gridMetrics;
+  gridMetrics = nullptr;
 
-  Mycila::System::Memory memory;
-  Mycila::System::getMemory(memory);
+  Mycila::Router::Metrics* routerMetrics = new Mycila::Router::Metrics();
+  router.getRouterMeasurements(*routerMetrics);
+  _routerPower.setValue(routerMetrics->power);
+  _routerApparentPower.setValue(routerMetrics->apparentPower);
+  _routerPowerFactor.setValue(routerMetrics->powerFactor);
+  _routerTHDi.setValue(routerMetrics->thdi);
+  _routerCurrent.setValue(routerMetrics->current);
+  _routerResistance.setValue(routerMetrics->resistance);
+  _routerEnergy.setValue(routerMetrics->energy);
+  delete routerMetrics;
+  routerMetrics = nullptr;
+
+  Mycila::System::Memory* memory = new Mycila::System::Memory();
+  Mycila::System::getMemory(*memory);
+  _deviceHeapTotal.setValue(memory->total);
+  _deviceHeapUsed.setValue(memory->used);
+  _deviceHeapUsage.setValue(memory->usage);
+  _deviceHeapMinFree.setValue(memory->minimumFree);
+  delete memory;
+  memory = nullptr;
 
   // statistics
 
-  _deviceHeapTotal.setValue(memory.total);
-  _deviceHeapUsed.setValue(memory.used);
-  _deviceHeapUsage.setValue(memory.usage);
-  _deviceHeapMinFree.setValue(memory.minimumFree);
-  _gridEnergy.setValue(gridMetrics.energy);
-  _gridEnergyReturned.setValue(gridMetrics.energyReturned);
   _gridFrequency.setValue(yasolr_frequency());
   _udpMessageRateBuffer.setValue(udpMessageRateBuffer ? udpMessageRateBuffer->rate() : 0);
   _networkWiFiRSSI.setValue(espConnect.getWiFiRSSI());
@@ -1419,17 +1436,7 @@ void YaSolR::Website::updateCards() {
 
   // home
 
-  _routerPower.setValue(routerMetrics.power);
-  _routerApparentPower.setValue(routerMetrics.apparentPower);
-  _routerPowerFactor.setValue(routerMetrics.powerFactor);
-  _routerTHDi.setValue(routerMetrics.thdi);
-  _routerVoltage.setValue(gridMetrics.voltage);
-  _routerCurrent.setValue(routerMetrics.current);
-  _routerResistance.setValue(routerMetrics.resistance);
-  _routerEnergy.setValue(routerMetrics.energy);
-  _gridPower.setValue(gridMetrics.power);
   _routerDS18State.setValue(ds18Sys ? ds18Sys->getTemperature().value_or(0.0f) : 0);
-
   _relay1Switch.setValue(relay1 && relay1->isOn());
   _relay2Switch.setValue(relay2 && relay2->isOn());
 
@@ -1544,10 +1551,6 @@ void YaSolR::Website::updateCards() {
 }
 
 void YaSolR::Website::updateCharts() {
-  // read last metrics
-  Mycila::Router::Metrics routerMetrics;
-  router.getRouterMeasurements(routerMetrics);
-
   // shift array
   memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY));
   memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], sizeof(_routedPowerHistoryY) - sizeof(*_routedPowerHistoryY));
@@ -1555,8 +1558,13 @@ void YaSolR::Website::updateCharts() {
 
   // set new value
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().orElse(0));
-  _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routerMetrics.power);
-  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = std::isnan(routerMetrics.thdi) ? 0 : std::round(routerMetrics.thdi);
+
+  Mycila::Router::Metrics* routerMetrics = new Mycila::Router::Metrics();
+  router.getRouterMeasurements(*routerMetrics);
+  _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routerMetrics->power);
+  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = std::isnan(routerMetrics->thdi) ? 0 : std::round(routerMetrics->thdi);
+  delete routerMetrics;
+  routerMetrics = nullptr;
 
   // update charts
   _gridPowerHistory.setY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);

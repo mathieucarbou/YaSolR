@@ -22,13 +22,17 @@ extern Mycila::Logger logger;
 
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
-  Metrics routerMeasurements;
-  getRouterMeasurements(routerMeasurements);
-  toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
+  Metrics* routerMeasurements = new Metrics();
+  getRouterMeasurements(*routerMeasurements);
+  toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+  delete routerMeasurements;
+  routerMeasurements = nullptr;
 
-  Metrics Metrics;
-  getRouterMetrics(Metrics, voltage);
-  toJson(root["metrics"].to<JsonObject>(), Metrics);
+  Metrics* metrics = new Metrics();
+  getRouterMetrics(*metrics, voltage);
+  toJson(root["metrics"].to<JsonObject>(), *metrics);
+  delete metrics;
+  metrics = nullptr;
 
   JsonObject local = root["source"]["local"].to<JsonObject>();
   if (_localMetrics.isPresent()) {

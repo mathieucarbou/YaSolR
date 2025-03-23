@@ -129,9 +129,11 @@ void Mycila::Grid::toJson(const JsonObject& root) const {
     root["frequency"] = frequency.value();
   }
 
-  Metrics measurements;
-  getGridMeasurements(measurements);
-  toJson(root["measurements"].to<JsonObject>(), measurements);
+  Metrics* measurements = new Metrics();
+  getGridMeasurements(*measurements);
+  toJson(root["measurements"].to<JsonObject>(), *measurements);
+  delete measurements;
+  measurements = nullptr;
 
   JsonObject local = root["source"]["local"].to<JsonObject>();
   if (_localMetrics.isPresent()) {

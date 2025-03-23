@@ -60,13 +60,17 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
     root["temperature"] = t;
   }
 
-  Metrics outputMeasurements;
-  getOutputMeasurements(outputMeasurements);
-  toJson(root["measurements"].to<JsonObject>(), outputMeasurements);
+  Metrics* outputMeasurements = new Metrics();
+  getOutputMeasurements(*outputMeasurements);
+  toJson(root["measurements"].to<JsonObject>(), *outputMeasurements);
+  delete outputMeasurements;
+  outputMeasurements = nullptr;
 
-  Metrics dimmerMetrics;
-  getOutputMetrics(dimmerMetrics, gridVoltage);
-  toJson(root["metrics"].to<JsonObject>(), dimmerMetrics);
+  Metrics* dimmerMetrics = new Metrics();
+  getOutputMetrics(*dimmerMetrics, gridVoltage);
+  toJson(root["metrics"].to<JsonObject>(), *dimmerMetrics);
+  delete dimmerMetrics;
+  dimmerMetrics = nullptr;
 
   JsonObject local = root["source"]["local"].to<JsonObject>();
   if (_localMetrics.isPresent()) {
