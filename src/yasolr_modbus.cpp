@@ -10,7 +10,9 @@ static Mycila::Task* modbusTask = nullptr;
 
 static WiFiClient theClient;     
 
-float modbus_frequency = 0.0f;
+float modbus_frequency = NAN;
+
+int victron_error_count = 0;
 
 
 // Create a ModbusTCP client instance
@@ -71,9 +73,9 @@ void parseVictronAC(ModbusMessage response){
   modbus_frequency = parseSignedorUnsignedInt16(response,15,0.01f,true);
   float power1 = parseSignedorUnsignedInt16(response,21,1.0f,true);
 
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
-    logger.info(TAG,"Victron AC input : %f V, %f A, %f Hz, %f W ", voltage1, current1, modbus_frequency, power1);
-  } 
+ //if (config.getBool(KEY_ENABLE_DEBUG)) {
+ //   logger.info(TAG,"Victron AC input : %f V, %f A, %f Hz, %f W ", voltage1, current1, modbus_frequency, power1);
+ // } 
   
 
   grid.remoteMetrics().update({
@@ -99,13 +101,13 @@ void parseVictronAC(ModbusMessage response){
 // plus a user-supplied token to identify the causing request
 void handleData(ModbusMessage response, uint32_t token) 
 {
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
-    logger.info(TAG,"Response: serverID=%d, FC=%d, Token=%08X, length=%d ", response.getServerID(), response.getFunctionCode(), token, response.size());
-    for (auto& byte : response) {
-      logger.info(TAG,"%02X ", byte);
-    }
-    logger.info(TAG,"=====================");
-   }
+  //if (config.getBool(KEY_ENABLE_DEBUG)) {
+  //  logger.info(TAG,"Response: serverID=%d, FC=%d, Token=%08X, length=%d ", response.getServerID(), response.getFunctionCode(), token, response.size());
+  //  for (auto& byte : response) {
+  //    logger.info(TAG,"%02X ", byte);
+  //  }
+  //  logger.info(TAG,"=====================");
+  // }
   
    parseVictronAC(response);
 
@@ -130,12 +132,12 @@ void handleError(Error error, uint32_t token)
 //   - set up the onData and onError handler functions  
 void yasolr_init_modbus() {
 
-  if (config.getBool(KEY_ENABLE_MODBUS)) {
+  if (config.getBool(KEY_ENABLE_VICTRON_MB)) {
     assert(!MB);
     assert(!modbusTask);
 
-    const char* modbus_IP = config.getString(KEY_MODBUS_SERVER).c_str();
-    const int modbus_port = config.getLong(KEY_MODBUS_PORT);
+    const char* modbus_IP = config.getString(KEY_VICTRON_MB_SERVER).c_str();
+    const int modbus_port = config.getLong(KEY_VICTRON_MB_PORT);
 
     logger.info(TAG, "Initialize ModBus Client TCP Async on %s:%i", modbus_IP,modbus_port);
 
@@ -181,9 +183,16 @@ void yasolr_init_modbus() {
         err = MB->addRequest((uint32_t)lastMillis,228, READ_HOLD_REGISTER, 3 , 12);
         if (err != SUCCESS) {
             ModbusError e(err);
-            logger.error(TAG,"Error creating request: %02X - %s\n", (int)e, (const char *)e);
+            victron_error_count++;
+            if (victron_error_count==10) {
+              logger.error(TAG,"Error creating request: %02X - %s\n", (int)e, (const char *)e);
+              victron_error_count = 0;
+            }
         }
-        // Else the request is processed in the background task and the onData/onError handler functions will get the result.
+        else {
+          // Else the request is processed in the background task and the onData/onError handler functions will get the result.
+          victron_error_count = 0;
+        }
       });
 
     modbusTask->setInterval(500);

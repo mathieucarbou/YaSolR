@@ -282,6 +282,6 @@
 #endif
 
 //Modbus TCP configuration keys
-#define KEY_ENABLE_MODBUS                  "modbus_enable"
-#define KEY_MODBUS_SERVER                  "modbus_server"
-#define KEY_MODBUS_PORT                    "modbus_port"
+#define KEY_ENABLE_VICTRON_MB                  "vic_mb_enable"
+#define KEY_VICTRON_MB_SERVER                  "vic_mb_server"
+#define KEY_VICTRON_MB_PORT                    "vic_mb_port"
