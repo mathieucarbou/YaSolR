@@ -885,6 +885,8 @@ It won't work if the water heater has already reached its threshold temperature.
 > if anything goes wrong, you will have to re-flash the complete FACTORY firmware and reconfigure everything (or restore a backup).
 {: .block-important }
 
+SafeBoot recovery partitions can be downloaded from the [MycilaSafeBoot](https://github.com/mathieucarbou/MycilaSafeBoot) project: [https://github.com/mathieucarbou/MycilaSafeBoot/releases](https://github.com/mathieucarbou/MycilaSafeBoot/releases)
+
 ### Debug
 
 [![](assets/img/screenshots/app-debug.jpeg)](assets/img/screenshots/app-debug.jpeg)
