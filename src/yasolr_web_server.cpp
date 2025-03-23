@@ -5,6 +5,8 @@
 #include <yasolr.h>
 #include <yasolr_dashboard.h>
 
+#include <esp_partition.h>
+
 #include <map>
 #include <string>
 
@@ -187,13 +189,14 @@ void rest_api() {
       HTTP_POST,
       [](AsyncWebServerRequest* request) {
         if (!request->_tempObject) {
-          return request->send(400, "text/plain", "No config file uploaded");
+          request->send(400, "text/plain", "No config file uploaded");
+        } else {
+          StreamString* buffer = reinterpret_cast<StreamString*>(request->_tempObject);
+          config.restore((*buffer).c_str());
+          delete buffer;
+          request->_tempObject = nullptr;
+          request->send(200, "text/plain", "OK");
         }
-        StreamString* buffer = reinterpret_cast<StreamString*>(request->_tempObject);
-        config.restore((*buffer).c_str());
-        delete buffer;
-        request->_tempObject = nullptr;
-        request->send(200, "text/plain", "OK");
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
         if (!index) {
@@ -211,18 +214,57 @@ void rest_api() {
 
   webServer
     .on(
+      "/api/safeboot/upload",
+      HTTP_POST,
+      [](AsyncWebServerRequest* request) {
+        if (request->_tempObject) {
+          request->_tempObject = nullptr;
+          website.setSafeBootUpdateStatus("Update complete!", dash::Status::SUCCESS);
+          request->send(200);
+        } else {
+          request->send(400);
+        }
+      },
+      [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
+        if (!index) {
+          const esp_partition_t* partition = esp_partition_find_first(esp_partition_type_t::ESP_PARTITION_TYPE_APP, esp_partition_subtype_t::ESP_PARTITION_SUBTYPE_APP_FACTORY, YASOLR_SAFEBOOT_PARTITION_NAME);
+          if (partition) {
+            logger.warn(TAG, "Updating Safeboot recovery partition");
+            website.setSafeBootUpdateStatus("Updating...", dash::Status::WARNING);
+            if (esp_partition_erase_range(partition, 0, partition->size) == ESP_OK) {
+              logger.info(TAG, "Safeboot partition formatted");
+              request->_tempObject = const_cast<void*>(reinterpret_cast<const void*>(partition));
+            } else {
+              website.setSafeBootUpdateStatus("Failed to format partition. Update aborted.", dash::Status::DANGER);
+            }
+          } else {
+            website.setSafeBootUpdateStatus("partition not found!", dash::Status::DANGER);
+          }
+        }
+        if (len && request->_tempObject) {
+          const esp_partition_t* partition = reinterpret_cast<const esp_partition_t*>(request->_tempObject);
+          if (esp_partition_write_raw(partition, index, data, len) != ESP_OK) {
+            website.setSafeBootUpdateStatus("Failed writing recovery partition!", dash::Status::DANGER);
+            request->_tempObject = nullptr;
+          }
+        }
+      });
+
+  webServer
+    .on(
       "/api/config/mqttServerCertificate",
       HTTP_POST,
       [](AsyncWebServerRequest* request) {
         AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", "OK");
         if (!LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE)) {
-          return request->send(400, "text/plain", "No PEM server certificate file uploaded");
+          request->send(400, "text/plain", "No PEM server certificate file uploaded");
+        } else {
+          File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
+          logger.info(TAG, "Uploaded MQTT PEM server certificate:\n%s", serverCertFile.readString().c_str());
+          serverCertFile.close();
+          dashboardInitTask.resume();
+          request->send(response);
         }
-        File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
-        logger.info(TAG, "Uploaded MQTT PEM server certificate:\n%s", serverCertFile.readString().c_str());
-        serverCertFile.close();
-        dashboardInitTask.resume();
-        request->send(response);
       },
       [](AsyncWebServerRequest* request, String filename, size_t index, uint8_t* data, size_t len, bool final) {
         if (!index)
@@ -274,9 +316,6 @@ void rest_api() {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
 
-    Mycila::System::Memory memory;
-    Mycila::System::getMemory(memory);
-
     root["app"]["manufacturer"] = Mycila::AppInfo.manufacturer;
     root["app"]["model"] = Mycila::AppInfo.model;
     root["app"]["name"] = Mycila::AppInfo.name;
@@ -285,9 +324,15 @@ void rest_api() {
     root["device"]["boots"] = Mycila::System::getBootCount();
     root["device"]["cores"] = ESP.getChipCores();
     root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
-    root["device"]["heap"]["total"] = memory.total;
-    root["device"]["heap"]["usage"] = memory.usage;
-    root["device"]["heap"]["used"] = memory.used;
+
+    Mycila::System::Memory* memory = new Mycila::System::Memory();
+    Mycila::System::getMemory(*memory);
+    root["device"]["heap"]["total"] = memory->total;
+    root["device"]["heap"]["usage"] = memory->usage;
+    root["device"]["heap"]["used"] = memory->used;
+    delete memory;
+    memory = nullptr;
+
     root["device"]["id"] = Mycila::AppInfo.id;
     root["device"]["model"] = ESP.getChipModel();
     root["device"]["revision"] = ESP.getChipRevision();

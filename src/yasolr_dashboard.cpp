@@ -177,6 +177,8 @@ static dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
 static dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
 static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
 static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
+static dash::FileUploadCard<const char*> _safebootUpload(dashboard, YASOLR_LBL_193, ".bin,.bin.gz");
+static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_LBL_194);
 
 // tab: debug
 
@@ -507,6 +509,8 @@ void YaSolR::Website::begin() {
   _safeBoot.setTab(_systemTab);
   _reset.setTab(_systemTab);
   _energyReset.setTab(_systemTab);
+  _safebootUpload.setTab(_systemTab);
+  _safebootUploadStatus.setTab(_systemTab);
 
   _restart.onPush([]() { restartTask.resume(); });
   _safeBoot.onPush([]() { safeBootTask.resume(); });
@@ -1116,7 +1120,10 @@ void YaSolR::Website::initCards() {
 
   _configBackup.setValue("/api/config/backup");
   _configRestore.setValue("/api/config/restore");
+  _safebootUpload.setValue("/api/safeboot/upload");
   _energyReset.setDisplay(jsyEnabled || pzem1Enabled || pzem2Enabled);
+  _safebootUpload.setDisplay(true);
+  _safebootUploadStatus.setDisplay(false);
 
   // tab: debug
 
@@ -1620,5 +1627,22 @@ bool YaSolR::Website::realTimePIDEnabled() const {
   return _pidView.optional().value_or(false);
 #else
   return false;
+#endif
+}
+
+void YaSolR::Website::setSafeBootUpdateStatus(const char* msg, dash::Status status) {
+#ifdef APP_MODEL_PRO
+  if (status == dash::Status::DANGER) {
+    logger.error(TAG, "SafeBoot Update: %s", msg);
+  } else if (status == dash::Status::WARNING) {
+    logger.warn(TAG, "SafeBoot Update: %s", msg);
+  } else {
+    logger.info(TAG, "SafeBoot Update: %s", msg);
+  }
+  _safebootUploadStatus.setFeedback(msg, status);
+  _safebootUploadStatus.setDisplay(true);
+  _safebootUpload.setDisplay(false);
+  dashboard.refresh(_safebootUpload);
+  dashboard.refresh(_safebootUploadStatus);
 #endif
 }

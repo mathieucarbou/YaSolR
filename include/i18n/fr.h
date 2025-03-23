@@ -196,8 +196,8 @@
 #define YASOLR_LBL_190 "Passerelle"
 #define YASOLR_LBL_191 "Serveur DNS"
 #define YASOLR_LBL_192 "Micro-contrôleur: Raison du reboot"
-// #define YASOLR_LBL_193 "Type de variateur"
-// #define YASOLR_LBL_194 "Sortie 2: Type de variateur"
+#define YASOLR_LBL_193 "Mettre à jour partition SafeBoot"
+#define YASOLR_LBL_194 "Mise à jour SafeBoot"
 // #define YASOLR_LBL_195
 // #define YASOLR_LBL_196
 // #define YASOLR_LBL_197

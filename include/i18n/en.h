@@ -196,8 +196,8 @@
 #define YASOLR_LBL_190 "Gateway"
 #define YASOLR_LBL_191 "DNS Server"
 #define YASOLR_LBL_192 "Device: Reboot Reason"
-// #define YASOLR_LBL_193 "Dimmer Type"
-// #define YASOLR_LBL_194 "Output 2 Dimmer Type"
+#define YASOLR_LBL_193 "Update SafeBoot partition"
+#define YASOLR_LBL_194 "SafeBoot Update"
 // #define YASOLR_LBL_195
 // #define YASOLR_LBL_196
 // #define YASOLR_LBL_197

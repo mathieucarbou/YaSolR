@@ -19,6 +19,7 @@ namespace YaSolR {
       void updatePIDCharts();
       void resetPIDCharts();
       bool realTimePIDEnabled() const;
+      void setSafeBootUpdateStatus(const char* msg, dash::Status status);
 
     private:
       void _boolConfig(dash::SwitchCard& card, const char* key) {
