@@ -479,6 +479,11 @@ void yasolr_init_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
     logger.info(TAG, "Initialize MQTT");
 
+    if (!config.getString(KEY_MQTT_SERVER).length()) {
+      logger.error(TAG, "MQTT server is not set");
+      return;
+    }
+
     mqtt = new Mycila::MQTT();
     mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
     mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, [](void* params) { publishConfig(); });
