@@ -62,6 +62,7 @@ YaSolR is:
   - RobotDyn 24A / 40A
   - Voltage Regulators (Loncont LSA or LCTC)
   - Many measurement tools (PZEM-004T v3, JSY-MK-333, JSY-MK-193, JSY-MK-194T, JSY-MK-194G, JSY-MK-163T, JSY-MK-227, JSY-MK-229, JSY Remote by UDP, MQTT)
+  - Victron Modbus TCP
 
 ## Detailed Features
 
@@ -188,6 +189,7 @@ YaSolR supports many ways to measure the grid power and voltage:
 - `JSY-MK-227` and `JSY-MK-229` (AC and DC, RS485 interface)
 - Remote JSY through **UDP** with [MycilaJSY UDP Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy) (as fast as a local JSY!)
 - Remote JSY through **ESP-Now** (🚧) (as fast as a local JSY!)
+- Victron Modbus TCP
 
 **3-Phase**:
 
@@ -195,6 +197,7 @@ YaSolR supports many ways to measure the grid power and voltage:
 - `JSY-MK-333` and `JSY-MK-333G` (AC, RS485 interface)
 - Remote JSY through **UDP** with [MycilaJSY UDP Sender](https://github.com/mathieucarbou/MycilaJSY?tab=readme-ov-file#remote-jsy) (as fast as a local JSY!)
 - Remote JSY through **ESP-Now** (🚧) (as fast as a local JSY!)
+- Victron Modbus TCP
 
 ### Relays
 

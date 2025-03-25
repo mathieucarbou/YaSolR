@@ -29,6 +29,7 @@ description: Manual
     - [JSY](#jsy)
     - [JSY Remote](#jsy-remote)
     - [Zero-Cross Detection](#zero-cross-detection)
+    - [Victron Modbus TCP](#victron-modbus-tcp)
     - [Dimmer Type](#dimmer-type)
     - [Dimmer Range Remapping](#dimmer-range-remapping)
     - [PZEM Pairing](#pzem-pairing)
@@ -585,6 +586,14 @@ Note that if the electricity is not available when YaSolR starts, the pulse anal
 >   - [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
 >
 {: .block-important }
+
+#### Victron Modbus TCP
+
+YaSolR supports connecting to Victron Modbus TCP Server to get the grid power, voltage and frequency.
+
+- Victron: whether to activate or not the Victron Modbus TCP feature
+- Victron Modbus TCP Server: the Victron Modbus TCP server IP address
+- Victron Modbus TCP Port: the Victron Modbus TCP server port (usually `502`)
 
 #### Dimmer Type
 
