@@ -40,6 +40,7 @@ void yasolr_init_config() {
   config.configure(KEY_ENABLE_OUTPUT2_RELAY, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY1, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY2, YASOLR_FALSE);
+  config.configure(KEY_ENABLE_VICTRON_MODBUS, YASOLR_FALSE);
   config.configure(KEY_ENABLE_ZCD, YASOLR_FALSE);
   config.configure(KEY_GRID_FREQUENCY, "0");
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
@@ -121,6 +122,8 @@ void yasolr_init_config() {
   config.configure(KEY_RELAY2_LOAD, "0");
   config.configure(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NO);
   config.configure(KEY_UDP_PORT, std::to_string(YASOLR_UDP_PORT));
+  config.configure(KEY_VICTRON_MODBUS_PORT, "502");
+  config.configure(KEY_VICTRON_MODBUS_SERVER);
   config.configure(KEY_WIFI_PASSWORD);
   config.configure(KEY_WIFI_SSID);
 

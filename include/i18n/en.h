@@ -198,8 +198,9 @@
 #define YASOLR_LBL_192 "Device: Reboot Reason"
 #define YASOLR_LBL_193 "Update SafeBoot partition"
 #define YASOLR_LBL_194 "SafeBoot Update"
-// #define YASOLR_LBL_195
-// #define YASOLR_LBL_196
+#define YASOLR_LBL_195 "Victron"
+#define YASOLR_LBL_196 "Victron Modbus TCP Server"
+#define YASOLR_LBL_197 "Victron Modbus TCP Port"
 // #define YASOLR_LBL_197
 // #define YASOLR_LBL_198
 // #define YASOLR_LBL_199

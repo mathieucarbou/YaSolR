@@ -28,6 +28,7 @@ void setup() {
   yasolr_init_display();
   yasolr_init_web_server();
   yasolr_init_mqtt();
+  yasolr_init_victron();
   // network
   yasolr_init_network();
 

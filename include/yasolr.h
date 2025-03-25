@@ -45,6 +45,7 @@
 #include <MycilaTime.h>
 #include <MycilaTrafficLight.h>
 #include <MycilaUtilities.h>
+#include <MycilaVictron.h>
 
 #ifdef APP_MODEL_TRIAL
   #include <MycilaTrial.h>
@@ -149,3 +150,8 @@ extern Mycila::RouterOutput* output1;
 extern Mycila::RouterOutput* output2;
 extern void yasolr_divert();
 extern void yasolr_init_router();
+
+// victron
+extern Mycila::Victron* victron;
+extern Mycila::Task* victronConnectTask;
+extern void yasolr_init_victron();

@@ -198,9 +198,9 @@
 #define YASOLR_LBL_192 "Micro-contrôleur: Raison du reboot"
 #define YASOLR_LBL_193 "Mettre à jour partition SafeBoot"
 #define YASOLR_LBL_194 "Mise à jour SafeBoot"
-// #define YASOLR_LBL_195
-// #define YASOLR_LBL_196
-// #define YASOLR_LBL_197
+#define YASOLR_LBL_195 "Victron"
+#define YASOLR_LBL_196 "Victron: Serveur Modbus TCP"
+#define YASOLR_LBL_197 "Victron: Port Modbus TCP"
 // #define YASOLR_LBL_198
 // #define YASOLR_LBL_199
 // #define YASOLR_LBL_200

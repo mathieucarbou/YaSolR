@@ -30,6 +30,10 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
 
     if (mqttConnectTask)
       mqttConnectTask->resume();
+
+    if (victronConnectTask) {
+      victronConnectTask->resume();
+    }
   }
 });
 

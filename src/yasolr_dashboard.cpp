@@ -289,6 +289,9 @@ static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Aut
 static dash::FeedbackSwitchCard _jsy(dashboard, YASOLR_LBL_128);
 static dash::FeedbackSwitchCard _jsyRemote(dashboard, YASOLR_LBL_187);
 static dash::FeedbackSwitchCard _zcd(dashboard, YASOLR_LBL_125);
+static dash::FeedbackSwitchCard _victron(dashboard, YASOLR_LBL_195);
+static dash::TextInputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
+static dash::TextInputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
 
 // output 1 dimmer
 static dash::FeedbackSwitchCard _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
@@ -771,9 +774,17 @@ void YaSolR::Website::begin() {
   _jsy.setTab(_hardwareConfigTab);
   _jsyRemote.setTab(_hardwareConfigTab);
   _zcd.setTab(_hardwareConfigTab);
+  _victron.setTab(_hardwareConfigTab);
+  _victronServer.setTab(_hardwareConfigTab);
+  _victronPort.setTab(_hardwareConfigTab);
+
   _boolConfig(_jsy, KEY_ENABLE_JSY);
   _boolConfig(_jsyRemote, KEY_ENABLE_JSY_REMOTE);
   _boolConfig(_zcd, KEY_ENABLE_ZCD);
+  _boolConfig(_victron, KEY_ENABLE_VICTRON_MODBUS);
+  _textConfig(_victronServer, KEY_VICTRON_MODBUS_SERVER);
+  _numConfig(_victronPort, KEY_VICTRON_MODBUS_PORT);
+
   _gridFreq.onChange([](const char* value) {
     if (strcmp(value, "50 Hz") == 0)
       config.set(KEY_GRID_FREQUENCY, "50");
@@ -1285,6 +1296,8 @@ void YaSolR::Website::initCards() {
       break;
   }
   _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp && udp->connected(), YASOLR_LBL_113);
+  _victronServer.setValue(config.get(KEY_VICTRON_MODBUS_SERVER));
+  _victronPort.setValue(config.getInt(KEY_VICTRON_MODBUS_PORT));
 
   // output 1 dimmer
   _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));
@@ -1554,6 +1567,7 @@ void YaSolR::Website::updateCards() {
   _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2 && pzemO2->isEnabled(), pzemO2 && pzemO2->isConnected() && pzemO2->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2 && pzemO2->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
   _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2 && ds18O2->isEnabled(), ds18O2 && ds18O2->getLastTime() > 0, YASOLR_LBL_114);
   _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys && ds18Sys->isEnabled(), ds18Sys && ds18Sys->getLastTime() > 0, YASOLR_LBL_114);
+  _status(_victron, KEY_ENABLE_VICTRON_MODBUS, victron, victron && !victron->hasError(), victron && victron->hasError() ? "Com. Error" : "");
 #endif
 }
 
