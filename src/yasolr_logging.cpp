@@ -17,10 +17,15 @@ class LogStream : public Print {
       File file = LittleFS.open(_path, "r");
       _logSize = file ? file.size() : 0;
       file.close();
+      _accepting = _logSize < _limit;
     }
     size_t write(const uint8_t* buffer, size_t size) override {
-      if (_logSize + size > _limit)
+      if (!_accepting)
         return 0;
+      if (_logSize + size > _limit) {
+        _accepting = false;
+        return 0;
+      }
       File file = LittleFS.open(_path, "a");
       if (!file)
         return 0;
@@ -38,6 +43,7 @@ class LogStream : public Print {
     const char* _path;
     const size_t _limit;
     size_t _logSize = 0;
+    bool _accepting = false;
 };
 
 static void initWebSerial() {
