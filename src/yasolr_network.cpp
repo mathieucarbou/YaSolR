@@ -55,7 +55,7 @@ void yasolr_init_network() {
   espConnectConfig.ipConfig.dns.fromString(config.get(KEY_NET_DNS));
   espConnect.setAutoRestart(true);
   espConnect.setBlocking(false);
-  espConnect.begin(Mycila::AppInfo.defaultSSID.c_str(), config.get(KEY_ADMIN_PASSWORD), espConnectConfig);
+  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), config.get(KEY_ADMIN_PASSWORD), espConnectConfig);
 
   espConnect.listen([](Mycila::ESPConnect::State previous, Mycila::ESPConnect::State state) {
     logger.debug(TAG, "NetworkState: %s => %s", espConnect.getStateName(previous), espConnect.getStateName(state));

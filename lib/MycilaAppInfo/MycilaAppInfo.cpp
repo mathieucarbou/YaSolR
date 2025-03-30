@@ -50,7 +50,6 @@ Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr()),
                                        buildBoard(__COMPILED_BUILD_BOARD__),
                                        defaultHostname(Mycila::string::toLowerCase(name + "-" + id)),
                                        defaultMqttClientId(Mycila::string::toLowerCase(name + "_" + id)),
-                                       defaultSSID(name + "-" + id),
                                        debug(firmware.find("debug") != std::string::npos),
                                        trial(firmware.find("trial") != std::string::npos) {}
 
