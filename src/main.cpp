@@ -31,17 +31,8 @@ void setup() {
   yasolr_init_victron();
   // network
   yasolr_init_network();
-
-  // profiling tasks ?
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
-    coreTaskManager.enableProfiling();
-    unsafeTaskManager.enableProfiling();
-  }
-  // core task manager
-  assert(coreTaskManager.asyncStart(512 * 8, 5, 1, 100, true));
-  // task manager for long running tasks like mqtt / pzem
-  if (unsafeTaskManager.tasks())
-    assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false));
+  // start tasks
+  yasolr_init_tasks();
 
   // STARTUP READY!
   logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());

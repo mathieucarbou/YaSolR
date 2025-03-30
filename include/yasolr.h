@@ -133,6 +133,7 @@ extern Mycila::Task safeBootTask;
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::TaskManager unsafeTaskManager;
 extern void yasolr_init_system();
+extern void yasolr_init_tasks();
 
 // Trial
 extern void yasolr_init_trial();
