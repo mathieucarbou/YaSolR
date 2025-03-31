@@ -75,9 +75,9 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
     // | 228      | Input frequency 1     | 9        | int16  | 15 (*) | 0.01f | -327.68 to 327.67   | Hz     |
     // | 228      | Input frequency 2     | 10       | int16  | 17     | 0.01f | -327.68 to 327.67   | Hz     |
     // | 228      | Input frequency 3     | 11       | int16  | 19     | 0.01f | -327.68 to 327.67   | Hz     |
-    // | 228      | Input power 1         | 12       | int16  | 21 (*) | 1f    | -32768.0 to 32767.0 | VA or W |
-    // | 228      | Input power 2         | 13       | int16  | 23     | 1f    | -32768.0 to 32767.0 | VA or W |
-    // | 228      | Input power 3         | 14       | int16  | 25     | 1f    | -32768.0 to 32767.0 | VA or W |
+    // | 228      | Input power 1         | 12       | int16  | 21 (*) | 10f   | -32768.0 to 32767.0 | VA or W |
+    // | 228      | Input power 2         | 13       | int16  | 23     | 10f   | -32768.0 to 32767.0 | VA or W |
+    // | 228      | Input power 3         | 14       | int16  | 25     | 10f   | -32768.0 to 32767.0 | VA or W |
     // =========================================================================================================
 
     // assumption: all phases have  the same frequency - so pick the first one (valid for 3-phase systems and 1-phase systems)
@@ -87,7 +87,7 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
     // aggregate the current of all phases to get the total current in/out
     this->_current = parseSignedorUnsignedInt16(response, 9, 0.1f, true) + parseSignedorUnsignedInt16(response, 11, 0.1f, true) + parseSignedorUnsignedInt16(response, 13, 0.1f, true);
     // aggregate the power of all phases to get the total power in/out
-    this->_power = parseSignedorUnsignedInt16(response, 21, 1.0f, true) + parseSignedorUnsignedInt16(response, 23, 1.0f, true) + parseSignedorUnsignedInt16(response, 25, 1.0f, true);
+    this->_power = parseSignedorUnsignedInt16(response, 21, 10.0f, true) + parseSignedorUnsignedInt16(response, 23, 10.0f, true) + parseSignedorUnsignedInt16(response, 25, 10.0f, true);
 
     if (_callback) {
       _callback(EventType::EVT_READ);
