@@ -88,7 +88,6 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT2_TEMPERATURE_STOP, "60");
   config.configure(KEY_OUTPUT2_TIME_START, "22:00");
   config.configure(KEY_OUTPUT2_TIME_STOP, "06:00");
-  config.configure(KEY_PID_D_MODE, "1");
   config.configure(KEY_PID_IC_MODE, "2");
   config.configure(KEY_PID_KD, "0.05");
   config.configure(KEY_PID_KI, "0.2");
@@ -259,10 +258,9 @@ void yasolr_init_config() {
       if (!config.getBool(KEY_ENABLE_AP_MODE))
         Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
-    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_P_MODE || key == KEY_PID_D_MODE || key == KEY_PID_IC_MODE || key == KEY_PID_SETPOINT) {
-      pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
-      pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.getLong(KEY_PID_D_MODE));
-      pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.getLong(KEY_PID_IC_MODE));
+    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_P_MODE || key == KEY_PID_IC_MODE || key == KEY_PID_SETPOINT) {
+      pidController.setProportionalMode(config.getLong(KEY_PID_P_MODE) == 1 ? Mycila::PID::ProportionalMode::P_ON_ERROR : Mycila::PID::ProportionalMode::P_ON_INPUT);
+      pidController.setIntegralCorrectionMode(config.getLong(KEY_PID_IC_MODE) == 1 ? Mycila::PID::IntegralCorrectionMode::IC_CLAMP : Mycila::PID::IntegralCorrectionMode::IC_ADVANCED);
       pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
       pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
       pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));

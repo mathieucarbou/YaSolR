@@ -235,9 +235,9 @@ void yasolr_init_router() {
   // PID Controller
 
   pidController.setReverse(false);
-  pidController.setProportionalMode((Mycila::PID::ProportionalMode)config.getLong(KEY_PID_P_MODE));
-  pidController.setDerivativeMode((Mycila::PID::DerivativeMode)config.getLong(KEY_PID_D_MODE));
-  pidController.setIntegralCorrectionMode((Mycila::PID::IntegralCorrectionMode)config.getLong(KEY_PID_IC_MODE));
+  pidController.setProportionalMode(config.getLong(KEY_PID_P_MODE) == 1 ? Mycila::PID::ProportionalMode::P_ON_ERROR : Mycila::PID::ProportionalMode::P_ON_INPUT);
+  pidController.setDerivativeMode(Mycila::PID::DerivativeMode::D_ON_ERROR);
+  pidController.setIntegralCorrectionMode(config.getLong(KEY_PID_IC_MODE) == 1 ? Mycila::PID::IntegralCorrectionMode::IC_CLAMP : Mycila::PID::IntegralCorrectionMode::IC_ADVANCED);
   pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
   pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
   pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));

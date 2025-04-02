@@ -233,16 +233,15 @@ static int16_t _pidSumHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-static dash::SwitchCard _pidView(dashboard, YASOLR_LBL_169);
-static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2 "," YASOLR_PID_P_MODE_3);
-static dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_161, YASOLR_PID_D_MODE_1 "," YASOLR_PID_D_MODE_2 "," YASOLR_PID_D_MODE_3);
-static dash::DropdownCard<const char*> _pidICMode(dashboard, YASOLR_LBL_162, YASOLR_PID_IC_MODE_0 "," YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2);
+static dash::DropdownCard<const char*> _pidICMode(dashboard, YASOLR_LBL_162, YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+static dash::TextInputCard<int> _pidOutMin(dashboard, YASOLR_LBL_164);
+static dash::TextInputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
 static dash::TextInputCard<int> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::TextInputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::TextInputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::TextInputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
-static dash::TextInputCard<int> _pidOutMin(dashboard, YASOLR_LBL_164);
-static dash::TextInputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
+static dash::SwitchCard _pidView(dashboard, YASOLR_LBL_169);
 static dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
 static dash::LineChart<int8_t, int16_t> _pidOutputHistory(dashboard, YASOLR_LBL_171);
 static dash::LineChart<int8_t, int16_t> _pidErrorHistory(dashboard, YASOLR_LBL_172);
@@ -633,7 +632,6 @@ void YaSolR::Website::begin() {
 
   _pidView.setTab(_pidTab);
   _pidPMode.setTab(_pidTab);
-  _pidDMode.setTab(_pidTab);
   _pidICMode.setTab(_pidTab);
   _pidSetpoint.setTab(_pidTab);
   _pidKp.setTab(_pidTab);
@@ -649,6 +647,7 @@ void YaSolR::Website::begin() {
   _pidITermHistory.setTab(_pidTab);
   _pidDTermHistory.setTab(_pidTab);
 
+  _pidView.setSize(FULL_SIZE);
   _pidInputHistory.setSize(FULL_SIZE);
   _pidOutputHistory.setSize(FULL_SIZE);
   _pidErrorHistory.setSize(FULL_SIZE);
@@ -677,31 +676,14 @@ void YaSolR::Website::begin() {
       config.set(KEY_PID_P_MODE, "1");
     else if (strcmp(value, YASOLR_PID_P_MODE_2) == 0)
       config.set(KEY_PID_P_MODE, "2");
-    else if (strcmp(value, YASOLR_PID_P_MODE_3) == 0)
-      config.set(KEY_PID_P_MODE, "3");
     else
       config.unset(KEY_PID_P_MODE);
     _pidPMode.setValue(config.get(KEY_PID_P_MODE));
     dashboard.refresh(_pidPMode);
   });
 
-  _pidDMode.onChange([](const char* value) {
-    if (strcmp(value, YASOLR_PID_D_MODE_1) == 0)
-      config.set(KEY_PID_D_MODE, "1");
-    else if (strcmp(value, YASOLR_PID_D_MODE_2) == 0)
-      config.set(KEY_PID_D_MODE, "2");
-    else if (strcmp(value, YASOLR_PID_D_MODE_3) == 0)
-      config.set(KEY_PID_D_MODE, "3");
-    else
-      config.unset(KEY_PID_D_MODE);
-    _pidDMode.setValue(config.get(KEY_PID_D_MODE));
-    dashboard.refresh(_pidDMode);
-  });
-
   _pidICMode.onChange([](const char* value) {
-    if (strcmp(value, YASOLR_PID_IC_MODE_0) == 0)
-      config.set(KEY_PID_IC_MODE, "0");
-    else if (strcmp(value, YASOLR_PID_IC_MODE_1) == 0)
+    if (strcmp(value, YASOLR_PID_IC_MODE_1) == 0)
       config.set(KEY_PID_IC_MODE, "1");
     else if (strcmp(value, YASOLR_PID_IC_MODE_2) == 0)
       config.set(KEY_PID_IC_MODE, "2");
@@ -1202,41 +1184,17 @@ void YaSolR::Website::initCards() {
     case 1:
       _pidPMode.setValue(YASOLR_PID_P_MODE_1);
       break;
-    case 2:
+    default:
       _pidPMode.setValue(YASOLR_PID_P_MODE_2);
-      break;
-    case 3:
-      _pidPMode.setValue(YASOLR_PID_P_MODE_3);
-      break;
-    default:
-      _pidPMode.setValue("");
-      break;
-  }
-
-  switch (config.getInt(KEY_PID_D_MODE)) {
-    case 1:
-      _pidDMode.setValue(YASOLR_PID_D_MODE_1);
-      break;
-    case 2:
-      _pidDMode.setValue(YASOLR_PID_D_MODE_2);
-      break;
-    default:
-      _pidDMode.setValue("");
       break;
   }
 
   switch (config.getInt(KEY_PID_IC_MODE)) {
-    case 0:
-      _pidICMode.setValue(YASOLR_PID_IC_MODE_0);
-      break;
     case 1:
       _pidICMode.setValue(YASOLR_PID_IC_MODE_1);
       break;
-    case 2:
-      _pidICMode.setValue(YASOLR_PID_IC_MODE_2);
-      break;
     default:
-      _pidICMode.setValue("");
+      _pidICMode.setValue(YASOLR_PID_IC_MODE_2);
       break;
   }
 

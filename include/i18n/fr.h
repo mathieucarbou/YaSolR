@@ -164,7 +164,7 @@
 #define YASOLR_LBL_158 "NTP"
 #define YASOLR_LBL_159 "PID"
 #define YASOLR_LBL_160 "Mode proportionnel"
-#define YASOLR_LBL_161 "Mode dérivé"
+// #define YASOLR_LBL_161 "Mode dérivé"
 #define YASOLR_LBL_162 "Correction d'Intégrale"
 #define YASOLR_LBL_163 "Consigne (puissance cible du réseau en W)"
 #define YASOLR_LBL_164 "Sortie Min (W)"

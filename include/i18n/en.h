@@ -164,7 +164,7 @@
 #define YASOLR_LBL_158 "NTP"
 #define YASOLR_LBL_159 "PID"
 #define YASOLR_LBL_160 "Proportional Mode"
-#define YASOLR_LBL_161 "Derivative Mode"
+// #define YASOLR_LBL_161 "Derivative Mode"
 #define YASOLR_LBL_162 "Integral Correction"
 #define YASOLR_LBL_163 "Setpoint (Target Grid Power in W)"
 #define YASOLR_LBL_164 "Output Min (W)"

@@ -60,15 +60,10 @@
 #define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
 #define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
 #define YASOLR_MQTT_WILL_TOPIC             "/status"
-#define YASOLR_PID_D_MODE_1                "1: On Error"
-#define YASOLR_PID_D_MODE_2                "2: On Input"
-#define YASOLR_PID_D_MODE_3                "3: On Error Rate"
-#define YASOLR_PID_IC_MODE_0               "0: Off"
 #define YASOLR_PID_IC_MODE_1               "1: Clamp"
 #define YASOLR_PID_IC_MODE_2               "2: Advanced"
 #define YASOLR_PID_P_MODE_1                "1: On Error"
 #define YASOLR_PID_P_MODE_2                "2: On Input"
-#define YASOLR_PID_P_MODE_3                "3: Both"
 #define YASOLR_PZEM_ADDRESS_OUTPUT1        0x01
 #define YASOLR_PZEM_ADDRESS_OUTPUT2        0x02
 #define YASOLR_RELAY_TYPE_NC               "NC"
@@ -184,7 +179,6 @@
 #define KEY_OUTPUT2_TIME_START             "o2_time_start"
 #define KEY_OUTPUT2_TIME_STOP              "o2_time_stop"
 #define KEY_OUTPUT2_TIME_STOP              "o2_time_stop"
-#define KEY_PID_D_MODE                     "pid_dmode"
 #define KEY_PID_IC_MODE                    "pid_icmode"
 #define KEY_PID_KD                         "pid_kd"
 #define KEY_PID_KI                         "pid_ki"
