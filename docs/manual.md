@@ -743,16 +743,16 @@ This is the power that would be sent to the grid if the router was not routing a
 
 `Grid Virtual Power` is negative on export and positive on import.
 
-- The relay will automatically start when `Grid Virtual Power + Relay Load <= -3% of Relay Load`.
-  In other words, the relay will automatically start when there is enough excess to absorb both the load connected to the relay plus 3% more of it.
+- The relay will automatically start when `Grid Virtual Power + Relay Load <= 5% of Relay Load`.
+  In other words, the relay will automatically start when there is enough excess to absorb both the load connected to the relay plus 5% more of it.
   When the relay will start, the remaining excess not absorbed by the load will be absorbed by the dimmer.
 
-- The relay will automatically stop when `Grid Virtual Power >= 3% of Relay Threshold`.
-  In other words, the relay will automatically stop when there is no excess anymore but a grid import equal to or more than 3% of the relay threshold.
+- The relay will automatically stop when `Grid Virtual Power >= 5% of Relay Threshold`.
+  In other words, the relay will automatically stop when there is no excess anymore but a grid import equal to or more than 5% of the relay threshold.
   When the relay will stop, there will be some excess again, which will be absorbed by the dimmer.
 
-For a 3000W three-phase resistance, 3% means 30W per relay because there is 3x 1000W resistances.
-For a 2100W three-phase resistance, 3% means 21W per relay because there is 3x 700W resistances.
+For a 3000W three-phase resistance, 5% means 30W per relay because there is 3x 1000W resistances.
+For a 2100W three-phase resistance, 5% means 21W per relay because there is 3x 700W resistances.
 
 #### LEDs
 
