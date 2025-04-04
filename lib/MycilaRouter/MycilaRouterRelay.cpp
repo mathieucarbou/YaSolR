@@ -44,13 +44,20 @@ bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
   return true;
 }
 
-bool Mycila::RouterRelay::autoSwitch(float virtualGridPower) {
+bool Mycila::RouterRelay::autoSwitch(float gridPower, float routedPower, float setpoint) {
   if (!isAutoRelayEnabled())
     return false;
 
+  // * setpoint is the grid power to be reached, configured in the PID section. Example 1: 1000W | Example 2: 0W
+  // * routedPower is the power routed to the load through the dimmer. Example1: 800W | Example 2: 800W
+  // * gridPower is the power coming from or going to the grid. Example1: 1000W | Example 2: 0W (800W routing + 200W home consumption)
+  // * virtualGridPower is the power that would come from or go to the grid if the routing was off. Example1: 200W | Example 2: -800W
+  // * relayRoomPower is the power that is available for a relay. Example1: 800W | Example 2: 800W
+
   if (_relay->isOff()) {
-    if (virtualGridPower + _load <= -_load * MYCILA_RELAY_TOLERANCE) {
-      LOGI(TAG, "Auto-Switching relay on pin %u ON: virtual grid power is %.2f W", _relay->getPin(), virtualGridPower);
+    const float relayRoomPower = setpoint + routedPower - gridPower;
+    if (relayRoomPower >= _load * (1.0f + MYCILA_RELAY_TOLERANCE)) {
+      LOGI(TAG, "Auto-Switching relay on pin %u ON. Grid power: %.2f W, routed power: %.2f W, setpoint: %.2f W", _relay->getPin(), gridPower, routedPower, setpoint);
       _relay->setState(true);
       return true;
     }
@@ -58,8 +65,9 @@ bool Mycila::RouterRelay::autoSwitch(float virtualGridPower) {
   }
 
   if (_relay->isOn()) {
-    if (virtualGridPower >= _load * MYCILA_RELAY_TOLERANCE) {
-      LOGI(TAG, "Auto-Switching relay on pin %u OFF: virtual grid power is %.2f W", _relay->getPin(), virtualGridPower);
+    const float relayRoomPower = setpoint + routedPower - gridPower + _load;
+    if (relayRoomPower <= _load * (1.0f - MYCILA_RELAY_TOLERANCE)) {
+      LOGI(TAG, "Auto-Switching relay on pin %u OFF. Grid power: %.2f W, routed power: %.2f W, setpoint: %.2f W", _relay->getPin(), gridPower, routedPower, setpoint);
       _relay->setState(false);
       return true;
     }

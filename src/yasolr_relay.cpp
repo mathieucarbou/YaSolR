@@ -68,12 +68,14 @@ void yasolr_init_relays() {
       Mycila::Router::Metrics routerMetrics;
       router.getRouterMeasurements(routerMetrics);
 
-      float virtualGridPower = grid.getPower().get() - routerMetrics.power;
+      float gridPower = grid.getPower().get();
+      float routedPower = routerMetrics.power;
+      float setpoint = pidController.getSetPoint();
 
-      if (relay1 && relay1->autoSwitch(virtualGridPower))
+      if (relay1 && relay1->autoSwitch(gridPower, routedPower, setpoint))
         return;
 
-      if (relay2 && relay2->autoSwitch(virtualGridPower))
+      if (relay2 && relay2->autoSwitch(gridPower, routedPower, setpoint))
         return;
     });
 
