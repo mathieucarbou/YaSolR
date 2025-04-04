@@ -136,12 +136,16 @@ void yasolr_init_config() {
     const std::string key = k;
 
     if (key == KEY_RELAY1_LOAD) {
-      if (relay1)
+      if (relay1) {
         relay1->setLoad(config.getLong(KEY_RELAY1_LOAD));
+        relay1->trySwitchRelay(false);
+      }
 
     } else if (key == KEY_RELAY2_LOAD) {
-      if (relay2)
+      if (relay2) {
         relay2->setLoad(config.getLong(KEY_RELAY2_LOAD));
+        relay2->trySwitchRelay(false);
+      }
 
     } else if (key == KEY_OUTPUT1_RESISTANCE) {
       if (output1)
