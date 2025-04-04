@@ -117,8 +117,10 @@ void yasolr_init_config() {
   config.configure(KEY_PIN_ZCD, std::to_string(YASOLR_ZCD_PIN));
   config.configure(KEY_PZEM_UART, PZEM_UART_DEFAULT);
   config.configure(KEY_RELAY1_LOAD, "0");
+  config.configure(KEY_RELAY1_TOLERANCE, "7");
   config.configure(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NO);
   config.configure(KEY_RELAY2_LOAD, "0");
+  config.configure(KEY_RELAY2_TOLERANCE, "7");
   config.configure(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NO);
   config.configure(KEY_UDP_PORT, std::to_string(YASOLR_UDP_PORT));
   config.configure(KEY_VICTRON_MODBUS_PORT, "502");
@@ -137,14 +139,28 @@ void yasolr_init_config() {
 
     if (key == KEY_RELAY1_LOAD) {
       if (relay1) {
-        relay1->setLoad(config.getLong(KEY_RELAY1_LOAD));
-        relay1->trySwitchRelay(false);
+        relay1->setNominalLoad(config.getLong(KEY_RELAY1_LOAD));
+        if (!relay1->getNominalLoad()) {
+          relay1->trySwitchRelay(false);
+        }
       }
 
     } else if (key == KEY_RELAY2_LOAD) {
       if (relay2) {
-        relay2->setLoad(config.getLong(KEY_RELAY2_LOAD));
-        relay2->trySwitchRelay(false);
+        relay2->setNominalLoad(config.getLong(KEY_RELAY2_LOAD));
+        if (!relay2->getNominalLoad()) {
+          relay2->trySwitchRelay(false);
+        }
+      }
+
+    } else if (key == KEY_RELAY1_TOLERANCE) {
+      if (relay1) {
+        relay1->setTolerance(config.getFloat(KEY_RELAY1_TOLERANCE) / 100.0f);
+      }
+
+    } else if (key == KEY_RELAY2_TOLERANCE) {
+      if (relay2) {
+        relay2->setTolerance(config.getFloat(KEY_RELAY2_TOLERANCE) / 100.0f);
       }
 
     } else if (key == KEY_OUTPUT1_RESISTANCE) {

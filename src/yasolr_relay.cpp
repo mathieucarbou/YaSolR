@@ -20,7 +20,8 @@ void yasolr_init_relays() {
       count++;
 
       relay1 = new Mycila::RouterRelay(*relay);
-      relay1->setLoad(config.getLong(KEY_RELAY1_LOAD));
+      relay1->setNominalLoad(config.getLong(KEY_RELAY1_LOAD));
+      relay1->setTolerance(config.getFloat(KEY_RELAY1_TOLERANCE) / 100.0f);
 
       relay->listen([](bool state) {
         logger.info(TAG, "Relay 1 changed to %s", state ? "ON" : "OFF");
@@ -44,7 +45,8 @@ void yasolr_init_relays() {
       count++;
 
       relay2 = new Mycila::RouterRelay(*relay);
-      relay2->setLoad(config.getLong(KEY_RELAY2_LOAD));
+      relay2->setNominalLoad(config.getLong(KEY_RELAY2_LOAD));
+      relay2->setTolerance(config.getFloat(KEY_RELAY2_TOLERANCE) / 100.0f);
 
       relay->listen([](bool state) {
         logger.info(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
@@ -62,20 +64,21 @@ void yasolr_init_relays() {
 
   if (count) {
     Mycila::Task* relayTask = new Mycila::Task("Relay", [](void* params) {
-      if (grid.getPower().isAbsent())
+      float gridPower = grid.getPower().value_or(NAN);
+      float gridVoltage = grid.getVoltage().value_or(NAN);
+      float setpoint = pidController.getSetPoint();
+
+      if (isnan(gridPower) || isnan(gridVoltage) || !gridVoltage) {
         return;
+      }
 
       Mycila::Router::Metrics routerMetrics;
       router.getRouterMeasurements(routerMetrics);
 
-      float gridPower = grid.getPower().get();
-      float routedPower = routerMetrics.power;
-      float setpoint = pidController.getSetPoint();
-
-      if (relay1 && relay1->autoSwitch(gridPower, routedPower, setpoint))
+      if (relay1 && relay1->autoSwitch(gridVoltage, gridPower, routerMetrics.power, setpoint))
         return;
 
-      if (relay2 && relay2->autoSwitch(gridPower, routedPower, setpoint))
+      if (relay2 && relay2->autoSwitch(gridVoltage, gridPower, routerMetrics.power, setpoint))
         return;
     });
 

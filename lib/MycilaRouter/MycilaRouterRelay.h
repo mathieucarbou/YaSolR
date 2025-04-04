@@ -6,19 +6,30 @@
 
 #include <MycilaRelay.h>
 
+#ifndef MYCILA_RELAY_DEFAULT_TOLERANCE
+  // in percentage
+  // => 50W for a tri-phase 3000W resistance (1000W per phase)
+  // => 35W for a tri-phase 2100W resistance (700W per phase)
+  #define MYCILA_RELAY_DEFAULT_TOLERANCE 0.05f
+#endif
+
 namespace Mycila {
   class RouterRelay {
     public:
       explicit RouterRelay(Relay& relay) : _relay(&relay) {}
 
-      void setLoad(uint16_t load) { _load = load; }
+      void setNominalLoad(uint16_t load) { _nominalLoad = load; }
+      uint16_t getNominalLoad() const { return _nominalLoad; }
+
+      void setTolerance(float tolerance) { _tolerance = tolerance; }
+      float getTolerance() const { return _tolerance; }
 
       bool isEnabled() const { return _relay->isEnabled(); }
-      bool isAutoRelayEnabled() const { return _relay->isEnabled() && _load > 0; }
+      bool isAutoRelayEnabled() const { return _relay->isEnabled() && _nominalLoad > 0; }
 
       bool trySwitchRelay(bool state, uint32_t duration = 0);
 
-      bool autoSwitch(float gridPower, float routedPower, float setpoint);
+      bool autoSwitch(float gridVoltage, float gridPower, float routedPower, float setpoint);
 
       bool isOn() const { return _relay->isOn(); }
       bool isOff() const { return _relay->isOff(); }
@@ -31,6 +42,7 @@ namespace Mycila {
 
     private:
       Mycila::Relay* _relay;
-      uint16_t _load = 0;
+      uint16_t _nominalLoad = 0;
+      float _tolerance = MYCILA_RELAY_DEFAULT_TOLERANCE;
   };
 } // namespace Mycila

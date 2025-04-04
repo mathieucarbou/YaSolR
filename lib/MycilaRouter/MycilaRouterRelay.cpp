@@ -18,13 +18,6 @@ extern Mycila::Logger logger;
   #define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
 #endif
 
-#ifndef MYCILA_RELAY_TOLERANCE
-  // in percentage
-  // => 50W for a tri-phase 3000W resistance (1000W per phase)
-  // => 35W for a tri-phase 2100W resistance (700W per phase)
-  #define MYCILA_RELAY_TOLERANCE 0.05f
-#endif
-
 #define TAG "RELAY"
 
 bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
@@ -32,7 +25,7 @@ bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
     return false;
 
   if (isAutoRelayEnabled()) {
-    LOGW(TAG, "Relay on pin %u cannot be activated because it is connected to a load of %" PRIu16 "W", _relay->getPin(), _load);
+    LOGW(TAG, "Relay on pin %u cannot be switched because it is connected to a load of %" PRIu16 "W", _relay->getPin(), _nominalLoad);
     return false;
   }
 
@@ -44,7 +37,7 @@ bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
   return true;
 }
 
-bool Mycila::RouterRelay::autoSwitch(float gridPower, float routedPower, float setpoint) {
+bool Mycila::RouterRelay::autoSwitch(float gridVoltage, float gridPower, float routedPower, float setpoint) {
   if (!isAutoRelayEnabled())
     return false;
 
@@ -54,10 +47,19 @@ bool Mycila::RouterRelay::autoSwitch(float gridPower, float routedPower, float s
   // * virtualGridPower is the power that would come from or go to the grid if the routing was off. Example1: 200W | Example 2: -800W
   // * relayRoomPower is the power that is available for a relay. Example1: 800W | Example 2: 800W
 
+  // detects the grid nominal voltage
+  const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
+  // calculate the amperage of the given nominal power of connected load
+  const float resistance = static_cast<float>(nominalVoltage * nominalVoltage) / static_cast<float>(_nominalLoad);
+  // calculate with the current voltage what the exact power of the load would be
+  const uint16_t adjustedLoad = static_cast<uint16_t>(gridVoltage * gridVoltage / resistance);
+
+  LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %" PRIu16 " W @ %" PRIu16 " V, Grid: %.1f W, Routed: %.1f W, Setpoint: %.1f W, Tolerance: %.2f %%", _relay->getPin(), _nominalLoad, nominalVoltage, adjustedLoad, static_cast<uint16_t>(gridVoltage), gridPower, routedPower, setpoint, _tolerance * 100.0f);
+
   if (_relay->isOff()) {
     const float relayRoomPower = setpoint + routedPower - gridPower;
-    if (relayRoomPower >= _load * (1.0f + MYCILA_RELAY_TOLERANCE)) {
-      LOGI(TAG, "Auto-Switching relay on pin %u ON. Grid power: %.2f W, routed power: %.2f W, setpoint: %.2f W", _relay->getPin(), gridPower, routedPower, setpoint);
+    if (relayRoomPower >= adjustedLoad * (1.0f + _tolerance)) {
+      LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay->getPin(), "ON");
       _relay->setState(true);
       return true;
     }
@@ -65,9 +67,9 @@ bool Mycila::RouterRelay::autoSwitch(float gridPower, float routedPower, float s
   }
 
   if (_relay->isOn()) {
-    const float relayRoomPower = setpoint + routedPower - gridPower + _load;
-    if (relayRoomPower <= _load * (1.0f - MYCILA_RELAY_TOLERANCE)) {
-      LOGI(TAG, "Auto-Switching relay on pin %u OFF. Grid power: %.2f W, routed power: %.2f W, setpoint: %.2f W", _relay->getPin(), gridPower, routedPower, setpoint);
+    const float relayRoomPower = setpoint + routedPower - gridPower + adjustedLoad;
+    if (relayRoomPower <= adjustedLoad * (1.0f - _tolerance)) {
+      LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay->getPin(), "OFF");
       _relay->setState(false);
       return true;
     }

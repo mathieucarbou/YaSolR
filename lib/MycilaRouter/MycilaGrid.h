@@ -29,19 +29,10 @@ namespace Mycila {
       // sources
 
       ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
-      const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
-
       ExpiringValue<Metrics>& remoteMetrics() { return _remoteMetrics; }
-      const ExpiringValue<Metrics>& remoteMetrics() const { return _remoteMetrics; }
-
       ExpiringValue<Metrics>& pzemMetrics() { return _pzemMetrics; }
-      const ExpiringValue<Metrics>& pzemMetrics() const { return _pzemMetrics; }
-
       ExpiringValue<float>& mqttPower() { return _mqttPower; }
-      const ExpiringValue<float>& mqttPower() const { return _mqttPower; }
-
       ExpiringValue<float>& mqttVoltage() { return _mqttVoltage; }
-      const ExpiringValue<float>& mqttVoltage() const { return _mqttVoltage; }
 
       // called after having updated the values from MQTT, JSY and JSY Remote
       // returns true if the power has been updated and routing must be updated too
@@ -50,8 +41,8 @@ namespace Mycila {
       bool isConnected() const { return getVoltage().has_value(); }
 
       // available power
-      ExpiringValue<float>& getPower() { return _power; }
-      const ExpiringValue<float>& getPower() const { return _power; }
+      ExpiringValue<float>& power() { return _power; }
+      std::optional<float> getPower() { return _power.opt(); }
 
       // get the current grid voltage
       // - if JSY are connected, they have priority

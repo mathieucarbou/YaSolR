@@ -324,11 +324,13 @@ static dash::FeedbackSwitchCard _output2DS18(dashboard, YASOLR_LBL_070 ": " YASO
 static dash::FeedbackSwitchCard _relay1(dashboard, YASOLR_LBL_074);
 static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::TextInputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
+static dash::PercentageSliderCard _relay1Tolerance(dashboard, YASOLR_LBL_198);
 
 // relay2
 static dash::FeedbackSwitchCard _relay2(dashboard, YASOLR_LBL_077);
 static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::TextInputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
+static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
 
 // router ds18
 static dash::FeedbackSwitchCard _routerDS18(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_132);
@@ -831,18 +833,22 @@ void YaSolR::Website::begin() {
   _relay1.setSize(FULL_SIZE);
   _relay1Type.setTab(_hardwareConfigTab);
   _relay1Load.setTab(_hardwareConfigTab);
+  _relay1Tolerance.setTab(_hardwareConfigTab);
   _boolConfig(_relay1, KEY_ENABLE_RELAY1);
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _textConfig(_relay1Type, KEY_RELAY1_TYPE);
+  _sliderConfig(_relay1Tolerance, KEY_RELAY1_TOLERANCE);
 
   // relay2
   _relay2.setTab(_hardwareConfigTab);
   _relay2.setSize(FULL_SIZE);
   _relay2Type.setTab(_hardwareConfigTab);
   _relay2Load.setTab(_hardwareConfigTab);
+  _relay2Tolerance.setTab(_hardwareConfigTab);
   _boolConfig(_relay2, KEY_ENABLE_RELAY2);
   _textConfig(_relay2Type, KEY_RELAY2_TYPE);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
+  _sliderConfig(_relay2Tolerance, KEY_RELAY2_TOLERANCE);
 
   // router ds18
   _routerDS18.setTab(_hardwareConfigTab);
@@ -1289,6 +1295,8 @@ void YaSolR::Website::initCards() {
   _relay1Type.setDisplay(relay1Enabled);
   _relay1Load.setValue(load1);
   _relay1Load.setDisplay(relay1Enabled);
+  _relay1Tolerance.setValue(config.getInt(KEY_RELAY1_TOLERANCE));
+  _relay1Tolerance.setDisplay(relay1Enabled);
 
   // relay2
   _status(_relay2, KEY_ENABLE_RELAY2, relay2 && relay2->isEnabled());
@@ -1296,6 +1304,8 @@ void YaSolR::Website::initCards() {
   _relay2Type.setDisplay(relay2Enabled);
   _relay2Load.setValue(load2);
   _relay2Load.setDisplay(relay2Enabled);
+  _relay2Tolerance.setValue(config.getInt(KEY_RELAY2_TOLERANCE));
+  _relay2Tolerance.setDisplay(relay2Enabled);
 
   // router led
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
@@ -1536,7 +1546,7 @@ void YaSolR::Website::updateCharts() {
   memmove(&_routerTHDiHistoryY[0], &_routerTHDiHistoryY[1], sizeof(_routerTHDiHistoryY) - sizeof(*_routerTHDiHistoryY));
 
   // set new value
-  _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().orElse(0));
+  _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
 
   Mycila::Router::Metrics* routerMetrics = new Mycila::Router::Metrics();
   router.getRouterMeasurements(*routerMetrics);

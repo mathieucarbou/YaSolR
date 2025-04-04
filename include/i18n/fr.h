@@ -143,7 +143,7 @@
 #define YASOLR_LBL_137 "Configuration de la marche forcée"
 #define YASOLR_LBL_138 "Config Sortie 1"
 #define YASOLR_LBL_139 "Config Sortie 2"
-#define YASOLR_LBL_140 "Charge connectée"
+#define YASOLR_LBL_140 "Puissance nominale connectée"
 #define YASOLR_LBL_141 "Fréquence nominale du réseau (Hz)"
 #define YASOLR_LBL_142 "Écran: Vitesse"
 #define YASOLR_LBL_143 "Écran: Type"
@@ -201,6 +201,6 @@
 #define YASOLR_LBL_195 "Victron"
 #define YASOLR_LBL_196 "Victron: Serveur Modbus TCP"
 #define YASOLR_LBL_197 "Victron: Port Modbus TCP"
-// #define YASOLR_LBL_198
-// #define YASOLR_LBL_199
+#define YASOLR_LBL_198 "Contrôle automatique du relais 1: Tolérance"
+#define YASOLR_LBL_199 "Contrôle automatique du relais 2: Tolérance"
 // #define YASOLR_LBL_200

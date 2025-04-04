@@ -110,7 +110,7 @@ void yasolr_init_display() {
             break;
           }
           case 5: {
-            display->home.printf("Grid   P: %9d W", static_cast<int>(std::round(grid.getPower().orElse(0))));
+            display->home.printf("Grid   P: %9d W", static_cast<int>(std::round(grid.getPower().value_or(0))));
             wrote = true;
             break;
           }

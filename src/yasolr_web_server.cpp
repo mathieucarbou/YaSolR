@@ -482,7 +482,7 @@ void rest_api() {
       if (!std::isnan(t))
         root["temperature"] = t;
     }
-    float virtual_grid_power = grid.getPower().orElse(NAN) - routerMeasurements.power;
+    float virtual_grid_power = grid.getPower().value_or(NAN) - routerMeasurements.power;
     if (!std::isnan(virtual_grid_power))
       root["virtual_grid_power"] = virtual_grid_power;
 

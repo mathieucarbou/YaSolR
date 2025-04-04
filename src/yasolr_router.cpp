@@ -28,7 +28,7 @@ static Mycila::Task calibrationTask("Calibration", [](void* params) { router.con
 static Mycila::Task routerTask("Router", [](void* params) {
   std::optional<float> voltage = grid.getVoltage();
 
-  if (!voltage.has_value() || grid.getPower().isAbsent())
+  if (!voltage.has_value() || !grid.getPower().has_value())
     router.noDivert();
 
   if (output1) {
@@ -221,8 +221,8 @@ void yasolr_divert() {
 
   std::optional<float> voltage = grid.getVoltage();
 
-  if (voltage.has_value() && grid.getPower().isPresent()) {
-    router.divert(voltage.value(), grid.getPower().get());
+  if (voltage.has_value() && grid.getPower().has_value()) {
+    router.divert(voltage.value(), grid.getPower().value());
     if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }

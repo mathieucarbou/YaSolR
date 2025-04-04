@@ -143,7 +143,7 @@
 #define YASOLR_LBL_137 "Bypass Configuration"
 #define YASOLR_LBL_138 "Output 1 Config"
 #define YASOLR_LBL_139 "Output 2 Config"
-#define YASOLR_LBL_140 "Connected Load"
+#define YASOLR_LBL_140 "Connected Load Nominal Power"
 #define YASOLR_LBL_141 "Nominal Grid Frequency (Hz)"
 #define YASOLR_LBL_142 "Display Speed"
 #define YASOLR_LBL_143 "Display Type"
@@ -201,7 +201,6 @@
 #define YASOLR_LBL_195 "Victron"
 #define YASOLR_LBL_196 "Victron Modbus TCP Server"
 #define YASOLR_LBL_197 "Victron Modbus TCP Port"
-// #define YASOLR_LBL_197
-// #define YASOLR_LBL_198
-// #define YASOLR_LBL_199
+#define YASOLR_LBL_198 "Relay 1 Automatic Control: Tolerance"
+#define YASOLR_LBL_199 "Relay 2 Automatic Control: Tolerance"
 // #define YASOLR_LBL_200
