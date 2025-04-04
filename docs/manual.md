@@ -707,8 +707,10 @@ A temperature sensor can also be used to monitor the router box itself (`Overvie
 
 #### Relay Automatic Control
 
-- `Relay X Automatic Control: Connected Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
+- `Relay X Automatic Control: Connected Nominal Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
   If you do so, the relay will be activated automatically based on the grid power.
+  **Warning:** pay attention to set the **nominal load**, which is the official load given by teh manufacturer with a nominal voltage (230V for France).
+  It can also be computed like this: `Nominal Load (Watts) = Nominal Voltage (V) * Nominal Voltage (V) / Resistance (ohms)`.
 
 YaSolR supports 2 additional relays (Electromechanical or SSR, controlled with 3.3V DC) to control external loads, or to be connected to the A1 and A2 terminals of a power contactor.
 Relays can also be connected to the other resistance of the water tank (three-phase resistance) as described in the [recommendations to reduce harmonics and flickering](./overview#recommendations-to-reduce-harmonics-and-flickering), in order to improve the routing and reduce harmonics.
