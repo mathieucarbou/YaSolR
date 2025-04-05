@@ -14,7 +14,6 @@ description: Manual
 - [YaSolR Application](#yasolr-application)
   - [Overview](#overview)
   - [Output 1 and 2](#output-1-and-2)
-  - [Relays](#relays)
   - [PID](#pid)
   - [Network](#network)
   - [NTP](#ntp)
@@ -224,18 +223,16 @@ The output sections show the state of the outputs and the possibility to control
   Only available when the bypass is not in automatic mode.
   Otherwise the bypass state is displayed.
 
-> ##### TIP
->
-> All these settings are applied immediately and do not require a restart
-{: .block-tip }
-
-### Relays
-
-[![](assets/img/screenshots/app-relays.jpeg)](assets/img/screenshots/app-relays.jpeg)
+**Relays:**
 
 - `Relay X Manual Control`: ON/OFF switch to control the relay manually.
   Only available when the relay is not in automatic mode.
   Otherwise the relay state is displayed.
+
+> ##### TIP
+>
+> All these settings are applied immediately and do not require a restart
+{: .block-tip }
 
 ### PID
 
