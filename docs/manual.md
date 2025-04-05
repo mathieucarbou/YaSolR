@@ -170,6 +170,18 @@ The overview section shows some global information about the router:
 
 [![](assets/img/screenshots/app-overview.jpeg)](assets/img/screenshots/app-overview.jpeg)
 
+- `Output 1` / `Output 2`:
+  - `Disabled`: Output is disabled (dimmer disabled or other reason)
+  - `Idle`: Output is not routing and not in bypass mode
+  - `Routing`: Routing in progress
+  - `Bypass`: Bypass has been activated manually
+  - `Bypass Auto`: Bypass has been activated based on automatic rules
+- `Temperature`: This is the temperature reported by the sensor in water tank, if installed
+
+- `Relay X Manual Control`: ON/OFF switch to control the relay manually.
+  Only available when the relay is not in automatic mode.
+  Otherwise the relay state is displayed.
+
 > ##### IMPORTANT
 >
 > The resistance value that you see in the overview page is an estimation of the global resistance value corresponding to output 1 and output 2 combined together,
@@ -183,14 +195,6 @@ The overview section shows some global information about the router:
 The output sections show the state of the outputs and the possibility to control them.
 
 [![](assets/img/screenshots/app-output.jpeg)](assets/img/screenshots/app-output.jpeg)
-
-- `Status`
-  - `Disabled`: Output is disabled (dimmer disabled or other reason)
-  - `Idle`: Output is not routing and not in bypass mode
-  - `Routing`: Routing in progress
-  - `Bypass`: Bypass has been activated manually
-  - `Bypass Auto`: Bypass has been activated based on automatic rules
-- `Temperature`: This is the temperature reported by the sensor in water tank, if installed
 
 **Energy:**
 
@@ -222,12 +226,6 @@ The output sections show the state of the outputs and the possibility to control
 - `Bypass`: Activate or deactivate dimmer bypass (force heating)
   Only available when the bypass is not in automatic mode.
   Otherwise the bypass state is displayed.
-
-**Relays:**
-
-- `Relay X Manual Control`: ON/OFF switch to control the relay manually.
-  Only available when the relay is not in automatic mode.
-  Otherwise the relay state is displayed.
 
 > ##### TIP
 >
