@@ -84,6 +84,13 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 
 // home
 
+static dash::FeedbackCard _output1State(dashboard, YASOLR_LBL_046);
+static dash::FeedbackCard _output2State(dashboard, YASOLR_LBL_070);
+static dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
+static dash::FeedbackCard _relay1SwitchRO(dashboard, YASOLR_LBL_074);
+static dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
+static dash::FeedbackCard _relay2SwitchRO(dashboard, YASOLR_LBL_077);
+
 static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_037, "VA");
 static dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_038);
@@ -94,17 +101,11 @@ static dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_042, "
 static dash::EnergyCard<uint32_t> _routerEnergy(dashboard, YASOLR_LBL_043, "Wh");
 static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
 static dash::TemperatureCard<float, 2> _routerDS18State(dashboard, YASOLR_LBL_045);
-static dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
-static dash::FeedbackCard _relay1SwitchRO(dashboard, YASOLR_LBL_074);
-static dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
-static dash::FeedbackCard _relay2SwitchRO(dashboard, YASOLR_LBL_077);
 
 #ifdef APP_MODEL_OSS
-static dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_046);
 static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_048);
 static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_051);
-static dash::FeedbackCard<const char*> _output2State(dashboard, YASOLR_LBL_070);
 static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_048);
 static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_051);
@@ -127,11 +128,13 @@ static dash::SwitchCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 
 #ifdef APP_MODEL_PRO
 // tab: output 1
 
-static dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_047);
-static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
 static dash::SwitchCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
 static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::ProgressCard<float, 2> _output1DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
+static dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
+static dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_051);
+static dash::FeedbackCard<const char*> _output1BypassRO(dashboard, YASOLR_LBL_051);
+
 static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_052, "W");
 static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
@@ -140,17 +143,18 @@ static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V"
 static dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
 static dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
 static dash::EnergyCard<uint32_t> _output1Energy(dashboard, YASOLR_LBL_059, "Wh");
-static dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
-static dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_051);
-static dash::FeedbackCard<const char*> _output1BypassRO(dashboard, YASOLR_LBL_051);
+
+static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
 
 // tab: output 2
 
-static dash::FeedbackCard<const char*> _output2State(dashboard, YASOLR_LBL_047);
-static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
 static dash::SwitchCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
 static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::ProgressCard<float, 2> _output2DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
+static dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
+static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
+static dash::FeedbackCard<const char*> _output2BypassRO(dashboard, YASOLR_LBL_051);
+
 static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_052, "W");
 static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
@@ -159,9 +163,8 @@ static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V"
 static dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
 static dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
 static dash::EnergyCard<uint32_t> _output2Energy(dashboard, YASOLR_LBL_059, "Wh");
-static dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
-static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
-static dash::FeedbackCard<const char*> _output2BypassRO(dashboard, YASOLR_LBL_051);
+
+static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
 
 // tab: system
 
@@ -450,7 +453,6 @@ void YaSolR::Website::begin() {
 
   // tab: output 1
 
-  _output1State.setTab(_output1Tab);
   _output1DS18State.setTab(_output1Tab);
   _output1DimmerAuto.setTab(_output1Tab);
   _output1DimmerSlider.setTab(_output1Tab);
@@ -472,7 +474,6 @@ void YaSolR::Website::begin() {
 
   // tab: output 2
 
-  _output2State.setTab(_output2Tab);
   _output2DS18State.setTab(_output2Tab);
   _output2DimmerAuto.setTab(_output2Tab);
   _output2DimmerSlider.setTab(_output2Tab);
@@ -1362,37 +1363,37 @@ void YaSolR::Website::initCards() {
 void YaSolR::Website::updateCards() {
   // metrics
 
-  Mycila::Grid::Metrics* gridMetrics = new Mycila::Grid::Metrics();
-  grid.getGridMeasurements(*gridMetrics);
-  _gridEnergy.setValue(gridMetrics->energy);
-  _gridEnergyReturned.setValue(gridMetrics->energyReturned);
-  _routerVoltage.setValue(gridMetrics->voltage);
-  _gridPower.setValue(gridMetrics->power);
-  _relay1SwitchRO.setFeedback(relay1 && relay1->isOn() ? std::to_string(relay1->getLoad(gridMetrics->voltage)) + " W" : "0 W", relay1 && relay1->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
-  _relay2SwitchRO.setFeedback(relay2 && relay2->isOn() ? std::to_string(relay2->getLoad(gridMetrics->voltage)) + " W" : "0 W", relay2 && relay2->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
-  delete gridMetrics;
-  gridMetrics = nullptr;
+  Mycila::Grid::Metrics gridMetrics;
+  grid.getGridMeasurements(gridMetrics);
+  _gridEnergy.setValue(gridMetrics.energy);
+  _gridEnergyReturned.setValue(gridMetrics.energyReturned);
+  _routerVoltage.setValue(gridMetrics.voltage);
+  _gridPower.setValue(gridMetrics.power);
 
-  Mycila::Router::Metrics* routerMetrics = new Mycila::Router::Metrics();
-  router.getRouterMeasurements(*routerMetrics);
-  _routerPower.setValue(routerMetrics->power);
-  _routerApparentPower.setValue(routerMetrics->apparentPower);
-  _routerPowerFactor.setValue(routerMetrics->powerFactor);
-  _routerTHDi.setValue(routerMetrics->thdi);
-  _routerCurrent.setValue(routerMetrics->current);
-  _routerResistance.setValue(routerMetrics->resistance);
-  _routerEnergy.setValue(routerMetrics->energy);
-  delete routerMetrics;
-  routerMetrics = nullptr;
+  Mycila::Router::Metrics routerMetrics;
+  router.getRouterMeasurements(routerMetrics);
+  _routerPower.setValue(routerMetrics.power);
+  _routerApparentPower.setValue(routerMetrics.apparentPower);
+  _routerPowerFactor.setValue(routerMetrics.powerFactor);
+  _routerTHDi.setValue(routerMetrics.thdi);
+  _routerCurrent.setValue(routerMetrics.current);
+  _routerResistance.setValue(routerMetrics.resistance);
+  _routerEnergy.setValue(routerMetrics.energy);
 
-  Mycila::System::Memory* memory = new Mycila::System::Memory();
-  Mycila::System::getMemory(*memory);
-  _deviceHeapTotal.setValue(memory->total);
-  _deviceHeapUsed.setValue(memory->used);
-  _deviceHeapUsage.setValue(memory->usage);
-  _deviceHeapMinFree.setValue(memory->minimumFree);
-  delete memory;
-  memory = nullptr;
+  Mycila::System::Memory memory;
+  Mycila::System::getMemory(memory);
+  _deviceHeapTotal.setValue(memory.total);
+  _deviceHeapUsed.setValue(memory.used);
+  _deviceHeapUsage.setValue(memory.usage);
+  _deviceHeapMinFree.setValue(memory.minimumFree);
+
+  Mycila::RouterOutput::Metrics output1Measurements;
+  if (output1)
+    output1->getOutputMeasurements(output1Measurements);
+
+  Mycila::RouterOutput::Metrics output2Measurements;
+  if (output2)
+    output2->getOutputMeasurements(output2Measurements);
 
   // statistics
 
@@ -1423,7 +1424,7 @@ void YaSolR::Website::updateCards() {
         _output1State.setFeedback(output1->getStateName(), dash::Status::WARNING);
         break;
       case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-        _output1State.setFeedback(output1->getStateName(), dash::Status::SUCCESS);
+        _output1State.setFeedback(output1->getStateName() + std::string(" (") + std::to_string(static_cast<uint16_t>(output1Measurements.power)) + " W)", dash::Status::SUCCESS);
         break;
       default:
         _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
@@ -1445,7 +1446,7 @@ void YaSolR::Website::updateCards() {
         _output2State.setFeedback(output2->getStateName(), dash::Status::WARNING);
         break;
       case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-        _output2State.setFeedback(output2->getStateName(), dash::Status::SUCCESS);
+        _output2State.setFeedback(output2->getStateName() + std::string(" (") + std::to_string(static_cast<uint16_t>(output2Measurements.power)) + " W)", dash::Status::SUCCESS);
         break;
       default:
         _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
@@ -1460,6 +1461,8 @@ void YaSolR::Website::updateCards() {
 
   _relay1Switch.setValue(relay1 && relay1->isOn());
   _relay2Switch.setValue(relay2 && relay2->isOn());
+  _relay1SwitchRO.setFeedback(relay1 && relay1->isOn() ? std::to_string(relay1->getLoad(gridMetrics.voltage)) + " W" : "0 W", relay1 && relay1->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
+  _relay2SwitchRO.setFeedback(relay2 && relay2->isOn() ? std::to_string(relay2->getLoad(gridMetrics.voltage)) + " W" : "0 W", relay2 && relay2->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
 
   _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
   _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
@@ -1470,9 +1473,6 @@ void YaSolR::Website::updateCards() {
   // tab: output 1
 
   if (output1) {
-    Mycila::RouterOutput::Metrics output1Measurements;
-    output1->getOutputMeasurements(output1Measurements);
-
     _output1DimmerSliderRO.setValue(output1->getDimmerDutyCycleLive() * 100.0f);
     _output1Power.setValue(output1Measurements.power);
     _output1ApparentPower.setValue(output1Measurements.apparentPower);
@@ -1488,9 +1488,6 @@ void YaSolR::Website::updateCards() {
   // tab: output 2
 
   if (output2) {
-    Mycila::RouterOutput::Metrics output2Measurements;
-    output2->getOutputMeasurements(output2Measurements);
-
     _output2DimmerSliderRO.setValue(output2->getDimmerDutyCycleLive() * 100.0f);
     _output2Power.setValue(output2Measurements.power);
     _output2ApparentPower.setValue(output2Measurements.apparentPower);

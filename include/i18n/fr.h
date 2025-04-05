@@ -50,7 +50,7 @@
 #define YASOLR_LBL_044 "Puissance réseau"
 #define YASOLR_LBL_045 "Température du routeur"
 #define YASOLR_LBL_046 "Sortie 1"
-#define YASOLR_LBL_047 "État"
+// #define YASOLR_LBL_047 "État"
 #define YASOLR_LBL_048 "Température"
 #define YASOLR_LBL_049 "Supprimer le certificat serveur"
 #define YASOLR_LBL_050 "Variateur"

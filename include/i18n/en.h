@@ -50,7 +50,7 @@
 #define YASOLR_LBL_044 "Grid Power"
 #define YASOLR_LBL_045 "Router Temperature"
 #define YASOLR_LBL_046 "Output 1"
-#define YASOLR_LBL_047 "Status"
+// #define YASOLR_LBL_047 "Status"
 #define YASOLR_LBL_048 "Temperature"
 #define YASOLR_LBL_049 "Remove Server Certificate"
 #define YASOLR_LBL_050 "Dimmer"
