@@ -23,7 +23,6 @@ static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .
 // tabs are declared early in order to have the smallest IDs that never change
 static dash::Tab _output1Tab(dashboard, "\u26A1 " YASOLR_LBL_046);
 static dash::Tab _output2Tab(dashboard, "\u26A1 " YASOLR_LBL_070);
-static dash::Tab _relaysTab(dashboard, "\u26A1 " YASOLR_LBL_071);
 static dash::Tab _pidTab(dashboard, "\u2672 " YASOLR_LBL_159);
 static dash::Tab _networkTab(dashboard, "\u2601 " YASOLR_LBL_087);
 static dash::Tab _ntpTab(dashboard, "\u23F2 " YASOLR_LBL_158);
@@ -95,10 +94,12 @@ static dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_042, "
 static dash::EnergyCard<uint32_t> _routerEnergy(dashboard, YASOLR_LBL_043, "Wh");
 static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
 static dash::TemperatureCard<float, 2> _routerDS18State(dashboard, YASOLR_LBL_045);
+static dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
+static dash::FeedbackCard _relay1SwitchRO(dashboard, YASOLR_LBL_074);
+static dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
+static dash::FeedbackCard _relay2SwitchRO(dashboard, YASOLR_LBL_077);
 
 #ifdef APP_MODEL_OSS
-static dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
-static dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
 static dash::FeedbackCard<const char*> _output1State(dashboard, YASOLR_LBL_046);
 static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_048);
 static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
@@ -161,13 +162,6 @@ static dash::EnergyCard<uint32_t> _output2Energy(dashboard, YASOLR_LBL_059, "Wh"
 static dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
 static dash::FeedbackCard<const char*> _output2BypassRO(dashboard, YASOLR_LBL_051);
-
-// tab: relays
-
-static dash::SwitchCard _relay1Switch(dashboard, YASOLR_LBL_073);
-static dash::FeedbackCard<const char*> _relay1SwitchRO(dashboard, YASOLR_LBL_074);
-static dash::SwitchCard _relay2Switch(dashboard, YASOLR_LBL_076);
-static dash::FeedbackCard<const char*> _relay2SwitchRO(dashboard, YASOLR_LBL_077);
 
 // tab: system
 
@@ -497,13 +491,6 @@ void YaSolR::Website::begin() {
 
   _boolConfig(_output2DimmerAuto, KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   _boolConfig(_output2BypassAuto, KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-
-  // tab: relays
-
-  _relay1Switch.setTab(_relaysTab);
-  _relay1SwitchRO.setTab(_relaysTab);
-  _relay2Switch.setTab(_relaysTab);
-  _relay2SwitchRO.setTab(_relaysTab);
 
   // tab: system
 
@@ -1038,9 +1025,15 @@ void YaSolR::Website::initCards() {
 
   _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled || output1TempReceived);
   _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled || output2TempReceived);
-  _relaysTab.setDisplay(relay1Enabled || relay2Enabled);
   _output1ConfigTab.setDisplay(dimmer1Enabled || output1RelayEnabled);
   _output2ConfigTab.setDisplay(dimmer2Enabled || output2RelayEnabled);
+
+  // overview
+
+  _relay1Switch.setDisplay(relay1Enabled && load1 <= 0);
+  _relay1SwitchRO.setDisplay(relay1Enabled && load1 > 0);
+  _relay2Switch.setDisplay(relay2Enabled && load2 <= 0);
+  _relay2SwitchRO.setDisplay(relay2Enabled && load2 > 0);
 
   // tab: output 1
 
@@ -1107,13 +1100,6 @@ void YaSolR::Website::initCards() {
   _output2BypassAuto.setDisplay(bypass2Possible);
   _output2Bypass.setDisplay(bypass2Possible && !autoBypass2Activated);
   _output2BypassRO.setDisplay(bypass2Possible && autoBypass2Activated);
-
-  // tab: relays
-
-  _relay1Switch.setDisplay(relay1Enabled && load1 <= 0);
-  _relay1SwitchRO.setDisplay(relay1Enabled && load1 > 0);
-  _relay2Switch.setDisplay(relay2Enabled && load2 <= 0);
-  _relay2SwitchRO.setDisplay(relay2Enabled && load2 > 0);
 
   // tab: system
 
@@ -1382,6 +1368,8 @@ void YaSolR::Website::updateCards() {
   _gridEnergyReturned.setValue(gridMetrics->energyReturned);
   _routerVoltage.setValue(gridMetrics->voltage);
   _gridPower.setValue(gridMetrics->power);
+  _relay1SwitchRO.setFeedback(relay1 && relay1->isOn() ? std::to_string(relay1->getLoad(gridMetrics->voltage)) + " W" : "0 W", relay1 && relay1->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
+  _relay2SwitchRO.setFeedback(relay2 && relay2->isOn() ? std::to_string(relay2->getLoad(gridMetrics->voltage)) + " W" : "0 W", relay2 && relay2->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
   delete gridMetrics;
   gridMetrics = nullptr;
 
@@ -1423,10 +1411,6 @@ void YaSolR::Website::updateCards() {
 #endif
 
   // home
-
-  _routerDS18State.setValue(ds18Sys ? ds18Sys->getTemperature().value_or(0.0f) : 0);
-  _relay1Switch.setValue(relay1 && relay1->isOn());
-  _relay2Switch.setValue(relay2 && relay2->isOn());
 
   if (output1) {
     switch (output1->getState()) {
@@ -1472,6 +1456,11 @@ void YaSolR::Website::updateCards() {
     _output2Bypass.setValue(output2->isBypassOn());
   }
 
+  _routerDS18State.setValue(ds18Sys ? ds18Sys->getTemperature().value_or(0.0f) : 0);
+
+  _relay1Switch.setValue(relay1 && relay1->isOn());
+  _relay2Switch.setValue(relay2 && relay2->isOn());
+
   _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
   _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
   _output1ResistanceCalibration.setValue(router.isCalibrationRunning());
@@ -1513,11 +1502,6 @@ void YaSolR::Website::updateCards() {
     _output2Energy.setValue(output2Measurements.energy);
     _output2BypassRO.setFeedback(YASOLR_STATE(output2->isBypassOn()), output2->isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
   }
-
-  // tab: relays
-
-  _relay1SwitchRO.setFeedback(YASOLR_STATE(relay1 && relay1->isOn()), relay1 && relay1->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
-  _relay2SwitchRO.setFeedback(YASOLR_STATE(relay2 && relay2->isOn()), relay2 && relay2->isOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
 
   // tab: mqtt
 

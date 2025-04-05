@@ -49,10 +49,8 @@ bool Mycila::RouterRelay::autoSwitch(float gridVoltage, float gridPower, float r
 
   // detects the grid nominal voltage
   const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
-  // calculate the amperage of the given nominal power of connected load
-  const float resistance = static_cast<float>(nominalVoltage * nominalVoltage) / static_cast<float>(_nominalLoad);
-  // calculate with the current voltage what the exact power of the load would be
-  const uint16_t adjustedLoad = static_cast<uint16_t>(gridVoltage * gridVoltage / resistance);
+  // calculate the real load with the grid voltage
+  const uint16_t adjustedLoad = getLoad(gridVoltage);
 
   LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %" PRIu16 " W @ %" PRIu16 " V, Grid: %.1f W, Routed: %.1f W, Setpoint: %.1f W, Tolerance: %.2f %%", _relay->getPin(), _nominalLoad, nominalVoltage, adjustedLoad, static_cast<uint16_t>(gridVoltage), gridPower, routedPower, setpoint, _tolerance * 100.0f);
 
