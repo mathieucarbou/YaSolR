@@ -109,9 +109,7 @@ To update the firmware through OTA, please follow these steps:
 
 [![](assets/img/screenshots/app-system.jpeg)](assets/img/screenshots/app-system.jpeg)
 
-3. Once in SafeBoot mode, the device will use your same YaSolR network settings (SSID, static IP address). Otherwise an Access Point with the name `SafeBoot-xxxxxx` that you can connect to.
-
-[![](assets/img/screenshots/safeboot-ssid.jpeg)](assets/img/screenshots/safeboot-ssid.jpeg)
+3. The device will use your same YaSolR network settings (SSID, static IP address) to start in SafeBoot mode. **Just refresh the web page.**. Otherwise, look for an Access Point named YaSolR-xxx or SafeBoot-xxx
 
 4. Once connected, you should see this UI allowing you to update the YaSolR firmware
 
