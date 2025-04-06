@@ -1388,12 +1388,14 @@ void YaSolR::Website::updateCards() {
   _deviceHeapMinFree.setValue(memory.minimumFree);
 
   Mycila::RouterOutput::Metrics output1Measurements;
-  if (output1)
+  if (output1) {
     output1->getOutputMeasurements(output1Measurements);
+  }
 
   Mycila::RouterOutput::Metrics output2Measurements;
-  if (output2)
+  if (output2) {
     output2->getOutputMeasurements(output2Measurements);
+  }
 
   // statistics
 
@@ -1424,7 +1426,7 @@ void YaSolR::Website::updateCards() {
         _output1State.setFeedback(output1->getStateName(), dash::Status::WARNING);
         break;
       case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-        _output1State.setFeedback(output1->getStateName() + std::string(" (") + std::to_string(static_cast<uint16_t>(output1Measurements.power)) + " W)", dash::Status::SUCCESS);
+        _output1State.setFeedback(output1->getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output1->getDimmerDutyCycleLive() * 100.0f)) + " %", dash::Status::SUCCESS);
         break;
       default:
         _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
@@ -1446,7 +1448,7 @@ void YaSolR::Website::updateCards() {
         _output2State.setFeedback(output2->getStateName(), dash::Status::WARNING);
         break;
       case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-        _output2State.setFeedback(output2->getStateName() + std::string(" (") + std::to_string(static_cast<uint16_t>(output2Measurements.power)) + " W)", dash::Status::SUCCESS);
+        _output2State.setFeedback(output2->getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output2->getDimmerDutyCycleLive() * 100.0f)) + " %", dash::Status::SUCCESS);
         break;
       default:
         _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
