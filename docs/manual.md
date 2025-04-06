@@ -117,6 +117,12 @@ To update the firmware through OTA, please follow these steps:
 
 5. After the update is successful, the device will reboot in the updated YaSolR.
 
+**Demo:**
+
+Here is a demo of the OTA update with SafeBoot:
+
+[![YaSolR OTA Update using SafeBoot mode](https://img.youtube.com/vi/9igXR-53qQ0/0.jpg)](https://www.youtube.com/watch?v9igXR-53qQ0 "YaSolR OTA Update using SafeBoot mode")
+
 ### Captive Portal (Access Point) and WiFi
 
 > ##### TIP
