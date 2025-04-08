@@ -133,7 +133,6 @@ static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_050
 static dash::ProgressCard<float, 2> _output1DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
 static dash::SwitchCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::SwitchCard _output1Bypass(dashboard, YASOLR_LBL_051);
-static dash::FeedbackCard<const char*> _output1BypassRO(dashboard, YASOLR_LBL_051);
 
 static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_052, "W");
 static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
@@ -153,7 +152,6 @@ static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_050
 static dash::ProgressCard<float, 2> _output2DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
 static dash::SwitchCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::SwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
-static dash::FeedbackCard<const char*> _output2BypassRO(dashboard, YASOLR_LBL_051);
 
 static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_052, "W");
 static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
@@ -467,7 +465,6 @@ void YaSolR::Website::begin() {
   _output1Energy.setTab(_output1Tab);
   _output1BypassAuto.setTab(_output1Tab);
   _output1Bypass.setTab(_output1Tab);
-  _output1BypassRO.setTab(_output1Tab);
 
   _boolConfig(_output1DimmerAuto, KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   _boolConfig(_output1BypassAuto, KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
@@ -488,7 +485,6 @@ void YaSolR::Website::begin() {
   _output2Energy.setTab(_output2Tab);
   _output2BypassAuto.setTab(_output2Tab);
   _output2Bypass.setTab(_output2Tab);
-  _output2BypassRO.setTab(_output2Tab);
 
   _boolConfig(_output2DimmerAuto, KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   _boolConfig(_output2BypassAuto, KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -1043,7 +1039,6 @@ void YaSolR::Website::initCards() {
 
   if (!output1) {
     _output1DimmerSliderRO.setValue(0);
-    _output1BypassRO.setFeedback("DISABLED", dash::Status::IDLE);
     _output1Power.setValue(0);
     _output1ApparentPower.setValue(0);
     _output1PowerFactor.setValue(NAN);
@@ -1066,8 +1061,7 @@ void YaSolR::Website::initCards() {
   _output1Resistance.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
-  _output1Bypass.setDisplay(bypass1Possible && !autoBypass1Activated);
-  _output1BypassRO.setDisplay(bypass1Possible && autoBypass1Activated);
+  _output1Bypass.setDisplay(bypass1Possible);
 
   // tab: output 2
 
@@ -1076,7 +1070,6 @@ void YaSolR::Website::initCards() {
 
   if (!output2) {
     _output2DimmerSliderRO.setValue(0);
-    _output2BypassRO.setFeedback("DISABLED", dash::Status::IDLE);
     _output2Power.setValue(0);
     _output2ApparentPower.setValue(0);
     _output2PowerFactor.setValue(NAN);
@@ -1099,8 +1092,7 @@ void YaSolR::Website::initCards() {
   _output2Resistance.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
-  _output2Bypass.setDisplay(bypass2Possible && !autoBypass2Activated);
-  _output2BypassRO.setDisplay(bypass2Possible && autoBypass2Activated);
+  _output2Bypass.setDisplay(bypass2Possible);
 
   // tab: system
 
@@ -1484,7 +1476,6 @@ void YaSolR::Website::updateCards() {
     _output1Current.setValue(output1Measurements.current);
     _output1Resistance.setValue(output1Measurements.resistance);
     _output1Energy.setValue(output1Measurements.energy);
-    _output1BypassRO.setFeedback(YASOLR_STATE(output1->isBypassOn()), output1->isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
   }
 
   // tab: output 2
@@ -1499,7 +1490,6 @@ void YaSolR::Website::updateCards() {
     _output2Current.setValue(output2Measurements.current);
     _output2Resistance.setValue(output2Measurements.resistance);
     _output2Energy.setValue(output2Measurements.energy);
-    _output2BypassRO.setFeedback(YASOLR_STATE(output2->isBypassOn()), output2->isBypassOn() ? dash::Status::SUCCESS : dash::Status::IDLE);
   }
 
   // tab: mqtt

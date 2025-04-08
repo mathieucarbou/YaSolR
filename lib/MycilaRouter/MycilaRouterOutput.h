@@ -73,7 +73,7 @@ namespace Mycila {
 
       bool isDimmerOnline() const { return _dimmer->isOnline(); }
       bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
-      bool isAutoDimmerEnabled() const { return config.autoDimmer && config.calibratedResistance > 0 && !_autoBypassEnabled && !_bypassEnabled; }
+      bool isAutoDimmerEnabled() const { return config.autoDimmer && config.calibratedResistance > 0 && !isBypassOn(); }
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
       bool isDimmerOn() const { return _dimmer->isOn(); }
       float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
@@ -88,7 +88,6 @@ namespace Mycila {
       void setDimmerDutyCycleMax(float max) { _dimmer->setDutyCycleMax(max); }
       void setDimmerDutyCycleLimit(float limit) { _dimmer->setDutyCycleLimit(limit); }
       void applyTemperatureLimit();
-
       float autoDivert(float gridVoltage, float availablePowerToDivert);
 
       // bypass
@@ -96,7 +95,7 @@ namespace Mycila {
       bool isBypassRelayEnabled() const { return _relay && _relay->isEnabled(); }
       bool isBypassRelayOn() const { return _relay && _relay->isOn(); }
       bool isAutoBypassEnabled() const { return config.autoBypass; }
-      bool isBypassOn() const { return _bypassEnabled; }
+      bool isBypassOn() const { return _autoBypassEnabled || _manualBypassEnabled; }
       bool setBypass(bool state);
       bool setBypassOn() { return setBypass(true); }
       bool setBypassOff() { return setBypass(false); }
@@ -132,7 +131,7 @@ namespace Mycila {
       Dimmer* _dimmer;
       Relay* _relay = nullptr; // optional
       bool _autoBypassEnabled = false;
-      bool _bypassEnabled = false;
+      bool _manualBypassEnabled = false;
       ExpiringValue<float> _temperature;
       ExpiringValue<Metrics> _localMetrics;
 

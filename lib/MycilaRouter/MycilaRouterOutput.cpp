@@ -43,7 +43,7 @@ Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
     return State::OUTPUT_DISABLED;
   if (_autoBypassEnabled)
     return State::OUTPUT_BYPASS_AUTO;
-  if (_bypassEnabled)
+  if (_manualBypassEnabled)
     return State::OUTPUT_BYPASS_MANUAL;
   if (_dimmer->isOn())
     return State::OUTPUT_ROUTING;
@@ -125,7 +125,10 @@ bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
     return false;
   }
 
-  _setBypass(false);
+  if (_manualBypassEnabled) {
+    _setBypass(false);
+  }
+
   _dimmer->setDutyCycle(dutyCycle);
 
   LOGD(TAG, "Set Dimmer '%s' duty to %f", _name, _dimmer->getDutyCycle());
@@ -137,7 +140,7 @@ void Mycila::RouterOutput::applyTemperatureLimit() {
   if (_autoBypassEnabled)
     return;
 
-  if (_bypassEnabled)
+  if (_manualBypassEnabled)
     return;
 
   if (_dimmer->isOff())
@@ -195,26 +198,22 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
 
 // bypass
 
-bool Mycila::RouterOutput::setBypass(bool switchOn) {
-  if (_autoBypassEnabled && !switchOn) {
-    LOGW(TAG, "Auto Bypass '%s' is activated: unable to turn of bypass relay", _name);
+bool Mycila::RouterOutput::setBypass(bool state) {
+  if (_autoBypassEnabled) {
+    LOGW(TAG, "Auto Bypass '%s' is activated: unable to manually control bypass relay", _name);
     return false;
   }
-  _setBypass(switchOn);
-  return _bypassEnabled;
+  _setBypass(state);
+  _manualBypassEnabled = state;
+  return true;
 }
 
 void Mycila::RouterOutput::applyAutoBypass() {
-  if (isAutoBypassEnabled() && !_autoBypassEnabled && isBypassOn()) {
-    LOGI(TAG, "Auto Bypass enabled: turning off manual bypass on output '%s'", _name);
-    _setBypass(false);
-  }
-
   if (!isAutoBypassEnabled()) {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Auto Bypass disabled: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
-      _setBypass(false);
+      _setBypass(_manualBypassEnabled);
     }
     return;
   }
@@ -226,7 +225,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Unable to get time: stopping Auto Bypass '%s'", _name);
       _autoBypassEnabled = false;
-      _setBypass(false);
+      _setBypass(_manualBypassEnabled);
     }
     return;
   }
@@ -238,7 +237,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
       if (_autoBypassEnabled) {
         LOGW(TAG, "Invalid temperature sensor value: stopping Auto Bypass '%s'", _name);
         _autoBypassEnabled = false;
-        _setBypass(false);
+        _setBypass(_manualBypassEnabled);
       }
       return;
     }
@@ -249,7 +248,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
       if (_autoBypassEnabled) {
         LOGI(TAG, "Temperature reached %.02f °C: stopping Auto Bypass '%s'", temp, _name);
         _autoBypassEnabled = false;
-        _setBypass(false);
+        _setBypass(_manualBypassEnabled);
       }
       return;
     }
@@ -265,7 +264,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
     if (_autoBypassEnabled) {
       LOGW(TAG, "Time range %s to %s is invalid: stopping Auto Bypass '%s'", config.autoStartTime.c_str(), config.autoStopTime.c_str(), _name);
       _autoBypassEnabled = false;
-      _setBypass(false);
+      _setBypass(_manualBypassEnabled);
     }
     return;
   }
@@ -274,7 +273,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
     if (_autoBypassEnabled) {
       LOGI(TAG, "Time reached %s: stopping Auto Bypass '%s'", config.autoStopTime.c_str(), _name);
       _autoBypassEnabled = false;
-      _setBypass(false);
+      _setBypass(_manualBypassEnabled);
     }
     return;
   }
@@ -286,12 +285,12 @@ void Mycila::RouterOutput::applyAutoBypass() {
     if (config.weekDays.find(wday) != std::string::npos) {
       LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
       _setBypass(true);
-      _autoBypassEnabled = _bypassEnabled;
+      _autoBypassEnabled = true;
     }
     return;
   }
 
-  // auto bypass is enabled
+  // auto bypass is enabled (_autoBypassEnabled == true)
 
   // relay is on ?
   if (isBypassRelayOn())
@@ -302,7 +301,7 @@ void Mycila::RouterOutput::applyAutoBypass() {
     return;
 
   // start bypass
-  LOGI(TAG, "Auto Bypass '%s' is activated: restarting Relay", _name);
+  LOGI(TAG, "Auto Bypass '%s' must be restarted", _name);
   _setBypass(true);
 }
 
@@ -347,34 +346,30 @@ void Mycila::RouterOutput::_setBypass(bool state, bool log) {
     // we want to activate bypass
     if (isBypassRelayEnabled()) {
       // we have a relay in-place: use it
-      _dimmer->off();
-      if (!isBypassRelayOn()) {
-        if (log)
-          LOGD(TAG, "Turning Bypass Relay '%s' ON", _name);
-        _relay->setState(true);
+      if (log && !isBypassRelayOn()) {
+        LOGD(TAG, "Turning Bypass Relay '%s' ON", _name);
       }
-      _bypassEnabled = true;
-
+      _dimmer->off();
+      _relay->setState(true);
     } else {
       // we don't have a relay: use the dimmer
-      if (log)
+      if (log) {
         LOGD(TAG, "Turning Dimmer '%s' ON", _name);
+      }
       _dimmer->on();
-      _bypassEnabled = true;
     }
   } else {
     // we want to deactivate bypass
     if (isBypassRelayEnabled()) {
-      if (isBypassRelayOn()) {
-        if (log)
-          LOGD(TAG, "Turning Bypass Relay '%s' OFF", _name);
-        _relay->setState(false);
+      if (log && isBypassRelayOn()) {
+        LOGD(TAG, "Turning Bypass Relay '%s' OFF", _name);
       }
+      _relay->setState(false);
     } else {
-      if (log)
+      if (log) {
         LOGD(TAG, "Turning Dimmer '%s' OFF", _name);
+      }
       _dimmer->off();
     }
-    _bypassEnabled = false;
   }
 }
