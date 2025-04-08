@@ -230,8 +230,8 @@ The output sections show the state of the outputs and the possibility to control
 
 - `Bypass Automatic Control`: Activate or deactivate automatic dimmer bypass (force heating) based on hours and/or temperature.
 - `Bypass`: Activate or deactivate dimmer bypass (force heating)
-  Only available when the bypass is not in automatic mode.
-  Otherwise the bypass state is displayed.
+  This is a manual override. So if, when automatic bypass deactivates (in the morning for example), you hav manual bypass that is activated, 
+  then bypass will stay activated until you deactivate the manual override.
 
 > ##### TIP
 >
