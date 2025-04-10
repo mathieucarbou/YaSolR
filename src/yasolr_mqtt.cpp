@@ -279,7 +279,7 @@ static void publishStaticData() {
   yield();
 
   mqtt->publish(baseTopic + "/system/network/eth/mac_address", espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH), true);
-  mqtt->publish(baseTopic + "/system/network/hostname", espConnect.getHostname(), true);
+  mqtt->publish(baseTopic + "/system/network/hostname", espConnect.getConfig().hostname.c_str(), true);
   mqtt->publish(baseTopic + "/system/network/wifi/mac_address", espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA), true);
   yield();
 }

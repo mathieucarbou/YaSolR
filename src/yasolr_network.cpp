@@ -47,6 +47,7 @@ void yasolr_init_network() {
   Mycila::ESPConnect::Config espConnectConfig;
   espConnectConfig.hostname = Mycila::AppInfo.defaultHostname;
   espConnectConfig.apMode = config.getBool(KEY_ENABLE_AP_MODE);
+  espConnectConfig.wifiBSSID = config.getString(KEY_WIFI_BSSID);
   espConnectConfig.wifiSSID = config.getString(KEY_WIFI_SSID);
   espConnectConfig.wifiPassword = config.getString(KEY_WIFI_PASSWORD);
   espConnectConfig.ipConfig.ip.fromString(config.get(KEY_NET_IP));
@@ -76,7 +77,7 @@ void yasolr_init_network() {
       case Mycila::ESPConnect::State::NETWORK_CONNECTED:
         logger.info(TAG, "Connected to network!");
         logger.info(TAG, "IP Address: %s", espConnect.getIPAddress().toString().c_str());
-        logger.info(TAG, "Hostname: %s", espConnect.getHostname().c_str());
+        logger.info(TAG, "Hostname: %s", espConnect.getConfig().hostname.c_str());
         if (espConnect.getWiFiSSID().length()) {
           logger.info(TAG, "WiFi SSID: %s", espConnect.getWiFiSSID().c_str());
         }
@@ -98,14 +99,17 @@ void yasolr_init_network() {
         logger.info(TAG, "Captive Portal started at %s with IP address %s", espConnect.getWiFiSSID().c_str(), espConnect.getIPAddress().toString().c_str());
         break;
       case Mycila::ESPConnect::State::PORTAL_COMPLETE: {
-        if (espConnect.hasConfiguredAPMode()) {
+        if (espConnect.getConfig().apMode) {
           logger.info(TAG, "Captive Portal: Access Point configured");
           config.setBool(KEY_ENABLE_AP_MODE, true);
         } else {
           logger.info(TAG, "Captive Portal: WiFi configured");
+          logger.info(TAG, "WiFi SSID: %s", espConnect.getConfig().wifiSSID.c_str());
+          logger.info(TAG, "WiFi BSSID: %s", espConnect.getConfig().wifiBSSID.c_str());
           config.setBool(KEY_ENABLE_AP_MODE, false);
-          config.set(KEY_WIFI_SSID, espConnect.getConfiguredWiFiSSID());
-          config.set(KEY_WIFI_PASSWORD, espConnect.getConfiguredWiFiPassword());
+          config.set(KEY_WIFI_BSSID, espConnect.getConfig().wifiBSSID);
+          config.set(KEY_WIFI_SSID, espConnect.getConfig().wifiSSID);
+          config.set(KEY_WIFI_PASSWORD, espConnect.getConfig().wifiPassword);
         }
         break;
       }

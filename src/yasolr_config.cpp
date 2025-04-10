@@ -125,6 +125,7 @@ void yasolr_init_config() {
   config.configure(KEY_UDP_PORT, std::to_string(YASOLR_UDP_PORT));
   config.configure(KEY_VICTRON_MODBUS_PORT, "502");
   config.configure(KEY_VICTRON_MODBUS_SERVER);
+  config.configure(KEY_WIFI_BSSID);
   config.configure(KEY_WIFI_PASSWORD);
   config.configure(KEY_WIFI_SSID);
 

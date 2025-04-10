@@ -199,6 +199,7 @@
 #define KEY_VICTRON_MODBUS_SERVER          "vic_mb_server"
 #define KEY_WIFI_PASSWORD                  "wifi_pwd"
 #define KEY_WIFI_SSID                      "wifi_ssid"
+#define KEY_WIFI_BSSID                     "wifi_bssid"
 
 // pinout configuration keys
 

@@ -68,6 +68,7 @@ static dash::StatisticValue _networkEthIP(dashboard, YASOLR_LBL_023);
 static dash::StatisticValue _networkEthMAC(dashboard, YASOLR_LBL_024);
 static dash::StatisticValue _networkWiFiIP(dashboard, YASOLR_LBL_025);
 static dash::StatisticValue _networkWiFiMAC(dashboard, YASOLR_LBL_026);
+static dash::StatisticValue _networkWiFiBSSID(dashboard, YASOLR_LBL_161);
 static dash::StatisticValue _networkWiFiSSID(dashboard, YASOLR_LBL_027);
 static dash::StatisticValue<int8_t> _networkWiFiRSSI(dashboard, YASOLR_LBL_028);
 static dash::StatisticValue<int8_t> _networkWiFiSignal(dashboard, YASOLR_LBL_029);
@@ -184,14 +185,15 @@ static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
 
 // tab: network
 
-static dash::PasswordCard _adminPwd(dashboard, YASOLR_LBL_088, YASOLR_HIDDEN_PWD);
 static dash::TextInputCard<const char*> _wifiSSID(dashboard, YASOLR_LBL_092);
+static dash::TextInputCard<const char*> _wifiBSSID(dashboard, YASOLR_LBL_047);
 static dash::PasswordCard _wifiPwd(dashboard, YASOLR_LBL_093, YASOLR_HIDDEN_PWD);
 static dash::SwitchCard _apMode(dashboard, YASOLR_LBL_094);
 static dash::TextInputCard<const char*> _staticIP(dashboard, YASOLR_LBL_188);
 static dash::TextInputCard<const char*> _subnetMask(dashboard, YASOLR_LBL_189);
 static dash::TextInputCard<const char*> _gateway(dashboard, YASOLR_LBL_190);
 static dash::TextInputCard<const char*> _dnsServer(dashboard, YASOLR_LBL_191);
+static dash::PasswordCard _adminPwd(dashboard, YASOLR_LBL_088, YASOLR_HIDDEN_PWD);
 
 // tab: ntp
 
@@ -527,6 +529,7 @@ void YaSolR::Website::begin() {
 
   _adminPwd.setTab(_networkTab);
   _wifiSSID.setTab(_networkTab);
+  _wifiBSSID.setTab(_networkTab);
   _wifiPwd.setTab(_networkTab);
   _apMode.setTab(_networkTab);
   _staticIP.setTab(_networkTab);
@@ -537,6 +540,7 @@ void YaSolR::Website::begin() {
   _passwordConfig(_adminPwd, KEY_ADMIN_PASSWORD);
   _boolConfig(_apMode, KEY_ENABLE_AP_MODE);
   _textConfig(_wifiSSID, KEY_WIFI_SSID);
+  _textConfig(_wifiBSSID, KEY_WIFI_BSSID);
   _passwordConfig(_wifiPwd, KEY_WIFI_PASSWORD);
   _textConfig(_staticIP, KEY_NET_IP);
   _textConfig(_subnetMask, KEY_NET_SUBNET);
@@ -949,6 +953,7 @@ void YaSolR::Website::initCards() {
       _networkWiFiIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
       _networkWiFiMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA));
       _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
+      _networkWiFiBSSID.setValue(espConnect.getWiFiBSSID());
       break;
 
     default:
@@ -1013,6 +1018,7 @@ void YaSolR::Website::initCards() {
   _networkWiFiIP.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiMAC.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
+  _networkWiFiBSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _output1RelaySwitchCount.setDisplay(output1 && output1->isBypassRelayEnabled());
   _output2RelaySwitchCount.setDisplay(output2 && output2->isBypassRelayEnabled());
   _relay1SwitchCount.setDisplay(relay1 && relay1->isEnabled());
@@ -1118,6 +1124,7 @@ void YaSolR::Website::initCards() {
 
   _adminPwd.setValue(config.get(KEY_ADMIN_PASSWORD));
   _wifiSSID.setValue(config.get(KEY_WIFI_SSID));
+  _wifiBSSID.setValue(config.get(KEY_WIFI_BSSID));
   _wifiPwd.setValue(config.get(KEY_WIFI_PASSWORD));
   _apMode.setValue(config.getBool(KEY_ENABLE_AP_MODE));
   _staticIP.setValue(config.get(KEY_NET_IP));

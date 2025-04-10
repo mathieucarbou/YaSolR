@@ -350,7 +350,7 @@ void rest_api() {
     root["network"]["eth"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString();
     root["network"]["eth"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
 
-    root["network"]["hostname"] = espConnect.getHostname();
+    root["network"]["hostname"] = espConnect.getConfig().hostname;
     root["network"]["ip_address"] = espConnect.getIPAddress().toString();
     root["network"]["mac_address"] = espConnect.getMACAddress();
     switch (espConnect.getMode()) {
