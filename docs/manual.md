@@ -321,6 +321,7 @@ Note: the WebSocket PID output was removed
 **WiFi settings:**
 
 - `WiFi SSID`: the Home WiFi SSID to connect to
+- `WiFi BSSID`: this value wil be set to the BSSID to the WiFi selected in the CaptivePortal. You can clear this value or change it. It helps YaSolR always reconnect to the same AP when it was setup. This increase security and connection stability.
 - `WiFi Password`: the Home WiFi password to connect to
 - `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
   You will need to connect to its WiFi to access the dashboard again.
