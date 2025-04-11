@@ -696,9 +696,11 @@ The temperature sensors are used to monitor the water tank in order:
 - to trigger an automatic heating based on temperature levels (called **auto bypass**).
 - to stop the routing if the temperature is too high (called **temperature limiter**).
 
+To activate them, buttons are available in the `Hardware` section and called `Output 1: DS18` and `Output 2: DS18`.
+
 Supported temperature sensor: `DS18B20`
 
-A temperature sensor can also be used to monitor the router box itself (`Overview` section).
+A temperature sensor can also be used to monitor the router box itself (`Overview` section): it is the button calld `Router: DS18`
 
 #### Relay Types
 
