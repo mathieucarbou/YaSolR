@@ -26,9 +26,7 @@ static Mycila::Dimmer* dimmer2 = nullptr;
 static Mycila::Task calibrationTask("Calibration", [](void* params) { router.continueCalibration(); });
 
 static Mycila::Task routerTask("Router", [](void* params) {
-  std::optional<float> voltage = grid.getVoltage();
-
-  if (!voltage.has_value() || !grid.getPower().has_value())
+  if (!grid.getVoltage().has_value() || !grid.getPower().has_value())
     router.noDivert();
 
   if (output1) {
@@ -213,16 +211,10 @@ static void initOutput2(uint16_t semiPeriod) {
 }
 
 void yasolr_divert() {
-  if (router.isCalibrationRunning())
-    return;
-
-  if (!router.isAutoDimmerEnabled())
-    return;
-
   std::optional<float> voltage = grid.getVoltage();
-
-  if (voltage.has_value() && grid.getPower().has_value()) {
-    router.divert(voltage.value(), grid.getPower().value());
+  std::optional<float> power = grid.getPower();
+  if (voltage.has_value() && power.has_value()) {
+    router.divert(voltage.value(), power.value());
     if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }
