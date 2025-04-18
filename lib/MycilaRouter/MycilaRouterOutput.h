@@ -47,6 +47,7 @@ namespace Mycila {
           bool autoDimmer = false;
           uint8_t dimmerTempLimit = 0;
           bool autoBypass = false;
+          uint16_t bypassTimeoutSec = 0;
           uint8_t autoStartTemperature = 0;
           uint8_t autoStopTemperature = 0;
           std::string autoStartTime;
@@ -96,10 +97,11 @@ namespace Mycila {
       bool isBypassRelayOn() const { return _relay && _relay->isOn(); }
       bool isAutoBypassEnabled() const { return config.autoBypass; }
       bool isBypassOn() const { return _autoBypassEnabled || _manualBypassEnabled; }
-      bool setBypass(bool state);
-      bool setBypassOn() { return setBypass(true); }
-      bool setBypassOff() { return setBypass(false); }
+      void setBypass(bool state);
+      void setBypassOn() { setBypass(true); }
+      void setBypassOff() { setBypass(false); }
       void applyAutoBypass();
+      void applyBypassTimeout();
       uint64_t getBypassRelaySwitchCount() const { return _relay ? _relay->getSwitchCount() : 0; }
 
       // metrics
@@ -132,10 +134,11 @@ namespace Mycila {
       Relay* _relay = nullptr; // optional
       bool _autoBypassEnabled = false;
       bool _manualBypassEnabled = false;
+      uint32_t _manualBypassTime = 0;
       ExpiringValue<float> _temperature;
       ExpiringValue<Metrics> _localMetrics;
 
     private:
-      void _setBypass(bool state, bool log = true);
+      void _switchBypass(bool state, bool log = true);
   };
 } // namespace Mycila

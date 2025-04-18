@@ -30,11 +30,13 @@ static Mycila::Task routerTask("Router", [](void* params) {
     router.noDivert();
 
   if (output1) {
+    output1->applyBypassTimeout();
     output1->applyTemperatureLimit();
     output1->applyAutoBypass();
   }
 
   if (output2) {
+    output2->applyBypassTimeout();
     output2->applyTemperatureLimit();
     output2->applyAutoBypass();
   }
@@ -163,6 +165,7 @@ static void initOutput1(uint16_t semiPeriod) {
     output1->config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
     output1->config.autoStopTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_STOP);
     output1->config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
+    output1->config.bypassTimeoutSec = config.getInt(KEY_OUTPUT1_BYPASS_TIMEOUT);
     output1->config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
     output1->config.dimmerTempLimit = config.getInt(KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
     output1->config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
@@ -199,6 +202,7 @@ static void initOutput2(uint16_t semiPeriod) {
     output2->config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
     output2->config.autoStopTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_STOP);
     output2->config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
+    output2->config.bypassTimeoutSec = config.getInt(KEY_OUTPUT2_BYPASS_TIMEOUT);
     output2->config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
     output2->config.dimmerTempLimit = config.getInt(KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
     output2->config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);

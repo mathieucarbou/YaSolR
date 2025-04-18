@@ -150,6 +150,7 @@
 #define KEY_NET_SUBNET                     "net_subnet"
 #define KEY_NTP_SERVER                     "ntp_server"
 #define KEY_NTP_TIMEZONE                   "ntp_timezone"
+#define KEY_OUTPUT1_BYPASS_TIMEOUT         "o1_bp_timeout"
 #define KEY_OUTPUT1_DAYS                   "o1_days"
 #define KEY_OUTPUT1_DIMMER_LIMIT           "o1_dim_limit"
 #define KEY_OUTPUT1_DIMMER_MAX             "o1_dim_max"
@@ -164,6 +165,7 @@
 #define KEY_OUTPUT1_TEMPERATURE_STOP       "o1_temp_stop"
 #define KEY_OUTPUT1_TIME_START             "o1_time_start"
 #define KEY_OUTPUT1_TIME_STOP              "o1_time_stop"
+#define KEY_OUTPUT2_BYPASS_TIMEOUT         "o2_bp_timeout"
 #define KEY_OUTPUT2_DAYS                   "o2_days"
 #define KEY_OUTPUT2_DIMMER_LIMIT           "o2_dim_limit"
 #define KEY_OUTPUT2_DIMMER_MAX             "o2_dim_max"
@@ -197,9 +199,9 @@
 #define KEY_UDP_PORT                       "udp_port"
 #define KEY_VICTRON_MODBUS_PORT            "vic_mb_port"
 #define KEY_VICTRON_MODBUS_SERVER          "vic_mb_server"
+#define KEY_WIFI_BSSID                     "wifi_bssid"
 #define KEY_WIFI_PASSWORD                  "wifi_pwd"
 #define KEY_WIFI_SSID                      "wifi_ssid"
-#define KEY_WIFI_BSSID                     "wifi_bssid"
 
 // pinout configuration keys
 

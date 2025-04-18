@@ -60,6 +60,7 @@ void yasolr_init_config() {
   config.configure(KEY_NET_SUBNET);
   config.configure(KEY_NTP_SERVER, "pool.ntp.org");
   config.configure(KEY_NTP_TIMEZONE, "Europe/Paris");
+  config.configure(KEY_OUTPUT1_BYPASS_TIMEOUT, "0");
   config.configure(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS);
   config.configure(KEY_OUTPUT1_DIMMER_LIMIT, "100");
   config.configure(KEY_OUTPUT1_DIMMER_MAX, "100");
@@ -74,6 +75,7 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT1_TEMPERATURE_STOP, "60");
   config.configure(KEY_OUTPUT1_TIME_START, "22:00");
   config.configure(KEY_OUTPUT1_TIME_STOP, "06:00");
+  config.configure(KEY_OUTPUT2_BYPASS_TIMEOUT, "0");
   config.configure(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS);
   config.configure(KEY_OUTPUT2_DIMMER_LIMIT, "100");
   config.configure(KEY_OUTPUT2_DIMMER_MAX, "100");
@@ -218,6 +220,10 @@ void yasolr_init_config() {
       if (output1)
         output1->config.excessPowerLimiter = config.getFloat(KEY_OUTPUT1_EXCESS_LIMITER);
 
+    } else if (key == KEY_OUTPUT1_BYPASS_TIMEOUT) {
+      if (output1)
+        output1->config.bypassTimeoutSec = config.getInt(KEY_OUTPUT1_BYPASS_TIMEOUT);
+
     } else if (key == KEY_OUTPUT2_RESISTANCE) {
       if (output2)
         output2->config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
@@ -271,6 +277,10 @@ void yasolr_init_config() {
     } else if (key == KEY_OUTPUT2_EXCESS_LIMITER) {
       if (output2)
         output2->config.excessPowerLimiter = config.getFloat(KEY_OUTPUT2_EXCESS_LIMITER);
+
+    } else if (key == KEY_OUTPUT2_BYPASS_TIMEOUT) {
+      if (output2)
+        output2->config.bypassTimeoutSec = config.getInt(KEY_OUTPUT2_BYPASS_TIMEOUT);
 
     } else if (key == KEY_NTP_TIMEZONE) {
       Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));

@@ -356,6 +356,7 @@ static dash::TextInputCard<uint8_t> _output1AutoStoptTemp(dashboard, YASOLR_LBL_
 static dash::TextInputCard<const char*> _output1AutoStartTime(dashboard, YASOLR_LBL_067);
 static dash::TextInputCard<const char*> _output1AutoStoptTime(dashboard, YASOLR_LBL_068);
 static dash::WeekCard<const char*> _output1AutoStartWDays(dashboard, YASOLR_LBL_069);
+static dash::SliderCard<float, 1> _output1BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
 
 // tab: output 2 config
 
@@ -372,6 +373,7 @@ static dash::TextInputCard<uint8_t> _output2AutoStoptTemp(dashboard, YASOLR_LBL_
 static dash::TextInputCard<const char*> _output2AutoStartTime(dashboard, YASOLR_LBL_067);
 static dash::TextInputCard<const char*> _output2AutoStoptTime(dashboard, YASOLR_LBL_068);
 static dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_069);
+static dash::SliderCard<float, 1> _output2BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
 #endif
 
 static void _onChangeResistanceCalibration(bool value) {
@@ -874,6 +876,7 @@ void YaSolR::Website::begin() {
   _output1AutoStartTime.setTab(_output1ConfigTab);
   _output1AutoStoptTime.setTab(_output1ConfigTab);
   _output1AutoStartWDays.setTab(_output1ConfigTab);
+  _output1BypassTimeout.setTab(_output1ConfigTab);
   _numConfig(_output1ResistanceInput, KEY_OUTPUT1_RESISTANCE);
   _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_LIMIT);
   _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
@@ -883,6 +886,12 @@ void YaSolR::Website::begin() {
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
   _textConfig(_output1AutoStoptTime, KEY_OUTPUT1_TIME_STOP);
   _daysConfig(_output1AutoStartWDays, KEY_OUTPUT1_DAYS);
+  _output1BypassTimeout.onChange([](float value) {
+    _output1BypassTimeout.setValue(value);
+    uint16_t seconds = static_cast<uint16_t>(value * 3600.0f);
+    config.set(KEY_OUTPUT1_BYPASS_TIMEOUT, std::to_string(seconds));
+    dashboard.refresh(_output1BypassTimeout);
+  });
 
   // tab: output 2 config
 
@@ -899,6 +908,7 @@ void YaSolR::Website::begin() {
   _output2AutoStartTime.setTab(_output2ConfigTab);
   _output2AutoStoptTime.setTab(_output2ConfigTab);
   _output2AutoStartWDays.setTab(_output2ConfigTab);
+  _output2BypassTimeout.setTab(_output2ConfigTab);
   _numConfig(_output2ResistanceInput, KEY_OUTPUT2_RESISTANCE);
   _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_LIMIT);
   _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
@@ -908,6 +918,12 @@ void YaSolR::Website::begin() {
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
   _textConfig(_output2AutoStoptTime, KEY_OUTPUT2_TIME_STOP);
   _daysConfig(_output2AutoStartWDays, KEY_OUTPUT2_DAYS);
+  _output2BypassTimeout.onChange([](float value) {
+    _output2BypassTimeout.setValue(value);
+    uint16_t seconds = static_cast<uint16_t>(value * 3600.0f);
+    config.set(KEY_OUTPUT2_BYPASS_TIMEOUT, std::to_string(seconds));
+    dashboard.refresh(_output2BypassTimeout);
+  });
 #endif
 
   initCards();
@@ -1330,6 +1346,8 @@ void YaSolR::Website::initCards() {
   _output1AutoStoptTime.setDisplay(bypass1Possible);
   _output1AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.get(KEY_OUTPUT1_DAYS));
   _output1AutoStartWDays.setDisplay(bypass1Possible);
+  _output1BypassTimeout.setValue(config.getFloat(KEY_OUTPUT1_BYPASS_TIMEOUT) / 3600.0f);
+  _output1BypassTimeout.setDisplay(bypass1Possible);
 
   // tab: output 2 config
 
@@ -1356,6 +1374,8 @@ void YaSolR::Website::initCards() {
   _output2AutoStoptTime.setDisplay(bypass2Possible);
   _output2AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.get(KEY_OUTPUT2_DAYS));
   _output2AutoStartWDays.setDisplay(bypass2Possible);
+  _output2BypassTimeout.setValue(config.getFloat(KEY_OUTPUT2_BYPASS_TIMEOUT) / 3600.0f);
+  _output2BypassTimeout.setDisplay(bypass2Possible);
 #endif
 }
 

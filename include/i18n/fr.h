@@ -203,4 +203,4 @@
 #define YASOLR_LBL_197 "Victron: Port Modbus TCP"
 #define YASOLR_LBL_198 "Contrôle automatique du relais 1: Tolérance"
 #define YASOLR_LBL_199 "Contrôle automatique du relais 2: Tolérance"
-// #define YASOLR_LBL_200
+#define YASOLR_LBL_200 "Timeout de la marche forcée"
