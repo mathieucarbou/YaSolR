@@ -877,6 +877,18 @@ It won't work if the water heater has already reached its threshold temperature.
 - `Bypass Stop Temperature`: The temperature threshold when the auto bypass will stop: the temperature of the water tank needs to be higher than this threshold.
 - `Bypass Start Time` / `Bypass Stop Time`: The time range when the auto bypass is allowed to start.
 - `Bypass Week Days`: Days of the week when the bypass can be activated.
+- `Manual Bypass Timeout`: The duration in hours after which the manual bypass, if activated, will be automatically deactivated. 
+    If zero, no auto-deactivation happens and you need to manually turn it off.
+
+> ##### TIP
+>
+> "Manual Bypass Timeout" is a cool feature to be integrated with Home Assistant using a keep-alive automation.
+> You can for example configure YaSolR with a Manual Bypass Timeout of 0.5 h (30 minutes).
+> Then, in Home Assistant, when activating manual bypass, you can create an automation that will periodically (each 5 minutes) set again the manual bypass to `true`.
+> This will have the effect to reset the timeout each time.
+> This is called a keep-alive automation.
+> A keep-alive automation is more secure because it makes sure that the manual bypass will be turned off of the process controlling the manual bypass dies.
+{: .block-tip }
 
 ### System
 
