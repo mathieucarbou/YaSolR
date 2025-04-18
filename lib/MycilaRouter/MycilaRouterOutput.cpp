@@ -55,6 +55,7 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   root["bypass"] = isBypassOn() ? "on" : "off";
   root["enabled"] = isDimmerOnline();
   root["state"] = getStateName();
+  root["elapsed"] = getBypassUptime();
   float t = _temperature.orElse(NAN);
   if (!std::isnan(t)) {
     root["temperature"] = t;
@@ -310,13 +311,12 @@ void Mycila::RouterOutput::applyAutoBypass() {
 
 // applyBypassTimeout
 void Mycila::RouterOutput::applyBypassTimeout() {
-  if (!config.bypassTimeoutSec)
+  const uint32_t elapsed = getBypassUptime();
+
+  if (!elapsed)
     return;
 
-  if (!_manualBypassTime)
-    return;
-
-  if (millis() - _manualBypassTime >= config.bypassTimeoutSec * 1000UL) {
+  if (elapsed >= config.bypassTimeoutSec) {
     LOGI(TAG, "Manual Bypass '%s' timeout!", _name);
     if (_autoBypassEnabled || !_manualBypassEnabled) {
       // auto-bypass is enabled, or we are routing => do not touch the relay states

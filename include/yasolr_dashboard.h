@@ -189,7 +189,7 @@ namespace YaSolR {
         }
       }
 
-      void _status(dash::FeedbackSwitchCard& card, const char* key, bool enabled, bool active = true, const char* err = "") {
+      void _status(dash::FeedbackSwitchCard<const char*>& card, const char* key, bool enabled, bool active = true, const char* err = "") {
         const bool configEnabled = config.getBool(key);
         card.setValue(configEnabled);
         if (!configEnabled) {

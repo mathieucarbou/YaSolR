@@ -100,6 +100,7 @@ namespace Mycila {
       void setBypass(bool state);
       void setBypassOn() { setBypass(true); }
       void setBypassOff() { setBypass(false); }
+      uint32_t getBypassUptime() const { return config.bypassTimeoutSec && _manualBypassTime ? (millis() - _manualBypassTime) / 1000UL : 0; }
       void applyAutoBypass();
       void applyBypassTimeout();
       uint64_t getBypassRelaySwitchCount() const { return _relay ? _relay->getSwitchCount() : 0; }
