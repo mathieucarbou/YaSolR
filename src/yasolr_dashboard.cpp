@@ -1454,8 +1454,6 @@ void YaSolR::Website::updateCards() {
     _output1DS18State.setValue(output1->temperature().orElse(NAN));
     _output1DimmerSlider.setValue(output1->getDimmerDutyCycle() * 100.0f);
     _output1Bypass.setValue(output1->isBypassOn());
-    const uint32_t bypassUptime = output1->getBypassUptime();
-    _output1Bypass.setMessage(bypassUptime && output1->isBypassOn() ? Mycila::Time::toDHHMMSS(bypassUptime) : "");
   }
 
   if (output2) {
@@ -1478,8 +1476,6 @@ void YaSolR::Website::updateCards() {
     _output2DS18State.setValue(output2->temperature().orElse(NAN));
     _output2DimmerSlider.setValue(output2->getDimmerDutyCycle() * 100.0f);
     _output2Bypass.setValue(output2->isBypassOn());
-    const uint32_t bypassUptime = output2->getBypassUptime();
-    _output2Bypass.setMessage(bypassUptime && output2->isBypassOn() ? Mycila::Time::toDHHMMSS(bypassUptime) : "");
   }
 
   _routerDS18State.setValue(ds18Sys ? ds18Sys->getTemperature().value_or(0.0f) : 0);
@@ -1507,6 +1503,9 @@ void YaSolR::Website::updateCards() {
     _output1Current.setValue(output1Measurements.current);
     _output1Resistance.setValue(output1Measurements.resistance);
     _output1Energy.setValue(output1Measurements.energy);
+
+    const uint32_t bypassUptime = output1->getBypassUptime();
+    _output1Bypass.setMessage(bypassUptime && output1->isBypassOn() ? Mycila::Time::toDHHMMSS(bypassUptime) : "");
   }
 
   // tab: output 2
@@ -1521,6 +1520,9 @@ void YaSolR::Website::updateCards() {
     _output2Current.setValue(output2Measurements.current);
     _output2Resistance.setValue(output2Measurements.resistance);
     _output2Energy.setValue(output2Measurements.energy);
+
+    const uint32_t bypassUptime = output2->getBypassUptime();
+    _output2Bypass.setMessage(bypassUptime && output2->isBypassOn() ? Mycila::Time::toDHHMMSS(bypassUptime) : "");
   }
 
   // tab: mqtt
