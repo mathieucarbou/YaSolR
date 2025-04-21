@@ -440,7 +440,7 @@ static void haDiscovery() {
   haDiscovery.publish(Mycila::HA::State("grid", "Grid Electricity", "/grid/online", YASOLR_TRUE, YASOLR_FALSE, "power"));
   haDiscovery.publish(Mycila::HA::Counter("grid_energy", "Grid Energy", "/grid/energy", "energy", nullptr, "Wh"));
   haDiscovery.publish(Mycila::HA::Counter("grid_energy_returned", "Grid Energy Returned", "/grid/energy_returned", "energy", nullptr, "Wh"));
-  haDiscovery.publish(Mycila::HA::Counter("grid_frequency", "Grid Frequency", "/grid/frequency", "frequency", nullptr, "Hz"));
+  haDiscovery.publish(Mycila::HA::Gauge("grid_frequency", "Grid Frequency", "/grid/frequency", "frequency", nullptr, "Hz"));
   haDiscovery.publish(Mycila::HA::Gauge("grid_power", "Grid Power", "/grid/power", "power", nullptr, "W"));
   haDiscovery.publish(Mycila::HA::Gauge("grid_power_virtual", "Grid Power Without Routing", "/router/virtual_grid_power", "power", nullptr, "W"));
   haDiscovery.publish(Mycila::HA::Gauge("grid_power_factor", "Grid Power Factor", "/grid/power_factor", "power_factor"));
