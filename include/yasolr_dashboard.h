@@ -22,7 +22,7 @@ namespace YaSolR {
       void setSafeBootUpdateStatus(const char* msg, dash::Status status);
 
     private:
-      void _boolConfig(dash::SwitchCard& card, const char* key) {
+      void _boolConfig(dash::ToggleButtonCard& card, const char* key) {
         card.onChange([key, &card, this](bool value) {
           config.setBool(key, value);
           card.setValue(config.getBool(key));
@@ -48,7 +48,7 @@ namespace YaSolR {
         });
       }
 
-      void _outputBypassSwitch(dash::SwitchCard& card, Mycila::RouterOutput& output) {
+      void _outputBypassSwitch(dash::ToggleButtonCard& card, Mycila::RouterOutput& output) {
         card.onChange([&card, &output, this](bool value) {
           output.setBypass(value);
           card.setValue(output.isBypassOn());
@@ -57,7 +57,7 @@ namespace YaSolR {
         });
       }
 
-      void _relaySwitch(dash::SwitchCard& card, Mycila::RouterRelay& relay) {
+      void _relaySwitch(dash::ToggleButtonCard& card, Mycila::RouterRelay& relay) {
         card.onChange([&card, &relay, this](bool value) {
           relay.trySwitchRelay(value);
           card.setValue(relay.isOn());
@@ -173,7 +173,7 @@ namespace YaSolR {
         int32_t pin = config.getInt(key);
         card.setValue(pin);
         if (pin == GPIO_NUM_NC) {
-          card.setFeedback("(" YASOLR_LBL_115 ")", dash::Status::IDLE);
+          card.setFeedback("(" YASOLR_LBL_115 ")", dash::Status::INFO);
         } else if (pinout.find(pin) != pinout.end()) {
           pinout[pin]->setFeedback("(" YASOLR_LBL_153 ")", dash::Status::DANGER);
           card.setFeedback("(" YASOLR_LBL_153 ")", dash::Status::DANGER);
@@ -196,7 +196,7 @@ namespace YaSolR {
           if (enabled) {
             card.setFeedback(YASOLR_LBL_185, dash::Status::DANGER);
           } else {
-            card.setFeedback(YASOLR_LBL_115, dash::Status::IDLE);
+            card.setFeedback(YASOLR_LBL_115, dash::Status::INFO);
           }
         } else if (!enabled)
           card.setFeedback(YASOLR_LBL_124, dash::Status::DANGER);
