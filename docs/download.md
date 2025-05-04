@@ -43,3 +43,12 @@ Please go to the **[Pro](pro)** page if you are interested in receiving the **Pr
 
 _Trial versions are like the Pro version but will stop after **3 days of uptime**._
 _If you need to extend your trial period: you can re-flash the factory firmware after erasing the flash, put your settings back, and you will be good for another 3 days of trial._
+
+> ##### IMPORTANT
+>
+> Trial version is an OLD version! It does not contain the latest features and fixes of the Pro and OSS versions.
+> Its goal is to showcase what you could get with the Pro version regarding the UI.
+>
+>  DO NOT OPEN BUGS OR ISSUES ON THE TRIAL VERSION!
+>
+{: .block-important }
