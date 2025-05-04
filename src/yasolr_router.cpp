@@ -244,9 +244,10 @@ void yasolr_init_router() {
   router.remoteMetrics().setExpiration(10000); // remote JSY is fast
 
   // Do we have a user defined frequency?
+  // Note: yasolr_frequency() at boot time will return either the user-defined frequency or NAN
 
-  const float frequency = config.getFloat(KEY_GRID_FREQUENCY);
-  const uint16_t semiPeriod = frequency ? 500000.0f / frequency : 0;
+  const float frequency = yasolr_frequency();
+  const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
 
   initOutput1(semiPeriod);
   initOutput2(semiPeriod);
@@ -269,8 +270,8 @@ void yasolr_init_router() {
     logger.warn(TAG, "Grid frequency will be auto-detected");
 
     frequencyMonitorTask = new Mycila::Task("Frequency", [](void* params) {
-      float frequency = yasolr_frequency();
-      const uint16_t semiPeriod = frequency ? 500000.0f / frequency : 0;
+      const float frequency = yasolr_frequency();
+      const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
 
       if (semiPeriod) {
         if (!Thyristor::getSemiPeriod() || (dimmer1 && !dimmer1->getSemiPeriod()) || (dimmer2 && !dimmer2->getSemiPeriod())) {

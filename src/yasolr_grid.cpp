@@ -24,7 +24,7 @@ float yasolr_frequency() {
       return frequency;
   }
 
-  return 0;
+  return NAN;
 }
 
 void yasolr_init_grid() {
