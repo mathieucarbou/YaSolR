@@ -67,6 +67,7 @@ static dash::StatisticValue _networkAPMAC(dashboard, YASOLR_LBL_022);
 static dash::StatisticValue _networkEthIP(dashboard, YASOLR_LBL_023);
 static dash::StatisticValue _networkEthMAC(dashboard, YASOLR_LBL_024);
 static dash::StatisticValue _networkWiFiIP(dashboard, YASOLR_LBL_025);
+static dash::StatisticValue _networkWiFiIPv6(dashboard, YASOLR_LBL_201);
 static dash::StatisticValue _networkWiFiMAC(dashboard, YASOLR_LBL_026);
 static dash::StatisticValue _networkWiFiBSSID(dashboard, YASOLR_LBL_161);
 static dash::StatisticValue _networkWiFiSSID(dashboard, YASOLR_LBL_027);
@@ -967,6 +968,7 @@ void YaSolR::Website::initCards() {
     case Mycila::ESPConnect::Mode::STA:
       _networkInterface.setValue("WiFi");
       _networkWiFiIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
+      _networkWiFiIPv6.setValue(espConnect.getIPv6Address(Mycila::ESPConnect::Mode::STA).toString().c_str());
       _networkWiFiMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA));
       _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
       _networkWiFiBSSID.setValue(espConnect.getWiFiBSSID());
@@ -1032,6 +1034,7 @@ void YaSolR::Website::initCards() {
   _networkEthIP.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
   _networkEthMAC.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
   _networkWiFiIP.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
+  _networkWiFiIPv6.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiMAC.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiBSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
