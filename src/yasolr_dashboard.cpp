@@ -8,9 +8,10 @@
 #include <unordered_map>
 
 #ifdef APP_MODEL_OSS
-  #define LineChart  BarChart
-  #define AreaChart  BarChart
-  #define EnergyCard GenericCard
+  #define LineChart          BarChart
+  #define AreaChart          BarChart
+  #define EnergyCard         GenericCard
+  #define FeedbackSwitchCard ToggleButtonCard
 #endif
 
 #ifdef APP_MODEL_PRO
@@ -89,10 +90,8 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 
 static dash::FeedbackCard _output1State(dashboard, YASOLR_LBL_046);
 static dash::FeedbackCard _output2State(dashboard, YASOLR_LBL_070);
-static dash::ToggleButtonCard _relay1Switch(dashboard, YASOLR_LBL_073);
-static dash::FeedbackCard _relay1SwitchRO(dashboard, YASOLR_LBL_074);
-static dash::ToggleButtonCard _relay2Switch(dashboard, YASOLR_LBL_076);
-static dash::FeedbackCard _relay2SwitchRO(dashboard, YASOLR_LBL_077);
+static dash::FeedbackSwitchCard _relay1Switch(dashboard, YASOLR_LBL_074);
+static dash::FeedbackSwitchCard _relay2Switch(dashboard, YASOLR_LBL_077);
 
 static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_037, "VA");
@@ -960,21 +959,27 @@ void YaSolR::Website::initCards() {
       _networkAPMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP));
       break;
 
-    case Mycila::ESPConnect::Mode::ETH:
+    case Mycila::ESPConnect::Mode::ETH: {
       _networkInterface.setValue("Ethernet");
       _networkEthIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
-      _networkEthIPv6.setValue(espConnect.getIPv6Address(Mycila::ESPConnect::Mode::ETH).toString().c_str());
-      _networkEthMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH).empty() ? std::string("N/A") : espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH));
+      auto ipv6 = espConnect.getIPv6Address(Mycila::ESPConnect::Mode::ETH);
+      _networkEthIPv6.setValue(ipv6 == IN6ADDR_ANY ? "N/A" : ipv6.toString().c_str());
+      auto mac = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
+      _networkEthMAC.setValue(mac.empty() ? std::string("N/A") : mac);
       break;
+    }
 
-    case Mycila::ESPConnect::Mode::STA:
+    case Mycila::ESPConnect::Mode::STA: {
       _networkInterface.setValue("WiFi");
       _networkWiFiIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
-      _networkWiFiIPv6.setValue(espConnect.getIPv6Address(Mycila::ESPConnect::Mode::STA).toString().c_str());
-      _networkWiFiMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA));
+      auto ipv6 = espConnect.getIPv6Address(Mycila::ESPConnect::Mode::STA);
+      _networkWiFiIPv6.setValue(ipv6 == IN6ADDR_ANY ? "N/A" : ipv6.toString().c_str());
+      auto mac = espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA);
+      _networkWiFiMAC.setValue(mac.empty() ? std::string("N/A") : mac);
       _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
       _networkWiFiBSSID.setValue(espConnect.getWiFiBSSID());
       break;
+    }
 
     default:
       _networkInterface.setValue("Unknown");
@@ -1025,8 +1030,6 @@ void YaSolR::Website::initCards() {
 
   const bool relay1Enabled = config.getBool(KEY_ENABLE_RELAY1);
   const bool relay2Enabled = config.getBool(KEY_ENABLE_RELAY2);
-  const uint16_t load1 = config.getInt(KEY_RELAY1_LOAD);
-  const uint16_t load2 = config.getInt(KEY_RELAY2_LOAD);
 
   // statistics
 
@@ -1055,10 +1058,8 @@ void YaSolR::Website::initCards() {
 
   // overview
 
-  _relay1Switch.setDisplay(relay1Enabled && load1 <= 0);
-  _relay1SwitchRO.setDisplay(relay1Enabled && load1 > 0);
-  _relay2Switch.setDisplay(relay2Enabled && load2 <= 0);
-  _relay2SwitchRO.setDisplay(relay2Enabled && load2 > 0);
+  _relay1Switch.setDisplay(relay1Enabled);
+  _relay2Switch.setDisplay(relay2Enabled);
 
   // tab: output 1
 
@@ -1301,7 +1302,7 @@ void YaSolR::Website::initCards() {
   _status(_relay1, KEY_ENABLE_RELAY1, relay1 && relay1->isEnabled());
   _relay1Type.setValue(config.get(KEY_RELAY1_TYPE));
   _relay1Type.setDisplay(relay1Enabled);
-  _relay1Load.setValue(load1);
+  _relay1Load.setValue(config.getInt(KEY_RELAY1_LOAD));
   _relay1Load.setDisplay(relay1Enabled);
   _relay1Tolerance.setValue(config.getInt(KEY_RELAY1_TOLERANCE));
   _relay1Tolerance.setDisplay(relay1Enabled);
@@ -1310,7 +1311,7 @@ void YaSolR::Website::initCards() {
   _status(_relay2, KEY_ENABLE_RELAY2, relay2 && relay2->isEnabled());
   _relay2Type.setValue(config.get(KEY_RELAY2_TYPE));
   _relay2Type.setDisplay(relay2Enabled);
-  _relay2Load.setValue(load2);
+  _relay2Load.setValue(config.getInt(KEY_RELAY2_LOAD));
   _relay2Load.setDisplay(relay2Enabled);
   _relay2Tolerance.setValue(config.getInt(KEY_RELAY2_TOLERANCE));
   _relay2Tolerance.setDisplay(relay2Enabled);
@@ -1486,10 +1487,21 @@ void YaSolR::Website::updateCards() {
 
   _routerDS18State.setValue(ds18Sys ? ds18Sys->getTemperature().value_or(0.0f) : 0);
 
-  _relay1Switch.setValue(relay1 && relay1->isOn());
-  _relay2Switch.setValue(relay2 && relay2->isOn());
-  _relay1SwitchRO.setFeedback(relay1 && relay1->isOn() ? std::to_string(relay1->getLoad(gridMetrics.voltage)) + " W" : "0 W", relay1 && relay1->isOn() ? dash::Status::SUCCESS : dash::Status::INFO);
-  _relay2SwitchRO.setFeedback(relay2 && relay2->isOn() ? std::to_string(relay2->getLoad(gridMetrics.voltage)) + " W" : "0 W", relay2 && relay2->isOn() ? dash::Status::SUCCESS : dash::Status::INFO);
+  if (relay1) {
+    _relay1Switch.setValue(relay1->isOn());
+#ifdef APP_MODEL_PRO
+    _relay1Switch.setStatus(dash::Status::NONE);
+    _relay1Switch.setMessage(relay1->isOn() ? std::to_string(relay1->getLoad(gridMetrics.voltage)) + " W" : "0 W");
+#endif
+  }
+
+  if (relay2) {
+    _relay2Switch.setValue(relay2->isOn());
+#ifdef APP_MODEL_PRO
+    _relay2Switch.setStatus(dash::Status::NONE);
+    _relay2Switch.setMessage(relay2->isOn() ? std::to_string(relay2->getLoad(gridMetrics.voltage)) + " W" : "0 W");
+#endif
+  }
 
   _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
   _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
