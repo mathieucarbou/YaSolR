@@ -205,3 +205,4 @@
 #define YASOLR_LBL_199 "Relay 2 Automatic Control: Tolerance"
 #define YASOLR_LBL_200 "Manual Bypass Timeout"
 #define YASOLR_LBL_201 "Network : WiFi IPv6 Address"
+#define YASOLR_LBL_202 "Network : Ethernet IPv6 Address"

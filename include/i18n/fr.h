@@ -204,3 +204,5 @@
 #define YASOLR_LBL_198 "Contrôle automatique du relais 1: Tolérance"
 #define YASOLR_LBL_199 "Contrôle automatique du relais 2: Tolérance"
 #define YASOLR_LBL_200 "Timeout de la marche forcée"
+#define YASOLR_LBL_201 "Réseau: WiFi: Adresse IPv6"
+#define YASOLR_LBL_202 "Réseau: Ethernet: Adresse IPv6"
