@@ -24,11 +24,6 @@ bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
   if (!_relay->isEnabled())
     return false;
 
-  if (isAutoRelayEnabled()) {
-    LOGW(TAG, "Relay on pin %u cannot be switched because it is connected to a load of %" PRIu16 "W", _relay->getPin(), _nominalLoad);
-    return false;
-  }
-
   if (duration)
     LOGI(TAG, "Switching relay on pin %u %s for %u ms", _relay->getPin(), state ? "ON" : "OFF", duration);
   else
