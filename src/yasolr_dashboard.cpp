@@ -66,10 +66,12 @@ static dash::StatisticValue<const char*> _networkInterface(dashboard, YASOLR_LBL
 static dash::StatisticValue _networkAPIP(dashboard, YASOLR_LBL_021);
 static dash::StatisticValue _networkAPMAC(dashboard, YASOLR_LBL_022);
 static dash::StatisticValue _networkEthIP(dashboard, YASOLR_LBL_023);
-static dash::StatisticValue _networkEthIPv6(dashboard, YASOLR_LBL_202);
+static dash::StatisticValue _networkEthIPv6Local(dashboard, YASOLR_LBL_202);
+static dash::StatisticValue _networkEthIPv6Global(dashboard, YASOLR_LBL_204);
 static dash::StatisticValue _networkEthMAC(dashboard, YASOLR_LBL_024);
 static dash::StatisticValue _networkWiFiIP(dashboard, YASOLR_LBL_025);
-static dash::StatisticValue _networkWiFiIPv6(dashboard, YASOLR_LBL_201);
+static dash::StatisticValue _networkWiFiIPv6Local(dashboard, YASOLR_LBL_201);
+static dash::StatisticValue _networkWiFiIPv6Global(dashboard, YASOLR_LBL_203);
 static dash::StatisticValue _networkWiFiMAC(dashboard, YASOLR_LBL_026);
 static dash::StatisticValue _networkWiFiBSSID(dashboard, YASOLR_LBL_161);
 static dash::StatisticValue _networkWiFiSSID(dashboard, YASOLR_LBL_027);
@@ -962,8 +964,10 @@ void YaSolR::Website::initCards() {
     case Mycila::ESPConnect::Mode::ETH: {
       _networkInterface.setValue("Ethernet");
       _networkEthIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
-      auto ipv6 = espConnect.getIPv6Address(Mycila::ESPConnect::Mode::ETH);
-      _networkEthIPv6.setValue(ipv6 == IN6ADDR_ANY ? "N/A" : ipv6.toString().c_str());
+      auto ipv6Local = espConnect.getLinkLocalIPv6Address(Mycila::ESPConnect::Mode::ETH);
+      _networkEthIPv6Local.setValue(ipv6Local == IN6ADDR_ANY ? "N/A" : ipv6Local.toString().c_str());
+      auto ipv6Global = espConnect.getGlobalIPv6Address(Mycila::ESPConnect::Mode::ETH);
+      _networkEthIPv6Global.setValue(ipv6Global == IN6ADDR_ANY ? "N/A" : ipv6Global.toString().c_str());
       auto mac = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
       _networkEthMAC.setValue(mac.empty() ? std::string("N/A") : mac);
       break;
@@ -972,8 +976,10 @@ void YaSolR::Website::initCards() {
     case Mycila::ESPConnect::Mode::STA: {
       _networkInterface.setValue("WiFi");
       _networkWiFiIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
-      auto ipv6 = espConnect.getIPv6Address(Mycila::ESPConnect::Mode::STA);
-      _networkWiFiIPv6.setValue(ipv6 == IN6ADDR_ANY ? "N/A" : ipv6.toString().c_str());
+      auto ipv6Local = espConnect.getLinkLocalIPv6Address(Mycila::ESPConnect::Mode::STA);
+      _networkWiFiIPv6Local.setValue(ipv6Local == IN6ADDR_ANY ? "N/A" : ipv6Local.toString().c_str());
+      auto ipv6Global = espConnect.getGlobalIPv6Address(Mycila::ESPConnect::Mode::STA);
+      _networkWiFiIPv6Global.setValue(ipv6Global == IN6ADDR_ANY ? "N/A" : ipv6Global.toString().c_str());
       auto mac = espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA);
       _networkWiFiMAC.setValue(mac.empty() ? std::string("N/A") : mac);
       _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
@@ -1037,10 +1043,12 @@ void YaSolR::Website::initCards() {
   _networkAPIP.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   _networkAPMAC.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   _networkEthIP.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
-  _networkEthIPv6.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
+  _networkEthIPv6Local.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
+  _networkEthIPv6Global.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
   _networkEthMAC.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
   _networkWiFiIP.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
-  _networkWiFiIPv6.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
+  _networkWiFiIPv6Local.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
+  _networkWiFiIPv6Global.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiMAC.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
   _networkWiFiBSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
