@@ -75,7 +75,7 @@ namespace YaSolR {
       }
 
       template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
-      void _numConfig(dash::TextInputCard<T>& card, const char* key) {
+      void _numConfig(dash::InputCard<T>& card, const char* key) {
         card.onChange([key, &card](const std::optional<T>& value) {
           if (value.has_value()) {
             config.set(key, std::to_string(value.value()));
@@ -88,7 +88,7 @@ namespace YaSolR {
       }
 
       template <uint8_t Precision>
-      void _numConfig(dash::TextInputCard<float, Precision>& card, const char* key) {
+      void _numConfig(dash::InputCard<float, Precision>& card, const char* key) {
         card.onChange([key, &card](const std::optional<float>& value) {
           if (value.has_value()) {
             config.set(key, dash::to_string<float, Precision>(value.value()));
@@ -110,7 +110,7 @@ namespace YaSolR {
       }
 
       template <uint8_t Precision>
-      void _numConfig(dash::FeedbackTextInputCard<float, Precision>& card, const char* key) {
+      void _numConfig(dash::FeedbackInputCard<float, Precision>& card, const char* key) {
         card.onChange([key, &card](const std::optional<float>& value) {
           if (value.has_value()) {
             config.set(key, dash::to_string<float, Precision>(value.value()));
@@ -123,7 +123,7 @@ namespace YaSolR {
       }
 
       template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
-      void _numConfig(dash::FeedbackTextInputCard<T>& card, const char* key) {
+      void _numConfig(dash::FeedbackInputCard<T>& card, const char* key) {
         card.onChange([key, &card, this](const std::optional<T> value) {
           if (value.has_value()) {
             config.set(key, std::to_string(value.value()));
@@ -143,7 +143,7 @@ namespace YaSolR {
         });
       }
 
-      void _textConfig(dash::TextInputCard<const char*>& card, const char* key) {
+      void _textConfig(dash::InputCard<const char*>& card, const char* key) {
         card.onChange([key, &card](const std::optional<const char*>& value) {
           config.set(key, value.value_or(""));
           card.setValue(""); // force refresh of pointer
@@ -169,7 +169,7 @@ namespace YaSolR {
         });
       }
 
-      void _pinout(dash::FeedbackTextInputCard<int32_t>& card, const char* key, std::unordered_map<int32_t, dash::FeedbackTextInputCard<int32_t>*>& pinout) {
+      void _pinout(dash::FeedbackInputCard<int32_t>& card, const char* key, std::unordered_map<int32_t, dash::FeedbackInputCard<int32_t>*>& pinout) {
         int32_t pin = config.getInt(key);
         card.setValue(pin);
         if (pin == GPIO_NUM_NC) {
