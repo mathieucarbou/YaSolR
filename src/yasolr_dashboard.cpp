@@ -1037,6 +1037,8 @@ void YaSolR::Website::initCards() {
   const bool relay1Enabled = config.getBool(KEY_ENABLE_RELAY1);
   const bool relay2Enabled = config.getBool(KEY_ENABLE_RELAY2);
 
+  const bool victronEnabled = config.getBool(KEY_ENABLE_VICTRON_MODBUS);
+
   // statistics
 
   _udpMessageRateBuffer.setDisplay(config.getBool(KEY_ENABLE_JSY_REMOTE));
@@ -1279,6 +1281,8 @@ void YaSolR::Website::initCards() {
   _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp && udp->connected(), YASOLR_LBL_113);
   _victronServer.setValue(config.get(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.getInt(KEY_VICTRON_MODBUS_PORT));
+  _victronServer.setDisplay(victronEnabled);
+  _victronPort.setDisplay(victronEnabled);
 
   // output 1 dimmer
   _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));
