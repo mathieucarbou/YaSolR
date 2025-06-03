@@ -138,7 +138,6 @@ namespace YaSolR {
       void _passwordConfig(dash::PasswordCard& card, const char* key) {
         card.onChange([key, &card, this](const std::optional<const char*>& value) {
           config.set(key, value.value_or(""));
-          card.setValue(""); // force refresh of pointer
           card.setValue(config.get(key));
           dashboard.refresh(card);
         });
@@ -147,7 +146,6 @@ namespace YaSolR {
       void _textConfig(dash::InputCard<const char*>& card, const char* key) {
         card.onChange([key, &card](const std::optional<const char*>& value) {
           config.set(key, value.value_or(""));
-          card.setValue(""); // force refresh of pointer
           card.setValue(config.get(key));
           dashboard.refresh(card);
         });
