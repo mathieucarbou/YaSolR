@@ -60,10 +60,6 @@ static void initWebSerial() {
 
 static void initLogDump() {
   logger.info(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
-  webServer.on("/api" YASOLR_LOG_FILE, HTTP_GET, [](AsyncWebServerRequest* request) {
-    LittleFS.open(YASOLR_LOG_FILE, "r");
-    request->send(LittleFS, YASOLR_LOG_FILE, "text/plain");
-  });
   logger.forwardTo(new LogStream(YASOLR_LOG_FILE, 32 * 1024));
 }
 

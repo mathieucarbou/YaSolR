@@ -508,6 +508,15 @@ void rest_api() {
     request->send(response);
   });
 
+  webServer.on("/api" YASOLR_LOG_FILE, HTTP_GET, [](AsyncWebServerRequest* request) {
+    if (LittleFS.exists(YASOLR_LOG_FILE)) {
+      LittleFS.open(YASOLR_LOG_FILE, "r");
+      request->send(LittleFS, YASOLR_LOG_FILE, "text/plain");
+    } else {
+      request->send(404);
+    }
+  });
+
   webServer.on("/api", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
