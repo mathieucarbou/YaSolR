@@ -292,6 +292,9 @@ static dash::FeedbackSwitchCard<const char*> _victron(dashboard, YASOLR_LBL_195)
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
 
+// output 1
+static dash::SeparatorCard<const char*> _output1Sep(dashboard, YASOLR_LBL_046);
+
 // output 1 dimmer
 static dash::FeedbackSwitchCard<const char*> _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
@@ -305,6 +308,9 @@ static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_1
 
 // output 1 ds18
 static dash::FeedbackSwitchCard<const char*> _output1DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
+
+// output 2
+static dash::SeparatorCard<const char*> _output2Sep(dashboard, YASOLR_LBL_070);
 
 // output 2 dimmer
 static dash::FeedbackSwitchCard<const char*> _output2Dimmer(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
@@ -320,6 +326,9 @@ static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_1
 // output 2 ds18
 static dash::FeedbackSwitchCard<const char*> _output2DS18(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
 
+// Relays
+static dash::SeparatorCard<const char*> _relaySep(dashboard, YASOLR_LBL_071);
+
 // relay1
 static dash::FeedbackSwitchCard<const char*> _relay1(dashboard, YASOLR_LBL_074);
 static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
@@ -331,6 +340,9 @@ static dash::FeedbackSwitchCard<const char*> _relay2(dashboard, YASOLR_LBL_077);
 static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
+
+// System
+static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_135);
 
 // router ds18
 static dash::FeedbackSwitchCard<const char*> _routerDS18(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_132);
@@ -773,6 +785,8 @@ void YaSolR::Website::begin() {
     dashboard.refresh(_gridFreq);
   });
 
+  _output1Sep.setTab(_hardwareConfigTab);
+
   // output 1 dimmer
   _output1Dimmer.setTab(_hardwareConfigTab);
   _output1Dimmer.setSize(FULL_SIZE);
@@ -796,6 +810,8 @@ void YaSolR::Website::begin() {
   _output1DS18.setTab(_hardwareConfigTab);
   _output1DS18.setSize(FULL_SIZE);
   _boolConfig(_output1DS18, KEY_ENABLE_OUTPUT1_DS18);
+
+  _output2Sep.setTab(_hardwareConfigTab);
 
   // output 2 dimmer
   _output2Dimmer.setTab(_hardwareConfigTab);
@@ -821,6 +837,8 @@ void YaSolR::Website::begin() {
   _output2DS18.setSize(FULL_SIZE);
   _boolConfig(_output2DS18, KEY_ENABLE_OUTPUT2_DS18);
 
+  _relaySep.setTab(_hardwareConfigTab);
+
   // relay1
   _relay1.setTab(_hardwareConfigTab);
   _relay1.setSize(FULL_SIZE);
@@ -842,6 +860,8 @@ void YaSolR::Website::begin() {
   _textConfig(_relay2Type, KEY_RELAY2_TYPE);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _sliderConfig(_relay2Tolerance, KEY_RELAY2_TOLERANCE);
+
+  _routerSep.setTab(_hardwareConfigTab);
 
   // router ds18
   _routerDS18.setTab(_hardwareConfigTab);
