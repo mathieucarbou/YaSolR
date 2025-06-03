@@ -216,13 +216,13 @@ static dash::FileUploadCard _mqttServerCert(dashboard, YASOLR_LBL_101, ".pem");
 static dash::PushButtonCard _mqttServerCertDelete(dashboard, YASOLR_LBL_049);
 static dash::InputCard<const char*> _mqttTopic(dashboard, YASOLR_LBL_103);
 static dash::SliderCard<uint8_t> _mqttPublishInterval(dashboard, YASOLR_LBL_102, 1, 30, 1, "s");
+static dash::FeedbackSwitchCard<const char*> _haDiscovery(dashboard, YASOLR_LBL_104);
+static dash::InputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
 static dash::SeparatorCard<const char*> _mqttSep1(dashboard, YASOLR_LBL_179);
 static dash::InputCard<const char*> _mqttGridVoltage(dashboard, YASOLR_LBL_106);
 static dash::InputCard<const char*> _mqttGridPower(dashboard, YASOLR_LBL_044);
 static dash::InputCard<const char*> _mqttTempO1(dashboard, YASOLR_LBL_181);
 static dash::InputCard<const char*> _mqttTempO2(dashboard, YASOLR_LBL_182);
-static dash::FeedbackSwitchCard<const char*> _haDiscovery(dashboard, YASOLR_LBL_104);
-static dash::InputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
 
 // tab: pid
 
@@ -603,7 +603,7 @@ void YaSolR::Website::begin() {
   _haDiscoveryTopic.setTab(_mqttTab);
 
   _mqtt.setSize(FULL_SIZE);
-  _haDiscovery.setSize(FULL_SIZE);
+  // _haDiscovery.setSize(FULL_SIZE);
 
   _boolConfig(_mqtt, KEY_ENABLE_MQTT);
   _textConfig(_mqttServer, KEY_MQTT_SERVER);
