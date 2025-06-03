@@ -253,6 +253,14 @@ static dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_1
 // tab: gpio
 
 static dash::SeparatorCard<const char*> _gpioTitle(dashboard, YASOLR_LBL_126);
+static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_012);
+static dash::FeedbackInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
+static dash::DropdownCard<const char*> _serialJsy(dashboard, YASOLR_LBL_150, YASOLR_UART_CHOICES);
+static dash::FeedbackInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
+static dash::FeedbackInputCard<int32_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
+static dash::DropdownCard<const char*> _serialPZEM(dashboard, YASOLR_LBL_152, YASOLR_UART_CHOICES);
+static dash::FeedbackInputCard<int32_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
+static dash::FeedbackInputCard<int32_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
 static dash::SeparatorCard<const char*> _gpioSep1(dashboard, YASOLR_LBL_046);
 static dash::FeedbackInputCard<int32_t> _pinDimmerO1(dashboard, YASOLR_LBL_050);
 static dash::FeedbackInputCard<int32_t> _pinRelayO1(dashboard, YASOLR_LBL_134);
@@ -264,14 +272,6 @@ static dash::FeedbackInputCard<int32_t> _pinDS18O2(dashboard, YASOLR_LBL_132);
 static dash::SeparatorCard<const char*> _gpioSep3(dashboard, YASOLR_LBL_071);
 static dash::FeedbackInputCard<int32_t> _pinRelay1(dashboard, YASOLR_LBL_074);
 static dash::FeedbackInputCard<int32_t> _pinRelay2(dashboard, YASOLR_LBL_077);
-static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_012);
-static dash::FeedbackInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
-static dash::DropdownCard<const char*> _serialJsy(dashboard, YASOLR_LBL_150, YASOLR_UART_CHOICES);
-static dash::FeedbackInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
-static dash::FeedbackInputCard<int32_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
-static dash::DropdownCard<const char*> _serialPZEM(dashboard, YASOLR_LBL_152, YASOLR_UART_CHOICES);
-static dash::FeedbackInputCard<int32_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
-static dash::FeedbackInputCard<int32_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
 static dash::SeparatorCard<const char*> _gpioSep5(dashboard, YASOLR_LBL_078);
 static dash::FeedbackInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_132);
 static dash::FeedbackInputCard<int32_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
@@ -283,7 +283,7 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, YASOLR_LBL_112);
 // tab: hardware
 
 // grid
-static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_107);
+static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 static dash::FeedbackSwitchCard<const char*> _jsy(dashboard, YASOLR_LBL_128);
 static dash::FeedbackSwitchCard<const char*> _jsyRemote(dashboard, YASOLR_LBL_187);
@@ -342,16 +342,16 @@ static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
 
 // System
-static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_135);
+static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_078);
 
 // router ds18
-static dash::FeedbackSwitchCard<const char*> _routerDS18(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_132);
+static dash::FeedbackSwitchCard<const char*> _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
 
 // router led
-static dash::FeedbackSwitchCard<const char*> _led(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_129);
+static dash::FeedbackSwitchCard<const char*> _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
 
 // display
-static dash::FeedbackSwitchCard<const char*> _display(dashboard, YASOLR_LBL_135 ": " YASOLR_LBL_127);
+static dash::FeedbackSwitchCard<const char*> _display(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_127);
 static dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
 static dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
 static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
@@ -401,8 +401,10 @@ static void _onChangeResistanceCalibration(bool value) {
     config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
 
     router.beginCalibration([]() {
-      config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(router.getOutputs()[0]->config.calibratedResistance, 2));
-      config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(router.getOutputs()[1]->config.calibratedResistance, 2));
+      if (output1)
+        config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(output1->config.calibratedResistance, 2));
+      if (output2)
+        config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(output2->config.calibratedResistance, 2));
     });
 
     // because we set false to trigger events
@@ -413,8 +415,6 @@ static void _onChangeResistanceCalibration(bool value) {
       mqttPublishTask->requestEarlyRun();
   }
 
-  _output1ResistanceCalibration.setValue(router.isCalibrationRunning());
-  _output2ResistanceCalibration.setValue(router.isCalibrationRunning());
   dashboard.refresh(_output1ResistanceCalibration);
   dashboard.refresh(_output2ResistanceCalibration);
 }
@@ -448,14 +448,16 @@ void YaSolR::Website::begin() {
   _output2ResistanceCalibration.onChange(_onChangeResistanceCalibration);
 
   _output1PZEMSync.onChange([](bool value) {
-    pzemO1PairingTask->resume();
-    _output1PZEMSync.setValue(pzemO1PairingTask->scheduled());
+    if (pzemO1PairingTask)
+      pzemO1PairingTask->resume();
+    _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
     dashboard.refresh(_output1PZEMSync);
   });
 
   _output2PZEMSync.onChange([](bool value) {
-    pzemO2PairingTask->resume();
-    _output2PZEMSync.setValue(pzemO2PairingTask->scheduled());
+    if (pzemO2PairingTask)
+      pzemO2PairingTask->resume();
+    _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
     dashboard.refresh(_output2PZEMSync);
   });
 
