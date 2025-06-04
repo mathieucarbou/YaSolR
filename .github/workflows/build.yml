@@ -130,6 +130,12 @@ jobs:
           find artifacts -name '*.bin' -exec mv {} artifacts/ \;
           find artifacts -name '*.elf' -exec mv {} artifacts/ \;
 
+      - name: Bump version and push tag
+        uses: laputansoft/github-tag-action@v4.6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: testing2
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
