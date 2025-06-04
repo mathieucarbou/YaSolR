@@ -299,6 +299,8 @@ static void publishData() {
 
   mqtt->publish(baseTopic + "/system/network/eth/ip_address", espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
   mqtt->publish(baseTopic + "/system/network/ip_address", espConnect.getIPAddress().toString().c_str());
+  mqtt->publish(baseTopic + "/system/network/ip6_link_local_address", espConnect.getLinkLocalIPv6Address().toString().c_str());
+  mqtt->publish(baseTopic + "/system/network/ip6_global_address", espConnect.getGlobalIPv6Address().toString().c_str());
   mqtt->publish(baseTopic + "/system/network/mac_address", espConnect.getMACAddress());
   mqtt->publish(baseTopic + "/system/network/ntp", YASOLR_STATE(Mycila::NTP.isSynced()));
   mqtt->publish(baseTopic + "/system/network/wifi/bssid", espConnect.getWiFiBSSID());
@@ -407,7 +409,9 @@ static void haDiscovery() {
   haDiscovery.publish(Mycila::HA::Value("firmware_filename", "Firmware", "/system/firmware/filename", nullptr, "mdi:file", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HA::Value("network_eth_mac_address", "Net: Eth MAC Address", "/system/network/eth/mac_address", nullptr, "mdi:lan", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HA::Value("network_hostname", "Net: Hostname", "/system/network/hostname", nullptr, "mdi:lan", Mycila::HA::Category::DIAGNOSTIC));
-  haDiscovery.publish(Mycila::HA::Value("network_ip_address", "Net: IP Address", "/system/network/ip_address", nullptr, "mdi:ip", Mycila::HA::Category::DIAGNOSTIC));
+  haDiscovery.publish(Mycila::HA::Value("network_ip_address", "Net: IPv4 Address", "/system/network/ip_address", nullptr, "mdi:ip", Mycila::HA::Category::DIAGNOSTIC));
+  haDiscovery.publish(Mycila::HA::Value("network_ip6_global_address", "Net: IPv6 Global Address", "/system/network/ip6_global_address", nullptr, "mdi:ip", Mycila::HA::Category::DIAGNOSTIC));
+  haDiscovery.publish(Mycila::HA::Value("network_ip6_link_local_address", "Net: IPv6 Link-local Address", "/system/network/ip6_link_local_address", nullptr, "mdi:ip", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HA::Value("network_wifi_mac_address", "Net: WiFi MAC Address", "/system/network/wifi/mac_address", nullptr, "mdi:lan", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HA::Value("network_wifi_ssid", "Net: WiFi SSID", "/system/network/wifi/ssid", nullptr, "mdi:wifi", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery.publish(Mycila::HA::State("network_ntp", "Net: NTP", "/system/network/ntp", YASOLR_ON, YASOLR_OFF, "connectivity", nullptr, Mycila::HA::Category::DIAGNOSTIC));
