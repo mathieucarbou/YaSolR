@@ -115,7 +115,7 @@ void yasolr_init_jsy() {
       jsyTaskManager->enableProfiling();
     }
 
-    assert(jsyTaskManager->asyncStart(512 * 5, 5, 0, 100, true));
+    assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
 
     Mycila::TaskMonitor.addTask(jsyTaskManager->name());
   }
