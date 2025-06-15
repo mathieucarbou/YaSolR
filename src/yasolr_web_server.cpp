@@ -43,6 +43,8 @@ void rewrites() {
   webServer.rewrite("/dash/assets/logo/mini", "/logo-icon");
   webServer.rewrite("/dash/assets/logo/large", "/logo");
   webServer.rewrite("/dash/assets/logo", "/logo");
+  webServer.rewrite("/dash/logo/light", "/logo");
+  webServer.rewrite("/dash/logo/dark", "/logo");
   webServer.rewrite("/ota/logo/dark", "/logo");
   webServer.rewrite("/ota/logo/light", "/logo");
   webServer.rewrite("/wsl/logo/dark", "/logo");
