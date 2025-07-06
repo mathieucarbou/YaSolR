@@ -1526,16 +1526,16 @@ void YaSolR::Website::updateCards() {
   if (relay1) {
     _relay1Switch.setValue(relay1->isOn());
 #ifdef APP_MODEL_PRO
-    _relay1Switch.setStatus(dash::Status::NONE);
-    _relay1Switch.setMessage(relay1->isOn() ? std::to_string(relay1->getLoad(gridMetrics.voltage)) + " W" : "0 W");
+    uint16_t load = relay1->getLoad(gridMetrics.voltage);
+    _relay1Switch.setMessage(relay1->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }
 
   if (relay2) {
     _relay2Switch.setValue(relay2->isOn());
 #ifdef APP_MODEL_PRO
-    _relay2Switch.setStatus(dash::Status::NONE);
-    _relay2Switch.setMessage(relay2->isOn() ? std::to_string(relay2->getLoad(gridMetrics.voltage)) + " W" : "0 W");
+    uint16_t load = relay2->getLoad(gridMetrics.voltage);
+    _relay2Switch.setMessage(relay2->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }
 

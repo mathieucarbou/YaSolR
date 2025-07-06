@@ -127,6 +127,7 @@ bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
   }
 
   if (_manualBypassEnabled) {
+    LOGW(TAG, "Bypass '%s' disabled by dimmer activation", _name);
     setBypass(false);
   }
 
