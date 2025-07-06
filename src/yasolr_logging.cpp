@@ -9,8 +9,6 @@ Mycila::Logger logger;
 static Mycila::Task* loggingTask = nullptr;
 static WebSerial* webSerial = nullptr;
 
-static File logFile;
-
 class LogStream : public Print {
   public:
     LogStream(const char* path, size_t limit) : _path(path), _limit(limit) {
