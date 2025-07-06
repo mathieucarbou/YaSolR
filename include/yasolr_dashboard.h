@@ -188,21 +188,21 @@ namespace YaSolR {
         }
       }
 
-      void _status(dash::FeedbackSwitchCard<const char*>& card, const char* key, bool enabled, bool active = true, const char* err = "") {
+      void _status(dash::FeedbackToggleButtonCard<const char*>& card, const char* key, bool enabled, bool active = true, const char* err = "") {
         const bool configEnabled = config.getBool(key);
         card.setValue(configEnabled);
         if (!configEnabled) {
-          if (enabled) {
-            card.setFeedback(YASOLR_LBL_185, dash::Status::DANGER);
-          } else {
-            card.setFeedback(YASOLR_LBL_115, dash::Status::INFO);
-          }
-        } else if (!enabled)
-          card.setFeedback(YASOLR_LBL_124, dash::Status::DANGER);
-        else if (!active)
-          card.setFeedback(err, dash::Status::WARNING);
-        else
-          card.setFeedback(YASOLR_LBL_130, dash::Status::SUCCESS);
+          card.setMessage(enabled ? YASOLR_LBL_185 : "");
+        } else if (!enabled) {
+          card.setStatus(dash::Status::WARNING);
+          card.setMessage(YASOLR_LBL_124);
+        } else if (!active) {
+          card.setStatus(dash::Status::WARNING);
+          card.setMessage(err);
+        } else {
+          card.setStatus(dash::Status::SUCCESS);
+          card.setMessage("");
+        }
       }
 #endif
   };

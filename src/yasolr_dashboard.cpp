@@ -8,11 +8,13 @@
 #include <unordered_map>
 
 #ifdef APP_MODEL_OSS
-  #define LineChart          BarChart
-  #define AreaChart          BarChart
-  #define EnergyCard         GenericCard
-  #define FeedbackSwitchCard ToggleButtonCard
+  #define LineChart                BarChart
+  #define AreaChart                BarChart
+  #define EnergyCard               GenericCard
+  #define FeedbackToggleButtonCard ToggleButtonCard
 #endif
+
+#define IndicatorButtonCard ToggleButtonCard
 
 #ifdef APP_MODEL_PRO
 static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
@@ -92,8 +94,8 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 
 static dash::FeedbackCard _output1State(dashboard, YASOLR_LBL_046);
 static dash::FeedbackCard _output2State(dashboard, YASOLR_LBL_070);
-static dash::FeedbackSwitchCard _relay1Switch(dashboard, YASOLR_LBL_074);
-static dash::FeedbackSwitchCard _relay2Switch(dashboard, YASOLR_LBL_077);
+static dash::FeedbackToggleButtonCard _relay1Switch(dashboard, YASOLR_LBL_074);
+static dash::FeedbackToggleButtonCard _relay2Switch(dashboard, YASOLR_LBL_077);
 
 static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_037, "VA");
@@ -123,10 +125,10 @@ static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_L
 static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
 
 #ifdef APP_MODEL_OSS
-static dash::ToggleButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
-static dash::ToggleButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
-static dash::ToggleButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
-static dash::ToggleButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
+static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
+static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
+static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
+static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
 #endif
 
 #ifdef APP_MODEL_PRO
@@ -136,7 +138,7 @@ static dash::ToggleButtonCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
 static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::ProgressCard<float, 2> _output1DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
 static dash::ToggleButtonCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
-static dash::FeedbackSwitchCard _output1Bypass(dashboard, YASOLR_LBL_051);
+static dash::FeedbackToggleButtonCard _output1Bypass(dashboard, YASOLR_LBL_051);
 
 static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_052, "W");
 static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
@@ -155,7 +157,7 @@ static dash::ToggleButtonCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
 static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::ProgressCard<float, 2> _output2DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
 static dash::ToggleButtonCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
-static dash::FeedbackSwitchCard _output2Bypass(dashboard, YASOLR_LBL_051);
+static dash::FeedbackToggleButtonCard _output2Bypass(dashboard, YASOLR_LBL_051);
 
 static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_052, "W");
 static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
@@ -181,7 +183,7 @@ static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_L
 
 // tab: debug
 
-static dash::FeedbackSwitchCard<const char*> _debugMode(dashboard, YASOLR_LBL_083);
+static dash::FeedbackToggleButtonCard<const char*> _debugMode(dashboard, YASOLR_LBL_083);
 static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
 static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
@@ -206,7 +208,7 @@ static dash::TimeSyncCard _ntpSync(dashboard, YASOLR_LBL_091);
 
 // tab: mqtt
 
-static dash::FeedbackSwitchCard<const char*> _mqtt(dashboard, YASOLR_LBL_095);
+static dash::FeedbackToggleButtonCard<const char*> _mqtt(dashboard, YASOLR_LBL_095);
 static dash::InputCard<const char*> _mqttServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _mqttPort(dashboard, YASOLR_LBL_097);
 static dash::InputCard<const char*> _mqttUser(dashboard, YASOLR_LBL_098);
@@ -216,7 +218,7 @@ static dash::FileUploadCard _mqttServerCert(dashboard, YASOLR_LBL_101, ".pem");
 static dash::PushButtonCard _mqttServerCertDelete(dashboard, YASOLR_LBL_049);
 static dash::InputCard<const char*> _mqttTopic(dashboard, YASOLR_LBL_103);
 static dash::SliderCard<uint8_t> _mqttPublishInterval(dashboard, YASOLR_LBL_102, 1, 30, 1, "s");
-static dash::FeedbackSwitchCard<const char*> _haDiscovery(dashboard, YASOLR_LBL_104);
+static dash::FeedbackToggleButtonCard<const char*> _haDiscovery(dashboard, YASOLR_LBL_104);
 static dash::InputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
 static dash::SeparatorCard<const char*> _mqttSep1(dashboard, YASOLR_LBL_179);
 static dash::InputCard<const char*> _mqttGridVoltage(dashboard, YASOLR_LBL_106);
@@ -285,10 +287,10 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, YASOLR_LBL_112);
 // grid
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-static dash::FeedbackSwitchCard<const char*> _jsy(dashboard, YASOLR_LBL_128);
-static dash::FeedbackSwitchCard<const char*> _jsyRemote(dashboard, YASOLR_LBL_187);
-static dash::FeedbackSwitchCard<const char*> _zcd(dashboard, YASOLR_LBL_125);
-static dash::FeedbackSwitchCard<const char*> _victron(dashboard, YASOLR_LBL_195);
+static dash::FeedbackToggleButtonCard<const char*> _jsy(dashboard, YASOLR_LBL_128);
+static dash::FeedbackToggleButtonCard<const char*> _jsyRemote(dashboard, YASOLR_LBL_187);
+static dash::FeedbackToggleButtonCard<const char*> _zcd(dashboard, YASOLR_LBL_125);
+static dash::FeedbackToggleButtonCard<const char*> _victron(dashboard, YASOLR_LBL_195);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
 
@@ -296,47 +298,47 @@ static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
 static dash::SeparatorCard<const char*> _output1Sep(dashboard, YASOLR_LBL_046);
 
 // output 1 dimmer
-static dash::FeedbackSwitchCard<const char*> _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
+static dash::FeedbackToggleButtonCard<const char*> _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::FeedbackSwitchCard<const char*> _output1PZEM(dashboard, YASOLR_LBL_133);
-static dash::ToggleButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
+static dash::FeedbackToggleButtonCard<const char*> _output1PZEM(dashboard, YASOLR_LBL_133);
+static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 1 bypass relay
-static dash::FeedbackSwitchCard<const char*> _output1Relay(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
+static dash::FeedbackToggleButtonCard<const char*> _output1Relay(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
 static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 1 ds18
-static dash::FeedbackSwitchCard<const char*> _output1DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
+static dash::FeedbackToggleButtonCard<const char*> _output1DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
 
 // output 2
 static dash::SeparatorCard<const char*> _output2Sep(dashboard, YASOLR_LBL_070);
 
 // output 2 dimmer
-static dash::FeedbackSwitchCard<const char*> _output2Dimmer(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
+static dash::FeedbackToggleButtonCard<const char*> _output2Dimmer(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::FeedbackSwitchCard<const char*> _output2PZEM(dashboard, YASOLR_LBL_133);
-static dash::ToggleButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
+static dash::FeedbackToggleButtonCard<const char*> _output2PZEM(dashboard, YASOLR_LBL_133);
+static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
 
 // output 2 bypass relay
-static dash::FeedbackSwitchCard<const char*> _output2Relay(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
+static dash::FeedbackToggleButtonCard<const char*> _output2Relay(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
 static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 2 ds18
-static dash::FeedbackSwitchCard<const char*> _output2DS18(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
+static dash::FeedbackToggleButtonCard<const char*> _output2DS18(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
 
 // Relays
 static dash::SeparatorCard<const char*> _relaySep(dashboard, YASOLR_LBL_071);
 
 // relay1
-static dash::FeedbackSwitchCard<const char*> _relay1(dashboard, YASOLR_LBL_074);
+static dash::FeedbackToggleButtonCard<const char*> _relay1(dashboard, YASOLR_LBL_074);
 static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::InputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
 static dash::PercentageSliderCard _relay1Tolerance(dashboard, YASOLR_LBL_198);
 
 // relay2
-static dash::FeedbackSwitchCard<const char*> _relay2(dashboard, YASOLR_LBL_077);
+static dash::FeedbackToggleButtonCard<const char*> _relay2(dashboard, YASOLR_LBL_077);
 static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
@@ -345,13 +347,13 @@ static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
 static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_078);
 
 // router ds18
-static dash::FeedbackSwitchCard<const char*> _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
+static dash::FeedbackToggleButtonCard<const char*> _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
 
 // router led
-static dash::FeedbackSwitchCard<const char*> _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
+static dash::FeedbackToggleButtonCard<const char*> _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
 
 // display
-static dash::FeedbackSwitchCard<const char*> _display(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_127);
+static dash::FeedbackToggleButtonCard<const char*> _display(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_127);
 static dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
 static dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
 static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
@@ -360,7 +362,7 @@ static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10,
 
 static dash::SeparatorCard<const char*> _output1ConfigSep0(dashboard, YASOLR_LBL_140);
 static dash::FeedbackInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
-static dash::ToggleButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
 static dash::SeparatorCard<const char*> _output1ConfigSep1(dashboard, YASOLR_LBL_136);
 static dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 static dash::InputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
@@ -377,7 +379,7 @@ static dash::SliderCard<float, 1> _output1BypassTimeout(dashboard, YASOLR_LBL_20
 
 static dash::SeparatorCard<const char*> _output2ConfigSep0(dashboard, YASOLR_LBL_140);
 static dash::FeedbackInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_145);
-static dash::ToggleButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
 static dash::SeparatorCard<const char*> _output2ConfigSep1(dashboard, YASOLR_LBL_136);
 static dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 static dash::InputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
@@ -391,8 +393,8 @@ static dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_
 static dash::SliderCard<float, 1> _output2BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
 #endif
 
-static void _onChangeResistanceCalibration(bool value) {
-  if (value && !router.isCalibrationRunning()) {
+static void _onChangeResistanceCalibration() {
+  if (!router.isCalibrationRunning()) {
     config.set(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
     config.set(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);
     config.set(KEY_OUTPUT1_DIMMER_LIMIT, "100", false);
@@ -444,8 +446,8 @@ void YaSolR::Website::begin() {
   _routedPowerHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
-  _output1ResistanceCalibration.onChange(_onChangeResistanceCalibration);
-  _output2ResistanceCalibration.onChange(_onChangeResistanceCalibration);
+  _output1ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
+  _output2ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
 
   _output1PZEMSync.onChange([](bool value) {
     if (pzemO1PairingTask)
