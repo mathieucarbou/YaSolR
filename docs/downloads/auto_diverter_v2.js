@@ -221,7 +221,7 @@ function callDimmers(cb) {
   }
 
   for (let ip in DIVERT.dimmers) {
-    const dimmer = DIVERT.dimmers[ip];
+    dimmer = DIVERT.dimmers[ip];
 
     // ignore contacted dimmers
     if (dimmer.rpc !== "pending") {
@@ -255,7 +255,7 @@ function onSwitchGetStatus(result, errCode, errMessage, data) {
     print(scriptName, ":", "onSwitchGetStatus:", JSON.stringify(result));
   if (result.output) {
     for (let ip in DIVERT.dimmers) {
-      const dimmer = DIVERT.dimmers[ip];
+      dimmer = DIVERT.dimmers[ip];
       if (CONFIG.DIMMERS[ip].BYPASS_CONTROLLED_BY_EM) {
         print(scriptName, ":", "Bypass is ON, turning off dimmer", ip);
         dimmer.apparentPower = 0;
@@ -278,7 +278,7 @@ function divert(voltage, gridPower) {
     print(scriptName, ":", "Grid:", voltage, "V,", gridPower, "W => To divert:", newRoutingPower, "W");
 
   for (let ip in DIVERT.dimmers) {
-    const dimmer = DIVERT.dimmers[ip];
+    dimmer = DIVERT.dimmers[ip];
     dimmer.maximumPower = voltage * voltage / CONFIG.DIMMERS[ip].RESISTANCE;
     dimmer.divertPower = Math.min(Math.max(0, newRoutingPower) * CONFIG.DIMMERS[ip].RESERVED_EXCESS_PERCENT / 100, dimmer.maximumPower);
     dimmer.dutyCycle = dimmer.divertPower / dimmer.maximumPower;

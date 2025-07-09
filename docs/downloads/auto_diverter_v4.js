@@ -225,7 +225,7 @@ function callDimmers(cb) {
   }
 
   for (let ip in DIVERT.dimmers) {
-    const dimmer = DIVERT.dimmers[ip];
+    dimmer = DIVERT.dimmers[ip];
 
     // ignore contacted dimmers
     if (dimmer.rpc !== "pending") {
@@ -259,7 +259,7 @@ function onSwitchGetStatus(result, errCode, errMessage, data) {
     print(scriptName, ":", "onSwitchGetStatus:", JSON.stringify(result));
   if (result.output) {
     for (let ip in DIVERT.dimmers) {
-      const dimmer = DIVERT.dimmers[ip];
+      dimmer = DIVERT.dimmers[ip];
       if (CONFIG.DIMMERS[ip].BYPASS_CONTROLLED_BY_EM) {
         print(scriptName, ":", "Bypass is ON, turning off dimmer", ip);
         dimmer.apparentPower = 0;
@@ -282,7 +282,7 @@ function divert(gridVoltage, gridPower) {
     print(scriptName, ":", "Grid:", gridVoltage, "V,", gridPower, "W => To divert:", availablePowerToDivert, "W");
 
   for (let ip in DIVERT.dimmers) {
-    const dimmer = DIVERT.dimmers[ip];
+    dimmer = DIVERT.dimmers[ip];
     dimmer.maxPower = gridVoltage * gridVoltage / CONFIG.DIMMERS[ip].RESISTANCE;
     dimmer.powerToDivert = constrain(availablePowerToDivert, 0, dimmer.maxPower);
     if (CONFIG.DIMMERS[ip].EXCESS_POWER_LIMIT > 0)
