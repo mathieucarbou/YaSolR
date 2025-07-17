@@ -190,15 +190,16 @@ static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
 
 // tab: network
 
+static dash::InputCard _hostnameWidget(dashboard, YASOLR_LBL_073);
 static dash::InputCard<const char*> _wifiSSID(dashboard, YASOLR_LBL_092);
 static dash::InputCard<const char*> _wifiBSSID(dashboard, YASOLR_LBL_047);
 static dash::PasswordCard _wifiPwd(dashboard, YASOLR_LBL_093, YASOLR_HIDDEN_PWD);
-static dash::ToggleButtonCard _apMode(dashboard, YASOLR_LBL_094);
 static dash::InputCard<const char*> _staticIP(dashboard, YASOLR_LBL_188);
 static dash::InputCard<const char*> _subnetMask(dashboard, YASOLR_LBL_189);
 static dash::InputCard<const char*> _gateway(dashboard, YASOLR_LBL_190);
 static dash::InputCard<const char*> _dnsServer(dashboard, YASOLR_LBL_191);
 static dash::PasswordCard _adminPwd(dashboard, YASOLR_LBL_088, YASOLR_HIDDEN_PWD);
+static dash::ToggleButtonCard _apMode(dashboard, YASOLR_LBL_094);
 
 // tab: ntp
 
@@ -557,6 +558,7 @@ void YaSolR::Website::begin() {
   _subnetMask.setTab(_networkTab);
   _gateway.setTab(_networkTab);
   _dnsServer.setTab(_networkTab);
+  _hostnameWidget.setTab(_networkTab);
 
   _passwordConfig(_adminPwd, KEY_ADMIN_PASSWORD);
   _boolConfig(_apMode, KEY_ENABLE_AP_MODE);
@@ -567,6 +569,11 @@ void YaSolR::Website::begin() {
   _textConfig(_subnetMask, KEY_NET_SUBNET);
   _textConfig(_gateway, KEY_NET_GATEWAY);
   _textConfig(_dnsServer, KEY_NET_DNS);
+  _hostnameWidget.onChange([](const std::optional<std::string>& value) {
+    config.set(KEY_HOSTNAME, value.value_or(""));
+    _hostnameWidget.setValue(config.get(KEY_HOSTNAME));
+    dashboard.refresh(_hostnameWidget);
+  });
 
   // tab: ntp
 
@@ -976,7 +983,7 @@ void YaSolR::Website::initCards() {
   _firmwareBuildHash.setValue(Mycila::AppInfo.buildHash.c_str());
   _firmwareBuildTimestamp.setValue(Mycila::AppInfo.buildDate.c_str());
   _firmwareFilename.setValue(Mycila::AppInfo.firmware.c_str());
-  _networkHostname.setValue(Mycila::AppInfo.defaultHostname.c_str());
+  _networkHostname.setValue(espConnect.getConfig().hostname.c_str());
 
   switch (mode) {
     case Mycila::ESPConnect::Mode::AP:
@@ -1179,15 +1186,16 @@ void YaSolR::Website::initCards() {
 
   // tab: network
 
-  _adminPwd.setValue(config.get(KEY_ADMIN_PASSWORD));
+  _hostnameWidget.setValue(config.get(KEY_HOSTNAME));
   _wifiSSID.setValue(config.get(KEY_WIFI_SSID));
   _wifiBSSID.setValue(config.get(KEY_WIFI_BSSID));
   _wifiPwd.setValue(config.get(KEY_WIFI_PASSWORD));
-  _apMode.setValue(config.getBool(KEY_ENABLE_AP_MODE));
   _staticIP.setValue(config.get(KEY_NET_IP));
   _subnetMask.setValue(config.get(KEY_NET_SUBNET));
   _gateway.setValue(config.get(KEY_NET_GATEWAY));
   _dnsServer.setValue(config.get(KEY_NET_DNS));
+  _adminPwd.setValue(config.get(KEY_ADMIN_PASSWORD));
+  _apMode.setValue(config.getBool(KEY_ENABLE_AP_MODE));
 
   // tab: ntp
 

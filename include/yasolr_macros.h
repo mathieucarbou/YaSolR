@@ -136,6 +136,7 @@
 #define KEY_GRID_POWER_MQTT_TOPIC          "grid_pow_mqtt"
 #define KEY_GRID_VOLTAGE_MQTT_TOPIC        "grid_volt_mqtt"
 #define KEY_HA_DISCOVERY_TOPIC             "ha_disco_topic"
+#define KEY_HOSTNAME                       "hostname"
 #define KEY_JSY_UART                       "jsy_uart"
 #define KEY_MQTT_PASSWORD                  "mqtt_pwd"
 #define KEY_MQTT_PORT                      "mqtt_port"

@@ -45,7 +45,7 @@ void yasolr_init_network() {
 
   // Network Manager
   Mycila::ESPConnect::Config espConnectConfig;
-  espConnectConfig.hostname = Mycila::AppInfo.defaultHostname;
+  espConnectConfig.hostname = config.getString(KEY_HOSTNAME);
   espConnectConfig.apMode = config.getBool(KEY_ENABLE_AP_MODE);
   espConnectConfig.wifiBSSID = config.getString(KEY_WIFI_BSSID);
   espConnectConfig.wifiSSID = config.getString(KEY_WIFI_SSID);

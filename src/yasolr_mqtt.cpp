@@ -386,7 +386,7 @@ static void haDiscovery() {
   haDiscovery.setWillTopic(config.getString(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC);
   haDiscovery.begin({
                       .id = Mycila::AppInfo.defaultMqttClientId,
-                      .name = Mycila::AppInfo.defaultHostname,
+                      .name = espConnect.getConfig().hostname,
                       .version = Mycila::AppInfo.version,
                       .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
                       .manufacturer = Mycila::AppInfo.manufacturer,
