@@ -121,7 +121,7 @@ All the supported dimmer types:
 A bypass relay allows to force a heating at full power and bypass the dimmer at a given schedule or manually.
 Keeping a dimmer `on` generates heat so a bypass relay can be installed to avoid using the dimmer.
 
-**If a bypass relay is installed, the dimmer will be used instead and will be set to 0-100% to simulate the relay.**
+**If no bypass relay is installed, the dimmer will be used instead and will be set to 0-100% to simulate the relay.**
 
 Here are the supported bypass relays:
 
