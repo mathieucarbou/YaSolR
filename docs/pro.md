@@ -55,9 +55,7 @@ Here are the availabilities below:
 
 | **Module Picture (from author)**                                            | **Module Link**                                                                                                                                                                                                                            | **Price** | **Availability** |
 | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :--------------: |
-| <img src="./assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)                                                                                                                  |   10 €    |        2         |
+| <img src="./assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)                                                                                                                  |   10 €    |        16         |
 | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure)                                                                                                       |   15 €    |        2         |
 
 You can read more about how important a good ZCD module is in the [Blog](blogs).
-
-**Shipping fees are not included in the price, and I can ship across Europe.**
