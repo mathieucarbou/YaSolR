@@ -14,8 +14,6 @@
   #define FeedbackToggleButtonCard ToggleButtonCard
 #endif
 
-#define IndicatorButtonCard ToggleButtonCard
-
 #ifdef APP_MODEL_PRO
 static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
 
@@ -24,18 +22,18 @@ static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .
 // https://en.wikipedia.org/wiki/List_of_Unicode_characters#Dingbats
 
 // tabs are declared early in order to have the smallest IDs that never change
-static dash::Tab _output1Tab(dashboard, "\u26A1 " YASOLR_LBL_046);
-static dash::Tab _output2Tab(dashboard, "\u26A1 " YASOLR_LBL_070);
-static dash::Tab _pidTab(dashboard, "\u2672 " YASOLR_LBL_159);
-static dash::Tab _networkTab(dashboard, "\u2601 " YASOLR_LBL_087);
-static dash::Tab _ntpTab(dashboard, "\u23F2 " YASOLR_LBL_158);
-static dash::Tab _mqttTab(dashboard, "\u21C6 " YASOLR_LBL_095);
-static dash::Tab _gpioTab(dashboard, "\u26EC " YASOLR_LBL_108);
-static dash::Tab _hardwareConfigTab(dashboard, "\u23DA " YASOLR_LBL_177);
-static dash::Tab _output1ConfigTab(dashboard, "\u2699 " YASOLR_LBL_138);
-static dash::Tab _output2ConfigTab(dashboard, "\u2699 " YASOLR_LBL_139);
-static dash::Tab _systemTab(dashboard, "\u26EB " YASOLR_LBL_078);
-static dash::Tab _debugTab(dashboard, "\u2757 " YASOLR_LBL_083);
+static dash::Tab _output1Tab(dashboard, YASOLR_LBL_046, dash::Icon::ZAP_ICON);
+static dash::Tab _output2Tab(dashboard, YASOLR_LBL_070, dash::Icon::ZAP_ICON);
+static dash::Tab _pidTab(dashboard, YASOLR_LBL_159, dash::Icon::RECYCLE_ICON);
+static dash::Tab _networkTab(dashboard, YASOLR_LBL_087, dash::Icon::WIFI_ICON);
+static dash::Tab _ntpTab(dashboard, YASOLR_LBL_158, dash::Icon::CLOCK_ICON);
+static dash::Tab _mqttTab(dashboard, YASOLR_LBL_095, dash::Icon::CLOUD_UPLOAD_ICON);
+static dash::Tab _gpioTab(dashboard, YASOLR_LBL_108, dash::Icon::CABLE_ICON);
+static dash::Tab _hardwareConfigTab(dashboard, YASOLR_LBL_177, dash::Icon::CPU_ICON);
+static dash::Tab _output1ConfigTab(dashboard, YASOLR_LBL_138, dash::Icon::COG_ICON);
+static dash::Tab _output2ConfigTab(dashboard, YASOLR_LBL_139, dash::Icon::COG_ICON);
+static dash::Tab _systemTab(dashboard, YASOLR_LBL_078, dash::Icon::MONITOR_COG_ICON);
+static dash::Tab _debugTab(dashboard, YASOLR_LBL_083, dash::Icon::BUG_ICON);
 
 #endif
 
@@ -447,20 +445,20 @@ void YaSolR::Website::begin() {
   _routedPowerHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
-  _output1ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
-  _output2ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
+  _output1ResistanceCalibration.onPush(_onChangeResistanceCalibration);
+  _output2ResistanceCalibration.onPush(_onChangeResistanceCalibration);
 
-  _output1PZEMSync.onChange([](bool value) {
+  _output1PZEMSync.onPush([]() {
     if (pzemO1PairingTask)
       pzemO1PairingTask->resume();
-    _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
+    _output1PZEMSync.setIndicator(pzemO1PairingTask && pzemO1PairingTask->scheduled(), dash::Status::WARNING);
     dashboard.refresh(_output1PZEMSync);
   });
 
-  _output2PZEMSync.onChange([](bool value) {
+  _output2PZEMSync.onPush([]() {
     if (pzemO2PairingTask)
       pzemO2PairingTask->resume();
-    _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
+    _output2PZEMSync.setIndicator(pzemO2PairingTask && pzemO2PairingTask->scheduled(), dash::Status::WARNING);
     dashboard.refresh(_output2PZEMSync);
   });
 
@@ -1547,10 +1545,37 @@ void YaSolR::Website::updateCards() {
 #endif
   }
 
-  _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
-  _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
-  _output1ResistanceCalibration.setValue(router.isCalibrationRunning());
-  _output2ResistanceCalibration.setValue(router.isCalibrationRunning());
+  if (pzemO1PairingTask && pzemO1PairingTask->scheduled()) {
+    _output1PZEMSync.setIndicator(true, dash::Status::WARNING);
+  } else if (pzemO1 && pzemO1->isConnected()) {
+    _output1PZEMSync.setIndicator(true, dash::Status::SUCCESS);
+  } else {
+    _output1PZEMSync.setIndicator(true, dash::Status::DANGER);
+  }
+
+  if (pzemO2PairingTask && pzemO2PairingTask->scheduled()) {
+    _output2PZEMSync.setIndicator(true, dash::Status::WARNING);
+  } else if (pzemO2 && pzemO2->isConnected()) {
+    _output2PZEMSync.setIndicator(true, dash::Status::SUCCESS);
+  } else {
+    _output2PZEMSync.setIndicator(true, dash::Status::DANGER);
+  }
+
+  if (router.isCalibrationRunning()) {
+    _output1ResistanceCalibration.setIndicator(true, dash::Status::WARNING);
+  } else if (output1 && output1->config.calibratedResistance > 0) {
+    _output1ResistanceCalibration.setIndicator(true, dash::Status::SUCCESS);
+  } else {
+    _output1ResistanceCalibration.setIndicator(true, dash::Status::DANGER);
+  }
+
+  if (router.isCalibrationRunning()) {
+    _output2ResistanceCalibration.setIndicator(true, dash::Status::WARNING);
+  } else if (output2 && output2->config.calibratedResistance > 0) {
+    _output2ResistanceCalibration.setIndicator(true, dash::Status::SUCCESS);
+  } else {
+    _output2ResistanceCalibration.setIndicator(true, dash::Status::DANGER);
+  }
 
 #ifdef APP_MODEL_PRO
   // tab: output 1
