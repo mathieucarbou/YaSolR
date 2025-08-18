@@ -23,7 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Cache
         uses: actions/cache@v4
@@ -64,7 +64,7 @@ jobs:
         environment: ${{ fromJSON(needs.pio_envs.outputs.pio_default_envs) }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get Tags
         run: git fetch --force --tags origin
@@ -121,7 +121,7 @@ jobs:
       contents: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Download
         uses: actions/download-artifact@v4
