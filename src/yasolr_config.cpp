@@ -219,7 +219,7 @@ void yasolr_init_config() {
 
     } else if (key == KEY_OUTPUT1_EXCESS_LIMITER) {
       if (output1)
-        output1->config.excessPowerLimiter = config.getFloat(KEY_OUTPUT1_EXCESS_LIMITER);
+        output1->config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
 
     } else if (key == KEY_OUTPUT1_BYPASS_TIMEOUT) {
       if (output1)
@@ -277,7 +277,7 @@ void yasolr_init_config() {
 
     } else if (key == KEY_OUTPUT2_EXCESS_LIMITER) {
       if (output2)
-        output2->config.excessPowerLimiter = config.getFloat(KEY_OUTPUT2_EXCESS_LIMITER);
+        output2->config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);
 
     } else if (key == KEY_OUTPUT2_BYPASS_TIMEOUT) {
       if (output2)
