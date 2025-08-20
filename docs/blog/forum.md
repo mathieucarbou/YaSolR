@@ -7,7 +7,7 @@ En tant que développeur de profession et spécialiste en librairies Arduino / E
 [*][b]Projet GitHub[/b]: https://github.com/mathieucarbou/YaSolR
 [/list]
 
-[img]https://yasolr.carbou.me/assets/img/screenshots/app-overview.jpeg[/img]
+[img]https://yasolr.carbou.me/assets/img/screenshots/app-overview-light.jpeg[/img]
 
 [size=150]Qui suis-je ?[/size]
 

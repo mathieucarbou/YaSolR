@@ -13,7 +13,7 @@ As a professional developer and specialist in Arduino / ESP32 libraries related 
 - **Website**: [https://yasolr.carbou.me](https://yasolr.carbou.me)
 - **GitHub Project**: [https://github.com/mathieucarbou/YaSolR](https://github.com/mathieucarbou/YaSolR)
 
-![](https://yasolr.carbou.me/assets/img/screenshots/app-overview.jpeg)
+![](https://yasolr.carbou.me/assets/img/screenshots/app-overview-light.jpeg)
 
 ## Who am I?
 

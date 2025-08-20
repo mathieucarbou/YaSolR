@@ -165,8 +165,6 @@ _(replace `yasolr.local` with the IP address of the router)_
 
 The main dashboard is accessible at `http://yasolr.local/` and contains several sections described below.
 
-[![](assets/img/screenshots/app-menu.jpeg)](assets/img/screenshots/app-menu.jpeg)
-
 ### Overview
 
 The overview section shows some global information about the router:
@@ -174,7 +172,7 @@ The overview section shows some global information about the router:
 - The temperature is coming from the sensor installed in the router box
 - The electricity measurements are coming from a JSY or PZEM
 
-[![](assets/img/screenshots/app-overview.jpeg)](assets/img/screenshots/app-overview.jpeg)
+[![](assets/img/screenshots/app-overview-light.jpeg)](assets/img/screenshots/app-overview-light.jpeg)
 
 - `Output 1` / `Output 2`:
   - `Disabled`: Output is disabled (dimmer disabled or other reason)
@@ -318,20 +316,23 @@ Note: the WebSocket PID output was removed
 >
 {: .block-warning }
 
+- `Hostname`: the hostname of the device, if you need to change it.
+- `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
+  You will need to connect to its WiFi to access the dashboard again.
+- `Admin Password`: the password used to access the router, even in AP mode, or the captive portal. If you loose it, you will need to do a factory reset of the device.
+
 **WiFi settings:**
 
 - `WiFi SSID`: the Home WiFi SSID to connect to
 - `WiFi BSSID`: this value wil be set to the BSSID to the WiFi selected in the CaptivePortal. You can clear this value or change it. It helps YaSolR always reconnect to the same AP when it was setup. This increase security and connection stability.
 - `WiFi Password`: the Home WiFi password to connect to
-- `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
-  You will need to connect to its WiFi to access the dashboard again.
 
 **Static IP address:**
 
 - `Static IP`: the static IP address to use for the router
 - `Gateway`: the gateway to use for the router (usually the router IP address)
 - `Subnet Mask`: the subnet mask to use for the network (usually `255.255.255.0`)
-- `DNS`: the DNS server to use for the router (usually the router IP address or `8.8.8.8`)
+- `DNS Server`: the DNS server to use for the router (usually the router IP address or `8.8.8.8`)
 
 When setting a static IP, the router will try to connect with the static IP and won't use DHCP anymore.
 
