@@ -386,7 +386,7 @@ static void haDiscovery() {
   haDiscovery.setWillTopic(config.getString(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC);
   haDiscovery.begin({
                       .id = Mycila::AppInfo.defaultMqttClientId,
-                      .name = espConnect.getConfig().hostname,
+                      .name = Mycila::AppInfo.name + " " + Mycila::AppInfo.model + " " + Mycila::AppInfo.id,
                       .version = Mycila::AppInfo.version,
                       .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
                       .manufacturer = Mycila::AppInfo.manufacturer,
@@ -455,7 +455,7 @@ static void haDiscovery() {
   haDiscovery.publish(Mycila::HA::Gauge("routed_power", "Routed Power", "/router/power", "power", nullptr, "W"));
   haDiscovery.publish(Mycila::HA::Gauge("router_power_factor", "Router Power Factor", "/router/power_factor", "power_factor"));
   haDiscovery.publish(Mycila::HA::Gauge("router_temperature", "Router Temperature", "/router/temperature", "temperature", "mdi:thermometer", "°C"));
-  haDiscovery.publish(Mycila::HA::Value("router_lights", "Router Lights", "/router/lights", nullptr, "mdi:cards-heart"));
+  haDiscovery.publish(Mycila::HA::Value("router_status", "Router Status", "/router/status", nullptr, "mdi:cards-heart"));
   yield();
 
   haDiscovery.publish(Mycila::HA::Outlet("relay1", "Relay 1", "/router/relay1/set", "/router/relay1", YASOLR_ON, YASOLR_OFF));
