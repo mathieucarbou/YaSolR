@@ -181,7 +181,7 @@ static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_L
 
 // tab: debug
 
-static dash::FeedbackToggleButtonCard<const char*> _debugMode(dashboard, YASOLR_LBL_083);
+static dash::FeedbackToggleButtonCard _debugMode(dashboard, YASOLR_LBL_083);
 static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
 static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
@@ -207,7 +207,7 @@ static dash::TimeSyncCard _ntpSync(dashboard, YASOLR_LBL_091);
 
 // tab: mqtt
 
-static dash::FeedbackToggleButtonCard<const char*> _mqtt(dashboard, YASOLR_LBL_095);
+static dash::FeedbackToggleButtonCard _mqtt(dashboard, YASOLR_LBL_095);
 static dash::InputCard<const char*> _mqttServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _mqttPort(dashboard, YASOLR_LBL_097);
 static dash::InputCard<const char*> _mqttUser(dashboard, YASOLR_LBL_098);
@@ -217,7 +217,7 @@ static dash::FileUploadCard _mqttServerCert(dashboard, YASOLR_LBL_101, ".pem");
 static dash::PushButtonCard _mqttServerCertDelete(dashboard, YASOLR_LBL_049);
 static dash::InputCard<const char*> _mqttTopic(dashboard, YASOLR_LBL_103);
 static dash::SliderCard<uint8_t> _mqttPublishInterval(dashboard, YASOLR_LBL_102, 1, 30, 1, "s");
-static dash::FeedbackToggleButtonCard<const char*> _haDiscovery(dashboard, YASOLR_LBL_104);
+static dash::FeedbackToggleButtonCard _haDiscovery(dashboard, YASOLR_LBL_104);
 static dash::InputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
 static dash::SeparatorCard<const char*> _mqttSep1(dashboard, YASOLR_LBL_179);
 static dash::InputCard<const char*> _mqttGridVoltage(dashboard, YASOLR_LBL_106);
@@ -286,10 +286,10 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, YASOLR_LBL_112);
 // grid
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-static dash::FeedbackToggleButtonCard<const char*> _jsy(dashboard, YASOLR_LBL_128);
-static dash::FeedbackToggleButtonCard<const char*> _jsyRemote(dashboard, YASOLR_LBL_187);
-static dash::FeedbackToggleButtonCard<const char*> _zcd(dashboard, YASOLR_LBL_125);
-static dash::FeedbackToggleButtonCard<const char*> _victron(dashboard, YASOLR_LBL_195);
+static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
+static dash::FeedbackToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
+static dash::FeedbackToggleButtonCard _zcd(dashboard, YASOLR_LBL_125);
+static dash::FeedbackToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
 
@@ -297,47 +297,47 @@ static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
 static dash::SeparatorCard<const char*> _output1Sep(dashboard, YASOLR_LBL_046);
 
 // output 1 dimmer
-static dash::FeedbackToggleButtonCard<const char*> _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
+static dash::FeedbackToggleButtonCard _output1Dimmer(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::FeedbackToggleButtonCard<const char*> _output1PZEM(dashboard, YASOLR_LBL_133);
+static dash::FeedbackToggleButtonCard _output1PZEM(dashboard, YASOLR_LBL_133);
 static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 1 bypass relay
-static dash::FeedbackToggleButtonCard<const char*> _output1Relay(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
+static dash::FeedbackToggleButtonCard _output1Relay(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
 static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 1 ds18
-static dash::FeedbackToggleButtonCard<const char*> _output1DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
+static dash::FeedbackToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
 
 // output 2
 static dash::SeparatorCard<const char*> _output2Sep(dashboard, YASOLR_LBL_070);
 
 // output 2 dimmer
-static dash::FeedbackToggleButtonCard<const char*> _output2Dimmer(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
+static dash::FeedbackToggleButtonCard _output2Dimmer(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::FeedbackToggleButtonCard<const char*> _output2PZEM(dashboard, YASOLR_LBL_133);
+static dash::FeedbackToggleButtonCard _output2PZEM(dashboard, YASOLR_LBL_133);
 static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
 
 // output 2 bypass relay
-static dash::FeedbackToggleButtonCard<const char*> _output2Relay(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
+static dash::FeedbackToggleButtonCard _output2Relay(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
 static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 2 ds18
-static dash::FeedbackToggleButtonCard<const char*> _output2DS18(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
+static dash::FeedbackToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
 
 // Relays
 static dash::SeparatorCard<const char*> _relaySep(dashboard, YASOLR_LBL_071);
 
 // relay1
-static dash::FeedbackToggleButtonCard<const char*> _relay1(dashboard, YASOLR_LBL_074);
+static dash::FeedbackToggleButtonCard _relay1(dashboard, YASOLR_LBL_074);
 static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::InputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
 static dash::PercentageSliderCard _relay1Tolerance(dashboard, YASOLR_LBL_198);
 
 // relay2
-static dash::FeedbackToggleButtonCard<const char*> _relay2(dashboard, YASOLR_LBL_077);
+static dash::FeedbackToggleButtonCard _relay2(dashboard, YASOLR_LBL_077);
 static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
@@ -346,13 +346,13 @@ static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
 static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_078);
 
 // router ds18
-static dash::FeedbackToggleButtonCard<const char*> _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
+static dash::FeedbackToggleButtonCard _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
 
 // router led
-static dash::FeedbackToggleButtonCard<const char*> _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
+static dash::FeedbackToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
 
 // display
-static dash::FeedbackToggleButtonCard<const char*> _display(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_127);
+static dash::FeedbackToggleButtonCard _display(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_127);
 static dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
 static dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
 static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
