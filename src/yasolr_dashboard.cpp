@@ -12,6 +12,7 @@
   #define AreaChart                BarChart
   #define EnergyCard               GenericCard
   #define FeedbackToggleButtonCard ToggleButtonCard
+  #define IndicatorButtonCard      ToggleButtonCard
 #endif
 
 #ifdef APP_MODEL_PRO
@@ -445,22 +446,56 @@ void YaSolR::Website::begin() {
   _routedPowerHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _routerTHDiHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
+#if APP_MODEL_PRO
   _output1ResistanceCalibration.onPush(_onChangeResistanceCalibration);
   _output2ResistanceCalibration.onPush(_onChangeResistanceCalibration);
 
   _output1PZEMSync.onPush([]() {
-    if (pzemO1PairingTask)
-      pzemO1PairingTask->resume();
-    _output1PZEMSync.setIndicator(pzemO1PairingTask && pzemO1PairingTask->scheduled(), dash::Status::WARNING);
+    if (pzemO1PairingTask) {
+      if (pzemO1PairingTask->running())
+        return;
+      if (!pzemO1PairingTask->scheduled())
+        pzemO1PairingTask->resume();
+    }
+    _output1PZEMSync.setIndicator(pzemO1PairingTask && (pzemO1PairingTask->scheduled() || pzemO1PairingTask->running()), dash::Status::WARNING);
     dashboard.refresh(_output1PZEMSync);
   });
 
   _output2PZEMSync.onPush([]() {
     if (pzemO2PairingTask)
+      if (pzemO2PairingTask->running())
+        return;
+    if (!pzemO2PairingTask->scheduled())
       pzemO2PairingTask->resume();
-    _output2PZEMSync.setIndicator(pzemO2PairingTask && pzemO2PairingTask->scheduled(), dash::Status::WARNING);
+    _output2PZEMSync.setIndicator(pzemO2PairingTask && (pzemO2PairingTask->scheduled() || pzemO2PairingTask->running()), dash::Status::WARNING);
     dashboard.refresh(_output2PZEMSync);
   });
+#else
+  _output1ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
+  _output2ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
+
+  _output1PZEMSync.onChange([](bool value) {
+    if (pzemO1PairingTask) {
+      if (pzemO1PairingTask->running())
+        return;
+      if (!pzemO1PairingTask->scheduled())
+        pzemO1PairingTask->resume();
+    }
+    _output1PZEMSync.setValue(pzemO1PairingTask && (pzemO1PairingTask->scheduled() || pzemO1PairingTask->running()));
+    dashboard.refresh(_output1PZEMSync);
+  });
+
+  _output2PZEMSync.onChange([](bool value) {
+    if (pzemO2PairingTask) {
+      if (pzemO2PairingTask->running())
+        return;
+      if (!pzemO2PairingTask->scheduled())
+        pzemO2PairingTask->resume();
+    }
+    _output2PZEMSync.setValue(pzemO2PairingTask && (pzemO2PairingTask->scheduled() || pzemO2PairingTask->running()));
+    dashboard.refresh(_output2PZEMSync);
+  });
+#endif
 
 #ifdef APP_MODEL_PRO
   dashboard.setChartAnimations(false);
@@ -1545,6 +1580,7 @@ void YaSolR::Website::updateCards() {
 #endif
   }
 
+#ifdef APP_MODEL_PRO
   if (pzemO1PairingTask && pzemO1PairingTask->scheduled()) {
     _output1PZEMSync.setIndicator(true, dash::Status::WARNING);
   } else if (pzemO1 && pzemO1->isConnected()) {
@@ -1576,6 +1612,12 @@ void YaSolR::Website::updateCards() {
   } else {
     _output2ResistanceCalibration.setIndicator(true, dash::Status::DANGER);
   }
+#else
+  _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
+  _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
+  _output1ResistanceCalibration.setValue(router.isCalibrationRunning());
+  _output2ResistanceCalibration.setValue(router.isCalibrationRunning());
+#endif
 
 #ifdef APP_MODEL_PRO
   // tab: output 1
