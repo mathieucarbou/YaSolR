@@ -22,7 +22,6 @@ ESPDash dashboard(webServer, "/dashboard", false);
 Mycila::ESPConnect espConnect(webServer);
 
 static AsyncAuthenticationMiddleware authMiddleware;
-static AsyncLoggingMiddleware loggingMiddleware;
 YaSolR::Website website;
 
 Mycila::Task dashboardInitTask("Init Dashboard", Mycila::Task::Type::ONCE, [](void* params) {
@@ -544,11 +543,6 @@ void yasolr_init_web_server() {
   LOGI(TAG, "Initialize web server");
 
   // Middleware
-
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
-    loggingMiddleware.setOutput(Serial);
-    webServer.addMiddleware(&loggingMiddleware);
-  }
 
   authMiddleware.setAuthType(AsyncAuthType::AUTH_DIGEST);
   authMiddleware.setRealm("YaSolR");
