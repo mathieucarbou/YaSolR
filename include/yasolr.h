@@ -4,6 +4,8 @@
  */
 #pragma once
 
+#include <esp_log.h>
+
 #include <AsyncJson.h>
 #include <AsyncUDP.h>
 #include <CRC.h>
@@ -28,7 +30,6 @@
 #include <MycilaGrid.h>
 #include <MycilaHADiscovery.h>
 #include <MycilaJSY.h>
-#include <MycilaLogger.h>
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
 #include <MycilaPID.h>
@@ -82,8 +83,8 @@ extern void yasolr_init_grid();
 extern float yasolr_frequency();
 
 // logging
-extern Mycila::Logger logger;
-extern void yasolr_init_logging();
+extern void yasolr_init_console_logging();
+extern void yasolr_init_startup_logging();
 extern void yasolr_configure_logging();
 
 // JSY

@@ -160,7 +160,6 @@ void rest_api() {
     library["MycilaESPConnect"] = ESPCONNECT_VERSION;
     library["MycilaHADiscovery"] = MYCILA_HA_VERSION;
     library["MycilaJSY"] = MYCILA_JSY_VERSION;
-    library["MycilaLogger"] = MYCILA_LOGGER_VERSION;
     library["MycilaMQTT"] = MYCILA_MQTT_VERSION;
     library["MycilaNTP"] = MYCILA_NTP_VERSION;
     library["MycilaPulseAnalyzer"] = MYCILA_PULSE_VERSION;

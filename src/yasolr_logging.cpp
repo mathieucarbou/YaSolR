@@ -4,24 +4,25 @@
  */
 #include <yasolr.h>
 
-Mycila::Logger logger;
-
-static Mycila::Task* loggingTask = nullptr;
-static WebSerial* webSerial = nullptr;
-
 class LogStream : public Print {
   public:
-    LogStream(const char* path, size_t limit) : _path(path), _limit(limit) {
+    LogStream(const char* path, size_t limit, std::function<void()> onEnd) : _path(path), _limit(limit), _onEnd(onEnd) {
       File file = LittleFS.open(_path, "r");
       _logSize = file ? file.size() : 0;
       file.close();
-      _accepting = _logSize < _limit;
+      if (_logSize >= _limit) {
+        if (_onEnd)
+          _onEnd();
+        _onEnd = nullptr;
+      }
     }
+
     size_t write(const uint8_t* buffer, size_t size) override {
-      if (!_accepting)
+      if (_onEnd == nullptr)
         return 0;
       if (_logSize + size > _limit) {
-        _accepting = false;
+        _onEnd();
+        _onEnd = nullptr;
         return 0;
       }
       File file = LittleFS.open(_path, "a");
@@ -32,36 +33,32 @@ class LogStream : public Print {
       _logSize += written;
       return written;
     }
+
     size_t write(uint8_t c) override {
-      assert(false);
-      return 0;
+      return write(&c, 1);
     }
 
   private:
     const char* _path;
     const size_t _limit;
+    std::function<void()> _onEnd;
     size_t _logSize = 0;
-    bool _accepting = false;
 };
 
-static void initWebSerial() {
-  LOGI(TAG, "Redirecting logs to WebSerial");
-  webSerial = new WebSerial();
-#ifdef APP_MODEL_PRO
-  webSerial->setID(Mycila::AppInfo.firmware.c_str());
-  webSerial->setTitle((Mycila::AppInfo.name + " Web Console").c_str());
-  webSerial->setInput(false);
-#endif
-  webSerial->begin(&webServer, "/console");
-  logger.forwardTo(webSerial);
+static Mycila::Task* loggingTask = nullptr;
+static WebSerial* webSerial = nullptr;
+static LogStream* logStream = nullptr;
+
+static int log_redirect_vprintf(const char* format, va_list args) {
+  size_t written = Serial.vprintf(format, args);
+  if (logStream)
+    logStream->vprintf(format, args);
+  if (webSerial)
+    webSerial->vprintf(format, args);
+  return written;
 }
 
-static void initLogDump() {
-  LOGI(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
-  logger.forwardTo(new LogStream(YASOLR_LOG_FILE, 32 * 1024));
-}
-
-void yasolr_init_logging() {
+void yasolr_init_console_logging() {
   Serial.begin(YASOLR_SERIAL_BAUDRATE);
 #if ARDUINO_USB_CDC_ON_BOOT
   Serial.setTxTimeoutMs(0);
@@ -71,22 +68,39 @@ void yasolr_init_logging() {
     yield();
 #endif
 
-  logger.redirectArduinoLogs();
-  logger.forwardTo(&Serial);
+  esp_log_level_set("*", LOG_LOCAL_LEVEL);
+  esp_log_set_vprintf(log_redirect_vprintf);
+  LOGI(TAG, "Logging initialized");
 }
 
-void yasolr_configure_logging() {
-  LOGI(TAG, "Initialize logging");
+void yasolr_init_startup_logging() {
+  LOGI(TAG, "Saving startup logs...");
 
   if (LittleFS.remove(YASOLR_LOG_FILE))
     LOGI(TAG, "Previous log file removed");
 
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
-    logger.setLevel(ARDUHAL_LOG_LEVEL_DEBUG);
-    esp_log_level_set("*", ESP_LOG_DEBUG);
+  LOGI(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
+  logStream = new LogStream(YASOLR_LOG_FILE, 32 * 1024, []() {
+    delete logStream;
+    logStream = nullptr;
+    LOGW(TAG, "Startup log size limit reached!");
+  });
+}
 
-    initWebSerial();
-    initLogDump();
+void yasolr_configure_logging() {
+  if (config.getBool(KEY_ENABLE_DEBUG)) {
+    esp_log_level_set("*", ESP_LOG_VERBOSE);
+    esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
+
+    LOGI(TAG, "Redirecting logs to WebSerial");
+    webSerial = new WebSerial();
+#ifdef APP_MODEL_PRO
+    webSerial->setID(Mycila::AppInfo.firmware.c_str());
+    webSerial->setTitle((Mycila::AppInfo.name + " Web Console").c_str());
+    webSerial->setInput(false);
+#endif
+    webSerial->setBuffer(256); // max log line size
+    webSerial->begin(&webServer, "/console");
 
     loggingTask = new Mycila::Task("Debug", [](void* params) {
       LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
@@ -105,7 +119,6 @@ void yasolr_configure_logging() {
     unsafeTaskManager.addTask(*loggingTask);
 
   } else {
-    logger.setLevel(ARDUHAL_LOG_LEVEL_INFO);
     esp_log_level_set("*", ESP_LOG_INFO);
   }
 }

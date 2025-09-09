@@ -25,7 +25,6 @@
   #define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)
   #define IS_LOGD(tag)           (logger.isDebugEnabled())
 #else
-  #include <esp_log.h>
   #define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
   #define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
   #define LOGW(tag, format, ...) ESP_LOGW(tag, format, ##__VA_ARGS__)
