@@ -82,7 +82,7 @@ void routes() {
 }
 
 void rest_api() {
-  logger.info(TAG, "Initialize REST API");
+  LOGI(TAG, "Initialize REST API");
 
   // debug
 
@@ -234,10 +234,10 @@ void rest_api() {
         if (!index) {
           const esp_partition_t* partition = esp_partition_find_first(esp_partition_type_t::ESP_PARTITION_TYPE_APP, esp_partition_subtype_t::ESP_PARTITION_SUBTYPE_APP_FACTORY, YASOLR_SAFEBOOT_PARTITION_NAME);
           if (partition) {
-            logger.warn(TAG, "Updating Safeboot recovery partition");
+            LOGW(TAG, "Updating Safeboot recovery partition");
             website.setSafeBootUpdateStatus("Updating...", dash::Status::WARNING);
             if (esp_partition_erase_range(partition, 0, partition->size) == ESP_OK) {
-              logger.info(TAG, "Safeboot partition formatted");
+              LOGI(TAG, "Safeboot partition formatted");
               request->_tempObject = const_cast<void*>(reinterpret_cast<const void*>(partition));
             } else {
               website.setSafeBootUpdateStatus("Failed to format partition. Update aborted.", dash::Status::DANGER);
@@ -265,7 +265,7 @@ void rest_api() {
           request->send(400, "text/plain", "No PEM server certificate file uploaded");
         } else {
           File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
-          logger.info(TAG, "Uploaded MQTT PEM server certificate:\n%s", serverCertFile.readString().c_str());
+          LOGI(TAG, "Uploaded MQTT PEM server certificate:\n%s", serverCertFile.readString().c_str());
           serverCertFile.close();
           dashboardInitTask.resume();
           request->send(response);
@@ -541,7 +541,7 @@ void rest_api() {
 }
 
 void yasolr_init_web_server() {
-  logger.info(TAG, "Initialize web server");
+  LOGI(TAG, "Initialize web server");
 
   // Middleware
 
@@ -568,7 +568,7 @@ void yasolr_init_web_server() {
 #endif
   dashboard.onBeforeUpdate([](bool changes_only) {
     if (!changes_only) {
-      logger.info(TAG, "Dashboard refresh requested!");
+      LOGI(TAG, "Dashboard refresh requested!");
       website.initCards();
     }
   });

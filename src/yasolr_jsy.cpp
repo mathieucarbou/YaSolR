@@ -11,7 +11,7 @@ static Mycila::JSY::Data jsyData;
 
 void yasolr_init_jsy() {
   if (config.getBool(KEY_ENABLE_JSY) && config.getString(KEY_JSY_UART) != YASOLR_UART_NONE) {
-    logger.info(TAG, "Initialize JSY with UART %s", config.get(KEY_JSY_UART));
+    LOGI(TAG, "Initialize JSY with UART %s", config.get(KEY_JSY_UART));
 
     jsy = new Mycila::JSY();
 
@@ -24,7 +24,7 @@ void yasolr_init_jsy() {
 #endif
 
     if (!jsy->isEnabled()) {
-      logger.error(TAG, "JSY failed to initialize!");
+      LOGE(TAG, "JSY failed to initialize!");
       jsy->end();
       delete jsy;
       jsy = nullptr;

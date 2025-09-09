@@ -9,7 +9,7 @@ Mycila::DS18* ds18O2 = nullptr;
 Mycila::DS18* ds18Sys = nullptr;
 
 void yasolr_init_ds18() {
-  logger.info(TAG, "Initialize DS18 probes");
+  LOGI(TAG, "Initialize DS18 probes");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_DS18_SYSTEM)) {
@@ -20,13 +20,13 @@ void yasolr_init_ds18() {
       count++;
       ds18Sys->listen([](float temperature, bool changed) {
         if (changed) {
-          logger.info(TAG, "Router Temperature changed to %.02f °C", temperature);
+          LOGI(TAG, "Router Temperature changed to %.02f °C", temperature);
           if (mqttPublishTask)
             mqttPublishTask->requestEarlyRun();
         }
       });
     } else {
-      logger.error(TAG, "DS18 system probe failed to initialize!");
+      LOGE(TAG, "DS18 system probe failed to initialize!");
       ds18Sys->end();
       delete ds18Sys;
       ds18Sys = nullptr;
@@ -49,13 +49,13 @@ void yasolr_init_ds18() {
         }
 
         if (changed) {
-          logger.info(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
+          LOGI(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
           if (mqttPublishTask)
             mqttPublishTask->requestEarlyRun();
         }
       });
     } else {
-      logger.error(TAG, "DS18 output 1 probe failed to initialize!");
+      LOGE(TAG, "DS18 output 1 probe failed to initialize!");
       ds18O1->end();
       delete ds18O1;
       ds18O1 = nullptr;
@@ -78,14 +78,14 @@ void yasolr_init_ds18() {
         }
 
         if (changed) {
-          logger.info(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
+          LOGI(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
           if (mqttPublishTask)
             mqttPublishTask->requestEarlyRun();
         }
       });
       ds18O2 = new Mycila::DS18();
     } else {
-      logger.error(TAG, "DS18 output 2 probe failed to initialize!");
+      LOGE(TAG, "DS18 output 2 probe failed to initialize!");
       ds18O2->end();
       delete ds18O2;
       ds18O2 = nullptr;

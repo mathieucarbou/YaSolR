@@ -422,7 +422,7 @@ static void _onChangeResistanceCalibration() {
 }
 
 void YaSolR::Website::begin() {
-  logger.info(TAG, "Initialize dashboard layout");
+  LOGI(TAG, "Initialize dashboard layout");
 
   for (int i = 0; i < YASOLR_GRAPH_POINTS; i++)
     _historyX[i] = i - YASOLR_GRAPH_POINTS;
@@ -666,7 +666,7 @@ void YaSolR::Website::begin() {
 
   _mqttServerCertDelete.onPush([this]() {
     if (LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE) && LittleFS.remove(YASOLR_MQTT_SERVER_CERT_FILE)) {
-      logger.warn(TAG, "MQTT server certificate deleted successfully!");
+      LOGW(TAG, "MQTT server certificate deleted successfully!");
       dashboardInitTask.resume();
     }
   });
@@ -998,7 +998,7 @@ void YaSolR::Website::begin() {
 }
 
 void YaSolR::Website::initCards() {
-  logger.info(TAG, "Initialize dashboard cards");
+  LOGI(TAG, "Initialize dashboard cards");
 
   const Mycila::ESPConnect::Mode mode = espConnect.getMode();
 
@@ -1208,7 +1208,7 @@ void YaSolR::Website::initCards() {
 
   // tab: debug
 
-  _status(_debugMode, KEY_ENABLE_DEBUG, logger.isDebugEnabled());
+  _status(_debugMode, KEY_ENABLE_DEBUG, IS_LOGD(TAG));
   _debugInfo.setValue("/api/debug");
   _startupLogs.setValue("/api" YASOLR_LOG_FILE);
   _consoleLink.setValue("/console");
@@ -1750,11 +1750,11 @@ bool YaSolR::Website::realTimePIDEnabled() const {
 void YaSolR::Website::setSafeBootUpdateStatus(const char* msg, dash::Status status) {
 #ifdef APP_MODEL_PRO
   if (status == dash::Status::DANGER) {
-    logger.error(TAG, "SafeBoot Update: %s", msg);
+    LOGE(TAG, "SafeBoot Update: %s", msg);
   } else if (status == dash::Status::WARNING) {
-    logger.warn(TAG, "SafeBoot Update: %s", msg);
+    LOGW(TAG, "SafeBoot Update: %s", msg);
   } else {
-    logger.info(TAG, "SafeBoot Update: %s", msg);
+    LOGI(TAG, "SafeBoot Update: %s", msg);
   }
   _safebootUploadStatus.setFeedback(msg, status);
   _safebootUploadStatus.setDisplay(true);

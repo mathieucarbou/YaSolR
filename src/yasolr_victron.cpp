@@ -18,10 +18,10 @@ static void connect() {
 
 void yasolr_init_victron() {
   if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
-    logger.info(TAG, "Initialize Victron Modbus TCP");
+    LOGI(TAG, "Initialize Victron Modbus TCP");
 
     if (!config.getString(KEY_VICTRON_MODBUS_SERVER).length()) {
-      logger.error(TAG, "Victron Modbus TCP server is not set");
+      LOGE(TAG, "Victron Modbus TCP server is not set");
       return;
     }
 

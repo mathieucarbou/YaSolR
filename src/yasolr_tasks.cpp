@@ -5,7 +5,7 @@
 #include <yasolr.h>
 
 void yasolr_init_tasks() {
-  logger.info(TAG, "Initialize tasks");
+  LOGI(TAG, "Initialize tasks");
 
   // profiling tasks ?
   if (config.getBool(KEY_ENABLE_DEBUG)) {

@@ -9,7 +9,7 @@
 Mycila::Config config;
 
 void yasolr_init_config() {
-  logger.info(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
+  LOGI(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // setup config system
   config.begin("YASOLR");
@@ -133,12 +133,12 @@ void yasolr_init_config() {
   config.configure(KEY_WIFI_SSID);
 
   config.listen([]() {
-    logger.info(TAG, "Configuration restored!");
+    LOGI(TAG, "Configuration restored!");
     restartTask.resume();
   });
 
   config.listen([](const char* k, const std::string& newValue) {
-    logger.info(TAG, "'%s' => '%s'", k, newValue.c_str());
+    LOGI(TAG, "'%s' => '%s'", k, newValue.c_str());
     const std::string key = k;
 
     if (key == KEY_RELAY1_LOAD) {
@@ -296,7 +296,7 @@ void yasolr_init_config() {
       pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
       pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
       pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
-      logger.info(TAG, "PID Controller reconfigured!");
+      LOGI(TAG, "PID Controller reconfigured!");
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {
       mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * 1000);

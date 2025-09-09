@@ -14,7 +14,7 @@ void yasolr_init_pzem() {
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM) && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER) && config.getString(KEY_PZEM_UART) != YASOLR_UART_NONE) {
-    logger.info(TAG, "Initialize Output 1 PZEM with UART %s", config.get(KEY_PZEM_UART));
+    LOGI(TAG, "Initialize Output 1 PZEM with UART %s", config.get(KEY_PZEM_UART));
 
     pzemO1 = new Mycila::PZEM();
 
@@ -56,7 +56,7 @@ void yasolr_init_pzem() {
       });
 
       pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::Task::Type::ONCE, [](void* params) {
-        logger.info(TAG, "Pairing connected PZEM to Output 1");
+        LOGI(TAG, "Pairing connected PZEM to Output 1");
         pzemO1->end();
 
         if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
@@ -74,12 +74,12 @@ void yasolr_init_pzem() {
               // stop PZEM if it was not enabled
               pzemO1->end();
             }
-            logger.warn(TAG, "PZEM already paired to Output 1");
+            LOGW(TAG, "PZEM already paired to Output 1");
             break;
           case MYCILA_PZEM_ADDRESS_UNKNOWN:
             // no device found
             pzemO1->end();
-            logger.error(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
+            LOGE(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
             break;
           default:
             // found a device
@@ -88,10 +88,10 @@ void yasolr_init_pzem() {
                 // stop PZEM if it was not enabled
                 pzemO1->end();
               }
-              logger.info(TAG, "PZEM has been paired to Output 1");
+              LOGI(TAG, "PZEM has been paired to Output 1");
             } else {
               pzemO1->end();
-              logger.error(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
+              LOGE(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
             }
         }
       });
@@ -100,7 +100,7 @@ void yasolr_init_pzem() {
         pzemO1PairingTask->enableProfiling();
 
     } else {
-      logger.error(TAG, "PZEM for Output 1 failed to initialize!");
+      LOGE(TAG, "PZEM for Output 1 failed to initialize!");
       pzemO1->end();
       delete pzemO1;
       pzemO1 = nullptr;
@@ -108,7 +108,7 @@ void yasolr_init_pzem() {
   }
 
   if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM) && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && config.getString(KEY_PZEM_UART) != YASOLR_UART_NONE) {
-    logger.info(TAG, "Initialize Output 2 PZEM with UART %s", config.get(KEY_PZEM_UART));
+    LOGI(TAG, "Initialize Output 2 PZEM with UART %s", config.get(KEY_PZEM_UART));
 
     pzemO2 = new Mycila::PZEM();
 
@@ -150,7 +150,7 @@ void yasolr_init_pzem() {
       });
 
       pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::Task::Type::ONCE, [](void* params) {
-        logger.info(TAG, "Pairing connected PZEM to Output 2");
+        LOGI(TAG, "Pairing connected PZEM to Output 2");
         pzemO2->end();
 
         if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
@@ -168,12 +168,12 @@ void yasolr_init_pzem() {
               // stop PZEM if it was not enabled
               pzemO2->end();
             }
-            logger.warn(TAG, "PZEM already paired to Output 2");
+            LOGW(TAG, "PZEM already paired to Output 2");
             break;
           case MYCILA_PZEM_ADDRESS_UNKNOWN:
             // no device found
             pzemO2->end();
-            logger.error(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
+            LOGE(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
             break;
           default:
             // found a device
@@ -182,10 +182,10 @@ void yasolr_init_pzem() {
                 // stop PZEM if it was not enabled
                 pzemO2->end();
               }
-              logger.info(TAG, "PZEM has been paired to Output 2");
+              LOGI(TAG, "PZEM has been paired to Output 2");
             } else {
               pzemO2->end();
-              logger.error(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
+              LOGE(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
             }
         }
       });
@@ -194,7 +194,7 @@ void yasolr_init_pzem() {
         pzemO2PairingTask->enableProfiling();
 
     } else {
-      logger.error(TAG, "PZEM for Output 2 failed to initialize!");
+      LOGE(TAG, "PZEM for Output 2 failed to initialize!");
       pzemO2->end();
       delete pzemO2;
       pzemO2 = nullptr;

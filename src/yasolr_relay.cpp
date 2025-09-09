@@ -9,7 +9,7 @@ Mycila::RouterRelay* relay1 = nullptr;
 Mycila::RouterRelay* relay2 = nullptr;
 
 void yasolr_init_relays() {
-  logger.info(TAG, "Initialize relays");
+  LOGI(TAG, "Initialize relays");
   uint8_t count = 0;
 
   if (config.getBool(KEY_ENABLE_RELAY1)) {
@@ -24,13 +24,13 @@ void yasolr_init_relays() {
       relay1->setTolerance(config.getFloat(KEY_RELAY1_TOLERANCE) / 100.0f);
 
       relay->listen([](bool state) {
-        logger.info(TAG, "Relay 1 changed to %s", state ? "ON" : "OFF");
+        LOGI(TAG, "Relay 1 changed to %s", state ? "ON" : "OFF");
         if (mqttPublishTask)
           mqttPublishTask->requestEarlyRun();
       });
 
     } else {
-      logger.error(TAG, "Relay 1 failed to initialize!");
+      LOGE(TAG, "Relay 1 failed to initialize!");
       relay->end();
       delete relay1;
       relay1 = nullptr;
@@ -49,13 +49,13 @@ void yasolr_init_relays() {
       relay2->setTolerance(config.getFloat(KEY_RELAY2_TOLERANCE) / 100.0f);
 
       relay->listen([](bool state) {
-        logger.info(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
+        LOGI(TAG, "Relay 2 changed to %s", state ? "ON" : "OFF");
         if (mqttPublishTask)
           mqttPublishTask->requestEarlyRun();
       });
 
     } else {
-      logger.error(TAG, "Relay 2 failed to initialize!");
+      LOGE(TAG, "Relay 2 failed to initialize!");
       relay->end();
       delete relay2;
       relay2 = nullptr;

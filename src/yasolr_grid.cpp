@@ -28,7 +28,7 @@ float yasolr_frequency() {
 }
 
 void yasolr_init_grid() {
-  logger.info(TAG, "Initialize grid electricity");
+  LOGI(TAG, "Initialize grid electricity");
 
   grid.localMetrics().setExpiration(10000);                             // local is fast
   grid.remoteMetrics().setExpiration(10000);                            // remote JSY is fast

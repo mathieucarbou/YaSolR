@@ -70,7 +70,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyEnable, con
   Mycila::Dimmer* dimmer = nullptr;
   const char* type = config.get(keyType);
 
-  logger.info(TAG, "Initializing dimmer %s for output %d", type, outputID);
+  LOGI(TAG, "Initializing dimmer %s for output %d", type, outputID);
 
   if (isZeroCrossBased(type)) {
     Mycila::ZeroCrossDimmer* zcDimmer = new Mycila::ZeroCrossDimmer();
@@ -102,14 +102,14 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyEnable, con
   }
 
   if (!dimmer) {
-    logger.error(TAG, "Dimmer type not supported: %s", type);
+    LOGE(TAG, "Dimmer type not supported: %s", type);
     return nullptr;
   }
 
   dimmer->begin();
 
   if (!dimmer->isEnabled()) {
-    logger.error(TAG, "Dimmer failed to initialize!");
+    LOGE(TAG, "Dimmer failed to initialize!");
     delete dimmer;
     dimmer = nullptr;
   }
@@ -124,14 +124,14 @@ static Mycila::Relay* createBypassRelay(const char* keyEnable, const char* keyTy
 
     if (relay->isEnabled()) {
       relay->listen([](bool state) {
-        logger.info(TAG, "Output Relay changed to %s", state ? "ON" : "OFF");
+        LOGI(TAG, "Output Relay changed to %s", state ? "ON" : "OFF");
         if (mqttPublishTask)
           mqttPublishTask->requestEarlyRun();
       });
       return relay;
 
     } else {
-      logger.error(TAG, "Output 1 Bypass Relay failed to initialize!");
+      LOGE(TAG, "Output 1 Bypass Relay failed to initialize!");
       delete relay;
       return nullptr;
     }
@@ -146,7 +146,7 @@ static void initOutput1(uint16_t semiPeriod) {
 
   // output 1 is only a bypass relay ?
   if (!dimmer1 && bypassRelay) {
-    logger.warn(TAG, "Output 1 has no dimmer and is only a bypass relay");
+    LOGW(TAG, "Output 1 has no dimmer and is only a bypass relay");
     // we do not call begin so that the virtual dimmer remains disabled
     dimmer1 = new Mycila::VirtualDimmer();
   }
@@ -183,7 +183,7 @@ static void initOutput2(uint16_t semiPeriod) {
 
   // output 2 is only a bypass relay ?
   if (!dimmer2 && bypassRelay) {
-    logger.warn(TAG, "Output 2 has no dimmer and is only a bypass relay");
+    LOGW(TAG, "Output 2 has no dimmer and is only a bypass relay");
     // we do not call begin so that the virtual dimmer remains disabled
     dimmer2 = new Mycila::VirtualDimmer();
   }
@@ -226,7 +226,7 @@ void yasolr_divert() {
 }
 
 void yasolr_init_router() {
-  logger.info(TAG, "Initialize router outputs");
+  LOGI(TAG, "Initialize router outputs");
 
   // PID Controller
 
@@ -253,11 +253,11 @@ void yasolr_init_router() {
   initOutput2(semiPeriod);
 
   if (semiPeriod) {
-    logger.warn(TAG, "Grid frequency forced by user to %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
+    LOGW(TAG, "Grid frequency forced by user to %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
 
     // until we have our new dimmer impl... Only for ZC based dimmers...
     if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
-      logger.info(TAG, "Starting Thyristor");
+      LOGI(TAG, "Starting Thyristor");
       Thyristor::setSemiPeriod(semiPeriod);
       Thyristor::begin();
       if (dimmer1)
@@ -267,7 +267,7 @@ void yasolr_init_router() {
     }
 
   } else {
-    logger.warn(TAG, "Grid frequency will be auto-detected");
+    LOGW(TAG, "Grid frequency will be auto-detected");
 
     frequencyMonitorTask = new Mycila::Task("Frequency", [](void* params) {
       const float frequency = yasolr_frequency();
@@ -275,22 +275,22 @@ void yasolr_init_router() {
 
       if (semiPeriod) {
         if (!Thyristor::getSemiPeriod() || (dimmer1 && !dimmer1->getSemiPeriod()) || (dimmer2 && !dimmer2->getSemiPeriod())) {
-          logger.info(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
+          LOGI(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
 
           if (!Thyristor::getSemiPeriod()) {
-            logger.info(TAG, "Starting Thyristor");
+            LOGI(TAG, "Starting Thyristor");
             Thyristor::setSemiPeriod(semiPeriod);
             Thyristor::begin();
           }
 
           if (dimmer1 && !dimmer1->getSemiPeriod()) {
-            logger.info(TAG, "Starting Output 1 Dimmer");
+            LOGI(TAG, "Starting Output 1 Dimmer");
             dimmer1->setSemiPeriod(semiPeriod);
             dimmer1->off();
           }
 
           if (dimmer2 && !dimmer2->getSemiPeriod()) {
-            logger.info(TAG, "Starting Output 2 Dimmer");
+            LOGI(TAG, "Starting Output 2 Dimmer");
             dimmer2->setSemiPeriod(semiPeriod);
             dimmer2->off();
           }
@@ -305,22 +305,22 @@ void yasolr_init_router() {
         }
 
       } else {
-        logger.warn(TAG, "Unknown grid frequency!");
+        LOGW(TAG, "Unknown grid frequency!");
 
         if (Thyristor::getSemiPeriod() || (dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
           if (Thyristor::getSemiPeriod()) {
-            logger.info(TAG, "Stopping Thyristor");
+            LOGI(TAG, "Stopping Thyristor");
             Thyristor::setSemiPeriod(0);
             Thyristor::end();
           }
 
           if (dimmer1 && dimmer1->getSemiPeriod()) {
-            logger.info(TAG, "Setting dimmer 1 semi-period to 0");
+            LOGI(TAG, "Setting dimmer 1 semi-period to 0");
             dimmer1->setSemiPeriod(0);
           }
 
           if (dimmer2 && dimmer2->getSemiPeriod()) {
-            logger.info(TAG, "Setting dimmer 2 semi-period to 0");
+            LOGI(TAG, "Setting dimmer 2 semi-period to 0");
             dimmer2->setSemiPeriod(0);
           }
 
@@ -358,7 +358,7 @@ void yasolr_init_router() {
     pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
 
     if (!pulseAnalyzer->isEnabled()) {
-      logger.error(TAG, "ZCD Pulse Analyzer failed to initialize!");
+      LOGE(TAG, "ZCD Pulse Analyzer failed to initialize!");
       delete pulseAnalyzer;
       pulseAnalyzer = nullptr;
     }

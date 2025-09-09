@@ -7,12 +7,12 @@
 void setup() {
   yasolr_init_logging(); // init logging
 
-  logger.info(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  LOGI(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
   yasolr_init_system();       // init system (safeboot, restart, reset, etc)
   yasolr_init_config();       // load configuration from NVS
   yasolr_configure_logging(); // configure logging
 
-  logger.info(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  LOGI(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
   yasolr_init_lights();
   yasolr_init_trial();
   // measurements
@@ -35,7 +35,7 @@ void setup() {
   yasolr_init_tasks();
 
   // STARTUP READY!
-  logger.info(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
+  LOGI(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 }
 
 // Destroy default Arduino async task

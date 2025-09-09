@@ -16,7 +16,7 @@ static uint32_t lastDisplayUpdate = 0;
 
 void yasolr_init_display() {
   if (config.getBool(KEY_ENABLE_DISPLAY)) {
-    logger.info(TAG, "Initialize display");
+    LOGI(TAG, "Initialize display");
 
     display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 
@@ -29,7 +29,7 @@ void yasolr_init_display() {
       display->begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
 
     if (!display->isEnabled()) {
-      logger.error(TAG, "Display failed to initialize!");
+      LOGE(TAG, "Display failed to initialize!");
       display->end();
       delete display;
       display = nullptr;

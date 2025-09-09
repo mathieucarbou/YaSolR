@@ -45,7 +45,7 @@ class LogStream : public Print {
 };
 
 static void initWebSerial() {
-  logger.info(TAG, "Redirecting logs to WebSerial");
+  LOGI(TAG, "Redirecting logs to WebSerial");
   webSerial = new WebSerial();
 #ifdef APP_MODEL_PRO
   webSerial->setID(Mycila::AppInfo.firmware.c_str());
@@ -57,7 +57,7 @@ static void initWebSerial() {
 }
 
 static void initLogDump() {
-  logger.info(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
+  LOGI(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
   logger.forwardTo(new LogStream(YASOLR_LOG_FILE, 32 * 1024));
 }
 
@@ -76,20 +76,20 @@ void yasolr_init_logging() {
 }
 
 void yasolr_configure_logging() {
-  logger.info(TAG, "Initialize logging");
+  LOGI(TAG, "Initialize logging");
 
   if (LittleFS.remove(YASOLR_LOG_FILE))
-    logger.info(TAG, "Previous log file removed");
+    LOGI(TAG, "Previous log file removed");
 
   if (config.getBool(KEY_ENABLE_DEBUG)) {
     logger.setLevel(ARDUHAL_LOG_LEVEL_DEBUG);
-    esp_log_level_set("*", static_cast<esp_log_level_t>(ARDUHAL_LOG_LEVEL_DEBUG));
+    esp_log_level_set("*", ESP_LOG_DEBUG);
 
     initWebSerial();
     initLogDump();
 
     loggingTask = new Mycila::Task("Debug", [](void* params) {
-      logger.info(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
+      LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
       Mycila::TaskMonitor.log();
       coreTaskManager.log();
       unsafeTaskManager.log();
@@ -106,6 +106,6 @@ void yasolr_configure_logging() {
 
   } else {
     logger.setLevel(ARDUHAL_LOG_LEVEL_INFO);
-    esp_log_level_set("*", static_cast<esp_log_level_t>(ARDUHAL_LOG_LEVEL_INFO));
+    esp_log_level_set("*", ESP_LOG_INFO);
   }
 }
