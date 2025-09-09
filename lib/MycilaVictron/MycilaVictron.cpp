@@ -55,7 +55,7 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
     return;
   }
 
-  logger.info(TAG, "Connecting to Victron Modbus TCP Server %s:%" PRIu16 "", host, port);
+  LOGI(TAG, "Connecting to Victron Modbus TCP Server %s:%" PRIu16 "", host, port);
   _client = new ModbusClientTCPasync(IPAddress(host), port);
   // _client->setTimeout(DEFAULTTIMEOUT);
   // _client->setIdleTimeout(DEFAULTIDLETIME);
@@ -102,7 +102,7 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
 
 void Mycila::Victron::end() {
   if (_client) {
-    logger.info(TAG, "Disconnecting from Victron Modbus TCP Server");
+    LOGI(TAG, "Disconnecting from Victron Modbus TCP Server");
     _client->disconnect();
     delete _client;
     _client = nullptr;
