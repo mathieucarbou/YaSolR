@@ -96,7 +96,7 @@ extern void yasolr_init_jsy();
 extern AsyncUDP* udp;
 extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
 extern Mycila::Task* jsyRemoteTask;
-extern void yasolr_init_jsy_remote();
+extern void yasolr_configure_jsy_remote();
 
 // DS18
 extern Mycila::DS18* ds18O1;

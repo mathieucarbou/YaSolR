@@ -289,7 +289,7 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, YASOLR_LBL_112);
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
-static dash::FeedbackToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
+static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
 static dash::FeedbackToggleButtonCard _zcd(dashboard, YASOLR_LBL_125);
 static dash::FeedbackToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
@@ -1340,7 +1340,7 @@ void YaSolR::Website::initCards() {
       _gridFreq.setValue("Auto-detect");
       break;
   }
-  _status(_jsyRemote, KEY_ENABLE_JSY_REMOTE, udp && udp->connected(), YASOLR_LBL_113);
+  _jsyRemote.setValue(config.getBool(KEY_ENABLE_JSY_REMOTE));
   _victronServer.setValue(config.get(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.getInt(KEY_VICTRON_MODBUS_PORT));
   _victronServer.setDisplay(victronEnabled);

@@ -106,23 +106,42 @@ void onData(AsyncUDPPacket packet) {
   }
 }
 
-void yasolr_init_jsy_remote() {
+void yasolr_configure_jsy_remote() {
   if (config.getBool(KEY_ENABLE_JSY_REMOTE)) {
-    LOGI(TAG, "Initialize JSY Remote");
+    if (jsyRemoteTask == nullptr) {
+      LOGI(TAG, "Enable JSY Remote");
 
-    udp = new AsyncUDP();
-    udp->onPacket(onData);
+      udp = new AsyncUDP();
+      udp->onPacket(onData);
 
-    udpMessageRateBuffer = new Mycila::CircularBuffer<float, 15>();
+      udpMessageRateBuffer = new Mycila::CircularBuffer<float, 15>();
 
-    Mycila::TaskMonitor.addTask("async_udp"); // AsyncUDP (stack size cannot be set)
+      jsyRemoteTask = new Mycila::Task("JSY Remote", Mycila::Task::Type::ONCE, [](void* params) {
+        const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
+        LOGI(TAG, "Enable JSY Remote Listener on port %" PRIu16, udpPort);
+        udp->listen(udpPort);
+      });
 
-    jsyRemoteTask = new Mycila::Task("JSY Remote", Mycila::Task::Type::ONCE, [](void* params) {
-      const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
-      LOGI(TAG, "Enable JSY Remote Listener on port %" PRIu16, udpPort);
-      udp->listen(udpPort);
-    });
+      coreTaskManager.addTask(*jsyRemoteTask);
 
-    coreTaskManager.addTask(*jsyRemoteTask);
+      Mycila::TaskMonitor.addTask("async_udp"); // AsyncUDP (stack size cannot be set)
+    }
+  } else {
+    if (jsyRemoteTask != nullptr) {
+      LOGI(TAG, "Disable JSY Remote");
+
+      Mycila::TaskMonitor.removeTask("async_udp");
+
+      coreTaskManager.removeTask(*jsyRemoteTask);
+      udp->close();
+
+      delete jsyRemoteTask;
+      delete udp;
+      delete udpMessageRateBuffer;
+
+      jsyRemoteTask = nullptr;
+      udp = nullptr;
+      udpMessageRateBuffer = nullptr;
+    }
   }
 }

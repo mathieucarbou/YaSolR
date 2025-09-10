@@ -309,6 +309,11 @@ void yasolr_init_config() {
       if (!config.getBool(KEY_ENABLE_AP_MODE) && mqttConnectTask) {
         mqttConnectTask->resume();
       }
+    } else if (key == KEY_ENABLE_JSY_REMOTE) {
+      yasolr_configure_jsy_remote();
+      if (!config.getBool(KEY_ENABLE_AP_MODE) && jsyRemoteTask) {
+        jsyRemoteTask->resume();
+      }
     }
 
     dashboardInitTask.resume();

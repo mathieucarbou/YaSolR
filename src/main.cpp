@@ -19,7 +19,7 @@ void setup() {
   // measurements
   yasolr_init_ds18();
   yasolr_init_jsy();
-  yasolr_init_jsy_remote();
+  yasolr_configure_jsy_remote();
   yasolr_init_pzem();
   // router hardware
   yasolr_init_relays();
