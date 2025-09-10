@@ -218,7 +218,8 @@ static dash::FileUploadCard _mqttServerCert(dashboard, YASOLR_LBL_101, ".pem");
 static dash::PushButtonCard _mqttServerCertDelete(dashboard, YASOLR_LBL_049);
 static dash::InputCard<const char*> _mqttTopic(dashboard, YASOLR_LBL_103);
 static dash::SliderCard<uint8_t> _mqttPublishInterval(dashboard, YASOLR_LBL_102, 1, 30, 1, "s");
-static dash::FeedbackToggleButtonCard _haDiscovery(dashboard, YASOLR_LBL_104);
+static dash::SeparatorCard<const char*> _haSep(dashboard, YASOLR_LBL_107);
+static dash::ToggleButtonCard _haDiscovery(dashboard, YASOLR_LBL_104);
 static dash::InputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
 static dash::SeparatorCard<const char*> _mqttSep1(dashboard, YASOLR_LBL_179);
 static dash::InputCard<const char*> _mqttGridVoltage(dashboard, YASOLR_LBL_106);
@@ -636,16 +637,16 @@ void YaSolR::Website::begin() {
   _mqttServerCertDelete.setTab(_mqttTab);
   _mqttTopic.setTab(_mqttTab);
   _mqttPublishInterval.setTab(_mqttTab);
+  _haSep.setTab(_mqttTab);
+  _haDiscovery.setTab(_mqttTab);
+  _haDiscoveryTopic.setTab(_mqttTab);
   _mqttSep1.setTab(_mqttTab);
   _mqttGridVoltage.setTab(_mqttTab);
   _mqttGridPower.setTab(_mqttTab);
   _mqttTempO1.setTab(_mqttTab);
   _mqttTempO2.setTab(_mqttTab);
-  _haDiscovery.setTab(_mqttTab);
-  _haDiscoveryTopic.setTab(_mqttTab);
 
   _mqtt.setSize(FULL_SIZE);
-  // _haDiscovery.setSize(FULL_SIZE);
 
   _boolConfig(_mqtt, KEY_ENABLE_MQTT);
   _textConfig(_mqttServer, KEY_MQTT_SERVER);
@@ -1247,6 +1248,7 @@ void YaSolR::Website::initCards() {
   _mqttTopic.setDisplay(mqttEnabled);
   _mqttPublishInterval.setValue(config.getInt(KEY_MQTT_PUBLISH_INTERVAL));
   _mqttPublishInterval.setDisplay(mqttEnabled);
+  
   _mqttSep1.setDisplay(mqttEnabled);
   _mqttGridVoltage.setValue(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
   _mqttGridVoltage.setDisplay(mqttEnabled);
@@ -1256,6 +1258,8 @@ void YaSolR::Website::initCards() {
   _mqttTempO1.setDisplay(mqttEnabled);
   _mqttTempO2.setValue(config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
   _mqttTempO2.setDisplay(mqttEnabled);
+  
+  _haSep.setDisplay(mqttEnabled);
   _haDiscovery.setValue(config.getBool(KEY_ENABLE_HA_DISCOVERY));
   _haDiscovery.setDisplay(mqttEnabled);
   _haDiscoveryTopic.setValue(config.get(KEY_HA_DISCOVERY_TOPIC));
@@ -1650,7 +1654,6 @@ void YaSolR::Website::updateCards() {
   // tab: mqtt
 
   _status(_mqtt, KEY_ENABLE_MQTT, mqtt && mqtt->isEnabled(), mqtt && mqtt->isConnected(), mqtt && mqtt->getLastError() ? mqtt->getLastError() : YASOLR_LBL_113);
-  _status(_haDiscovery, KEY_ENABLE_HA_DISCOVERY, mqtt && mqtt->isEnabled(), mqtt && mqtt->isConnected(), mqtt && mqtt->getLastError() ? mqtt->getLastError() : YASOLR_LBL_113);
 
   // tab: hardware
 

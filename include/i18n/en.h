@@ -110,7 +110,7 @@
 #define YASOLR_LBL_104 "Home Assistant Integration"
 #define YASOLR_LBL_105 "Discovery Topic"
 #define YASOLR_LBL_106 "Grid Voltage"
-// #define YASOLR_LBL_107 "Grid Electricity and Measurements"
+#define YASOLR_LBL_107 "Home Assistant"
 #define YASOLR_LBL_108 "GPIO"
 #define YASOLR_LBL_109 "Unknown"
 #define YASOLR_LBL_110 "No electricity"

@@ -110,7 +110,7 @@
 #define YASOLR_LBL_104 "Intégration Home Assistant"
 #define YASOLR_LBL_105 "Topic de découverte"
 #define YASOLR_LBL_106 "Tension réseau"
-// #define YASOLR_LBL_107 "Réseau électrique et mesures"
+#define YASOLR_LBL_107 "Home Assistant"
 #define YASOLR_LBL_108 "GPIO"
 #define YASOLR_LBL_109 "Inconnu"
 #define YASOLR_LBL_110 "Pas d'électricité"
