@@ -482,14 +482,9 @@ static void haDiscovery() {
 
 void yasolr_configure_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
-    LOGI(TAG, "Initialize MQTT");
-
-    if (!config.getString(KEY_MQTT_SERVER).length()) {
-      LOGE(TAG, "MQTT server is not set");
-      return;
-    }
-
     if (mqtt == nullptr) {
+      LOGI(TAG, "Enabling MQTT");
+
       mqtt = new Mycila::MQTT();
       mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
       mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, [](void* params) { publishConfig(); });
@@ -527,6 +522,34 @@ void yasolr_configure_mqtt() {
         mqttPublishStaticTask->enableProfiling();
         mqttPublishTask->enableProfiling();
       }
+    }
+  } else {
+    if (mqtt) {
+      LOGI(TAG, "Disabling MQTT");
+
+      Mycila::TaskMonitor.removeTask("mqtt_task");
+
+      unsafeTaskManager.removeTask(*mqttConnectTask);
+      unsafeTaskManager.removeTask(*haDiscoveryTask);
+      unsafeTaskManager.removeTask(*mqttPublishConfigTask);
+      unsafeTaskManager.removeTask(*mqttPublishStaticTask);
+      unsafeTaskManager.removeTask(*mqttPublishTask);
+
+      mqtt->end();
+
+      delete mqttConnectTask;
+      delete haDiscoveryTask;
+      delete mqttPublishConfigTask;
+      delete mqttPublishStaticTask;
+      delete mqttPublishTask;
+      delete mqtt;
+
+      mqttConnectTask = nullptr;
+      haDiscoveryTask = nullptr;
+      mqttPublishConfigTask = nullptr;
+      mqttPublishStaticTask = nullptr;
+      mqttPublishTask = nullptr;
+      mqtt = nullptr;
     }
   }
 }

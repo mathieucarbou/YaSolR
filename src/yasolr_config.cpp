@@ -303,6 +303,12 @@ void yasolr_init_config() {
 
     } else if (key == KEY_ENABLE_DEBUG) {
       yasolr_configure_logging();
+
+    } else if (key == KEY_ENABLE_MQTT) {
+      yasolr_configure_mqtt();
+      if (!config.getBool(KEY_ENABLE_AP_MODE) && mqttConnectTask) {
+        mqttConnectTask->resume();
+      }
     }
 
     dashboardInitTask.resume();
