@@ -18,19 +18,10 @@
 
 // LOGGING REDIRECTION
 
-#ifdef MYCILA_LOGGER_SUPPORT
-  #define LOGD(tag, format, ...) logger.debug(tag, format, ##__VA_ARGS__)
-  #define LOGI(tag, format, ...) logger.info(tag, format, ##__VA_ARGS__)
-  #define LOGW(tag, format, ...) logger.warn(tag, format, ##__VA_ARGS__)
-  #define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)
-  #define IS_LOGD(tag)           (logger.isDebugEnabled())
-#else
-  #define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
-  #define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
-  #define LOGW(tag, format, ...) ESP_LOGW(tag, format, ##__VA_ARGS__)
-  #define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
-  #define IS_LOGD(tag)           (esp_log_level_get(tag) >= ESP_LOG_DEBUG)
-#endif
+#define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
+#define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
+#define LOGW(tag, format, ...) ESP_LOGW(tag, format, ##__VA_ARGS__)
+#define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
 
 // YASOLR
 

@@ -51,9 +51,9 @@ static LogStream* logStream = nullptr;
 
 static int log_redirect_vprintf(const char* format, va_list args) {
   size_t written = Serial.vprintf(format, args);
-  if (logStream)
+  if (logStream != nullptr)
     logStream->vprintf(format, args);
-  if (webSerial)
+  if (webSerial != nullptr)
     webSerial->vprintf(format, args);
   return written;
 }
@@ -85,40 +85,49 @@ void yasolr_init_startup_logging() {
     logStream = nullptr;
     LOGW(TAG, "Startup log size limit reached!");
   });
+
+  LOGI(TAG, "Redirecting logs to WebSerial...");
+  webSerial = new WebSerial();
+#ifdef APP_MODEL_PRO
+  webSerial->setID(Mycila::AppInfo.firmware.c_str());
+  webSerial->setTitle((Mycila::AppInfo.name + " Web Console").c_str());
+  webSerial->setInput(false);
+#endif
+  webSerial->setBuffer(256); // max log line size
+  webSerial->begin(&webServer, "/console");
 }
 
 void yasolr_configure_logging() {
   if (config.getBool(KEY_ENABLE_DEBUG)) {
     esp_log_level_set("*", ESP_LOG_VERBOSE);
     esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
+    LOGI(TAG, "Debug logging enabled");
 
-    LOGI(TAG, "Redirecting logs to WebSerial");
-    webSerial = new WebSerial();
-#ifdef APP_MODEL_PRO
-    webSerial->setID(Mycila::AppInfo.firmware.c_str());
-    webSerial->setTitle((Mycila::AppInfo.name + " Web Console").c_str());
-    webSerial->setInput(false);
-#endif
-    webSerial->setBuffer(256); // max log line size
-    webSerial->begin(&webServer, "/console");
+    if (loggingTask == nullptr) {
+      loggingTask = new Mycila::Task("Debug", [](void* params) {
+        LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
+        Mycila::TaskMonitor.log();
+        coreTaskManager.log();
+        unsafeTaskManager.log();
+        if (jsyTaskManager)
+          jsyTaskManager->log();
+        if (pzemTaskManager)
+          pzemTaskManager->log();
+      });
 
-    loggingTask = new Mycila::Task("Debug", [](void* params) {
-      LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
-      Mycila::TaskMonitor.log();
-      coreTaskManager.log();
-      unsafeTaskManager.log();
-      if (jsyTaskManager)
-        jsyTaskManager->log();
-      if (pzemTaskManager)
-        pzemTaskManager->log();
-    });
+      loggingTask->setInterval(30000);
+      loggingTask->enableProfiling();
 
-    loggingTask->setInterval(30000);
-    loggingTask->enableProfiling();
-
-    unsafeTaskManager.addTask(*loggingTask);
+      unsafeTaskManager.addTask(*loggingTask);
+    }
 
   } else {
     esp_log_level_set("*", ESP_LOG_INFO);
+    if (loggingTask != nullptr) {
+      unsafeTaskManager.removeTask(*loggingTask);
+      delete loggingTask;
+      loggingTask = nullptr;
+    }
+    LOGI(TAG, "Debug logging disabled");
   }
 }

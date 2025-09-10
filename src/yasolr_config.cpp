@@ -300,6 +300,9 @@ void yasolr_init_config() {
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {
       mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * 1000);
+
+    } else if (key == KEY_ENABLE_DEBUG) {
+      yasolr_configure_logging();
     }
 
     dashboardInitTask.resume();

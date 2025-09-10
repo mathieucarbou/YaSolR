@@ -181,7 +181,7 @@
 #define YASOLR_LBL_175 "I Term (W)"
 #define YASOLR_LBL_176 "D Term (W)"
 #define YASOLR_LBL_177 "Hardware"
-#define YASOLR_LBL_178 "Debug Information"
+#define YASOLR_LBL_178 "System Information"
 #define YASOLR_LBL_179 "Optional MQTT Topic Subscriptions"
 #define YASOLR_LBL_180 "Not paired"
 #define YASOLR_LBL_181 "Output 1 Temperature"

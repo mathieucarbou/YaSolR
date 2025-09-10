@@ -182,7 +182,7 @@ static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_L
 
 // tab: debug
 
-static dash::FeedbackToggleButtonCard _debugMode(dashboard, YASOLR_LBL_083);
+static dash::ToggleButtonCard _debugMode(dashboard, YASOLR_LBL_083);
 static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
 static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
@@ -575,8 +575,6 @@ void YaSolR::Website::begin() {
   _debugInfo.setTab(_debugTab);
   _startupLogs.setTab(_debugTab);
   _consoleLink.setTab(_debugTab);
-
-  _debugMode.setSize(FULL_SIZE);
 
   _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
 
@@ -1075,7 +1073,6 @@ void YaSolR::Website::initCards() {
   }
 
 #ifdef APP_MODEL_PRO
-  const bool debugEnabled = config.getBool(KEY_ENABLE_DEBUG);
   const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY);
   const bool mqttEnabled = config.getBool(KEY_ENABLE_MQTT);
   const bool pidViewEnabled = realTimePIDEnabled();
@@ -1208,14 +1205,10 @@ void YaSolR::Website::initCards() {
 
   // tab: debug
 
-  _status(_debugMode, KEY_ENABLE_DEBUG, IS_LOGD(TAG));
+  _debugMode.setValue(config.getBool(KEY_ENABLE_DEBUG));
   _debugInfo.setValue("/api/debug");
   _startupLogs.setValue("/api" YASOLR_LOG_FILE);
   _consoleLink.setValue("/console");
-
-  _debugInfo.setDisplay(debugEnabled);
-  _startupLogs.setDisplay(debugEnabled);
-  _consoleLink.setDisplay(debugEnabled);
 
   // tab: network
 
