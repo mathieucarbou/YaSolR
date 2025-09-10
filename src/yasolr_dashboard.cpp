@@ -1248,7 +1248,7 @@ void YaSolR::Website::initCards() {
   _mqttTopic.setDisplay(mqttEnabled);
   _mqttPublishInterval.setValue(config.getInt(KEY_MQTT_PUBLISH_INTERVAL));
   _mqttPublishInterval.setDisplay(mqttEnabled);
-  
+
   _mqttSep1.setDisplay(mqttEnabled);
   _mqttGridVoltage.setValue(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
   _mqttGridVoltage.setDisplay(mqttEnabled);
