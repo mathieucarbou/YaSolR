@@ -101,7 +101,7 @@ void yasolr_configure_logging() {
   if (config.getBool(KEY_ENABLE_DEBUG)) {
     esp_log_level_set("*", ESP_LOG_VERBOSE);
     esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
-    LOGI(TAG, "Debug logging enabled");
+    LOGI(TAG, "Enable Debug Mode");
 
     if (loggingTask == nullptr) {
       loggingTask = new Mycila::Task("Debug", [](void* params) {
@@ -123,11 +123,11 @@ void yasolr_configure_logging() {
 
   } else {
     esp_log_level_set("*", ESP_LOG_INFO);
+    LOGI(TAG, "Disable Debug Mode");
     if (loggingTask != nullptr) {
       unsafeTaskManager.removeTask(*loggingTask);
       delete loggingTask;
       loggingTask = nullptr;
     }
-    LOGI(TAG, "Debug logging disabled");
   }
 }

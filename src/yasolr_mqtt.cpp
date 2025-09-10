@@ -483,7 +483,7 @@ static void haDiscovery() {
 void yasolr_configure_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
     if (mqtt == nullptr) {
-      LOGI(TAG, "Enabling MQTT");
+      LOGI(TAG, "Enable MQTT");
 
       mqtt = new Mycila::MQTT();
       mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
@@ -525,7 +525,7 @@ void yasolr_configure_mqtt() {
     }
   } else {
     if (mqtt) {
-      LOGI(TAG, "Disabling MQTT");
+      LOGI(TAG, "Disable MQTT");
 
       Mycila::TaskMonitor.removeTask("mqtt_task");
 
