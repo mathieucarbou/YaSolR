@@ -68,7 +68,7 @@ void yasolr_init_console_logging() {
     yield();
 #endif
 
-  esp_log_level_set("*", LOG_LOCAL_LEVEL);
+  esp_log_level_set("*", ESP_LOG_INFO);
   esp_log_set_vprintf(log_redirect_vprintf);
   LOGI(TAG, "Logging initialized");
 }
