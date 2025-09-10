@@ -1258,7 +1258,7 @@ void YaSolR::Website::initCards() {
   _mqttTempO1.setDisplay(mqttEnabled);
   _mqttTempO2.setValue(config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
   _mqttTempO2.setDisplay(mqttEnabled);
-  
+
   _haSep.setDisplay(mqttEnabled);
   _haDiscovery.setValue(config.getBool(KEY_ENABLE_HA_DISCOVERY));
   _haDiscovery.setDisplay(mqttEnabled);
