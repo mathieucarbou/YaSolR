@@ -11,6 +11,7 @@
 
 Mycila::EasyDisplay* display = nullptr;
 
+static Mycila::Task* displayTask = nullptr;
 static uint8_t startingInformation = 1;
 static uint32_t lastDisplayUpdate = 0;
 
@@ -38,7 +39,7 @@ void yasolr_init_display() {
 
     display->setActive(true);
 
-    Mycila::Task* displayTask = new Mycila::Task("Display", [](void* params) {
+    displayTask = new Mycila::Task("Display", [](void* params) {
       if (lastDisplayUpdate && millis() - lastDisplayUpdate < config.getLong(KEY_DISPLAY_SPEED) * 1000)
         return;
 
