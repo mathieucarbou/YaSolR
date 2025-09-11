@@ -53,6 +53,7 @@ void onData(AsyncUDPPacket packet) {
         .current = doc["current"] | NAN,
         .energy = doc["active_energy_imported"] | static_cast<uint32_t>(0),
         .energyReturned = doc["active_energy_returned"] | static_cast<uint32_t>(0),
+        .frequency = doc["frequency"] | NAN,
         .power = doc["active_power"] | NAN,
         .powerFactor = doc["power_factor"] | NAN,
         .voltage = doc["voltage"] | NAN,
