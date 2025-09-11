@@ -569,8 +569,8 @@ It is required with these types of dimmers:
 - RobotDyn 24/40A
 - Triac + ZCD
 
-When activating `Zero-Cross Detection` in the hardware page, YaSolR will first start a pulse analyzer to grab some statistics about the pulse characteristics: period and length.
-This characteristics are used to fine-tune the TRIAC firing and they can be viewed in the dashboard, in the statistics section:
+When activating `Zero-Cross Detection`, YaSolR will first start a pulse analyzer to grab some statistics about the pulse characteristics: period and length.
+This characteristics are used to fine-tune the TRIAC firing and they can be viewed in the dashboard, in the system information (debug section) the ZCD information are exposed:
 
 - `ZCD: Pulse Width` (will depends on your ZCD module)
 - `ZCD: Pulse Period` (should be around 10ms for 50Hz and 8ms for 60Hz)
