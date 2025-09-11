@@ -329,17 +329,16 @@ static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_1
 // output 2 ds18
 static dash::FeedbackToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
 
-// Relays
-static dash::SeparatorCard<const char*> _relaySep(dashboard, YASOLR_LBL_071);
-
 // relay1
-static dash::FeedbackToggleButtonCard _relay1(dashboard, YASOLR_LBL_074);
+static dash::SeparatorCard<const char*> _relay1Sep(dashboard, YASOLR_LBL_074);
+static dash::ToggleButtonCard _relay1(dashboard, YASOLR_LBL_074);
 static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::InputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
 static dash::PercentageSliderCard _relay1Tolerance(dashboard, YASOLR_LBL_198);
 
 // relay2
-static dash::FeedbackToggleButtonCard _relay2(dashboard, YASOLR_LBL_077);
+static dash::SeparatorCard<const char*> _relay2Sep(dashboard, YASOLR_LBL_077);
+static dash::ToggleButtonCard _relay2(dashboard, YASOLR_LBL_077);
 static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
 static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
@@ -876,11 +875,9 @@ void YaSolR::Website::begin() {
   _output2DS18.setSize(FULL_SIZE);
   _boolConfig(_output2DS18, KEY_ENABLE_OUTPUT2_DS18);
 
-  _relaySep.setTab(_hardwareConfigTab);
-
   // relay1
+  _relay1Sep.setTab(_hardwareConfigTab);
   _relay1.setTab(_hardwareConfigTab);
-  _relay1.setSize(FULL_SIZE);
   _relay1Type.setTab(_hardwareConfigTab);
   _relay1Load.setTab(_hardwareConfigTab);
   _relay1Tolerance.setTab(_hardwareConfigTab);
@@ -890,8 +887,8 @@ void YaSolR::Website::begin() {
   _sliderConfig(_relay1Tolerance, KEY_RELAY1_TOLERANCE);
 
   // relay2
+  _relay2Sep.setTab(_hardwareConfigTab);
   _relay2.setTab(_hardwareConfigTab);
-  _relay2.setSize(FULL_SIZE);
   _relay2Type.setTab(_hardwareConfigTab);
   _relay2Load.setTab(_hardwareConfigTab);
   _relay2Tolerance.setTab(_hardwareConfigTab);
@@ -1085,9 +1082,6 @@ void YaSolR::Website::initCards() {
   const bool output2TempReceived = output2 && !output2->temperature().neverUpdated();
   const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM);
 
-  const bool relay1Enabled = config.getBool(KEY_ENABLE_RELAY1);
-  const bool relay2Enabled = config.getBool(KEY_ENABLE_RELAY2);
-
   const bool victronEnabled = config.getBool(KEY_ENABLE_VICTRON_MODBUS);
 
   // statistics
@@ -1119,8 +1113,8 @@ void YaSolR::Website::initCards() {
 
   // overview
 
-  _relay1Switch.setDisplay(relay1Enabled);
-  _relay2Switch.setDisplay(relay2Enabled);
+  _relay1Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
+  _relay2Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
 
   // tab: output 1
 
@@ -1347,22 +1341,16 @@ void YaSolR::Website::initCards() {
   _output2RelayType.setDisplay(output2RelayEnabled);
 
   // relay1
-  _status(_relay1, KEY_ENABLE_RELAY1, relay1 && relay1->isEnabled());
+  _relay1.setValue(config.getBool(KEY_ENABLE_RELAY1));
   _relay1Type.setValue(config.get(KEY_RELAY1_TYPE));
-  _relay1Type.setDisplay(relay1Enabled);
   _relay1Load.setValue(config.getInt(KEY_RELAY1_LOAD));
-  _relay1Load.setDisplay(relay1Enabled);
   _relay1Tolerance.setValue(config.getInt(KEY_RELAY1_TOLERANCE));
-  _relay1Tolerance.setDisplay(relay1Enabled);
 
   // relay2
-  _status(_relay2, KEY_ENABLE_RELAY2, relay2 && relay2->isEnabled());
+  _relay2.setValue(config.getBool(KEY_ENABLE_RELAY2));
   _relay2Type.setValue(config.get(KEY_RELAY2_TYPE));
-  _relay2Type.setDisplay(relay2Enabled);
   _relay2Load.setValue(config.getInt(KEY_RELAY2_LOAD));
-  _relay2Load.setDisplay(relay2Enabled);
   _relay2Tolerance.setValue(config.getInt(KEY_RELAY2_TOLERANCE));
-  _relay2Tolerance.setDisplay(relay2Enabled);
 
   // router led
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());

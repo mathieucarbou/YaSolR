@@ -15,7 +15,7 @@
 #define YASOLR_LBL_009 "Micro-contrôleur: Mémoire Heap: utilisée (bytes)"
 #define YASOLR_LBL_010 "Micro-contrôleur: ID"
 #define YASOLR_LBL_011 "Micro-contrôleur: Modèle"
-#define YASOLR_LBL_012 "Mesure électrique"
+#define YASOLR_LBL_012 "Mesure du réseau électrique"
 #define YASOLR_LBL_013 "Micro-logiciel: Hachage de construction"
 #define YASOLR_LBL_014 "Micro-logiciel: Date de construction"
 #define YASOLR_LBL_015 "Micro-logiciel: Nom de fichier"

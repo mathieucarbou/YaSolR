@@ -15,7 +15,7 @@
 #define YASOLR_LBL_009 "Device: Heap Memory Used (bytes)"
 #define YASOLR_LBL_010 "Device: ID"
 #define YASOLR_LBL_011 "Device: Model"
-#define YASOLR_LBL_012 "Electricity Measurement"
+#define YASOLR_LBL_012 "Grid Measurement"
 #define YASOLR_LBL_013 "Firmware: Build Hash"
 #define YASOLR_LBL_014 "Firmware: Build Timestamp"
 #define YASOLR_LBL_015 "Firmware: Filename"
