@@ -140,7 +140,7 @@ static Mycila::Relay* createBypassRelay(const char* keyEnable, const char* keyTy
   return nullptr;
 }
 
-static void initOutput1(uint16_t semiPeriod) {
+static void initOutput1() {
   dimmer1 = createDimmer(1, KEY_ENABLE_OUTPUT1_DIMMER, KEY_OUTPUT1_DIMMER_TYPE, KEY_PIN_OUTPUT1_DIMMER);
   Mycila::Relay* bypassRelay = createBypassRelay(KEY_ENABLE_OUTPUT1_RELAY, KEY_OUTPUT1_RELAY_TYPE, KEY_PIN_OUTPUT1_RELAY);
 
@@ -154,7 +154,6 @@ static void initOutput1(uint16_t semiPeriod) {
   if (dimmer1) {
     output1 = new Mycila::RouterOutput("output1", *dimmer1, bypassRelay);
 
-    dimmer1->setSemiPeriod(semiPeriod);
     dimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
     dimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
     dimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
@@ -177,7 +176,7 @@ static void initOutput1(uint16_t semiPeriod) {
   }
 }
 
-static void initOutput2(uint16_t semiPeriod) {
+static void initOutput2() {
   dimmer2 = createDimmer(2, KEY_ENABLE_OUTPUT2_DIMMER, KEY_OUTPUT2_DIMMER_TYPE, KEY_PIN_OUTPUT2_DIMMER);
   Mycila::Relay* bypassRelay = createBypassRelay(KEY_ENABLE_OUTPUT2_RELAY, KEY_OUTPUT2_RELAY_TYPE, KEY_PIN_OUTPUT2_RELAY);
 
@@ -191,7 +190,6 @@ static void initOutput2(uint16_t semiPeriod) {
   if (dimmer2) {
     output2 = new Mycila::RouterOutput("output2", *dimmer2, bypassRelay);
 
-    dimmer2->setSemiPeriod(semiPeriod);
     dimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
     dimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
     dimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
@@ -243,17 +241,22 @@ void yasolr_init_router() {
   router.localMetrics().setExpiration(10000);  // local is fast
   router.remoteMetrics().setExpiration(10000); // remote JSY is fast
 
+  // outputs
+
+  initOutput1();
+  initOutput2();
+
   // Do we have a user defined frequency?
   // Note: yasolr_frequency() at boot time will return either the user-defined frequency or NAN
 
   const float frequency = yasolr_frequency();
   const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
 
-  initOutput1(semiPeriod);
-  initOutput2(semiPeriod);
-
   if (semiPeriod) {
     LOGW(TAG, "Grid frequency forced by user to %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
+
+    dimmer1->setSemiPeriod(semiPeriod);
+    dimmer2->setSemiPeriod(semiPeriod);
 
     // until we have our new dimmer impl... Only for ZC based dimmers...
     if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
