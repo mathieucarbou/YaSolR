@@ -22,9 +22,10 @@ void setup() {
   yasolr_configure_jsy_remote();
   yasolr_init_pzem();
   // router hardware
+  yasolr_init_grid();
   yasolr_init_relays();
   yasolr_init_router();
-  yasolr_init_grid();
+  yasolr_configure_frequency();
   // UI: display, web, mqtt, etc
   yasolr_init_display();
   yasolr_init_web_server();
