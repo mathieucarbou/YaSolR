@@ -132,7 +132,6 @@
 #define KEY_ENABLE_RELAY1              "relay1_enable"
 #define KEY_ENABLE_RELAY2              "relay2_enable"
 #define KEY_ENABLE_VICTRON_MODBUS      "vic_mb_enable"
-#define KEY_ENABLE_ZCD                 "zcd_enable"
 
 // configuration keys
 

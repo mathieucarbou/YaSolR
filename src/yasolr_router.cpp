@@ -255,8 +255,10 @@ void yasolr_init_router() {
   if (semiPeriod) {
     LOGW(TAG, "Grid frequency forced by user to %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
 
-    dimmer1->setSemiPeriod(semiPeriod);
-    dimmer2->setSemiPeriod(semiPeriod);
+    if (dimmer1)
+      dimmer1->setSemiPeriod(semiPeriod);
+    if (dimmer2)
+      dimmer2->setSemiPeriod(semiPeriod);
 
     // until we have our new dimmer impl... Only for ZC based dimmers...
     if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
@@ -352,10 +354,6 @@ void yasolr_init_router() {
   // Do we need a ZCD ?
 
   if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
-    config.setBool(KEY_ENABLE_ZCD, true);
-  }
-
-  if (config.getBool(KEY_ENABLE_ZCD)) {
     pulseAnalyzer = new Mycila::PulseAnalyzer();
     pulseAnalyzer->onZeroCross(Mycila::ZeroCrossDimmer::onZeroCross);
     pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));

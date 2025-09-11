@@ -41,7 +41,6 @@ void yasolr_init_config() {
   config.configure(KEY_ENABLE_RELAY1, YASOLR_FALSE);
   config.configure(KEY_ENABLE_RELAY2, YASOLR_FALSE);
   config.configure(KEY_ENABLE_VICTRON_MODBUS, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_ZCD, YASOLR_FALSE);
   config.configure(KEY_GRID_FREQUENCY, "0");
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
   config.configure(KEY_GRID_VOLTAGE_MQTT_TOPIC);

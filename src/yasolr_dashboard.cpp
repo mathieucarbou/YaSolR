@@ -290,7 +290,6 @@ static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
 static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
-static dash::FeedbackToggleButtonCard _zcd(dashboard, YASOLR_LBL_125);
 static dash::FeedbackToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
@@ -805,14 +804,12 @@ void YaSolR::Website::begin() {
   _gridFreq.setTab(_hardwareConfigTab);
   _jsy.setTab(_hardwareConfigTab);
   _jsyRemote.setTab(_hardwareConfigTab);
-  _zcd.setTab(_hardwareConfigTab);
   _victron.setTab(_hardwareConfigTab);
   _victronServer.setTab(_hardwareConfigTab);
   _victronPort.setTab(_hardwareConfigTab);
 
   _boolConfig(_jsy, KEY_ENABLE_JSY);
   _boolConfig(_jsyRemote, KEY_ENABLE_JSY_REMOTE);
-  _boolConfig(_zcd, KEY_ENABLE_ZCD);
   _boolConfig(_victron, KEY_ENABLE_VICTRON_MODBUS);
   _textConfig(_victronServer, KEY_VICTRON_MODBUS_SERVER);
   _numConfig(_victronPort, KEY_VICTRON_MODBUS_PORT);
@@ -1658,7 +1655,6 @@ void YaSolR::Website::updateCards() {
   // tab: hardware
 
   _status(_jsy, KEY_ENABLE_JSY, jsy && jsy->isEnabled(), jsy && jsy->isConnected(), YASOLR_LBL_110);
-  _status(_zcd, KEY_ENABLE_ZCD, pulseAnalyzer && pulseAnalyzer->isEnabled(), pulseAnalyzer && pulseAnalyzer->isOnline(), YASOLR_LBL_110);
   _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, output1 && output1->isDimmerEnabled(), output1 && output1->isDimmerOnline(), YASOLR_LBL_146);
   _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1 && pzemO1->isEnabled(), pzemO1 && pzemO1->isConnected() && pzemO1->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT1, pzemO1 && pzemO1->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
   _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1 && ds18O1->isEnabled(), ds18O1 && ds18O1->getLastTime() > 0, YASOLR_LBL_114);
