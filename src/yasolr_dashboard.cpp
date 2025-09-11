@@ -218,7 +218,7 @@ static dash::FileUploadCard _mqttServerCert(dashboard, YASOLR_LBL_101, ".pem");
 static dash::PushButtonCard _mqttServerCertDelete(dashboard, YASOLR_LBL_049);
 static dash::InputCard<const char*> _mqttTopic(dashboard, YASOLR_LBL_103);
 static dash::SliderCard<uint8_t> _mqttPublishInterval(dashboard, YASOLR_LBL_102, 1, 30, 1, "s");
-static dash::SeparatorCard<const char*> _haSep(dashboard, YASOLR_LBL_107);
+static dash::SeparatorCard<const char*> _haSep(dashboard, "Home Assistant");
 static dash::ToggleButtonCard _haDiscovery(dashboard, YASOLR_LBL_104);
 static dash::InputCard<const char*> _haDiscoveryTopic(dashboard, YASOLR_LBL_105);
 static dash::SeparatorCard<const char*> _mqttSep1(dashboard, YASOLR_LBL_179);
@@ -280,8 +280,9 @@ static dash::FeedbackInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_132
 static dash::FeedbackInputCard<int32_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
 static dash::FeedbackInputCard<int32_t> _pinLEDYellow(dashboard, YASOLR_LBL_120);
 static dash::FeedbackInputCard<int32_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
-static dash::FeedbackInputCard<int32_t> _pinI2CSCL(dashboard, YASOLR_LBL_111);
-static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, YASOLR_LBL_112);
+static dash::SeparatorCard<const char*> _gpioSep6(dashboard, YASOLR_LBL_111);
+static dash::FeedbackInputCard<int32_t> _pinI2CSCL(dashboard, "SCL");
+static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, "SDA");
 
 // tab: hardware
 
@@ -765,12 +766,13 @@ void YaSolR::Website::begin() {
   _pinPZEMTX.setTab(_gpioTab);
   _pinZCD.setTab(_gpioTab);
   _gpioSep5.setTab(_gpioTab);
-  _pinI2CSCL.setTab(_gpioTab);
-  _pinI2CSDA.setTab(_gpioTab);
   _pinDS18Router.setTab(_gpioTab);
   _pinLEDGreen.setTab(_gpioTab);
   _pinLEDRed.setTab(_gpioTab);
   _pinLEDYellow.setTab(_gpioTab);
+  _gpioSep6.setTab(_gpioTab);
+  _pinI2CSCL.setTab(_gpioTab);
+  _pinI2CSDA.setTab(_gpioTab);
 
   _gpioTitle.setSubtitle(YASOLR_LBL_131);
 
