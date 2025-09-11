@@ -8,7 +8,7 @@ AsyncUDP* udp = nullptr;
 Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
 Mycila::Task* jsyRemoteTask = nullptr;
 
-void onData(AsyncUDPPacket packet) {
+static void onData(AsyncUDPPacket packet) {
   // buffer[0] == MYCILA_UDP_MSG_TYPE_JSY_DATA (1)
   // buffer[1] == size_t (4)
   // buffer[5] == MsgPack (?)
