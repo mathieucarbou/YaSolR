@@ -26,6 +26,7 @@ void setup() {
   yasolr_init_relays();
   yasolr_init_router();
   yasolr_configure_frequency();
+  yasolr_configure_pid();
   // UI: display, web, mqtt, etc
   yasolr_init_display();
   yasolr_init_web_server();

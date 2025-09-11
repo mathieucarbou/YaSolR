@@ -4,9 +4,18 @@
  */
 #include <yasolr.h>
 
+#include <functional>
+#include <queue>
 #include <string>
 
 Mycila::Config config;
+
+static std::queue<std::function<void()>> reconfigureQueue;
+static Mycila::Task reconfigureTask("Reconfigure", [](void* params) {
+  auto fn = reconfigureQueue.front();
+  reconfigureQueue.pop();
+  fn();
+});
 
 void yasolr_init_config() {
   LOGI(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
@@ -290,37 +299,39 @@ void yasolr_init_config() {
         Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
     } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_P_MODE || key == KEY_PID_IC_MODE || key == KEY_PID_SETPOINT) {
-      pidController.setProportionalMode(config.getLong(KEY_PID_P_MODE) == 1 ? Mycila::PID::ProportionalMode::P_ON_ERROR : Mycila::PID::ProportionalMode::P_ON_INPUT);
-      pidController.setIntegralCorrectionMode(config.getLong(KEY_PID_IC_MODE) == 1 ? Mycila::PID::IntegralCorrectionMode::IC_CLAMP : Mycila::PID::IntegralCorrectionMode::IC_ADVANCED);
-      pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
-      pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
-      pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
-      LOGI(TAG, "PID Controller reconfigured!");
+      reconfigureQueue.push(yasolr_configure_pid);
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {
       mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * 1000);
 
     } else if (key == KEY_ENABLE_DEBUG) {
-      yasolr_configure_logging();
+      reconfigureQueue.push(yasolr_configure_logging);
 
     } else if (key == KEY_ENABLE_MQTT) {
-      yasolr_configure_mqtt();
-      if (!config.getBool(KEY_ENABLE_AP_MODE) && mqttConnectTask) {
-        mqttConnectTask->resume();
-      }
+      reconfigureQueue.push([]() {
+        yasolr_configure_mqtt();
+        if (!config.getBool(KEY_ENABLE_AP_MODE) && mqttConnectTask) {
+          mqttConnectTask->resume();
+        }
+      });
 
     } else if (key == KEY_ENABLE_JSY_REMOTE) {
-      yasolr_configure_jsy_remote();
-      if (!config.getBool(KEY_ENABLE_AP_MODE) && jsyRemoteTask) {
-        jsyRemoteTask->resume();
-      }
+      reconfigureQueue.push([]() {
+        yasolr_configure_jsy_remote();
+        if (!config.getBool(KEY_ENABLE_AP_MODE) && jsyRemoteTask) {
+          jsyRemoteTask->resume();
+        }
+      });
 
     } else if (key == KEY_GRID_FREQUENCY) {
-      yasolr_configure_frequency();
+      reconfigureQueue.push(yasolr_configure_frequency);
     }
 
     dashboardInitTask.resume();
     if (mqttPublishConfigTask)
       mqttPublishConfigTask->resume();
   });
+
+  reconfigureTask.setEnabledWhen([]() { return !reconfigureQueue.empty(); });
+  unsafeTaskManager.addTask(reconfigureTask);
 }

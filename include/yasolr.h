@@ -153,6 +153,7 @@ extern Mycila::RouterOutput* output2;
 extern void yasolr_divert();
 extern void yasolr_init_router();
 extern void yasolr_configure_frequency();
+extern void yasolr_configure_pid();
 
 // victron
 extern Mycila::Victron* victron;
