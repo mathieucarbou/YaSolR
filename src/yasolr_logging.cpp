@@ -80,7 +80,7 @@ void yasolr_init_startup_logging() {
     LOGI(TAG, "Previous log file removed");
 
   LOGI(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
-  logStream = new LogStream(YASOLR_LOG_FILE, 16 * 1024, []() {
+  logStream = new LogStream(YASOLR_LOG_FILE, (config.getBool(KEY_ENABLE_DEBUG) ? 16 : 8) * 1024, []() {
     delete logStream;
     logStream = nullptr;
     LOGW(TAG, "Startup log size limit reached!");
