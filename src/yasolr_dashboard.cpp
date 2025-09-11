@@ -1262,7 +1262,7 @@ void YaSolR::Website::initCards() {
   _haDiscovery.setValue(config.getBool(KEY_ENABLE_HA_DISCOVERY));
   _haDiscovery.setDisplay(mqttEnabled);
   _haDiscoveryTopic.setValue(config.get(KEY_HA_DISCOVERY_TOPIC));
-  _haDiscoveryTopic.setDisplay(mqttEnabled && config.getBool(KEY_ENABLE_HA_DISCOVERY));
+  _haDiscoveryTopic.setDisplay(mqttEnabled);
 
   // tab: pid
 
