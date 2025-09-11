@@ -106,7 +106,7 @@ extern void yasolr_init_ds18();
 
 // Display
 extern Mycila::EasyDisplay* display;
-extern void yasolr_init_display();
+extern void yasolr_configure_display();
 
 // MQTT
 extern Mycila::MQTT* mqtt;

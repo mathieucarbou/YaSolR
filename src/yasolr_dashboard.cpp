@@ -344,20 +344,17 @@ static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "N
 static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
 
-// System
-static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_078);
-
-// router ds18
-static dash::FeedbackToggleButtonCard _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
-
-// router led
-static dash::FeedbackToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
-
 // display
-static dash::FeedbackToggleButtonCard _display(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_127);
+static dash::SeparatorCard<const char*> _displaySep(dashboard, YASOLR_LBL_127);
+static dash::ToggleButtonCard _display(dashboard, YASOLR_LBL_127);
 static dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
 static dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
 static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
+
+// System
+static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_078);
+static dash::FeedbackToggleButtonCard _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
+static dash::FeedbackToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
 
 // tab: output 1 config
 
@@ -903,21 +900,9 @@ void YaSolR::Website::begin() {
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _sliderConfig(_relay2Tolerance, KEY_RELAY2_TOLERANCE);
 
-  _routerSep.setTab(_hardwareConfigTab);
-
-  // router ds18
-  _routerDS18.setTab(_hardwareConfigTab);
-  _routerDS18.setSize(FULL_SIZE);
-  _boolConfig(_routerDS18, KEY_ENABLE_DS18_SYSTEM);
-
-  // router led
-  _led.setTab(_hardwareConfigTab);
-  _led.setSize(FULL_SIZE);
-  _boolConfig(_led, KEY_ENABLE_LIGHTS);
-
   // display
+  _displaySep.setTab(_hardwareConfigTab);
   _display.setTab(_hardwareConfigTab);
-  _display.setSize(FULL_SIZE);
   _displayType.setTab(_hardwareConfigTab);
   _displayRotation.setTab(_hardwareConfigTab);
   _displaySpeed.setTab(_hardwareConfigTab);
@@ -925,6 +910,13 @@ void YaSolR::Website::begin() {
   _textConfig(_displayType, KEY_DISPLAY_TYPE);
   _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
   _sliderConfig(_displaySpeed, KEY_DISPLAY_SPEED);
+
+  // system
+  _routerSep.setTab(_hardwareConfigTab);
+  _routerDS18.setTab(_hardwareConfigTab);
+  _led.setTab(_hardwareConfigTab);
+  _boolConfig(_routerDS18, KEY_ENABLE_DS18_SYSTEM);
+  _boolConfig(_led, KEY_ENABLE_LIGHTS);
 
   // tab: output 1 config
 
@@ -1074,9 +1066,7 @@ void YaSolR::Website::initCards() {
 
 #ifdef APP_MODEL_PRO
   const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY);
-  const bool mqttEnabled = config.getBool(KEY_ENABLE_MQTT);
   const bool pidViewEnabled = realTimePIDEnabled();
-  const bool displayEnabled = config.getBool(KEY_ENABLE_DISPLAY);
   const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
 
   const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
@@ -1231,38 +1221,23 @@ void YaSolR::Website::initCards() {
   // tab: mqtt
 
   _mqttServer.setValue(config.get(KEY_MQTT_SERVER));
-  _mqttServer.setDisplay(mqttEnabled);
   _mqttPort.setValue(config.getInt(KEY_MQTT_PORT));
-  _mqttPort.setDisplay(mqttEnabled);
   _mqttUser.setValue(config.get(KEY_MQTT_USERNAME));
-  _mqttUser.setDisplay(mqttEnabled);
   _mqttPwd.setValue(config.get(KEY_MQTT_PASSWORD));
-  _mqttPwd.setDisplay(mqttEnabled);
   _mqttSecured.setValue(config.getBool(KEY_MQTT_SECURED));
-  _mqttSecured.setDisplay(mqttEnabled);
   _mqttServerCert.setValue("/api/config/mqttServerCertificate");
-  _mqttServerCert.setDisplay(mqttEnabled && !serverCertExists);
-  _mqttServerCertDelete.setDisplay(mqttEnabled && serverCertExists);
+  _mqttServerCert.setDisplay(!serverCertExists);
+  _mqttServerCertDelete.setDisplay(serverCertExists);
   _mqttTopic.setValue(config.get(KEY_MQTT_TOPIC));
-  _mqttTopic.setDisplay(mqttEnabled);
   _mqttPublishInterval.setValue(config.getInt(KEY_MQTT_PUBLISH_INTERVAL));
-  _mqttPublishInterval.setDisplay(mqttEnabled);
 
-  _mqttSep1.setDisplay(mqttEnabled);
   _mqttGridVoltage.setValue(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
-  _mqttGridVoltage.setDisplay(mqttEnabled);
   _mqttGridPower.setValue(config.get(KEY_GRID_POWER_MQTT_TOPIC));
-  _mqttGridPower.setDisplay(mqttEnabled);
   _mqttTempO1.setValue(config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC));
-  _mqttTempO1.setDisplay(mqttEnabled);
   _mqttTempO2.setValue(config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
-  _mqttTempO2.setDisplay(mqttEnabled);
 
-  _haSep.setDisplay(mqttEnabled);
   _haDiscovery.setValue(config.getBool(KEY_ENABLE_HA_DISCOVERY));
-  _haDiscovery.setDisplay(mqttEnabled);
   _haDiscoveryTopic.setValue(config.get(KEY_HA_DISCOVERY_TOPIC));
-  _haDiscoveryTopic.setDisplay(mqttEnabled);
 
   // tab: pid
 
@@ -1393,13 +1368,10 @@ void YaSolR::Website::initCards() {
   _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
 
   // display
-  _status(_display, KEY_ENABLE_DISPLAY, display && display->isEnabled());
+  _display.setValue(config.getBool(KEY_ENABLE_DISPLAY));
   _displayType.setValue(config.get(KEY_DISPLAY_TYPE));
-  _displayType.setDisplay(displayEnabled);
   _displayRotation.setValue(config.getInt(KEY_DISPLAY_ROTATION));
-  _displayRotation.setDisplay(displayEnabled);
   _displaySpeed.setValue(config.getInt(KEY_DISPLAY_SPEED));
-  _displaySpeed.setDisplay(displayEnabled);
 
   // tab: output 1 config
 

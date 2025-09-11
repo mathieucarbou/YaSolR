@@ -18,9 +18,10 @@ void setup() {
   yasolr_init_trial();
   // measurements
   yasolr_init_ds18();
+  yasolr_init_pzem();
+  yasolr_init_victron();
   yasolr_init_jsy();
   yasolr_configure_jsy_remote();
-  yasolr_init_pzem();
   // router hardware
   yasolr_init_grid();
   yasolr_init_relays();
@@ -28,10 +29,9 @@ void setup() {
   yasolr_configure_frequency();
   yasolr_configure_pid();
   // UI: display, web, mqtt, etc
-  yasolr_init_display();
   yasolr_init_web_server();
+  yasolr_configure_display();
   yasolr_configure_mqtt();
-  yasolr_init_victron();
   // network
   yasolr_init_network();
   // start tasks

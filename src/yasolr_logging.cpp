@@ -74,19 +74,19 @@ void yasolr_init_console_logging() {
 }
 
 void yasolr_init_startup_logging() {
-  LOGI(TAG, "Saving startup logs...");
+  LOGI(TAG, "Saving startup logs");
 
   if (LittleFS.remove(YASOLR_LOG_FILE))
     LOGI(TAG, "Previous log file removed");
 
   LOGI(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
   logStream = new LogStream(YASOLR_LOG_FILE, (config.getBool(KEY_ENABLE_DEBUG) ? 16 : 8) * 1024, []() {
-    delete logStream;
-    logStream = nullptr;
+    // delete logStream;
+    // logStream = nullptr;
     LOGW(TAG, "Startup log size limit reached!");
   });
 
-  LOGI(TAG, "Redirecting logs to WebSerial...");
+  LOGI(TAG, "Redirecting logs to WebSerial");
   webSerial = new WebSerial();
 #ifdef APP_MODEL_PRO
   webSerial->setID(Mycila::AppInfo.firmware.c_str());
