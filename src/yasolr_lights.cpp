@@ -34,20 +34,33 @@ static Mycila::Task lightsTask("Lights", [](void* params) {
   switch (espConnect.getState()) {
     case Mycila::ESPConnect::State::NETWORK_CONNECTED:
     case Mycila::ESPConnect::State::AP_STARTED:
-      lights.setRed(false);
       break;
     default:
       lights.setRed(true);
-      break;
+      return;
   }
+
+  lights.setRed(false);
 });
+
+void yasolr_configure_leds() {
+  if (config.getBool(KEY_ENABLE_LIGHTS)) {
+    if (!lights.isEnabled()) {
+      LOGI(TAG, "Enable LEDs");
+      lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
+    }
+  } else {
+    if (lights.isEnabled()) {
+      LOGI(TAG, "Disable LEDs");
+      lights.end();
+    }
+  }
+}
 
 void yasolr_init_lights() {
   LOGI(TAG, "Initialize system lights");
 
-  if (config.getBool(KEY_ENABLE_LIGHTS)) {
-    lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
-  }
+  yasolr_configure_leds();
 
   lights.set(Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::ON, Mycila::TrafficLight::State::OFF);
 
