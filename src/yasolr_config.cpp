@@ -328,6 +328,9 @@ void yasolr_init_config() {
 
     } else if (key == KEY_ENABLE_DISPLAY) {
       reconfigureQueue.push(yasolr_configure_display);
+
+    } else if (key == KEY_ENABLE_LIGHTS) {
+      reconfigureQueue.push(yasolr_configure_leds);
     }
 
     dashboardInitTask.resume();

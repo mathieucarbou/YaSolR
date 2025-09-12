@@ -60,8 +60,6 @@ void yasolr_configure_leds() {
 void yasolr_init_lights() {
   LOGI(TAG, "Initialize system lights");
 
-  yasolr_configure_leds();
-
   lights.set(Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::ON, Mycila::TrafficLight::State::OFF);
 
   lightsTask.setInterval(200);
