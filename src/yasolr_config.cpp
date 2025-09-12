@@ -331,6 +331,15 @@ void yasolr_init_config() {
 
     } else if (key == KEY_ENABLE_LIGHTS) {
       reconfigureQueue.push(yasolr_configure_leds);
+
+    } else if (key == KEY_ENABLE_DS18_SYSTEM) {
+      reconfigureQueue.push(yasolr_configure_ds18_router);
+
+    } else if (key == KEY_ENABLE_OUTPUT1_DS18) {
+      reconfigureQueue.push(yasolr_configure_ds18_output1);
+
+    } else if (key == KEY_ENABLE_OUTPUT2_DS18) {
+      reconfigureQueue.push(yasolr_configure_ds18_output2);
     }
 
     dashboardInitTask.resume();

@@ -103,6 +103,9 @@ extern Mycila::DS18* ds18O1;
 extern Mycila::DS18* ds18O2;
 extern Mycila::DS18* ds18Sys;
 extern void yasolr_init_ds18();
+extern void yasolr_configure_ds18_router();
+extern void yasolr_configure_ds18_output1();
+extern void yasolr_configure_ds18_output2();
 
 // Display
 extern Mycila::EasyDisplay* display;

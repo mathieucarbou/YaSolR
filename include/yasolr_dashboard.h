@@ -192,7 +192,7 @@ namespace YaSolR {
         const bool configEnabled = config.getBool(key);
         card.setValue(configEnabled);
         if (!configEnabled) {
-          card.setMessage(enabled ? YASOLR_LBL_185 : "");
+          card.setMessage("");
         } else if (!enabled) {
           card.setStatus(dash::Status::WARNING);
           card.setMessage(YASOLR_LBL_124);

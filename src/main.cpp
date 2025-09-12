@@ -14,10 +14,14 @@ void setup() {
   yasolr_configure_logging(); // configure logging
 
   LOGI(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  yasolr_configure_leds(); // before yasolr_init_lights();
   yasolr_init_lights();
   yasolr_init_trial();
   // measurements
   yasolr_init_ds18();
+  yasolr_configure_ds18_router();
+  yasolr_configure_ds18_output1();
+  yasolr_configure_ds18_output2();
   yasolr_init_pzem();
   yasolr_init_victron();
   yasolr_init_jsy();
