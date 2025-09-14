@@ -58,7 +58,7 @@ curl -X GET http://<esp-ip>/api/config
   "grid_pow_mqtt": "",
   "grid_volt_mqtt": "",
   "ha_disco_enable": "true",
-  "ha_disco_topic": "homeassistant/discovery",
+  "ha_disco_topic": "homeassistant",
   "jsy_enable": "true",
   "lights_enable": "true",
   "mqtt_enable": "true",

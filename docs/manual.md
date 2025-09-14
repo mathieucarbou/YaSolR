@@ -436,14 +436,12 @@ YaSolR supports Home Assistant Discovery: if configured, it will **automatically
 
 - `Home Assistant Integration`: whether to activate or not MQTT Discovery
 - `Home Assistant Discovery Topic`: the MQTT topic prefix to use for all the topics published by the router for Home Assistant Discovery.
-  It is set by default to `homeassistant/discovery`.
-  The default Home Assistant Discovery topic prefix is `homeassistant`.
-  I strongly recommend to keep the default of the router and configure Home Assistant to use `homeassistant/discovery` for Discovery in order to separate state topics from discovery topics.
+  It is set by default to `homeassistant` (which is HA's default value).
 
 **The device must be restarted to apply the changes.**
 
 You can read more about Home Assistant Discovery and how to configure it [here](https://www.home-assistant.io/docs/mqtt/discovery/).
-To configure the discovery topic, you need to go to [http://homeassistant.local:8123/config/integrations/integration/mqtt](http://homeassistant.local:8123/config/integrations/integration/mqtt), then click on `configure`, then `reconfigure` then `next`, then you can enter the discovery prefix `homeassistant/discovery`.
+To configure the discovery topic, you need to go to [http://homeassistant.local:8123/config/integrations/integration/mqtt](http://homeassistant.local:8123/config/integrations/integration/mqtt), then click on `configure`, then `reconfigure` then `next`, then you can enter the discovery prefix `homeassistant`.
 Once done on Home Assistant side and YaSolR side, you should see the Solar Router device appear in Home Assistant in the list of MQTT devices.
 
 #### MQTT API
