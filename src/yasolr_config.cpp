@@ -53,7 +53,7 @@ void yasolr_init_config() {
   config.configure(KEY_GRID_FREQUENCY, "0");
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
   config.configure(KEY_GRID_VOLTAGE_MQTT_TOPIC);
-  config.configure(KEY_HA_DISCOVERY_TOPIC, MYCILA_HA_DISCOVERY_TOPIC);
+  config.configure(KEY_HA_DISCOVERY_TOPIC, YASOLR_HA_DISCOVERY_TOPIC);
   config.configure(KEY_HOSTNAME, Mycila::AppInfo.defaultHostname);
   config.configure(KEY_JSY_UART, JSY_UART_DEFAULT);
   config.configure(KEY_MQTT_PASSWORD);

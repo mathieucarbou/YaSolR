@@ -61,6 +61,7 @@
 #define YASOLR_DIMMER_ZC_SSR               "Zero-crossing Solid State Relay"
 #define YASOLR_DS18_SEARCH_MAX_RETRY       30
 #define YASOLR_GRAPH_POINTS                60
+#define YASOLR_HA_DISCOVERY_TOPIC          "homeassistant"
 #define YASOLR_HIDDEN_PWD                  "********"
 #define YASOLR_LOG_FILE                    "/logs.txt"
 #define YASOLR_MQTT_KEEPALIVE              60

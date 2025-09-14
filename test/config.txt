@@ -1,6 +1,6 @@
 tmp_ext_enable=true
 tmp_sys_enable=true
-ha_disco_topic=homeassistant/discovery
+ha_disco_topic=homeassistant
 mqtt_enable=true
 ntp_enable=true
 portal_timeout=120
