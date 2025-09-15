@@ -11,6 +11,7 @@ Mycila::RouterRelay* relay2 = nullptr;
 void yasolr_configure_relay1() {
   if (config.getBool(KEY_ENABLE_RELAY1)) {
     if (relay1 == nullptr) {
+      LOGI(TAG, "Enable Relay 1");
       relay1 = new Mycila::RouterRelay();
       relay1->relay().begin(config.getLong(KEY_PIN_RELAY1), config.isEqual(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
       if (relay1->relay().isEnabled()) {
@@ -30,6 +31,7 @@ void yasolr_configure_relay1() {
     }
   } else {
     if (relay1 != nullptr) {
+      LOGI(TAG, "Disable Relay 1");
       relay1->relay().end();
       delete relay1;
       relay1 = nullptr;
@@ -40,6 +42,7 @@ void yasolr_configure_relay1() {
 void yasolr_configure_relay2() {
   if (config.getBool(KEY_ENABLE_RELAY2)) {
     if (relay2 == nullptr) {
+      LOGI(TAG, "Enable Relay 2");
       relay2 = new Mycila::RouterRelay();
       relay2->relay().begin(config.getLong(KEY_PIN_RELAY2), config.isEqual(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
       if (relay2->relay().isEnabled()) {
@@ -59,6 +62,7 @@ void yasolr_configure_relay2() {
     }
   } else {
     if (relay2 != nullptr) {
+      LOGI(TAG, "Disable Relay 2");
       relay2->relay().end();
       delete relay2;
       relay2 = nullptr;
