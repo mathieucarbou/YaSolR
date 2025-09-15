@@ -289,11 +289,11 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, "SDA");
 // grid
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
-static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
 static dash::FeedbackToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
+static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
+static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
 
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
@@ -1078,8 +1078,6 @@ void YaSolR::Website::initCards() {
   const bool output2TempReceived = output2 && !output2->temperature().neverUpdated();
   const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM);
 
-  const bool victronEnabled = config.getBool(KEY_ENABLE_VICTRON_MODBUS);
-
   // statistics
 
   _udpMessageRateBuffer.setDisplay(config.getBool(KEY_ENABLE_JSY_REMOTE));
@@ -1307,8 +1305,6 @@ void YaSolR::Website::initCards() {
   _jsyRemote.setValue(config.getBool(KEY_ENABLE_JSY_REMOTE));
   _victronServer.setValue(config.get(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.getInt(KEY_VICTRON_MODBUS_PORT));
-  _victronServer.setDisplay(victronEnabled);
-  _victronPort.setDisplay(victronEnabled);
 
   // output 1 dimmer
   _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));

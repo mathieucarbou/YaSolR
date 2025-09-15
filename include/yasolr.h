@@ -164,4 +164,4 @@ extern void yasolr_configure_pid();
 // victron
 extern Mycila::Victron* victron;
 extern Mycila::Task* victronConnectTask;
-extern void yasolr_init_victron();
+extern void yasolr_configure_victron();

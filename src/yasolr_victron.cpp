@@ -9,55 +9,75 @@ Mycila::Task* victronConnectTask = nullptr;
 
 static Mycila::Task* victronReadTask = nullptr;
 
-static void connect() {
-  victron->end();
-  const char* server = config.get(KEY_VICTRON_MODBUS_SERVER);
-  uint16_t port = static_cast<uint16_t>(config.getLong(KEY_VICTRON_MODBUS_PORT));
-  victron->begin(server, port);
-}
-
-void yasolr_init_victron() {
+void yasolr_configure_victron() {
   if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
-    LOGI(TAG, "Initialize Victron Modbus TCP");
-
-    if (!config.getString(KEY_VICTRON_MODBUS_SERVER).length()) {
-      LOGE(TAG, "Victron Modbus TCP server is not set");
-      return;
-    }
-
-    // Victron class handling Modbus TCP connection
-    victron = new Mycila::Victron();
-
-    // when receiving data from Victron, update grid metrics
-    victron->setCallback([](Mycila::Victron::EventType eventType) {
-      if (eventType == Mycila::Victron::EventType::EVT_READ) {
-        grid.remoteMetrics().update({
-          .current = victron->getCurrent(),
-          .frequency = victron->getFrequency(),
-          .power = victron->getPower(),
-          .voltage = victron->getVoltage(),
-        });
-
-        if (grid.updatePower()) {
-          yasolr_divert();
-        }
+    if (victron == nullptr) {
+      if (!config.getString(KEY_VICTRON_MODBUS_SERVER).length()) {
+        LOGE(TAG, "Victron Modbus TCP server is not set");
+        return;
       }
-    });
 
-    // task called once network is up to connect
-    victronConnectTask = new Mycila::Task("Victron Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
+      LOGI(TAG, "Enable Victron Modbus TCP");
 
-    // reader
-    victronReadTask = new Mycila::Task("Victron Read", [](void* params) { victron->read(); });
-    victronReadTask->setInterval(500);
+      // Victron class handling Modbus TCP connection
+      victron = new Mycila::Victron();
 
-    // I/O tasks pinned to unsafe task manager
-    unsafeTaskManager.addTask(*victronConnectTask);
-    unsafeTaskManager.addTask(*victronReadTask);
+      // when receiving data from Victron, update grid metrics
+      victron->setCallback([](Mycila::Victron::EventType eventType) {
+        if (eventType == Mycila::Victron::EventType::EVT_READ) {
+          grid.remoteMetrics().update({
+            .current = victron->getCurrent(),
+            .frequency = victron->getFrequency(),
+            .power = victron->getPower(),
+            .voltage = victron->getVoltage(),
+          });
 
-    if (config.getBool(KEY_ENABLE_DEBUG)) {
-      victronConnectTask->enableProfiling();
-      victronReadTask->enableProfiling();
+          if (grid.updatePower()) {
+            yasolr_divert();
+          }
+        }
+      });
+
+      // task called once network is up to connect
+      victronConnectTask = new Mycila::Task("Victron Connect", Mycila::Task::Type::ONCE, [](void* params) {
+        victron->end();
+        const char* server = config.get(KEY_VICTRON_MODBUS_SERVER);
+        uint16_t port = static_cast<uint16_t>(config.getLong(KEY_VICTRON_MODBUS_PORT));
+        victron->begin(server, port);
+      });
+
+      // reader
+      victronReadTask = new Mycila::Task("Victron Read", [](void* params) { victron->read(); });
+      victronReadTask->setInterval(500);
+
+      // I/O tasks pinned to unsafe task manager
+      unsafeTaskManager.addTask(*victronConnectTask);
+      unsafeTaskManager.addTask(*victronReadTask);
+
+      if (config.getBool(KEY_ENABLE_DEBUG)) {
+        victronConnectTask->enableProfiling();
+        victronReadTask->enableProfiling();
+      }
+    }
+  } else {
+    if (victron != nullptr) {
+      LOGI(TAG, "Disable Victron Modbus TCP");
+
+      if (victronConnectTask) {
+        unsafeTaskManager.removeTask(*victronConnectTask);
+        delete victronConnectTask;
+        victronConnectTask = nullptr;
+      }
+
+      if (victronReadTask) {
+        unsafeTaskManager.removeTask(*victronReadTask);
+        delete victronReadTask;
+        victronReadTask = nullptr;
+      }
+
+      victron->end();
+      delete victron;
+      victron = nullptr;
     }
   }
 }

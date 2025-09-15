@@ -346,6 +346,14 @@ void yasolr_init_config() {
 
     } else if (key == KEY_ENABLE_RELAY2) {
       reconfigureQueue.push(yasolr_configure_relay2);
+
+    } else if (key == KEY_ENABLE_VICTRON_MODBUS) {
+      reconfigureQueue.push([]() {
+        yasolr_configure_victron();
+        if (!config.getBool(KEY_ENABLE_AP_MODE) && victronConnectTask) {
+          victronConnectTask->resume();
+        }
+      });
     }
 
     dashboardInitTask.resume();

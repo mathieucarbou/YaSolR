@@ -57,8 +57,8 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
 
   LOGI(TAG, "Connecting to Victron Modbus TCP Server %s:%" PRIu16 "", host, port);
   _client = new ModbusClientTCPasync(IPAddress(host), port);
-  // _client->setTimeout(DEFAULTTIMEOUT);
-  // _client->setIdleTimeout(DEFAULTIDLETIME);
+  _client->setTimeout(DEFAULTTIMEOUT);
+  _client->setIdleTimeout(DEFAULTIDLETIME);
 
   _client->onDataHandler([this](ModbusMessage response, uint32_t token) {
     _lastError = "";
