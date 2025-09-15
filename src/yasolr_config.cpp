@@ -340,6 +340,12 @@ void yasolr_init_config() {
 
     } else if (key == KEY_ENABLE_OUTPUT2_DS18) {
       reconfigureQueue.push(yasolr_configure_ds18_output2);
+
+    } else if (key == KEY_ENABLE_RELAY1) {
+      reconfigureQueue.push(yasolr_configure_relay1);
+
+    } else if (key == KEY_ENABLE_RELAY2) {
+      reconfigureQueue.push(yasolr_configure_relay2);
     }
 
     dashboardInitTask.resume();

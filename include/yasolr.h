@@ -147,6 +147,8 @@ extern void yasolr_init_trial();
 extern Mycila::RouterRelay* relay1;
 extern Mycila::RouterRelay* relay2;
 extern void yasolr_init_relays();
+extern void yasolr_configure_relay1();
+extern void yasolr_configure_relay2();
 
 // router
 extern Mycila::PID pidController;

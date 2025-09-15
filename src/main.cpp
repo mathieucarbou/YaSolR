@@ -29,6 +29,8 @@ void setup() {
   // router hardware
   yasolr_init_grid();
   yasolr_init_relays();
+  yasolr_configure_relay1();
+  yasolr_configure_relay2();
   yasolr_init_router();
   yasolr_configure_frequency();
   yasolr_configure_pid();

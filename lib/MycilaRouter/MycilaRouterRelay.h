@@ -16,8 +16,6 @@
 namespace Mycila {
   class RouterRelay {
     public:
-      explicit RouterRelay(Relay& relay) : _relay(&relay) {}
-
       void setNominalLoad(uint16_t load) { _nominalLoad = load; }
       uint16_t getNominalLoad() const { return _nominalLoad; }
 
@@ -36,24 +34,26 @@ namespace Mycila {
       void setTolerance(float tolerance) { _tolerance = tolerance; }
       float getTolerance() const { return _tolerance; }
 
-      bool isEnabled() const { return _relay->isEnabled(); }
-      bool isAutoRelayEnabled() const { return _relay->isEnabled() && _nominalLoad > 0; }
+      bool isEnabled() const { return _relay.isEnabled(); }
+      bool isAutoRelayEnabled() const { return _relay.isEnabled() && _nominalLoad > 0; }
 
       bool trySwitchRelay(bool state, uint32_t duration = 0);
 
       bool autoSwitch(float gridVoltage, float gridPower, float routedPower, float setpoint);
 
-      bool isOn() const { return _relay->isOn(); }
-      bool isOff() const { return _relay->isOff(); }
+      bool isOn() const { return _relay.isOn(); }
+      bool isOff() const { return _relay.isOff(); }
 
-      uint64_t getSwitchCount() const { return _relay->getSwitchCount(); }
+      uint64_t getSwitchCount() const { return _relay.getSwitchCount(); }
 
 #ifdef MYCILA_JSON_SUPPORT
-      void toJson(const JsonObject& root) const { _relay->toJson(root); }
+      void toJson(const JsonObject& root) const { _relay.toJson(root); }
 #endif
 
+      Mycila::Relay& relay() { return _relay; }
+
     private:
-      Mycila::Relay* _relay;
+      Mycila::Relay _relay;
       uint16_t _nominalLoad = 0;
       float _tolerance = MYCILA_RELAY_DEFAULT_TOLERANCE;
   };
