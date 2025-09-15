@@ -483,6 +483,11 @@ static void haDiscovery() {
 void yasolr_configure_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
     if (mqtt == nullptr) {
+      if (!config.getString(KEY_MQTT_SERVER).length()) {
+        LOGE(TAG, "MQTT server is not set");
+        return;
+      }
+
       LOGI(TAG, "Enable MQTT");
 
       mqtt = new Mycila::MQTT();
