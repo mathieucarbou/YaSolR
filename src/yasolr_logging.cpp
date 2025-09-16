@@ -6,23 +6,20 @@
 
 class LogStream : public Print {
   public:
-    LogStream(const char* path, size_t limit, std::function<void()> onEnd) : _path(path), _limit(limit), _onEnd(onEnd) {
+    LogStream(const char* path, size_t limit) : _path(path), _limit(limit) {
       File file = LittleFS.open(_path, "r");
       _logSize = file ? file.size() : 0;
       file.close();
       if (_logSize >= _limit) {
-        if (_onEnd)
-          _onEnd();
-        _onEnd = nullptr;
+        _closed = true;
       }
     }
 
     size_t write(const uint8_t* buffer, size_t size) override {
-      if (_onEnd == nullptr)
+      if (_closed)
         return 0;
       if (_logSize + size > _limit) {
-        _onEnd();
-        _onEnd = nullptr;
+        _closed = true;
         return 0;
       }
       File file = LittleFS.open(_path, "a");
@@ -41,7 +38,7 @@ class LogStream : public Print {
   private:
     const char* _path;
     const size_t _limit;
-    std::function<void()> _onEnd;
+    bool _closed = false;
     size_t _logSize = 0;
 };
 
@@ -90,14 +87,12 @@ void yasolr_configure_logging() {
     LOGI(TAG, "Enable Debug Mode");
 
     if (logStream == nullptr) {
-      LOGI(TAG, "Saving logs on disk (max 1kB) to " YASOLR_LOG_FILE);
+      LOGI(TAG, "Saving logs on disk to " YASOLR_LOG_FILE);
 
       if (LittleFS.remove(YASOLR_LOG_FILE))
         LOGI(TAG, "Previous log file removed");
 
-      logStream = new LogStream(YASOLR_LOG_FILE, 24 * 1024, []() {
-        LOGW(TAG, "Logs on disk: size limit reached!");
-      });
+      logStream = new LogStream(YASOLR_LOG_FILE, 24 * 1024);
     }
 
     if (loggingTask == nullptr) {
