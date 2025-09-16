@@ -289,11 +289,12 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, "SDA");
 // grid
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-static dash::FeedbackToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
-static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_196);
-static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_197);
 static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
 static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
+static dash::SeparatorCard<const char*> _victronSep(dashboard, YASOLR_LBL_195);
+static dash::FeedbackToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
+static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
+static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
@@ -802,6 +803,7 @@ void YaSolR::Website::begin() {
   _gridFreq.setTab(_hardwareConfigTab);
   _jsy.setTab(_hardwareConfigTab);
   _jsyRemote.setTab(_hardwareConfigTab);
+  _victronSep.setTab(_hardwareConfigTab);
   _victron.setTab(_hardwareConfigTab);
   _victronServer.setTab(_hardwareConfigTab);
   _victronPort.setTab(_hardwareConfigTab);
