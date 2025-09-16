@@ -221,7 +221,7 @@ void yasolr_init_pzem() {
       pzemTaskManager->enableProfiling();
     }
 
-    assert(pzemTaskManager->asyncStart(512 * 5, 5, 0, 100, false));
+    assert(pzemTaskManager->asyncStart(512 * 5, 5, 0, 100, true));
 
     Mycila::TaskMonitor.addTask(pzemTaskManager->name());
   }

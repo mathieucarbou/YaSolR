@@ -14,9 +14,9 @@ void yasolr_init_tasks() {
   }
 
   // core task manager
-  assert(coreTaskManager.asyncStart(512 * 8, 5, 1, 100, false));
+  assert(coreTaskManager.asyncStart(512 * 8, 5, 1, 100, true));
 
   // task manager for long running tasks like mqtt / pzem
   if (unsafeTaskManager.tasks())
-    assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, false));
+    assert(unsafeTaskManager.asyncStart(512 * 8, 1, 1, 100, true));
 }
