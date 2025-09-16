@@ -5,9 +5,8 @@
 #include <yasolr.h>
 
 void setup() {
-  yasolr_init_console_logging(); // init logging
-  yasolr_init_system();          // init system (safeboot, restart, reset, etc)
-  yasolr_init_startup_logging(); // save early logs to file
+  yasolr_init_logging(); // init logging
+  yasolr_init_system();  // init system (safeboot, restart, reset, etc)
 
   LOGI(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
   yasolr_init_config();       // load configuration from NVS

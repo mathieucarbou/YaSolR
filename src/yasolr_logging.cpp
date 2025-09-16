@@ -58,7 +58,7 @@ static int log_redirect_vprintf(const char* format, va_list args) {
   return written;
 }
 
-void yasolr_init_console_logging() {
+void yasolr_init_logging() {
   Serial.begin(YASOLR_SERIAL_BAUDRATE);
 #if ARDUINO_USB_CDC_ON_BOOT
   Serial.setTxTimeoutMs(0);
@@ -68,23 +68,9 @@ void yasolr_init_console_logging() {
     yield();
 #endif
 
+  LOGI(TAG, "Initialize logging");
   esp_log_level_set("*", ESP_LOG_INFO);
   esp_log_set_vprintf(log_redirect_vprintf);
-  LOGI(TAG, "Logging initialized");
-}
-
-void yasolr_init_startup_logging() {
-  LOGI(TAG, "Saving startup logs");
-
-  if (LittleFS.remove(YASOLR_LOG_FILE))
-    LOGI(TAG, "Previous log file removed");
-
-  LOGI(TAG, "Redirecting logs to " YASOLR_LOG_FILE);
-  logStream = new LogStream(YASOLR_LOG_FILE, (config.getBool(KEY_ENABLE_DEBUG) ? 16 : 8) * 1024, []() {
-    // delete logStream; // sometimes crash here, and anyway this is not harmful to keep it
-    logStream = nullptr;
-    LOGW(TAG, "Startup log size limit reached!");
-  });
 
   LOGI(TAG, "Redirecting logs to WebSerial");
   webSerial = new WebSerial();
@@ -102,6 +88,17 @@ void yasolr_configure_logging() {
     esp_log_level_set("*", ESP_LOG_VERBOSE);
     esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
     LOGI(TAG, "Enable Debug Mode");
+
+    if (logStream == nullptr) {
+      LOGI(TAG, "Saving logs on disk (max 1kB) to " YASOLR_LOG_FILE);
+
+      if (LittleFS.remove(YASOLR_LOG_FILE))
+        LOGI(TAG, "Previous log file removed");
+
+      logStream = new LogStream(YASOLR_LOG_FILE, 16 * 1024, []() {
+        LOGW(TAG, "Logs on disk: size limit reached!");
+      });
+    }
 
     if (loggingTask == nullptr) {
       loggingTask = new Mycila::Task("Debug", [](void* params) {
@@ -124,10 +121,19 @@ void yasolr_configure_logging() {
   } else {
     esp_log_level_set("*", ESP_LOG_INFO);
     LOGI(TAG, "Disable Debug Mode");
+
     if (loggingTask != nullptr) {
       unsafeTaskManager.removeTask(*loggingTask);
       delete loggingTask;
       loggingTask = nullptr;
+    }
+
+    if (logStream != nullptr) {
+      delete logStream;
+      logStream = nullptr;
+
+      if (LittleFS.remove(YASOLR_LOG_FILE))
+        LOGI(TAG, "Previous log file removed");
     }
   }
 }

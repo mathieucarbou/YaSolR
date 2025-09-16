@@ -83,8 +83,7 @@ extern void yasolr_init_grid();
 extern float yasolr_frequency();
 
 // logging
-extern void yasolr_init_console_logging();
-extern void yasolr_init_startup_logging();
+extern void yasolr_init_logging();
 extern void yasolr_configure_logging();
 
 // JSY
