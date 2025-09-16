@@ -85,9 +85,18 @@ void yasolr_configure_jsy() {
     // setup JSY async task manager
     if (jsyTaskManager == nullptr) {
       jsyTaskManager = new Mycila::TaskManager("y-jsy");
+
       if (config.getBool(KEY_ENABLE_DEBUG)) {
         jsyTaskManager->enableProfiling();
       }
+
+      jsyTask = new Mycila::Task("JSY", [](void* params) {
+        if (jsy != nullptr)
+          jsy->read();
+      });
+
+      jsyTaskManager->addTask(*jsyTask);
+
       assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
       Mycila::TaskMonitor.addTask(jsyTaskManager->name());
     }
@@ -123,9 +132,6 @@ void yasolr_configure_jsy() {
         jsy->setBaudRate(jsy->getMaxAvailableBaudRate());
 
       jsy->setCallback(jsy_callback);
-
-      jsyTask = new Mycila::Task("JSY", [](void* params) { jsy->read(); });
-      jsyTaskManager->addTask(*jsyTask);
     }
   } else {
     // disable JSY if enabled but leave the task manager in case we re-enable it later
@@ -133,15 +139,11 @@ void yasolr_configure_jsy() {
     if (jsy != nullptr) {
       LOGI(TAG, "Disable JSY");
 
-      jsyTaskManager->removeTask(*jsyTask);
-      delete jsyTask;
-      jsyTask = nullptr;
-
       jsy->end();
-      jsyData.clear();
-
       delete jsy;
       jsy = nullptr;
+
+      jsyData.clear();
     }
   }
 }
