@@ -24,7 +24,7 @@ void setup() {
   yasolr_configure_ds18_output2();
   yasolr_init_pzem();
   yasolr_configure_victron();
-  yasolr_init_jsy();
+  yasolr_configure_jsy();
   yasolr_configure_jsy_remote();
   // router hardware
   yasolr_init_grid();

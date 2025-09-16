@@ -127,7 +127,7 @@
 #define YASOLR_LBL_121 "PZEM (TX) Serial RX"
 #define YASOLR_LBL_122 "PZEM (RX) Serial TX"
 #define YASOLR_LBL_123 "En attente"
-#define YASOLR_LBL_124 "Erreur d'activation"
+#define YASOLR_LBL_124 "Activation en attente..."
 #define YASOLR_LBL_125 "Détection de passage par zéro"
 #define YASOLR_LBL_126 "Assignations GPIO"
 #define YASOLR_LBL_127 "Écran"

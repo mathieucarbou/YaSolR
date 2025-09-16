@@ -7,6 +7,7 @@
 Mycila::JSY* jsy = nullptr;
 Mycila::TaskManager* jsyTaskManager = nullptr;
 
+static Mycila::Task* jsyTask;
 static Mycila::JSY::Data jsyData;
 
 static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::JSY::Data& data) {
@@ -79,46 +80,68 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
   }
 }
 
-void yasolr_init_jsy() {
-  if (config.getBool(KEY_ENABLE_JSY) && config.getString(KEY_JSY_UART) != YASOLR_UART_NONE) {
-    LOGI(TAG, "Initialize JSY with UART %s", config.get(KEY_JSY_UART));
+void yasolr_configure_jsy() {
+  if (config.getBool(KEY_ENABLE_JSY)) {
+    // setup JSY async task manager
+    if (jsyTaskManager == nullptr) {
+      jsyTaskManager = new Mycila::TaskManager("y-jsy");
+      if (config.getBool(KEY_ENABLE_DEBUG)) {
+        jsyTaskManager->enableProfiling();
+      }
+      assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
+      Mycila::TaskMonitor.addTask(jsyTaskManager->name());
+    }
 
-    jsy = new Mycila::JSY();
+    // setup JSY if not done yet
+    if (jsy == nullptr) {
+      if (config.getString(KEY_JSY_UART) == YASOLR_UART_NONE) {
+        LOGE(TAG, "No UART selected for JSY");
+        return;
+      }
 
-    if (config.getString(KEY_JSY_UART) == YASOLR_UART_1_NAME)
-      jsy->begin(Serial1, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
+      LOGI(TAG, "Enable JSY with UART %s", config.get(KEY_JSY_UART));
+
+      jsy = new Mycila::JSY();
+
+      if (config.getString(KEY_JSY_UART) == YASOLR_UART_1_NAME)
+        jsy->begin(Serial1, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
 
 #if SOC_UART_NUM > 2
-    if (config.getString(KEY_JSY_UART) == YASOLR_UART_2_NAME)
-      jsy->begin(Serial2, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
+      if (config.getString(KEY_JSY_UART) == YASOLR_UART_2_NAME)
+        jsy->begin(Serial2, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
 #endif
 
-    if (!jsy->isEnabled()) {
-      LOGE(TAG, "JSY failed to initialize!");
+      if (!jsy->isEnabled()) {
+        LOGE(TAG, "JSY failed to initialize!");
+        jsy->end();
+        delete jsy;
+        jsy = nullptr;
+        return;
+      }
+
+      if (jsy->getBaudRate() != jsy->getMaxAvailableBaudRate())
+        jsy->setBaudRate(jsy->getMaxAvailableBaudRate());
+
+      jsy->setCallback(jsy_callback);
+
+      jsyTask = new Mycila::Task("JSY", [](void* params) { jsy->read(); });
+      jsyTaskManager->addTask(*jsyTask);
+    }
+  } else {
+    // disable JSY if enabled but leave the task manager in case we re-enable it later
+    // stopping the whole task manager is supported but not deleting it to free memory, so we can lave it as-is
+    if (jsy != nullptr) {
+      LOGI(TAG, "Disable JSY");
+
+      jsyTaskManager->removeTask(*jsyTask);
+      delete jsyTask;
+      jsyTask = nullptr;
+
       jsy->end();
+      jsyData.clear();
+
       delete jsy;
       jsy = nullptr;
-      return;
     }
-
-    if (jsy->getBaudRate() != jsy->getMaxAvailableBaudRate())
-      jsy->setBaudRate(jsy->getMaxAvailableBaudRate());
-
-    jsy->setCallback(jsy_callback);
-
-    // async task
-
-    Mycila::Task* jsyTask = new Mycila::Task("JSY", [](void* params) { jsy->read(); });
-
-    jsyTaskManager = new Mycila::TaskManager("y-jsy");
-    jsyTaskManager->addTask(*jsyTask);
-
-    if (config.getBool(KEY_ENABLE_DEBUG)) {
-      jsyTaskManager->enableProfiling();
-    }
-
-    assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, false));
-
-    Mycila::TaskMonitor.addTask(jsyTaskManager->name());
   }
 }

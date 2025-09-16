@@ -90,7 +90,7 @@ extern void yasolr_configure_logging();
 // JSY
 extern Mycila::JSY* jsy;
 extern Mycila::TaskManager* jsyTaskManager;
-extern void yasolr_init_jsy();
+extern void yasolr_configure_jsy();
 
 // JSY Remote
 extern AsyncUDP* udp;

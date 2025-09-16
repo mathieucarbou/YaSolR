@@ -359,6 +359,9 @@ void yasolr_init_config() {
           victronConnectTask->resume();
         }
       });
+
+    } else if (key == KEY_ENABLE_JSY) {
+      reconfigureQueue.push(yasolr_configure_jsy);
     }
 
     dashboardInitTask.resume();
