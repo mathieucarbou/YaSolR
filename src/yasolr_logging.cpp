@@ -95,7 +95,7 @@ void yasolr_configure_logging() {
       if (LittleFS.remove(YASOLR_LOG_FILE))
         LOGI(TAG, "Previous log file removed");
 
-      logStream = new LogStream(YASOLR_LOG_FILE, 16 * 1024, []() {
+      logStream = new LogStream(YASOLR_LOG_FILE, 24 * 1024, []() {
         LOGW(TAG, "Logs on disk: size limit reached!");
       });
     }
