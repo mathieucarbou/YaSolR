@@ -1316,7 +1316,6 @@ void YaSolR::Website::initCards() {
   // output 1 bypass relay
   _status(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY, output1 && output1->isBypassRelayEnabled());
   _output1RelayType.setValue(config.get(KEY_OUTPUT1_RELAY_TYPE));
-  _output1RelayType.setDisplay(output1RelayEnabled);
 
   // output 2 dimmer
   _output2DimmerType.setValue(config.get(KEY_OUTPUT2_DIMMER_TYPE));
@@ -1326,7 +1325,6 @@ void YaSolR::Website::initCards() {
   // output 2 bypass relay
   _status(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY, output2 && output2->isBypassRelayEnabled());
   _output2RelayType.setValue(config.get(KEY_OUTPUT2_RELAY_TYPE));
-  _output2RelayType.setDisplay(output2RelayEnabled);
 
   // relay1
   _relay1.setValue(config.getBool(KEY_ENABLE_RELAY1));
