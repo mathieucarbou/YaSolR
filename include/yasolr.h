@@ -125,7 +125,8 @@ extern Mycila::PZEM* pzemO2;
 extern Mycila::Task* pzemO1PairingTask;
 extern Mycila::Task* pzemO2PairingTask;
 extern Mycila::TaskManager* pzemTaskManager;
-extern void yasolr_init_pzem();
+extern void yasolr_configure_pzem_output1();
+extern void yasolr_configure_pzem_output2();
 
 // Lights
 extern Mycila::TrafficLight lights;

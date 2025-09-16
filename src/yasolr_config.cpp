@@ -362,6 +362,12 @@ void yasolr_init_config() {
 
     } else if (key == KEY_ENABLE_JSY) {
       reconfigureQueue.push(yasolr_configure_jsy);
+
+    } else if (key == KEY_ENABLE_OUTPUT1_PZEM) {
+      reconfigureQueue.push(yasolr_configure_pzem_output1);
+
+    } else if (key == KEY_ENABLE_OUTPUT2_PZEM) {
+      reconfigureQueue.push(yasolr_configure_pzem_output2);
     }
 
     dashboardInitTask.resume();
