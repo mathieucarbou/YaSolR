@@ -124,8 +124,8 @@ static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_L
 static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
 
 #ifdef APP_MODEL_OSS
-static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
-static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
+static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_147);
+static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_147);
 static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
 static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
 #endif
@@ -256,7 +256,7 @@ static dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_1
 // tab: gpio
 
 static dash::SeparatorCard<const char*> _gpioTitle(dashboard, YASOLR_LBL_126);
-static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_012);
+static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_076);
 static dash::FeedbackInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
 static dash::DropdownCard<const char*> _serialJsy(dashboard, YASOLR_LBL_150, YASOLR_UART_CHOICES);
 static dash::FeedbackInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
@@ -287,7 +287,7 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, "SDA");
 // tab: hardware
 
 // grid
-static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
+static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012 ": " YASOLR_LBL_133);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
 static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
@@ -301,7 +301,8 @@ static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 "
 static dash::FeedbackToggleButtonCard _output1Dimmer(dashboard, YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::FeedbackToggleButtonCard _output1PZEM(dashboard, YASOLR_LBL_133);
+static dash::SeparatorCard<const char*> _output1PZEMSep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_133);
+static dash::FeedbackToggleButtonCard _output1PZEM(dashboard, "PZEM");
 static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 1 bypass relay
@@ -318,8 +319,9 @@ static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070 "
 static dash::FeedbackToggleButtonCard _output2Dimmer(dashboard, YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::FeedbackToggleButtonCard _output2PZEM(dashboard, YASOLR_LBL_133);
-static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_148);
+static dash::SeparatorCard<const char*> _output2PZEMSep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_133);
+static dash::FeedbackToggleButtonCard _output2PZEM(dashboard, "PZEM");
+static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 2 bypass relay
 static dash::SeparatorCard<const char*> _output2Sep2(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
@@ -830,6 +832,7 @@ void YaSolR::Website::begin() {
   _output1Dimmer.setTab(_hardwareConfigTab);
   _output1DimmerType.setTab(_hardwareConfigTab);
   _output1DimmerMapper.setTab(_hardwareConfigTab);
+  _output1PZEMSep1.setTab(_hardwareConfigTab);
   _output1PZEM.setTab(_hardwareConfigTab);
   _output1PZEMSync.setTab(_hardwareConfigTab);
   _boolConfig(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER);
@@ -854,6 +857,7 @@ void YaSolR::Website::begin() {
   _output2Dimmer.setTab(_hardwareConfigTab);
   _output2DimmerType.setTab(_hardwareConfigTab);
   _output2DimmerMapper.setTab(_hardwareConfigTab);
+  _output2PZEMSep1.setTab(_hardwareConfigTab);
   _output2PZEM.setTab(_hardwareConfigTab);
   _output2PZEMSync.setTab(_hardwareConfigTab);
   _boolConfig(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER);
