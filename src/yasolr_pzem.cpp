@@ -42,9 +42,9 @@ static void start_task_manager() {
 
 void yasolr_configure_pzem_output1() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
-    if (pzemO1 == nullptr) {
-      start_task_manager();
+    start_task_manager();
 
+    if (pzemO1 == nullptr) {
       LOGI(TAG, "Enable Output 1 PZEM with UART %s", config.get(KEY_PZEM_UART));
 
       pzemO1 = new Mycila::PZEM();
@@ -154,10 +154,10 @@ void yasolr_configure_pzem_output1() {
 }
 
 void yasolr_configure_pzem_output2() {
-  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM) && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER) && config.getString(KEY_PZEM_UART) != YASOLR_UART_NONE) {
-    if (pzemO2 == nullptr) {
-      start_task_manager();
+  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+    start_task_manager();
 
+    if (pzemO2 == nullptr) {
       LOGI(TAG, "Enable Output 2 PZEM with UART %s", config.get(KEY_PZEM_UART));
 
       pzemO2 = new Mycila::PZEM();
