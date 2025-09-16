@@ -116,6 +116,7 @@ extern Mycila::MQTT* mqtt;
 extern Mycila::Task* mqttConnectTask;
 extern Mycila::Task* mqttPublishConfigTask;
 extern Mycila::Task* mqttPublishTask;
+extern Mycila::Task* haDiscoveryTask;
 extern void yasolr_configure_mqtt();
 
 // PZEM

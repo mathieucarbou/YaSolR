@@ -315,6 +315,11 @@ void yasolr_init_config() {
         }
       });
 
+    } else if (key == KEY_ENABLE_HA_DISCOVERY) {
+      if (haDiscoveryTask) {
+        haDiscoveryTask->resume();
+      }
+
     } else if (key == KEY_ENABLE_JSY_REMOTE) {
       reconfigureQueue.push([]() {
         yasolr_configure_jsy_remote();

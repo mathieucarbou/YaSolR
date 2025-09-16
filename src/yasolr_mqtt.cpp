@@ -14,8 +14,7 @@ Mycila::Task* mqttConnectTask = nullptr;
 Mycila::Task* mqttPublishConfigTask = nullptr;
 Mycila::Task* mqttPublishStaticTask = nullptr;
 Mycila::Task* mqttPublishTask = nullptr;
-
-static Mycila::Task* haDiscoveryTask = nullptr;
+Mycila::Task* haDiscoveryTask = nullptr;
 
 static void connect() {
   mqtt->end();
