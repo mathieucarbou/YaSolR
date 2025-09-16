@@ -48,6 +48,7 @@ void yasolr_configure_pzem_output1() {
       LOGI(TAG, "Enable Output 1 PZEM with UART %s", config.get(KEY_PZEM_UART));
 
       pzemO1 = new Mycila::PZEM();
+      pzemO1->setSharedSerial(true);
 
       if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
         pzemO1->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
@@ -161,6 +162,7 @@ void yasolr_configure_pzem_output2() {
       LOGI(TAG, "Enable Output 2 PZEM with UART %s", config.get(KEY_PZEM_UART));
 
       pzemO2 = new Mycila::PZEM();
+      pzemO2->setSharedSerial(true);
 
       if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
         pzemO2->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
