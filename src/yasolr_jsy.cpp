@@ -80,26 +80,30 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
   }
 }
 
+static void start_task_manager() {
+  // setup JSY async task manager
+  if (jsyTaskManager == nullptr) {
+    jsyTaskManager = new Mycila::TaskManager("y-jsy");
+
+    if (config.getBool(KEY_ENABLE_DEBUG)) {
+      jsyTaskManager->enableProfiling();
+    }
+
+    jsyTask = new Mycila::Task("JSY", [](void* params) {
+      if (jsy != nullptr)
+        jsy->read();
+    });
+
+    jsyTaskManager->addTask(*jsyTask);
+
+    assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
+    Mycila::TaskMonitor.addTask(jsyTaskManager->name());
+  }
+}
+
 void yasolr_configure_jsy() {
   if (config.getBool(KEY_ENABLE_JSY)) {
-    // setup JSY async task manager
-    if (jsyTaskManager == nullptr) {
-      jsyTaskManager = new Mycila::TaskManager("y-jsy");
-
-      if (config.getBool(KEY_ENABLE_DEBUG)) {
-        jsyTaskManager->enableProfiling();
-      }
-
-      jsyTask = new Mycila::Task("JSY", [](void* params) {
-        if (jsy != nullptr)
-          jsy->read();
-      });
-
-      jsyTaskManager->addTask(*jsyTask);
-
-      assert(jsyTaskManager->asyncStart(512 * 6, 5, 0, 100, true));
-      Mycila::TaskMonitor.addTask(jsyTaskManager->name());
-    }
+    start_task_manager();
 
     // setup JSY if not done yet
     if (jsy == nullptr) {
