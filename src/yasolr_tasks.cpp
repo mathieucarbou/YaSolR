@@ -4,8 +4,8 @@
  */
 #include <yasolr.h>
 
-void yasolr_init_tasks() {
-  LOGI(TAG, "Initialize tasks");
+void yasolr_start_task_manager() {
+  LOGI(TAG, "Start task managers");
 
   // profiling tasks ?
   if (config.getBool(KEY_ENABLE_DEBUG)) {

@@ -40,7 +40,7 @@ static void start_task_manager() {
   }
 }
 
-void yasolr_configure_pzem_output1() {
+void yasolr_configure_output1_pzem() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
     start_task_manager();
 
@@ -71,18 +71,17 @@ void yasolr_configure_pzem_output1() {
               .powerFactor = NAN,
               .voltage = data.voltage,
             });
-            if (output1)
-              output1->localMetrics().update({
-                .apparentPower = data.apparentPower,
-                .current = data.current,
-                .dimmedVoltage = data.dimmedVoltage(),
-                .energy = data.activeEnergy,
-                .power = data.activePower,
-                .powerFactor = data.powerFactor,
-                .resistance = data.resistance(),
-                .thdi = data.thdi(),
-                .voltage = data.voltage,
-              });
+            output1.localMetrics().update({
+              .apparentPower = data.apparentPower,
+              .current = data.current,
+              .dimmedVoltage = data.dimmedVoltage(),
+              .energy = data.activeEnergy,
+              .power = data.activePower,
+              .powerFactor = data.powerFactor,
+              .resistance = data.resistance(),
+              .thdi = data.thdi(),
+              .voltage = data.voltage,
+            });
           }
         });
 
@@ -154,7 +153,7 @@ void yasolr_configure_pzem_output1() {
   }
 }
 
-void yasolr_configure_pzem_output2() {
+void yasolr_configure_output2_pzem() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
     start_task_manager();
 
@@ -185,18 +184,17 @@ void yasolr_configure_pzem_output2() {
               .powerFactor = NAN,
               .voltage = data.voltage,
             });
-            if (output2)
-              output2->localMetrics().update({
-                .apparentPower = data.apparentPower,
-                .current = data.current,
-                .dimmedVoltage = data.dimmedVoltage(),
-                .energy = data.activeEnergy,
-                .power = data.activePower,
-                .powerFactor = data.powerFactor,
-                .resistance = data.resistance(),
-                .thdi = data.thdi(),
-                .voltage = data.voltage,
-              });
+            output2.localMetrics().update({
+              .apparentPower = data.apparentPower,
+              .current = data.current,
+              .dimmedVoltage = data.dimmedVoltage(),
+              .energy = data.activeEnergy,
+              .power = data.activePower,
+              .powerFactor = data.powerFactor,
+              .resistance = data.resistance(),
+              .thdi = data.thdi(),
+              .voltage = data.voltage,
+            });
           }
         });
 

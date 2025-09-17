@@ -102,9 +102,9 @@ extern Mycila::DS18* ds18O1;
 extern Mycila::DS18* ds18O2;
 extern Mycila::DS18* ds18Sys;
 extern void yasolr_init_ds18();
-extern void yasolr_configure_ds18_router();
-extern void yasolr_configure_ds18_output1();
-extern void yasolr_configure_ds18_output2();
+extern void yasolr_configure_router_ds18();
+extern void yasolr_configure_output1_ds18();
+extern void yasolr_configure_output2_ds18();
 
 // Display
 extern Mycila::EasyDisplay* display;
@@ -124,8 +124,8 @@ extern Mycila::PZEM* pzemO2;
 extern Mycila::Task* pzemO1PairingTask;
 extern Mycila::Task* pzemO2PairingTask;
 extern Mycila::TaskManager* pzemTaskManager;
-extern void yasolr_configure_pzem_output1();
-extern void yasolr_configure_pzem_output2();
+extern void yasolr_configure_output1_pzem();
+extern void yasolr_configure_output2_pzem();
 
 // Lights
 extern Mycila::TrafficLight lights;
@@ -139,7 +139,7 @@ extern Mycila::Task safeBootTask;
 extern Mycila::TaskManager coreTaskManager;
 extern Mycila::TaskManager unsafeTaskManager;
 extern void yasolr_init_system();
-extern void yasolr_init_tasks();
+extern void yasolr_start_task_manager();
 
 // Trial
 extern void yasolr_init_trial();
@@ -155,10 +155,14 @@ extern void yasolr_configure_relay2();
 extern Mycila::PID pidController;
 extern Mycila::PulseAnalyzer* pulseAnalyzer;
 extern Mycila::Router router;
-extern Mycila::RouterOutput* output1;
-extern Mycila::RouterOutput* output2;
+extern Mycila::RouterOutput output1;
+extern Mycila::RouterOutput output2;
 extern void yasolr_divert();
 extern void yasolr_init_router();
+extern void yasolr_configure_output1_dimmer();
+extern void yasolr_configure_output2_dimmer();
+extern void yasolr_configure_output1_bypass_relay();
+extern void yasolr_configure_output2_bypass_relay();
 extern void yasolr_configure_frequency();
 extern void yasolr_configure_pid();
 

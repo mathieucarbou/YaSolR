@@ -9,41 +9,44 @@ void setup() {
   yasolr_init_system();  // init system (safeboot, restart, reset, etc)
 
   LOGI(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
+
   yasolr_init_config();       // load configuration from NVS
   yasolr_configure_logging(); // configure logging
 
   LOGI(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
-  yasolr_configure_leds(); // before yasolr_init_lights();
+
   yasolr_init_lights();
   yasolr_init_trial();
-  // measurements
   yasolr_init_ds18();
-  yasolr_configure_ds18_router();
-  yasolr_configure_ds18_output1();
-  yasolr_configure_ds18_output2();
-  yasolr_configure_pzem_output1();
-  yasolr_configure_pzem_output2();
-  yasolr_configure_victron();
-  yasolr_configure_jsy();
-  yasolr_configure_jsy_remote();
-  // router hardware
   yasolr_init_grid();
   yasolr_init_relays();
+  yasolr_init_router();
+  yasolr_init_web_server();
+  yasolr_init_network();
+
+  yasolr_configure_display();
+  yasolr_configure_frequency();
+  yasolr_configure_jsy_remote();
+  yasolr_configure_jsy();
+  yasolr_configure_leds();
+  yasolr_configure_mqtt();
+  yasolr_configure_pid();
   yasolr_configure_relay1();
   yasolr_configure_relay2();
-  yasolr_init_router();
-  yasolr_configure_frequency();
-  yasolr_configure_pid();
-  // UI: display, web, mqtt, etc
-  yasolr_init_web_server();
-  yasolr_configure_display();
-  yasolr_configure_mqtt();
-  // network
-  yasolr_init_network();
-  // start tasks
-  yasolr_init_tasks();
+  yasolr_configure_router_ds18();
+  yasolr_configure_victron();
+
+  yasolr_configure_output1_bypass_relay();
+  yasolr_configure_output1_dimmer();
+  yasolr_configure_output1_ds18();
+  yasolr_configure_output1_pzem();
+  yasolr_configure_output2_bypass_relay();
+  yasolr_configure_output2_dimmer();
+  yasolr_configure_output2_ds18();
+  yasolr_configure_output2_pzem();
 
   // STARTUP READY!
+  yasolr_start_task_manager();
   LOGI(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 }
 

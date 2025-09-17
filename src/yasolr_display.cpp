@@ -133,22 +133,20 @@ void yasolr_configure_display() {
               break;
             }
             case 8: {
-              if (output1) {
-                display->home.printf("Output 1: %11.11s", output1->getStateName());
-                wrote = true;
-              }
+              display->home.printf("Output 1: %11.11s", output1.getStateName());
+              wrote = true;
               break;
             }
             case 9: {
-              if (output1 && output1->isDimmerEnabled()) {
-                display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(std::round(output1->getDimmerDutyCycleLive() * 100.0f)));
+              if (output1.isDimmerEnabled()) {
+                display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(std::round(output1.getDimmerDutyCycleLive() * 100.0f)));
                 wrote = true;
               }
               break;
             }
             case 10: {
-              if (output1 && output1->temperature()) {
-                display->home.printf("Output 1 T: %6.1f ", output1->temperature().get());
+              if (output1.temperature()) {
+                display->home.printf("Output 1 T: %6.1f ", output1.temperature().get());
                 display->home.printf("\xb0");
                 display->home.printf("C");
                 wrote = true;
@@ -156,22 +154,20 @@ void yasolr_configure_display() {
               break;
             }
             case 11: {
-              if (output2) {
-                display->home.printf("Output 2: %11.11s", output2->getStateName());
-                wrote = true;
-              }
+              display->home.printf("Output 2: %11.11s", output2.getStateName());
+              wrote = true;
               break;
             }
             case 12: {
-              if (output2 && output2->isDimmerEnabled()) {
-                display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(std::round(output2->getDimmerDutyCycleLive() * 100.0f)));
+              if (output2.isDimmerEnabled()) {
+                display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(std::round(output2.getDimmerDutyCycleLive() * 100.0f)));
                 wrote = true;
               }
               break;
             }
             case 13: {
-              if (output2 && output2->temperature()) {
-                display->home.printf("Output 2 T: %6.1f ", output2->temperature().get());
+              if (output2.temperature()) {
+                display->home.printf("Output 2 T: %6.1f ", output2.temperature().get());
                 display->home.printf("\xb0");
                 display->home.printf("C");
                 wrote = true;

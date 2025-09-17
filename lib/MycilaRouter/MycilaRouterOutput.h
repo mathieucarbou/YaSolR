@@ -56,7 +56,12 @@ namespace Mycila {
           uint16_t excessPowerLimiter = 0;
       } Config;
 
-      RouterOutput(const char* name, Dimmer& dimmer, Relay* relay) : _name(name), _dimmer(&dimmer), _relay(relay) {}
+      explicit RouterOutput(const char* name) : _name(name) {}
+
+      // dimmer is mandatory
+      void setDimmer(Dimmer* dimmer) { _dimmer = dimmer; }
+      // Bypass relay is optional
+      void setBypassRelay(Relay* relay) { _relay = relay; }
 
       // output
 

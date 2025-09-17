@@ -24,7 +24,7 @@ static Mycila::Task lightsTask("Lights", [](void* params) {
 
   lights.setGreen(true);
 
-  lights.setYellow((relay1 && relay1->isOn()) || (relay2 && relay2->isOn()) || (output1 && output1->isOn()) || (output2 && output2->isOn()));
+  lights.setYellow((relay1 && relay1->isOn()) || (relay2 && relay2->isOn()) || (output1.isOn()) || (output2.isOn()));
 
   if (!grid.isConnected()) {
     lights.setRed(true);

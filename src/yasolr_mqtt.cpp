@@ -99,39 +99,31 @@ static void subscribe() {
   // router
 
   mqtt->subscribe(baseTopic + "/router/output1/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
-    if (output1) {
-      float duty;
-      if (std::from_chars(payload.begin(), payload.end(), duty).ec == std::errc{}) {
-        output1->setDimmerDutyCycle(duty / 100.0f);
-      }
+    float duty;
+    if (std::from_chars(payload.begin(), payload.end(), duty).ec == std::errc{}) {
+      output1.setDimmerDutyCycle(duty / 100.0f);
     }
   });
 
   mqtt->subscribe(baseTopic + "/router/output2/duty_cycle/set", [](const std::string& topic, const std::string_view& payload) {
-    if (output2) {
-      float duty;
-      if (std::from_chars(payload.begin(), payload.end(), duty).ec == std::errc{}) {
-        output2->setDimmerDutyCycle(duty / 100.0f);
-      }
+    float duty;
+    if (std::from_chars(payload.begin(), payload.end(), duty).ec == std::errc{}) {
+      output2.setDimmerDutyCycle(duty / 100.0f);
     }
   });
 
   mqtt->subscribe(baseTopic + "/router/output1/bypass/set", [](const std::string& topic, const std::string_view& payload) {
-    if (output1) {
-      if (payload == YASOLR_ON)
-        output1->setBypassOn();
-      else if (payload == YASOLR_OFF)
-        output1->setBypassOff();
-    }
+    if (payload == YASOLR_ON)
+      output1.setBypassOn();
+    else if (payload == YASOLR_OFF)
+      output1.setBypassOff();
   });
 
   mqtt->subscribe(baseTopic + "/router/output2/bypass/set", [](const std::string& topic, const std::string_view& payload) {
-    if (output2) {
-      if (payload == YASOLR_ON)
-        output2->setBypassOn();
-      else if (payload == YASOLR_OFF)
-        output2->setBypassOff();
-    }
+    if (payload == YASOLR_ON)
+      output2.setBypassOn();
+    else if (payload == YASOLR_OFF)
+      output2.setBypassOff();
   });
 
   // device
@@ -214,12 +206,10 @@ static void subscribe() {
   if (output1TemperatureMQTTTopic[0] != '\0') {
     LOGI(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic);
     mqtt->subscribe(output1TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
-      if (output1) {
-        float t;
-        if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
-          LOGD(TAG, "Output 1 Temperature from MQTT: %f", t);
-          output1->temperature().update(t);
-        }
+      float t;
+      if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
+        LOGD(TAG, "Output 1 Temperature from MQTT: %f", t);
+        output1.temperature().update(t);
       }
     });
   }
@@ -229,12 +219,10 @@ static void subscribe() {
   if (output2TemperatureMQTTTopic[0] != '\0') {
     LOGI(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic);
     mqtt->subscribe(output2TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
-      if (output2) {
-        float t;
-        if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
-          LOGD(TAG, "Output 2 Temperature from MQTT: %f", t);
-          output2->temperature().update(t);
-        }
+      float t;
+      if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
+        LOGD(TAG, "Output 2 Temperature from MQTT: %f", t);
+        output2.temperature().update(t);
       }
     });
   }
