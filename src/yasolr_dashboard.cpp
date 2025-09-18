@@ -66,10 +66,12 @@ static dash::StatisticValue<const char*> _networkHostname(dashboard, YASOLR_LBL_
 static dash::StatisticValue<const char*> _networkInterface(dashboard, YASOLR_LBL_020);
 static dash::StatisticValue _networkAPIP(dashboard, YASOLR_LBL_021);
 static dash::StatisticValue _networkAPMAC(dashboard, YASOLR_LBL_022);
+#ifdef ESPCONNECT_ETH_SUPPORT
 static dash::StatisticValue _networkEthIP(dashboard, YASOLR_LBL_023);
 static dash::StatisticValue _networkEthIPv6Local(dashboard, YASOLR_LBL_202);
 static dash::StatisticValue _networkEthIPv6Global(dashboard, YASOLR_LBL_204);
 static dash::StatisticValue _networkEthMAC(dashboard, YASOLR_LBL_024);
+#endif
 static dash::StatisticValue _networkWiFiIP(dashboard, YASOLR_LBL_025);
 static dash::StatisticValue _networkWiFiIPv6Local(dashboard, YASOLR_LBL_201);
 static dash::StatisticValue _networkWiFiIPv6Global(dashboard, YASOLR_LBL_203);
@@ -1001,27 +1003,27 @@ void YaSolR::Website::initCards() {
   _firmwareFilename.setValue(Mycila::AppInfo.firmware.c_str());
   _networkHostname.setValue(espConnect.getConfig().hostname.c_str());
 
-  switch (mode) {
-    case Mycila::ESPConnect::Mode::AP:
-      _networkInterface.setValue("Access Point");
-      _networkAPIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::AP).toString().c_str());
-      _networkAPMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP));
-      break;
-
-    case Mycila::ESPConnect::Mode::ETH: {
-      _networkInterface.setValue("Ethernet");
-      _networkEthIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
-      auto ipv6Local = espConnect.getLinkLocalIPv6Address(Mycila::ESPConnect::Mode::ETH);
-      _networkEthIPv6Local.setValue(ipv6Local == IN6ADDR_ANY ? "N/A" : ipv6Local.toString().c_str());
-      auto ipv6Global = espConnect.getGlobalIPv6Address(Mycila::ESPConnect::Mode::ETH);
-      _networkEthIPv6Global.setValue(ipv6Global == IN6ADDR_ANY ? "N/A" : ipv6Global.toString().c_str());
-      auto mac = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
-      _networkEthMAC.setValue(mac.empty() ? std::string("N/A") : mac);
-      break;
+  if (mode == Mycila::ESPConnect::Mode::AP) {
+    _networkInterface.setValue("Access Point");
+    _networkAPIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::AP).toString().c_str());
+    _networkAPMAC.setValue(espConnect.getMACAddress(Mycila::ESPConnect::Mode::AP));
+  } else {
+    // Mode
+    switch (mode) {
+      case Mycila::ESPConnect::Mode::ETH: {
+        _networkInterface.setValue("Ethernet");
+        break;
+      }
+      case Mycila::ESPConnect::Mode::STA: {
+        _networkInterface.setValue("WiFi");
+        break;
+      }
+      default:
+        _networkInterface.setValue("Unknown");
+        break;
     }
-
-    case Mycila::ESPConnect::Mode::STA: {
-      _networkInterface.setValue("WiFi");
+    // WiFi
+    {
       _networkWiFiIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::STA).toString().c_str());
       auto ipv6Local = espConnect.getLinkLocalIPv6Address(Mycila::ESPConnect::Mode::STA);
       _networkWiFiIPv6Local.setValue(ipv6Local == IN6ADDR_ANY ? "N/A" : ipv6Local.toString().c_str());
@@ -1031,12 +1033,19 @@ void YaSolR::Website::initCards() {
       _networkWiFiMAC.setValue(mac.empty() ? std::string("N/A") : mac);
       _networkWiFiSSID.setValue(espConnect.getWiFiSSID());
       _networkWiFiBSSID.setValue(espConnect.getWiFiBSSID());
-      break;
     }
-
-    default:
-      _networkInterface.setValue("Unknown");
-      break;
+#ifdef ESPCONNECT_ETH_SUPPORT
+    // Ethernet
+    {
+      _networkEthIP.setValue(espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString().c_str());
+      auto ipv6Local = espConnect.getLinkLocalIPv6Address(Mycila::ESPConnect::Mode::ETH);
+      _networkEthIPv6Local.setValue(ipv6Local == IN6ADDR_ANY ? "N/A" : ipv6Local.toString().c_str());
+      auto ipv6Global = espConnect.getGlobalIPv6Address(Mycila::ESPConnect::Mode::ETH);
+      _networkEthIPv6Global.setValue(ipv6Global == IN6ADDR_ANY ? "N/A" : ipv6Global.toString().c_str());
+      auto mac = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);
+      _networkEthMAC.setValue(mac.empty() ? std::string("N/A") : mac);
+    }
+#endif
   }
 
   // home
@@ -1079,16 +1088,18 @@ void YaSolR::Website::initCards() {
   _udpMessageRateBuffer.setDisplay(config.getBool(KEY_ENABLE_JSY_REMOTE));
   _networkAPIP.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   _networkAPMAC.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
-  _networkEthIP.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
-  _networkEthIPv6Local.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
-  _networkEthIPv6Global.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
-  _networkEthMAC.setDisplay(mode == Mycila::ESPConnect::Mode::ETH);
-  _networkWiFiIP.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
-  _networkWiFiIPv6Local.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
-  _networkWiFiIPv6Global.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
-  _networkWiFiMAC.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
-  _networkWiFiSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
-  _networkWiFiBSSID.setDisplay(mode == Mycila::ESPConnect::Mode::STA);
+  #ifdef ESPCONNECT_ETH_SUPPORT
+  _networkEthIP.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkEthIPv6Local.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkEthIPv6Global.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkEthMAC.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  #endif
+  _networkWiFiIP.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkWiFiIPv6Local.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkWiFiIPv6Global.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkWiFiMAC.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkWiFiSSID.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
+  _networkWiFiBSSID.setDisplay(mode != Mycila::ESPConnect::Mode::AP);
   _output1RelaySwitchCount.setDisplay(output1.isBypassRelayEnabled());
   _output2RelaySwitchCount.setDisplay(output2.isBypassRelayEnabled());
   _relay1SwitchCount.setDisplay(relay1 && relay1->isEnabled());
