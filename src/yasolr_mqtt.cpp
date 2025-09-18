@@ -343,7 +343,7 @@ static void publishData() {
   routerMeasurements = nullptr;
   yield();
 
-  mqtt->publish(baseTopic + "/router/lights", lights.toString());
+  mqtt->publish(baseTopic + "/router/status", lights.toString());
   mqtt->publish(baseTopic + "/router/virtual_grid_power", std::isnan(virtual_grid_power) ? "0" : std::to_string(virtual_grid_power));
   if (relay1)
     mqtt->publish(baseTopic + "/router/relay1", YASOLR_STATE(relay1->isOn()));
