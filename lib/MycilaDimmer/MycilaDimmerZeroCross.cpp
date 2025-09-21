@@ -73,22 +73,23 @@ void Mycila::ZeroCrossDimmer::begin() {
 void Mycila::ZeroCrossDimmer::end() {
   if (!_enabled)
     return;
-  _enabled = false;
   LOGI(TAG, "Disable ZC Dimmer on pin %" PRId8, _pin);
-  // Note: do not set _dutyCycle to 0 in order to keep last set user value
-  _delay = UINT16_MAX;
-  _dimmer->setDelay(_delay);
+  _enabled = false;
+  _dimmer->setDelay(UINT16_MAX);
   delete _dimmer;
   _dimmer = nullptr;
+  // Note: do not set _dutyCycle to 0 in order to keep last set user value
+  _delay = UINT16_MAX;
   digitalWrite(_pin, LOW);
+}
+
+bool Mycila::ZeroCrossDimmer::apply() {
+  if (_delay < PHASE_DELAY_MIN_US)
+    _delay = PHASE_DELAY_MIN_US;
+  _dimmer->setDelay(_delay);
+  return true;
 }
 
 void ARDUINO_ISR_ATTR Mycila::ZeroCrossDimmer::onZeroCross(int16_t delayUntilZero, void* arg) {
   Thyristor::zero_cross_int(arg);
-}
-
-bool Mycila::ZeroCrossDimmer::apply() {
-  // TODO: use PHASE_DELAY_MIN_US ?
-  _dimmer->setDelay(_delay);
-  return true;
 }

@@ -260,7 +260,20 @@ void yasolr_configure_frequency() {
   // Note: yasolr_frequency() at boot time will return either the user-defined frequency or NAN
   const float frequency = config.getFloat(KEY_GRID_FREQUENCY);
 
+  if (dimmer1) {
+    dimmer1->setSemiPeriod(0);
+    dimmer1->off();
+  }
+
+  if (dimmer2) {
+    dimmer2->setSemiPeriod(0);
+    dimmer2->off();
+  }
+
   if (frequency > 0) {
+    // Frequency is forced by user from the dropdown in the settings
+    // We don't need to monitor the frequency anymore
+
     // cleanup previous task if any
     if (frequencyMonitorTask != nullptr) {
       coreTaskManager.removeTask(*frequencyMonitorTask);
@@ -269,23 +282,24 @@ void yasolr_configure_frequency() {
     }
 
     const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
-
     LOGI(TAG, "Grid frequency forced by user to %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
 
-    if (dimmer1)
+    if (dimmer1) {
       dimmer1->setSemiPeriod(semiPeriod);
-    if (dimmer2)
-      dimmer2->setSemiPeriod(semiPeriod);
+    }
 
-    // until we have our new dimmer impl... Only for ZC based dimmers...
+    if (dimmer2) {
+      dimmer2->setSemiPeriod(semiPeriod);
+    }
+
+    // ONLY for Thyristor lib
     if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
       if (Thyristor::getSemiPeriod()) {
-        // Thyristor already running, just update semi-period
         LOGI(TAG, "Updating Thyristor semi-period");
         Thyristor::setSemiPeriod(semiPeriod);
       } else {
-        Thyristor::setSemiPeriod(semiPeriod);
         LOGI(TAG, "Starting Thyristor");
+        Thyristor::setSemiPeriod(semiPeriod);
         Thyristor::begin();
         if (dimmer1)
           dimmer1->off();
@@ -304,10 +318,20 @@ void yasolr_configure_frequency() {
         const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
 
         if (semiPeriod) {
-          if (Thyristor::getSemiPeriod() != semiPeriod || (dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) || (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod)) {
+          if ((dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) || (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod)) {
             LOGI(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
 
-            // until we have our new dimmer impl... Only for ZC based dimmers...
+            if (dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) {
+              LOGI(TAG, "Updating Output 1 Dimmer semi-period");
+              dimmer1->setSemiPeriod(semiPeriod);
+            }
+
+            if (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod) {
+              LOGI(TAG, "Updating Output 2 Dimmer semi-period");
+              dimmer2->setSemiPeriod(semiPeriod);
+            }
+
+            // ONLY for Thyristor lib
             if (Thyristor::getSemiPeriod()) {
               LOGI(TAG, "Updating Thyristor semi-period");
               Thyristor::setSemiPeriod(semiPeriod);
@@ -317,55 +341,28 @@ void yasolr_configure_frequency() {
               Thyristor::begin();
             }
 
-            if (dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) {
-              if (dimmer1->getSemiPeriod()) {
-                LOGI(TAG, "Updating Output 1 Dimmer semi-period");
-                dimmer1->setSemiPeriod(semiPeriod);
-              } else {
-                LOGI(TAG, "Starting Output 1 Dimmer");
-                dimmer1->setSemiPeriod(semiPeriod);
-                dimmer1->off();
-              }
-            }
-
-            if (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod) {
-              if (dimmer2->getSemiPeriod()) {
-                LOGI(TAG, "Updating Output 2 Dimmer semi-period");
-                dimmer2->setSemiPeriod(semiPeriod);
-              } else {
-                LOGI(TAG, "Starting Output 2 Dimmer");
-                dimmer2->setSemiPeriod(semiPeriod);
-                dimmer2->off();
-              }
-            }
-
             dashboardInitTask.resume();
-          } else {
-            Thyristor::setSemiPeriod(semiPeriod);
-            if (dimmer1)
-              dimmer1->setSemiPeriod(semiPeriod);
-            if (dimmer2)
-              dimmer2->setSemiPeriod(semiPeriod);
           }
 
         } else {
           LOGW(TAG, "Unknown grid frequency!");
-
-          if (Thyristor::getSemiPeriod() || (dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
-            if (Thyristor::getSemiPeriod()) {
-              LOGI(TAG, "Stopping Thyristor");
-              Thyristor::setSemiPeriod(0);
-              Thyristor::end();
-            }
-
+          if ((dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
             if (dimmer1 && dimmer1->getSemiPeriod()) {
-              LOGI(TAG, "Setting dimmer 1 semi-period to 0");
+              LOGI(TAG, "Pausing Output 1 Dimmer");
               dimmer1->setSemiPeriod(0);
+              dimmer1->off();
             }
 
             if (dimmer2 && dimmer2->getSemiPeriod()) {
-              LOGI(TAG, "Setting dimmer 2 semi-period to 0");
+              LOGI(TAG, "Pausing Output 2 Dimmer");
               dimmer2->setSemiPeriod(0);
+              dimmer2->off();
+            }
+
+            if (Thyristor::getSemiPeriod()) {
+              LOGI(TAG, "Pausing Thyristor");
+              Thyristor::setSemiPeriod(0);
+              Thyristor::end();
             }
 
             dashboardInitTask.resume();
