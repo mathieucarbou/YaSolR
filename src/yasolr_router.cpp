@@ -339,6 +339,10 @@ void yasolr_configure_frequency() {
               LOGI(TAG, "Starting Thyristor");
               Thyristor::setSemiPeriod(semiPeriod);
               Thyristor::begin();
+              if (dimmer1)
+                dimmer1->off();
+              if (dimmer2)
+                dimmer2->off();
             }
 
             dashboardInitTask.resume();
