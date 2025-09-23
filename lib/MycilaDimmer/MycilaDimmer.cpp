@@ -16,18 +16,11 @@ static const uint16_t TABLE_PHASE_DELAY[TABLE_PHASE_LEN] PROGMEM = {0xefea, 0xdf
 // =============================================================================
 
 uint16_t Mycila::Dimmer::_lookupFiringDelay(float dutyCycle) {
-  if (dutyCycle == 0)
-    return UINT16_MAX;
-
-  if (dutyCycle == 1)
-    return 0;
-
   uint32_t duty = dutyCycle * DIMMER_MAX;
   uint32_t slot = duty * TABLE_PHASE_SCALE + (TABLE_PHASE_SCALE >> 1);
   uint32_t index = slot >> 16;
   uint32_t a = TABLE_PHASE_DELAY[index];
   uint32_t b = TABLE_PHASE_DELAY[index + 1];
   uint32_t delay = a - (((a - b) * (slot & 0xffff)) >> 16); // interpolate a b
-
   return (delay * _semiPeriod) >> 16; // scale to period
 }

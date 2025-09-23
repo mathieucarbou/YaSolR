@@ -9,6 +9,7 @@
 
 // gpio
 #include <driver/gpio.h>
+#include <driver/gptimer_types.h>
 #include <esp32-hal-gpio.h>
 #include <hal/gpio_ll.h>
 #include <soc/gpio_struct.h>

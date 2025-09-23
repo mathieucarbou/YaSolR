@@ -79,7 +79,12 @@ namespace Mycila {
           return false;
         }
 
-        _delay = _lookupFiringDelay(getMappedDutyCycle());
+        if (dutyCycle == 0)
+          _delay = UINT16_MAX;
+        else if (dutyCycle == 1)
+          _delay = 0;
+        else
+          _delay = _lookupFiringDelay(getMappedDutyCycle());
 
         return apply();
       }

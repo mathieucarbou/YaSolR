@@ -126,6 +126,7 @@ static void configure_zcd() {
     if (pulseAnalyzer == nullptr) {
       LOGI(TAG, "Enable ZCD Pulse Analyzer");
       pulseAnalyzer = new Mycila::PulseAnalyzer();
+      pulseAnalyzer->setZeroCrossEventShift(YASOLR_ZC_EVENT_SHIFT_US);
       pulseAnalyzer->onZeroCross(Mycila::ZeroCrossDimmer::onZeroCross);
       pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
 
