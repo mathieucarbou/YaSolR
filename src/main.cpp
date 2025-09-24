@@ -37,13 +37,13 @@ void setup() {
   yasolr_configure_victron();
 
   yasolr_configure_output1_bypass_relay();
-  yasolr_configure_output1_dimmer();
-  yasolr_configure_output1_ds18();
-  yasolr_configure_output1_pzem();
   yasolr_configure_output2_bypass_relay();
-  yasolr_configure_output2_dimmer();
-  yasolr_configure_output2_ds18();
+  yasolr_configure_output1_pzem();
   yasolr_configure_output2_pzem();
+  yasolr_configure_output1_ds18(); // must be before dimmer otherwise ISR will cause crash since ds18 initialization is time sensitive
+  yasolr_configure_output2_ds18();
+  yasolr_configure_output1_dimmer();
+  yasolr_configure_output2_dimmer();
 
   // STARTUP READY!
   yasolr_start_task_manager();
