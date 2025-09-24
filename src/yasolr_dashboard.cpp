@@ -429,10 +429,24 @@ void YaSolR::Website::begin() {
 
   // home
 
-  if (relay1)
-    _relaySwitch(_relay1Switch, *relay1);
-  if (relay2)
-    _relaySwitch(_relay2Switch, *relay2);
+  _relay1Switch.onChange([](bool value) {
+    if (relay1) {
+      relay1->trySwitchRelay(value);
+      _relay1Switch.setValue(relay1->isOn());
+      dashboard.refresh(_relay1Switch);
+      dashboardUpdateTask.requestEarlyRun();
+    }
+  });
+
+  _relay2Switch.onChange([](bool value) {
+    if (relay2) {
+      relay2->trySwitchRelay(value);
+      _relay2Switch.setValue(relay2->isOn());
+      dashboard.refresh(_relay2Switch);
+      dashboardUpdateTask.requestEarlyRun();
+    }
+  });
+
   _outputBypassSwitch(_output1Bypass, output1);
   _outputDimmerSlider(_output1DimmerSlider, output1);
   _outputBypassSwitch(_output2Bypass, output2);

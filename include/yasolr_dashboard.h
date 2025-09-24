@@ -57,14 +57,6 @@ namespace YaSolR {
         });
       }
 
-      void _relaySwitch(dash::ToggleButtonCard& card, Mycila::RouterRelay& relay) {
-        card.onChange([&card, &relay, this](bool value) {
-          relay.trySwitchRelay(value);
-          card.setValue(relay.isOn());
-          dashboard.refresh(card);
-        });
-      }
-
 #ifdef APP_MODEL_PRO
       void _daysConfig(dash::WeekCard<const char*>& card, const char* key) {
         card.onChange([key, &card, this](const char* value) {
