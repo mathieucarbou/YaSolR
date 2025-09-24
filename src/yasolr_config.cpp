@@ -298,9 +298,6 @@ void yasolr_init_config() {
         }
       });
 
-    } else if (key == KEY_GRID_FREQUENCY) {
-      reconfigureQueue.push(yasolr_configure_frequency);
-
     } else if (key == KEY_ENABLE_DISPLAY) {
       reconfigureQueue.push(yasolr_configure_display);
 

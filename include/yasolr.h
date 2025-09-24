@@ -163,7 +163,6 @@ extern void yasolr_configure_output1_dimmer();
 extern void yasolr_configure_output2_dimmer();
 extern void yasolr_configure_output1_bypass_relay();
 extern void yasolr_configure_output2_bypass_relay();
-extern void yasolr_configure_frequency();
 extern void yasolr_configure_pid();
 
 // victron

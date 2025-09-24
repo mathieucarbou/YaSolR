@@ -25,7 +25,6 @@ void setup() {
   yasolr_init_network();
 
   yasolr_configure_display();
-  yasolr_configure_frequency();
   yasolr_configure_jsy_remote();
   yasolr_configure_jsy();
   yasolr_configure_leds();

@@ -42,7 +42,71 @@ static Mycila::Task routerTask("Router", [](void* params) {
   output2.applyAutoBypass();
 });
 
-static Mycila::Task* frequencyMonitorTask;
+static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
+  const float frequency = yasolr_frequency();
+  const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
+
+  if (semiPeriod) {
+    if ((dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) || (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod)) {
+      LOGI(TAG, "Grid frequency changed to %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
+
+      if (dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) {
+        LOGI(TAG, "Updating Output 1 Dimmer semi-period");
+        dimmer1->setSemiPeriod(semiPeriod);
+      }
+
+      if (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod) {
+        LOGI(TAG, "Updating Output 2 Dimmer semi-period");
+        dimmer2->setSemiPeriod(semiPeriod);
+      }
+
+      // ONLY for Thyristor lib
+      if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
+        if (Thyristor::getSemiPeriod()) {
+          LOGI(TAG, "Updating Thyristor semi-period");
+          Thyristor::setSemiPeriod(semiPeriod);
+        } else {
+          LOGI(TAG, "Starting Thyristor");
+          Thyristor::setSemiPeriod(semiPeriod);
+          Thyristor::begin();
+          if (dimmer1)
+            dimmer1->off();
+          if (dimmer2)
+            dimmer2->off();
+        }
+      }
+
+      dashboardInitTask.resume();
+    }
+
+  } else {
+    LOGW(TAG, "Unknown grid frequency!");
+    if ((dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
+      if (dimmer1 && dimmer1->getSemiPeriod()) {
+        LOGI(TAG, "Pausing Output 1 Dimmer");
+        dimmer1->setSemiPeriod(0);
+        dimmer1->off();
+      }
+
+      if (dimmer2 && dimmer2->getSemiPeriod()) {
+        LOGI(TAG, "Pausing Output 2 Dimmer");
+        dimmer2->setSemiPeriod(0);
+        dimmer2->off();
+      }
+
+      // ONLY for Thyristor lib
+      if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
+        if (Thyristor::getSemiPeriod()) {
+          LOGI(TAG, "Pausing Thyristor");
+          Thyristor::setSemiPeriod(0);
+          Thyristor::end();
+        }
+      }
+
+      dashboardInitTask.resume();
+    }
+  }
+});
 
 // functions
 
@@ -256,131 +320,6 @@ void yasolr_configure_pid() {
   LOGI(TAG, "PID Controller configured");
 }
 
-void yasolr_configure_frequency() {
-  // Do we have a user defined frequency?
-  // Note: yasolr_frequency() at boot time will return either the user-defined frequency or NAN
-  const float frequency = config.getFloat(KEY_GRID_FREQUENCY);
-
-  if (dimmer1) {
-    dimmer1->setSemiPeriod(0);
-    dimmer1->off();
-  }
-
-  if (dimmer2) {
-    dimmer2->setSemiPeriod(0);
-    dimmer2->off();
-  }
-
-  if (frequency > 0) {
-    // Frequency is forced by user from the dropdown in the settings
-    // We don't need to monitor the frequency anymore
-
-    // cleanup previous task if any
-    if (frequencyMonitorTask != nullptr) {
-      coreTaskManager.removeTask(*frequencyMonitorTask);
-      delete frequencyMonitorTask;
-      frequencyMonitorTask = nullptr;
-    }
-
-    const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
-    LOGI(TAG, "Grid frequency forced by user to %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
-
-    if (dimmer1) {
-      dimmer1->setSemiPeriod(semiPeriod);
-    }
-
-    if (dimmer2) {
-      dimmer2->setSemiPeriod(semiPeriod);
-    }
-
-    // ONLY for Thyristor lib
-    if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
-      if (Thyristor::getSemiPeriod()) {
-        LOGI(TAG, "Updating Thyristor semi-period");
-        Thyristor::setSemiPeriod(semiPeriod);
-      } else {
-        LOGI(TAG, "Starting Thyristor");
-        Thyristor::setSemiPeriod(semiPeriod);
-        Thyristor::begin();
-        if (dimmer1)
-          dimmer1->off();
-        if (dimmer2)
-          dimmer2->off();
-      }
-    }
-
-  } else {
-    // auto-detect frequency
-    LOGI(TAG, "Grid frequency will be auto-detected");
-
-    if (frequencyMonitorTask == nullptr) {
-      frequencyMonitorTask = new Mycila::Task("Frequency", [](void* params) {
-        const float frequency = yasolr_frequency();
-        const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
-
-        if (semiPeriod) {
-          if ((dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) || (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod)) {
-            LOGI(TAG, "Detected grid frequency: %.2f Hz with semi-period: %" PRIu16 " us", frequency, semiPeriod);
-
-            if (dimmer1 && dimmer1->getSemiPeriod() != semiPeriod) {
-              LOGI(TAG, "Updating Output 1 Dimmer semi-period");
-              dimmer1->setSemiPeriod(semiPeriod);
-            }
-
-            if (dimmer2 && dimmer2->getSemiPeriod() != semiPeriod) {
-              LOGI(TAG, "Updating Output 2 Dimmer semi-period");
-              dimmer2->setSemiPeriod(semiPeriod);
-            }
-
-            // ONLY for Thyristor lib
-            if (Thyristor::getSemiPeriod()) {
-              LOGI(TAG, "Updating Thyristor semi-period");
-              Thyristor::setSemiPeriod(semiPeriod);
-            } else {
-              LOGI(TAG, "Starting Thyristor");
-              Thyristor::setSemiPeriod(semiPeriod);
-              Thyristor::begin();
-              if (dimmer1)
-                dimmer1->off();
-              if (dimmer2)
-                dimmer2->off();
-            }
-
-            dashboardInitTask.resume();
-          }
-
-        } else {
-          LOGW(TAG, "Unknown grid frequency!");
-          if ((dimmer1 && dimmer1->getSemiPeriod()) || (dimmer2 && dimmer2->getSemiPeriod())) {
-            if (dimmer1 && dimmer1->getSemiPeriod()) {
-              LOGI(TAG, "Pausing Output 1 Dimmer");
-              dimmer1->setSemiPeriod(0);
-              dimmer1->off();
-            }
-
-            if (dimmer2 && dimmer2->getSemiPeriod()) {
-              LOGI(TAG, "Pausing Output 2 Dimmer");
-              dimmer2->setSemiPeriod(0);
-              dimmer2->off();
-            }
-
-            if (Thyristor::getSemiPeriod()) {
-              LOGI(TAG, "Pausing Thyristor");
-              Thyristor::setSemiPeriod(0);
-              Thyristor::end();
-            }
-
-            dashboardInitTask.resume();
-          }
-        }
-      });
-
-      frequencyMonitorTask->setInterval(2000);
-      coreTaskManager.addTask(*frequencyMonitorTask);
-    }
-  }
-}
-
 void yasolr_init_router() {
   LOGI(TAG, "Initialize router outputs");
 
@@ -437,6 +376,9 @@ void yasolr_init_router() {
   if (config.getBool(KEY_ENABLE_DEBUG))
     calibrationTask.enableProfiling();
 
+  frequencyMonitorTask.setInterval(2000);
+
+  coreTaskManager.addTask(frequencyMonitorTask);
   coreTaskManager.addTask(routerTask);
   coreTaskManager.addTask(calibrationTask);
 }
