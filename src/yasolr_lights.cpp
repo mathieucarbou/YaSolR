@@ -43,7 +43,7 @@ static Mycila::Task lightsTask("Lights", [](void* params) {
   lights.setRed(false);
 });
 
-void yasolr_configure_leds() {
+void yasolr_configure_lights() {
   if (config.getBool(KEY_ENABLE_LIGHTS)) {
     if (!lights.isEnabled()) {
       LOGI(TAG, "Enable LEDs");

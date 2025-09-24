@@ -130,7 +130,7 @@ extern void yasolr_configure_output2_pzem();
 // Lights
 extern Mycila::TrafficLight lights;
 extern void yasolr_init_lights();
-extern void yasolr_configure_leds();
+extern void yasolr_configure_lights();
 
 // System
 extern Mycila::Task resetTask;

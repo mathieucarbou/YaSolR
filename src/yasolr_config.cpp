@@ -15,6 +15,7 @@ static Mycila::Task reconfigureTask("Reconfigure", [](void* params) {
   auto fn = reconfigureQueue.front();
   reconfigureQueue.pop();
   fn();
+  dashboardInitTask.resume();
 });
 
 void yasolr_init_config() {
@@ -302,7 +303,7 @@ void yasolr_init_config() {
       reconfigureQueue.push(yasolr_configure_display);
 
     } else if (key == KEY_ENABLE_LIGHTS) {
-      reconfigureQueue.push(yasolr_configure_leds);
+      reconfigureQueue.push(yasolr_configure_lights);
 
     } else if (key == KEY_ENABLE_DS18_SYSTEM) {
       reconfigureQueue.push(yasolr_configure_router_ds18);

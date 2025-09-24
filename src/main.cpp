@@ -27,7 +27,7 @@ void setup() {
   yasolr_configure_display();
   yasolr_configure_jsy_remote();
   yasolr_configure_jsy();
-  yasolr_configure_leds();
+  yasolr_configure_lights();
   yasolr_configure_mqtt();
   yasolr_configure_pid();
   yasolr_configure_relay1();
