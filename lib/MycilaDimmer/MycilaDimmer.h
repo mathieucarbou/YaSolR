@@ -20,12 +20,12 @@ namespace Mycila {
       virtual const char* type() const = 0;
 
       /**
-       * @brief Set the semi-period of the dimmer in us
+       * @brief Set the semi-period of the grid frequency in us
        */
       void setSemiPeriod(uint16_t semiPeriod) { _semiPeriod = semiPeriod; }
 
       /**
-       * @brief Get the semi-period of the dimmer in us
+       * @brief Get the semi-period of the grid frequency in us
        */
       uint16_t getSemiPeriod() const { return _semiPeriod; }
 
@@ -72,19 +72,21 @@ namespace Mycila {
       bool setDutyCycle(float dutyCycle) {
         // Apply limit and save the wanted duty cycle.
         // It will only be applied when dimmer will be on.
-        _dutyCycle = constrain(dutyCycle, 0, _dutyCycleLimit);
+        _dutyCycle = _contrain(dutyCycle, 0, _dutyCycleLimit);
 
         if (!isOnline() && _dutyCycle) {
           // when not connected to the grid, we only allow setting dimmer off
           return false;
         }
 
-        if (dutyCycle == 0)
+        float mapped = getMappedDutyCycle();
+
+        if (mapped == 0)
           _delay = UINT16_MAX;
-        else if (dutyCycle == 1)
+        else if (mapped == 1)
           _delay = 0;
         else
-          _delay = _lookupFiringDelay(getMappedDutyCycle());
+          _delay = _lookupFiringDelay(mapped);
 
         return apply();
       }
@@ -95,7 +97,7 @@ namespace Mycila {
        * @param limit: the power duty cycle limit in the range [0.0, 1.0]
        */
       void setDutyCycleLimit(float limit) {
-        _dutyCycleLimit = constrain(limit, 0, 1);
+        _dutyCycleLimit = _contrain(limit, 0, 1);
         if (_dutyCycle > _dutyCycleLimit)
           setDutyCycle(_dutyCycleLimit);
       }
@@ -107,7 +109,7 @@ namespace Mycila {
        * @param min: Set the new "0" value for the power duty cycle. The duty cycle in the range [0.0, 1.0] will be remapped to [min, max].
        */
       void setDutyCycleMin(float min) {
-        _dutyCycleMin = constrain(min, 0, _dutyCycleMax);
+        _dutyCycleMin = _contrain(min, 0, _dutyCycleMax);
         setDutyCycle(_dutyCycle);
       }
 
@@ -118,7 +120,7 @@ namespace Mycila {
        * @param max: Set the new "1" value for the power duty cycle. The duty cycle in the range [0.0, 1.0] will be remapped to [min, max].
        */
       void setDutyCycleMax(float max) {
-        _dutyCycleMax = constrain(max, _dutyCycleMin, 1);
+        _dutyCycleMax = _contrain(max, _dutyCycleMin, 1);
         setDutyCycle(_dutyCycle);
       }
 
@@ -215,6 +217,10 @@ namespace Mycila {
       uint16_t _lookupFiringDelay(float dutyCycle);
 
       virtual bool apply() = 0;
+
+      static inline float _contrain(float amt, float low, float high) {
+        return (amt < low) ? low : ((amt > high) ? high : amt);
+      }
   };
 
   class VirtualDimmer : public Dimmer {
