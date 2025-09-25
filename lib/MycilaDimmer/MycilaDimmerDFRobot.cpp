@@ -107,6 +107,7 @@ void Mycila::DFRobotDimmer::end() {
   LOGI(TAG, "Disable DFRobot Dimmer");
   // Note: do not set _dutyCycle to 0 in order to keep last set user value
   _delay = UINT16_MAX;
+  apply();
 }
 
 bool Mycila::DFRobotDimmer::apply() {
