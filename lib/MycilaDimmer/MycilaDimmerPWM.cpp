@@ -68,6 +68,7 @@ void Mycila::PWMDimmer::end() {
   // Note: do not set _dutyCycle to 0 in order to keep last set user value
   _delay = UINT16_MAX;
   ledcDetach(_pin);
+  pinMode(_pin, OUTPUT);
   digitalWrite(_pin, LOW);
 }
 
