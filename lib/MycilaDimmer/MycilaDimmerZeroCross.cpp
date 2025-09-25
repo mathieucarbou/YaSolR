@@ -14,9 +14,6 @@
 #include <hal/gpio_ll.h>
 #include <soc/gpio_struct.h>
 
-// timers
-#include <inlined_gptimer.h>
-
 // logging
 #include <esp32-hal-log.h>
 
