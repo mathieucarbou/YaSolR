@@ -36,10 +36,10 @@ Please go to the **[Pro](pro)** page if you are interested in receiving the **Pr
 
 ### Trial versions
 
-- [YaSolR-v1.0.0-rc17-trial-esp32-en.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc17-trial-esp32-en.FACTORY.bin)
-- [YaSolR-v1.0.0-rc17-trial-esp32-fr.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc17-trial-esp32-fr.FACTORY.bin)
-- [YaSolR-v1.0.0-rc17-trial-esp32s3-en.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc17-trial-esp32s3-en.FACTORY.bin)
-- [YaSolR-v1.0.0-rc17-trial-esp32s3-fr.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc17-trial-esp32s3-fr.FACTORY.bin)
+- [YaSolR-v1.0.0-rc47-trial-esp32-en.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc47-trial-esp32-en.FACTORY.bin)
+- [YaSolR-v1.0.0-rc47-trial-esp32-fr.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc47-trial-esp32-fr.FACTORY.bin)
+- [YaSolR-v1.0.0-rc47-trial-esp32s3-en.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc47-trial-esp32s3-en.FACTORY.bin)
+- [YaSolR-v1.0.0-rc47-trial-esp32s3-fr.FACTORY.bin](/downloads/trials/YaSolR-v1.0.0-rc47-trial-esp32s3-fr.FACTORY.bin)
 
 _Trial versions are like the Pro version but will stop after **3 days of uptime**._
 _If you need to extend your trial period: you can re-flash the factory firmware after erasing the flash, put your settings back, and you will be good for another 3 days of trial._
