@@ -153,6 +153,7 @@ void rest_api() {
     library["CRC"] = CRC_LIB_VERSION;
     library["ESPAsyncWebServer"] = ASYNCWEBSERVER_VERSION;
     library["MycilaConfig"] = MYCILA_CONFIG_VERSION;
+    library["MycilaDimmer"] = MYCILA_DIMMER_VERSION;
     library["MycilaDS18"] = MYCILA_DS18_VERSION;
     library["MycilaEasyDisplay"] = MYCILA_EASY_DISPLAY_VERSION;
     library["MycilaESPConnect"] = ESPCONNECT_VERSION;
