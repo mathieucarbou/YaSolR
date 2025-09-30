@@ -39,11 +39,13 @@ Mycila::Task dashboardUpdateTask("Dashboard", [](void* params) {
 });
 
 void rewrites() {
-  webServer.rewrite("/dash/assets/logo/mini", "/logo-icon");
-  webServer.rewrite("/dash/assets/logo/large", "/logo");
+  webServer.rewrite("/console/l/dark", "/logo");
+  webServer.rewrite("/console/l/light", "/logo");
   webServer.rewrite("/dash/assets/logo", "/logo");
-  webServer.rewrite("/dash/logo/light", "/logo");
+  webServer.rewrite("/dash/assets/logo/large", "/logo");
+  webServer.rewrite("/dash/assets/logo/mini", "/logo-icon");
   webServer.rewrite("/dash/logo/dark", "/logo");
+  webServer.rewrite("/dash/logo/light", "/logo");
   webServer.rewrite("/ota/logo/dark", "/logo");
   webServer.rewrite("/ota/logo/light", "/logo");
   webServer.rewrite("/wsl/logo/dark", "/logo");
@@ -564,6 +566,16 @@ void yasolr_init_web_server() {
       website.initCards();
     }
   });
+
+  // WebSerial
+
+#ifdef APP_MODEL_PRO
+  WebSerial.setID(Mycila::AppInfo.nameModelVersion.c_str());
+  WebSerial.setTitle((Mycila::AppInfo.nameModel + " Web Console").c_str());
+  WebSerial.setInput(false);
+#endif
+  WebSerial.setBuffer(256); // max log line size
+  WebSerial.begin(&webServer, "/console");
 
   // YaSolR
 

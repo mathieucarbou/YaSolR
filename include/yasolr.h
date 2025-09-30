@@ -54,7 +54,7 @@
   #include <WebSerialPro.h>
 #else
   #include <ESPDash.h>
-  #include <MycilaWebSerial.h>
+  #include <WebSerial.h>
 #endif
 
 #include <yasolr_macros.h>

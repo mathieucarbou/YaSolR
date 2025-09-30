@@ -35,15 +35,13 @@ class LogStream : public Print {
 };
 
 static Mycila::Task* loggingTask = nullptr;
-static WebSerial* webSerial = nullptr;
 static LogStream* logStream = nullptr;
 
 static int log_redirect_vprintf(const char* format, va_list args) {
   size_t written = Serial.vprintf(format, args);
   if (logStream != nullptr)
     logStream->vprintf(format, args);
-  if (webSerial != nullptr)
-    webSerial->vprintf(format, args);
+  WebSerial.vprintf(format, args);
   return written;
 }
 
@@ -60,16 +58,6 @@ void yasolr_init_logging() {
   LOGI(TAG, "Initialize logging");
   esp_log_level_set("*", ESP_LOG_INFO);
   esp_log_set_vprintf(log_redirect_vprintf);
-
-  LOGI(TAG, "Redirecting logs to WebSerial");
-  webSerial = new WebSerial();
-#ifdef APP_MODEL_PRO
-  webSerial->setID(Mycila::AppInfo.firmware.c_str());
-  webSerial->setTitle((Mycila::AppInfo.name + " Web Console").c_str());
-  webSerial->setInput(false);
-#endif
-  webSerial->setBuffer(256); // max log line size
-  webSerial->begin(&webServer, "/console");
 }
 
 void yasolr_configure_logging() {
