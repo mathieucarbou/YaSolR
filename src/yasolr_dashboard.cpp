@@ -116,6 +116,10 @@ static dash::ToggleButtonCard _output1Bypass(dashboard, YASOLR_LBL_046 ": " YASO
 static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_048);
 static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::ToggleButtonCard _output2Bypass(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_051);
+static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_147);
+static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_147);
+static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
+static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
 #endif
 
 static int16_t _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
@@ -124,13 +128,6 @@ static uint8_t _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
 static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_036 " (W)");
 static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
-
-#ifdef APP_MODEL_OSS
-static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_147);
-static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_147);
-static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
-static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
-#endif
 
 #ifdef APP_MODEL_PRO
 // tab: output 1
