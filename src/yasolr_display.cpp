@@ -52,7 +52,7 @@ void yasolr_configure_display() {
 
           switch (info) {
             case 1: {
-              display->home.printf("%-6.6s %-3.3s %-10.10s", Mycila::AppInfo.name.c_str(), Mycila::AppInfo.model.c_str(), Mycila::AppInfo.version.c_str());
+              display->home.printf("%-21.21s", Mycila::AppInfo.nameModelVersion.c_str());
               wrote = true;
               break;
             }
