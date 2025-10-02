@@ -41,7 +41,8 @@ static int log_redirect_vprintf(const char* format, va_list args) {
   size_t written = Serial.vprintf(format, args);
   if (logStream != nullptr)
     logStream->vprintf(format, args);
-  WebSerial.vprintf(format, args);
+  if (WebSerial.getConnectionCount())
+    WebSerial.vprintf(format, args);
   return written;
 }
 
