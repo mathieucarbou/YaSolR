@@ -3,8 +3,7 @@
 // ***************
 
 void InitTemperature() {
-  ds18b20.begin();
-  Nbr_DS18B20 = ds18b20.getDeviceCount();
+  Nbr_DS18B20 = 0;
   for (int i = 0; i < 4; i++) {  // 4 canaux max de température
     Source_Temp[i] = "tempNo";
     temperature[i] = -127;
@@ -56,61 +55,26 @@ void LectureTemperature() {
         TemperatureValide[canal] = 5;
         temperature[canal] = temperature_brute;
       }
-    } else if (Source_Temp[canal] == "tempExt" && refTempIP[canal] > 0 && ModeWifi<2) {
-      String RMSExtTemp = "";
-
-      // Use WiFiClient class to create TCP connections
-      WiFiClient clientESP_RMS;
-      String host = IP2String(RMS_IP[refTempIP[canal]]);
-      if (!clientESP_RMS.connect(host.c_str(), 80)) {
-        StockMessage("connection to ESP_RMS Temperature failed : " + host);
-        delay(200);
-        if (TemperatureValide[canal] > 0) {
-          TemperatureValide[canal] = TemperatureValide[canal] - 1;  // Perte éventuels de quelques mesures
-        } else {                                                    //Trop de pertes
-          temperature[canal] = temperature_brute;
-        }
-        return;
-      }
-      String url = "/ajax_Temperature";
-      clientESP_RMS.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Connection: close\r\n\r\n");
-      unsigned long timeout = millis();
-      while (clientESP_RMS.available() == 0) {
-        if (millis() - timeout > 5000) {
-          StockMessage("client ESP_RMS Temperature Timeout !" + host);
-          clientESP_RMS.stop();
-          if (TemperatureValide[canal] > 0) {
-            TemperatureValide[canal] = TemperatureValide[canal] - 1;  // Perte éventuels de quelques mesures
-          } else {                                                    //Trop de pertes
-            temperature[canal] = temperature_brute;
-          }
-          return;
-        }
-      }
-      timeout = millis();
-      // Lecture des données brutes distantes
-      while (clientESP_RMS.available() && (millis() - timeout < 5000)) {
-        RMSExtTemp += clientESP_RMS.readStringUntil('\r');
-      }
-
-      if (RMSExtTemp.length() > 150) {
-        RMSExtTemp = "";
-      }
-      if (RMSExtTemp.indexOf(GS) >= 0 && RMSExtTemp.indexOf(RS) > 0) {  //Trame complète reçue
-        RMSExtTemp = RMSExtTemp.substring(RMSExtTemp.indexOf(GS) + 1);
-        RMSExtTemp = RMSExtTemp.substring(0, RMSExtTemp.indexOf(RS));
-        for (byte c = 0; c < 4; c++) {
-          String Tempera = RMSExtTemp.substring(0, RMSExtTemp.indexOf("|"));
-          if (canalTempExterne[canal] == c) {
-            temperature_brute = RMSExtTemp.toFloat();
+    } else if (Source_Temp[canal] == "tempExt" && refTempIP[canal] > 0 && ModeReseau < 2) {
+      if (TemperatureValide[canal] > 0)   TemperatureValide[canal] = TemperatureValide[canal] - 1;  // Watchdog pour verfier mesures arrivent 
+      if (RMS_Note[refTempIP[canal]]>0) {
+        String Etat,TempsR, TempR, Valeur;
+        SplitS(RMS_NomEtat[refTempIP[canal]], Valeur, US, Etat);  //Nom
+        SplitS(Etat, TempsR, US, Etat);                           //Les Températures        
+        while (TempsR.length() > 1) {
+          SplitS(TempsR, TempR, FS, TempsR);
+          SplitS(TempR, Valeur, ES, TempR);  //Canal Externe
+          if (Valeur.toInt() == canalTempExterne[canal]) {
+            SplitS(TempR, Valeur, ES, TempR);  //Titre
+            SplitS(TempR, Valeur, ES, TempR);  //Température
+            temperature_brute = Valeur.toFloat();
             TemperatureValide[canal] = 5;
-            temperature[canal] = temperature_brute;
           }
-          RMSExtTemp = RMSExtTemp.substring(RMSExtTemp.indexOf("|") + 1);
         }
-        RMSExtTemp = "";
+        
       }
-    } else if (Source_Temp[canal] == "tempMqtt"  && ModeWifi<2) {
+      temperature[canal] = temperature_brute;
+    } else if (Source_Temp[canal] == "tempMqtt" && ModeReseau < 2) {
       if (TemperatureValide[canal] > 0) {
         TemperatureValide[canal] = TemperatureValide[canal] - 1;  // Watchdog pour verfier mesures arrivent voir MQTT.ino
       } else {

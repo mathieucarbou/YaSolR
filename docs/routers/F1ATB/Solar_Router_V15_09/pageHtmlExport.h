@@ -4,9 +4,9 @@
 const char *ExportHtml = R"====(
   <!doctype html>
   <html><head><meta charset="UTF-8">
-  <link rel="stylesheet" href="commun.css">
+  <link rel="stylesheet" href="/commun.css">
   <style>
-    .Zone{width:100%;border 1px solid grey;border-radius:10px;margin-top:10px;background-color:rgba(30,30,30,0.3);} 
+    .Zone{width:100%;border:1px solid grey;border-radius:10px;margin-top:10px;background-color:rgba(30,30,30,0.3);} 
     .boldT{text-align:left;font-weight:bold;padding:10px;}
     .form {margin:auto;padding:10px;display: table;text-align:left;width:100%;}
     .ligne {display: table-row;padding:10px;}
@@ -18,13 +18,13 @@ const char *ExportHtml = R"====(
     .Bparametres{border:inset 10px azure;}
     .Bexport{border:inset 4px azure;}
   </style>
-  
+  <title>Import/Export</title>
   </head>
   <body onload="Init();">
     <div id='lesOnglets'></div>
     <h2 >Import / Export des paramètres</h2>
     <div class="Zone">
-        <div class="boldT">Export / Sauvegarde des paramètres <br><span class='fsize10'>(Permet la sauvegarde des paramètres sur votre PC avant une mise à jour)</span></div>
+        <div class="boldT">Export / Sauvegarde des paramètres <br><span class='fsize12'>(Permet la sauvegarde des paramètres sur votre PC avant une mise à jour)</span></div>
         <div class="form"  >
           <div class='ligne'>
             <label for='ip_load'>Paramètres IP du routeur : </label><input type='checkbox' name='ip_load' id='ip_load' style='width:25px;' onclick="setConf();" checked>
@@ -36,7 +36,7 @@ const char *ExportHtml = R"====(
             <label for='action_load'>Planning des Actions : </label><input type='checkbox' name='action_load' id='action_load' style='width:25px;' onclick="setConf();" checked>
           </div>
           <div class='ligne'>
-            <label for='nom_f_para'>Nom du fichier ( *.json) : </label><input type='text' name='nom_f_para' id='nom_f_para'  value="parametres.json" onchange="setNomPara();">
+            <label for='nom_f_para'>Nom du fichier de sauvegarde ( *.json) : </label><input type='text' name='nom_f_para' id='nom_f_para'  value="parametres.json" onchange="setNomPara();">
           </div>
           <div class='ligne'>
             <div class='cell'></div><div class='cell'><a href="/export_file" download="parametre.json" id="adr_export"><button class='bouton'>Télécharger paramètres</button></a></div>
@@ -55,8 +55,9 @@ const char *ExportHtml = R"====(
             <div class="lds-dual-ring" id="attente"></div>
           </div>
         </form>
+        <span class='fsize12'>Après un Import de paramètres, faites un Reset pour redémarrer avec les nouveaux.</span>
     </div>
-    
+    <input  class='bouton' type='button' onclick='Reset();' value='ESP32 Reset' >
     <script>
         var BordsInverse=[".Bparametres",".Bexport"]; 
         function Init(){
@@ -87,14 +88,16 @@ const char *ExportHtml = R"====(
           GID("adr_export").download= GID("nom_f_para").value;
         }
         function setConf(){
-          var conf="/export_file?ip=" + GID("ip_load").checked + "&para=" + GID("para_load").checked + "&action=" + GID("action_load").checked
+          let conf="/export_file?ip=" + GID("ip_load").checked + "&para=" + GID("para_load").checked + "&action=" + GID("action_load").checked
           GID("adr_export").href= conf;
         }
-        function AdaptationSource(){};
+        function AdaptationSource(){}
         function FinParaRouteur(){
           GID("Bheure").style.display= (Horloge>1) ? "inline-block": "none";
+          GID("Bwifi").style.display= (ESP32_Type<10) ? "inline-block": "none";
           LoadCouleurs();
         };
+        
     </script>
     <br>
     <div id='pied'></div>

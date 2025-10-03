@@ -20,7 +20,7 @@ const char *TXT = "text";
 void GestionMQTT() {
 
   bool Temper = false;
-  if (ModeWifi < 2) {
+  if (ModeReseau < 2) {
     for (int C = 0; C < 4; C++) {
       if (Source_Temp[C] == "tempMqtt") Temper = true;
     }
@@ -36,7 +36,7 @@ void GestionMQTT() {
 bool testMQTTconnected() {
   bool connecte = true;
   if (!clientMQTT.connected()) {  // si le mqtt n'est pas connecté (utile aussi lors de la 1ere connexion)
-    Serial.println("Connection au serveur MQTT ...");
+    TelnetPrintln("Connection au serveur MQTT ...");
     String host = IP2String(MQTTIP);
     String S = "";
     if (MQTTPrefix != "") S = MQTTPrefix + "/";
@@ -48,7 +48,6 @@ bool testMQTTconnected() {
     sprintf(AvailableTopic, "%s%s/%s", PrefixMQTTEtat, MQTTdeviceName.c_str(), TopicA.c_str());
     clientMQTT.setServer(host.c_str(), MQTTPort);
     clientMQTT.setCallback(callback);  //Déclaration de la fonction de souscription
-    // if (clientMQTT.connect(MQTTdeviceName.c_str(), MQTTUser.c_str(), MQTTPwd.c_str())) {  // si l'utilisateur est connecté au mqtt
     if (clientMQTT.connect(MQTTdeviceName.c_str(), MQTTUser.c_str(), MQTTPwd.c_str(), AvailableTopic, 2, true, "offline")) {  // si l'utilisateur est connecté au mqtt
       StockMessage(MQTTdeviceName + " connecté au broker MQTT");
       clientMQTT.publish(AvailableTopic, "online", true);
@@ -65,21 +64,26 @@ bool testMQTTconnected() {
         clientMQTT.subscribe(Topicp);
       }
       if (subMQTT == 1) {
+        char TopicAct[60];
         for (int i = 0; i < NbActions; i++) {
-          if (LesActions[i].Actif > 0) {
-            char TopicAct[50];
-            sprintf(TopicAct, "%s", LesActions[i].Titre.c_str());
+          if (LesActions[i].Titre.length() > 0) {
+            sprintf(TopicAct, "%s/%s", MQTTdeviceName.c_str(),LesActions[i].Titre.c_str());
             clientMQTT.subscribe(TopicAct);
           }
         }
       }
       sprintf(StateTopic, "%s%s_state", PrefixMQTTEtat, MQTTdeviceName.c_str());
       byte mac[6];  // the MAC address of your Wifi shield
-      WiFi.macAddress(mac);
-      sprintf(ESP_ID, "%02x%02x%02x", mac[2], mac[1], mac[0]);  // ID de l'entité pour HA
-      sprintf(mdl, "%s%s", "ESP32 - ", ESP_ID);                 // ID de l'entité pour HA
-      String mf = "F1ATB - https://f1atb.fr";
       String cu = "http://" + WiFi.localIP().toString();
+      if (ESP32_Type < 10) {
+        WiFi.macAddress(mac);
+      } else {
+        Ethernet.macAddress(mac);
+        cu = "http://" + Ethernet.localIP().toString();
+      }
+      sprintf(ESP_ID, "%02x%02x%02x%02x%02x", mac[4], mac[3], mac[2], mac[1], mac[0]);  // ID de l'entité pour HA
+      sprintf(mdl, "%s%s", "ESP32 - ", ESP_ID);                                         // ID de l'entité pour HA
+      String mf = "F1ATB - https://f1atb.fr";
       String hw = String(ESP.getChipModel()) + " rev." + String(ESP.getChipRevision());
       String sw = Version;
       sprintf(DEVICE, "{\"ids\":\"%s\",\"name\":\"%s\",\"mdl\":\"%s\",\"mf\":\"%s\",\"hw\":\"%s\",\"sw\":\"%s\",\"cu\":\"%s\"}", ESP_ID, nomRouteur.c_str(), mdl, mf.c_str(), hw.c_str(), sw.c_str(), cu.c_str());
@@ -113,6 +117,7 @@ void callback(char *topic, byte *payload, unsigned int length) {
   }
   Message[length] = '\0';
   String message = String(Message) + ",";
+  TelnetPrintln("Mqtt::"+message);
   for (int canal = 0; canal < 4; canal++) {
     if (String(topic) == TopicT[canal] && Source_Temp[canal] == "tempMqtt") {
       temperature[canal] = ValJson("temperature", message);
@@ -128,10 +133,37 @@ void callback(char *topic, byte *payload, unsigned int length) {
     if (message.indexOf("Pw") > 0) LastPwMQTTMillis = millis();
   }
   if (subMQTT == 1) {
+    char TopicAct[60];
     for (int i = 0; i < NbActions; i++) {
-      if (LesActions[i].Actif > 0 && LesActions[i].Titre == String(topic)) {
-        LesActions[i].tOnOff = ValJson("tOnOff", message);
-        LesActions[i].Prioritaire();
+      if (LesActions[i].Titre.length() > 0) {
+        sprintf(TopicAct, "%s/%s", MQTTdeviceName.c_str(),LesActions[i].Titre.c_str());
+        if ( strcmp(TopicAct , topic)==0) {
+          if (message.indexOf("tOnOff\":") > 0) LesActions[i].tOnOff = int(ValJson("tOnOff", message));
+          if (message.indexOf("Mode\":") > 0){
+              String modeRecu = StringJson("Mode", message); 
+              if (modeRecu == "Inactif") {
+                  LesActions[i].Actif = 0;
+              } else if (modeRecu == "Decoupe" || modeRecu == "OnOff") {
+                  LesActions[i].Actif = 1;
+              } else if (modeRecu == "Multi") {
+                  LesActions[i].Actif = 2;
+              } else if (modeRecu == "Train") {
+                  LesActions[i].Actif = 3;
+              } else if (modeRecu == "PWM") {
+                  LesActions[i].Actif = 4;
+              }
+          }
+          if (message.indexOf("Periode\":") > 0) {
+            int periodeRecu = int(ValJson("Periode", message));
+            if (periodeRecu>=0 && periodeRecu<LesActions[i].NbPeriode){
+              if (message.indexOf("SeuilOn\":") > 0) LesActions[i].Vmin[periodeRecu]  = int(ValJson("SeuilOn", message));
+              if (message.indexOf("SeuilOff\":") > 0) LesActions[i].Vmax[periodeRecu]  = int(ValJson("SeuilOff", message)); //Mode OnOff
+              if (message.indexOf("OuvreMax\":") > 0) LesActions[i].Vmax[periodeRecu]  = int(ValJson("OuvreMax", message)); //Autre Modes
+            }
+          }
+          LesActions[i].Prioritaire();
+          StockMessage("Action MQTT : " + String(topic) + " | " +String(Message));
+        }
       }
     }
   }
@@ -153,7 +185,7 @@ void sendMQTTDiscoveryMsg_global() {
     DeviceToDiscover("PuissanceI_T", "Puissance T Injectée", "W", "power", "0");
     DeviceToDiscover("Tension_T", "Tension T", "V", "voltage", "2");
     DeviceToDiscover("Intensite_T", "Intensité T", "A", "current", "2");
-    DeviceToDiscover("PowerFactor_T", "Facteur de Puissance T", "", "power_factor", "2");
+    DeviceToDiscoverWithoutUnit("PowerFactor_T", "Facteur de Puissance T", "2");
     DeviceToDiscover("Energie_T_Soutiree", "Energie Totale T Soutirée", "Wh", "energy", "0");
     DeviceToDiscover("Energie_T_Injectee", "Energie Totale T Injectée", "Wh", "energy", "0");
     DeviceToDiscover("EnergieJour_T_Soutiree", "Energie Jour T Soutirée", "Wh", "energy", "0");
@@ -171,6 +203,7 @@ void sendMQTTDiscoveryMsg_global() {
   }
   if (Source == "Linky") {
     DeviceTextToDiscover("NGTF", "Calendrier Tarifaire");
+    DeviceTextToDiscover("STGE", "Statuts");
     DeviceToDiscover("EASF01", "EASF01", "Wh", "energy", "0");
     DeviceToDiscover("EASF02", "EASF02", "Wh", "energy", "0");
     DeviceToDiscover("EASF03", "EASF03", "Wh", "energy", "0");
@@ -191,7 +224,7 @@ void sendMQTTDiscoveryMsg_global() {
   DeviceToDiscover("PuissanceI_M", "Puissance M Injectée", "W", "power", "0");
   DeviceToDiscover("Tension_M", "Tension M", "V", "voltage", "2");
   DeviceToDiscover("Intensite_M", "Intensité M", "A", "current", "2");
-  DeviceToDiscover("PowerFactor_M", "Facteur de Puissance M", "", "power_factor", "2");
+  DeviceToDiscoverWithoutUnit("PowerFactor_M", "Facteur de Puissance M", "2");
   DeviceToDiscover("Energie_M_Soutiree", "Energie Totale M Soutirée", "Wh", "energy", "0");
   DeviceToDiscover("Energie_M_Injectee", "Energie Totale M Injectée", "Wh", "energy", "0");
   DeviceToDiscover("EnergieJour_M_Soutiree", "Energie Jour M Soutirée", "Wh", "energy", "0");
@@ -215,7 +248,7 @@ void sendMQTTDiscoveryMsg_global() {
       DeviceToDiscoverWithoutClass(ActionOnOff, LesActions[i].Titre + " Force OnOff", "min", "0");
     }
   }
-  Serial.println("Paramètres Auto-Discovery publiés !");
+  TelnetPrintln("Paramètres Auto-Discovery publiés !");
   Discovered = true;
 
 
@@ -311,12 +344,12 @@ void SendDataToHomeAssistant() {
     int code = 0;
     if (LTARF.indexOf("HEURE  CREUSE") >= 0) code = 1;  //Code Linky
     if (LTARF.indexOf("HEURE  PLEINE") >= 0) code = 2;
-    if (LTARF.indexOf("HC BLEU") >= 0) code = 11;
-    if (LTARF.indexOf("HP BLEU") >= 0) code = 12;
-    if (LTARF.indexOf("HC BLANC") >= 0) code = 13;
-    if (LTARF.indexOf("HP BLANC") >= 0) code = 14;
-    if (LTARF.indexOf("HC ROUGE") >= 0) code = 15;
-    if (LTARF.indexOf("HP ROUGE") >= 0) code = 16;
+    if (LTARF.indexOf("HC") >= 0 && LTARF.indexOf("BLEU") >= 0) code = 11;
+    if (LTARF.indexOf("HP") >= 0 && LTARF.indexOf("BLEU") >= 0) code = 12;
+    if (LTARF.indexOf("HC") >= 0 && LTARF.indexOf("BLANC") >= 0) code = 13;
+    if (LTARF.indexOf("HP") >= 0 && LTARF.indexOf("BLANC") >= 0) code = 14;
+    if (LTARF.indexOf("HC") >= 0 && LTARF.indexOf("ROUGE") >= 0) code = 15;
+    if (LTARF.indexOf("HP") >= 0 && LTARF.indexOf("ROUGE") >= 0) code = 16;
     if (LTARF.indexOf("TEMPO_BLEU") >= 0) code = 17;  // Code RTE
     if (LTARF.indexOf("TEMPO_BLANC") >= 0) code = 18;
     if (LTARF.indexOf("TEMPO_ROUGE") >= 0) code = 19;
@@ -324,6 +357,7 @@ void SendDataToHomeAssistant() {
   }
   if (Source == "Linky") {
     sprintf(value, "%s,\"NGTF\":\"%s\"", value, NGTF.c_str());
+    sprintf(value, "%s,\"STGE\":\"%s\"", value, STGE.c_str());
     sprintf(value, "%s,\"EASF01\":%d, \"EASF02\":%d, \"EASF03\":%d, \"EASF04\":%d, \"EASF05\":%d, \"EASF06\":%d,\"EASF07\":%d, \"EASF08\":%d, \"EASF09\":%d, \"EASF10\":%d", value, EASF01, EASF02, EASF03, EASF04, EASF05, EASF06, EASF07, EASF08, EASF09, EASF10);
   }
   if (Source == "Enphase") {

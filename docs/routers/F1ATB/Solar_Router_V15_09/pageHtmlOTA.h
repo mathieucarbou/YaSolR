@@ -4,7 +4,7 @@
 const char *OtaHtml = R"====(
   <!doctype html>
   <html><head><meta charset="UTF-8">
-  <link rel="stylesheet" href="commun.css">
+  <link rel="stylesheet" href="/commun.css">
   <style>
     input {font-size:20px;}
     .liste{display:flex;justify-content:center;text-align:left;} 
@@ -13,12 +13,12 @@ const char *OtaHtml = R"====(
     .Bota{border:inset 4px azure;}
   </style>
   <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
-
+  <title>Update OTA F1ATB</title>
   </head>
   <body onload="Init();">
     <div id='lesOnglets'></div>
     <h2 >Web OTA</h2>
-    <h4>Mise à jour par Wifi</h4>
+    <h4>Mise à jour par Wifi ou Ethernet</h4>
     <div class="liste">
       Votre version actuelle du routeur : <span id ="Version_actu"></span>
     </div>
@@ -27,7 +27,7 @@ const char *OtaHtml = R"====(
       Version(s) disponible(s) :
     </div>
     <div class="liste">
-      <iframe src="https://f1atb.fr/web_tool/scan_dir_bin.php"  width=50% height=150px></iframe>
+      <iframe src="https://f1atb.fr/web_tool/scan_dir_bin.php"  style="width=50% ; height=150px"></iframe>
     </div>
     <div class="liste">
       <ul>
@@ -68,7 +68,7 @@ const char *OtaHtml = R"====(
               return xhr;
               },
               success:function(d, s) {
-              console.log('succès!')
+              console.log('succès!');
               
             },
             error: function (a, b, c) {
@@ -85,9 +85,11 @@ const char *OtaHtml = R"====(
         };
         function FinParaRouteur(){
           GID("Bheure").style.display= (Horloge>1) ? "inline-block": "none";
+          GID("Bwifi").style.display= (ESP32_Type<10) ? "inline-block": "none";
         };
     </script>
     <br>
+    <small>Après une mise à jour un reset de l'ESP32 et un Ctrl+F5 pour vider le cache du navigateur sont recommandés.</small>
     <div id='pied'></div>
     <br>
     <script src="/ParaRouteurJS"></script>

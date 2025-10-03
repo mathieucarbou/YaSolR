@@ -12,6 +12,15 @@ void Setup_JSY333() {
 
 void Requete_JSY333() {
   int i;
+  if (RAZ_JSY) {  //RAZ Message proposé par F6AAM
+    byte msg_send[] = { 0x01, 0x10, 0x00, 0x0C, 0x00, 0x02, 0x04, 0x00, 0x00, 0x00, 0x00, 0xF3, 0xFA };
+    // Envoi commande raz sur le JSY-MK_333
+    for (i = 0; i < 13; i++) {
+      MySerial.write(msg_send[i]);
+    }
+    RAZ_JSY = false;
+    delay(500);
+  }
   byte msg_send[] = { 0x01, 0x03, 0x01, 0x00, 0x00, 0x44, 0x44, 0x05 };
   for (i = 0; i < 8; i++) {
     MySerial.write(msg_send[i]);

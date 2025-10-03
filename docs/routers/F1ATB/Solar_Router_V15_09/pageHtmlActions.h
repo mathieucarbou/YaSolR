@@ -5,17 +5,20 @@
 const char *ActionsHtml = R"====(
    <!doctype html>
   <html><head><meta charset="UTF-8">
-  <link rel="stylesheet" href="commun.css">
+  <link rel="stylesheet" href="/commun.css">
   
   <style>
    
     .Bactions{border:inset 8px azure;}
     .cadre{width:100%;max-width:1200px;margin:auto;}
-    .form{width:100%;text-align:left;}
+    .form{width:100%;text-align:left;} 
+    .form2 {margin:auto;padding:5px;display: table;text-align:left;width:100%;}
     .titre{display:flex;justify-content:center;cursor:pointer;color:black;font-weight:bold;font-size:110%;}
     .slideTriac{width:100%;position:relative;margin:4px;padding:4px;border:2px inset grey;background-color:#fff8f8;color:black;font-size:14px;}
     .slideTriacIn{display:flex;justify-content:center;width:100%;}
-    .planning{width:100%;position:relative;margin:4px;padding:2px;border:2px inset grey;background-color:white;color:black;border-radius:8px;}
+    .planning,#CACSI,#Freq_PWM{width:100%;position:relative;margin:4px;padding:2px;border:2px inset grey;background-color:white;color:black;border-radius:8px;}
+    #CACSI,#Freq_PWM{background-color:#ffa;}
+    #commun,#CACSI{display:none;}
     .periode{position:absolute;height:100%;border:outset 4px;border-radius:10px;display:flex;justify-content:space-between;align-items: center;color:white;cursor:ew-resize;}
     .curseur{position:relative;width:100%;height:30px;}
     .infoAction{position:relative;display:flex;width:100%;min-height:40px;font-size:20px;}
@@ -36,11 +39,12 @@ const char *ActionsHtml = R"====(
     .fcontleft{display:flex;justify-content: space-around;flex-direction: column;}
     .tm{width:60px;text-align:left;}
     .tbut{width:40px;padding-left:10px;padding-right:10px;text-align:center;font-weight:bold;font-size:24px;cursor:pointer;display:inline-flex;}
-    .ligne {display: table-row;padding:10px;}
+    .ligne {display: table-row;padding:10px;} 
     tr {margin: 2px;text-align:left;font-size:20px;}
     h4{padding:2px;margin:0px;}
     h5{text-align:left;padding:2px;margin:0px;}
     label{text-align:right;}
+    .source label{display: table-cell;margin: 5px;text-align:left;font-size:20px;height:26px;width:initial;}
     input {margin: 5px;text-align:left;font-size:15px;max-width:150px;}
     #message{position:fixed;border:inset 4px grey;top:2px;right:2px;background-color:#333;color:white;font-size:16px;display:none;text-align:left;padding:5px;}
     .bord1px{border:solid 1px grey; margin:4px;padding:2px;border-radius:4px;}
@@ -51,6 +55,7 @@ const char *ActionsHtml = R"====(
     .minmax{display: flex;  justify-content: center;align-items: center;}
     .minmax div{margin-right:5px;margin-left:5px;}
   </style>
+  <title>Actions</title>
   </head>
   <body onLoad="SetHautBas();Init();" onmouseup='mouseClick=false;' >
     <div class="cadre">
@@ -64,17 +69,54 @@ const char *ActionsHtml = R"====(
       <div class="form"   >
         <div id="plannings"></div>
       </div> 
-      <div  style='text-align:right;padding-top:20px;'>
-        <input class='bouton' type='button' value='Sauvegarder' onclick="SendValues();">
+      <div id="commun"> 
+        <br>
+        <h4>Paramètres communs aux Actions</h4>   
+        <div id="CACSI"> 
+          <div>Réactivité si CACSI <span class='fsize10'>Augmentée pour les valeurs de puissance inférieures au seuil Pw. Pour tous les SSR ou Triac.</span></div>
+          <div class="form2"  >
+            <div class="ligne source">
+              <label for='CACSI1' style='text-align:right;'>Pas d'augmentation</label>
+              <input type='radio' name='ReacCACSI' id='CACSI1' value="1" checked>
+              <label for='CACSI2' style='text-align:right;'>Réactivité x 2</label>
+              <input type='radio' name='ReacCACSI' id='CACSI2' value="2" >
+              <label for='CACSI4' style='text-align:right;'>Réactivité x 4</label>
+              <input type='radio' name='ReacCACSI' id='CACSI4' value="4" >
+              <label for='CACSI8' style='text-align:right;'>Réactivité x 8</label>
+              <input type='radio' name='ReacCACSI' id='CACSI8' value="8" >
+            </div>
+          </div>
+        </div>
+        <div id="Freq_PWM"> 
+          <div>Fréquence signaux PWM <span class='fsize10'> Nécessite un Reset de l'ESP32</span></div>
+          <div class="form2"  >
+            <div class="ligne source">
+              <label for='Fpwm5' style='text-align:right;'>5 Hz</label>
+              <input type='radio' name='Fpwm' id='Fpwm5' value="5" >
+              <label for='Fpwm50' style='text-align:right;'>50 Hz</label>
+              <input type='radio' name='Fpwm' id='Fpwm50' value="50" >
+              <label for='Fpwm500' style='text-align:right;'>500 Hz</label>
+              <input type='radio' name='Fpwm' id='Fpwm500' value="500" checked>
+              <label for='Fpwm5000' style='text-align:right;'>5000 Hz</label>
+              <input type='radio' name='Fpwm' id='Fpwm5000' value="5000" >
+              <label for='Fpwm50000' style='text-align:right;'>50000 Hz</label>
+              <input type='radio' name='Fpwm' id='Fpwm50000' value="50000" >
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div  id='BoutonsBas'>        
+        <br><input  class='bouton' type='button' onclick="SendValues();" value='Sauvegarder' >
         <div class="lds-dual-ring" id="attente"></div>
+        <input  class='bouton' type='button' onclick='Reset();' value='ESP32 Reset' >
       </div>
     </div>
     <div id="message"></div><br>
     <div id='pied'></div> 
     <script src="/ParaRouteurJS"></script>
-    <script src="ActionsJS"></script>
-    <script src="ActionsJS2"></script>
-    <script src="ActionsJS3"></script>
+    <script src="/ActionsJS"></script>
+    <script src="/PinsActionsJS"></script>
     <script src="/CommunCouleurJS"></script>
   </body></html>
 )====";
@@ -88,6 +130,7 @@ const char *ActionsJS = R"====(
   var SelectActions="";
   var LTARFbin=0;
   var pTriac=0;
+  var ReacCACSI=1;
   var IS="|"; //Input Separator
   var BordsInverse=[".Bactions"];
   function Init() {
@@ -116,7 +159,7 @@ const char *ActionsJS = R"====(
       if (iAct > 0){Radio1 = "<div ><input type='radio' name='modeactif" + iAct +"' id='radio" + iAct +"-1'  onclick='checkDisabled();'>On/Off</div>";}
       Radio1 += "<div ><input type='radio' name='modeactif" + iAct +"' id='radio" + iAct +"-2'  onclick='checkDisabled();'>Multi-sinus</div>";
       Radio1 += "<div ><input type='radio' name='modeactif" + iAct +"' id='radio" + iAct +"-3'  onclick='checkDisabled();'>Train de sinus</div>";
-      var Pins=[0,4,5,14,16,17,21,22,23,25,26,27,-1];
+      Radio1 += "<div id='Pwm" + iAct + "'><input type='radio' name='modeactif" + iAct +"' id='radio" + iAct +"-4'  onclick='checkDisabled();'>PWM</div>";
       var SelectPin="<div>Gpio <select id='selectPin"+iAct +"' onchange='checkDisabled();' onmousemove='Disp(this)'>";
       for (var i=0;i<Pins.length;i++){
         var v="gpio:"+Pins[i];
@@ -221,14 +264,15 @@ const char *ActionsJS = R"====(
           }
           TxtTarif ="<div>" + TxtTarif +"</div>";
         }
+        let TexteMinMax="";
         var condition= (temperature!="" || H_Ouvert!="" || TxtTarif !="" )?  "<div>Condition(s) :</div>" + temperature +H_Ouvert+ TxtTarif:""; 
         if (LesActions[iAct].Actif<=1 && iAct>0){
           LesActions[iAct].Periodes[i].Vmax=Math.max(LesActions[iAct].Periodes[i].Vmin,LesActions[iAct].Periodes[i].Vmax);
-		      var TexteMinMax="<div>Off si Pw&gt;"+LesActions[iAct].Periodes[i].Vmax+"W</div><div>On si Pw&lt;"+LesActions[iAct].Periodes[i].Vmin+"W</div>"+condition;
+		      TexteMinMax="<div>Off si Pw&gt;"+LesActions[iAct].Periodes[i].Vmax+"W</div><div>On si Pw&lt;"+LesActions[iAct].Periodes[i].Vmin+"W</div>"+condition;
         } else {
           LesActions[iAct].Periodes[i].Vmax=Math.max(0,LesActions[iAct].Periodes[i].Vmax);
           LesActions[iAct].Periodes[i].Vmax=Math.min(100,LesActions[iAct].Periodes[i].Vmax);
-          var TexteMinMax="<div>Seuil Pw : "+LesActions[iAct].Periodes[i].Vmin+"W</div>" + "<div>Ouvre Max : "+LesActions[iAct].Periodes[i].Vmax+"%</div>"+condition;
+          TexteMinMax="<div>Seuil Pw : "+LesActions[iAct].Periodes[i].Vmin+"W</div>" + "<div>Ouvre Max : "+LesActions[iAct].Periodes[i].Vmax+"%</div>"+condition;
         }
 		    var TexteTriac="<div>Seuil Pw : "+LesActions[iAct].Periodes[i].Vmin+"W</div>" + "<div>Ouvre Max : "+LesActions[iAct].Periodes[i].Vmax+"%</div>"+condition;
         var paras = ["Pas de contr&ocirc;le", "OFF", "<div>ON</div>" +condition, TexteMinMax, TexteTriac];
@@ -238,7 +282,7 @@ const char *ActionsJS = R"====(
         fs = Math.max(8, Math.min(16, w/2)) + "px";
         Sinfo += "<div class='infoZone' style='width:" + w + "%;border-color:" + color + ";font-size:" + fs + "'  onclick='infoZclicK(" + i + "," + iAct + ")'  >"
         Sinfo += "<div class='Hfin'>" + Hmn + "</div>" + para + "</div>";
-        SinfoClick +="<div id='info" + iAct + "Z" + i + "' class='infoZ' ></div>"
+        SinfoClick +="<div id='info" + iAct + "Z" + i + "' class='infoZ' ></div>";
       }
       GH("curseurs" + iAct, S);
       GH("infoAction" + iAct, SinfoClick + Sinfo);
@@ -263,7 +307,7 @@ const char *ActionsJS = R"====(
       var idxClick = 0;
       var deltaX = 999999;
       for (var i = 0; i < LesActions[iAct].Periodes.length - 1; i++) {
-          var dist = Math.abs(HeureMouse - LesActions[iAct].Periodes[i].Hfin)
+          let dist = Math.abs(HeureMouse - LesActions[iAct].Periodes[i].Hfin)
               if (dist < deltaX) {
                   idxClick = i;
                   deltaX = dist;
@@ -280,10 +324,7 @@ const char *ActionsJS = R"====(
 
   }
   
-)====";
 
-
-const char *ActionsJS2 = R"====(
   function AddSub(v, iAct) {
       if (v == 1) {
           if (LesActions[iAct].Periodes.length<8){
@@ -347,7 +388,7 @@ const char *ActionsJS2 = R"====(
               if (Tinf>1500 || Tinf<-500) TinfC=""; //Temperature entre -50 et 150° représenté en dixième
               if (Tsup>1500 || Tsup<-500) TsupC=""; //Temperature entre -50 et 150
               if (iAct > 0) {
-                  var Routage=["","Routage ON/Off","Routage Multi-sinus","Routage Train de Sinus"];
+                  var Routage=["","Routage ON/Off","Routage Multi-sinus","Routage Train de Sinus","PWM"];
                   S += "<div class='zPw' ><div class='radioC' ><input type='radio'  name='R" + idZ +"' onclick='selectZ(3," + i + "," + iAct + ");' " + check +">" +Routage[LesActions[iAct].Actif] + "</div>";
                   if (LesActions[iAct].Actif<=1) {
                       S += "<div><small>On : &nbsp;</small>Pw &lt;<input id='Pw_min_"+idZ+"' onmousemove='Disp(this)' type='number' value='"+Vmin+"' onchange='NewVal(this)' >W</div>";
@@ -431,7 +472,7 @@ const char *ActionsJS2 = R"====(
   function infoZclose(idx) {
       var champs=idx.split("info");
 	    var idx=champs[1].split("Z");
-      S="TracePeriodes("+idx[0]+");"
+      S="TracePeriodes("+idx[0]+");";
       setTimeout(S, 100);
   }
   function selectZ(T, i, iAct) {
@@ -512,9 +553,11 @@ const char *ActionsJS2 = R"====(
   }
   function checkDisabled(){
     GID("sortie0").style.display ="none";
+    GID("Freq_PWM").style.display="none";
+    GID("commun").style.display = (ModePara>0 && ReacCACSI<100 ) ? "block":"none";
     for (var iAct = 0; iAct < LesActions.length; iAct++) {
-        for (var i=0;i<=3;i++){
-            if( GID("radio" + iAct +"-"+ i).checked ) { LesActions[iAct].Actif =i;} //0=Inactif,1=Decoupe ou On/Off, 2=Multi, 3= Train
+        for (var i=0;i<=4;i++){
+            if( GID("radio" + iAct +"-"+ i).checked ) { LesActions[iAct].Actif =i;} //0=Inactif,1=Decoupe ou On/Off, 2=Multi, 3= Train, 4= PWM
         }
         if (GID("selectPin"+iAct).value==-1 && LesActions[iAct].Actif>1 && iAct>0){LesActions[iAct].Actif=1;GID("radio" + iAct +"-" +LesActions[iAct].Actif).checked = true;}  
         TracePeriodes(iAct);
@@ -532,18 +575,21 @@ const char *ActionsJS2 = R"====(
         GID("Repet"+iAct).style.display =visible;   
         GID("radio" + iAct +"-2").disabled = disable; 
         GID("radio" + iAct +"-3").disabled = disable;
+        GID("radio" + iAct +"-4").disabled = disable;
         GID("ordreoff"+iAct).style.display=disp;  
         GID("ordreon"+iAct).style.display =disp;
         if (GID("selectPin"+iAct).value==-1 && GID("ordreOn"+iAct).value.indexOf(IS)>0) GID("ordreOn"+iAct).value="";                   
         GID("ligne_bas"+iAct).style.display  =( LesActions[iAct].Actif==1 && GID("selectPin"+iAct).value<=0 && iAct>0) ?  "flex" :"none";
         GID("fen_slide"+iAct).style.display = (LesActions[iAct].Actif== 1 && iAct>0  ) ? "none" : "block";
+        if( GID("radio" + iAct +"-4").checked) {
+          GID("Freq_PWM").style.display="block";
+          GID("commun").style.display =  "block";
+        }
+        
     }
+    GID("Pwm0").style.display = "none"; //Pas de PWM sur la sortie Triac
   }
 
-)====";
-
-
-const char *ActionsJS3 = R"====(
   function LoadActions() {
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
@@ -555,6 +601,12 @@ const char *ActionsJS3 = R"====(
               NomTemperatures = LesParas[1].split(US);
               LTARFbin = parseInt(LesParas[2]);
               pTriac = parseInt(LesParas[3]);
+              ReacCACSI = LesParas[4]; //1,24 8 ou 100 pour EstimCACSI
+              if (ReacCACSI<100) {
+                GID("CACSI" + ReacCACSI).checked = true; //Reactivité CACSI et non Estimation
+                GID("CACSI").style = "display:block;";
+              }
+              GID("Fpwm" + LesParas[5]).checked = true;
               LesActions.splice(0,LesActions.length);
               for (var iAct=1;iAct<Les_ACTIONS.length-1;iAct++){
                 var champs=Les_ACTIONS[iAct].split(RS);
@@ -613,7 +665,7 @@ const char *ActionsJS3 = R"====(
               LoadParaRouteur();
           }
       };
-      xhttp.open('GET', 'ActionsAjax', true);
+      xhttp.open('GET', '/ActionsAjax', true);
       xhttp.send();
   }
   
@@ -621,7 +673,7 @@ const char *ActionsJS3 = R"====(
   function SendValues() {
       GID("attente").style="visibility: visible;";
       for (var iAct = 0; iAct < LesActions.length; iAct++) {
-        for (var i=0;i<=3;i++){
+        for (var i=0;i<=4;i++){
             if( GID("radio" + iAct +"-"+ i).checked ) { LesActions[iAct].Actif =i;}
         }
         LesActions[iAct].Titre = GID("titre" + iAct).innerHTML.trim();
@@ -658,8 +710,10 @@ const char *ActionsJS3 = R"====(
             S +=GS;
         }
       }
+      if (ReacCACSI<100) ReacCACSI  = document.querySelector('input[name="ReacCACSI"]:checked').value; //Pas d'estimation
+      var Fpwm  = document.querySelector('input[name="Fpwm"]:checked').value;
       S=clean(S);
-      S = "?actions="+S+"|"; //On ne peut pas terminer par GS
+      S = "?ReacCACSI=" + ReacCACSI + "&Fpwm=" + Fpwm +"&actions="+S+"|"; //On ne peut pas terminer par GS
       
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function () {
@@ -668,7 +722,7 @@ const char *ActionsJS3 = R"====(
              location.reload();
           }
       };
-      xhttp.open('GET', 'ActionsUpdate' + S, true);
+      xhttp.open('GET', '/ActionsUpdate' + S, true);
       xhttp.send();
       
   }
@@ -683,72 +737,74 @@ const char *ActionsJS3 = R"====(
         ListeActions[v]= T +nomActions[esp][iAct][1];    
       }
     }
+    checkDisabled();
   }
   
   function Disp(t) {
     if ( t!="zOn" && t!="zOff" && t!="pwTr" && t!="mxTr"  && t!="tmpr" && t!="tarif"  && t!="sAct" ) t=t.id.substr(0, 4);
+      let m="";
       switch (t) { 
       case "mode":
-          var m = "D&eacute;sactivation du routage ou mode de découpe du secteur 230V."
-              break;
+          m = "D&eacute;sactivation du routage ou mode de découpe du secteur 230V.";
+          break;
       case "opti":
-          var m = "Critères d'activation."
-              break;
+          m = "Critères d'activation.";
+          break;
       case "titr":
-          var m = "Nom ou Titre";
+          m = "Nom ou Titre";
           break;
       case "slid":
-          var m = "Gain de la boucle d'asservissement. Faible, la r&eacute;gulation est lente mais stable. Elev&eacute;, la r&eacute;gulation est rapide mais risque d'oscillations. A ajuster suivant la charge branch&eacute;e au triac.";
+          m = "Gain de la boucle d'asservissement. Faible, la r&eacute;gulation est lente mais stable. Elev&eacute;, la r&eacute;gulation est rapide mais risque d'oscillations. A ajuster suivant la charge branch&eacute;e au triac.";
           break;
       case "host":
-          var m = "Adresse IP machine sur réseau LAN, nom de domaine ou rien pour l'ESP32.<br>Ex : <b>192.168.1.25</b> ou <b>machine.local</b> .";
+          m = "Adresse IP machine sur réseau LAN, nom de domaine ou rien pour l'ESP32.<br>Ex : <b>192.168.1.25</b> ou <b>machine.local</b> .";
           break;
       case "port":
-          var m = "Port d'acc&egrave;s via le protocole http , uniquement pour machine distante. En g&eacute;n&eacute;ral <b>80</b>.";
+          m = "Port d'acc&egrave;s via le protocole http , uniquement pour machine distante. En g&eacute;n&eacute;ral <b>80</b>.";
           break;
       case "ordr":
-          var m = "Ordre à passer à la machine distante. <br>";
-          m += "Ex. pour une machine sur le r&eacute;seau :<br><b>/commande?idx=23&position=on</b>. Se r&eacute;f&eacute;rer &agrave; la documentation constructeur."
+          m = "Ordre à passer à la machine distante. <br>";
+          m += "Ex. pour une machine sur le r&eacute;seau :<br><b>/commande?idx=23&position=on</b>. Se r&eacute;f&eacute;rer &agrave; la documentation constructeur.";
           break;
       case "sele":
-          var m = "Sélection du GPIO. <br>";
-          m += "Choix de l'état de sortie haut ou bas quand l'action est 'On'"
+          m = "Sélection du GPIO. <br>";
+          m += "Choix de l'état de sortie haut ou bas quand l'action est 'On'";
           break;
       case "repe":
-          var m = "P&eacute;riode en s de r&eacute;p&eacute;tition/rafra&icirc;chissement de la commande. Uniquement pour les commandes vers l'extérieur.<br>";
+          m = "P&eacute;riode en s de r&eacute;p&eacute;tition/rafra&icirc;chissement de la commande. Uniquement pour les commandes vers l'extérieur.<br>";
           m += "0= pas de répétition.";
           break;
       case "temp":
-          var m = "Temporisation entre chaque changement d'état pour éviter des oscillations quand un appareil dans la maison consomme en dents de scie (Ex: un four)."
+          m = "Temporisation entre chaque changement d'état pour éviter des oscillations quand un appareil dans la maison consomme en dents de scie (Ex: un four).";
           break;
       case "adds":
-          var m = "Ajout ou retrait d'une p&eacute;riode horaire."
-              break;
+          m = "Ajout ou retrait d'une p&eacute;riode horaire.";
+          break;
       case "Pw_m":
-          var m = "Seuil de puissance pour activer ou désactiver le routage.";
-      m +="Attention, en cas de mode On/Off la diff&eacute;rence, seuil sup&eacute;rieur moins  seuil inf&eacute;rieur doit &ecirc;tre sup&eacute;rieure &agrave; la consommation du dipositif pour &eacute;viter l'oscillation du relais de commande."
+          m = "Seuil de puissance pour activer ou désactiver le routage.";
+          m +="Attention, en cas de mode On/Off la diff&eacute;rence, seuil sup&eacute;rieur moins  seuil inf&eacute;rieur doit &ecirc;tre sup&eacute;rieure &agrave; la consommation du dipositif pour &eacute;viter l'oscillation du relais de commande.";
           break;
       case "pwTr":
-          var m = "Seuil en W de r&eacute;gulation par le Triac de la puissance mesur&eacute;e Pw en entrée de la maison. Valeur typique : 0.";
+          m = "Seuil en W de r&eacute;gulation par le Triac de la puissance mesur&eacute;e Pw en entrée de la maison. Valeur typique : 0.";
           break;
       case "mxTr":
-          var m = "Ouverture maximum du triac ou du SSR entre 5 et 100%. Valeur typique : 100%";
+          m = "Ouverture maximum du triac ou du SSR entre 5 et 100%. Valeur typique : 100%";
           break;
       case "zOff":
-            var m = "Off forcé";
-            break;
+          m = "Off forcé";
+          break;
       case "zOn":
-            var m = "On forcé (si conditions optionnelles valides)";
-            break;
+          m = "On forcé (si conditions optionnelles valides)";
+          break;
       case "tmpr":
-            var m = "Définir la ou les températures qui permettent l'activation de la fonction On ou Routage.<br>Si condition non rempli ordre Off envoyé ou Triac se ferme.<br><br> Si seuil T>= est supérieur à seuil T<=,<br>activation de la fonction pour les valeurs inférieures de température<br>avec creation d'une hysteresis entre ces 2 seuils.<br><br>Ne rien mettre si pas d'activation en fonction de la température.";
-            break;
+          m = "Définir la ou les températures qui permettent l'activation de la fonction On ou Routage.<br>Si condition non rempli ordre Off envoyé ou Triac se ferme.<br><br> Si seuil T>= est supérieur à seuil T<=,<br>activation de la fonction pour les valeurs inférieures de température<br>avec creation d'une hysteresis entre ces 2 seuils.<br><br>Ne rien mettre si pas d'activation en fonction de la température.";
+          break;
       case "tarif":
-            var m = "Condition d'activation suivant la tarification.<br>Sinon ordre Off envoyé ou Triac se ferme.";
-            break;
+          m = "Condition d'activation suivant la tarification.<br>Sinon ordre Off envoyé ou Triac se ferme.";
+          break;
       case "sAct":
-            var m = "Définir des seuils :<br>- durée d'ouverture<br>- pourcentage d'ouverture";
-            break;
+          m = "Définir des seuils :<br>- durée d'ouverture<br>- pourcentage d'ouverture";
+          break;
       }
       GH("message", m);
       GID("message").style = "display:inline-block;";

@@ -18,6 +18,7 @@ void LectureUxIx2() {  //Ecriture et Lecture port série du JSY-MK-194  .
       MySerial.write(msg_send[i]);
     }
     RAZ_JSY = false;
+    delay(100);
   }
 
   byte msg_send[] = { 0x01, 0x03, 0x00, 0x48, 0x00, 0x0E, 0x44, 0x18 };

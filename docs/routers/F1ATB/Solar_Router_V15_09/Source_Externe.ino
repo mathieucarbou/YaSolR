@@ -10,21 +10,29 @@ void CallESP32_Externe() {
 
   // Use WiFiClient class to create TCP connections
   WiFiClient clientESP_RMS;
+  if (RMS_NbCx[RMSextIdx] < 100) RMS_NbCx[RMSextIdx]++;
   String host = IP2String(RMSextIP);
-  if (!clientESP_RMS.connect(host.c_str(), 80)) {
-
-    StockMessage("connection to ESP_RMS : " + host + " failed");
-    delay(200);
-    return;
+  if (!clientESP_RMS.connect(host.c_str(), 80, 3000)) {
+  
+    delay(500);
+    if (!clientESP_RMS.connect(host.c_str(), 80, 3000)) {
+      delay(100);
+      clientESP_RMS.stop();
+      StockMessage("Connection to ESP_RMS : " + host + " failed");
+      if (RMS_Note[RMSextIdx] > 0) RMS_Note[RMSextIdx]--;
+      delay(100);
+      return;
+    }
   }
   String url = "/ajax_data";
   clientESP_RMS.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Connection: close\r\n\r\n");
   unsigned long timeout = millis();
   while (clientESP_RMS.available() == 0) {
     if (millis() - timeout > 5000) {
-
-      StockMessage("client ESP_RMS Timeout !" + host);
       clientESP_RMS.stop();
+      delay(100);
+      StockMessage("client ESP_RMS Timeout !" + host);      
+      if (RMS_Note[RMSextIdx] > 0) RMS_Note[RMSextIdx]--;
       return;
     }
   }
@@ -33,6 +41,7 @@ void CallESP32_Externe() {
   while (clientESP_RMS.available() && (millis() - timeout < 5000)) {
     RMSExtDataB += clientESP_RMS.readStringUntil('\r');
   }
+  clientESP_RMS.stop();
   if (RMSExtDataB.length() > 400) {
     RMSExtDataB = "";
   }
@@ -40,6 +49,8 @@ void CallESP32_Externe() {
   if (RMSExtDataB.indexOf("Deb") >= 0 && RMSExtDataB.indexOf("Fin") > 0) {  //Trame complète reçue
     RMSExtDataB = RMSExtDataB.substring(RMSExtDataB.indexOf("Deb") + 4);
     RMSExtDataB = RMSExtDataB.substring(0, RMSExtDataB.indexOf("Fin") + 3);
+    if (RMS_Note[RMSextIdx] < 100) RMS_Note[RMSextIdx]++;
+    RMS_NbCx[RMSextIdx] = max(RMS_NbCx[RMSextIdx], RMS_Note[RMSextIdx]);
     String Sval = "";
     int idx = 0;
     while (RMSExtDataB.indexOf(GS) > 0) {
@@ -70,7 +81,7 @@ void CallESP32_Externe() {
           if (TempoRTEon == 0) LTARF = data_[i];
           break;
         case 3:
-          if (TempoRTEon == 0) STGE = data_[i];
+          if (TempoRTEon == 0) STGEt = data_[i];
           break;
         case 4:
           //Temperature non utilisé
@@ -132,5 +143,26 @@ void CallESP32_Externe() {
       }
     }
     RMSExtDataB = "";
+  }
+ 
+}
+void IndexSource() {
+  RMSextIdx = 0;
+  if (RMSextIP > 0 && Source == "Ext") {
+    for (int8_t i = 1; i < LesRouteursMax; i++) {
+      if (RMS_IP[i] == RMSextIP) {
+        RMSextIdx = i;
+      }
+    }
+
+    if (RMSextIdx == 0) {
+      for (int8_t i = 1; i < LesRouteursMax; i++) {
+        if (RMS_IP[i] == 0) {
+          RMS_IP[i] = RMSextIP;
+          RMSextIdx = i;
+          i = 100;
+        }
+      }
+    }
   }
 }

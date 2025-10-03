@@ -4,7 +4,7 @@
 const char *PageBrute = R"====(
  <!doctype html>
    <html><head><meta charset="UTF-8">
-   <link rel="stylesheet" href="commun.css">
+   <link rel="stylesheet" href="/commun.css">
    <style>
     .ri { text-align: right;}
     .Wh { background-color:#fdd;}
@@ -22,17 +22,23 @@ const char *PageBrute = R"====(
     .dispT{display:none;}
     .ce { text-align: center;position:relative;}
     svg { border:10px inset azure;}
-    #infoUxIx2,#infoUxIx3,#infoUxI,#infoLinky,#infoEnphase,#infoSmartG,#infoShellyEm,#infoPmqtt{display:none;}
+    #infoUxIx2,#infoUxIx3,#infoUxI,#infoNotDef,#infoLinky,#infoEnphase,#infoSmartG,#infoHomeW,#infoShellyEm,#infoPmqtt{display:none;}
     #donneeDistante{font-size:50%;text-align:center;margin-bottom:10px;display:none;}
+    .bloc a:link {color:#116;text-decoration: none;}
+    .bloc a:visited {color:#226;text-decoration: none;}
   </style>
+  <title>Data brute F1ATB</title>
   </head>
   <body  onload='SetHautBas();LoadParaRouteur();' >
     <div id='LED'></div>
     <div id="lesOnglets"></div>
     <div id='date'>Date</div><br><br>
+    <div id='infoNotDef'>
+      <div class='tableau'>Source des mesures de puissance non définie<br>A définir au bas de la page Paramètres<br><br>Données simulées</div> <br><br>    
+    </div>
     <div id='infoUxI'>
       <div >Tension et Courant sur 20ms</div>
-      <div  class='ce'><h3 style='position:absolute;top:20px;right:40px;'><span id='Ueff'></span>
+      <div  class='ce'><h3 style='position:absolute;top:20px;right:40px;'><span id='Ueff'>.</span>
       <span id='Ieff'></span><br>
       <span id='cosphi'></span></h3><p id='SVG'></p></div>
     </div>
@@ -52,6 +58,10 @@ const char *PageBrute = R"====(
       <div>Donn&eacute;es SmartGateways</div>
       <div id='dataSmartG' class='tableau dataIn'></div>
     </div>
+    <div id='infoHomeW'>
+      <div>Donn&eacute;es HomeWizard</div>
+      <div id='dataHomeW' class='tableau dataIn'></div>
+    </div>
     <div id='infoShellyEm'>
       <div>Donn&eacute;es Shelly Em </div>
       <div id='dataShellyEm' class='tableau dataIn'></div>
@@ -68,11 +78,10 @@ const char *PageBrute = R"====(
     </div>
     <div id="donneeDistante">Données distantes</div>
     <div>Donn&eacute;es ESP32</div>
-    <div><div id='DataESP32' class='tableau'></div></div><br>
+    <div><div id='DataESP32' class='tableau bloc'></div></div><br>
     <div id='pied'></div>
     <script src="/ParaRouteurJS"></script>
     <script src='BruteJS'></script>
-    <script src='BruteJS2'></script>
     <script src="/CommunCouleurJS"></script>
     <br></body></html>
 )====";
@@ -182,7 +191,8 @@ const char *PageBruteJS = R"====(
         xhttp.onreadystatechange = function() { 
           if (this.readyState == 4 && this.status == 200) {
               var dataESP=this.responseText;
-              var message=dataESP.split(RS);
+              var Messages=dataESP.split(GS);
+              var message=Messages[0].split(RS);
               var S='<table>';
               var H=parseInt(message[0]);
               H=H + (message[0]-H)*0.6;
@@ -190,32 +200,46 @@ const char *PageBruteJS = R"====(
               H=H.replace(".", "h ")+"mn";
               var LaSource=Source;
               if (LaSource=='Ext') LaSource="Externe ("+Source_data+")<br>" +int2ip(RMSextIP);
-              S+='<tr><td>ESP On depuis :</td><td>'+H+'</td></tr>';
+              var typeESP32=["Non défini","Wroom seul","Carte 1 relais","Carte 4 relais","Ecran320*240","","","","","","ESP32-ETH01"];
+              S+='<tr><td>ESP32 On depuis :</td><td>'+H+'</td></tr>';
+              S+='<tr><td>ESP32 modèle :</td><td>'+typeESP32[message[1]]+'</td></tr>';
               S+='<tr><td>Source des mesures :</td><td>'+LaSource+'</td></tr>';
-              if (ModeWifi<2){
-                S+='<tr><td>Niveau WiFi :</td><td>'+message[1]+' dBm</td></tr>';
-                S+="<tr><td>Point d'acc&egrave;s WiFi :</td><td>"+message[2]+'</td></tr>';
-                S+='<tr><td>Adresse MAC ESP32 :</td><td>'+message[3]+'</td></tr>';
-                S+='<tr><td>R&eacute;seau WiFi :</td><td>'+message[4]+'</td></tr>';
-                S+='<tr><td>Adresse IP ESP32 :</td><td>'+message[5]+'</td></tr>';
-                S+='<tr><td>Adresse passerelle :</td><td>'+message[6]+'</td></tr>';
-                S+='<tr><td>Masque du r&eacute;seau :</td><td>'+message[7]+'</td></tr>';
+              if (ModeReseau<2){
+                if (message[1]<10){ //WIFI
+                  S+='<tr><td>Niveau WiFi :</td><td>'+message[2]+' dBm</td></tr>';
+                  S+="<tr><td>Point d'acc&egrave;s WiFi :</td><td>"+message[3]+'</td></tr>';
+                  S+='<tr><td>R&eacute;seau WiFi :</td><td>'+message[6]+'</td></tr>';
+                  S+='<tr><td>Canal WiFi :</td><td>'+message[4]+'</td></tr>';
+                }
+                S+='<tr><td>Adresse MAC ESP32 :</td><td>'+message[5]+'</td></tr>';                
+                S+='<tr><td>Adresse IP ESP32 :</td><td>'+message[7]+'</td></tr>';
+                S+='<tr><td>Adresse passerelle :</td><td>'+message[8]+'</td></tr>';
+                S+='<tr><td>Masque du r&eacute;seau :</td><td>'+message[9]+'</td></tr>';
               } else {
                 S+="<tr><td>Adresse IP ESP32 (Point d'Accès) :</td><td>192.168.4.1</td></tr>";
               }
-              S+='<tr><td>Charge coeur 0 (Lecture Puissance) Min, Moy, Max :</td><td>'+message[8]+' ms</td></tr>';
-              S+='<tr><td>Charge coeur 1 (Calcul + Wifi) Min, Moy, Max :</td><td>'+message[9]+' ms</td></tr>';
-              S+='<tr><td>Espace mémoire EEPROM utilisé :</td><td>'+message[10]+' %</td></tr>';
-              S+='<tr><td>Mémoire RAM libre actuellement :</td><td>'+message[11]+' octet</td></tr>';
-              S+='<tr><td>Mémoire RAM libre minimum :</td><td>'+message[12]+' octet</td></tr>';
-              S+="<tr><td>Nombre d'interruptions en 15ms du Gradateur (signal Zc) : Filtrés/Brutes :</td><td>"+message[13]+'</td></tr>';
-              S+='<tr><td>Synchronisation au Secteur ou asynchrone horloge ESP32</td><td>'+message[14]+'</td></tr>';
-              var Stemp=message[15];
-              if (message[15]>0) Stemp +='<span class="fsize10">' + message[16] +'</span>';
+              S+='<tr><td>Charge coeur 0 (Lecture Puissance) Min, Moy, Max :</td><td>'+message[10]+' ms</td></tr>';
+              S+='<tr><td>Charge coeur 1 (Calcul + Wifi) Min, Moy, Max :</td><td>'+message[11]+' ms</td></tr>';
+              S+='<tr><td>Espace mémoire EEPROM utilisé :</td><td>'+message[12]+' %</td></tr>';
+              S+='<tr><td>Mémoire RAM libre actuellement :</td><td>'+message[13]+' octet</td></tr>';
+              S+='<tr><td>Mémoire RAM libre minimum :</td><td>'+message[14]+' octet</td></tr>';
+              S+="<tr><td>Nombre d'interruptions en 15ms du Gradateur (signal Zc) : Filtrés/Brutes :</td><td>"+message[15]+'</td></tr>';
+              S+='<tr><td>Synchronisation au Secteur ou asynchrone horloge ESP32</td><td>'+message[16]+'</td></tr>';
+              var Stemp=message[17];
+              if (message[17]>0) Stemp +='<span class="fsize10">' + message[18] +'</span>';
               S+="<tr><td>Nombre de capteurs de température DS18B20 :</td><td>"+Stemp+'</td></tr>';
               S +='<tr><td style="text-align:center;"><strong>Messages</strong></td><td></td></tr>';
-              for (var i=0;i<10;i++){
-                S +='<tr><td>'+message[17+i]+'</td><td></td></tr>';
+              var message1=Messages[1].split(RS);
+              for (var i=1;i<=10;i++){
+                S +='<tr><td>'+message1[i]+'</td><td></td></tr>';
+              }
+              var message2=Messages[2].split(RS);
+              if(message2.length>1){
+                S +='<tr><td style="text-align:center;"><strong>Note échanges entre routeurs</strong></td><td></td></tr>';
+                for (var i=0;i<message2.length-1;i++){
+                    var Note=message2[i].split(ES);
+                    S +='<tr><td>'+Note[0]+'</td><td>' +Note[1] +'</td></tr>';
+                }
               }
               S+='</table>';
               GH('DataESP32', S);             
@@ -223,7 +247,7 @@ const char *PageBruteJS = R"====(
           }
           
         };
-        xhttp.open('GET', 'ajax_dataESP32', true);
+        xhttp.open('GET', '/ajax_dataESP32', true);
         xhttp.send();
        }
        function FinParaRouteur(){
@@ -231,9 +255,7 @@ const char *PageBruteJS = R"====(
         LoadData();
         LoadDataESP32();
        }
-)====";
 
-const char *PageBruteJS2 = R"====(
       function LoadData() {
         GID('LED').style='display:block;';
         var xhttp = new XMLHttpRequest();
@@ -241,10 +263,13 @@ const char *PageBruteJS2 = R"====(
           if (this.readyState == 4 && this.status == 200) {
             GID('LED').style='display:none;';
             var DuRMS=this.responseText;
-            var groupes=DuRMS.split(GS)
+            var groupes=DuRMS.split(GS);
             var G0=groupes[0].split(RS);
             GH('date',G0[0]);
             Source_data=G0[1];
+            if (Source_data == "NotDef"){
+              GID('infoNotDef').style.display="block";
+            }
             if (Source_data == "UxI"){
               GID('infoUxI').style.display="block";
               GH('Ueff',"<span style='color:#" + Koul[Coul_W][3] + ";'>_" +parseInt(G0[2],10) + "<small> V</small></span>");
@@ -324,6 +349,16 @@ const char *PageBruteJS2 = R"====(
               }
                GH('dataSmartG', S);
             }
+            if (Source_data == "HomeW"){
+              GID('infoHomeW').style.display="block";
+              groupes[1] = groupes[1].replaceAll('"','');
+              var G1=groupes[1].split(",");
+              var S="";              
+              for (var i=0;i<G1.length;i++){
+                    S +=G1[i]+"<br>";
+              }
+               GH('dataHomeW', S);
+            }
             if (Source_data == "UxIx3"){
               GID('infoUxIx3').style.display="block";
                GH('dataUxIx3', groupes[1]);
@@ -387,8 +422,8 @@ const char *PageBruteJS2 = R"====(
             setCouleur();
             setTimeout('LoadData();',2000);
           }  
-        };
-        xhttp.open('GET', 'ajax_dataRMS?idx='+IdxMessage, true);
+        }
+        xhttp.open('GET', '/ajax_dataRMS?idx='+IdxMessage, true);
         xhttp.send();
       }
       

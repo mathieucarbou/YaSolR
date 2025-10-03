@@ -16,31 +16,31 @@ void Call_RTE_data() {
   int LastH = LastHeureRTE / 2;
 
 // il faut éviter de questionner l'URL tempo light si on a déjà les infos qui nous intéressent...
-  bool couleur_lendemain =  (STGE == "4" || STGE == "8" || STGE == "C" );              // true si couleur du lendemain connue
+  bool couleur_lendemain =  (STGEt == "4" || STGEt == "8" || STGEt == "C" );              // true si couleur du lendemain connue
   bool couleur_jour      =  (LTARF == "TEMPO_BLEU" || LTARF == "TEMPO_BLANC" || LTARF == "TEMPO_ROUGE"); // true si couleur du jour connu
 
  // traitement du changement de couleur tempo à 6h00, avec ré-initialisation de la couleur du lendemain
- if ( (Hcour==300) && (LTARF!="") && (STGE!="") )   // à 6h00 précises, la couleur tempo du lendemain devient la couleur du jour. Celle du lendemain n'est à priori pas encore connue
+ if ( (Hcour==300) && (LTARF!="") && (STGEt!="") )   // à 6h00 précises, la couleur tempo du lendemain devient la couleur du jour. Celle du lendemain n'est à priori pas encore connue
                                                     // Cela permet de continuer à fonctionner de manière nominale même si le site RTE n'est pas encore renseigné
                                                     // && (LTARF!="") pour ne pas passer dans cette boucle au reset si fait à 6h00 du matin...
-                                                    // && (STGE<>"")  pour éviter de passer plusieurs fois( 3 à 4 ) dans cette boucle à cause du Hcour/2
+                                                    // && (STGEt<>"")  pour éviter de passer plusieurs fois( 3 à 4 ) dans cette boucle à cause du Hcour/2
     {  
-     if       (STGE == "4") LTARF = "TEMPO_BLEU";  
-     else if  (STGE == "8") LTARF = "TEMPO_BLANC"; 
-     else if  (STGE == "C") LTARF = "TEMPO_ROUGE";
-     STGE=""; 
+     if       (STGEt == "4") LTARF = "TEMPO_BLEU";  
+     else if  (STGEt == "8") LTARF = "TEMPO_BLANC"; 
+     else if  (STGEt == "C") LTARF = "TEMPO_ROUGE";
+     STGEt=""; 
      couleur_lendemain=false; // on ne connait plus la couleur du lendemain. Cela forcera la lecture sur le site RTE 
-     if (LTARF!="") {  
+     if (LTARF!="" && TempoRTEon == 1 && ModeReseau==0) {  
            StockMessage("Tempo depuis 6h00: " + LTARF + ",demain ? ");
       }
     }  
 
 
   if ((HeureValide) && (!(couleur_lendemain && couleur_jour ) ) && ((LastH != Hcour) && (Hcour == 302 || Hcour == 310 || Hcour == 530 || Hcour == 560 || Hcour == 600 || Hcour == 900 || Hcour == 1150) || LastHeureRTE < 0)) {
-    if (TempoRTEon == 1 && ModeWifi==0) {
+    if (TempoRTEon == 1 && ModeReseau==0) {
       // Use clientSecu class to create TCP connections
       clientSecuRTE.setInsecure();  //skip verification
-      if (!clientSecuRTE.connect(adr_RTE_Host, 443)) {
+      if (!clientSecuRTE.connect(adr_RTE_Host, 443,3000)) {
         StockMessage("Connection failed to RTE server :" + Host);
       } else {
         time_t timestamp = time(NULL) - 21600;  //Decallage début période couleur  RTE de 6h.
@@ -51,13 +51,13 @@ void Call_RTE_data() {
         struct tm* pTime2 = localtime(&timestamp2);
         strftime(buffer, MAX_SIZE_T, "%Y-%m-%d", pTime2);
         DateRTE2 = String(buffer);
-        Serial.print("DateRTE:");
-        Serial.println(DateRTE);
-        Serial.print("DateRTE lendemain:");
-        Serial.println(DateRTE2);
-        Serial.println(urlJSON);
+        TelnetPrint("DateRTE:");
+        TelnetPrintln(DateRTE);
+        TelnetPrint("DateRTE lendemain:");
+        TelnetPrintln(DateRTE2);
+        TelnetPrintln(urlJSON);
         clientSecuRTE.print(String("GET ") + urlJSON + " HTTP/1.1\r\n" + "Host: " + Host + "\r\n" + "Connection: close\r\n\r\n");
-        Serial.println("Request vers RTE Envoyé");
+        TelnetPrintln("Request vers RTE Envoyé");
         unsigned long timeout = millis();
         while (clientSecuRTE.available() == 0) {
           if (millis() - timeout > 5000) {
@@ -75,8 +75,8 @@ void Call_RTE_data() {
           if (line.indexOf("}}") >= 0) fin = 2;
         }
         clientSecuRTE.stop();
-        Serial.print("RTEdata:");
-        Serial.println(RTEdata);
+        TelnetPrint("RTEdata:");
+        TelnetPrintln(RTEdata);
         // C'est RTE qui donne la couleur
         int p = RTEdata.indexOf("\"" + DateRTE + "\"");
         int q = RTEdata.indexOf("\"" + DateRTE2 + "\"");
@@ -100,7 +100,7 @@ void Call_RTE_data() {
             line = "C";
             lendemain = "TEMPO_ROUGE";
           }
-          STGE = line;  //Valeur Hexa code du Linky
+          STGEt = line;  //Valeur Hexa code du Linky
           StockMessage(DateRTE + " : " + LTARF + " | " + DateRTE2 + " : " + lendemain);
           RTEdata = "";
           LastHeureRTE = HeureCouranteDeci;  //Heure lecture Tempo RTE
@@ -111,7 +111,7 @@ void Call_RTE_data() {
     } else {
       if (Source != "Linky" && Source != "Ext") {
         LTARF = "";
-        STGE = "0";
+        STGEt = "0";
       }
     }
   }

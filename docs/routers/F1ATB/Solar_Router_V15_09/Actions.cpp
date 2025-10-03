@@ -17,7 +17,7 @@ Action::Action(int aIdx) {
   Idx = aIdx;
   T_LastAction = int(millis() / 1000);
   On = false;
-  Actif = 0;
+  Actif = 0;  //0=Inactif,1=Decoupe ou On/Off, 2=Multi, 3= Train , 4=PWM
   Reactivite = 10;
   OutOn = 1;
   OutOff = 0;
@@ -52,8 +52,12 @@ Action::Action(int aIdx) {
 void Action::Arreter() {
   int Tseconde = int(millis() / 1000);
   if ((Tseconde - T_LastAction) >= Tempo || Idx == 0 || Actif != 1) {
-    if (Gpio > 0 || Idx == 0) {
-      digitalWrite(Gpio, OutOff);
+    if (Gpio > 0) {
+      if (Actif == 4) {  //PWM
+        ledcWrite(Gpio, OutOff * 255);
+      } else {
+        digitalWrite(Gpio, OutOff);
+      }
       T_LastAction = Tseconde;
     } else {
       if (On || ((Tseconde - T_LastAction) > Repet && Repet != 0)) {
@@ -68,7 +72,11 @@ void Action::RelaisOn() {
   int Tseconde = int(millis() / 1000);
   if ((Tseconde - T_LastAction) >= Tempo) {
     if (Gpio > 0) {
-      digitalWrite(Gpio, OutOn);
+      if (Actif == 4) {  //PWM
+        ledcWrite(Gpio, OutOn * 255);
+      } else {
+        digitalWrite(Gpio, OutOn);
+      }
       T_LastAction = Tseconde;
       On = true;
     } else {
@@ -257,7 +265,7 @@ int Action::Valmax(int Heure) {  //Retourne la valeur Vmax (ex ouverture du Tria
   return S;
 }
 
-void Action::InitGpio() {  //Initialise les sorties GPIO pour des relais
+void Action::InitGpio(int FreqPWM) {  //Initialise les sorties GPIO pour des relais
   int p;
   String S;
   String IS = "|";  //Input Separator
@@ -271,8 +279,12 @@ void Action::InitGpio() {  //Initialise les sorties GPIO pour des relais
       OutOn = OrdreOn.substring(p + 1).toInt();
       OutOff = (1 + OutOn) % 2;
       if (Gpio > 0) {
-        pinMode(Gpio, OUTPUT);
-        digitalWrite(Gpio, OutOff);
+        if (Actif == 4) {                            //PWM
+          ledcAttachChannel(Gpio, FreqPWM, 8, Idx);  //Affectation des  channels
+        } else {
+          pinMode(Gpio, OUTPUT);
+          digitalWrite(Gpio, OutOff);
+        }
       }
     }
   }
@@ -283,10 +295,15 @@ void Action::CallExterne(String host, String url, int port) {
     WiFiClient clientExt;
     char hostbuf[host.length() + 1];
     host.toCharArray(hostbuf, host.length() + 1);
-
-    if (!clientExt.connect(hostbuf, port)) {
-      StockMessage("connection to :" + host + " failed");
-      return;
+    if (!clientExt.connect(hostbuf, port, 3000)) {
+      clientExt.stop();
+      delay(500);
+      if (!clientExt.connect(hostbuf, port, 3000)) {
+        delay(100); //Necessaire
+        StockMessage("connection to :" + host + " failed");
+        delay(100);
+        return;
+      }
     }
     clientExt.print(String("GET ") + url + " HTTP/1.1\r\n" + "Host: " + host + "\r\n" + "Connection: close\r\n\r\n");
     unsigned long timeout = millis();

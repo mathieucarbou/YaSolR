@@ -16,7 +16,7 @@ void LectureUxI() {
 }
 void MeasurePower() {  //Lecture Tension et courants pendant 20ms
   int iStore;
-  value0 = analogRead(AnalogIn0);  //Mean value. Should be at 3.3v/2
+  value0 = analogRead(AnalogIn0);  //Mean value. Should be at 3.3v/2 /35
   static unsigned long OverflowOffset = 0;
   static unsigned long PrevMicros = 0;
   unsigned long NowMicros;
@@ -27,8 +27,8 @@ void MeasurePower() {  //Lecture Tension et courants pendant 20ms
       OverflowOffset = (OverflowOffset+ 7296)%20000;
     }
     iStore = ((NowMicros%20000 + OverflowOffset) % 20000) / 200;  //We have more results that we need during 20ms to fill the tables of 100 samples
-    volt[iStore] = analogRead(AnalogIn1) - value0;
-    amp[iStore] = analogRead(AnalogIn2) - value0;
+    volt[iStore] = analogRead(AnalogIn1) - value0;//32
+    amp[iStore] = analogRead(AnalogIn2) - value0;//33
     PrevMicros = NowMicros;
   }
 }

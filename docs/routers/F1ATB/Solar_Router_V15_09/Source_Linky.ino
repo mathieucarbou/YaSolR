@@ -2,6 +2,8 @@
 // * Source de Mesures LINKY  *
 // ****************************
 
+//Evolutions pour les Linky avec CACSI proposée par LJ (septembre 2025)
+
 float deltaWS = 0;
 float deltaWI = 0;
 int boucle_appel_Linky = 0;
@@ -12,6 +14,7 @@ void Setup_Linky() {
   delay(100);
 }
 
+int pIRMS1, pIRMS2, pIRMS3 = -1, pURMS1, pURMS2, pURMS3, pSINSTS = 0, pSINSTS1 = 0, pSINSTS2, pSINSTS3, pPuissance;
 void LectureLinky() {  //Lecture port série du LINKY .
   int V = 0;
   long OldWh = 0;
@@ -99,7 +102,7 @@ void LectureLinky() {  //Lecture port série du LINKY .
                 }
                 moyPWS = 0.05 * deltaWS + 0.95 * moyPWS;
                 EASTvalid = true;
-                if (!EAITvalid && Tm > 8000) {  //Cas des CACSI ou EAIT n'est jamais positionné
+                if (!EAITvalid && Tm > 12000) {  //Cas des CACSI ou EAIT n'est jamais positionné
                   EAITvalid = true;
                 }
               }
@@ -127,6 +130,7 @@ void LectureLinky() {  //Lecture port série du LINKY .
                 EnergieActiveValide = true;
               }
               if (code == "SINSTS") {  //Puissance apparente soutirée. Egalité pour ne pas confondre avec SINSTS1 (triphasé)
+                pSINSTS = val.toInt();
                 PVAS_M = PintMax(val.toInt());
                 moyPVAS = 0.05 * float(PVAS_M) + 0.95 * moyPVAS;
                 moyPWS = min(moyPWS, moyPVAS);
@@ -139,34 +143,93 @@ void LectureLinky() {  //Lecture port série du LINKY .
                 Pva_valide = true;
               }
               if (code.indexOf("SINSTI") == 0) {  //Puissance apparente injectée
-                PVAI_M = PintMax(val.toInt());
-                moyPVAI = 0.05 * float(PVAI_M) + 0.95 * moyPVAI;
-                moyPWI = min(moyPWI, moyPVAI);
-                if (moyPVAI > 0) {
-                  COSphiI = moyPWI / moyPVAI;
-                  COSphiI = min(float(1.0), COSphiI);
-                  PowerFactor_M = COSphiI;
+                if (ReacCACSI != 100) {           //Estimateur OFF, mode normal sans CACSI
+                  PVAI_M = PintMax(val.toInt());
+                  moyPVAI = 0.05 * float(PVAI_M) + 0.95 * moyPVAI;
+                  moyPWI = min(moyPWI, moyPVAI);
+                  if (moyPVAI > 0) {
+                    COSphiI = moyPWI / moyPVAI;
+                    COSphiI = min(float(1.0), COSphiI);
+                    PowerFactor_M = COSphiI;
+                  }
+                  PuissanceI_M = PintMax(int(COSphiI * float(PVAI_M)));
+                  Pva_valide = true;
+ 
                 }
-                PuissanceI_M = PintMax(int(COSphiI * float(PVAI_M)));
-                Pva_valide = true;
               }
             }
           }
           if (code.indexOf("DATE") == 0) {
+
             PuissanceRecue = true;  //Reset du Watchdog à chaque trame du Linky reçue
             if (Horloge == 1) {
               JourLinky = val.substring(5, 7) + "/" + val.substring(3, 5) + "/" + val.substring(1, 3);
-              Int_Heure = val.substring(7, 9).toInt();
-              Int_Minute = val.substring(9, 11).toInt();
-              Int_Seconde = val.substring(11, 13).toInt();
+              Int_HeureLinky = val.substring(7, 9).toInt();
+              Int_MinuteLinky = val.substring(9, 11).toInt();
+              Int_SecondeLinky = val.substring(11, 13).toInt();
               HeureValide = true;
             }
           }
+          
+          //LJ START
+          if (ReacCACSI == 100) {  //Estimateur ON
+            if (code.indexOf("IRMS1") == 0) {
+              pIRMS1 = val.toInt();
+            }
+            if (code.indexOf("IRMS2") == 0) {
+              pIRMS2 = val.toInt();
+            }
+            if (code.indexOf("IRMS3") == 0) {
+              pIRMS3 = val.toInt();
+            }
+            if (code.indexOf("URMS1") == 0) {
+              pURMS1 = val.toInt();
+            }
+            if (code.indexOf("URMS2") == 0) {
+              pURMS2 = val.toInt();
+            }
+            if (code.indexOf("URMS3") == 0) {
+              pURMS3 = val.toInt();
+            }
+            if (code.indexOf("SINSTS1") == 0) {
+              pSINSTS1 = val.toInt();
+            }
+            if (code.indexOf("SINSTS2") == 0) {
+              pSINSTS2 = val.toInt();
+            }
+            if (code.indexOf("SINSTS3") == 0) {
+              pSINSTS3 = val.toInt();
+            }
+            if (code == "SMAXSN") {
+
+              PuissanceI_M = 0;
+              if (PuissanceS_M == 0) {                                            // estimation de la puissance d'injection si PuissanceS_M==0
+                if (pIRMS3 != -1) {                                               // triphasé
+                  pPuissance = 150 + (pSINSTS1 == 0 ? -1 : 1) * pURMS1 * pIRMS1;  // marge de 150W, en mono SINSTS1==0 si PuissanceS_M==0
+                  pPuissance += (pSINSTS2 == 0 ? -1 : 1) * pURMS2 * pIRMS2;
+                  pPuissance += (pSINSTS3 == 0 ? -1 : 1) * pURMS3 * pIRMS3;
+                } else {
+                  pPuissance = 150 + (pSINSTS == 0 ? -1 : 1) * pURMS1 * pIRMS1;  // marge de 150W, en mono SINSTS==0 si PuissanceS_M==0
+                }
+                if (pPuissance < 0) {  // estimation si l'écart est supérieur à 150W
+
+                  PuissanceI_M = -pPuissance;  // "-" car on donne la valeur injectée
+                  PVAI_M = PuissanceI_M;       //On egalise Pw et PVA
+              
+                }
+              }
+            }
+          }
+          //LJ STOP
           if (code.indexOf("URMS1") == 0) {
             Tension_M = val.toFloat();  //phase 1 uniquement
           }
           if (code.indexOf("IRMS1") == 0) {
             Intensite_M = val.toFloat();  //Phase 1 uniquement
+          }
+          if (code.indexOf("STGE") == 0) {
+            STGE = val;  //Status
+            STGE.trim();
           }
           if (TempoRTEon == 0) {  // On prend tarif sur Linky
             if (code.indexOf("LTARF") == 0) {
@@ -193,7 +256,6 @@ void LectureLinky() {  //Lecture port série du LINKY .
           if (code.indexOf("EASF08") == 0) EASF08 = val.toInt();
           if (code.indexOf("EASF09") == 0) EASF09 = val.toInt();
           if (code.indexOf("EASF10") == 0) EASF10 = val.toInt();
-
         }
         break;
       default:

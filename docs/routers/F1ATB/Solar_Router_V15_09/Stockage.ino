@@ -103,6 +103,9 @@ void JourHeureChange() {
     int16_t minute = atoi(buffer);
     Int_Minute = minute;
   } else if (Horloge == 1) {  //Heure Linky
+    Int_Heure = Int_HeureLinky;
+    Int_Minute = Int_MinuteLinky;
+    Int_Seconde = Int_SecondeLinky;
     sprintf(buffer, "%d:%02d:%02d", Int_Heure, Int_Minute, Int_Seconde);
     DATE = JourLinky + " " + String(buffer);
   } else {  //Horloge interne ou par IT 10 ou 20ms
@@ -131,6 +134,11 @@ void JourHeureChange() {
       EEPROM.commit();
       LectureConsoMatinJour();
     }
+    //Puissance Max du jour à zero
+    PuisMaxS_T = 0;
+    PuisMaxS_M = 0;
+    PuisMaxI_T = 0;
+    PuisMaxI_M = 0;
   }
 }
 String HistoriqueEnergie1An(void) {
@@ -180,10 +188,10 @@ void LectureEnROM() {
   int VersionMajeur = int(VersionStocke / 100);
   String V = Version;
   int Vr = V.toInt();
-  Serial.print("Version stockée (partie entière) :");
-  Serial.println(VersionMajeur);
-  Serial.print("Version du logiciel( partie entière) :");
-  Serial.println(Vr);
+  TelnetPrint("Version stockée (partie entière) :");
+  TelnetPrintln(String(VersionMajeur));
+  TelnetPrint("Version du logiciel( partie entière) :");
+  TelnetPrintln(String(Vr));
   if (Vr == VersionMajeur) {  //La partie entière  ne change pas. On lit la suite
     CleAccesRef = EEPROM.readString(address);
     address += CleAccesRef.length() + 1;
@@ -191,9 +199,25 @@ void LectureEnROM() {
     address += Couleurs.length() + 1;
     ModePara = EEPROM.readByte(address);
     address += sizeof(byte);
-    ModeWifi = EEPROM.readByte(address);
+    ModeReseau = EEPROM.readByte(address);
     address += sizeof(byte);
     Horloge = EEPROM.readByte(address);
+    address += sizeof(byte);
+    ESP32_Type = EEPROM.readByte(address);
+    address += sizeof(byte);
+    LEDgroupe = EEPROM.readByte(address);
+    address += sizeof(byte);
+    rotation = EEPROM.readByte(address);
+    address += sizeof(byte);
+    DurEcran = EEPROM.readULong(address);
+    address += sizeof(unsigned long);
+    for (int i = 0; i < 8; i++) {
+      Calibre[i] = EEPROM.readShort(address);
+      address += sizeof(unsigned short);
+    }
+    pUxI = EEPROM.readByte(address);
+    address += sizeof(byte);
+    pTemp = EEPROM.readByte(address);
     address += sizeof(byte);
     Source = EEPROM.readString(address);
     address += Source.length() + 1;
@@ -257,12 +281,18 @@ void LectureEnROM() {
     address += sizeof(byte);
     WifiSleep = EEPROM.readByte(address);
     address += sizeof(byte);
+    ComSurv = EEPROM.readShort(address);
+    address += sizeof(short);
     pSerial = EEPROM.readByte(address);
     address += sizeof(byte);
     pTriac = EEPROM.readByte(address);
     address += sizeof(byte);
 
     //Zone des actions
+    ReacCACSI = EEPROM.readByte(address);
+    address += sizeof(byte);
+    Fpwm = EEPROM.readUShort(address);
+    address += sizeof(unsigned short);
     NbActions = EEPROM.readUShort(address);
     address += sizeof(unsigned short);
     for (int iAct = 0; iAct < NbActions; iAct++) {
@@ -351,9 +381,25 @@ int EcritureEnROM() {
   address += Couleurs.length() + 1;
   EEPROM.writeByte(address, ModePara);
   address += sizeof(byte);
-  EEPROM.writeByte(address, ModeWifi);
+  EEPROM.writeByte(address, ModeReseau);
   address += sizeof(byte);
   EEPROM.writeByte(address, Horloge);
+  address += sizeof(byte);
+  EEPROM.writeByte(address, ESP32_Type);
+  address += sizeof(byte);
+  EEPROM.writeByte(address, LEDgroupe);
+  address += sizeof(byte);
+  EEPROM.writeByte(address, rotation);
+  address += sizeof(byte);
+  EEPROM.writeULong(address, DurEcran);
+  address += sizeof(unsigned long);
+  for (int i = 0; i < 8; i++) {
+    EEPROM.writeShort(address, Calibre[i]);
+    address += sizeof(unsigned short);
+  }
+  EEPROM.writeByte(address, pUxI);
+  address += sizeof(byte);
+  EEPROM.writeByte(address, pTemp);
   address += sizeof(byte);
   EEPROM.writeString(address, Source);
   address += Source.length() + 1;
@@ -365,9 +411,9 @@ int EcritureEnROM() {
   address += EnphasePwd.length() + 1;
   EEPROM.writeString(address, EnphaseSerial);
   address += EnphaseSerial.length() + 1;
-  if (ModePara==0) {
-    MQTTRepet=0;
-    subMQTT=0;
+  if (ModePara == 0) {
+    MQTTRepet = 0;
+    subMQTT = 0;
   }
   EEPROM.writeUShort(address, MQTTRepet);
   address += sizeof(unsigned short);
@@ -421,11 +467,17 @@ int EcritureEnROM() {
   address += sizeof(byte);
   EEPROM.writeByte(address, WifiSleep);
   address += sizeof(byte);
+  EEPROM.writeShort(address, ComSurv);
+  address += sizeof(unsigned short);
   EEPROM.writeByte(address, pSerial);
   address += sizeof(byte);
   EEPROM.writeByte(address, pTriac);
   address += sizeof(byte);
   //Enregistrement des Actions
+  EEPROM.writeByte(address, ReacCACSI);
+  address += sizeof(byte);
+  EEPROM.writeUShort(address, Fpwm);
+  address += sizeof(short);
   EEPROM.writeUShort(address, NbActions);
   address += sizeof(unsigned short);
   for (int iAct = 0; iAct < NbActions; iAct++) {
@@ -490,7 +542,7 @@ void Calibration(int address) {
   kV = KV * float(CalibU) / 1000.0;  //Calibration coefficient to be applied
   kI = KI * float(CalibI) / 1000.0;
   P_cent_EEPROM = int(100 * address / EEPROM_SIZE);
-  Serial.println("Mémoire EEPROM utilisée : " + String(P_cent_EEPROM) + "%");
+  TelnetPrintln("Mémoire EEPROM utilisée : " + String(P_cent_EEPROM) + "%");
 }
 
 void init_puissance() {
@@ -534,6 +586,7 @@ void filtre_puissance() {  //Filtre RC
   }
 
 
+
   Puissance_M_moy = A * (PuissanceS_M_inst - PuissanceI_M_inst) + B * Puissance_M_moy;
   if (Puissance_M_moy < 0) {
     PuissanceI_M = -int(Puissance_M_moy);  //Puissance Watt affichée en entier Maison
@@ -565,53 +618,12 @@ void filtre_puissance() {  //Filtre RC
 
 void StockMessage(String m) {
   m = DATE + " : " + m;
-  Serial.println(m);
   MessageH[idxMessage] = m;
   idxMessage = (idxMessage + 1) % 10;
+  PrintScroll(m);
 }
 
-// PORT SERIE
-void LireSerial() {
-  int inbyte;
-  while (Serial.available() > 0) {
-    inbyte = Serial.read();
-    String sw;
-    String valeur = "";
-    int p;
 
-    if ((inbyte == 10) || (inbyte == 13)) {
-      SerialIn.trim();
-      Serial.println(SerialIn);
-      p = SerialIn.indexOf(":");
-      if (p > 0) {
-        sw = SerialIn.substring(0, p);
-        valeur = SerialIn.substring(p + 1);
-        sw.trim();
-        valeur.trim();
-      } else {
-        sw = SerialIn;
-      }
-
-      if (sw.indexOf("restart") >= 0) {
-        ESP.restart();
-      }
-      if (sw.indexOf("ssid") >= 0) {
-        ssid = valeur;
-        ModeWifi = 0;  // A priori
-        EcritureEnROM();
-      }
-      if (sw.indexOf("password") >= 0) {
-        password = valeur;
-        EcritureEnROM();
-      }
-
-
-      SerialIn = "";
-    } else {
-      SerialIn += String(char(inbyte));
-    }
-  }
-}
 
 //Fichier parametres à dowloader
 String Fichier_parametres(String ip, String para, String action) {
@@ -626,7 +638,12 @@ String Fichier_parametres(String ip, String para, String action) {
   }
   if (para == "true") {
     S += AddStr("CleAccesRef", CleAccesRef) + AddStr("Couleurs", Couleurs);
-    S += AddByte("ModePara", ModePara) + AddByte("ModeWifi", ModeWifi) + AddByte("Horloge", Horloge);
+    S += AddByte("ModePara", ModePara) + AddByte("ModeReseau", ModeReseau) + AddByte("Horloge", Horloge);
+    S += AddByte("ESP32_Type", ESP32_Type) + AddByte("LEDgroupe", LEDgroupe) + AddByte("rotation", rotation) + AddUlong("DurEcran", DurEcran);
+    for (int i = 0; i < 8; i++) {
+      S += AddUshort("Calibre" + String(i), Calibre[i]);
+    }
+    S += AddByte("pUxI", pUxI) + AddByte("pTemp", pTemp);
     S += AddStr("Source", Source) + AddUlong("RMSextIP", RMSextIP) + AddStr("EnphaseUser", EnphaseUser) + AddStr("EnphasePwd", EnphasePwd) + AddStr("EnphaseSerial", EnphaseSerial);
     S += AddUshort("MQTTRepet", MQTTRepet) + AddUlong("MQTTIP", MQTTIP) + AddUshort("MQTTPort", MQTTPort);
     S += AddStr("MQTTUser", MQTTUser) + AddStr("MQTTPwd", MQTTPwd) + AddStr("MQTTPrefix", MQTTPrefix) + AddStr("MQTTPrefixEtat", MQTTPrefixEtat);
@@ -640,9 +657,10 @@ String Fichier_parametres(String ip, String para, String action) {
       S += AddStr("TopicT" + String(c), TopicT[c]) + AddByte("canalTempExterne" + String(c), canalTempExterne[c]) + AddInt("offsetTemp" + String(c), offsetTemp[c]);
     }
     S += AddUshort("CalibU", CalibU) + AddUshort("CalibI", CalibI);
-    S += AddByte("TempoRTEon", TempoRTEon) + AddByte("WifiSleep", WifiSleep) + AddByte("pSerial", pSerial) + AddByte("pTriac", pTriac);
+    S += AddByte("TempoRTEon", TempoRTEon) + AddByte("WifiSleep", WifiSleep) + AddInt("ComSurv", ComSurv) + AddByte("pSerial", pSerial) + AddByte("pTriac", pTriac);
   }
   if (action == "true") {
+    S += AddByte("ReacCACSI", ReacCACSI) + AddUshort("Fpwm", Fpwm);
     S += AddUshort("NbActions", NbActions) + ",\"Actions\":[";
     for (int iAct = 0; iAct < NbActions; iAct++) {
       S += "{\"Action\":" + String(iAct) + AddByte("Actif", LesActions[iAct].Actif) + AddStr("Titre", LesActions[iAct].Titre);
@@ -705,8 +723,17 @@ void ImportParametres(String Conf) {
     CleAccesRef = StringJson("CleAccesRef", Conf);
     Couleurs = StringJson("Couleurs", Conf);
     ModePara = ByteJson("ModePara", Conf);
-    ModeWifi = ByteJson("ModeWifi", Conf);
+    ModeReseau = ByteJson("ModeReseau", Conf);
     Horloge = ByteJson("Horloge", Conf);
+    ESP32_Type = ByteJson("ESP32_Type", Conf);
+    LEDgroupe = ByteJson("LEDgroupe", Conf);
+    rotation = ByteJson("rotation", Conf);
+    DurEcran = ULongJson("DurEcran", Conf);
+    for (int i = 0; i < 8; i++) {
+      Calibre[i] = UShortJson("Calibre" + String(i), Conf);
+    }
+    pUxI = ByteJson("pUxI", Conf);
+    pTemp = ByteJson("pTemp", Conf);
     Source = StringJson("Source", Conf);
     RMSextIP = ULongJson("RMSextIP", Conf);
     EnphaseUser = StringJson("EnphaseUser", Conf);
@@ -737,7 +764,7 @@ void ImportParametres(String Conf) {
     for (int i = 1; i < LesRouteursMax; i++) {
       RMS_IP[i] = ULongJson("RMS_IP" + String(i), Conf);
     }
-    if (Conf.indexOf("\"nomTemperature0\":") > 0) {  //On a les temperarures
+    if (Conf.indexOf("\"nomTemperature0\":") > 0) {  //On a les temperatures
       for (int c = 0; c < 4; c++) {
         nomTemperature[c] = StringJson("nomTemperature" + String(c), Conf);
         Source_Temp[c] = StringJson("Source_Temp" + String(c), Conf);
@@ -751,10 +778,16 @@ void ImportParametres(String Conf) {
     CalibI = UShortJson("CalibI", Conf);
     TempoRTEon = ByteJson("TempoRTEon", Conf);
     WifiSleep = ByteJson("WifiSleep", Conf);
+    ComSurv = ShortJson("ComSurv", Conf);
+    if (ComSurv < 6) ComSurv = 6;
     pSerial = ByteJson("pSerial", Conf);
     pTriac = ByteJson("pTriac", Conf);
   }
   if (Conf.indexOf("\"NbActions\":") > 0) {  //ACTIONS
+    ReacCACSI = ByteJson("ReacCACSI", Conf);
+    if (ReacCACSI < 1) ReacCACSI = 1;
+    Fpwm = UShortJson("Fpwm", Conf);
+    if (Fpwm < 5) Fpwm = 500;
     NbActions = UShortJson("NbActions", Conf);
     for (int iAct = 0; iAct < NbActions; iAct++) {
       int p = Conf.indexOf("{\"Action\":");
@@ -794,7 +827,11 @@ void ImportParametres(String Conf) {
 
   EcritureEnROM();
 }
-
+void SplitS(String Str, String &Before, String Separ, String &After) {
+  int p = Str.indexOf(Separ);
+  Before = Str.substring(0, p);
+  After = Str.substring(p + 1);
+}
 // Conversion des adresses IP suivant le coeur
 
 String IP2String(unsigned long IP) {
@@ -831,6 +868,100 @@ String ULtoHex(unsigned long x) {
   return S;
 }
 unsigned long ConvCouleur(String V) {  //Notation CSS en UL
-  V = V.substring(1);                  //enleve #
   return strtoul(V.c_str(), NULL, 16);
+}
+
+//Telnet et Serial
+//****************
+
+// --- Fonction de sortie partagée ---
+void TelnetPrint(const String &message) {
+  Serial.print(message);  // Sortie sur port série
+  if (telnetClient && telnetClient.connected()) {
+    telnetClient.print(message);  // Sortie sur Telnet
+  }
+}
+void TelnetPrintln(const String &message) {
+  Serial.println(message);
+  if (telnetClient && telnetClient.connected()) {
+    telnetClient.println(message);
+  }
+}
+// PORT SERIE ou TELNET
+void LireSerial() {
+  int inbyte;
+  //Port Serie
+  while (Serial.available() > 0) {
+    inbyte = Serial.read();
+
+
+    if ((inbyte == 10) || (inbyte == 13)) {
+      DecodeSerial();
+    } else {
+      SerialIn += String(char(inbyte));
+    }
+  }
+  //Telnet
+  if (telnetClient && telnetClient.connected() && telnetClient.available()) {
+    char c = telnetClient.read();  // Lire caractère
+    if (c == '\n' || c == '\r') {  // Fin de ligne → commande complète
+      DecodeSerial();
+    } else {
+      SerialIn += c;  // Ajouter caractère au buffer
+    }
+  }
+}
+void DecodeSerial() {
+  String sw;
+  String valeur = "";
+  int p;
+  SerialIn.trim();
+  TelnetPrintln(SerialIn);
+  p = SerialIn.indexOf(":");
+  if (p > 0) {
+    sw = SerialIn.substring(0, p);
+    valeur = SerialIn.substring(p + 1);
+    sw.trim();
+    valeur.trim();
+  } else {
+    sw = SerialIn;
+  }
+
+  if (sw.indexOf("restart") >= 0) {
+    ESP.restart();
+  }
+  if (sw.indexOf("ssid") >= 0) {
+    ssid = valeur;
+    ModeReseau = 0;          // A priori
+    dhcpOn = 1;              //Au cas ou l'on change de mapping des adresses LAN
+    if (ESP32_Type >= 10) {  //Carte Ethernet
+      ESP32_Type = 0;
+    }
+    EcritureEnROM();
+  }
+  if (sw.indexOf("password") >= 0) {
+    password = valeur;
+    EcritureEnROM();
+  }
+  if (sw.indexOf("ETH01") >= 0) {
+    ESP32_Type = 10;
+    EcritureEnROM();
+  }
+  if (sw.indexOf("dispPw") >= 0) {
+    dispPw = !dispPw;
+  }
+  if (sw.indexOf("dispAct") >= 0) {
+    dispAct = !dispAct;
+  }
+  // dispAct
+  SerialIn = "";
+}
+void MessageCommandes(){
+  telnetClient.println("");
+  telnetClient.println("*** Commandes par le port série USB ou Telnet port 23 ***");
+  telnetClient.println("ssid:xxx     | pour définir le nom xxx du Wifi à utiliser");
+  telnetClient.println("password:yyy | pour définir le mot de passe yyy du Wifi");
+  telnetClient.println("restart      | pour redémarrer l'ESP32");
+  telnetClient.println("dispPw       | pour afficher les mesures de puissance Pw");
+  telnetClient.println("dispAct      | pour afficher les ouvertures des Actions");
 }

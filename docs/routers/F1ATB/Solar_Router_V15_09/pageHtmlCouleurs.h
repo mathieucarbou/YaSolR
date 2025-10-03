@@ -4,9 +4,9 @@
 const char *CouleursHtml = R"====(
   <!doctype html>
   <html><head><meta charset="UTF-8">
-  <link rel="stylesheet" href="commun.css">
+  <link rel="stylesheet" href="/commun.css">
   <style>
-    .Zone{width:100%;border 1px solid grey;border-radius:10px;margin-top:10px;background-color:rgba(30,30,30,0.3);} 
+    .Zone{width:100%;border:1px solid grey;border-radius:10px;margin-top:10px;background-color:rgba(30,30,30,0.3);} 
     .boldT{text-align:left;font-weight:bold;padding:10px;}
     .form {margin:auto;padding:10px;display: table;text-align:left;width:100%;}
     .ligne {display: table-row;margin-top:5px;}
@@ -18,7 +18,7 @@ const char *CouleursHtml = R"====(
     .Bcouleurs{border:inset 4px azure;}
     .les_boutons{display:flex;justify-content:space-between;}
   </style>
-  
+  <title>Colors</title>
   </head>
   <body onload="Init();">
     <div id='lesOnglets'></div>
@@ -32,6 +32,7 @@ const char *CouleursHtml = R"====(
       <input  class='bouton' type='button' onclick="CouleurDefaut();CoulPage();setCouleur();" value='Couleurs par défaut' >
         <input  class='bouton' type='button' onclick="SendValues();" value='Sauvegarder' >
     </div>
+    <small>Valide après 30s ou un Ctrl+F5 pour vider le cache du navigateur.</small>
     <script>
         var BordsInverse=[".Bparametres",".Bcouleurs"];
     
@@ -81,7 +82,7 @@ const char *CouleursHtml = R"====(
               location.reload();
             }         
           };
-          xhttp.open('GET', 'CouleurUpdate'+S, true);
+          xhttp.open('GET', '/CouleurUpdate'+S, true);
           xhttp.send();
  
 
@@ -89,7 +90,7 @@ const char *CouleursHtml = R"====(
         function AdaptationSource(){}
         function FinParaRouteur(){
           GID("Bheure").style.display= (Horloge>1) ? "inline-block": "none";
-          
+          GID("Bwifi").style.display= (ESP32_Type<10) ? "inline-block": "none";
         }
          
         
@@ -125,7 +126,7 @@ const char *CommunCouleurJS = R"====(
             setCouleur();
           }         
         };
-        xhttp.open('GET', 'CouleursAjax', true);
+        xhttp.open('GET', '/CouleursAjax', true);
         xhttp.send();
   }
   

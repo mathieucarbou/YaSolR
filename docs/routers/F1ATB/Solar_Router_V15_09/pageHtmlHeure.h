@@ -4,9 +4,9 @@
 const char *HeureHtml = R"====(
   <!doctype html>
   <html><head><meta charset="UTF-8">
-  <link rel="stylesheet" href="commun.css">
+  <link rel="stylesheet" href="/commun.css">
   <style>
-    .Zone{width:40%;border 1px solid grey;border-radius:10px;margin:auto;background-color:rgba(30,30,30,0.3);} 
+    .Zone{width:40%;border: 1px solid grey;border-radius:10px;margin:auto;background-color:rgba(30,30,30,0.3);} 
     .form {margin:auto;padding:10px;display: table;text-align:left;width:100%;}
     .ligne {display: table-row;padding:10px;}
     label{display: table-cell;margin: 5px;text-align:right;font-size:20px;height:25px;width:50%;}
@@ -16,7 +16,7 @@ const char *HeureHtml = R"====(
     .Bheure{border:inset 4px azure;}
     .bouton{width:auto;}
   </style>
-  
+  <title>Set hours F1ATB</title>
   </head>
   <body onload="Init();">
     <div id='lesOnglets'></div>
@@ -43,8 +43,8 @@ const char *HeureHtml = R"====(
           LoadCouleurs();
         }
 
-        function AdaptationSource(){};
-        function FinParaRouteur(){};
+        function AdaptationSource(){}
+        function FinParaRouteur(){}
         function LoadData() {
           var xhttp = new XMLHttpRequest();
           xhttp.onreadystatechange = function() { 
@@ -56,7 +56,7 @@ const char *HeureHtml = R"====(
                 setTimeout('LoadData();',2000);
             }
           };
-          xhttp.open('GET', 'ajax_data', true);
+          xhttp.open('GET', '/ajax_data', true);
           xhttp.send();
         }
         function SendHour(){
@@ -69,7 +69,7 @@ const char *HeureHtml = R"====(
               GID("attente").style="visibility: hidden;";
             }         
           };
-          xhttp.open('GET', 'HourUpdate?New_H='+clean(New_H), true);
+          xhttp.open('GET', '/HourUpdate?New_H='+clean(New_H), true);
           xhttp.send(); 
         }
     </script>
