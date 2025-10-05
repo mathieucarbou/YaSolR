@@ -94,6 +94,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V14](../downloads/auto_diverter_v14.js)**: Code cleanup and fixed from v13 and moved dimmer related config in dimmer section
 
+- **[Shelly Solar Diverter Script V15](../downloads/auto_diverter_v15.js)**: Added MIN / MAX brightness remapping + support for 3EM by [@Bormes](https://forum-photovoltaique.fr/viewtopic.php?p=840087&sid=f9f96caeac8a35eee320341a9c50b88d#p840087) + fixed teh behavior of Internal EM relay Switch used for bypass to correctly pause the dimmer when activating bypass
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
