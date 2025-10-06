@@ -98,6 +98,8 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V16](../downloads/auto_diverter_v16.js)**: Added ability to use the internal relay of the Shelly Dimmer to do the bypass (full power) mode even when nothing is connected to the relay.
 
+- **[Shelly Solar Diverter Script V17](../downloads/auto_diverter_v17.js)**: Introduced POWER_RATIO and POWER_LIMIT to better share the available power to divert between multiple dimmers and fixed issue with standby and full power modes impacting the power sharing
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
