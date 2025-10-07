@@ -62,13 +62,13 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   }
 
   Metrics* outputMeasurements = new Metrics();
-  getOutputMeasurements(*outputMeasurements);
+  readMeasurements(*outputMeasurements);
   toJson(root["measurements"].to<JsonObject>(), *outputMeasurements);
   delete outputMeasurements;
   outputMeasurements = nullptr;
 
   Metrics* dimmerMetrics = new Metrics();
-  getOutputMetrics(*dimmerMetrics, gridVoltage);
+  readMetrics(*dimmerMetrics, gridVoltage);
   toJson(root["metrics"].to<JsonObject>(), *dimmerMetrics);
   delete dimmerMetrics;
   dimmerMetrics = nullptr;
@@ -332,7 +332,7 @@ void Mycila::RouterOutput::applyBypassTimeout() {
 
 // metrics
 
-void Mycila::RouterOutput::getOutputMetrics(Metrics& metrics, float gridVoltage) const {
+void Mycila::RouterOutput::readMetrics(Metrics& metrics, float gridVoltage) const {
   metrics.resistance = config.calibratedResistance;
   metrics.voltage = gridVoltage;
   if (_localMetrics.isPresent())
@@ -347,7 +347,7 @@ void Mycila::RouterOutput::getOutputMetrics(Metrics& metrics, float gridVoltage)
   metrics.thdi = dutyCycle == 0 ? 0 : 100.0f * std::sqrt(1 / dutyCycle - 1);
 }
 
-bool Mycila::RouterOutput::getOutputMeasurements(Metrics& metrics) const {
+bool Mycila::RouterOutput::readMeasurements(Metrics& metrics) const {
   if (_localMetrics.isAbsent())
     return false;
   metrics.voltage = _localMetrics.get().voltage;

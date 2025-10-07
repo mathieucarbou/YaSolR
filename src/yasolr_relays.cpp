@@ -84,7 +84,7 @@ void yasolr_init_relays() {
     }
 
     Mycila::Router::Metrics routerMetrics;
-    router.getRouterMeasurements(routerMetrics);
+    router.readMeasurements(routerMetrics);
 
     if (relay1 && relay1->autoSwitch(gridVoltage, gridPower, routerMetrics.power, setpoint))
       return;

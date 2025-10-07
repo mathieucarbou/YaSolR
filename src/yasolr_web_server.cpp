@@ -388,7 +388,7 @@ void rest_api() {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
     Mycila::Grid::Metrics metrics;
-    grid.getGridMeasurements(metrics);
+    grid.readMeasurements(metrics);
     Mycila::Grid::toJson(root, metrics);
     response->setLength();
     request->send(response);
@@ -471,7 +471,7 @@ void rest_api() {
     JsonObject root = response->getRoot();
 
     Mycila::Router::Metrics routerMeasurements;
-    router.getRouterMeasurements(routerMeasurements);
+    router.readMeasurements(routerMeasurements);
 
     root["lights"] = lights.toString();
     if (relay1)
@@ -501,7 +501,7 @@ void rest_api() {
       }
 
       Mycila::RouterOutput::Metrics outputMeasurements;
-      output->getOutputMeasurements(outputMeasurements);
+      output->readMeasurements(outputMeasurements);
       Mycila::RouterOutput::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
     }
 

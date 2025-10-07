@@ -118,7 +118,7 @@ void yasolr_configure_display() {
             }
             case 6: {
               Mycila::Router::Metrics routerMetrics;
-              router.getRouterMeasurements(routerMetrics);
+              router.readMeasurements(routerMetrics);
               display->home.printf("Router P: %9d W", static_cast<int>(std::round(routerMetrics.power)));
               wrote = true;
               break;

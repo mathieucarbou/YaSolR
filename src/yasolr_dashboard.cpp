@@ -1421,14 +1421,14 @@ void YaSolR::Website::updateCards() {
   // metrics
 
   Mycila::Grid::Metrics gridMetrics;
-  grid.getGridMeasurements(gridMetrics);
+  grid.readMeasurements(gridMetrics);
   _gridEnergy.setValue(gridMetrics.energy);
   _gridEnergyReturned.setValue(gridMetrics.energyReturned);
   _routerVoltage.setValue(gridMetrics.voltage);
   _gridPower.setValue(gridMetrics.power);
 
   Mycila::Router::Metrics routerMetrics;
-  router.getRouterMeasurements(routerMetrics);
+  router.readMeasurements(routerMetrics);
   _routerPower.setValue(routerMetrics.power);
   _routerApparentPower.setValue(routerMetrics.apparentPower);
   _routerPowerFactor.setValue(routerMetrics.powerFactor);
@@ -1445,10 +1445,10 @@ void YaSolR::Website::updateCards() {
   _deviceHeapMinFree.setValue(memory.minimumFree);
 
   Mycila::RouterOutput::Metrics output1Measurements;
-  output1.getOutputMeasurements(output1Measurements);
+  output1.readMeasurements(output1Measurements);
 
   Mycila::RouterOutput::Metrics output2Measurements;
-  output2.getOutputMeasurements(output2Measurements);
+  output2.readMeasurements(output2Measurements);
 
   // statistics
 
@@ -1628,7 +1628,7 @@ void YaSolR::Website::updateCharts() {
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
 
   Mycila::Router::Metrics* routerMetrics = new Mycila::Router::Metrics();
-  router.getRouterMeasurements(*routerMetrics);
+  router.readMeasurements(*routerMetrics);
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routerMetrics->power);
   _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = std::isnan(routerMetrics->thdi) ? 0 : std::round(routerMetrics->thdi);
   delete routerMetrics;

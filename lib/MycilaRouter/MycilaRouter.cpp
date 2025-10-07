@@ -23,13 +23,13 @@ extern Mycila::Logger logger;
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
   Metrics* routerMeasurements = new Metrics();
-  getRouterMeasurements(*routerMeasurements);
+  readMeasurements(*routerMeasurements);
   toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
   delete routerMeasurements;
   routerMeasurements = nullptr;
 
   Metrics* metrics = new Metrics();
-  getRouterMetrics(*metrics, voltage);
+  readMetrics(*metrics, voltage);
   toJson(root["metrics"].to<JsonObject>(), *metrics);
   delete metrics;
   metrics = nullptr;
@@ -73,12 +73,12 @@ void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {
 #endif
 
 // get router theoretical metrics based on the dimmer states and the grid voltage
-void Mycila::Router::getRouterMetrics(Metrics& metrics, float voltage) const {
+void Mycila::Router::readMetrics(Metrics& metrics, float voltage) const {
   metrics.voltage = voltage;
 
   for (const auto& output : _outputs) {
     RouterOutput::Metrics outputMetrics;
-    output->getOutputMetrics(outputMetrics, voltage);
+    output->readMetrics(outputMetrics, voltage);
     metrics.energy += outputMetrics.energy;
     metrics.apparentPower += outputMetrics.apparentPower;
     metrics.current += outputMetrics.current;
@@ -96,13 +96,13 @@ void Mycila::Router::getRouterMetrics(Metrics& metrics, float voltage) const {
   }
 }
 
-void Mycila::Router::getRouterMeasurements(Metrics& metrics) const {
+void Mycila::Router::readMeasurements(Metrics& metrics) const {
   bool routing = false;
 
   for (size_t i = 0; i < _outputs.size(); i++) {
     // check if we have a PZEM output
     RouterOutput::Metrics pzemMetrics;
-    const bool pzem = _outputs[i]->getOutputMeasurements(pzemMetrics);
+    const bool pzem = _outputs[i]->readMeasurements(pzemMetrics);
 
     // pzem output found: get voltage and energy
     if (pzem) {
@@ -210,11 +210,11 @@ void Mycila::Router::continueCalibration() {
       if (millis() - _calibrationStartTime > 5000) {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
         RouterOutput::Metrics outputMetrics;
-        _outputs[_calibrationOutputIndex]->getOutputMeasurements(outputMetrics);
+        _outputs[_calibrationOutputIndex]->readMeasurements(outputMetrics);
         float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
         if (!resistance) {
           Router::Metrics routerMetrics;
-          getRouterMeasurements(routerMetrics);
+          readMeasurements(routerMetrics);
           resistance = routerMetrics.resistance;
         }
 
@@ -231,11 +231,11 @@ void Mycila::Router::continueCalibration() {
       if (millis() - _calibrationStartTime > 5000) {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
         RouterOutput::Metrics outputMetrics;
-        _outputs[_calibrationOutputIndex]->getOutputMeasurements(outputMetrics);
+        _outputs[_calibrationOutputIndex]->readMeasurements(outputMetrics);
         float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
         if (!resistance) {
           Router::Metrics routerMetrics;
-          getRouterMeasurements(routerMetrics);
+          readMeasurements(routerMetrics);
           resistance = routerMetrics.resistance;
         }
 

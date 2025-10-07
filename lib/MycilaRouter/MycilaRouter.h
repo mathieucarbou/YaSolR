@@ -88,10 +88,10 @@ namespace Mycila {
 #endif
 
       // get router theoretical metrics based on the dimmer states and the grid voltage
-      void getRouterMetrics(Metrics& metrics, float voltage) const;
+      void readMetrics(Metrics& metrics, float voltage) const;
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
-      void getRouterMeasurements(Metrics& metrics) const;
+      void readMeasurements(Metrics& metrics) const;
 
     private:
       PID* _pidController;

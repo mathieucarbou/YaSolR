@@ -315,8 +315,8 @@ static void publishData() {
   Mycila::Grid::Metrics* gridMetrics = new Mycila::Grid::Metrics();
   Mycila::Router::Metrics* routerMeasurements = new Mycila::Router::Metrics();
 
-  grid.getGridMeasurements(*gridMetrics);
-  router.getRouterMeasurements(*routerMeasurements);
+  grid.readMeasurements(*gridMetrics);
+  router.readMeasurements(*routerMeasurements);
 
   float virtual_grid_power = gridMetrics->power - routerMeasurements->power;
 
