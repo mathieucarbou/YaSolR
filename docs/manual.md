@@ -672,7 +672,7 @@ You can verify that the pairing is successful by trying to activate the dimmer i
 This complex pairing procedure is not specific to this router project but is common to any PZEM-004T device when using several PZEM-004T v3 devices on the same Serial TX/RX.
 You can read more at:
 
-- [mathieucarbou/MycilaPZEM004Tv3](https://github.com/mathieucarbou/MycilaPZEM004Tv3)
+- [mathieucarbou/MycilaPZEM](https://github.com/mathieucarbou/MycilaPZEM)
 - [mandulaj/PZEM-004T-v30](https://github.com/mandulaj/PZEM-004T-v30)
 
 #### Bypass Relay

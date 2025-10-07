@@ -19,7 +19,7 @@ Je suis notamment l'auteur des librairies (toutes utilisées par YaSolR):
 
 [list]
 [*] [b][url=https://mathieu.carbou.me/MycilaJSY]MycilaJSY[/url][/b]: librairie qui supporte les JSY en TTL et RS485 sur ESP32
-[*] [b][url=https://mathieu.carbou.me/MycilaPZEM004Tv3]MycilaPZEM004Tv3[/url][/b]: librairie qui supporte le PZEM-004T v3 sur ESP32
+[*] [b][url=https://mathieu.carbou.me/MycilaPZEM]MycilaPZEM[/url][/b]: librairie qui supporte le PZEM-004T v3 sur ESP32
 [*] [b][url=https://mathieu.carbou.me/MycilaPulseAnalyzer]MycilaPulseAnalyzer[/url][/b]: librairie d'analyse de pulse de circuit Zero-Cross
 [*] [b][url=https://mathieu.carbou.me/MycilaESPConnect]MycilaESPConnect[/url][/b]: librairie de gestion réseau pour ESP32 qui supporte l'Ethernet
 [/list]

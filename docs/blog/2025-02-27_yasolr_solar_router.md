@@ -24,7 +24,7 @@ For those who don't know me, I am very active in the Arduino / ESP32 / Home Assi
 I am notably the author of the libraries (all used by YaSolR):
 
 - **[MycilaJSY](https://mathieu.carbou.me/MycilaJSY)**: library that supports JSY in TTL and RS485 on ESP32
-- **[MycilaPZEM004Tv3](https://mathieu.carbou.me/MycilaPZEM004Tv3)**: library that supports PZEM-004T v3 on ESP32
+- **[MycilaPZEM](https://mathieu.carbou.me/MycilaPZEM)**: library that supports PZEM-004T v3 on ESP32
 - **[MycilaPulseAnalyzer](https://mathieu.carbou.me/MycilaPulseAnalyzer)**: library for analyzing circuit pulses Zero-Cross
 - **[MycilaESPConnect](https://mathieu.carbou.me/MycilaESPConnect)**: network management library for ESP32 that supports Ethernet
 
