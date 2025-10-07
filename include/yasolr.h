@@ -30,7 +30,7 @@
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
 #include <MycilaPID.h>
-#include <MycilaPZEM004Tv3.h>
+#include <MycilaPZEM.h>
 #include <MycilaPulseAnalyzer.h>
 #include <MycilaRelay.h>
 #include <MycilaRouter.h>

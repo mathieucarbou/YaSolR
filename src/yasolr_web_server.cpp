@@ -164,7 +164,7 @@ void rest_api() {
     library["MycilaMQTT"] = MYCILA_MQTT_VERSION;
     library["MycilaNTP"] = MYCILA_NTP_VERSION;
     library["MycilaPulseAnalyzer"] = MYCILA_PULSE_VERSION;
-    library["MycilaPZEM004Tv3"] = MYCILA_PZEM_VERSION;
+    library["MycilaPZEM"] = MYCILA_PZEM_VERSION;
     library["MycilaRelay"] = MYCILA_RELAY_VERSION;
     library["MycilaSystem"] = MYCILA_SYSTEM_VERSION;
     library["MycilaTaskManager"] = MYCILA_TASK_MANAGER_VERSION;
