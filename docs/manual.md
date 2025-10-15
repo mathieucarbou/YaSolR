@@ -15,6 +15,7 @@ description: Manual
   - [Overview](#overview)
   - [Output 1 and 2](#output-1-and-2)
   - [PID](#pid)
+  - [PID Tuning](#pid-tuning)
   - [Network](#network)
   - [NTP](#ntp)
   - [MQTT](#mqtt)
@@ -228,7 +229,7 @@ The output sections show the state of the outputs and the possibility to control
 
 - `Bypass Automatic Control`: Activate or deactivate automatic dimmer bypass (force heating) based on hours and/or temperature.
 - `Bypass`: Activate or deactivate dimmer bypass (force heating)
-  This is a manual override. So if, when automatic bypass deactivates (in the morning for example), you hav manual bypass that is activated, 
+  This is a manual override. So if, when automatic bypass deactivates (in the morning for example), you hav manual bypass that is activated,
   then bypass will stay activated until you deactivate the manual override.
 
 > ##### TIP
@@ -253,12 +254,13 @@ You can change the PID settings at runtime and the effect will appear immediatel
 **Default Settings**
 
 - `Proportional Mode`: `On Input`
-- `Integral Correction`: `Advanced`
+- `Derivative Mode`: `On Input`
 - `Kp`: `0.1`
 - `Ki`: `0.2`
 - `Kd`: `0.05`
 - `Output Min`: `-300`
 - `Output Max`: `4000`
+- `Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)
 
 Here are some other values that seem to work well depending on the load, ZCD module, etc:
 
@@ -269,26 +271,85 @@ Here are some other values that seem to work well depending on the load, ZCD mod
 >
 > If you find better settings, please do not hesitate to share them with the community.
 >
-> If you are using a slower measurement device like MQTT, you might want to try with a higher Kd and Ki.
 {: .block-tip }
 
-**Tuning:**
+### PID Tuning
 
-- `Real-time Data`: can be activated to see the PID action in real time in the graphs.
-- `Chart Reset`: click to reset the charts (has no effect on the PID controller).
+The first thing to really understand about a router / diverter is that **its efficiency is directly linked to the frequency of measurements and the speed of reaction of the router**.
+The faster the router will react to a change in grid power, the better it will truly optimize the self-consumption.
 
-Here are some basic links to start with, which talks about the code used under the hood:
+For example, a JSY (connected or remote) can provide several measurements per second and the router will react directly to these changes.
+So a change of grid power is immediately detected and corrected to adjust the routed power.
 
-- [Improving the Beginner’s PID – Introduction](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/)
-- [Improving the Beginner’s PID – Derivative Kick](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-derivative-kick/)
-- [Introducing Proportional On Measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/)
-- [Proportional on Measurement – The Code](http://brettbeauregard.com/blog/2017/06/proportional-on-measurement-the-code/)
+At the opposite, if your measurements are coming from MQTT at an infrequent rate (typical for Home Assistant),
+the router will only react to past measurements and will apply corrections based on some old data.
+So it will create consumption and export peaks because the computed correction a few seconds ago is not valid anymore.
+
+Whether measurements are frequent or not, the PID controller will try to adapt to the situation in order to smooth grid power and avoid as much as possible oscillations.
+If no measurement is received for a long time (2 seconds), the PID controller will be called again with the last measurement which will have the effect to slowly continuing to apply the same correction until a new measurement is received.
+
+YaSolR supports two modes for the proportional and derivative terms:
+
+- `On Error`: the proportional and derivative terms are based on the error (difference between setpoint and measured value)
+- `On Input`: the proportional and derivative terms are based on the measured value differences (grid power)
+
+In most cases, `On Input` mode is preferred because it avoids the derivative kick effect when a sudden change happens (for example when the grid power goes from 0W to 3000W).
+This is the default mode used in YaSolR, but you can try the other mode if you want and see what is happening live in the graphs.
+
+#### Clamping
+
+A PID Controller usually offers an anti-windup mechanism to avoid the integral term to grow too much when the output is saturated (for example, to much consumption or too much solar production so the dimmer is set at 0% or 100%).
+
+In the case of YaSolR, the clamping is done with `Output Min` and `Output Max` values.
+
+- `Output Min`: the minimum output value of the PID controller (negative values are allowed).
+  It should be set to a value lower than your setpoint.
+  The idea is to allow the PID Controller to continue to work in the range of [`Output Min`, `Setpoint`] to smooth any sudden change but this min value should still be close to the setpoint in order for the PID to react quickly.
+- `Output Max`: same thing but in relationship to the load. If you have a 3kW load, you can set it to 4000W for example.
+  It should be set to a value higher than your maximum load power.
+
+#### Proportional / Derivative on measurements (input)
+
+**YaSolR PID controller is using by default proportional on input (measured value) and derivative on input (measured value)**.
+
+- Kp: the proportional gain, is used to control the weight of the integral of input differences
+- Ki: the integral gain, is used to control the weight of the accumulated errors against setpoint
+- Kd: the derivative gain, is used to control the weight of the error
+
+**Effects:**
+
+- Increasing Kp will make the controller slowdown more to avoid overshoot.
+- Increasing Ki will make the controller react more strongly to accumulated errors.
+  If Ki is too high, it can lead to overshoot and instability.
+- Increasing Kd will make the controller react more strongly to a sudden change of grid power
+
+#### Proportional / Derivative on measurements (input)
+
+If you are familiar with PID, you'll notice that this definition differs from a more classic PID based on error: proportional on error, integral on error, derivative on error.
+A more traditional PID controller is controlled with these gains:
+
+- Kp: the proportional gain, is used to control the weight of the current error against setpoint
+- Ki: the integral gain, is used to control the weight of the accumulated errors against setpoint
+- Kd: the derivative gain, is used to control the weight of the error rate of change
+
+**Effects:**
+
+- Increasing Kp will make the controller react more strongly to changes in input.
+  If Kp is too high, it can lead to oscillations around the setpoint.
+- Increasing Ki will make the controller react more strongly to accumulated errors.
+  If Ki is too high, it can lead to overshoot and instability.
+- Increasing Kd will make the controller react more strongly to the rate of change of the input.
+  If Kd is too high, it can lead to noise amplification and instability.
+
+#### Simulation
+
+Try to play with the PID settings to see how it reacts to changes in grid power with the Real-time Data option activated.
+
+To facilitate the tuning, do not forget that you can set a setpoint of any value, so you can still simulate a situation in the late evening where you want the PID to stabilize your grid consumption at 2000W for testing.
 
 > ##### IMPORTANT
 >
 > - Do not leave `Real-time Data` option always activated because the data flow is so high that it impacts the device performance.
->
-> - you are supposed to know how to tune a PID controller. If not, please research on Google.
 >
 {: .block-important }
 
@@ -299,6 +360,27 @@ Here is a demo of the real-time PID tuning in action:
 [![PID Tuning in YaSolR (Yet Another Solar Router)](https://img.youtube.com/vi/ygSpUxKYlUE/0.jpg)](https://www.youtube.com/watch?v=ygSpUxKYlUE "PID Tuning in YaSolR (Yet Another Solar Router)")
 
 Note: the WebSocket PID output was removed
+
+#### References
+
+The PID Controller that YaSolR is using is based on [Mycila::PID](https://mathieu.carbou.me/MycilaUtilities).
+This is a complete PID controller implementation with a lot of features, base on the famous PID-related work from [Brett Beauregard](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/).
+
+This library also contains a complete [PID simulator](https://youtu.be/aSKE0_tJjhw) with grid power, solar production and a load.
+You can use it to test several parameters and see how the PID reacts to changes in setpoint and load.
+
+The PID controller documentation is available at https://mathieu.carbou.me/MycilaUtilities/pid
+
+Here are other interesting links about PID controllers:
+
+- [Improving the Beginner’s PID – Introduction](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/)
+- [Improving the Beginner’s PID – Derivative Kick](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-derivative-kick/)
+- [Introducing Proportional On Measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/)
+- [Proportional on Measurement – The Code](http://brettbeauregard.com/blog/2017/06/proportional-on-measurement-the-code/)
+- [QuickPID](https://github.com/Dlloydev/QuickPID) - Arduino / ESP32
+- [Arduino-PID-Library](https://github.com/br3ttb/Arduino-PID-Library) - Arduino / ESP32
+- [simple-pid](https://github.com/m-lundberg/simple-pid) in Python (and its [documentation](https://simple-pid.readthedocs.io/en/latest/user_guide.html))
+- [Simple PID Controller](https://github.com/bvweerd/simple_pid_controller/) (for Home Assistant)
 
 ### Network
 
@@ -407,7 +489,16 @@ If is possible to listen to some MQTT topics to read the grid voltage, grid powe
 The Shelly sends this kind of data:
 
 ```json
-{"id":1,"current":2.681,"voltage":236.7,"act_power":-607.3,"aprt_power":636.0,"pf":0.95,"freq":50.0,"calibration":"factory"}
+{
+  "id": 1,
+  "current": 2.681,
+  "voltage": 236.7,
+  "act_power": -607.3,
+  "aprt_power": 636.0,
+  "pf": 0.95,
+  "freq": 50.0,
+  "calibration": "factory"
+}
 ```
 
 **Example of configuration with Shelly 3EM:**
@@ -418,7 +509,29 @@ The Shelly sends this kind of data:
 The Shelly sends this kind of data:
 
 ```json
-{"id":0,"a_current":0.132,"a_voltage":236.0,"a_act_power":3.9,"a_aprt_power":31.0,"a_pf":-0.53,"b_current":0.594,"b_voltage":236.4,"b_act_power":45.4,"b_aprt_power":140.3,"b_pf":-0.61,"c_current":0.368,"c_voltage":237.8,"c_act_power":54.3,"c_aprt_power":87.5,"c_pf":-0.72,"n_current":null,"total_current":1.094,"total_act_power":103.610,"total_aprt_power":258.799, "user_calibrated_phase":[]}
+{
+  "id": 0,
+  "a_current": 0.132,
+  "a_voltage": 236.0,
+  "a_act_power": 3.9,
+  "a_aprt_power": 31.0,
+  "a_pf": -0.53,
+  "b_current": 0.594,
+  "b_voltage": 236.4,
+  "b_act_power": 45.4,
+  "b_aprt_power": 140.3,
+  "b_pf": -0.61,
+  "c_current": 0.368,
+  "c_voltage": 237.8,
+  "c_act_power": 54.3,
+  "c_aprt_power": 87.5,
+  "c_pf": -0.72,
+  "n_current": null,
+  "total_current": 1.094,
+  "total_act_power": 103.61,
+  "total_aprt_power": 258.799,
+  "user_calibrated_phase": []
+}
 ```
 
 **The device must be restarted to apply the changes.**
@@ -624,7 +737,7 @@ You can see the full specifications of list of DFRobot DAC modules [here](https:
 - Pick one module between the DFR1071, DFR0971 or DFR1073, ideally the DFR1073 because it has 2 channels and 15 bits resolution and higher accuracy.
 - Connect the module to the router by using the I2C pins (SDA and SCL, same for the display)
 - For DFR0971 and DFR1073 (2-channel): Channel 1 is used for output 1 and channel 2 is used for output 2.
-- Leave the selectors on the module to the default position A2-A1-A0 at 0-0-0 (which means address: 0x58, their default address). 
+- Leave the selectors on the module to the default position A2-A1-A0 at 0-0-0 (which means address: 0x58, their default address).
   **Pay attention to that: some modules come with another address configured!**
 
 [![https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp](https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp)](https://www.dfrobot.com/product-2613.html)
@@ -876,8 +989,8 @@ It won't work if the water heater has already reached its threshold temperature.
 - `Bypass Stop Temperature`: The temperature threshold when the auto bypass will stop: the temperature of the water tank needs to be higher than this threshold.
 - `Bypass Start Time` / `Bypass Stop Time`: The time range when the auto bypass is allowed to start.
 - `Bypass Week Days`: Days of the week when the bypass can be activated.
-- `Manual Bypass Timeout`: The duration in hours after which the manual bypass, if activated, will be automatically deactivated. 
-    If zero, no auto-deactivation happens and you need to manually turn it off.
+- `Manual Bypass Timeout`: The duration in hours after which the manual bypass, if activated, will be automatically deactivated.
+  If zero, no auto-deactivation happens and you need to manually turn it off.
 
 > ##### TIP
 >
@@ -907,8 +1020,8 @@ It won't work if the water heater has already reached its threshold temperature.
 > When updating through web (OTA) it is not possible to update the partition from which the application is currently running.
 > That is why YaSolR needs to restart in SafeBoot mode to update the main application partition.
 > And consequently, from YaSolR, it is possible to update this SafeBoot recovery partition.
-> 
-> Pay really attention when updating the recovery partition: 
+>
+> Pay really attention when updating the recovery partition:
 > if anything goes wrong, you will have to re-flash the complete FACTORY firmware and reconfigure everything (or restore a backup).
 {: .block-important }
 
