@@ -68,10 +68,8 @@
 #define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
 #define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
 #define YASOLR_MQTT_WILL_TOPIC             "/status"
-#define YASOLR_PID_IC_MODE_1               "1: Clamp"
-#define YASOLR_PID_IC_MODE_2               "2: Advanced"
-#define YASOLR_PID_P_MODE_1                "1: On Error"
-#define YASOLR_PID_P_MODE_2                "2: On Input"
+#define YASOLR_PID_MODE_ERROR              "On Error"
+#define YASOLR_PID_MODE_INPUT              "On Input"
 #define YASOLR_PZEM_ADDRESS_OUTPUT1        0x01
 #define YASOLR_PZEM_ADDRESS_OUTPUT2        0x02
 #define YASOLR_RELAY_TYPE_NC               "NC"
@@ -190,13 +188,13 @@
 #define KEY_OUTPUT2_TIME_START             "o2_time_start"
 #define KEY_OUTPUT2_TIME_STOP              "o2_time_stop"
 #define KEY_OUTPUT2_TIME_STOP              "o2_time_stop"
-#define KEY_PID_IC_MODE                    "pid_icmode"
 #define KEY_PID_KD                         "pid_kd"
 #define KEY_PID_KI                         "pid_ki"
 #define KEY_PID_KP                         "pid_kp"
+#define KEY_PID_MODE_D                     "pid_mode_d"
+#define KEY_PID_MODE_P                     "pid_mode_p"
 #define KEY_PID_OUT_MAX                    "pid_out_max"
 #define KEY_PID_OUT_MIN                    "pid_out_min"
-#define KEY_PID_P_MODE                     "pid_pmode"
 #define KEY_PID_SETPOINT                   "pid_setpoint"
 #define KEY_PZEM_UART                      "pzem_uart"
 #define KEY_RELAY1_LOAD                    "relay1_load"

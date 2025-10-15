@@ -76,7 +76,7 @@ void yasolr_init_relays() {
   Mycila::Task* relayTask = new Mycila::Task("Relay", [](void* params) {
     float gridPower = grid.getPower().value_or(NAN);
     float gridVoltage = grid.getVoltage().value_or(NAN);
-    float setpoint = pidController.getSetPoint();
+    float setpoint = pidController.getSetpoint();
 
     if (isnan(gridPower) || isnan(gridVoltage) || !gridVoltage) {
       LOGW(TAG, "Cannot auto switch relays: missing grid power/voltage");

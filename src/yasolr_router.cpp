@@ -28,8 +28,24 @@ static Mycila::Relay* bypassRelay2 = nullptr;
 static Mycila::Task calibrationTask("Calibration", [](void* params) { router.continueCalibration(); });
 
 static Mycila::Task routerTask("Router", [](void* params) {
-  if (!grid.getVoltage().has_value() || !grid.getPower().has_value())
+  std::optional<float> voltage = grid.getVoltage();
+  std::optional<float> power = grid.getPower();
+
+  if (voltage.has_value() && power.has_value()) {
+    if (micros() - pidController.getLastTime() > 2000000 && !router.isCalibrationRunning() && router.isAutoDimmerEnabled()) {
+      // Ensure the PID controller is called about once per second.
+      // This keeps the PID running even if the measurements are not frequent enough (like with MQTT).
+      LOGW(TAG, "Grid measurement system too slow: forcing PID run with previous measurements");
+      router.divert(voltage.value(), power.value());
+      if (website.realTimePIDEnabled()) {
+        dashboardUpdateTask.requestEarlyRun();
+      }
+    }
+
+  } else {
+    // pause routing if grid voltage or power are not available
     router.noDivert();
+  }
 
   output1.applyBypassTimeout();
   output1.applyTemperatureLimit();
@@ -285,11 +301,18 @@ void yasolr_divert() {
 
 void yasolr_configure_pid() {
   pidController.setReverse(false);
-  pidController.setProportionalMode(config.getLong(KEY_PID_P_MODE) == 1 ? Mycila::PID::ProportionalMode::P_ON_ERROR : Mycila::PID::ProportionalMode::P_ON_INPUT);
-  pidController.setIntegralCorrectionMode(config.getLong(KEY_PID_IC_MODE) == 1 ? Mycila::PID::IntegralCorrectionMode::IC_CLAMP : Mycila::PID::IntegralCorrectionMode::IC_ADVANCED);
-  pidController.setSetPoint(config.getFloat(KEY_PID_SETPOINT));
+  pidController.setTimeSampling(false);
+  pidController.setIntegralCorrectionMode(Mycila::PID::IntegralCorrectionMode::CLAMP);
+
+  pidController.setProportionalMode(config.getString(KEY_PID_MODE_P) == YASOLR_PID_MODE_ERROR ? Mycila::PID::ProportionalMode::ON_ERROR : Mycila::PID::ProportionalMode::ON_INPUT);
+  pidController.setDerivativeMode(config.getString(KEY_PID_MODE_D) == YASOLR_PID_MODE_ERROR ? Mycila::PID::DerivativeMode::ON_ERROR : Mycila::PID::DerivativeMode::ON_INPUT);
+
+  pidController.setSetpoint(config.getFloat(KEY_PID_SETPOINT));
   pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
   pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
+
+  pidController.reset();
+
   LOGI(TAG, "PID Controller configured");
 }
 
@@ -343,6 +366,8 @@ void yasolr_init_router() {
 
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500);
+  if (config.getBool(KEY_ENABLE_DEBUG))
+    routerTask.enableProfiling();
 
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1000);

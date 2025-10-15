@@ -100,13 +100,13 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT2_TEMPERATURE_STOP, "60");
   config.configure(KEY_OUTPUT2_TIME_START, "22:00");
   config.configure(KEY_OUTPUT2_TIME_STOP, "06:00");
-  config.configure(KEY_PID_IC_MODE, "2");
   config.configure(KEY_PID_KD, "0.05");
   config.configure(KEY_PID_KI, "0.2");
   config.configure(KEY_PID_KP, "0.1");
+  config.configure(KEY_PID_MODE_D, YASOLR_PID_MODE_INPUT);
+  config.configure(KEY_PID_MODE_P, YASOLR_PID_MODE_INPUT);
   config.configure(KEY_PID_OUT_MAX, "4000");
   config.configure(KEY_PID_OUT_MIN, "-300");
-  config.configure(KEY_PID_P_MODE, "2");
   config.configure(KEY_PID_SETPOINT, "0");
   config.configure(KEY_PIN_I2C_SCL, std::to_string(YASOLR_I2C_SCL_PIN));
   config.configure(KEY_PIN_I2C_SDA, std::to_string(YASOLR_I2C_SDA_PIN));
@@ -269,7 +269,7 @@ void yasolr_init_config() {
       if (!config.getBool(KEY_ENABLE_AP_MODE))
         Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
 
-    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_P_MODE || key == KEY_PID_IC_MODE || key == KEY_PID_SETPOINT) {
+    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_MODE_P || key == KEY_PID_MODE_D || key == KEY_PID_SETPOINT) {
       reconfigureQueue.push(yasolr_configure_pid);
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {

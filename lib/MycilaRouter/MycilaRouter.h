@@ -60,10 +60,6 @@ namespace Mycila {
       void divert(float gridVoltage, float gridPower) {
         if (isCalibrationRunning())
           return;
-
-        if (!isAutoDimmerEnabled())
-          return;
-
         float powerToDivert = _pidController->compute(gridPower);
         for (const auto& output : _outputs) {
           const float usedPower = output->autoDivert(gridVoltage, powerToDivert);

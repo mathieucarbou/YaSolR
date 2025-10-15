@@ -230,13 +230,11 @@ static dash::InputCard<const char*> _mqttTempO2(dashboard, YASOLR_LBL_182);
 
 static int16_t _pidInputHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidOutputHistoryY[YASOLR_GRAPH_POINTS] = {0};
-static int16_t _pidErrorHistoryY[YASOLR_GRAPH_POINTS] = {0};
-static int16_t _pidSumHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
-static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_P_MODE_1 "," YASOLR_PID_P_MODE_2);
-static dash::DropdownCard<const char*> _pidICMode(dashboard, YASOLR_LBL_162, YASOLR_PID_IC_MODE_1 "," YASOLR_PID_IC_MODE_2);
+static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_MODE_ERROR "," YASOLR_PID_MODE_INPUT);
+static dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_148, YASOLR_PID_MODE_ERROR "," YASOLR_PID_MODE_INPUT);
 static dash::InputCard<int> _pidOutMin(dashboard, YASOLR_LBL_164);
 static dash::InputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
 static dash::InputCard<int> _pidSetpoint(dashboard, YASOLR_LBL_163);
@@ -244,10 +242,9 @@ static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
 static dash::ToggleButtonCard _pidView(dashboard, YASOLR_LBL_169);
+
 static dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
 static dash::LineChart<int8_t, int16_t> _pidOutputHistory(dashboard, YASOLR_LBL_171);
-static dash::LineChart<int8_t, int16_t> _pidErrorHistory(dashboard, YASOLR_LBL_172);
-static dash::BarChart<int8_t, int16_t> _pidSumHistory(dashboard, YASOLR_LBL_173);
 static dash::LineChart<int8_t, int16_t> _pidPTermHistory(dashboard, YASOLR_LBL_174);
 static dash::LineChart<int8_t, int16_t> _pidITermHistory(dashboard, YASOLR_LBL_175);
 static dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_176);
@@ -680,44 +677,52 @@ void YaSolR::Website::begin() {
 
   _pidInputHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _pidOutputHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
-  _pidErrorHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
-  _pidSumHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _pidPTermHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _pidITermHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _pidDTermHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
-  _pidView.setTab(_pidTab);
   _pidPMode.setTab(_pidTab);
-  _pidICMode.setTab(_pidTab);
+  _pidDMode.setTab(_pidTab);
   _pidSetpoint.setTab(_pidTab);
+  _pidOutMin.setTab(_pidTab);
+  _pidOutMax.setTab(_pidTab);
   _pidKp.setTab(_pidTab);
   _pidKi.setTab(_pidTab);
   _pidKd.setTab(_pidTab);
-  _pidOutMin.setTab(_pidTab);
-  _pidOutMax.setTab(_pidTab);
+  _pidView.setTab(_pidTab);
+
+  _pidView.setSize(FULL_SIZE);
+
   _pidInputHistory.setTab(_pidTab);
   _pidOutputHistory.setTab(_pidTab);
-  _pidErrorHistory.setTab(_pidTab);
-  _pidSumHistory.setTab(_pidTab);
   _pidPTermHistory.setTab(_pidTab);
   _pidITermHistory.setTab(_pidTab);
   _pidDTermHistory.setTab(_pidTab);
 
-  _pidView.setSize(FULL_SIZE);
   _pidInputHistory.setSize(FULL_SIZE);
   _pidOutputHistory.setSize(FULL_SIZE);
-  _pidErrorHistory.setSize(FULL_SIZE);
-  _pidSumHistory.setSize(FULL_SIZE);
   _pidPTermHistory.setSize(FULL_SIZE);
   _pidITermHistory.setSize(FULL_SIZE);
   _pidDTermHistory.setSize(FULL_SIZE);
 
   _numConfig(_pidSetpoint, KEY_PID_SETPOINT);
+  _numConfig(_pidOutMin, KEY_PID_OUT_MIN);
+  _numConfig(_pidOutMax, KEY_PID_OUT_MAX);
   _numConfig(_pidKp, KEY_PID_KP);
   _numConfig(_pidKi, KEY_PID_KI);
   _numConfig(_pidKd, KEY_PID_KD);
-  _numConfig(_pidOutMin, KEY_PID_OUT_MIN);
-  _numConfig(_pidOutMax, KEY_PID_OUT_MAX);
+
+  _pidPMode.onChange([](const char* value) {
+    config.set(KEY_PID_MODE_P, value);
+    _pidPMode.setValue(value);
+    dashboard.refresh(_pidPMode);
+  });
+
+  _pidDMode.onChange([](const char* value) {
+    config.set(KEY_PID_MODE_D, value);
+    _pidDMode.setValue(value);
+    dashboard.refresh(_pidDMode);
+  });
 
   _pidView.onChange([this](bool value) {
     _pidView.setValue(value);
@@ -725,28 +730,6 @@ void YaSolR::Website::begin() {
       resetPIDCharts();
     dashboard.refresh(_pidView);
     dashboardInitTask.resume();
-  });
-
-  _pidPMode.onChange([](const char* value) {
-    if (strcmp(value, YASOLR_PID_P_MODE_1) == 0)
-      config.set(KEY_PID_P_MODE, "1");
-    else if (strcmp(value, YASOLR_PID_P_MODE_2) == 0)
-      config.set(KEY_PID_P_MODE, "2");
-    else
-      config.unset(KEY_PID_P_MODE);
-    _pidPMode.setValue(config.get(KEY_PID_P_MODE));
-    dashboard.refresh(_pidPMode);
-  });
-
-  _pidICMode.onChange([](const char* value) {
-    if (strcmp(value, YASOLR_PID_IC_MODE_1) == 0)
-      config.set(KEY_PID_IC_MODE, "1");
-    else if (strcmp(value, YASOLR_PID_IC_MODE_2) == 0)
-      config.set(KEY_PID_IC_MODE, "2");
-    else
-      config.unset(KEY_PID_IC_MODE);
-    _pidICMode.setValue(config.get(KEY_PID_IC_MODE));
-    dashboard.refresh(_pidICMode);
   });
 
   // tab: gpio
@@ -1243,24 +1226,8 @@ void YaSolR::Website::initCards() {
 
   // tab: pid
 
-  switch (config.getInt(KEY_PID_P_MODE)) {
-    case 1:
-      _pidPMode.setValue(YASOLR_PID_P_MODE_1);
-      break;
-    default:
-      _pidPMode.setValue(YASOLR_PID_P_MODE_2);
-      break;
-  }
-
-  switch (config.getInt(KEY_PID_IC_MODE)) {
-    case 1:
-      _pidICMode.setValue(YASOLR_PID_IC_MODE_1);
-      break;
-    default:
-      _pidICMode.setValue(YASOLR_PID_IC_MODE_2);
-      break;
-  }
-
+  _pidPMode.setValue(config.get(KEY_PID_MODE_P));
+  _pidDMode.setValue(config.get(KEY_PID_MODE_D));
   _pidSetpoint.setValue(config.getInt(KEY_PID_SETPOINT));
   _pidKp.setValue(config.getFloat(KEY_PID_KP));
   _pidKi.setValue(config.getFloat(KEY_PID_KI));
@@ -1270,8 +1237,6 @@ void YaSolR::Website::initCards() {
 
   _pidInputHistory.setDisplay(pidViewEnabled);
   _pidOutputHistory.setDisplay(pidViewEnabled);
-  _pidErrorHistory.setDisplay(pidViewEnabled);
-  _pidSumHistory.setDisplay(pidViewEnabled);
   _pidPTermHistory.setDisplay(pidViewEnabled);
   _pidITermHistory.setDisplay(pidViewEnabled);
   _pidDTermHistory.setDisplay(pidViewEnabled);
@@ -1645,8 +1610,6 @@ void YaSolR::Website::updatePIDCharts() {
   // shift array
   memmove(&_pidInputHistoryY[0], &_pidInputHistoryY[1], sizeof(_pidInputHistoryY) - sizeof(*_pidInputHistoryY));
   memmove(&_pidOutputHistoryY[0], &_pidOutputHistoryY[1], sizeof(_pidOutputHistoryY) - sizeof(*_pidOutputHistoryY));
-  memmove(&_pidErrorHistoryY[0], &_pidErrorHistoryY[1], sizeof(_pidErrorHistoryY) - sizeof(*_pidErrorHistoryY));
-  memmove(&_pidSumHistoryY[0], &_pidSumHistoryY[1], sizeof(_pidSumHistoryY) - sizeof(*_pidSumHistoryY));
   memmove(&_pidPTermHistoryY[0], &_pidPTermHistoryY[1], sizeof(_pidPTermHistoryY) - sizeof(*_pidPTermHistoryY));
   memmove(&_pidITermHistoryY[0], &_pidITermHistoryY[1], sizeof(_pidITermHistoryY) - sizeof(*_pidITermHistoryY));
   memmove(&_pidDTermHistoryY[0], &_pidDTermHistoryY[1], sizeof(_pidDTermHistoryY) - sizeof(*_pidDTermHistoryY));
@@ -1654,8 +1617,6 @@ void YaSolR::Website::updatePIDCharts() {
   // set new values
   _pidInputHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getInput());
   _pidOutputHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getOutput());
-  _pidErrorHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getError());
-  _pidSumHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getSum());
   _pidPTermHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getPTerm());
   _pidITermHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getITerm());
   _pidDTermHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(pidController.getDTerm());
@@ -1663,8 +1624,6 @@ void YaSolR::Website::updatePIDCharts() {
   // update charts
   _pidInputHistory.setY(_pidInputHistoryY, YASOLR_GRAPH_POINTS);
   _pidOutputHistory.setY(_pidOutputHistoryY, YASOLR_GRAPH_POINTS);
-  _pidErrorHistory.setY(_pidErrorHistoryY, YASOLR_GRAPH_POINTS);
-  _pidSumHistory.setY(_pidSumHistoryY, YASOLR_GRAPH_POINTS);
   _pidPTermHistory.setY(_pidPTermHistoryY, YASOLR_GRAPH_POINTS);
   _pidITermHistory.setY(_pidITermHistoryY, YASOLR_GRAPH_POINTS);
   _pidDTermHistory.setY(_pidDTermHistoryY, YASOLR_GRAPH_POINTS);
@@ -1675,8 +1634,6 @@ void YaSolR::Website::resetPIDCharts() {
 #ifdef APP_MODEL_PRO
   memset(_pidOutputHistoryY, 0, sizeof(_pidOutputHistoryY));
   memset(_pidInputHistoryY, 0, sizeof(_pidInputHistoryY));
-  memset(_pidErrorHistoryY, 0, sizeof(_pidErrorHistoryY));
-  memset(_pidSumHistoryY, 0, sizeof(_pidSumHistoryY));
   memset(_pidPTermHistoryY, 0, sizeof(_pidPTermHistoryY));
   memset(_pidITermHistoryY, 0, sizeof(_pidITermHistoryY));
   memset(_pidDTermHistoryY, 0, sizeof(_pidDTermHistoryY));
