@@ -31,10 +31,10 @@ static void start_task_manager() {
     pzemTaskManager->addTask(*pzemTask);
 
     if (config.getBool(KEY_ENABLE_DEBUG)) {
-      pzemTaskManager->enableProfiling();
+      pzemTask->enableProfiling();
     }
 
-    assert(pzemTaskManager->asyncStart(512 * 5, 5, 0, 100, true));
+    assert(pzemTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
 
     Mycila::TaskMonitor.addTask(pzemTaskManager->name());
   }

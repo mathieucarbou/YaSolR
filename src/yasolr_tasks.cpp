@@ -7,12 +7,6 @@
 void yasolr_start_task_manager() {
   LOGI(TAG, "Start task managers");
 
-  // profiling tasks ?
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
-    coreTaskManager.enableProfiling();
-    unsafeTaskManager.enableProfiling();
-  }
-
   // core task manager
   assert(coreTaskManager.asyncStart(512 * 8, 5, 1, 100, true));
 

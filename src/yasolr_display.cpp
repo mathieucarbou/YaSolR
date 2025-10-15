@@ -210,6 +210,8 @@ void yasolr_configure_display() {
       });
 
       displayTask->setInterval(1000);
+      if (config.getBool(KEY_ENABLE_DEBUG))
+        displayTask->enableProfiling();
 
       coreTaskManager.addTask(*displayTask);
     }

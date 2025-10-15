@@ -85,14 +85,14 @@ static void start_task_manager() {
   if (jsyTaskManager == nullptr) {
     jsyTaskManager = new Mycila::TaskManager("y-jsy");
 
-    if (config.getBool(KEY_ENABLE_DEBUG)) {
-      jsyTaskManager->enableProfiling();
-    }
-
     jsyTask = new Mycila::Task("JSY", [](void* params) {
       if (jsy != nullptr)
         jsy->read();
     });
+
+    if (config.getBool(KEY_ENABLE_DEBUG)) {
+      jsyTask->enableProfiling();
+    }
 
     jsyTaskManager->addTask(*jsyTask);
 
