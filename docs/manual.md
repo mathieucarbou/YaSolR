@@ -267,6 +267,15 @@ Here are some other values that seem to work well depending on the load, ZCD mod
 - `Kp`: `0.3`, `Ki`: `0.6`, `Kd`: `0.1`
 - `Kp`: `0.3`, `Ki`: `0.4`, `Kd`: `0.1`
 
+**Regular PID trigger**
+
+For example, if a new MQTT measurement comes and the PID detects that it should decrease step by step the load because the grid power has increased, then, if no new measurement is coming in the next 2 seconds, it will automatically continue to decrease step by step until a new measurement is received. Same applied if it has to increase the load.
+
+Such behavior will have 2 beneficial effect:
+
+1. The PID will be more likely to reach the setpoint faster since the PID loop will keep on sending corrections instead of stopping
+2. The PID constantly changing the power going to the load will also have an effect to trigger a new measurement. This is especially true for devices like Shelly, which are not sending updates if the power does not change. With Shellys this is possible to not have any update for more than 1 minute (which will then stop the routing). To counter that, the PID will continue slowly change the load so that the Shelly will see a power change and consequently send a MQTT event, which will refresh the PID. This allows a closed loop control without lacking measurement.
+
 > ##### TIP
 >
 > If you find better settings, please do not hesitate to share them with the community.
