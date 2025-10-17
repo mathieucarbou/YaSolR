@@ -101,7 +101,7 @@ const CONFIG = {
       KD: 0.05,
       // Output Minimum (W): should be below the SETPOINT value, like 300W below.
       OUT_MIN: -300,
-      // Output Maximum (W): should be above the nominal power of the load.
+      // Output Maximum (W): should be above the nominal power of the load, ideally your maximum possible excess power, like your solar production peak power
       // I set below, the the available power to divert will be limited to this value globally for all dimmers.
       OUT_MAX: 2000,
     },
