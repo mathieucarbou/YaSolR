@@ -20,7 +20,7 @@ static void onData(AsyncUDPPacket packet) {
   if (len < 5 || buffer[0] != YASOLR_UDP_MSG_TYPE_JSY_DATA)
     return;
 
-  uint32_t size;
+  size_t size;
   memcpy(&size, buffer + 1, 4);
 
   if (len != size + 9)
