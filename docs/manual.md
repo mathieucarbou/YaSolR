@@ -649,13 +649,13 @@ This is easier to put a clamp around the grid wire.
 #### JSY Remote
 
 JSY can also be replaced with a remote JSY **without any impact on routing speed**.
-You can install the [Sender](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP) .ino file on a device and connect it to the JSY.
+You can install the [MycilaJSY App](https://github.com/mathieucarbou/MycilaJSYApp) on a device and connect it to the JSY.
 This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP.
 The reading rate is about **20-25 messages per second** and sending rate is 3 messages per second (because the JSY exposes 3 new measurements every second).
 
 ![](https://github.com/mathieucarbou/MycilaJSY/assets/61346/3066bf12-31d5-45de-9303-d810f14731d0)
 
-You can look in the [JSY project](https://mathieu.carbou.me/MycilaJSY/) to find more information about how to setup remote JSY and the supported protocols.
+You can look in the [MycilaJSY App](https://github.com/mathieucarbou/MycilaJSYApp) project to find more information about how to setup remote JSY and the supported protocols.
 
 When using a remote JSY with the router, the following rules apply:
 

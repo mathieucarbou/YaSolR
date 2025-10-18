@@ -20,7 +20,7 @@ There is also a `Listener` example which is the same app, bit not connected to t
 
 The 2 samples are made with ESP-DASH, ElegantOTA, WebSerial, MycilaESpConnect, etc.
 
-=> [MycilaJSY RemoteUDP](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP)
+=> [MycilaJSY App](https://github.com/mathieucarbou/MycilaJSYApp) (UDp Remote Sender and Listener examples)
 => [MycilaJSY](https://mathieu.carbou.me/MycilaJSY/) project
 
 ## Remote JSY in YaSolR

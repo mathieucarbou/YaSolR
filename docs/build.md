@@ -65,7 +65,7 @@ Here are below some examples:
   * [Voltage Regulator + PWM to Analog Converter only](#voltage-regulator--pwm-to-analog-converter-only)
   * [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
 - [Possible Upgrades](#possible-upgrades): some additional components you can add to your router
-- [Remote JSY](#remote-jsy): a standalone application to place in your electrical panel to send the JSY metrics through UDP for remote installations
+- [Remote JSY](#remote-jsy): a standalone application to place in your electrical panel to send the JSY metrics through MycilaJSY App for remote installations
 - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter): a limited Solar Diverter / Router with Shelly devices and a voltage regulator
 - [Alternative: Home Assistant Solar Diverter](#alternative-home-assistant-solar-diverter)
 
@@ -295,13 +295,13 @@ Here are below what you can add to upgrade your router:
 
 ### Remote JSY
 
-Here are the components below to build a remote JSY and install the [Sender](https://github.com/mathieucarbou/MycilaJSY/tree/main/examples/RemoteUDP) .ino file on a it.
+Here are the components below to build a [MycilaJSY App](https://github.com/mathieucarbou/MycilaJSYApp).
 This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP.
 The reading rate is about **20-25 messages per second** and sending rate is 3 messages per second (because the JSY exposes 3 new measurements every second).
 
 ![](https://github.com/mathieucarbou/MycilaJSY/assets/61346/3066bf12-31d5-45de-9303-d810f14731d0)
 
-You can look in the [JSY project](https://mathieu.carbou.me/MycilaJSY/) to find more information about how to setup remote JSY and the supported protocols.
+You can look in the [MycilaJSY App](https://github.com/mathieucarbou/MycilaJSYApp) project to find more information about how to setup remote JSY and the supported protocols.
 
 |                        Mean Well HDR-15-5 5V DC                        |                              ESP32                               | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333                          |
 | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | ------------------------------------------------------------------------ |

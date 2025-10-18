@@ -91,7 +91,7 @@ I do not provide a pre-assembled router for security reasons, standards, after-s
 - JSY-MK-163T
 - JSY-MK-227
 - JSY-MK-229
-- JSY Remote by UDP
+- JSY Remote through UDP (with [MycilaJSY App](http://mathieu.carbou.me/MycilaJSYApp/))
 - MQTT (raw value, Shelly JSON)
 
 ### Dimmers supported in phase control with a module Zero-Cross
