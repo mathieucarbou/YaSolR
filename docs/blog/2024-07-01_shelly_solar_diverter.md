@@ -72,6 +72,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 - **[Shelly Solar Diverter Script V3](../downloads/auto_diverter_v3.js)**: Updated PID parameters ([see here](https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194) and [here](https://yasolr.carbou.me/manual#pid) to have more info about how to tune the PID controller)
 
 - **[Shelly Solar Diverter Script V4](../downloads/auto_diverter_v4.js)**: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. `EXCESS_POWER_LIMIT` can also be used to limit an output power to a specific value.
+- **[Shelly Solar Diverter Script V4](../downloads/auto_diverter_v4.js)**: Fixed dimmer sharing feature to use Watts instead of %: using % based on PID output is wrong and will make the PID react to compensate. (Now replaced by `POWER_RATIO` and `POWER_LIMIT` in later versions.)
 
 - **[Shelly Solar Diverter Script V5](../downloads/auto_diverter_v5.js)**: Introduced a LUT to more closely match the voltage and current sine wave when computing the dimmer duty cycle to apply to the LSA
 
@@ -223,7 +224,7 @@ const CONFIG = {
   DEBUG: 1,
   // Set ID of the Bypass Switch button off the Shelly (== its output): 0 for PRO EM50, 100 for PRO 3EM, negative to disable
   // When set, the script will read the status of the switch to detect if the bypass relay is on or off in order to pause routing
-  // This can only be set when you have wired to Shelly static relay to a contactor in order to use the Shelly button to activate 
+  // This can only be set when you have wired to Shelly static relay to a contactor in order to use the Shelly button to activate
   // a bypass mode that will heat at 100% without using the voltage regulator
   // This can also be set to 0 or 100 if you want the bypass to be done with the dimmer: when the relay will be switched on, the script will detect it and put the dimmer in full power mode.
   SHELLY_SWITCH_ID: 0,
@@ -275,7 +276,7 @@ const CONFIG = {
     // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
     KI: 0.2,
     // PID Derivative Gain = keep it low
-    KD: 0.05
+    KD: 0.05,
   },
 
   // DIMMER LIST
@@ -320,7 +321,7 @@ const CONFIG = {
     //   MIN: 1,
     //   MAX: 99,
     // }
-  }
+  },
 };
 ```
 
@@ -342,22 +343,40 @@ Let's say you have 3 dimmers with this configuration:
 DIMMERS: {
   "192.168.125.93": {
     RESISTANCE: 53,
-    EXCESS_POWER_LIMIT: 200,
+    POWER_LIMIT: 200,    // reserve up to 200 W for this dimmer
   },
   "192.168.125.94": {
     RESISTANCE: 53,
-    EXCESS_POWER_LIMIT: 200,
+    POWER_LIMIT: 200,    // reserve up to 200 W for this dimmer
   },
   "192.168.125.95": {
     RESISTANCE: 53,
-    EXCESS_POWER_LIMIT: 0,
+    POWER_LIMIT: 0,      // 0 means "take the remaining power"
   }
 }
 ```
 
-- the first one will take up to 200W
-- the second one 200W (if some excess power is left)
+- the first one will take up to 200 W (because of `POWER_LIMIT`)
+- the second one up to 200 W (if some excess power is left)
 - the third one will take the remaining power (if any left)
+
+Alternative: use `POWER_RATIO` to share proportionally. For example, two dimmers sharing equally:
+
+```javascript
+DIMMERS: {
+  "heaterA": { RESISTANCE: 50, POWER_RATIO: 0.5 },
+  "heaterB": { RESISTANCE: 50, POWER_RATIO: 0.5 }
+}
+```
+
+Or combine `POWER_RATIO` with `POWER_LIMIT` to cap each dimmer:
+
+```javascript
+DIMMERS: {
+  "heaterA": { RESISTANCE: 50, POWER_RATIO: 0.6, POWER_LIMIT: 800 },
+  "heaterB": { RESISTANCE: 50, POWER_RATIO: 0.4, POWER_LIMIT: 500 }
+}
+```
 
 ### Start / Stop Automatic Divert
 
@@ -416,6 +435,7 @@ Examples:
 - `GET /script/1/status` => returns a JSON object with `config`, `pid` and `divert` state
 - `GET /script/1/status?debug=2` => sets debug level to verbose
 - `GET /script/1/status?boiler=standby` => sets the dimmer named `boiler` to standby (force off)
+- `GET /script/1/status?boiler=auto` => sets the dimmer named `boiler` to auto (normal operation)
 
 Sample response (v18):
 
@@ -425,7 +445,7 @@ Sample response (v18):
     "DEBUG": 1,
     "SHELLY_SWITCH_ID": 0,
     "GRID_SOURCE": {
-      "TYPE": "EM",
+      "TYPE": "MQTT",
       "NOMINAL_VOLTAGE": 230,
       "MQTT_TOPIC_GRID_POWER": "homeassistant/states/sensor/grid_power/state",
       "MQTT_TOPIC_GRID_VOLTAGE": "homeassistant/states/sensor/grid_voltage/state"
@@ -435,7 +455,7 @@ Sample response (v18):
       "INTERVAL_S": 1,
       "P_MODE": "input",
       "D_MODE": "input",
-      "SETPOINT": -100,
+      "SETPOINT": 1500,
       "OUT_MIN": -400,
       "OUT_MAX": 6000,
       "KP": 0.1,
@@ -457,18 +477,21 @@ Sample response (v18):
     }
   },
   "pid": {
-    "input": 0,
-    "output": 0,
-    "error": 0,
-    "pTerm": 0,
-    "iTerm": 0,
+    "input": 1242.7,
+    "output": 1225.53,
+    "error": 257.3,
+    "pTerm": -124.27,
+    "iTerm": 1349.8,
     "dTerm": 0
   },
   "divert": {
+    "gridVoltage": 237.5,
     "dimmers": {
       "boiler": {
         "powerToDivert": 0,
-        "maxPower": 622.35,
+        "fullPower": false,
+        "standby": false,
+        "maxPower": 663.60294117647,
         "dutyCycle": 0,
         "firingDelay": 10000,
         "powerFactor": 0,
@@ -476,12 +499,11 @@ Sample response (v18):
         "current": 0,
         "apparentPower": 0,
         "thdi": 0,
-        "rpc": "pending",
-        "lastActivation": 0
+        "rpc": "success",
+        "lastActivation": 1760909103663.832
       }
     },
-    "gridVoltage": 230,
-    "gridPower": 0
+    "gridPower": 1242.7
   }
 }
 ```
