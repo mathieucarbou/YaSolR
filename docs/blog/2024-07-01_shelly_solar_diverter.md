@@ -50,11 +50,33 @@ A router can also schedule some forced heating of the water tank to ensure the w
 
 ## Shelly Solar Diverter Features
 
-- **Unlimited dimmers (output)**
-- **PID Controller**
-- **Excess sharing amongst dimmers**
-- **Bypass (force heating)** and automatically turn the dimmer off
-- **Plus all the power of the Shelly ecosystem (rules, schedules, automations, etc)**
+- ⚙️ **Core capabilities**
+  - 🔌 Unlimited dimmers (outputs)
+  - 🧭 PID controller (new algorithm — simpler and more efficient)
+  - 🔁 Excess sharing amongst dimmers (proportional sharing with `POWER_RATIO`)
+  - 🔥 Bypass (force heating) with automatic dimmer turn-off
+
+- 🔧 **Per-output controls**
+  - ⚡ Per-output power limiting (`POWER_LIMIT`)
+  - 📊 Per-output min/max duty cycle support (MIN / MAX)
+  - 🔢 Use LUT-based dimming (`USE_POWER_LUT`) for more accurate power matching
+
+- 🌐 **Configuration & integrations**
+  - 🧩 Simplified configuration (reorganized `PID` and `DIMMERS` sections)
+  - 🌩️ Support for Shelly EM, 3EM and MQTT as measurement sources (`GRID_SOURCE.TYPE`)
+  - 🧰 Support for Shelly virtual components (dynamic config values)
+
+- 🔁 **Routing & responsiveness**
+  - 🧠 Routing managed by the PID controller proportional to measurements
+  - ⚡ Better responsiveness, especially with MQTT (closed-loop MQTT updates)
+
+- 🛠️ **API & control**
+  - 🛰️ REST endpoint to read status and change debug level (`/script/1/status?debug=...`)
+  - 📴 REST endpoint to set a dimmer to `standby` or `auto` (e.g. `?boiler=standby`)
+  - 🔄 Support for physical forced full-power via contactor or virtual forced mode (EM relay)
+
+- 🌐 **Ecosystem**
+  - 🔗 Plus all the power of the Shelly ecosystem (rules, schedules, automations, Home Assistant integration)
 
 This solar diverter based on Shelly devices and a Shelly script can control remotely dimmers and could even be enhanced with relays.
 Shelly's being remotely controllable, such system offers a very good integration with Shelly App and Home Automation Systems like Home Assistant.
