@@ -169,7 +169,7 @@ Also, this central place allows to control the 1, 2 or more dimmers remotely.
 - Set static IP addresses
 - Set **Operation mode** to 1-10V
 - Set **Min brightness** on toggle" to 0
-- Use **Min/max brightness** to remap the 0-100% to match the voltage regulator. In the case of the LSA and LCTC, I found that **I had to remap to 7% - 85%.**
+- Use **Min/max brightness** to remap the 0-100% to match the voltage regulator. In the case of the LSA and LCTC, I found that **I had to remap to 4% - 96%.**
 
 **IMPORTANT**
 
