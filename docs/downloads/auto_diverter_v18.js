@@ -130,7 +130,7 @@ const CONFIG = {
       MIN: 1,
       // Maximum duty cycle value to set on the dimmer
       // Range: 1-99 %
-      MAX: 99,
+      MAX: 100,
     },
     // pool_heater: {
     //   IP: "192.168.125.99",
