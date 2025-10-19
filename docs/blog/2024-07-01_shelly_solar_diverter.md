@@ -101,15 +101,15 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 - **[Shelly Solar Diverter Script V17](../downloads/auto_diverter_v17.js)**: Introduced POWER_RATIO and POWER_LIMIT to better share the available power to divert between multiple dimmers and fixed issue with standby and full power modes impacting the power sharing
 
 - **[Shelly Solar Diverter Script V18](../downloads/auto_diverter_v18.js) ([minified](../downloads/auto_diverter_v18.min.js))**:
-  - Removed GRID_SOURCE.PHASES: use GRID_SOURCE.TYPE instead with "EM" or "3EM"
-  - OUT_MIN and OUT_MAX moved to PID section
-  - New PID algorithm from https://mathieu.carbou.me/MycilaUtilities/pid (same used in YaSolR router)
-  - Improving MQTT integration to force a closed loop to get more frequent MQTT updates
-  - Added API:
-    - `/script/1/status` => get current status and config
-    - `/script/1/status?debug=0|1|2` => set debug level
-    - `/script/1/status?boiler=standby|auto` => set dimmer mode to standby or auto
-    -  Note: bypass mode is controlled by using the Shelly EM switch
+  - Removed GRID_SOURCE.PHASES: use `GRID_SOURCE.TYPE` instead with "EM", "3EM" or "MQTT"
+  - `OUT_MIN` and `OUT_MAX` moved to the `PID` section
+  - New PID implementation (same algorithm used in YaSolR router): https://mathieu.carbou.me/MycilaUtilities/pid
+  - Improved MQTT integration when using `GRID_SOURCE.TYPE = "MQTT"` (script forces a closed loop to get more frequent MQTT updates)
+  - New HTTP API endpoint `/script/1/status` returning current `config`, `pid` and `divert` objects
+    - `GET /script/1/status` => returns current status and configuration
+    - `GET /script/1/status?debug=0|1|2` => set script debug level live
+    - `GET /script/1/status?<dimmerName>=standby|auto` => set a dimmer mode to `standby` (force off) or `auto` (normal)
+  - Bypass handling: the script reads a Shelly switch (config `SHELLY_SWITCH_ID`) to detect bypass activation; set a negative `SHELLY_SWITCH_ID` to disable reading the switch
 
 ## Hardware
 
@@ -208,20 +208,34 @@ _Shelly Pro EM 50 is optional: the script can be installed directly on the Shell
 
 ### Configuration
 
-Edit the `CONFIG` object and pay attention to the values, especially the resistance value which should be accurate, otherwise the routing precision will be bad.
+Edit the `CONFIG` object to match your installation. v18 simplified and reorganized the configuration:
+
+- `SHELLY_SWITCH_ID`: ID of the Shelly switch used for bypass detection (0 for PRO EM50, 100 for PRO 3EM, negative to disable). When set, the script reads the switch output to detect bypass and pause routing or force full power depending on dimmer configuration.
+- `GRID_SOURCE.TYPE`: "EM", "3EM" or "MQTT" (use `MQTT` when the script is installed directly on a dimmer and reads grid power/voltage from MQTT topics).
+- `PID`: now contains INTERVAL_S, P_MODE, D_MODE, SETPOINT, OUT_MIN, OUT_MAX and the PID gains (KP, KI, KD).
+- `DIMMERS`: named dimmer entries (example uses `boiler`) with per-dimmer options such as `IP`, `RESISTANCE`, `POWER_RATIO`, `POWER_LIMIT`, `BYPASS_THROUGH_EM_RELAY`, `USE_POWER_LUT`, `DIMMER_TURN_OFF_DELAY`, `MIN`, `MAX`.
+
+Example minimal default configuration for v18:
 
 ```javascript
 const CONFIG = {
-  // Debug mode
-  DEBUG: 0,
+  // Debug mode: 0, 1 (info) or 2 (verbose)
+  DEBUG: 1,
+  // Set ID of the Bypass Switch button off the Shelly (== its output): 0 for PRO EM50, 100 for PRO 3EM, negative to disable
+  // When set, the script will read the status of the switch to detect if the bypass relay is on or off in order to pause routing
+  // This can only be set when you have wired to Shelly static relay to a contactor in order to use the Shelly button to activate 
+  // a bypass mode that will heat at 100% without using the voltage regulator
+  // This can also be set to 0 or 100 if you want the bypass to be done with the dimmer: when the relay will be switched on, the script will detect it and put the dimmer in full power mode.
+  SHELLY_SWITCH_ID: 0,
+
   // Configure the sources for the grid power and voltage.
   // By default, the script will use a Shelly EM to read the grid power and voltage.
   // But it can be installed directly on the dimmer and read the power and voltage from MQTT.
   GRID_SOURCE: {
-    TYPE: "MQTT", // "EM" or "MQTT"
+    TYPE: "EM", // "EM", "3EM" or "MQTT"
 
-    // Grid Read Interval (s) for power and voltage (only used when GRID_SOURCE.TYPE is "EM")
-    EM_READ_INTERVAL_S: 1,
+    // Enter your grid nominal voltage here. It will be used while waiting for the correct value from MQTT
+    NOMINAL_VOLTAGE: 230,
 
     // MQTT Topic for Grid Power (only used when GRID_SOURCE.TYPE is "MQTT")
     MQTT_TOPIC_GRID_POWER: "homeassistant/states/sensor/grid_power/state",
@@ -230,21 +244,14 @@ const CONFIG = {
   },
   // grid semi-period in micro-seconds
   SEMI_PERIOD: 10000,
-  // If set to true, the calculation of the dimmer duty cycle will be done based on a power matching LUT table which considers the voltage and current sine wave.
-  // This should be more precise than a linear dimming.
-  // You can try it and set it to false to compare the results, there is no harm in that!
-  USE_POWER_LUT: true,
-  // If the dimmer is running at 0-1% for this duration, it will be turned off automatically.
-  // This duration should be long enough in order to not turn off the internal dimmer relay too often
-  // The value is in milliseconds, the default is 5 minutes.
-  DIMMER_TURN_OFF_DELAY: 5 * 60 * 1000,
+
   // PID
   // More information for tuning:
   // - https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
   // - https://yasolr.carbou.me/manual#pid
   PID: {
-    // Reverse
-    REVERSE: false,
+    // PID trigger update interval in seconds
+    INTERVAL_S: 1,
     // Proportional Mode:
     // - "error" (proportional on error),
     // - "input" (proportional on measurement),
@@ -253,60 +260,67 @@ const CONFIG = {
     // Derivative Mode:
     // - "error" (derivative on error),
     // - "input" (derivative on measurement)
-    D_MODE: "error",
-    // Integral Correction
-    // - "off" (integral sum not clamped),
-    // - "clamp" (integral sum not clamped to OUT_MIN and OUT_MAX),
-    // - "advanced" (advanced anti-windup algorithm)
-    IC_MODE: "advanced",
+    D_MODE: "input",
     // Target Grid Power (W)
-    SETPOINT: 0,
-    // At which power to switch between HIGH and LOW PID parameters
-    HIGH_LOW_SWITCH: 200,
-    // PID Parameters to use when grid power is far away from setpoint
-    HIGH: {
-      // PID Proportional Gain
-      // Also try with 0.1, 0.2, 0.3
-      KP: 0.2,
-      // PID Integral Gain
-      // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
-      KI: 0.4,
-      // PID Derivative Gain = keep it low
-      KD: 0.05,
-      // Output Minimum (W): should be below the SETPOINT value, like 300W below.
-      OUT_MIN: -1000,
-      // Output Maximum (W): should be above the nominal power of the load.
-      // I set below, the the available power to divert will be limited to this value globally for all dimmers.
-      OUT_MAX: 5000,
-    },
-    // PID Parameters to use when grid power is near the setpoint
-    LOW: {
-      KP: 0.1,
-      KI: 0.2,
-      KD: 0.05,
-      OUT_MIN: -1000,
-      OUT_MAX: 5000,
-    },
+    SETPOINT: -100,
+    // Output Minimum (W): should be below the SETPOINT value, like 300-400W below.
+    OUT_MIN: -400,
+    // Output Maximum (W): should be above the nominal power of the load, ideally your maximum possible excess power, like your solar production peak power
+    // I set below, the the available power to divert will be limited to this value globally for all dimmers.
+    OUT_MAX: 6000,
+    // PID Proportional Gain
+    // Also try with 0.1, 0.2, 0.3
+    KP: 0.1,
+    // PID Integral Gain
+    // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
+    KI: 0.2,
+    // PID Derivative Gain = keep it low
+    KD: 0.05
   },
+
   // DIMMER LIST
   DIMMERS: {
-    "192.168.125.98": {
+    boiler: {
+      IP: "192.168.123.173",
       // Resistance (in Ohm) of the load connecter to the dimmer + voltage regulator
       // 0 will disable the dimmer
-      RESISTANCE: 24.37,
-      // Maximum excess power to reserve to this load.
+      RESISTANCE: 85,
+      // The ratio of the power that the PID has calculated to be diverted to the dimmers
+      // For example if set to 0.5 (== 50%), then this dimmer will take 50% of the available power to divert and the remaining 50% will be given to the next dimmers
+      POWER_RATIO: 1.0,
+      // Maximum excess power in Watts to reserve to this load.
       // The remaining power will be given to the next dimmers
-      EXCESS_POWER_LIMIT: 0,
-      // Set whether the Shelly EM with this script will be used to control the bypass relay to force a heating
-      // When set to true, if you activate remotely the bypass to force a heating, then the script will detect it and turn the dimmer off
-      BYPASS_CONTROLLED_BY_EM: true,
+      POWER_LIMIT: 0,
+      // When set to true: the bypass mode (full power, 100%) is done thanks to the internal relay of the Shelly EM which must be wired to a contactor that will bypass the dimmer and allow the full load to be at 100%.
+      // When set to false: the internal relay of the Shelly EM is not connected to anything but its state is read by the script to detect if the bypass mode is activated or not. If yes, the dimmer will be set to full power mode at 100%.
+      BYPASS_THROUGH_EM_RELAY: false,
+      // If set to true, the calculation of the dimmer duty cycle will be done based on a power matching LUT table which considers the voltage and current sine wave.
+      // This should be more precise than a linear dimming.
+      // You can try it and set it to false to compare the results, there is no harm in that!
+      USE_POWER_LUT: true,
+      // If the dimmer is running at 0-1% for this duration, it will be turned off automatically.
+      // This duration should be long enough in order to not turn off the internal dimmer relay too often
+      // The value is in milliseconds, the default is 5 minutes.
+      DIMMER_TURN_OFF_DELAY: 5 * 60 * 1000,
+      // Minimum duty cycle value to set on the dimmer when routing.
+      // Range: 1-99 %
+      MIN: 1,
+      // Maximum duty cycle value to set on the dimmer
+      // Range: 1-99 %
+      MAX: 99,
     },
-    // "192.168.125.99": {
+    // pool_heater: {
+    //   IP: "192.168.125.99",
     //   RESISTANCE: 0,
-    //   EXCESS_POWER_LIMIT: 0,
-    //   BYPASS_CONTROLLED_BY_EM: false
+    //   POWER_RATIO: 1.0,
+    //   POWER_LIMIT: 0,
+    //   BYPASS_THROUGH_EM_RELAY: false,
+    //   USE_POWER_LUT: true,
+    //   DIMMER_TURN_OFF_DELAY: 5 * 60 * 1000,
+    //   MIN: 1,
+    //   MAX: 99,
     // }
-  },
+  }
 };
 ```
 
@@ -391,47 +405,54 @@ Here, Auto Divert can start and stop the divert script and Bypass Relay controls
 
 ### Solar Diverter Status
 
-You can view the status of the script by going to the script `status` endpoint, which is only available when the script is running.
+You can view and control some runtime parameters through the script HTTP endpoint (available while the script is running):
 
 ```
 http://192.168.125.92/script/1/status
 ```
 
+Examples:
+
+- `GET /script/1/status` => returns a JSON object with `config`, `pid` and `divert` state
+- `GET /script/1/status?debug=2` => sets debug level to verbose
+- `GET /script/1/status?boiler=standby` => sets the dimmer named `boiler` to standby (force off)
+
+Sample response (v18):
+
 ```json
 {
   "config": {
     "DEBUG": 1,
-    "READ_INTERVAL_S": 1,
+    "SHELLY_SWITCH_ID": 0,
+    "GRID_SOURCE": {
+      "TYPE": "EM",
+      "NOMINAL_VOLTAGE": 230,
+      "MQTT_TOPIC_GRID_POWER": "homeassistant/states/sensor/grid_power/state",
+      "MQTT_TOPIC_GRID_VOLTAGE": "homeassistant/states/sensor/grid_voltage/state"
+    },
     "SEMI_PERIOD": 10000,
-    "USE_POWER_LUT": true,
-    "DIMMER_TURN_OFF_DELAY": 300000,
     "PID": {
-      "REVERSE": false,
+      "INTERVAL_S": 1,
       "P_MODE": "input",
-      "D_MODE": "error",
-      "IC_MODE": "advanced",
-      "SETPOINT": 0,
-      "HIGH_LOW_SWITCH": 200,
-      "HIGH": {
-        "KP": 0.2,
-        "KI": 0.4,
-        "KD": 0.05,
-        "OUT_MIN": -1000,
-        "OUT_MAX": 5000
-      },
-      "LOW": {
-        "KP": 0.1,
-        "KI": 0.2,
-        "KD": 0.05,
-        "OUT_MIN": -1000,
-        "OUT_MAX": 5000
-      }
+      "D_MODE": "input",
+      "SETPOINT": -100,
+      "OUT_MIN": -400,
+      "OUT_MAX": 6000,
+      "KP": 0.1,
+      "KI": 0.2,
+      "KD": 0.05
     },
     "DIMMERS": {
-      "192.168.125.98": {
-        "RESISTANCE": 24.37,
-        "EXCESS_POWER_LIMIT": 0,
-        "BYPASS_CONTROLLED_BY_EM": true
+      "boiler": {
+        "IP": "192.168.123.173",
+        "RESISTANCE": 85,
+        "POWER_RATIO": 1,
+        "POWER_LIMIT": 0,
+        "BYPASS_THROUGH_EM_RELAY": false,
+        "USE_POWER_LUT": true,
+        "DIMMER_TURN_OFF_DELAY": 300000,
+        "MIN": 1,
+        "MAX": 99
       }
     }
   },
@@ -441,21 +462,13 @@ http://192.168.125.92/script/1/status
     "error": 0,
     "pTerm": 0,
     "iTerm": 0,
-    "dTerm": 0,
-    "sum": 0,
-    "mode": "LOW",
-    "kp": 0.1,
-    "ki": 0.2,
-    "kd": 0.05,
-    "out_min": -1000,
-    "out_max": 5000
+    "dTerm": 0
   },
   "divert": {
-    "lastTime": 1737027370748.083,
     "dimmers": {
-      "192.168.125.98": {
+      "boiler": {
         "powerToDivert": 0,
-        "maxPower": 2246.86089454247,
+        "maxPower": 622.35,
         "dutyCycle": 0,
         "firingDelay": 10000,
         "powerFactor": 0,
@@ -467,7 +480,7 @@ http://192.168.125.92/script/1/status
         "lastActivation": 0
       }
     },
-    "gridVoltage": 234,
+    "gridVoltage": 230,
     "gridPower": 0
   }
 }

@@ -26,15 +26,15 @@
  *        By Mathieu and @Bormes (https://forum-photovoltaique.fr/viewtopic.php?p=840087&sid=f9f96caeac8a35eee320341a9c50b88d#p840087)
  * - v16: Added ability to use the internal relay of the Shelly Dimmer to do the bypass (full power) mode even when nothing is connected to the relay.
  * - v17: Introduced POWER_RATIO and POWER_LIMIT to better share the available power to divert between multiple dimmers and fixed issue with standby and full power modes impacting the power sharing
- * - v18: Removed GRID_SOURCE.PHASES: use GRID_SOURCE.TYPE instead with "EM" or "3EM"
+ * - v18: Removed GRID_SOURCE.PHASES: use GRID_SOURCE.TYPE instead with "EM", "3EM" or "MQTT"
  *        OUT_MIN and OUT_MAX moved to PID section
  *        New PID algorithm from https://mathieu.carbou.me/MycilaUtilities/pid (same used in YaSolR router)
- *        Improving MQTT integration to force a closed loop to get more frequent MQTT updates
- *        Added API: 
+ *        Improving MQTT integration to force a closed loop to get more frequent MQTT updates when using MQTT as grid source
+ *        Added API:
  *          - /script/1/status => get current status and config
- *          - /script/1/status?debug=1 => set debug level
- *          - /script/1/status?boiler=standby|auto => set dimmer mode to standby or auto
- *        Note: bypass mode is controlled by using the Shelly EM switch
+ *          - /script/1/status?debug=0|1|2 => set debug level
+ *          - /script/1/status?<dimmerName>=standby|auto => set dimmer mode to standby or auto
+ *        Note: bypass mode is controlled by using the Shelly switch (configure SHELLY_SWITCH_ID)
  * ======================================
  */
 const scriptName = "auto_diverter";
