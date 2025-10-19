@@ -100,6 +100,17 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V17](../downloads/auto_diverter_v17.js)**: Introduced POWER_RATIO and POWER_LIMIT to better share the available power to divert between multiple dimmers and fixed issue with standby and full power modes impacting the power sharing
 
+- **[Shelly Solar Diverter Script V18](../downloads/auto_diverter_v18.js) ([minified](../downloads/auto_diverter_v18.min.js))**:
+  - Removed GRID_SOURCE.PHASES: use GRID_SOURCE.TYPE instead with "EM" or "3EM"
+  - OUT_MIN and OUT_MAX moved to PID section
+  - New PID algorithm from https://mathieu.carbou.me/MycilaUtilities/pid (same used in YaSolR router)
+  - Improving MQTT integration to force a closed loop to get more frequent MQTT updates
+  - Added API:
+    - `/script/1/status` => get current status and config
+    - `/script/1/status?debug=0|1|2` => set debug level
+    - `/script/1/status?boiler=standby|auto` => set dimmer mode to standby or auto
+    -  Note: bypass mode is controlled by using the Shelly EM switch
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
@@ -483,7 +494,7 @@ The Shelly routeur having a slower feeback loop for measurements (each second fo
 
 The script can be directly installed on the dimmer and read the grid power and voltage from MQTT.
 
-When doing that, some features are not available like using bypass mode. 
+When doing that, some features are not available like using bypass mode.
 The script can be installed though on a Shelly supporting a Switch if you want bypass mode to work.
 
 This setup is ideal for simple router setups with only 1 dimmer and 1 LSA.
