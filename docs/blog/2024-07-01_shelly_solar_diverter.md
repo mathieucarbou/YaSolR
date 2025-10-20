@@ -134,6 +134,16 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
     - `GET /script/1/status?<dimmerName>=standby|auto` => set a dimmer mode to `standby` (force off) or `auto` (normal)
   - Bypass handling: the script reads a Shelly switch (config `SHELLY_SWITCH_ID`) to detect bypass activation; set a negative `SHELLY_SWITCH_ID` to disable reading the switch
 
+- **[Shelly Solar Diverter Script V19](../downloads/auto_diverter_v19.js) ([minified](../downloads/auto_diverter_v19.min.js))**:
+  - Reduce call count to avoid Uncaught Error: Too many calls in progress
+  - Changed config for BYPASS mode and clarified its usage and operation
+  - Clarified doc for GRID_SOURCE.TYPE
+  - Fix MIN & MAX validation
+  - Fix MIN-MAX ranges
+  - Added new HTTP API endpoints:
+    - `GET /script/1/status?reset=1` => resets all dimmer & PID states
+    - `GET /script/1/status?setpoint=<value>` => sets PID setpoint on the fly
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
@@ -246,15 +256,16 @@ const CONFIG = {
   DEBUG: 1,
   // Set ID of the Bypass Switch button off the Shelly (== its output): 0 for PRO EM50, 100 for PRO 3EM, negative to disable
   // When set, the script will read the status of the switch to detect if the bypass relay is on or off in order to pause routing
-  // This can only be set when you have wired to Shelly static relay to a contactor in order to use the Shelly button to activate
+  // This can only be set when you have wired to Shelly static relay to a contactor in order to use the Shelly button to activate 
   // a bypass mode that will heat at 100% without using the voltage regulator
   // This can also be set to 0 or 100 if you want the bypass to be done with the dimmer: when the relay will be switched on, the script will detect it and put the dimmer in full power mode.
   SHELLY_SWITCH_ID: 0,
 
-  // Configure the sources for the grid power and voltage.
-  // By default, the script will use a Shelly EM to read the grid power and voltage.
-  // But it can be installed directly on the dimmer and read the power and voltage from MQTT.
   GRID_SOURCE: {
+    // Configure the API type to call to get grid power and voltage
+    // EM will use Shelly EM API (EM1.GetStatus)
+    // 3EM will use Shelly 3EM aggregate API (EM.GetStatus)
+    // MQTT will use MQTT topics to read grid power and voltage
     TYPE: "EM", // "EM", "3EM" or "MQTT"
 
     // Enter your grid nominal voltage here. It will be used while waiting for the correct value from MQTT
@@ -298,7 +309,7 @@ const CONFIG = {
     // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
     KI: 0.2,
     // PID Derivative Gain = keep it low
-    KD: 0.05,
+    KD: 0.05
   },
 
   // DIMMER LIST
@@ -314,9 +325,11 @@ const CONFIG = {
       // Maximum excess power in Watts to reserve to this load.
       // The remaining power will be given to the next dimmers
       POWER_LIMIT: 0,
-      // When set to true: the bypass mode (full power, 100%) is done thanks to the internal relay of the Shelly EM which must be wired to a contactor that will bypass the dimmer and allow the full load to be at 100%.
-      // When set to false: the internal relay of the Shelly EM is not connected to anything but its state is read by the script to detect if the bypass mode is activated or not. If yes, the dimmer will be set to full power mode at 100%.
-      BYPASS_THROUGH_EM_RELAY: false,
+      // Define how the bypass mode is done (== marche forcée)
+      // Bypass is activated when we turn the Shelly EM switch on, and the goal is let let pass 100% power to the load.
+      // - Set it to "virtual" if nothing is connected to the Shelly EM relay. The script will then turn the dimmer to 100% to do the bypass.
+      // - Set it to "contactor" if you have wired the Shelly EM relay to a power contactor that will bypass the dimmer when activated. In this case, the script will turn off the dimmer when bypass is activated.
+      BYPASS: "virtual",
       // If set to true, the calculation of the dimmer duty cycle will be done based on a power matching LUT table which considers the voltage and current sine wave.
       // This should be more precise than a linear dimming.
       // You can try it and set it to false to compare the results, there is no harm in that!
@@ -330,20 +343,20 @@ const CONFIG = {
       MIN: 1,
       // Maximum duty cycle value to set on the dimmer
       // Range: 1-99 %
-      MAX: 99,
+      MAX: 100,
     },
     // pool_heater: {
     //   IP: "192.168.125.99",
     //   RESISTANCE: 0,
     //   POWER_RATIO: 1.0,
     //   POWER_LIMIT: 0,
-    //   BYPASS_THROUGH_EM_RELAY: false,
+    //   BYPASS: "virtual",
     //   USE_POWER_LUT: true,
     //   DIMMER_TURN_OFF_DELAY: 5 * 60 * 1000,
     //   MIN: 1,
     //   MAX: 99,
     // }
-  },
+  }
 };
 ```
 
@@ -458,6 +471,8 @@ Examples:
 - `GET /script/1/status?debug=2` => sets debug level to verbose
 - `GET /script/1/status?boiler=standby` => sets the dimmer named `boiler` to standby (force off)
 - `GET /script/1/status?boiler=auto` => sets the dimmer named `boiler` to auto (normal operation)
+- `GET /script/1/status?reset=1` => resets all dimmer states
+- `GET /script/1/status?setpoint=<value>` => sets PID setpoint on the fly
 
 Sample response (v18):
 
