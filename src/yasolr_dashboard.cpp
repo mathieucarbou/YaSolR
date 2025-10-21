@@ -98,15 +98,15 @@ static dash::FeedbackCard _output2State(dashboard, YASOLR_LBL_070);
 static dash::FeedbackToggleButtonCard _relay1Switch(dashboard, YASOLR_LBL_074);
 static dash::FeedbackToggleButtonCard _relay2Switch(dashboard, YASOLR_LBL_077);
 
-static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
-static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_037, "VA");
-static dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_038);
-static dash::EnergyCard<float, 2> _routerTHDi(dashboard, YASOLR_LBL_039, "%");
-static dash::EnergyCard<float, 0> _routerVoltage(dashboard, YASOLR_LBL_040, "V");
-static dash::EnergyCard<float, 2> _routerCurrent(dashboard, YASOLR_LBL_041, "A");
-static dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_042, "Ω");
-static dash::EnergyCard<uint32_t> _routerEnergy(dashboard, YASOLR_LBL_043, "Wh");
 static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
+static dash::EnergyCard<float, 0> _gridVoltage(dashboard, YASOLR_LBL_106, "V");
+static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
+static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_053, "VA");
+static dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_054);
+static dash::EnergyCard<float, 2> _routerTHDi(dashboard, YASOLR_LBL_055, "%");
+static dash::EnergyCard<float, 2> _routerCurrent(dashboard, YASOLR_LBL_057, "A");
+static dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_058, "Ω");
+static dash::EnergyCard<uint32_t> _routerEnergy(dashboard, YASOLR_LBL_059, "Wh");
 static dash::TemperatureCard<float, 2> _routerDS18State(dashboard, YASOLR_LBL_045);
 
 #ifdef APP_MODEL_OSS
@@ -127,7 +127,7 @@ static uint16_t _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static uint8_t _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
 static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_036 " (W)");
-static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_039 " (%)");
+static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_055 " (%)");
 
 #ifdef APP_MODEL_PRO
 // tab: output 1
@@ -138,7 +138,7 @@ static dash::ProgressCard<float, 2> _output1DimmerSliderRO(dashboard, YASOLR_LBL
 static dash::ToggleButtonCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::FeedbackToggleButtonCard _output1Bypass(dashboard, YASOLR_LBL_051);
 
-static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_052, "W");
+static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
 static dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
@@ -157,7 +157,7 @@ static dash::ProgressCard<float, 2> _output2DimmerSliderRO(dashboard, YASOLR_LBL
 static dash::ToggleButtonCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::FeedbackToggleButtonCard _output2Bypass(dashboard, YASOLR_LBL_051);
 
-static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_052, "W");
+static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
 static dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
@@ -359,10 +359,12 @@ static dash::FeedbackToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR
 static dash::SeparatorCard<const char*> _output1ConfigSep0(dashboard, YASOLR_LBL_140);
 static dash::FeedbackInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
 static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::SeparatorCard<const char*> _output1ConfigSep3(dashboard, YASOLR_LBL_107);
+static dash::PercentageSliderCard _output1ExcessRatio(dashboard, YASOLR_LBL_112);
+static dash::InputCard<uint16_t> _output1ExcessLimiter(dashboard, YASOLR_LBL_061);
 static dash::SeparatorCard<const char*> _output1ConfigSep1(dashboard, YASOLR_LBL_136);
 static dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 static dash::InputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
-static dash::InputCard<uint16_t> _output1DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
 static dash::SeparatorCard<const char*> _output1ConfigSep2(dashboard, YASOLR_LBL_137);
 static dash::InputCard<uint8_t> _output1AutoStartTemp(dashboard, YASOLR_LBL_065);
 static dash::InputCard<uint8_t> _output1AutoStoptTemp(dashboard, YASOLR_LBL_066);
@@ -376,10 +378,12 @@ static dash::SliderCard<float, 1> _output1BypassTimeout(dashboard, YASOLR_LBL_20
 static dash::SeparatorCard<const char*> _output2ConfigSep0(dashboard, YASOLR_LBL_140);
 static dash::FeedbackInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_145);
 static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::SeparatorCard<const char*> _output2ConfigSep3(dashboard, YASOLR_LBL_107);
+static dash::PercentageSliderCard _output2ExcessRatio(dashboard, YASOLR_LBL_112);
+static dash::InputCard<uint16_t> _output2ExcessLimiter(dashboard, YASOLR_LBL_061);
 static dash::SeparatorCard<const char*> _output2ConfigSep1(dashboard, YASOLR_LBL_136);
 static dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 static dash::InputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
-static dash::InputCard<uint16_t> _output2DimmerExcessLimiter(dashboard, YASOLR_LBL_061);
 static dash::SeparatorCard<const char*> _output2ConfigSep2(dashboard, YASOLR_LBL_137);
 static dash::InputCard<uint8_t> _output2AutoStartTemp(dashboard, YASOLR_LBL_065);
 static dash::InputCard<uint8_t> _output2AutoStoptTemp(dashboard, YASOLR_LBL_066);
@@ -915,8 +919,10 @@ void YaSolR::Website::begin() {
   _output1ConfigSep1.setTab(_output1ConfigTab);
   _output1DimmerDutyLimiter.setTab(_output1ConfigTab);
   _output1DimmerTempLimiter.setTab(_output1ConfigTab);
-  _output1DimmerExcessLimiter.setTab(_output1ConfigTab);
+  _output1ExcessLimiter.setTab(_output1ConfigTab);
+  _output1ExcessRatio.setTab(_output1ConfigTab);
   _output1ConfigSep2.setTab(_output1ConfigTab);
+  _output1ConfigSep3.setTab(_output1ConfigTab);
   _output1AutoStartTemp.setTab(_output1ConfigTab);
   _output1AutoStoptTemp.setTab(_output1ConfigTab);
   _output1AutoStartTime.setTab(_output1ConfigTab);
@@ -926,7 +932,8 @@ void YaSolR::Website::begin() {
   _numConfig(_output1ResistanceInput, KEY_OUTPUT1_RESISTANCE);
   _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_LIMIT);
   _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
-  _numConfig(_output1DimmerExcessLimiter, KEY_OUTPUT1_EXCESS_LIMITER);
+  _numConfig(_output1ExcessLimiter, KEY_OUTPUT1_EXCESS_LIMITER);
+  _sliderConfig(_output1ExcessRatio, KEY_OUTPUT1_EXCESS_RATIO);
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
   _numConfig(_output1AutoStoptTemp, KEY_OUTPUT1_TEMPERATURE_STOP);
   _textConfig(_output1AutoStartTime, KEY_OUTPUT1_TIME_START);
@@ -947,8 +954,10 @@ void YaSolR::Website::begin() {
   _output2ConfigSep1.setTab(_output2ConfigTab);
   _output2DimmerDutyLimiter.setTab(_output2ConfigTab);
   _output2DimmerTempLimiter.setTab(_output2ConfigTab);
-  _output2DimmerExcessLimiter.setTab(_output2ConfigTab);
+  _output2ExcessLimiter.setTab(_output2ConfigTab);
+  _output2ExcessRatio.setTab(_output2ConfigTab);
   _output2ConfigSep2.setTab(_output2ConfigTab);
+  _output2ConfigSep3.setTab(_output2ConfigTab);
   _output2AutoStartTemp.setTab(_output2ConfigTab);
   _output2AutoStoptTemp.setTab(_output2ConfigTab);
   _output2AutoStartTime.setTab(_output2ConfigTab);
@@ -958,7 +967,8 @@ void YaSolR::Website::begin() {
   _numConfig(_output2ResistanceInput, KEY_OUTPUT2_RESISTANCE);
   _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_LIMIT);
   _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
-  _numConfig(_output2DimmerExcessLimiter, KEY_OUTPUT2_EXCESS_LIMITER);
+  _numConfig(_output2ExcessLimiter, KEY_OUTPUT2_EXCESS_LIMITER);
+  _sliderConfig(_output2ExcessRatio, KEY_OUTPUT2_EXCESS_RATIO);
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
   _numConfig(_output2AutoStoptTemp, KEY_OUTPUT2_TEMPERATURE_STOP);
   _textConfig(_output2AutoStartTime, KEY_OUTPUT2_TIME_START);
@@ -1336,8 +1346,10 @@ void YaSolR::Website::initCards() {
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT1_DIMMER_TEMP_LIMITER));
   _output1DimmerTempLimiter.setDisplay(dimmer1Enabled);
-  _output1DimmerExcessLimiter.setValue(config.getInt(KEY_OUTPUT1_EXCESS_LIMITER));
-  _output1DimmerExcessLimiter.setDisplay(dimmer1Enabled);
+  _output1ExcessLimiter.setValue(config.getInt(KEY_OUTPUT1_EXCESS_LIMITER));
+  _output1ExcessLimiter.setDisplay(dimmer1Enabled);
+  _output1ExcessRatio.setValue(config.getInt(KEY_OUTPUT1_EXCESS_RATIO));
+  _output1ExcessRatio.setDisplay(dimmer1Enabled);
   _output1ConfigSep2.setDisplay(bypass1Possible);
   _output1AutoStartTemp.setValue(config.getInt(KEY_OUTPUT1_TEMPERATURE_START));
   _output1AutoStartTemp.setDisplay(bypass1Possible);
@@ -1364,8 +1376,10 @@ void YaSolR::Website::initCards() {
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT2_DIMMER_TEMP_LIMITER));
   _output2DimmerTempLimiter.setDisplay(dimmer2Enabled);
-  _output2DimmerExcessLimiter.setValue(config.getInt(KEY_OUTPUT2_EXCESS_LIMITER));
-  _output2DimmerExcessLimiter.setDisplay(dimmer2Enabled);
+  _output2ExcessLimiter.setValue(config.getInt(KEY_OUTPUT2_EXCESS_LIMITER));
+  _output2ExcessLimiter.setDisplay(dimmer2Enabled);
+  _output2ExcessRatio.setValue(config.getInt(KEY_OUTPUT2_EXCESS_RATIO));
+  _output2ExcessRatio.setDisplay(dimmer2Enabled);
   _output2ConfigSep2.setDisplay(bypass2Possible);
   _output2AutoStartTemp.setValue(config.getInt(KEY_OUTPUT2_TEMPERATURE_START));
   _output2AutoStartTemp.setDisplay(bypass2Possible);
@@ -1389,7 +1403,7 @@ void YaSolR::Website::updateCards() {
   grid.readMeasurements(gridMetrics);
   _gridEnergy.setValue(gridMetrics.energy);
   _gridEnergyReturned.setValue(gridMetrics.energyReturned);
-  _routerVoltage.setValue(gridMetrics.voltage);
+  _gridVoltage.setValue(gridMetrics.voltage);
   _gridPower.setValue(gridMetrics.power);
 
   Mycila::Router::Metrics routerMetrics;
