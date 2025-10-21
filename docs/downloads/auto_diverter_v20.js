@@ -482,9 +482,9 @@ function divert(gridVoltage, gridPower) {
 
     } else {
       // apply the POWER_RATIO first to share the available power to divert
-      dimmer.powerToDivert = Math.round(dimmer.powerToDivert * CONFIG.DIMMERS[dimmer_name].POWER_RATIO);
+      dimmer.powerToDivert = Math.round(availablePowerToDivert * CONFIG.DIMMERS[dimmer_name].POWER_RATIO);
       // then clamp to the available power to divert and maxPower
-      dimmer.powerToDivert = constrain(availablePowerToDivert, 0, dimmer.maxPower);
+      dimmer.powerToDivert = constrain(dimmer.powerToDivert, 0, dimmer.maxPower);
       // then clamp to POWER_LIMIT if set
       if (CONFIG.DIMMERS[dimmer_name].POWER_LIMIT > 0)
         dimmer.powerToDivert = constrain(dimmer.powerToDivert, 0, CONFIG.DIMMERS[dimmer_name].POWER_LIMIT);
