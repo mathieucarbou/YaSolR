@@ -147,7 +147,7 @@ void Mycila::Router::readMeasurements(Metrics& metrics) const {
   }
 }
 
-void Mycila::Router::beginCalibration(CalibrationCallback cb) {
+void Mycila::Router::beginCalibration(size_t outputIndex, CalibrationCallback cb) {
   if (_calibrationRunning) {
     LOGW(TAG, "Calibration already running");
     return;
@@ -158,18 +158,22 @@ void Mycila::Router::beginCalibration(CalibrationCallback cb) {
     return;
   }
 
-  // find if at least one output is online
-  bool atLeastOneOnline = std::find_if(_outputs.begin(), _outputs.end(), [](const auto& output) { return output->isDimmerOnline(); }) != _outputs.end();
-
-  if (atLeastOneOnline) {
-    LOGI(TAG, "Starting calibration");
-    _calibrationStep = 1;
-    _calibrationOutputIndex = -1;
-    _calibrationCallback = cb;
-    _calibrationRunning = true;
-  } else {
-    LOGW(TAG, "Unable to calibrate: no output is online");
+  if (outputIndex >= _outputs.size()) {
+    LOGW(TAG, "Invalid output index %d for calibration", outputIndex);
+    return;
   }
+
+  // find if at least one output is online
+  if (!_outputs[outputIndex]->isDimmerOnline()) {
+    LOGW(TAG, "Unable to calibrate: output %s is not online", _outputs[outputIndex]->getName());
+    return;
+  }
+
+  LOGI(TAG, "Starting calibration");
+  _calibrationStep = 1;
+  _calibrationOutputIndex = outputIndex;
+  _calibrationCallback = cb;
+  _calibrationRunning = true;
 }
 
 void Mycila::Router::continueCalibration() {
@@ -178,23 +182,15 @@ void Mycila::Router::continueCalibration() {
 
   switch (_calibrationStep) {
     case 1: {
-      size_t index = 0;
+      LOGI(TAG, "Disabling Auto Dimmer and Auto Bypass on all outputs and turning them off");
       for (const auto& output : _outputs) {
-        if (output->isDimmerOnline()) {
-          output->config.autoBypass = false;
-          output->config.autoDimmer = false;
-          LOGI(TAG, "Disabling %s Auto Bypass", output->getName());
-          output->applyAutoBypass();
-          LOGI(TAG, "Turing off %s", output->getName());
-          output->setDimmerOff();
-          output->setBypassOff();
-
-          // index of the first available dimmer for calibration
-          if (_calibrationOutputIndex == -1) {
-            _calibrationOutputIndex = index;
-          }
-        }
-        index++;
+        output->config.autoBypass = false;
+        output->config.autoDimmer = false;
+        LOGI(TAG, "Disabling %s Auto Bypass", output->getName());
+        output->applyAutoBypass();
+        LOGI(TAG, "Turing off %s", output->getName());
+        output->setDimmerOff();
+        output->setBypassOff();
       }
       _calibrationStep++;
       break;
@@ -213,9 +209,9 @@ void Mycila::Router::continueCalibration() {
         _outputs[_calibrationOutputIndex]->readMeasurements(outputMetrics);
         float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
         if (!resistance) {
-          Router::Metrics routerMetrics;
-          readMeasurements(routerMetrics);
-          resistance = routerMetrics.resistance;
+          Router::Metrics measurements;
+          readMeasurements(measurements);
+          resistance = measurements.resistance;
         }
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = resistance;
@@ -233,10 +229,11 @@ void Mycila::Router::continueCalibration() {
         RouterOutput::Metrics outputMetrics;
         _outputs[_calibrationOutputIndex]->readMeasurements(outputMetrics);
         float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
+
         if (!resistance) {
-          Router::Metrics routerMetrics;
-          readMeasurements(routerMetrics);
-          resistance = routerMetrics.resistance;
+          Router::Metrics measurements;
+          readMeasurements(measurements);
+          resistance = measurements.resistance;
         }
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = (_outputs[_calibrationOutputIndex]->config.calibratedResistance + resistance) / 2;
@@ -244,19 +241,10 @@ void Mycila::Router::continueCalibration() {
         LOGI(TAG, "Turning off %s dimmer", _outputs[_calibrationOutputIndex]->getName());
         _outputs[_calibrationOutputIndex]->setDimmerOff();
 
-        // find next output to calibrate that is online
-        do {
-          _calibrationOutputIndex++;
-        } while (_calibrationOutputIndex < _outputs.size() && !_outputs[_calibrationOutputIndex]->isDimmerOnline());
-
-        if (_calibrationOutputIndex < _outputs.size()) {
-          _calibrationStep = 2; // we found another dimmer to calibrate that is online
-        } else {
-          _calibrationRunning = false;
-          LOGI(TAG, "Calibration done");
-          if (_calibrationCallback)
-            _calibrationCallback();
-        }
+        _calibrationRunning = false;
+        LOGI(TAG, "Calibration done");
+        if (_calibrationCallback)
+          _calibrationCallback();
       }
       break;
 

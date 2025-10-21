@@ -393,7 +393,7 @@ static dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_
 static dash::SliderCard<float, 1> _output2BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
 #endif
 
-static void _onChangeResistanceCalibration() {
+static void _calibrate(size_t outputIndex) {
   if (!router.isCalibrationRunning()) {
     config.set(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
     config.set(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);
@@ -402,7 +402,7 @@ static void _onChangeResistanceCalibration() {
     config.set(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_FALSE, false);
     config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
 
-    router.beginCalibration([]() {
+    router.beginCalibration(outputIndex, []() {
       config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(output1.config.calibratedResistance, 2));
       config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(output2.config.calibratedResistance, 2));
     });
@@ -455,8 +455,8 @@ void YaSolR::Website::begin() {
   _routerTHDiHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
 #if APP_MODEL_PRO
-  _output1ResistanceCalibration.onPush(_onChangeResistanceCalibration);
-  _output2ResistanceCalibration.onPush(_onChangeResistanceCalibration);
+  _output1ResistanceCalibration.onPush([]() { _calibrate(0); });
+  _output2ResistanceCalibration.onPush([]() { _calibrate(1); });
 
   _output1PZEMSync.onPush([]() {
     if (pzemO1PairingTask) {
@@ -479,8 +479,8 @@ void YaSolR::Website::begin() {
     dashboard.refresh(_output2PZEMSync);
   });
 #else
-  _output1ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
-  _output2ResistanceCalibration.onChange([](bool value) { if (value) _onChangeResistanceCalibration(); });
+  _output1ResistanceCalibration.onChange([](bool value) { if (value) _calibrate(0); });
+  _output2ResistanceCalibration.onChange([](bool value) { if (value) _calibrate(1); });
 
   _output1PZEMSync.onChange([](bool value) {
     if (pzemO1PairingTask) {

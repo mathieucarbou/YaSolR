@@ -74,7 +74,7 @@ namespace Mycila {
       }
 
       typedef std::function<void()> CalibrationCallback;
-      void beginCalibration(CalibrationCallback cb = nullptr);
+      void beginCalibration(size_t outputIndex, CalibrationCallback cb = nullptr);
       void continueCalibration();
       bool isCalibrationRunning() const { return _calibrationRunning; }
 
