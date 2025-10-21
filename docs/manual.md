@@ -41,6 +41,7 @@ description: Manual
     - [Display](#display)
   - [Output 1 and 2 Config](#output-1-and-2-config)
     - [Resistance Calibration](#resistance-calibration)
+    - [Excess Configuration](#excess-configuration)
     - [Dimmer Configuration](#dimmer-configuration)
     - [Bypass Configuration](#bypass-configuration)
   - [System](#system)
@@ -980,17 +981,35 @@ Any previously set value will be erased.
 To use this feature, make sure that the resistance will really draw some current.
 It won't work if the water heater has already reached its threshold temperature.
 
+#### Excess Configuration
+
+Excess Configuration allows to configure how the excess power is routed to the outputs.
+
+- `Excess Ratio`: allows to split the excess power between output 1 and output 2.
+  For example, if set to `70%`, then output 1 will take 70% of the excess power and output 2 will take the remaining 30%.
+  This setting is only applied in automatic mode when routing.
+  This setting is also available in output 2 if you want to reduce its share.
+  For example, if you want to assign 50% of the excess to output 1 and 25% to output 2, you can set output 1 to `50%` and output 2 to `50%` (which means 50% of the remaining 50%, so 25% of the total).
+
+- `Excess Power Limiter (W)`: Allows to set a hard limit on the grid excess assigned to an output.
+  Only available in automatic mode.
+  For example, if output 1 is set to `500 W`, then output 1 will take at most `500 W` of the grid excess.
+  Output 2 will be dimmed with the remaining excess.
+  A value of `0` means that the excess power limiter is disabled.
+
+These 2 settings are cumulative: first the excess ratio is applied, then the excess power limiter is applied.
+
+For example, if the grid excess is `2000 W`, output 1 is set to `70%` and has an excess power limiter of `1000 W`, then:
+
+- output 1 will take `70%` of `2000 W`, which is `1400 W`, but because of the excess power limiter, it will be limited to `1000 W`
+- output 2 will take the remaining excess, which is `2000 W - 1000 W = 1000 W`
+
 #### Dimmer Configuration
 
 - `Dimmer Limiter`: Slider to limit the level of the dimmer in order to limit the routed power.
 - `Dimmer Temperature Limiter`: Temperature threshold when the dimmer will stop routing.
   This temperature can be different than the temperature used in auto bypass mode.
   A value of `0` means that the temperature limiter is disabled.
-- `Excess Power Limiter (W)`: Allows to share the remaining grid excess to the second output.
-  Only available in automatic mode.
-  For example, if output 1 is set to `500 W`, then output 1 will take at most `500 W` of the grid excess.
-  Output 2 will be dimmed with the remaining excess.
-  A value of `0` means that the excess power limiter is disabled.
 
 #### Bypass Configuration
 
