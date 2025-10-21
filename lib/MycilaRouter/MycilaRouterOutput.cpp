@@ -170,12 +170,16 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
     return 0;
   }
 
-  if (std::isnan(config.calibratedResistance) || config.calibratedResistance <= 0) {
+  if (!_dimmer->isOnline()) {
     return 0;
   }
 
   // maximum power of the load based on the calibrated resistance value
   const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
+
+  if (maxPower == 0) {
+    return 0;
+  }
 
   // cap the power to divert to the load
   float powerToDivert = constrain(availablePowerToDivert, 0, maxPower);
@@ -184,18 +188,11 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
   if (config.excessPowerLimiter)
     powerToDivert = constrain(powerToDivert, 0, config.excessPowerLimiter);
 
-  // convert to a duty
-  const float dutyCycle = maxPower == 0 ? 0 : powerToDivert / maxPower;
-
   // try to apply duty
-  _dimmer->setDutyCycle(dutyCycle);
+  _dimmer->setDutyCycle(powerToDivert / maxPower);
 
   // returns the real used power as per the dimmer state
-  float used = maxPower * getDimmerDutyCycleLive();
-
-  // Serial.printf("Auto Divert %s: %.02f W => %.02f W %.02f%%\n", _name, availablePowerToDivert, used, dutyCycle * 100);
-
-  return used;
+  return maxPower * powerToDivert;
 }
 
 // bypass
@@ -337,7 +334,7 @@ void Mycila::RouterOutput::readMetrics(Metrics& metrics, float gridVoltage) cons
   metrics.voltage = gridVoltage;
   if (_localMetrics.isPresent())
     metrics.energy = _localMetrics.get().energy;
-  const float dutyCycle = getDimmerDutyCycleLive();
+  const float dutyCycle = _dimmer->getFiringRatio();
   const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
   metrics.power = dutyCycle * maxPower;
   metrics.powerFactor = std::sqrt(dutyCycle);
