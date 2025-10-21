@@ -66,7 +66,7 @@
 #define YASOLR_LBL_060 "Dimmer Automatic Control"
 #define YASOLR_LBL_061 "Excess Power Limiter (W)"
 #define YASOLR_LBL_062 "Dimmer Limiter"
-#define YASOLR_LBL_063 "Dimmer Temperature Limiter (°C)"
+#define YASOLR_LBL_063 "Temperature Limiter (°C)"
 #define YASOLR_LBL_064 "Bypass Automatic Control"
 #define YASOLR_LBL_065 "Bypass Start Temperature (°C)"
 #define YASOLR_LBL_066 "Bypass Stop Temperature (°C)"

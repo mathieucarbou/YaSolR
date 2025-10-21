@@ -66,7 +66,7 @@
 #define YASOLR_LBL_060 "Routage automatique"
 #define YASOLR_LBL_061 "Limite de surplus (W)"
 #define YASOLR_LBL_062 "Limitation du variateur"
-#define YASOLR_LBL_063 "Température de consigne d'arrêt du routage (°C)"
+#define YASOLR_LBL_063 "Température d'arrêt du routage (°C)"
 #define YASOLR_LBL_064 "Marche forcée automatique"
 #define YASOLR_LBL_065 "Température de démarrage de la marche forcée (°C)"
 #define YASOLR_LBL_066 "Température d'arrêt de la marche forcée (°C)"
