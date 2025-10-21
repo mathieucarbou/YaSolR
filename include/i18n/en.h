@@ -115,7 +115,7 @@
 #define YASOLR_LBL_109 "Unknown"
 #define YASOLR_LBL_110 "No electricity"
 #define YASOLR_LBL_111 "I2C (Display, DFRobot)"
-#define YASOLR_LBL_112 "Remaining Excess Ratio"
+#define YASOLR_LBL_112 "Excess Ratio"
 #define YASOLR_LBL_113 "Disconnected"
 #define YASOLR_LBL_114 "Waiting for data..."
 #define YASOLR_LBL_115 "Disabled"

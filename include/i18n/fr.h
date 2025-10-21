@@ -115,7 +115,7 @@
 #define YASOLR_LBL_109 "Inconnu"
 #define YASOLR_LBL_110 "Pas d'électricité"
 #define YASOLR_LBL_111 "I2C (Écran, DFRobot)"
-#define YASOLR_LBL_112 "Ratio de surplus restant"
+#define YASOLR_LBL_112 "Ratio du surplus"
 #define YASOLR_LBL_113 "Déconnecté"
 #define YASOLR_LBL_114 "Attente de données..."
 #define YASOLR_LBL_115 "Désactivé"

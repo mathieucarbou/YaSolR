@@ -218,6 +218,9 @@ void yasolr_init_config() {
     } else if (key == KEY_OUTPUT1_EXCESS_LIMITER) {
       output1.config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
 
+    } else if (key == KEY_OUTPUT1_EXCESS_RATIO) {
+      output1.config.excessPowerRatio = config.getFloat(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
+
     } else if (key == KEY_OUTPUT1_BYPASS_TIMEOUT) {
       output1.config.bypassTimeoutSec = config.getInt(KEY_OUTPUT1_BYPASS_TIMEOUT);
 
@@ -260,6 +263,9 @@ void yasolr_init_config() {
 
     } else if (key == KEY_OUTPUT2_EXCESS_LIMITER) {
       output2.config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);
+
+    } else if (key == KEY_OUTPUT2_EXCESS_RATIO) {
+      output2.config.excessPowerRatio = config.getFloat(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;
 
     } else if (key == KEY_OUTPUT2_BYPASS_TIMEOUT) {
       output2.config.bypassTimeoutSec = config.getInt(KEY_OUTPUT2_BYPASS_TIMEOUT);

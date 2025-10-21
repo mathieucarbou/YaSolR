@@ -343,6 +343,7 @@ void yasolr_init_router() {
   output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
   output1.config.dimmerTempLimit = config.getInt(KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
   output1.config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
+  output1.config.excessPowerRatio = config.getFloat(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
   output1.localMetrics().setExpiration(10000);                             // local is fast
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
@@ -358,6 +359,7 @@ void yasolr_init_router() {
   output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
   output2.config.dimmerTempLimit = config.getInt(KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
   output2.config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);
+  output2.config.excessPowerRatio = config.getFloat(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
   output2.localMetrics().setExpiration(10000);                             // local is fast
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt

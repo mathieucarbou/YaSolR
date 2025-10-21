@@ -181,8 +181,9 @@ float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerTo
     return 0;
   }
 
-  // cap the power to divert to the load
-  float powerToDivert = constrain(availablePowerToDivert, 0, maxPower);
+  // 1. apply excess power ratio for sharing
+  // 2. cap the power to divert to the load
+  float powerToDivert = constrain(availablePowerToDivert * config.excessPowerRatio, 0, maxPower);
 
   // apply the excess power limiter
   if (config.excessPowerLimiter)
