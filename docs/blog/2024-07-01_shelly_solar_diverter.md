@@ -154,6 +154,11 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
   - Improved doc and logging
   - Code refactoring
 
+- **[Shelly Solar Diverter Script V21](../downloads/auto_diverter_v21.js) ([minified](../downloads/auto_diverter_v21.min.js))**:
+  - Improved throttling function to avoid overlapping calls when execution time is longer than tick rate
+  - Code cleanup
+  - Added API: `/script/1/status?all=standby|auto|bypass` to set all dimmers to standby, auto or bypass
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
@@ -479,6 +484,7 @@ Examples:
 - `GET /script/1/status?boiler=standby` => sets the dimmer named `boiler` to standby (force off)
 - `GET /script/1/status?boiler=auto` => sets the dimmer named `boiler` to auto (normal operation)
 - `GET /script/1/status?boiler=bypass` => sets the dimmer named `boiler` in bypass mode (100% power) - only work if `BYPASS` is set to `api`
+- `GET /script/1/status?all=standby|auto|bypass` => sets all dimmers to standby, auto or bypass mode
 - `GET /script/1/status?reset=1` => resets all dimmer states
 - `GET /script/1/status?setpoint=<value>` => sets PID setpoint on the fly
 
