@@ -139,7 +139,7 @@ void yasolr_configure_display() {
             }
             case 9: {
               if (output1.isDimmerEnabled()) {
-                display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(std::round(output1.getDimmerDutyCycleLive() * 100.0f)));
+                display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(std::round(output1.getDimmerDutyCycleOnline() * 100.0f)));
                 wrote = true;
               }
               break;
@@ -160,7 +160,7 @@ void yasolr_configure_display() {
             }
             case 12: {
               if (output2.isDimmerEnabled()) {
-                display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(std::round(output2.getDimmerDutyCycleLive() * 100.0f)));
+                display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(std::round(output2.getDimmerDutyCycleOnline() * 100.0f)));
                 wrote = true;
               }
               break;

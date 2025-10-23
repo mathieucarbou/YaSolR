@@ -1457,7 +1457,7 @@ void YaSolR::Website::updateCards() {
       _output1State.setFeedback(output1.getStateName(), dash::Status::WARNING);
       break;
     case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-      _output1State.setFeedback(output1.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output1.getDimmerDutyCycleLive() * 100.0f)) + " %", dash::Status::SUCCESS);
+      _output1State.setFeedback(output1.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output1.getDimmerDutyCycleOnline() * 100.0f)) + " %", dash::Status::SUCCESS);
       break;
     default:
       _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
@@ -1477,7 +1477,7 @@ void YaSolR::Website::updateCards() {
       _output2State.setFeedback(output2.getStateName(), dash::Status::WARNING);
       break;
     case Mycila::RouterOutput::State::OUTPUT_ROUTING:
-      _output2State.setFeedback(output2.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output2.getDimmerDutyCycleLive() * 100.0f)) + " %", dash::Status::SUCCESS);
+      _output2State.setFeedback(output2.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output2.getDimmerDutyCycleOnline() * 100.0f)) + " %", dash::Status::SUCCESS);
       break;
     default:
       _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
@@ -1547,7 +1547,7 @@ void YaSolR::Website::updateCards() {
 #ifdef APP_MODEL_PRO
   // tab: output 1
 
-  _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleLive() * 100.0f);
+  _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleOnline() * 100.0f);
   _output1Power.setValue(output1Measurements.power);
   _output1ApparentPower.setValue(output1Measurements.apparentPower);
   _output1PowerFactor.setValue(output1Measurements.powerFactor);
@@ -1564,7 +1564,7 @@ void YaSolR::Website::updateCards() {
 
   // tab: output 2
 
-  _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleLive() * 100.0f);
+  _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleOnline() * 100.0f);
   _output2Power.setValue(output2Measurements.power);
   _output2ApparentPower.setValue(output2Measurements.apparentPower);
   _output2PowerFactor.setValue(output2Measurements.powerFactor);

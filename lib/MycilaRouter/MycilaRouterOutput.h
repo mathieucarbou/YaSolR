@@ -84,7 +84,7 @@ namespace Mycila {
       bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
       bool isDimmerOn() const { return _dimmer->isOn(); }
       float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
-      float getDimmerDutyCycleLive() const { return _dimmer->getDutyCycleLive(); }
+      float getDimmerDutyCycleOnline() const { return _dimmer->isOnline() ? _dimmer->getDutyCycle() : 0; }
       float getDimmerDutyCycleLimit() const { return _dimmer->getDutyCycleLimit(); }
       // Power Duty Cycle [0, 1]
       // At 0% power, duty == 0

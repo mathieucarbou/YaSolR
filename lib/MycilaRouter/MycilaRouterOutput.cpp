@@ -335,7 +335,7 @@ void Mycila::RouterOutput::readMetrics(Metrics& metrics, float gridVoltage) cons
   metrics.voltage = gridVoltage;
   if (_localMetrics.isPresent())
     metrics.energy = _localMetrics.get().energy;
-  const float dutyCycle = _dimmer->getFiringRatio();
+  const float dutyCycle = _dimmer->getDutyCycleFire();
   const float maxPower = metrics.resistance == 0 ? 0 : metrics.voltage * metrics.voltage / metrics.resistance;
   metrics.power = dutyCycle * maxPower;
   metrics.powerFactor = std::sqrt(dutyCycle);
