@@ -9,18 +9,18 @@ Mycila::Grid grid;
 float yasolr_frequency() {
   // 1. check if frequency is set in config
   float frequency = config.getFloat(KEY_GRID_FREQUENCY);
-  if (frequency > 0)
+  if ((frequency >= 49.0f && frequency <= 51.0f) || (frequency >= 59.0f && frequency <= 61.0f))
     return frequency;
 
   // 2. check if frequency is set from a measurement devices (PZEM, JSY, ...)
   frequency = std::round(grid.getFrequency().value_or(NAN));
-  if (frequency > 0)
+  if ((frequency >= 49.0f && frequency <= 51.0f) || (frequency >= 59.0f && frequency <= 61.0f))
     return frequency;
 
   // 3. check if frequency is set in pulse analyzer
   if (pulseAnalyzer) {
     frequency = pulseAnalyzer->getNominalGridFrequency();
-    if (frequency > 0)
+    if ((frequency >= 49.0f && frequency <= 51.0f) || (frequency >= 59.0f && frequency <= 61.0f))
       return frequency;
   }
 
@@ -35,5 +35,5 @@ void yasolr_init_grid() {
   grid.pzemMetrics().setExpiration(10000);                              // local is fast
   grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
   grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
-  grid.power().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);    // local is fast
+  grid.power().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);       // local is fast
 }
