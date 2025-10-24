@@ -68,12 +68,12 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
       LOGI(TAG, "Grid frequency changed to %.2f Hz", frequency);
 
       if (dimmer1 && dimmer1->getPowerLUTSemiPeriod() != semiPeriod) {
-        LOGI(TAG, "Updating Output 1 Dimmer semi-period to: %" PRIu16 " us", frequency, semiPeriod);
+        LOGI(TAG, "Updating Output 1 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
         dimmer1->enablePowerLUT(true, semiPeriod);
       }
 
       if (dimmer2 && dimmer2->getPowerLUTSemiPeriod() != semiPeriod) {
-        LOGI(TAG, "Updating Output 2 Dimmer semi-period to: %" PRIu16 " us", frequency, semiPeriod);
+        LOGI(TAG, "Updating Output 2 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
         dimmer2->enablePowerLUT(true, semiPeriod);
       }
 
