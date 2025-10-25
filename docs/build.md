@@ -337,16 +337,17 @@ If yours in not listed, just ask: it may be possible to add it.
 
 | **Board**                                                                                                                                                  | **UARTs** | **Ethernet** |
 | :--------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------: | :----------: |
+| [Denky D4](https://github.com/hallard/Denky-D4)                                                                                                            |     3     |              |
+| [ESP-32S](https://www.es.co.th/Schemetic/PDF/ESP32.PDF)                                                                                                    |     2     |              |
 | [ESP32-DevKitC](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/hw-reference/esp32/get-started-devkitc.html) (recommended - 3 UARTs)           |     3     |              |
 | [ESP32-S3-DevKitC-1](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/hw-reference/esp32s3/user-guide-devkitc-1.html) (recommended - 3 UARTs) |     3     |              |
-| [T-ETH-Lite ESP32 S3](https://www.lilygo.cc/products/t-eth-lite?variant=43120880779445) (recommended - 3 UARTs)                                            |     3     |      ✅      |
-| [ESP-32S](https://www.es.co.th/Schemetic/PDF/ESP32.PDF)                                                                                                    |     2     |              |
-| [WT32-ETH01](https://en.wireless-tag.com/product-item-2.html)                                                                                              |     2     |      ✅      |
-| [Olimex ESP32-POE](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE/open-source-hardware)                                                               |     3     |      ✅      |
 | [Olimex ESP32-GATEWAY](https://www.olimex.com/Products/IoT/ESP32/ESP32-GATEWAY/open-source-hardware)                                                       |     3     |      ✅      |
-| [WIPI 3](https://docs.pycom.io/datasheets/development/wipy3/)                                                                                              |     3     |              |
+| [Olimex ESP32-POE](https://www.olimex.com/Products/IoT/ESP32/ESP32-POE/open-source-hardware)                                                               |     3     |      ✅      |
+| [T-ETH-Lite ESP32 S3](https://www.lilygo.cc/products/t-eth-lite?variant=43120880779445) (recommended - 3 UARTs)                                            |     3     |      ✅      |
 | [TinyPICO](https://www.tinypico.com)                                                                                                                       |     3     |              |
-| [Denky D4](https://github.com/hallard/Denky-D4)                                                                                                            |     3     |              |
+| [Waveshare ESP32-S3 ETH Board](https://www.waveshare.com/wiki/ESP32-S3-ETH)                                                                                |     3     |      ✅      |
+| [WIPI 3](https://docs.pycom.io/datasheets/development/wipy3/)                                                                                              |     3     |              |
+| [WT32-ETH01](https://en.wireless-tag.com/product-item-2.html)                                                                                              |     2     |      ✅      |
 
 ### Dimmers: RobotDyn, Solid State Relay or Voltage Regulator ?
 
