@@ -608,6 +608,16 @@ The website display the pinout configured, the pinout layout that is live at run
 
 ## Wiring
 
+> ##### IMPORTANT
+>
+> Make sure to power the components from the ESP32 3.3V and not directly from the 5V supply.
+>
+> This is especially true for the JSY, PZEM, DS18, Display, DAC, ZCD, etc.
+> 
+> So please don't do exactly like the schemas below where they show all components powered from the same +5V.
+>
+{: .block-important }
+
 - [How to wire RobotDyn dimmer](#how-to-wire-robotdyn-dimmer)
 - [How to wire Random Solid State Relay dimmer](#how-to-wire-random-solid-state-relay-dimmer)
 - [How to wire PWM controlled Voltage Regulator dimmer](#how-to-wire-pwm-controlled-voltage-regulator-dimmer)
