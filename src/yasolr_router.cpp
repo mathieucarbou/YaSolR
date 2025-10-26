@@ -60,60 +60,61 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
   const float frequency = yasolr_frequency();
   const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
 
-  if (semiPeriod) {
-    bool updateUI = false;
+  bool updateUI = false;
+  bool unknownGridFreq = false;
 
-    // check for semi-period changes
-    if ((dimmer1 && dimmer1->getPowerLUTSemiPeriod() != semiPeriod) || (dimmer2 && dimmer2->getPowerLUTSemiPeriod() != semiPeriod)) {
-      LOGI(TAG, "Grid frequency changed to %.2f Hz", frequency);
-
-      if (dimmer1 && dimmer1->getPowerLUTSemiPeriod() != semiPeriod) {
+  if (dimmer1 && dimmer1->isEnabled()) {
+    if (semiPeriod) {
+      // check for semi-period changes
+      if (dimmer1->getPowerLUTSemiPeriod() != semiPeriod) {
         LOGI(TAG, "Updating Output 1 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
         dimmer1->enablePowerLUT(true, semiPeriod);
+        updateUI = true;
       }
-
-      if (dimmer2 && dimmer2->getPowerLUTSemiPeriod() != semiPeriod) {
-        LOGI(TAG, "Updating Output 2 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
-        dimmer2->enablePowerLUT(true, semiPeriod);
-      }
-
-      updateUI = true;
-    }
-
-    // check for dimmer online status
-    if ((dimmer1 && !dimmer1->isOnline()) || (dimmer2 && !dimmer2->isOnline())) {
-      if (dimmer1 && !dimmer1->isOnline()) {
-        LOGI(TAG, "Output 1 Dimmer online");
+      // check for dimmer online status
+      if (!dimmer1->isOnline()) {
+        LOGI(TAG, "Switch Output 1 Dimmer online");
         dimmer1->setOnline(true);
+        updateUI = true;
       }
-
-      if (dimmer2 && !dimmer2->isOnline()) {
-        LOGI(TAG, "Output 2 Dimmer online");
-        dimmer2->setOnline(true);
-      }
-
-      updateUI = true;
-    }
-
-    if (updateUI) {
-      dashboardInitTask.resume();
-    }
-
-  } else {
-    LOGW(TAG, "Unknown grid frequency!");
-    if ((dimmer1 && dimmer1->isOnline()) || (dimmer2 && dimmer2->isOnline())) {
-      if (dimmer1 && dimmer1->isOnline()) {
-        LOGW(TAG, "Output 1 Dimmer offline");
+    } else {
+      unknownGridFreq = true;
+      if (dimmer1->isOnline()) {
+        LOGW(TAG, "Switch Output 1 Dimmer offline");
         dimmer1->setOnline(false);
       }
+    }
+  }
 
-      if (dimmer2 && dimmer2->isOnline()) {
-        LOGW(TAG, "Output 2 Dimmer offline");
+  if (dimmer2 && dimmer2->isEnabled()) {
+    if (semiPeriod) {
+      // check for semi-period changes
+      if (dimmer2->getPowerLUTSemiPeriod() != semiPeriod) {
+        LOGI(TAG, "Updating Output 2 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
+        dimmer2->enablePowerLUT(true, semiPeriod);
+        updateUI = true;
+      }
+      // check for dimmer online status
+      if (!dimmer2->isOnline()) {
+        LOGI(TAG, "Switch Output 2 Dimmer online");
+        dimmer2->setOnline(true);
+        updateUI = true;
+      }
+    } else {
+      unknownGridFreq = true;
+      if (dimmer2->isOnline()) {
+        LOGW(TAG, "Switch Output 2 Dimmer offline");
         dimmer2->setOnline(false);
       }
-
-      dashboardInitTask.resume();
     }
+  }
+
+  if (unknownGridFreq) {
+    LOGW(TAG, "Unknown grid frequency!");
+  }
+
+  if (updateUI) {
+    dashboardInitTask.resume();
   }
 });
 
