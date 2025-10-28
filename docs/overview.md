@@ -248,6 +248,7 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 
 **Harmonics**
 
+- [CEI 61000-3-2 Harmonic Standards](http://crochet.david.online.fr/bep/copie%20serveur/Normes/cei%2061000-3-2.pdf)
 - [Etude des harmoniques du courant de ligne](https://www.thierry-lequeu.fr/data/TRIAC.pdf) (Thierry Lequeu)
 - [Détection et atténuation des harmoniques](https://fr.electrical-installation.org/frwiki/Détection_et_atténuation_des_harmoniques) (Schneider Electric)
 - [Router via TRIAC et "Pollution" du réseau](https://forum-photovoltaique.fr/viewtopic.php?t=60521) (Forum photovoltaïque)
@@ -266,6 +267,7 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 
 - [Learn: PV Diversion](https://docs.openenergymonitor.org/pv-diversion/)
 - [Optimized Random Integral Wave AC Control Algorithm for AC heaters](https://tsltd.github.io)
+- [Cycle Stealing Control](https://www.renesas.com/en/document/apn/1164-cycle-stealing-control) (Vladimir Veljkovic)
 
 ## Alternatives and Inspirations
 
