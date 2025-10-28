@@ -97,10 +97,10 @@ Each output is composed of the following components:
 A dimmer controls the power sent to the load.
 Example of supported dimmers:
 
-|                           | **RobotDyn 24A**<br> ![](./assets/img/hardware/RobotDyn_24A.jpeg) | **RobotDyn 40A**<br> ![](./assets/img/hardware/RobotDyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
+|                           | **RobotDyn 24A**<br> ![](./assets/img/hardware/RobotDyn_24A.jpeg) | **RobotDyn 40A**<br> ![](./assets/img/hardware/RobotDyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator with DAC**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
 | :------------------------ | :-------------------------------------------------------------: | :-------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :-------------------------------------------------------------------: |
 | `Phase Control`           |                               ✅                                |                               ✅                                |                              ✅                               |                                ❌                                 |                                  ✅                                   |
-| `Burst Fire Control` (🚧) |                               ✅                                |                               ✅                                |                              ✅                               |                                ✅                                 |                                  ✅                                   |
+| `Burst Fire Control` (🚧) |                               ✅                                |                               ✅                                |                              ✅                               |                                ✅                                 |                                  ❌                                   |
 
 All the supported dimmer types:
 
