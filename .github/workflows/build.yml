@@ -104,7 +104,7 @@ jobs:
           # mv .pio/build/${{ matrix.environment }}/firmware.elf ./${{ needs.pio_envs.outputs.pio_name }}-$ref-${{ matrix.environment }}-fr.elf
 
       - name: Upload
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.environment }}
           if-no-files-found: error
