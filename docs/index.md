@@ -20,7 +20,7 @@ If you already have a Solar Router at home based on ESP32, built by yourself or 
 YaSolR **is a software** that will run on your Solar Router.
 
 YaSolR **does not come with hardware**.
-But this website will help you pick and build your router.
+But this website will help you pick and [build](build) your router.
 
 Please go to the [overview](overview) page to know how a solar router works.
 
@@ -98,9 +98,9 @@ A dimmer controls the power sent to the load.
 Example of supported dimmers:
 
 |                           | **RobotDyn 24A**<br> ![](./assets/img/hardware/RobotDyn_24A.jpeg) | **RobotDyn 40A**<br> ![](./assets/img/hardware/RobotDyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator with DAC**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
-| :------------------------ | :-------------------------------------------------------------: | :-------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :-------------------------------------------------------------------: |
-| `Phase Control`           |                               ✅                                |                               ✅                                |                              ✅                               |                                ❌                                 |                                  ✅                                   |
-| `Burst Fire Control` (🚧) |                               ✅                                |                               ✅                                |                              ✅                               |                                ✅                                 |                                  ❌                                   |
+| :------------------------ | :---------------------------------------------------------------: | :---------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :----------------------------------------------------------------------------: |
+| `Phase Control`           |                   ✅<br/>(ZCD module required)                    |                   ✅<br/>(ZCD module required)                    |                 ✅<br/>(ZCD module required)                  |                                ❌                                 |                                       ✅                                       |
+| `Burst Fire Control` (🚧) |                   ✅<br/>(ZCD module required)                    |                   ✅<br/>(ZCD module required)                    |                 ✅<br/>(ZCD module required)                  |                                ✅                                 |                                       ❌                                       |
 
 All the supported dimmer types:
 
@@ -115,6 +115,9 @@ All the supported dimmer types:
   - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071)
   - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971)
   - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)
+
+_ZCD module required_ means that the dimmer requires a Zero-Cross Detection module so that the ESP32 knows when the AC voltage crosses the zero point (0V).
+The [build](build) page helps you pick a ZCD module.
 
 #### Bypass Relay (optional)
 
