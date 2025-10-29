@@ -62,12 +62,12 @@ const CONFIG = {
     OUT_MAX: 6000,
     // PID Proportional Gain
     // Also try with 0.1, 0.2, 0.3
-    KP: 0.1,
+    KP: 0.2,
     // PID Integral Gain
     // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
-    KI: 0.2,
+    KI: 0.4,
     // PID Derivative Gain = keep it low
-    KD: 0.05
+    KD: 0.02
   },
 
   // DIMMER LIST
