@@ -52,7 +52,7 @@ const CONFIG = {
     // Derivative Mode:
     // - "error" (derivative on error),
     // - "input" (derivative on measurement)
-    D_MODE: "input",
+    D_MODE: "error",
     // Target Grid Power (W)
     SETPOINT: -100,
     // Output Minimum (W): should be below the SETPOINT value, like 300-400W below.
