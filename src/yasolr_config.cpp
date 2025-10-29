@@ -105,7 +105,7 @@ void yasolr_init_config() {
   config.configure(KEY_PID_KD, "0.05");
   config.configure(KEY_PID_KI, "0.2");
   config.configure(KEY_PID_KP, "0.1");
-  config.configure(KEY_PID_MODE_D, YASOLR_PID_MODE_INPUT);
+  config.configure(KEY_PID_MODE_D, YASOLR_PID_MODE_ERROR);
   config.configure(KEY_PID_MODE_P, YASOLR_PID_MODE_INPUT);
   config.configure(KEY_PID_OUT_MAX, "4000");
   config.configure(KEY_PID_OUT_MIN, "-300");
