@@ -256,9 +256,9 @@ You can change the PID settings at runtime and the effect will appear immediatel
 
 - `Proportional Mode`: `On Input`
 - `Derivative Mode`: `On Error`
-- `Kp`: `0.1`
-- `Ki`: `0.2`
-- `Kd`: `0.05`
+- `Kp`: `0.2`
+- `Ki`: `0.4`
+- `Kd`: `0.02`
 - `Output Min`: `-300`
 - `Output Max`: `4000`
 - `Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)
@@ -267,6 +267,9 @@ Here are some other values that seem to work well depending on the load, ZCD mod
 
 - `Kp`: `0.3`, `Ki`: `0.6`, `Kd`: `0.1`
 - `Kp`: `0.3`, `Ki`: `0.4`, `Kd`: `0.1`
+
+You can simulate the PID parameters in the **[Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/)**
+
 
 **Regular PID trigger**
 
