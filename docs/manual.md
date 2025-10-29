@@ -255,7 +255,7 @@ You can change the PID settings at runtime and the effect will appear immediatel
 **Default Settings**
 
 - `Proportional Mode`: `On Input`
-- `Derivative Mode`: `On Input`
+- `Derivative Mode`: `On Error`
 - `Kp`: `0.1`
 - `Ki`: `0.2`
 - `Kd`: `0.05`
