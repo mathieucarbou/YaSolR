@@ -36,72 +36,6 @@ static const char* DaysOfWeek[] = {"sun", "mon", "tue", "wed", "thu", "fri", "sa
 
 const char* Mycila::RouterOutput::getStateName() const { return StateNames[static_cast<int>(getState())]; }
 
-// output
-
-Mycila::RouterOutput::State Mycila::RouterOutput::getState() const {
-  if (!isDimmerOnline() && !isBypassRelayEnabled())
-    return State::OUTPUT_DISABLED;
-  if (_autoBypassEnabled)
-    return State::OUTPUT_BYPASS_AUTO;
-  if (_manualBypassEnabled)
-    return State::OUTPUT_BYPASS_MANUAL;
-  if (_dimmer->isOn())
-    return State::OUTPUT_ROUTING;
-  return State::OUTPUT_IDLE;
-}
-
-#ifdef MYCILA_JSON_SUPPORT
-void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) const {
-  root["bypass"] = isBypassOn() ? "on" : "off";
-  root["enabled"] = isDimmerOnline();
-  root["state"] = getStateName();
-  root["elapsed"] = getBypassUptime();
-  float t = _temperature.orElse(NAN);
-  if (!std::isnan(t)) {
-    root["temperature"] = t;
-  }
-
-  Metrics* outputMeasurements = new Metrics();
-  readMeasurements(*outputMeasurements);
-  toJson(root["measurements"].to<JsonObject>(), *outputMeasurements);
-  delete outputMeasurements;
-  outputMeasurements = nullptr;
-
-  JsonObject local = root["source"]["local"].to<JsonObject>();
-  if (_pzemMetrics.isPresent()) {
-    local["enabled"] = true;
-    local["time"] = _pzemMetrics.getLastUpdateTime();
-    toJson(local, _pzemMetrics.get());
-  } else {
-    local["enabled"] = false;
-  }
-
-  _dimmer->toJson(root["dimmer"].to<JsonObject>());
-  if (_relay)
-    _relay->toJson(root["relay"].to<JsonObject>());
-}
-
-void Mycila::RouterOutput::toJson(const JsonObject& dest, const Metrics& metrics) {
-  if (!std::isnan(metrics.apparentPower))
-    dest["apparent_power"] = metrics.apparentPower;
-  if (!std::isnan(metrics.current))
-    dest["current"] = metrics.current;
-  dest["energy"] = metrics.energy;
-  if (!std::isnan(metrics.power))
-    dest["power"] = metrics.power;
-  if (!std::isnan(metrics.powerFactor))
-    dest["power_factor"] = metrics.powerFactor;
-  if (!std::isnan(metrics.resistance))
-    dest["resistance"] = metrics.resistance;
-  if (!std::isnan(metrics.thdi))
-    dest["thdi"] = metrics.thdi;
-  if (!std::isnan(metrics.voltage))
-    dest["voltage"] = metrics.voltage;
-  if (!std::isnan(metrics.dimmedVoltage))
-    dest["voltage_dimmed"] = metrics.dimmedVoltage;
-}
-#endif
-
 // dimmer
 
 bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
@@ -147,47 +81,6 @@ void Mycila::RouterOutput::applyTemperatureLimit() {
     _dimmer->off();
     return;
   }
-}
-
-float Mycila::RouterOutput::autoDivert(float gridVoltage, float availablePowerToDivert) {
-  if (!_dimmer->isEnabled() || !isAutoDimmerEnabled()) {
-    return 0;
-  }
-
-  if (availablePowerToDivert <= 0) {
-    _dimmer->off();
-    return 0;
-  }
-
-  if (isDimmerTemperatureLimitReached()) {
-    _dimmer->off();
-    return 0;
-  }
-
-  if (!_dimmer->isOnline()) {
-    return 0;
-  }
-
-  // maximum power of the load based on the calibrated resistance value
-  const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
-
-  if (maxPower == 0) {
-    return 0;
-  }
-
-  // 1. apply excess power ratio for sharing
-  // 2. cap the power to divert to the load
-  float powerToDivert = constrain(availablePowerToDivert * config.excessPowerRatio, 0, maxPower);
-
-  // apply the excess power limiter
-  if (config.excessPowerLimiter)
-    powerToDivert = constrain(powerToDivert, 0, config.excessPowerLimiter);
-
-  // try to apply duty
-  _dimmer->setDutyCycle(powerToDivert / maxPower);
-
-  // returns the real used power as per the dimmer state
-  return maxPower * powerToDivert;
 }
 
 // bypass
@@ -320,25 +213,6 @@ void Mycila::RouterOutput::applyBypassTimeout() {
       setBypass(false);
     }
   }
-}
-
-// metrics
-
-bool Mycila::RouterOutput::readMeasurements(Metrics& metrics) const {
-  if (_pzemMetrics.isAbsent())
-    return false;
-  metrics.voltage = _pzemMetrics.get().voltage;
-  metrics.energy = _pzemMetrics.get().energy;
-  if (getState() == State::OUTPUT_ROUTING) {
-    metrics.apparentPower = _pzemMetrics.get().apparentPower;
-    metrics.current = _pzemMetrics.get().current;
-    metrics.dimmedVoltage = _pzemMetrics.get().dimmedVoltage;
-    metrics.power = _pzemMetrics.get().power;
-    metrics.powerFactor = _pzemMetrics.get().powerFactor;
-    metrics.resistance = _pzemMetrics.get().resistance;
-    metrics.thdi = _pzemMetrics.get().thdi;
-  }
-  return true;
 }
 
 // private

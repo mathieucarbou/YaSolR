@@ -79,12 +79,74 @@ namespace Mycila {
       bool isCalibrationRunning() const { return _calibrationRunning; }
 
 #ifdef MYCILA_JSON_SUPPORT
-      void toJson(const JsonObject& root, float voltage) const;
-      static void toJson(const JsonObject& dest, const Metrics& metrics);
+      void toJson(const JsonObject& root, float voltage) const {
+        Metrics* routerMeasurements = new Metrics();
+        readMeasurements(*routerMeasurements);
+        toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+        delete routerMeasurements;
+        routerMeasurements = nullptr;
+
+        JsonObject source = root["source"].to<JsonObject>();
+        if (_aggregatedMetrics.isPresent()) {
+          source["enabled"] = true;
+          source["time"] = _aggregatedMetrics.getLastUpdateTime();
+          toJson(source, _aggregatedMetrics.get());
+        } else {
+          source["enabled"] = false;
+        }
+      }
+
+      static void toJson(const JsonObject& dest, const Metrics& metrics) {
+        if (!std::isnan(metrics.apparentPower))
+          dest["apparent_power"] = metrics.apparentPower;
+        if (!std::isnan(metrics.current))
+          dest["current"] = metrics.current;
+        dest["energy"] = metrics.energy;
+        if (!std::isnan(metrics.power))
+          dest["power"] = metrics.power;
+        if (!std::isnan(metrics.powerFactor))
+          dest["power_factor"] = metrics.powerFactor;
+        if (!std::isnan(metrics.resistance))
+          dest["resistance"] = metrics.resistance;
+        if (!std::isnan(metrics.thdi))
+          dest["thdi"] = metrics.thdi;
+        if (!std::isnan(metrics.voltage))
+          dest["voltage"] = metrics.voltage;
+      }
 #endif
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
-      void readMeasurements(Metrics& metrics) const;
+      void readMeasurements(Metrics& metrics) const {
+        for (size_t i = 0; i < _outputs.size(); i++) {
+          RouterOutput::Metrics pzemMetrics;
+          if (_outputs[i]->readMeasurements(pzemMetrics)) {
+            metrics.voltage = pzemMetrics.voltage;
+            metrics.energy += pzemMetrics.energy;
+            metrics.apparentPower += pzemMetrics.apparentPower;
+            metrics.current += pzemMetrics.current;
+            metrics.power += pzemMetrics.power;
+          }
+        }
+
+        // we found some pzem ? we are done
+        if (metrics.voltage > 0) {
+          metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
+          metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
+          metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
+          return;
+        }
+
+        // no pzem found, let's check if we have a local JSY or remote JSY
+        if (_aggregatedMetrics.isPresent()) {
+          if (isRouting()) {
+            // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
+            memcpy(&metrics, &_aggregatedMetrics.get(), sizeof(Metrics));
+          } else {
+            metrics.voltage = _aggregatedMetrics.get().voltage;
+            metrics.energy = _aggregatedMetrics.get().energy;
+          }
+        }
+      }
 
     private:
       PID* _pidController;
