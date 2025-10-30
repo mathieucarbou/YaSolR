@@ -40,9 +40,9 @@ std::optional<float> Mycila::Grid::getFrequency() const {
 // returns false if no measurements are available
 bool Mycila::Grid::readMeasurements(Metrics& metrics) const {
   if (_mqttPower.isPresent()) {
-    metrics.power = _mqttPower.get();
-    metrics.voltage = getVoltage().value_or(NAN);
-    metrics.frequency = getFrequency().value_or(NAN);
+    metrics.power = _mqttPower.orElse(NAN);
+    metrics.voltage = _mqttVoltage.orElse(NAN);
+    return true;
   }
 
   if (_remoteMetrics.isPresent()) {

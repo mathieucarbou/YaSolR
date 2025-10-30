@@ -57,6 +57,9 @@ namespace Mycila {
 
       // get the current grid measurements
       // returns false if no measurements are available
+      // - if MQTT is connected, it has priority
+      // - if JSY remote is connected, it has second priority
+      // - if JSY is connected, it has lowest priority
       bool readMeasurements(Metrics& metrics) const;
 
 #ifdef MYCILA_JSON_SUPPORT
