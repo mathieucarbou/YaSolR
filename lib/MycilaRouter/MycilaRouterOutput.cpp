@@ -68,10 +68,10 @@ void Mycila::RouterOutput::toJson(const JsonObject& root, float gridVoltage) con
   outputMeasurements = nullptr;
 
   JsonObject local = root["source"]["local"].to<JsonObject>();
-  if (_localMetrics.isPresent()) {
+  if (_pzemMetrics.isPresent()) {
     local["enabled"] = true;
-    local["time"] = _localMetrics.getLastUpdateTime();
-    toJson(local, _localMetrics.get());
+    local["time"] = _pzemMetrics.getLastUpdateTime();
+    toJson(local, _pzemMetrics.get());
   } else {
     local["enabled"] = false;
   }
@@ -325,18 +325,18 @@ void Mycila::RouterOutput::applyBypassTimeout() {
 // metrics
 
 bool Mycila::RouterOutput::readMeasurements(Metrics& metrics) const {
-  if (_localMetrics.isAbsent())
+  if (_pzemMetrics.isAbsent())
     return false;
-  metrics.voltage = _localMetrics.get().voltage;
-  metrics.energy = _localMetrics.get().energy;
+  metrics.voltage = _pzemMetrics.get().voltage;
+  metrics.energy = _pzemMetrics.get().energy;
   if (getState() == State::OUTPUT_ROUTING) {
-    metrics.apparentPower = _localMetrics.get().apparentPower;
-    metrics.current = _localMetrics.get().current;
-    metrics.dimmedVoltage = _localMetrics.get().dimmedVoltage;
-    metrics.power = _localMetrics.get().power;
-    metrics.powerFactor = _localMetrics.get().powerFactor;
-    metrics.resistance = _localMetrics.get().resistance;
-    metrics.thdi = _localMetrics.get().thdi;
+    metrics.apparentPower = _pzemMetrics.get().apparentPower;
+    metrics.current = _pzemMetrics.get().current;
+    metrics.dimmedVoltage = _pzemMetrics.get().dimmedVoltage;
+    metrics.power = _pzemMetrics.get().power;
+    metrics.powerFactor = _pzemMetrics.get().powerFactor;
+    metrics.resistance = _pzemMetrics.get().resistance;
+    metrics.thdi = _pzemMetrics.get().thdi;
   }
   return true;
 }

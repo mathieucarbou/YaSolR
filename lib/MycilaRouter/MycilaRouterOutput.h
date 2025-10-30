@@ -113,17 +113,11 @@ namespace Mycila {
 
       // metrics
 
-      ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
-      const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
+      ExpiringValue<Metrics>& pzemMetrics() { return _pzemMetrics; }
+      const ExpiringValue<Metrics>& pzemMetrics() const { return _pzemMetrics; }
 
       // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
       bool readMeasurements(Metrics& metrics) const;
-
-      std::optional<float> getOutputPower() const {
-        if (_localMetrics.isPresent() && _localMetrics.get().power > 0)
-          return _localMetrics.get().power;
-        return std::nullopt;
-      }
 
       // temperature
 
@@ -141,7 +135,7 @@ namespace Mycila {
       bool _manualBypassEnabled = false;
       uint32_t _manualBypassTime = 0;
       ExpiringValue<float> _temperature;
-      ExpiringValue<Metrics> _localMetrics;
+      ExpiringValue<Metrics> _pzemMetrics;
 
     private:
       void _switchBypass(bool state, bool log = true);
