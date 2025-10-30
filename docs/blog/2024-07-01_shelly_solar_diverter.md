@@ -574,6 +574,9 @@ You will find a lot of information in the [YaSolR manual](/manual#pid).
 
 The Shelly routeur having a slower feeback loop for measurements (each second for EM and could be more feom MQTT), it includes 2 PID configurations: one used when the grid excess is by default higher than 200W and another one when the excess is below. the advantage is to limit the over shoots of the PID and make it slowdown its corrections when around the setpoint.
 
+You can also use the [Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/).
+This simulator was built for YaSolR router but the PID algorithm is the same.
+
 ### MQTT Grid source
 
 The script can be directly installed on the dimmer and read the grid power and voltage from MQTT.
