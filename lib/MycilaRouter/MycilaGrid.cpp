@@ -9,14 +9,14 @@ std::optional<float> Mycila::Grid::getPower() const {
     return _mqttPower.get();
   if (_remoteMetrics.isPresent() && !std::isnan(_remoteMetrics.get().power))
     return _remoteMetrics.get().power;
-  if (_localMetrics.isPresent() && !std::isnan(_localMetrics.get().power))
-    return _localMetrics.get().power;
+  if (_jsyMetrics.isPresent() && !std::isnan(_jsyMetrics.get().power))
+    return _jsyMetrics.get().power;
   return std::nullopt;
 }
 
 std::optional<float> Mycila::Grid::getVoltage() const {
-  if (_localMetrics.isPresent() && _localMetrics.get().voltage > 0)
-    return _localMetrics.get().voltage;
+  if (_jsyMetrics.isPresent() && _jsyMetrics.get().voltage > 0)
+    return _jsyMetrics.get().voltage;
   if (_remoteMetrics.isPresent() && _remoteMetrics.get().voltage > 0)
     return _remoteMetrics.get().voltage;
   if (_pzemMetrics.isPresent() && _pzemMetrics.get().voltage > 0)
@@ -27,8 +27,8 @@ std::optional<float> Mycila::Grid::getVoltage() const {
 }
 
 std::optional<float> Mycila::Grid::getFrequency() const {
-  if (_localMetrics.isPresent() && _localMetrics.get().frequency > 0)
-    return _localMetrics.get().frequency;
+  if (_jsyMetrics.isPresent() && _jsyMetrics.get().frequency > 0)
+    return _jsyMetrics.get().frequency;
   if (_remoteMetrics.isPresent() && _remoteMetrics.get().frequency > 0)
     return _remoteMetrics.get().frequency;
   if (_pzemMetrics.isPresent() && _pzemMetrics.get().frequency > 0)
@@ -57,15 +57,15 @@ bool Mycila::Grid::readMeasurements(Metrics& metrics) const {
     return true;
   }
 
-  if (_localMetrics.isPresent()) {
-    metrics.apparentPower = _localMetrics.get().apparentPower;
-    metrics.current = _localMetrics.get().current;
-    metrics.energy = _localMetrics.get().energy;
-    metrics.energyReturned = _localMetrics.get().energyReturned;
-    metrics.frequency = _localMetrics.get().frequency;
-    metrics.power = _localMetrics.get().power;
-    metrics.powerFactor = _localMetrics.get().powerFactor;
-    metrics.voltage = _localMetrics.get().voltage;
+  if (_jsyMetrics.isPresent()) {
+    metrics.apparentPower = _jsyMetrics.get().apparentPower;
+    metrics.current = _jsyMetrics.get().current;
+    metrics.energy = _jsyMetrics.get().energy;
+    metrics.energyReturned = _jsyMetrics.get().energyReturned;
+    metrics.frequency = _jsyMetrics.get().frequency;
+    metrics.power = _jsyMetrics.get().power;
+    metrics.powerFactor = _jsyMetrics.get().powerFactor;
+    metrics.voltage = _jsyMetrics.get().voltage;
     return true;
   }
 
@@ -98,10 +98,10 @@ void Mycila::Grid::toJson(const JsonObject& root) const {
   measurements = nullptr;
 
   JsonObject local = root["source"]["local"].to<JsonObject>();
-  if (_localMetrics.isPresent()) {
+  if (_jsyMetrics.isPresent()) {
     local["enabled"] = true;
-    local["time"] = _localMetrics.getLastUpdateTime();
-    toJson(local, _localMetrics.get());
+    local["time"] = _jsyMetrics.getLastUpdateTime();
+    toJson(local, _jsyMetrics.get());
   } else {
     local["enabled"] = false;
   }

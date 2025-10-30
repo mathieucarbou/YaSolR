@@ -30,7 +30,7 @@ float yasolr_frequency() {
 void yasolr_init_grid() {
   LOGI(TAG, "Initialize grid electricity");
 
-  grid.localMetrics().setExpiration(10000);                             // local is fast
+  grid.jsyMetrics().setExpiration(10000);                             // local is fast
   grid.remoteMetrics().setExpiration(10000);                            // remote JSY is fast
   grid.pzemMetrics().setExpiration(10000);                              // local is fast
   grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt

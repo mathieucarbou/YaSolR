@@ -28,7 +28,8 @@ namespace Mycila {
 
       // sources
 
-      ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
+      ExpiringValue<Metrics>& jsyMetrics() { return _jsyMetrics; }
+      // For JSY Remote (UDP) or Victron
       ExpiringValue<Metrics>& remoteMetrics() { return _remoteMetrics; }
       ExpiringValue<Metrics>& pzemMetrics() { return _pzemMetrics; }
       ExpiringValue<float>& mqttPower() { return _mqttPower; }
@@ -68,7 +69,7 @@ namespace Mycila {
 #endif
 
     private:
-      ExpiringValue<Metrics> _localMetrics;
+      ExpiringValue<Metrics> _jsyMetrics;
       ExpiringValue<Metrics> _remoteMetrics;
       ExpiringValue<Metrics> _pzemMetrics;
       ExpiringValue<float> _mqttPower;
