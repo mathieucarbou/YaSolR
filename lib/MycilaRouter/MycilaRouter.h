@@ -33,11 +33,9 @@ namespace Mycila {
       void addOutput(RouterOutput& output) { _outputs.push_back(&output); }
       const std::vector<RouterOutput*>& getOutputs() const { return _outputs; }
 
-      ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
-      const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
-
-      ExpiringValue<Metrics>& remoteMetrics() { return _remoteMetrics; }
-      const ExpiringValue<Metrics>& remoteMetrics() const { return _remoteMetrics; }
+      // aggregated measurements for all outputs combined, if available
+      ExpiringValue<Metrics>& aggregatedMetrics() { return _aggregatedMetrics; }
+      const ExpiringValue<Metrics>& aggregatedMetrics() const { return _aggregatedMetrics; }
 
       bool isRouting() const {
         for (const auto& output : _outputs) {
@@ -91,8 +89,7 @@ namespace Mycila {
     private:
       PID* _pidController;
       std::vector<RouterOutput*> _outputs;
-      ExpiringValue<Metrics> _localMetrics;
-      ExpiringValue<Metrics> _remoteMetrics;
+      ExpiringValue<Metrics> _aggregatedMetrics;
 
       // calibration
       // 0: idle

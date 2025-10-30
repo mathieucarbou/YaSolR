@@ -28,22 +28,13 @@ void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
   delete routerMeasurements;
   routerMeasurements = nullptr;
 
-  JsonObject local = root["source"]["local"].to<JsonObject>();
-  if (_localMetrics.isPresent()) {
-    local["enabled"] = true;
-    local["time"] = _localMetrics.getLastUpdateTime();
-    toJson(local, _localMetrics.get());
+  JsonObject source = root["source"].to<JsonObject>();
+  if (_aggregatedMetrics.isPresent()) {
+    source["enabled"] = true;
+    source["time"] = _aggregatedMetrics.getLastUpdateTime();
+    toJson(source, _aggregatedMetrics.get());
   } else {
-    local["enabled"] = false;
-  }
-
-  JsonObject remote = root["source"]["remote"].to<JsonObject>();
-  if (_remoteMetrics.isPresent()) {
-    remote["enabled"] = true;
-    remote["time"] = _remoteMetrics.getLastUpdateTime();
-    toJson(remote, _remoteMetrics.get());
-  } else {
-    remote["enabled"] = false;
+    source["enabled"] = false;
   }
 }
 
@@ -100,19 +91,12 @@ void Mycila::Router::readMeasurements(Metrics& metrics) const {
     return;
 
   // no pzem found, let's check if we have a local JSY or remote JSY
-  if (_localMetrics.isPresent()) {
+  if (_aggregatedMetrics.isPresent()) {
     if (routing) {
-      memcpy(&metrics, &_localMetrics.get(), sizeof(Metrics));
+      memcpy(&metrics, &_aggregatedMetrics.get(), sizeof(Metrics));
     } else {
-      metrics.voltage = _localMetrics.get().voltage;
-      metrics.energy = _localMetrics.get().energy;
-    }
-  } else if (_remoteMetrics.isPresent()) {
-    if (routing) {
-      memcpy(&metrics, &_remoteMetrics.get(), sizeof(Metrics));
-    } else {
-      metrics.voltage = _remoteMetrics.get().voltage;
-      metrics.energy = _remoteMetrics.get().energy;
+      metrics.voltage = _aggregatedMetrics.get().voltage;
+      metrics.energy = _aggregatedMetrics.get().energy;
     }
   }
 }

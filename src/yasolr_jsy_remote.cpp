@@ -72,7 +72,7 @@ static void onData(AsyncUDPPacket packet) {
         .powerFactor = doc["channel2"]["power_factor"] | NAN,
         .voltage = doc["channel2"]["voltage"] | NAN,
       });
-      router.remoteMetrics().update({
+      router.aggregatedMetrics().update({
         .apparentPower = doc["channel1"]["apparent_power"] | NAN,
         .current = doc["channel1"]["current"] | NAN,
         .energy = doc["channel1"]["active_energy"] | static_cast<uint32_t>(0),

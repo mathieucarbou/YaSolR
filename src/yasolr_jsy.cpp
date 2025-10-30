@@ -46,7 +46,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
           .powerFactor = data.channel2().powerFactor,
           .voltage = data.channel2().voltage,
         });
-        router.localMetrics().update({
+        router.aggregatedMetrics().update({
           .apparentPower = data.channel1().apparentPower,
           .current = data.channel1().current,
           .energy = data.channel1().activeEnergy,
