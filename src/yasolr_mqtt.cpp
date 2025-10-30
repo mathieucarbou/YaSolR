@@ -158,7 +158,7 @@ static void subscribe() {
         }
 
         if (!isnan(p)) {
-          LOGD(TAG, "Grid Power from MQTT: %f", p);
+          LOGI(TAG, "Grid Power from MQTT: %f", p);
           grid.mqttPower().update(p);
           if (grid.updatePower()) {
             yasolr_divert();
@@ -194,7 +194,7 @@ static void subscribe() {
         }
 
         if (!isnan(v)) {
-          LOGD(TAG, "Grid Voltage from MQTT: %f", v);
+          LOGI(TAG, "Grid Voltage from MQTT: %f", v);
           grid.mqttVoltage().update(v);
         }
       }
