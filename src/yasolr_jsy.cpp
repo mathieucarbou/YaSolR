@@ -8,11 +8,11 @@ Mycila::JSY* jsy = nullptr;
 Mycila::TaskManager* jsyTaskManager = nullptr;
 
 static Mycila::Task* jsyTask;
-static Mycila::JSY::Data jsyData;
+static Mycila::JSY::Data* jsyData;
 
 static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::JSY::Data& data) {
-  if (jsyData != data) {
-    jsyData = data;
+  if (*jsyData != data) {
+    *jsyData = data;
 
     switch (data.model) {
       case MYCILA_JSY_MK_1031:
@@ -133,6 +133,7 @@ void yasolr_configure_jsy() {
       if (jsy->getBaudRate() != jsy->getMaxAvailableBaudRate())
         jsy->setBaudRate(jsy->getMaxAvailableBaudRate());
 
+      jsyData = new Mycila::JSY::Data();
       jsy->setCallback(jsy_callback);
     }
   } else {
@@ -145,7 +146,8 @@ void yasolr_configure_jsy() {
       delete jsy;
       jsy = nullptr;
 
-      jsyData.clear();
+      delete jsyData;
+      jsyData = nullptr;
     }
   }
 }
