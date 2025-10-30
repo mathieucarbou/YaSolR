@@ -102,7 +102,7 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT2_TEMPERATURE_STOP, "60");
   config.configure(KEY_OUTPUT2_TIME_START, "22:00");
   config.configure(KEY_OUTPUT2_TIME_STOP, "06:00");
-  config.configure(KEY_PID_KD, "0.1");
+  config.configure(KEY_PID_KD, "0.05");
   config.configure(KEY_PID_KI, "0.4");
   config.configure(KEY_PID_KP, "0.1");
   config.configure(KEY_PID_MODE_D, YASOLR_PID_MODE_ERROR);

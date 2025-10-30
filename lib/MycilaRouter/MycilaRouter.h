@@ -68,6 +68,8 @@ namespace Mycila {
       }
 
       void noDivert() {
+        if (isCalibrationRunning())
+          return;
         for (const auto& output : _outputs) {
           output->autoDivert(0, 0);
         }
