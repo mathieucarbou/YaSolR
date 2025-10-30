@@ -85,9 +85,6 @@ namespace Mycila {
       static void toJson(const JsonObject& dest, const Metrics& metrics);
 #endif
 
-      // get router theoretical metrics based on the dimmer states and the grid voltage
-      void readMetrics(Metrics& metrics, float voltage) const;
-
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
       void readMeasurements(Metrics& metrics) const;
 

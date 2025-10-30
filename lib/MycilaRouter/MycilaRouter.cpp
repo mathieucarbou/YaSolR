@@ -28,12 +28,6 @@ void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
   delete routerMeasurements;
   routerMeasurements = nullptr;
 
-  Metrics* metrics = new Metrics();
-  readMetrics(*metrics, voltage);
-  toJson(root["metrics"].to<JsonObject>(), *metrics);
-  delete metrics;
-  metrics = nullptr;
-
   JsonObject local = root["source"]["local"].to<JsonObject>();
   if (_localMetrics.isPresent()) {
     local["enabled"] = true;
@@ -71,30 +65,6 @@ void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {
     dest["voltage"] = metrics.voltage;
 }
 #endif
-
-// get router theoretical metrics based on the dimmer states and the grid voltage
-void Mycila::Router::readMetrics(Metrics& metrics, float voltage) const {
-  metrics.voltage = voltage;
-
-  for (const auto& output : _outputs) {
-    RouterOutput::Metrics outputMetrics;
-    output->readMetrics(outputMetrics, voltage);
-    metrics.energy += outputMetrics.energy;
-    metrics.apparentPower += outputMetrics.apparentPower;
-    metrics.current += outputMetrics.current;
-    metrics.power += outputMetrics.power;
-  }
-
-  metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
-  metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-  metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
-
-  if (_localMetrics.isPresent()) {
-    metrics.energy = _localMetrics.get().energy;
-  } else if (_remoteMetrics.isPresent()) {
-    metrics.energy = _remoteMetrics.get().energy;
-  }
-}
 
 void Mycila::Router::readMeasurements(Metrics& metrics) const {
   bool routing = false;

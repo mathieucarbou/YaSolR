@@ -116,8 +116,6 @@ namespace Mycila {
       ExpiringValue<Metrics>& localMetrics() { return _localMetrics; }
       const ExpiringValue<Metrics>& localMetrics() const { return _localMetrics; }
 
-      // get output theoretical metrics based on the dimmer state and the grid voltage
-      void readMetrics(Metrics& metrics, float gridVoltage) const;
       // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
       bool readMeasurements(Metrics& metrics) const;
 
