@@ -258,7 +258,7 @@ You can change the PID settings at runtime and the effect will appear immediatel
 - `Derivative Mode`: `On Error`
 - `Kp`: `0.1`
 - `Ki`: `0.4`
-- `Kd`: `0.1`
+- `Kd`: `0.05`
 - `Output Min`: `-300`
 - `Output Max`: `4000`
 - `Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)

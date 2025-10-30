@@ -67,7 +67,7 @@ const CONFIG = {
     // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
     KI: 0.4,
     // PID Derivative Gain = keep it low
-    KD: 0.1
+    KD: 0.05
   },
 
   // DIMMER LIST
