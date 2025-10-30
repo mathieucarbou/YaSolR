@@ -58,41 +58,31 @@ void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {
 #endif
 
 void Mycila::Router::readMeasurements(Metrics& metrics) const {
-  bool routing = false;
+  // bool routing = false;
 
   for (size_t i = 0; i < _outputs.size(); i++) {
-    // check if we have a PZEM output
     RouterOutput::Metrics pzemMetrics;
-    const bool pzem = _outputs[i]->readMeasurements(pzemMetrics);
-
-    // pzem output found: get voltage and energy
-    if (pzem) {
+    if (_outputs[i]->readMeasurements(pzemMetrics)) {
       metrics.voltage = pzemMetrics.voltage;
       metrics.energy += pzemMetrics.energy;
-    }
-
-    bool r = _outputs[i]->getState() == RouterOutput::State::OUTPUT_ROUTING;
-    routing |= r;
-
-    // pzem found and routing => we have all the metrics
-    if (pzem && r) {
       metrics.apparentPower += pzemMetrics.apparentPower;
       metrics.current += pzemMetrics.current;
       metrics.power += pzemMetrics.power;
-
-      metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
-      metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-      metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
     }
   }
 
   // we found some pzem ? we are done
-  if (metrics.voltage > 0)
+  if (metrics.voltage > 0) {
+    metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
+    metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
+    metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
     return;
+  }
 
   // no pzem found, let's check if we have a local JSY or remote JSY
   if (_aggregatedMetrics.isPresent()) {
-    if (routing) {
+    if (isRouting()) {
+      // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
       memcpy(&metrics, &_aggregatedMetrics.get(), sizeof(Metrics));
     } else {
       metrics.voltage = _aggregatedMetrics.get().voltage;
