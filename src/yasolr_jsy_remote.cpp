@@ -102,9 +102,7 @@ static void onData(AsyncUDPPacket packet) {
       break;
   }
 
-  if (grid.updatePower()) {
-    yasolr_divert();
-  }
+  yasolr_divert();
 }
 
 void yasolr_configure_jsy_remote() {

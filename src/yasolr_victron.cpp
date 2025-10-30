@@ -31,10 +31,7 @@ void yasolr_configure_victron() {
             .power = victron->getPower(),
             .voltage = victron->getVoltage(),
           });
-
-          if (grid.updatePower()) {
-            yasolr_divert();
-          }
+          yasolr_divert();
         }
       });
 

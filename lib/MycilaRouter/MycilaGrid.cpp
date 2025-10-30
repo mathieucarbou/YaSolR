@@ -4,51 +4,16 @@
  */
 #include <MycilaGrid.h>
 
-bool Mycila::Grid::updatePower() {
-  float update = NAN;
-
-  // try in order of priority
-  // - if MQTT is connected, it has priority
-  // - if JSY remote is connected, it has second priority
-  // - if JSY is connected, it has lowest priority
-  if (_mqttPower.isPresent()) {
-    update = _mqttPower.get();
-  } else if (_remoteMetrics.isPresent()) {
-    update = _remoteMetrics.get().power;
-  } else if (_localMetrics.isPresent()) {
-    update = _localMetrics.get().power;
-  }
-
-  if (std::isnan(update) && _power.neverUpdated()) {
-    return false;
-  }
-
-  // all became unavailable ?
-  if (std::isnan(update)) {
-    _power.reset();
-    return true;
-  }
-
-  // one became available ?
-  if (_power.neverUpdated()) {
-    _power.update(update);
-    return true;
-  }
-
-  // check if update is significant
-  if (update != _power.get()) {
-    _power.update(update);
-    return true;
-  }
-
-  return false;
+std::optional<float> Mycila::Grid::getPower() const {
+  if (_mqttPower.isPresent() && !std::isnan(_mqttPower.get()))
+    return _mqttPower.get();
+  if (_remoteMetrics.isPresent() && !std::isnan(_remoteMetrics.get().power))
+    return _remoteMetrics.get().power;
+  if (_localMetrics.isPresent() && !std::isnan(_localMetrics.get().power))
+    return _localMetrics.get().power;
+  return std::nullopt;
 }
 
-// get the current grid voltage
-// - if JSY are connected, they have priority
-// - if JSY remote is connected, it has second priority
-// - if PZEM is connected, it has third priority
-// - if MQTT is connected, it has lowest priority
 std::optional<float> Mycila::Grid::getVoltage() const {
   if (_localMetrics.isPresent() && _localMetrics.get().voltage > 0)
     return _localMetrics.get().voltage;
@@ -61,10 +26,6 @@ std::optional<float> Mycila::Grid::getVoltage() const {
   return std::nullopt;
 }
 
-// get the grid frequency
-// - if JSY are connected, they have priority
-// - if JSY remote is connected, it has second priority
-// - if PZEM is connected, it has third priority
 std::optional<float> Mycila::Grid::getFrequency() const {
   if (_localMetrics.isPresent() && _localMetrics.get().frequency > 0)
     return _localMetrics.get().frequency;
@@ -115,8 +76,9 @@ bool Mycila::Grid::readMeasurements(Metrics& metrics) const {
 void Mycila::Grid::toJson(const JsonObject& root) const {
   root["online"] = isConnected();
 
-  if (_power.isPresent()) {
-    root["power"] = _power.get();
+  std::optional<float> power = getPower();
+  if (power.has_value()) {
+    root["power"] = power.value();
   }
 
   std::optional<float> voltage = getVoltage();

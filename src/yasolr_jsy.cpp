@@ -74,9 +74,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
       default:
         break;
     }
-    if (grid.updatePower()) {
-      yasolr_divert();
-    }
+    yasolr_divert();
   }
 }
 

@@ -160,9 +160,7 @@ static void subscribe() {
         if (!isnan(p)) {
           LOGI(TAG, "Grid Power from MQTT: %f", p);
           grid.mqttPower().update(p);
-          if (grid.updatePower()) {
-            yasolr_divert();
-          }
+          yasolr_divert();
         }
       }
     });

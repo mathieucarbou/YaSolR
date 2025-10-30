@@ -35,5 +35,4 @@ void yasolr_init_grid() {
   grid.pzemMetrics().setExpiration(10000);                              // local is fast
   grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
   grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
-  grid.power().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
 }
