@@ -154,7 +154,7 @@ extern Mycila::PulseAnalyzer* pulseAnalyzer;
 extern Mycila::Router router;
 extern Mycila::RouterOutput output1;
 extern Mycila::RouterOutput output2;
-extern void yasolr_divert();
+extern bool yasolr_divert();
 extern void yasolr_init_router();
 extern void yasolr_configure_output1_dimmer();
 extern void yasolr_configure_output2_dimmer();

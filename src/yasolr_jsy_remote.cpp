@@ -48,7 +48,7 @@ static void onData(AsyncUDPPacket packet) {
     case MYCILA_JSY_MK_163:
     case MYCILA_JSY_MK_227:
     case MYCILA_JSY_MK_229: {
-      grid.remoteMetrics().update({
+      grid.metrics(Mycila::Grid::Source::REMOTE).update({
         .apparentPower = doc["apparent_power"] | NAN,
         .current = doc["current"] | NAN,
         .energy = doc["active_energy_imported"] | static_cast<uint32_t>(0),
@@ -62,7 +62,7 @@ static void onData(AsyncUDPPacket packet) {
     }
     case MYCILA_JSY_MK_193:
     case MYCILA_JSY_MK_194: {
-      grid.remoteMetrics().update({
+      grid.metrics(Mycila::Grid::Source::REMOTE).update({
         .apparentPower = doc["channel2"]["apparent_power"] | NAN,
         .current = doc["channel2"]["current"] | NAN,
         .energy = doc["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0),
@@ -86,7 +86,7 @@ static void onData(AsyncUDPPacket packet) {
     }
     case MYCILA_JSY_MK_333: {
       JsonObject aggregate = doc["aggregate"].as<JsonObject>();
-      grid.remoteMetrics().update({
+      grid.metrics(Mycila::Grid::Source::REMOTE).update({
         .apparentPower = aggregate["apparent_power"] | NAN,
         .current = aggregate["current"] | NAN,
         .energy = aggregate["active_energy_imported"] | static_cast<uint32_t>(0),
@@ -102,7 +102,9 @@ static void onData(AsyncUDPPacket packet) {
       break;
   }
 
-  yasolr_divert();
+  if (grid.getDataSource(Mycila::Grid::DataType::POWER) == Mycila::Grid::Source::REMOTE) {
+    yasolr_divert();
+  }
 }
 
 void yasolr_configure_jsy_remote() {

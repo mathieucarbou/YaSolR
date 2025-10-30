@@ -160,7 +160,10 @@ static void subscribe() {
         if (!isnan(p)) {
           LOGI(TAG, "Grid Power from MQTT: %f", p);
           grid.mqttPower().update(p);
-          yasolr_divert();
+
+          if (grid.getDataSource(Mycila::Grid::DataType::POWER) == Mycila::Grid::Source::MQTT) {
+            yasolr_divert();
+          }
         }
       }
     });

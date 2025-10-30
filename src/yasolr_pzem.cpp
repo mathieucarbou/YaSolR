@@ -61,7 +61,7 @@ void yasolr_configure_output1_pzem() {
       if (pzemO1->isEnabled()) {
         pzemO1->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            grid.pzemMetrics().update({
+            grid.metrics(Mycila::Grid::Source::PZEM).update({
               .apparentPower = NAN,
               .current = NAN,
               .energy = 0,
@@ -174,7 +174,7 @@ void yasolr_configure_output2_pzem() {
       if (pzemO2->isEnabled()) {
         pzemO2->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            grid.pzemMetrics().update({
+            grid.metrics(Mycila::Grid::Source::PZEM).update({
               .apparentPower = NAN,
               .current = NAN,
               .energy = 0,

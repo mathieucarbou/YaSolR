@@ -22,7 +22,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
       case MYCILA_JSY_MK_163:
       case MYCILA_JSY_MK_227:
       case MYCILA_JSY_MK_229:
-        grid.jsyMetrics().update({
+        grid.metrics(Mycila::Grid::Source::JSY).update({
           .apparentPower = data.single().apparentPower,
           .current = data.single().current,
           .energy = data.single().activeEnergyImported,
@@ -36,7 +36,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
 
       case MYCILA_JSY_MK_193:
       case MYCILA_JSY_MK_194:
-        grid.jsyMetrics().update({
+        grid.metrics(Mycila::Grid::Source::JSY).update({
           .apparentPower = data.channel2().apparentPower,
           .current = data.channel2().current,
           .energy = data.channel2().activeEnergyImported,
@@ -59,7 +59,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
         break;
 
       case MYCILA_JSY_MK_333:
-        grid.jsyMetrics().update({
+        grid.metrics(Mycila::Grid::Source::JSY).update({
           .apparentPower = data.aggregate.apparentPower,
           .current = data.aggregate.current,
           .energy = data.aggregate.activeEnergyImported,
@@ -74,7 +74,10 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
       default:
         break;
     }
-    yasolr_divert();
+
+    if (grid.getDataSource(Mycila::Grid::DataType::POWER) == Mycila::Grid::Source::JSY) {
+      yasolr_divert();
+    }
   }
 }
 

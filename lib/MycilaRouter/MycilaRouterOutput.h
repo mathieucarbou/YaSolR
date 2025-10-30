@@ -98,15 +98,6 @@ namespace Mycila {
         delete outputMeasurements;
         outputMeasurements = nullptr;
 
-        JsonObject local = root["source"]["local"].to<JsonObject>();
-        if (_pzemMetrics.isPresent()) {
-          local["enabled"] = true;
-          local["time"] = _pzemMetrics.getLastUpdateTime();
-          toJson(local, _pzemMetrics.get());
-        } else {
-          local["enabled"] = false;
-        }
-
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
         if (_relay)
           _relay->toJson(root["relay"].to<JsonObject>());

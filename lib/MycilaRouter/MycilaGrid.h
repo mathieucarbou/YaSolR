@@ -195,7 +195,7 @@ namespace Mycila {
         delete measurements;
         measurements = nullptr;
 
-        JsonObject local = root["source"]["local"].to<JsonObject>();
+        JsonObject local = root["source"]["jsy"].to<JsonObject>();
         if (_jsyMetrics.isPresent()) {
           local["enabled"] = true;
           local["time"] = _jsyMetrics.getLastUpdateTime();
@@ -222,7 +222,7 @@ namespace Mycila {
           pzem["enabled"] = false;
         }
 
-        JsonObject mqttPower = root["source"]["mqtt_power"].to<JsonObject>();
+        JsonObject mqttPower = root["source"]["mqtt"]["power"].to<JsonObject>();
         if (_mqttPower.isPresent()) {
           mqttPower["enabled"] = true;
           mqttPower["time"] = _mqttPower.getLastUpdateTime();
@@ -231,7 +231,7 @@ namespace Mycila {
           mqttPower["enabled"] = false;
         }
 
-        JsonObject mqttVoltage = root["source"]["mqtt_voltage"].to<JsonObject>();
+        JsonObject mqttVoltage = root["source"]["mqtt"]["voltage"].to<JsonObject>();
         if (_mqttVoltage.isPresent()) {
           mqttVoltage["enabled"] = true;
           mqttVoltage["time"] = _mqttVoltage.getLastUpdateTime();

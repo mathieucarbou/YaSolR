@@ -25,13 +25,16 @@ void yasolr_configure_victron() {
       // when receiving data from Victron, update grid metrics
       victron->setCallback([](Mycila::Victron::EventType eventType) {
         if (eventType == Mycila::Victron::EventType::EVT_READ) {
-          grid.remoteMetrics().update({
+          grid.metrics(Mycila::Grid::Source::REMOTE).update({
             .current = victron->getCurrent(),
             .frequency = victron->getFrequency(),
             .power = victron->getPower(),
             .voltage = victron->getVoltage(),
           });
-          yasolr_divert();
+
+          if (grid.getDataSource(Mycila::Grid::DataType::POWER) == Mycila::Grid::Source::REMOTE) {
+            yasolr_divert();
+          }
         }
       });
 

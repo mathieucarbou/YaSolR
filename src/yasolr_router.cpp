@@ -28,11 +28,10 @@ static Mycila::Relay* bypassRelay2 = nullptr;
 static Mycila::Task calibrationTask("Calibration", [](void* params) { router.continueCalibration(); });
 
 static Mycila::Task routerTask("Router", [](void* params) {
-  if (micros() - pidController.getLastTime() > 2000000) {
+  if (micros() - pidController.getLastTime() > 2000000 && yasolr_divert()) {
     // Ensure the PID controller is called frequently enough.
     // This keeps the PID running even if the measurements are not frequent enough (like with MQTT).
     LOGW(TAG, "Grid measurement system too slow!");
-    yasolr_divert();
   }
 
   output1.applyBypassTimeout();
@@ -297,7 +296,7 @@ void yasolr_configure_output2_bypass_relay() {
   }
 }
 
-void yasolr_divert() {
+bool yasolr_divert() {
   std::optional<float> voltage = grid.getVoltage();
   std::optional<float> power = grid.getPower();
   if (voltage.has_value() && power.has_value()) {
@@ -305,9 +304,11 @@ void yasolr_divert() {
     if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }
+    return true;
   } else {
     // pause routing if grid voltage or power are not available
     router.noDivert();
+    return false;
   }
 }
 
