@@ -98,6 +98,15 @@ namespace Mycila {
         delete outputMeasurements;
         outputMeasurements = nullptr;
 
+        JsonObject metrics = root["metrics"].to<JsonObject>();
+        if (_metrics.isPresent()) {
+          metrics["enabled"] = true;
+          metrics["time"] = _metrics.getLastUpdateTime();
+          toJson(metrics, _metrics.get());
+        } else {
+          metrics["enabled"] = false;
+        }
+
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
         if (_relay)
           _relay->toJson(root["relay"].to<JsonObject>());
