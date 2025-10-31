@@ -293,6 +293,17 @@ void rest_api() {
   });
 
   webServer.on("/api/config", HTTP_GET, [](AsyncWebServerRequest* request) {
+    const size_t pcount = request->params();
+    if (pcount) {
+      std::map<const char*, std::string> settings;
+      for (size_t i = 0; i < pcount; i++) {
+        const AsyncWebParameter* p = request->getParam(i);
+        const char* keyRef = config.keyRef(p->name().c_str());
+        settings[keyRef] = p->value().c_str();
+      }
+      config.set(settings);
+    }
+
     AsyncJsonResponse* response = new AsyncJsonResponse(false);
     config.toJson(response->getRoot());
     response->setLength();

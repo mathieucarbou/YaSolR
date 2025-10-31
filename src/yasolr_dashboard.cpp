@@ -295,7 +295,7 @@ static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
 static dash::FeedbackToggleButtonCard _output1Dimmer(dashboard, YASOLR_LBL_050);
-static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
+static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_BF "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_BF "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_BF "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output1PZEMSep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_133);
 static dash::FeedbackToggleButtonCard _output1PZEM(dashboard, "PZEM");
@@ -313,7 +313,7 @@ static dash::FeedbackToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
 // output 2 dimmer
 static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
 static dash::FeedbackToggleButtonCard _output2Dimmer(dashboard, YASOLR_LBL_050);
-static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_ZC_SSR);
+static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_BF "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_BF "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_BF "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output2PZEMSep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_133);
 static dash::FeedbackToggleButtonCard _output2PZEM(dashboard, "PZEM");

@@ -76,7 +76,7 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT1_DIMMER_MAX, "100");
   config.configure(KEY_OUTPUT1_DIMMER_MIN, "0");
   config.configure(KEY_OUTPUT1_DIMMER_TEMP_LIMITER, "0");
-  config.configure(KEY_OUTPUT1_DIMMER_TYPE, YASOLR_DIMMER_ROBODYN);
+  config.configure(KEY_OUTPUT1_DIMMER_TYPE, "");
   config.configure(KEY_OUTPUT1_EXCESS_LIMITER, "0");
   config.configure(KEY_OUTPUT1_EXCESS_RATIO, "100");
   config.configure(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
@@ -92,7 +92,7 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT2_DIMMER_MAX, "100");
   config.configure(KEY_OUTPUT2_DIMMER_MIN, "0");
   config.configure(KEY_OUTPUT2_DIMMER_TEMP_LIMITER, "0");
-  config.configure(KEY_OUTPUT2_DIMMER_TYPE, YASOLR_DIMMER_ROBODYN);
+  config.configure(KEY_OUTPUT2_DIMMER_TYPE, "");
   config.configure(KEY_OUTPUT2_EXCESS_LIMITER, "0");
   config.configure(KEY_OUTPUT2_EXCESS_RATIO, "100");
   config.configure(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);

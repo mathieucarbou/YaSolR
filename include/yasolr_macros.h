@@ -55,10 +55,13 @@
 #define YASOLR_DIMMER_LSA_GP8413           "LSA + DAC GP8413 (DFR1073)"
 #define YASOLR_DIMMER_LSA_PWM              "LSA + PWM->Analog 0-10V only"
 #define YASOLR_DIMMER_LSA_PWM_ZCD          "LSA + PWM->Analog 0-10V + ZCD"
-#define YASOLR_DIMMER_RANDOM_SSR           "Random Solid State Relay + ZCD"
+#define YASOLR_DIMMER_RANDOM_SSR           "Random SSR + ZCD"
+#define YASOLR_DIMMER_RANDOM_SSR_BF        "Random SSR + ZCD (Burst Fire)"
 #define YASOLR_DIMMER_ROBODYN              "Robodyn 24A / 40A"
+#define YASOLR_DIMMER_ROBODYN_BF           "Robodyn 24A / 40A (Burst Fire)"
 #define YASOLR_DIMMER_TRIAC                "Triac + ZCD"
-#define YASOLR_DIMMER_ZC_SSR               "Zero-Crossing Solid State Relay"
+#define YASOLR_DIMMER_TRIAC_BF             "Triac + ZCD (Burst Fire)"
+#define YASOLR_DIMMER_ZC_SSR               "Zero-crossing SSR"
 #define YASOLR_DS18_SEARCH_MAX_RETRY       30
 #define YASOLR_GRAPH_POINTS                60
 #define YASOLR_HA_DISCOVERY_TOPIC          "homeassistant"

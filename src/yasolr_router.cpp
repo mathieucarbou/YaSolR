@@ -107,6 +107,15 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
 
 // functions
 
+// these dimmers work in burst fire mode
+static bool isZeroCrossingBased(const char* type) {
+  return strcmp(type, YASOLR_DIMMER_ROBODYN_BF) == 0 ||
+         strcmp(type, YASOLR_DIMMER_RANDOM_SSR_BF) == 0 ||
+         strcmp(type, YASOLR_DIMMER_TRIAC_BF) == 0 ||
+         strcmp(type, YASOLR_DIMMER_ZC_SSR) == 0;
+}
+
+// these dimmers work with phase control and need ZCD
 static bool isThyristorBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
          strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
@@ -114,10 +123,12 @@ static bool isThyristorBased(const char* type) {
          strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
 }
 
+// these dimmers work with phase control by sending a PWM signal to an analog convertor to control a voltage regulator
 static bool isPWMBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM) == 0;
 }
 
+// these dimmers work with phase control by sending a duty to a DAC (Digital-to-Analog Converter) to control a voltage regulator
 static bool isDACBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_GP8211S) == 0 ||
          strcmp(type, YASOLR_DIMMER_LSA_GP8403) == 0 ||
@@ -158,7 +169,15 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
       dfRobotDimmer->setSKU(Mycila::DFRobotDimmer::SKU::DFR1073_GP8413);
       return dfRobotDimmer;
     }
+    LOGE(TAG, "DFRobot Dimmer type not supported: %s", type);
     delete dfRobotDimmer;
+    return new Mycila::VirtualDimmer();
+  }
+
+  if (isZeroCrossingBased(type)) {
+    // Mycila::BurstFireDimmer* bfDimmer = new Mycila::BurstFireDimmer();
+    // bfDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    // return bfDimmer;
   }
 
   LOGE(TAG, "Dimmer type not supported: %s", type);
@@ -182,13 +201,21 @@ static Mycila::Relay* createBypassRelay(const char* keyType, const char* keyPin)
   }
 }
 
+static void ARDUINO_ISR_ATTR onZeroCross(int16_t delayUntilZero, void* arg) {
+  Mycila::ThyristorDimmer::onZeroCross(delayUntilZero, arg);
+  // Mycila::BurstFireDimmer::onZeroCross(delayUntilZero, arg);
+}
+
 static void configure_zcd() {
-  if ((dimmer1 && strcmp(dimmer1->type(), "zero-cross") == 0) || (dimmer2 && strcmp(dimmer2->type(), "zero-cross") == 0)) {
+  if ((dimmer1 && strcmp(dimmer1->type(), "thyristor") == 0) ||
+      (dimmer1 && strcmp(dimmer1->type(), "burst-fire") == 0) ||
+      (dimmer2 && strcmp(dimmer2->type(), "thyristor") == 0) ||
+      (dimmer2 && strcmp(dimmer2->type(), "burst-fire") == 0)) {
     if (pulseAnalyzer == nullptr) {
       LOGI(TAG, "Enable ZCD Pulse Analyzer");
       pulseAnalyzer = new Mycila::PulseAnalyzer();
       pulseAnalyzer->setZeroCrossEventShift(YASOLR_ZC_EVENT_SHIFT_US);
-      pulseAnalyzer->onZeroCross(Mycila::ThyristorDimmer::onZeroCross);
+      pulseAnalyzer->onZeroCross(onZeroCross);
       pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
 
       if (!pulseAnalyzer->isEnabled()) {
