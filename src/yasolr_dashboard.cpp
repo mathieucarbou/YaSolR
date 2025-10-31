@@ -126,7 +126,7 @@ static int16_t _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static uint16_t _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static uint8_t _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
-static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_036 " (W)");
+static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_052 " (W)");
 static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_055 " (%)");
 
 #ifdef APP_MODEL_PRO

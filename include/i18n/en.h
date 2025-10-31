@@ -55,7 +55,7 @@
 #define YASOLR_LBL_049 "Remove Server Certificate"
 #define YASOLR_LBL_050 "Dimmer"
 #define YASOLR_LBL_051 "Bypass"
-// #define YASOLR_LBL_052 "Power"
+#define YASOLR_LBL_052 "Routed Power"
 #define YASOLR_LBL_053 "Apparent Power"
 #define YASOLR_LBL_054 "Power Factor"
 #define YASOLR_LBL_055 "THDi"

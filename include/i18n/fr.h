@@ -55,7 +55,7 @@
 #define YASOLR_LBL_049 "Supprimer le certificat serveur"
 #define YASOLR_LBL_050 "Variateur"
 #define YASOLR_LBL_051 "Marche forcée"
-// #define YASOLR_LBL_052 "Puissance"
+#define YASOLR_LBL_052 "Puissance routée"
 #define YASOLR_LBL_053 "Puissance Apparente"
 #define YASOLR_LBL_054 "Facteur de Puissance"
 #define YASOLR_LBL_055 "THDi"
