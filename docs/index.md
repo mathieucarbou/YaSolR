@@ -56,7 +56,7 @@ YaSolR is:
 - supports **remote** temperature and measurement
 - compatible with **many hardware components**:
   - DS18 Temperature Sensors
-  - ESP32: Dev Kit boards, S3 Dev Kit boards, ESP32s, WIPI 3, Denky D4, Lilygo T Eth Lite S3 boards (**Ethernet support**), WT32-ETH01 boards (**Ethernet support**), Olimex ESP32-POE boards (**Ethernet support**), Olimex ESP32 Gateway boards (**Ethernet support**)
+  - ESP32: Dev Kit boards, S3 Dev Kit boards, ESP32s, WIPI 3, Denky D4, Lilygo T Eth Lite S3 boards (**Ethernet support**), WT32-ETH01 boards (**Ethernet support**), Olimex ESP32-POE boards (**Ethernet support**), Olimex ESP32 Gateway boards (**Ethernet support**), Waveshare ESP32-S3 ETH (**Ethernet support**), etc
   - Many Zero-Cross Detection modules (JSY-MK-194G, Pulse ZCD, BM1Z102FJ, etc)
   - Random (async) and Zero-Cross (sync) Solid State Relays
   - RobotDyn 24A / 40A
