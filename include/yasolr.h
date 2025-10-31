@@ -88,7 +88,7 @@ extern Mycila::JSY* jsy;
 extern Mycila::TaskManager* jsyTaskManager;
 extern void yasolr_configure_jsy();
 
-// JSY Remote
+// Remote JSY
 extern AsyncUDP* udp;
 extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
 extern Mycila::Task* jsyRemoteTask;
