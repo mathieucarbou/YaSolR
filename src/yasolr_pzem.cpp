@@ -71,7 +71,7 @@ void yasolr_configure_output1_pzem() {
               .powerFactor = NAN,
               .voltage = data.voltage,
             });
-            output1.pzemMetrics().update({
+            output1.metrics().update({
               .apparentPower = data.apparentPower,
               .current = data.current,
               .dimmedVoltage = data.dimmedVoltage(),
@@ -184,7 +184,7 @@ void yasolr_configure_output2_pzem() {
               .powerFactor = NAN,
               .voltage = data.voltage,
             });
-            output2.pzemMetrics().update({
+            output2.metrics().update({
               .apparentPower = data.apparentPower,
               .current = data.current,
               .dimmedVoltage = data.dimmedVoltage(),

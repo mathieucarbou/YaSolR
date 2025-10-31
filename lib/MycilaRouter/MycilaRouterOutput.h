@@ -201,23 +201,22 @@ namespace Mycila {
 
       // metrics
 
-      ExpiringValue<Metrics>& pzemMetrics() { return _pzemMetrics; }
-      const ExpiringValue<Metrics>& pzemMetrics() const { return _pzemMetrics; }
+      ExpiringValue<Metrics>& metrics() { return _metrics; }
 
       // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
       bool readMeasurements(Metrics& metrics) const {
-        if (_pzemMetrics.isAbsent())
+        if (_metrics.isAbsent())
           return false;
-        metrics.voltage = _pzemMetrics.get().voltage;
-        metrics.energy = _pzemMetrics.get().energy;
+        metrics.voltage = _metrics.get().voltage;
+        metrics.energy = _metrics.get().energy;
         if (getState() == State::OUTPUT_ROUTING) {
-          metrics.apparentPower = _pzemMetrics.get().apparentPower;
-          metrics.current = _pzemMetrics.get().current;
-          metrics.dimmedVoltage = _pzemMetrics.get().dimmedVoltage;
-          metrics.power = _pzemMetrics.get().power;
-          metrics.powerFactor = _pzemMetrics.get().powerFactor;
-          metrics.resistance = _pzemMetrics.get().resistance;
-          metrics.thdi = _pzemMetrics.get().thdi;
+          metrics.apparentPower = _metrics.get().apparentPower;
+          metrics.current = _metrics.get().current;
+          metrics.dimmedVoltage = _metrics.get().dimmedVoltage;
+          metrics.power = _metrics.get().power;
+          metrics.powerFactor = _metrics.get().powerFactor;
+          metrics.resistance = _metrics.get().resistance;
+          metrics.thdi = _metrics.get().thdi;
         }
         return true;
       }
@@ -238,7 +237,7 @@ namespace Mycila {
       bool _manualBypassEnabled = false;
       uint32_t _manualBypassTime = 0;
       ExpiringValue<float> _temperature;
-      ExpiringValue<Metrics> _pzemMetrics;
+      ExpiringValue<Metrics> _metrics;
 
     private:
       void _switchBypass(bool state, bool log = true);
