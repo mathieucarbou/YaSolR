@@ -17,7 +17,13 @@
 namespace Mycila {
   class Router {
     public:
+      enum class Source {
+        METRICS_PER_OUTPUT,
+        METRICS_AGGREGATED,
+        METRICS_UNKNOWN
+      };
       typedef struct {
+          Source source = Source::METRICS_UNKNOWN;
           float apparentPower = 0;
           float current = 0;
           uint32_t energy = 0;
@@ -34,8 +40,8 @@ namespace Mycila {
       const std::vector<RouterOutput*>& getOutputs() const { return _outputs; }
 
       // aggregated measurements for all outputs combined, if available
-      ExpiringValue<Metrics>& aggregatedMetrics() { return _aggregatedMetrics; }
-      const ExpiringValue<Metrics>& aggregatedMetrics() const { return _aggregatedMetrics; }
+      ExpiringValue<Metrics>& metrics() { return _metrics; }
+      const ExpiringValue<Metrics>& metrics() const { return _metrics; }
 
       bool isRouting() const {
         for (const auto& output : _outputs) {
@@ -86,17 +92,18 @@ namespace Mycila {
         delete routerMeasurements;
         routerMeasurements = nullptr;
 
-        JsonObject source = root["source"].to<JsonObject>();
-        if (_aggregatedMetrics.isPresent()) {
-          source["enabled"] = true;
-          source["time"] = _aggregatedMetrics.getLastUpdateTime();
-          toJson(source, _aggregatedMetrics.get());
+        JsonObject metrics = root["metrics"].to<JsonObject>();
+        if (_metrics.isPresent()) {
+          metrics["enabled"] = true;
+          metrics["time"] = _metrics.getLastUpdateTime();
+          toJson(metrics, _metrics.get());
         } else {
-          source["enabled"] = false;
+          metrics["enabled"] = false;
         }
       }
 
       static void toJson(const JsonObject& dest, const Metrics& metrics) {
+        dest["source"] = metrics.source == Source::METRICS_PER_OUTPUT ? "output" : (metrics.source == Source::METRICS_AGGREGATED ? "aggregated" : "unknown");
         if (!std::isnan(metrics.apparentPower))
           dest["apparent_power"] = metrics.apparentPower;
         if (!std::isnan(metrics.current))
@@ -121,6 +128,7 @@ namespace Mycila {
           RouterOutput::Metrics pzemMetrics;
           if (_outputs[i]->readMeasurements(pzemMetrics)) {
             metrics.voltage = pzemMetrics.voltage;
+            // Note: energy is not accurate in the case of a virtual bypass through dimmer
             metrics.energy += pzemMetrics.energy;
             metrics.apparentPower += pzemMetrics.apparentPower;
             metrics.current += pzemMetrics.current;
@@ -130,6 +138,7 @@ namespace Mycila {
 
         // we found some pzem ? we are done
         if (metrics.voltage > 0) {
+          metrics.source = Source::METRICS_PER_OUTPUT;
           metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
           metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
           metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
@@ -137,13 +146,15 @@ namespace Mycila {
         }
 
         // no pzem found, let's check if we have a local JSY or remote JSY
-        if (_aggregatedMetrics.isPresent()) {
+        if (_metrics.isPresent()) {
           if (isRouting()) {
             // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
-            memcpy(&metrics, &_aggregatedMetrics.get(), sizeof(Metrics));
+            memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
           } else {
-            metrics.voltage = _aggregatedMetrics.get().voltage;
-            metrics.energy = _aggregatedMetrics.get().energy;
+            metrics.source = _metrics.get().source;
+            metrics.voltage = _metrics.get().voltage;
+            // Note: energy is not accurate in the case of a virtual bypass through dimmer
+            metrics.energy = _metrics.get().energy;
           }
         }
       }
@@ -151,7 +162,7 @@ namespace Mycila {
     private:
       PID* _pidController;
       std::vector<RouterOutput*> _outputs;
-      ExpiringValue<Metrics> _aggregatedMetrics;
+      ExpiringValue<Metrics> _metrics;
 
       // calibration
       // 0: idle

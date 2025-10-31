@@ -334,7 +334,7 @@ void yasolr_init_router() {
 
   // Router
 
-  router.aggregatedMetrics().setExpiration(10000); // aggregated metrics for all outputs from JSY local or remote (fast)
+  router.metrics().setExpiration(10000); // aggregated metrics for all outputs from JSY local or remote (fast)
 
   // outputs
   dimmer1 = new Mycila::VirtualDimmer();
