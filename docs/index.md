@@ -212,7 +212,7 @@ YaSolR supports up to 2 relays to control external resistive loads or contactors
 
 ### Monitoring and Management
 
-- `Charts`: Live charts (grid power, routed power, THDi, PID tuning, etc)
+- `Charts`: Live charts (grid power, routed power, PID tuning, etc)
 - `Display`: Support I2C OLED Display (`SSD1307`, `SH1106`, `SH1107`)
 - `GPIO`: A GPIO section shows the view of configured pins and activated pins, to report issues, duplications or invalid pins.
 - `Health`: configuration mistakes are detected as much as possible and issues displayed when a component was found to not properly work.

@@ -212,7 +212,6 @@ curl -X GET http://<esp-ip>/api/router
     "power": 0,
     "power_factor": 0,
     "resistance": 0,
-    "thdi": 0,
     "voltage": 0,
     "voltage_dimmed": 0
   },
@@ -229,7 +228,6 @@ curl -X GET http://<esp-ip>/api/router
       "power": 0,
       "power_factor": 0,
       "resistance": 0,
-      "thdi": 0,
       "voltage": 0,
       "voltage_dimmed": 0
     }
@@ -247,7 +245,6 @@ curl -X GET http://<esp-ip>/api/router
       "power": 0,
       "power_factor": 0,
       "resistance": 0,
-      "thdi": 0,
       "voltage": 0,
       "voltage_dimmed": 0
     }
