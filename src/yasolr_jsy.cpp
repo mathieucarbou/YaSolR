@@ -76,7 +76,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
         break;
     }
 
-    if (grid.getDataSource(Mycila::Grid::DataType::POWER) == Mycila::Grid::Source::JSY) {
+    if (grid.isUsing(Mycila::Grid::Source::JSY)) {
       yasolr_divert();
     }
   }
@@ -137,6 +137,8 @@ void yasolr_configure_jsy() {
       if (jsy->getBaudRate() != jsy->getMaxAvailableBaudRate())
         jsy->setBaudRate(jsy->getMaxAvailableBaudRate());
 
+      grid.metrics(Mycila::Grid::Source::JSY).setExpiration(10000);
+
       jsyData = new Mycila::JSY::Data();
       jsy->setCallback(jsy_callback);
     }
@@ -152,6 +154,8 @@ void yasolr_configure_jsy() {
 
       delete jsyData;
       jsyData = nullptr;
+
+      grid.deleteMetrics(Mycila::Grid::Source::JSY);
     }
   }
 }

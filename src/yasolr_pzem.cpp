@@ -37,6 +37,8 @@ static void start_task_manager() {
     assert(pzemTaskManager->asyncStart(512 * 4, 5, 0, 100, true));
 
     Mycila::TaskMonitor.addTask(pzemTaskManager->name());
+
+    grid.metrics(Mycila::Grid::Source::PZEM).setExpiration(10000);
   }
 }
 

@@ -16,6 +16,9 @@ Mycila::Task* mqttPublishStaticTask = nullptr;
 Mycila::Task* mqttPublishTask = nullptr;
 Mycila::Task* haDiscoveryTask = nullptr;
 
+static Mycila::ExpiringValue<float>* voltage = nullptr;
+static Mycila::ExpiringValue<float>* power = nullptr;
+
 static void connect() {
   mqtt->end();
 
@@ -136,6 +139,7 @@ static void subscribe() {
   const char* gridPowerMQTTTopic = config.get(KEY_GRID_POWER_MQTT_TOPIC);
   if (gridPowerMQTTTopic[0] != '\0') {
     LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
+    grid.metrics(Mycila::Grid::Source::MQTT).setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
     mqtt->subscribe(gridPowerMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       if (payload.length()) {
         float p = NAN;
@@ -159,9 +163,18 @@ static void subscribe() {
 
         if (!isnan(p)) {
           LOGI(TAG, "Grid Power from MQTT: %f", p);
-          grid.mqttPower().update(p);
-
-          if (grid.getDataSource(Mycila::Grid::DataType::POWER) == Mycila::Grid::Source::MQTT) {
+          power->update(p);
+          grid.metrics(Mycila::Grid::Source::MQTT).update({
+            .apparentPower = NAN,
+            .current = NAN,
+            .energy = 0,
+            .energyReturned = 0,
+            .frequency = NAN,
+            .power = power->orElse(NAN),
+            .powerFactor = NAN,
+            .voltage = voltage->orElse(NAN),
+          });
+          if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
             yasolr_divert();
           }
         }
@@ -173,6 +186,7 @@ static void subscribe() {
   const char* gridVoltageMQTTTopic = config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC);
   if (gridVoltageMQTTTopic[0] != '\0') {
     LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
+    grid.metrics(Mycila::Grid::Source::MQTT).setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
     mqtt->subscribe(gridVoltageMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       if (payload.length()) {
         float v = NAN;
@@ -196,7 +210,17 @@ static void subscribe() {
 
         if (!isnan(v)) {
           LOGI(TAG, "Grid Voltage from MQTT: %f", v);
-          grid.mqttVoltage().update(v);
+          voltage->update(v);
+          grid.metrics(Mycila::Grid::Source::MQTT).update({
+            .apparentPower = NAN,
+            .current = NAN,
+            .energy = 0,
+            .energyReturned = 0,
+            .frequency = NAN,
+            .power = power->orElse(NAN),
+            .powerFactor = NAN,
+            .voltage = voltage->orElse(NAN),
+          });
         }
       }
     });
@@ -478,6 +502,9 @@ void yasolr_configure_mqtt() {
 
       LOGI(TAG, "Enable MQTT");
 
+      voltage = new Mycila::ExpiringValue<float>(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
+      power = new Mycila::ExpiringValue<float>(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
+
       mqtt = new Mycila::MQTT();
       mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
       mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, [](void* params) { publishConfig(); });
@@ -536,6 +563,8 @@ void yasolr_configure_mqtt() {
       delete mqttPublishStaticTask;
       delete mqttPublishTask;
       delete mqtt;
+      delete voltage;
+      delete power;
 
       mqttConnectTask = nullptr;
       haDiscoveryTask = nullptr;
@@ -543,6 +572,8 @@ void yasolr_configure_mqtt() {
       mqttPublishStaticTask = nullptr;
       mqttPublishTask = nullptr;
       mqtt = nullptr;
+      voltage = nullptr;
+      power = nullptr;
     }
   }
 }

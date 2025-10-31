@@ -25,18 +25,20 @@ void yasolr_configure_victron() {
       // when receiving data from Victron, update grid metrics
       victron->setCallback([](Mycila::Victron::EventType eventType) {
         if (eventType == Mycila::Victron::EventType::EVT_READ) {
-          grid.metrics(Mycila::Grid::Source::REMOTE).update({
+          grid.metrics(Mycila::Grid::Source::VICTRON).update({
             .current = victron->getCurrent(),
             .frequency = victron->getFrequency(),
             .power = victron->getPower(),
             .voltage = victron->getVoltage(),
           });
 
-          if (grid.getDataSource(Mycila::Grid::DataType::POWER) == Mycila::Grid::Source::REMOTE) {
+          if (grid.isUsing(Mycila::Grid::Source::VICTRON)) {
             yasolr_divert();
           }
         }
       });
+
+      grid.metrics(Mycila::Grid::Source::VICTRON).setExpiration(10000); // Victron through Modbus is fast
 
       // task called once network is up to connect
       victronConnectTask = new Mycila::Task("Victron Connect", Mycila::Task::Type::ONCE, [](void* params) {
@@ -78,6 +80,8 @@ void yasolr_configure_victron() {
       victron->end();
       delete victron;
       victron = nullptr;
+
+      grid.deleteMetrics(Mycila::Grid::Source::VICTRON);
     }
   }
 }

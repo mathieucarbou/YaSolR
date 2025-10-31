@@ -26,13 +26,3 @@ float yasolr_frequency() {
 
   return NAN;
 }
-
-void yasolr_init_grid() {
-  LOGI(TAG, "Initialize grid electricity");
-
-  grid.metrics(Mycila::Grid::Source::JSY).setExpiration(10000);         // local is fast
-  grid.metrics(Mycila::Grid::Source::REMOTE).setExpiration(10000);      // remote JSY is fast
-  grid.metrics(Mycila::Grid::Source::PZEM).setExpiration(10000);        // local is fast
-  grid.mqttPower().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);   // through mqtt
-  grid.mqttVoltage().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // through mqtt
-}

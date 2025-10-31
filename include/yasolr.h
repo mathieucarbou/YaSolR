@@ -76,7 +76,6 @@ extern void yasolr_init_network();
 
 // grid electricity
 extern Mycila::Grid grid;
-extern void yasolr_init_grid();
 extern float yasolr_frequency();
 
 // logging
