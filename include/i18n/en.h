@@ -40,7 +40,7 @@
 #define YASOLR_LBL_034 "Time"
 #define YASOLR_LBL_035 "Uptime"
 #define YASOLR_LBL_036 "Power"
-// #define YASOLR_LBL_037 "Apparent Power"
+#define YASOLR_LBL_037 "Harmonics"
 // #define YASOLR_LBL_038 "Power Factor"
 // #define YASOLR_LBL_039 "THDi"
 // #define YASOLR_LBL_040 "Grid Voltage"

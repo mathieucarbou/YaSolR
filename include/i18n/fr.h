@@ -40,7 +40,7 @@
 #define YASOLR_LBL_034 "Temps"
 #define YASOLR_LBL_035 "Durée de fonctionnement"
 #define YASOLR_LBL_036 "Puissance"
-// #define YASOLR_LBL_037 "Puissance apparente"
+#define YASOLR_LBL_037 "Harmoniques"
 // #define YASOLR_LBL_038 "Facteur de puissance"
 // #define YASOLR_LBL_039 "THDi"
 // #define YASOLR_LBL_040 "Tension du routeur"
