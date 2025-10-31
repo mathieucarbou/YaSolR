@@ -103,19 +103,23 @@ namespace Mycila {
       bool isConnected() const { return getVoltage().has_value(); }
 
       bool isUsing(Source source) const {
-        switch (source) {
-          case Source::MQTT:
-            return _mqttMetrics != nullptr && _mqttMetrics->isPresent() && !std::isnan(_mqttMetrics->get().power);
-          case Source::VICTRON:
-            return _victronMetrics != nullptr && _victronMetrics->isPresent() && !std::isnan(_victronMetrics->get().power);
-          case Source::JSY_REMOTE:
-            return _jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent() && !std::isnan(_jsyRemoteMetrics->get().power);
-          case Source::JSY:
-            return _jsyMetrics != nullptr && _jsyMetrics->isPresent() && !std::isnan(_jsyMetrics->get().power);
-          default:
-            // Note: PZEM is no a valid grid source since not bidirectional
-            return false;
+        return currentSource().has_value() && currentSource().value() == source;
+      }
+
+      std::optional<Source> currentSource() const {
+        if (_mqttMetrics != nullptr && _mqttMetrics->isPresent() && !std::isnan(_mqttMetrics->get().power)) {
+          return Source::MQTT;
         }
+        if (_victronMetrics != nullptr && _victronMetrics->isPresent() && !std::isnan(_victronMetrics->get().power)) {
+          return Source::VICTRON;
+        }
+        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent() && !std::isnan(_jsyRemoteMetrics->get().power)) {
+          return Source::JSY_REMOTE;
+        }
+        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent() && !std::isnan(_jsyMetrics->get().power)) {
+          return Source::JSY;
+        }
+        return std::nullopt;
       }
 
       std::optional<float> getPower() const {
