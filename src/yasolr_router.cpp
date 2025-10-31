@@ -107,7 +107,7 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
 
 // functions
 
-static bool isZeroCrossBased(const char* type) {
+static bool isThyristorBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
          strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
@@ -128,10 +128,10 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
   const char* type = config.get(keyType);
   LOGI(TAG, "Initializing dimmer %s for output %d", type, outputID);
 
-  if (isZeroCrossBased(type)) {
-    Mycila::ZeroCrossDimmer* zcDimmer = new Mycila::ZeroCrossDimmer();
-    zcDimmer->setPin((gpio_num_t)config.getInt(keyPin));
-    return zcDimmer;
+  if (isThyristorBased(type)) {
+    Mycila::ThyristorDimmer* thyristorDimmer = new Mycila::ThyristorDimmer();
+    thyristorDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    return thyristorDimmer;
   }
 
   if (isPWMBased(type)) {
@@ -188,7 +188,7 @@ static void configure_zcd() {
       LOGI(TAG, "Enable ZCD Pulse Analyzer");
       pulseAnalyzer = new Mycila::PulseAnalyzer();
       pulseAnalyzer->setZeroCrossEventShift(YASOLR_ZC_EVENT_SHIFT_US);
-      pulseAnalyzer->onZeroCross(Mycila::ZeroCrossDimmer::onZeroCross);
+      pulseAnalyzer->onZeroCross(Mycila::ThyristorDimmer::onZeroCross);
       pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
 
       if (!pulseAnalyzer->isEnabled()) {
