@@ -495,10 +495,8 @@ If is possible to listen to some MQTT topics to read the grid voltage, grid powe
 
 - `Grid Voltage`: if set to a MQTT Topic, the router will listen to it to read the Grid voltage.
   YaSolR supports raw values and JSON values like Shelly EM and 3EM.
-  **Any measurement device (JSY or JSY Remote) will still have priority over MQTT**.
 - `Grid Power`: if set to a MQTT Topic, the router will listen to it to read the Grid power.
   YaSolR supports raw values and JSON values like Shelly EM and 3EM.
-  **It takes precedence over any other source, even a JSY connected to the device**.
 - `Output 1 Temperature`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 1
 - `Output 2 Temperature`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 2
 
@@ -654,25 +652,20 @@ This is easier to put a clamp around the grid wire.
 
 > ##### NOTE
 >
-> The JSY-194G labels are wrong for RX and TX, so for this JSY, connect the JSY RX to the board RX and the JSY TX to the board TX.
+> The JSY-194G labels can be wrong for RX and TX, so for this JSY, connect the JSY RX to the board RX and the JSY TX to the board TX.
 >
 {: .block-note }
 
 #### JSY Remote
 
 JSY can also be replaced with a remote JSY **without any impact on routing speed**.
-You can install the [MycilaJSY App](https://github.com/mathieucarbou/MycilaJSYApp) on a device and connect it to the JSY.
+You can install the [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp) on a device and connect it to the JSY.
 This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP.
 The reading rate is about **20-25 messages per second** and sending rate is 3 messages per second (because the JSY exposes 3 new measurements every second).
 
 ![](https://github.com/mathieucarbou/MycilaJSY/assets/61346/3066bf12-31d5-45de-9303-d810f14731d0)
 
-You can look in the [MycilaJSY App](https://github.com/mathieucarbou/MycilaJSYApp) project to find more information about how to setup remote JSY and the supported protocols.
-
-When using a remote JSY with the router, the following rules apply:
-
-- The voltage will always be read if possible from a connected JSY or PZEM, then from a remote JSY, then from MQTT.
-- The grid power will always be read first from MQTT, then from a remote JSY, then from a connected JSY.
+You can look in the [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp) project to find more information about how to setup remote JSY and the supported protocols.
 
 JSY Remote can be activated in the Hardware section by switching the button called **"JSY Remote"**.
 
@@ -693,7 +686,6 @@ This is easier to put a clamp around the grid wire.
 #### Zero-Cross Detection
 
 The Zero-Cross Detection (ZCD) module is used to detect the zero-crossing of the grid voltage.
-
 It is required with these types of dimmers:
 
 - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
@@ -701,7 +693,7 @@ It is required with these types of dimmers:
 - RobotDyn 24/40A
 - Triac + ZCD
 
-When activating `Zero-Cross Detection`, YaSolR will first start a pulse analyzer to grab some statistics about the pulse characteristics: period and length.
+When auto-activating `Zero-Cross Detection`, YaSolR will first start a pulse analyzer to grab some statistics about the pulse characteristics: period and length.
 This characteristics are used to fine-tune the TRIAC firing and they can be viewed in the dashboard, in the system information (debug section) the ZCD information are exposed:
 
 - `ZCD: Pulse Width` (will depends on your ZCD module)
