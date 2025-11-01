@@ -577,6 +577,8 @@ The Shelly routeur having a slower feeback loop for measurements (each second fo
 You can also use the [Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/).
 This simulator was built for YaSolR router but the PID algorithm is the same.
 
+[![](assets/img/screenshots/pid_simulator.jpeg)](assets/img/screenshots/pid_simulator.jpeg)
+
 ### MQTT Grid source
 
 The script can be directly installed on the dimmer and read the grid power and voltage from MQTT.
