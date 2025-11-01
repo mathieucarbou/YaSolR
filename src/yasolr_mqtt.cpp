@@ -572,6 +572,8 @@ void yasolr_configure_mqtt() {
       mqtt = nullptr;
       voltage = nullptr;
       power = nullptr;
+
+      grid.deleteMetrics(Mycila::Grid::Source::MQTT);
     }
   }
 }
