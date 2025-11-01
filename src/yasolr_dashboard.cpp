@@ -129,6 +129,7 @@ static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_L
 
 #ifdef APP_MODEL_PRO
 static const char* _outputHarmonicsHistoryX[11] = {"H1", "H3", "H5", "H7", "H9", "H11", "H13", "H15", "H17", "H19", "H21"};
+static const char* _outputHarmonicCurrentsHistoryX[11] = {"I1", "I3", "I5", "I7", "I9", "I11", "I13", "I15", "I17", "I19", "I21"};
 
 // tab: output 1
 
@@ -150,7 +151,9 @@ static dash::EnergyCard<uint32_t> _output1Energy(dashboard, YASOLR_LBL_059, "Wh"
 static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
 
 static float _output1HarmonicsHistoryY[11] = {0};
-static dash::BarChart<const char*, float> _output1HarmonicsHistory(dashboard, YASOLR_LBL_037 " (%)");
+static float _output1HarmonicCurrentsHistoryY[11] = {0};
+static dash::BarChart<const char*, float> _output1HarmonicsHistory(dashboard, YASOLR_LBL_037);
+static dash::BarChart<const char*, float> _output1HarmonicCurrentsHistory(dashboard, YASOLR_LBL_038);
 
 // tab: output 2
 
@@ -172,7 +175,9 @@ static dash::EnergyCard<uint32_t> _output2Energy(dashboard, YASOLR_LBL_059, "Wh"
 static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
 
 static float _output2HarmonicsHistoryY[11] = {0};
-static dash::BarChart<const char*, float> _output2HarmonicsHistory(dashboard, YASOLR_LBL_037 " (%)");
+static float _output2HarmonicCurrentsHistoryY[11] = {0};
+static dash::BarChart<const char*, float> _output2HarmonicsHistory(dashboard, YASOLR_LBL_037);
+static dash::BarChart<const char*, float> _output2HarmonicCurrentsHistory(dashboard, YASOLR_LBL_038);
 
 // tab: system
 
@@ -539,6 +544,10 @@ void YaSolR::Website::begin() {
   _output1HarmonicsHistory.setSize(FULL_SIZE);
   _output1HarmonicsHistory.setX(_outputHarmonicsHistoryX, 11);
 
+  _output1HarmonicCurrentsHistory.setTab(_output1Tab);
+  _output1HarmonicCurrentsHistory.setSize(FULL_SIZE);
+  _output1HarmonicCurrentsHistory.setX(_outputHarmonicsHistoryX, 11);
+
   _boolConfig(_output1DimmerAuto, KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   _boolConfig(_output1BypassAuto, KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
 
@@ -562,6 +571,10 @@ void YaSolR::Website::begin() {
   _output2HarmonicsHistory.setTab(_output2Tab);
   _output2HarmonicsHistory.setSize(FULL_SIZE);
   _output2HarmonicsHistory.setX(_outputHarmonicsHistoryX, 11);
+
+  _output2HarmonicCurrentsHistory.setTab(_output2Tab);
+  _output2HarmonicCurrentsHistory.setSize(FULL_SIZE);
+  _output2HarmonicCurrentsHistory.setX(_outputHarmonicsHistoryX, 11);
 
   _boolConfig(_output2DimmerAuto, KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   _boolConfig(_output2BypassAuto, KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -1628,10 +1641,28 @@ void YaSolR::Website::updateCharts() {
 
 #ifdef APP_MODEL_PRO
   // harmonics
-  output1.readHarmonics(_output1HarmonicsHistoryY, 11);
-  output2.readHarmonics(_output2HarmonicsHistoryY, 11);
+  output1.calculateHarmonics(_output1HarmonicsHistoryY, 11);
+  output2.calculateHarmonics(_output2HarmonicsHistoryY, 11);
+
+  Mycila::RouterOutput::Metrics* outputMetrics = new Mycila::RouterOutput::Metrics();
+
+  output1.readMeasurements(*outputMetrics);
+  for (size_t i = 0; i < 11; i++) {
+    _output1HarmonicCurrentsHistoryY[i] = outputMetrics->current * _output1HarmonicsHistoryY[i] / 100.0f;
+  }
+
+  output2.readMeasurements(*outputMetrics);
+  for (size_t i = 0; i < 11; i++) {
+    _output2HarmonicCurrentsHistoryY[i] = outputMetrics->current * _output2HarmonicsHistoryY[i] / 100.0f;
+  }
+
+  delete outputMetrics;
+  outputMetrics = nullptr;
+
   _output1HarmonicsHistory.setY(_output1HarmonicsHistoryY, 11);
   _output2HarmonicsHistory.setY(_output2HarmonicsHistoryY, 11);
+  _output1HarmonicCurrentsHistory.setY(_output1HarmonicCurrentsHistoryY, 11);
+  _output2HarmonicCurrentsHistory.setY(_output2HarmonicCurrentsHistoryY, 11);
 #endif
 }
 

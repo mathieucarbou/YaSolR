@@ -101,19 +101,6 @@ namespace Mycila {
         delete outputMeasurements;
         outputMeasurements = nullptr;
 
-        // Add harmonics information if dimmer is active
-        JsonObject harm = root["measurements"]["harmonics"].to<JsonObject>();
-        float harmonics[11]; // H1, H3, H5, H7, H9, H11, H13, H15, H17, H19, H21
-        if (readHarmonics(harmonics, 11)) {
-          for (size_t i = 0; i < 11; i++) {
-            if (!std::isnan(harmonics[i])) {
-              char key[8];
-              snprintf(key, sizeof(key), "h%d", static_cast<int>(2 * i + 1));
-              harm[key] = harmonics[i];
-            }
-          }
-        }
-
         JsonObject metrics = root["metrics"].to<JsonObject>();
         if (_metrics.isPresent()) {
           metrics["enabled"] = true;
@@ -246,7 +233,7 @@ namespace Mycila {
         return true;
       }
 
-      bool readHarmonics(float* array, size_t n) const {
+      bool calculateHarmonics(float* array, size_t n) const {
         if (array == nullptr || n == 0)
           return false;
 
@@ -255,10 +242,10 @@ namespace Mycila {
           for (size_t i = 0; i < n; i++) {
             array[i] = 0.0f;
           }
-          return false;
+          return true;
         }
 
-        return _dimmer->readHarmonics(array, n);
+        return _dimmer->calculateHarmonics(array, n);
       }
 
       // temperature
