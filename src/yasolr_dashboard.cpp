@@ -150,8 +150,8 @@ static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_05
 static dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
 static dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
 static dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
-static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
+static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<uint32_t> _output1Energy(dashboard, YASOLR_LBL_059, "Wh");
 
 static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
@@ -176,8 +176,8 @@ static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_05
 static dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
 static dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
 static dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
-static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
+static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<uint32_t> _output2Energy(dashboard, YASOLR_LBL_059, "Wh");
 
 static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
@@ -1157,6 +1157,7 @@ void YaSolR::Website::initCards() {
 
   _relay1Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
   _relay2Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
+  _routerDS18State.setDisplay(config.getBool(KEY_ENABLE_DS18_SYSTEM));
 
   // tab: output 1
 
@@ -1186,6 +1187,7 @@ void YaSolR::Website::initCards() {
   _output1Energy.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
   _output1Bypass.setDisplay(bypass1Possible);
+  _output1DS18State.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_DS18));
 
   // tab: output 2
 
@@ -1215,6 +1217,7 @@ void YaSolR::Website::initCards() {
   _output2Energy.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
   _output2Bypass.setDisplay(bypass2Possible);
+  _output2DS18State.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_DS18));
 
   // tab: system
 
