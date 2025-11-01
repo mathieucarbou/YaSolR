@@ -182,8 +182,8 @@ void yasolr_init_config() {
       output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
-      output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
       output1.setDimmerOff();
+      output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
 
     } else if (key == KEY_OUTPUT1_DIMMER_MIN) {
       output1.setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
@@ -228,8 +228,8 @@ void yasolr_init_config() {
       output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
-      output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
       output2.setDimmerOff();
+      output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
 
     } else if (key == KEY_OUTPUT2_DIMMER_MIN) {
       output2.setDimmerDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
