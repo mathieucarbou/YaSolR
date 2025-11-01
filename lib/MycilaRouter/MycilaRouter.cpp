@@ -78,13 +78,10 @@ void Mycila::Router::continueCalibration() {
     case 3:
       if (millis() - _calibrationStartTime > 5000) {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
-        RouterOutput::Metrics outputMetrics;
-        _outputs[_calibrationOutputIndex]->readMeasurements(outputMetrics);
-        float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
-        if (!resistance) {
-          Router::Metrics measurements;
-          readMeasurements(measurements);
-          resistance = measurements.resistance;
+
+        float resistance = _outputs[_calibrationOutputIndex]->readResistance().value_or(NAN);
+        if (std::isnan(resistance)) {
+          resistance = readResistance().value_or(NAN);
         }
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = resistance;
@@ -99,14 +96,10 @@ void Mycila::Router::continueCalibration() {
     case 4:
       if (millis() - _calibrationStartTime > 5000) {
         LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
-        RouterOutput::Metrics outputMetrics;
-        _outputs[_calibrationOutputIndex]->readMeasurements(outputMetrics);
-        float resistance = outputMetrics.resistance > 0 ? outputMetrics.resistance : 0; // handles nan
 
-        if (!resistance) {
-          Router::Metrics measurements;
-          readMeasurements(measurements);
-          resistance = measurements.resistance;
+        float resistance = _outputs[_calibrationOutputIndex]->readResistance().value_or(NAN);
+        if (std::isnan(resistance)) {
+          resistance = readResistance().value_or(NAN);
         }
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = (_outputs[_calibrationOutputIndex]->config.calibratedResistance + resistance) / 2;

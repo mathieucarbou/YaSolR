@@ -117,9 +117,11 @@ void yasolr_configure_display() {
               break;
             }
             case 6: {
-              Mycila::Router::Metrics routerMetrics;
-              router.readMeasurements(routerMetrics);
-              display->home.printf("Router P: %9d W", static_cast<int>(std::round(routerMetrics.power)));
+              std::optional<float> routedPower = router.readTotalRoutedPower();
+              if (!routedPower.has_value()) {
+                routedPower = router.calculateTotalRoutedPower(grid.getVoltage().value_or(NAN));
+              }
+              display->home.printf("Router P: %9d W", static_cast<int>(std::round(routedPower.value_or(0))));
               wrote = true;
               break;
             }

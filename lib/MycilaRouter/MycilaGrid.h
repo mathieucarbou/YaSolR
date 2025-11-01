@@ -220,11 +220,9 @@ namespace Mycila {
           root["frequency"] = frequency.value();
         }
 
-        Metrics* measurements = new Metrics();
-        readMeasurements(*measurements);
-        toJson(root["measurements"].to<JsonObject>(), *measurements);
-        delete measurements;
-        measurements = nullptr;
+        Metrics measurements;
+        readMeasurements(measurements);
+        toJson(root["measurements"].to<JsonObject>(), measurements);
 
         JsonObject mqtt = root["source"]["mqtt"].to<JsonObject>();
         if (_mqttMetrics != nullptr && _mqttMetrics->isPresent()) {

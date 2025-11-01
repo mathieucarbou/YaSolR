@@ -78,18 +78,20 @@ void yasolr_init_relays() {
     float gridVoltage = grid.getVoltage().value_or(NAN);
     float setpoint = pidController.getSetpoint();
 
-    if (isnan(gridPower) || isnan(gridVoltage) || !gridVoltage) {
-      LOGW(TAG, "Cannot auto switch relays: missing grid power/voltage");
+    std::optional<float> routedPower = router.readTotalRoutedPower();
+    if (!routedPower.has_value()) {
+      routedPower = router.calculateTotalRoutedPower(gridVoltage);
+    }
+
+    if (isnan(gridPower) || isnan(gridVoltage) || !gridVoltage || !routedPower.has_value()) {
+      LOGW(TAG, "Cannot auto switch relays: missing grid power, grid voltage or routed power");
       return;
     }
 
-    Mycila::Router::Metrics routerMetrics;
-    router.readMeasurements(routerMetrics);
-
-    if (relay1 && relay1->autoSwitch(gridVoltage, gridPower, routerMetrics.power, setpoint))
+    if (relay1 && relay1->autoSwitch(gridVoltage, gridPower, routedPower.value(), setpoint))
       return;
 
-    if (relay2 && relay2->autoSwitch(gridVoltage, gridPower, routerMetrics.power, setpoint))
+    if (relay2 && relay2->autoSwitch(gridVoltage, gridPower, routedPower.value(), setpoint))
       return;
   });
 

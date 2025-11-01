@@ -20,6 +20,7 @@ namespace Mycila {
       enum class Source {
         METRICS_PER_OUTPUT,
         METRICS_AGGREGATED,
+        METRICS_CALCULATED,
         METRICS_UNKNOWN
       };
       typedef struct {
@@ -30,7 +31,7 @@ namespace Mycila {
           float power = 0;
           float powerFactor = NAN;
           float resistance = NAN;
-          float voltage = NAN;
+          float thdi = NAN;
       } Metrics;
 
       explicit Router(PID& pidController) : _pidController(&pidController) {}
@@ -41,15 +42,6 @@ namespace Mycila {
       // aggregated measurements for all outputs combined, if available
       ExpiringValue<Metrics>& metrics() { return _metrics; }
       const ExpiringValue<Metrics>& metrics() const { return _metrics; }
-
-      bool isRouting() const {
-        for (const auto& output : _outputs) {
-          if (output->getState() == RouterOutput::State::OUTPUT_ROUTING) {
-            return true;
-          }
-        }
-        return false;
-      }
 
       bool isAutoDimmerEnabled() const {
         for (const auto& output : _outputs) {
@@ -85,24 +77,35 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float voltage) const {
-        Metrics* routerMeasurements = new Metrics();
-        readMeasurements(*routerMeasurements);
-        toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
-        delete routerMeasurements;
-        routerMeasurements = nullptr;
+        Metrics routerMeasurements;
+        readMeasurements(routerMeasurements);
+        toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
 
-        JsonObject metrics = root["metrics"].to<JsonObject>();
+        JsonObject source = root["source"].to<JsonObject>();
         if (_metrics.isPresent()) {
-          metrics["enabled"] = true;
-          metrics["time"] = _metrics.getLastUpdateTime();
-          toJson(metrics, _metrics.get());
+          source["enabled"] = true;
+          source["time"] = _metrics.getLastUpdateTime();
+          toJson(source, _metrics.get());
         } else {
-          metrics["enabled"] = false;
+          source["enabled"] = false;
         }
       }
 
       static void toJson(const JsonObject& dest, const Metrics& metrics) {
-        dest["source"] = metrics.source == Source::METRICS_PER_OUTPUT ? "output" : (metrics.source == Source::METRICS_AGGREGATED ? "aggregated" : "unknown");
+        switch (metrics.source) {
+          case Source::METRICS_AGGREGATED:
+            dest["source"] = "aggregated";
+            break;
+          case Source::METRICS_CALCULATED:
+            dest["source"] = "calculated";
+            break;
+          case Source::METRICS_PER_OUTPUT:
+            dest["source"] = "output";
+            break;
+          default:
+            dest["source"] = "unknown";
+            break;
+        }
         if (!std::isnan(metrics.apparentPower))
           dest["apparent_power"] = metrics.apparentPower;
         if (!std::isnan(metrics.current))
@@ -114,45 +117,95 @@ namespace Mycila {
           dest["power_factor"] = metrics.powerFactor;
         if (!std::isnan(metrics.resistance))
           dest["resistance"] = metrics.resistance;
-        if (!std::isnan(metrics.voltage))
-          dest["voltage"] = metrics.voltage;
+        if (!std::isnan(metrics.thdi))
+          dest["thdi"] = metrics.thdi;
       }
 #endif
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
-      void readMeasurements(Metrics& metrics) const {
+      bool readMeasurements(Metrics& metrics) const {
+        RouterOutput::Metrics outputMetrics;
+        metrics.source = Source::METRICS_UNKNOWN;
+
         for (size_t i = 0; i < _outputs.size(); i++) {
-          RouterOutput::Metrics pzemMetrics;
-          if (_outputs[i]->readMeasurements(pzemMetrics)) {
-            metrics.voltage = pzemMetrics.voltage;
+          if (_outputs[i]->readMeasurements(outputMetrics)) {
+            metrics.source = Source::METRICS_PER_OUTPUT;
             // Note: energy is not accurate in the case of a virtual bypass through dimmer
-            metrics.energy += pzemMetrics.energy;
-            metrics.apparentPower += pzemMetrics.apparentPower;
-            metrics.current += pzemMetrics.current;
-            metrics.power += pzemMetrics.power;
+            metrics.energy += outputMetrics.energy;
+            metrics.apparentPower += outputMetrics.apparentPower;
+            metrics.current += outputMetrics.current;
+            metrics.power += outputMetrics.power;
           }
         }
 
         // we found some pzem ? we are done
-        if (metrics.voltage > 0) {
+        if (metrics.source == Source::METRICS_PER_OUTPUT) {
           metrics.source = Source::METRICS_PER_OUTPUT;
           metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
           metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-          return;
+          metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
+          return true;
         }
 
         // no pzem found, let's check if we have a local JSY or remote JSY
         if (_metrics.isPresent()) {
-          if (isRouting()) {
-            // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
-            memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
-          } else {
-            metrics.source = _metrics.get().source;
-            metrics.voltage = _metrics.get().voltage;
-            // Note: energy is not accurate in the case of a virtual bypass through dimmer
-            metrics.energy = _metrics.get().energy;
-          }
+          // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
+          memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
+          metrics.source = Source::METRICS_AGGREGATED;
+          return true;
         }
+
+        return false;
+      }
+
+      bool calculateMetrics(Metrics& metrics, float gridVoltage) const {
+        if (gridVoltage > 0) {
+          RouterOutput::Metrics outputMetrics;
+          metrics.source = Source::METRICS_CALCULATED;
+          for (size_t i = 0; i < _outputs.size(); i++) {
+            if (_outputs[i]->calculateMetrics(outputMetrics, gridVoltage)) {
+              metrics.energy += outputMetrics.energy;
+              metrics.apparentPower += outputMetrics.apparentPower;
+              metrics.current += outputMetrics.current;
+              metrics.power += outputMetrics.power;
+            }
+          }
+          metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
+          metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
+          metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
+          return true;
+        }
+        return false;
+      }
+
+      std::optional<float> readTotalRoutedPower() const {
+        float power = 0;
+        for (size_t i = 0; i < _outputs.size(); i++) {
+          power += _outputs[i]->readRoutedPower().value_or(NAN);
+        }
+        if (!std::isnan(power)) {
+          return power;
+        }
+        if (_metrics.isPresent())
+          return _metrics.get().power;
+        return std::nullopt;
+      }
+
+      std::optional<float> calculateTotalRoutedPower(float gridVoltage) const {
+        float power = 0;
+        for (size_t i = 0; i < _outputs.size(); i++) {
+          power += _outputs[i]->calculateRoutedPower(gridVoltage).value_or(NAN);
+        }
+        if (!std::isnan(power)) {
+          return power;
+        }
+        return std::nullopt;
+      }
+
+      std::optional<float> readResistance() const {
+        if (_metrics.isAbsent())
+          return std::nullopt;
+        return _metrics.get().resistance;
       }
 
     private:

@@ -340,13 +340,11 @@ void rest_api() {
     root["device"]["cores"] = ESP.getChipCores();
     root["device"]["cpu_freq"] = ESP.getCpuFreqMHz();
 
-    Mycila::System::Memory* memory = new Mycila::System::Memory();
-    Mycila::System::getMemory(*memory);
-    root["device"]["heap"]["total"] = memory->total;
-    root["device"]["heap"]["usage"] = memory->usage;
-    root["device"]["heap"]["used"] = memory->used;
-    delete memory;
-    memory = nullptr;
+    Mycila::System::Memory memory;
+    Mycila::System::getMemory(memory);
+    root["device"]["heap"]["total"] = memory.total;
+    root["device"]["heap"]["usage"] = memory.usage;
+    root["device"]["heap"]["used"] = memory.used;
 
     root["device"]["id"] = Mycila::AppInfo.id;
     root["device"]["model"] = ESP.getChipModel();
@@ -482,7 +480,13 @@ void rest_api() {
     JsonObject root = response->getRoot();
 
     Mycila::Router::Metrics routerMeasurements;
-    router.readMeasurements(routerMeasurements);
+    Mycila::RouterOutput::Metrics outputMeasurements;
+
+    float gridVoltage = grid.getVoltage().value_or(NAN);
+
+    if (!router.readMeasurements(routerMeasurements)) {
+      router.calculateMetrics(routerMeasurements, gridVoltage);
+    }
 
     root["lights"] = lights.toString();
     if (relay1)
@@ -511,8 +515,8 @@ void rest_api() {
         json["temperature"] = t;
       }
 
-      Mycila::RouterOutput::Metrics outputMeasurements;
-      output->readMeasurements(outputMeasurements);
+      if (!output->readMeasurements(outputMeasurements))
+        output->calculateMetrics(outputMeasurements, gridVoltage);
       Mycila::RouterOutput::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
     }
 

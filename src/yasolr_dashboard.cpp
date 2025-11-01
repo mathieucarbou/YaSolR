@@ -93,13 +93,17 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 
 // home
 
+static dash::SeparatorCard<const char*> _overviewSep1(dashboard, YASOLR_LBL_039);
 static dash::FeedbackCard _output1State(dashboard, YASOLR_LBL_046);
 static dash::FeedbackCard _output2State(dashboard, YASOLR_LBL_070);
 static dash::FeedbackToggleButtonCard _relay1Switch(dashboard, YASOLR_LBL_074);
 static dash::FeedbackToggleButtonCard _relay2Switch(dashboard, YASOLR_LBL_077);
 
+static dash::SeparatorCard<const char*> _overviewSep2(dashboard, YASOLR_LBL_012 ": " YASOLR_LBL_133);
 static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
 static dash::EnergyCard<float, 0> _gridVoltage(dashboard, YASOLR_LBL_106, "V");
+
+static dash::SeparatorCard<const char*> _overviewSep3(dashboard, YASOLR_LBL_040 ": " YASOLR_LBL_133);
 static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_054);
@@ -133,18 +137,20 @@ static const char* _outputHarmonicCurrentsHistoryX[11] = {"I1", "I3", "I5", "I7"
 
 // tab: output 1
 
+static dash::SeparatorCard<const char*> _output1Controls(dashboard, YASOLR_LBL_039);
 static dash::ToggleButtonCard _output1DimmerAuto(dashboard, YASOLR_LBL_060);
 static dash::SliderCard<float, 2> _output1DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::ProgressCard<float, 2> _output1DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
 static dash::ToggleButtonCard _output1BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::FeedbackToggleButtonCard _output1Bypass(dashboard, YASOLR_LBL_051);
 
+static dash::SeparatorCard<const char*> _output1Measures(dashboard, YASOLR_LBL_133);
 static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
 static dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
-static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
+static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
 static dash::EnergyCard<uint32_t> _output1Energy(dashboard, YASOLR_LBL_059, "Wh");
 
@@ -157,18 +163,20 @@ static dash::BarChart<const char*, float> _output1HarmonicCurrentsHistory(dashbo
 
 // tab: output 2
 
+static dash::SeparatorCard<const char*> _output2Controls(dashboard, YASOLR_LBL_039);
 static dash::ToggleButtonCard _output2DimmerAuto(dashboard, YASOLR_LBL_060);
 static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, 0.01f, "%");
 static dash::ProgressCard<float, 2> _output2DimmerSliderRO(dashboard, YASOLR_LBL_050, 0.0f, 100.0f, "%");
 static dash::ToggleButtonCard _output2BypassAuto(dashboard, YASOLR_LBL_064);
 static dash::FeedbackToggleButtonCard _output2Bypass(dashboard, YASOLR_LBL_051);
 
+static dash::SeparatorCard<const char*> _output2Measures(dashboard, YASOLR_LBL_133);
 static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
 static dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
-static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
+static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
 static dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
 static dash::EnergyCard<uint32_t> _output2Energy(dashboard, YASOLR_LBL_059, "Wh");
 
@@ -525,10 +533,12 @@ void YaSolR::Website::begin() {
 
   // tab: output 1
 
+  _output1Controls.setTab(_output1Tab);
   _output1DS18State.setTab(_output1Tab);
   _output1DimmerAuto.setTab(_output1Tab);
   _output1DimmerSlider.setTab(_output1Tab);
   _output1DimmerSliderRO.setTab(_output1Tab);
+  _output1Measures.setTab(_output1Tab);
   _output1Power.setTab(_output1Tab);
   _output1ApparentPower.setTab(_output1Tab);
   _output1PowerFactor.setTab(_output1Tab);
@@ -546,17 +556,19 @@ void YaSolR::Website::begin() {
 
   _output1HarmonicCurrentsHistory.setTab(_output1Tab);
   _output1HarmonicCurrentsHistory.setSize(FULL_SIZE);
-  _output1HarmonicCurrentsHistory.setX(_outputHarmonicsHistoryX, 11);
+  _output1HarmonicCurrentsHistory.setX(_outputHarmonicCurrentsHistoryX, 11);
 
   _boolConfig(_output1DimmerAuto, KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   _boolConfig(_output1BypassAuto, KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
 
   // tab: output 2
 
+  _output2Controls.setTab(_output2Tab);
   _output2DS18State.setTab(_output2Tab);
   _output2DimmerAuto.setTab(_output2Tab);
   _output2DimmerSlider.setTab(_output2Tab);
   _output2DimmerSliderRO.setTab(_output2Tab);
+  _output2Measures.setTab(_output2Tab);
   _output2Power.setTab(_output2Tab);
   _output2ApparentPower.setTab(_output2Tab);
   _output2PowerFactor.setTab(_output2Tab);
@@ -574,7 +586,7 @@ void YaSolR::Website::begin() {
 
   _output2HarmonicCurrentsHistory.setTab(_output2Tab);
   _output2HarmonicCurrentsHistory.setSize(FULL_SIZE);
-  _output2HarmonicCurrentsHistory.setX(_outputHarmonicsHistoryX, 11);
+  _output2HarmonicCurrentsHistory.setX(_outputHarmonicCurrentsHistoryX, 11);
 
   _boolConfig(_output2DimmerAuto, KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   _boolConfig(_output2BypassAuto, KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -1164,13 +1176,13 @@ void YaSolR::Website::initCards() {
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
   _output1DimmerSlider.setDisplay(dimmer1Enabled && !autoDimmer1Activated);
   _output1DimmerSliderRO.setDisplay(dimmer1Enabled && autoDimmer1Activated);
-  _output1Power.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1ApparentPower.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1PowerFactor.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1THDi.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1Voltage.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1Current.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1Resistance.setDisplay(dimmer1Enabled && pzem1Enabled);
+  _output1Power.setDisplay(dimmer1Enabled);
+  _output1ApparentPower.setDisplay(dimmer1Enabled);
+  _output1PowerFactor.setDisplay(dimmer1Enabled);
+  _output1THDi.setDisplay(dimmer1Enabled);
+  _output1Voltage.setDisplay(dimmer1Enabled);
+  _output1Current.setDisplay(dimmer1Enabled);
+  _output1Resistance.setDisplay(dimmer1Enabled);
   _output1Energy.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
   _output1Bypass.setDisplay(bypass1Possible);
@@ -1193,13 +1205,13 @@ void YaSolR::Website::initCards() {
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
   _output2DimmerSlider.setDisplay(dimmer2Enabled && !autoDimmer2Activated);
   _output2DimmerSliderRO.setDisplay(dimmer2Enabled && autoDimmer2Activated);
-  _output2Power.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2ApparentPower.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2PowerFactor.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2THDi.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2Voltage.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2Current.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2Resistance.setDisplay(dimmer2Enabled && pzem2Enabled);
+  _output2Power.setDisplay(dimmer2Enabled);
+  _output2ApparentPower.setDisplay(dimmer2Enabled);
+  _output2PowerFactor.setDisplay(dimmer2Enabled);
+  _output2THDi.setDisplay(dimmer2Enabled);
+  _output2Voltage.setDisplay(dimmer2Enabled);
+  _output2Current.setDisplay(dimmer2Enabled);
+  _output2Resistance.setDisplay(dimmer2Enabled);
   _output2Energy.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
   _output2Bypass.setDisplay(bypass2Possible);
@@ -1423,7 +1435,6 @@ void YaSolR::Website::initCards() {
 
 void YaSolR::Website::updateCards() {
   // metrics
-
   Mycila::Grid::Metrics gridMetrics;
   grid.readMeasurements(gridMetrics);
   _gridEnergy.setValue(gridMetrics.energy);
@@ -1432,11 +1443,15 @@ void YaSolR::Website::updateCards() {
   _gridPower.setValue(gridMetrics.power);
 
   Mycila::Router::Metrics routerMetrics;
-  router.readMeasurements(routerMetrics);
+  if (!router.readMeasurements(routerMetrics)) {
+    router.calculateMetrics(routerMetrics, gridMetrics.voltage);
+  }
+
   _routerPower.setValue(routerMetrics.power);
   _routerApparentPower.setValue(routerMetrics.apparentPower);
   _routerPowerFactor.setValue(routerMetrics.powerFactor);
   _routerCurrent.setValue(routerMetrics.current);
+  _routerTHDi.setValue(routerMetrics.thdi);
   _routerResistance.setValue(routerMetrics.resistance);
   _routerEnergy.setValue(routerMetrics.energy);
 
@@ -1446,12 +1461,6 @@ void YaSolR::Website::updateCards() {
   _deviceHeapUsed.setValue(memory.used);
   _deviceHeapUsage.setValue(memory.usage);
   _deviceHeapMinFree.setValue(memory.minimumFree);
-
-  Mycila::RouterOutput::Metrics output1Measurements;
-  output1.readMeasurements(output1Measurements);
-
-  Mycila::RouterOutput::Metrics output2Measurements;
-  output2.readMeasurements(output2Measurements);
 
   // statistics
 
@@ -1569,17 +1578,22 @@ void YaSolR::Website::updateCards() {
 #endif
 
 #ifdef APP_MODEL_PRO
+  Mycila::RouterOutput::Metrics outputMeasurements;
+
   // tab: output 1
 
+  if (!output1.readMeasurements(outputMeasurements))
+    output1.calculateMetrics(outputMeasurements, gridMetrics.voltage);
+
   _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleOnline() * 100.0f);
-  _output1Power.setValue(output1Measurements.power);
-  _output1ApparentPower.setValue(output1Measurements.apparentPower);
-  _output1PowerFactor.setValue(output1Measurements.powerFactor);
-  _output1THDi.setValue(output1Measurements.thdi);
-  _output1Voltage.setValue(output1Measurements.dimmedVoltage);
-  _output1Current.setValue(output1Measurements.current);
-  _output1Resistance.setValue(output1Measurements.resistance);
-  _output1Energy.setValue(output1Measurements.energy);
+  _output1Power.setValue(outputMeasurements.power);
+  _output1ApparentPower.setValue(outputMeasurements.apparentPower);
+  _output1PowerFactor.setValue(outputMeasurements.powerFactor);
+  _output1THDi.setValue(outputMeasurements.thdi);
+  _output1Voltage.setValue(outputMeasurements.dimmedVoltage);
+  _output1Current.setValue(outputMeasurements.current);
+  _output1Resistance.setValue(outputMeasurements.resistance);
+  _output1Energy.setValue(outputMeasurements.energy);
 
   {
     const uint32_t bypassUptime = output1.getBypassUptime();
@@ -1588,15 +1602,18 @@ void YaSolR::Website::updateCards() {
 
   // tab: output 2
 
+  if (!output2.readMeasurements(outputMeasurements))
+    output2.calculateMetrics(outputMeasurements, gridMetrics.voltage);
+
   _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleOnline() * 100.0f);
-  _output2Power.setValue(output2Measurements.power);
-  _output2ApparentPower.setValue(output2Measurements.apparentPower);
-  _output2PowerFactor.setValue(output2Measurements.powerFactor);
-  _output2THDi.setValue(output2Measurements.thdi);
-  _output2Voltage.setValue(output2Measurements.dimmedVoltage);
-  _output2Current.setValue(output2Measurements.current);
-  _output2Resistance.setValue(output2Measurements.resistance);
-  _output2Energy.setValue(output2Measurements.energy);
+  _output2Power.setValue(outputMeasurements.power);
+  _output2ApparentPower.setValue(outputMeasurements.apparentPower);
+  _output2PowerFactor.setValue(outputMeasurements.powerFactor);
+  _output2THDi.setValue(outputMeasurements.thdi);
+  _output2Voltage.setValue(outputMeasurements.dimmedVoltage);
+  _output2Current.setValue(outputMeasurements.current);
+  _output2Resistance.setValue(outputMeasurements.resistance);
+  _output2Energy.setValue(outputMeasurements.energy);
 
   {
     const uint32_t bypassUptime = output2.getBypassUptime();
@@ -1627,13 +1644,12 @@ void YaSolR::Website::updateCharts() {
   memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], sizeof(_routedPowerHistoryY) - sizeof(*_routedPowerHistoryY));
 
   // set new value
+  std::optional<float> routedPower = router.readTotalRoutedPower();
+  if (!routedPower.has_value()) {
+    routedPower = router.calculateTotalRoutedPower(grid.getVoltage().value_or(NAN));
+  }
+  _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routedPower.value_or(0));
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
-
-  Mycila::Router::Metrics* routerMetrics = new Mycila::Router::Metrics();
-  router.readMeasurements(*routerMetrics);
-  _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routerMetrics->power);
-  delete routerMetrics;
-  routerMetrics = nullptr;
 
   // update charts
   _gridPowerHistory.setY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
@@ -1644,20 +1660,21 @@ void YaSolR::Website::updateCharts() {
   output1.calculateHarmonics(_output1HarmonicsHistoryY, 11);
   output2.calculateHarmonics(_output2HarmonicsHistoryY, 11);
 
-  Mycila::RouterOutput::Metrics* outputMetrics = new Mycila::RouterOutput::Metrics();
-
-  output1.readMeasurements(*outputMetrics);
+  std::optional<float> h1Current = output1.readRoutedCurrent();
+  if (!h1Current.has_value()) {
+    h1Current = output1.calculateRoutedCurrent(grid.getVoltage().value_or(NAN));
+  }
   for (size_t i = 0; i < 11; i++) {
-    _output1HarmonicCurrentsHistoryY[i] = outputMetrics->current * _output1HarmonicsHistoryY[i] / 100.0f;
+    _output1HarmonicCurrentsHistoryY[i] = h1Current.value_or(0) * _output1HarmonicsHistoryY[i] / 100.0f;
   }
 
-  output2.readMeasurements(*outputMetrics);
-  for (size_t i = 0; i < 11; i++) {
-    _output2HarmonicCurrentsHistoryY[i] = outputMetrics->current * _output2HarmonicsHistoryY[i] / 100.0f;
+  h1Current = output2.readRoutedCurrent();
+  if (!h1Current.has_value()) {
+    h1Current = output2.calculateRoutedCurrent(grid.getVoltage().value_or(NAN));
   }
-
-  delete outputMetrics;
-  outputMetrics = nullptr;
+  for (size_t i = 0; i < 11; i++) {
+    _output2HarmonicCurrentsHistoryY[i] = h1Current.value_or(0) * _output2HarmonicsHistoryY[i] / 100.0f;
+  }
 
   _output1HarmonicsHistory.setY(_output1HarmonicsHistoryY, 11);
   _output2HarmonicsHistory.setY(_output2HarmonicsHistoryY, 11);

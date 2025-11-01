@@ -95,19 +95,21 @@ namespace Mycila {
           root["temperature"] = t;
         }
 
-        Metrics* outputMeasurements = new Metrics();
-        readMeasurements(*outputMeasurements);
-        toJson(root["measurements"].to<JsonObject>(), *outputMeasurements);
-        delete outputMeasurements;
-        outputMeasurements = nullptr;
+        Metrics metrics;
 
-        JsonObject metrics = root["metrics"].to<JsonObject>();
+        readMeasurements(metrics);
+        toJson(root["measurements"].to<JsonObject>(), metrics);
+
+        calculateMetrics(metrics, gridVoltage);
+        toJson(root["metrics"].to<JsonObject>(), metrics);
+
+        JsonObject source = root["source"].to<JsonObject>();
         if (_metrics.isPresent()) {
-          metrics["enabled"] = true;
-          metrics["time"] = _metrics.getLastUpdateTime();
-          toJson(metrics, _metrics.get());
+          source["enabled"] = true;
+          source["time"] = _metrics.getLastUpdateTime();
+          toJson(source, _metrics.get());
         } else {
-          metrics["enabled"] = false;
+          source["enabled"] = false;
         }
 
         _dimmer->toJson(root["dimmer"].to<JsonObject>());
@@ -215,22 +217,88 @@ namespace Mycila {
 
       ExpiringValue<Metrics>& metrics() { return _metrics; }
 
-      // get PZEM measurements, and returns false if the PZEM is not connected, true if measurements are available
       bool readMeasurements(Metrics& metrics) const {
-        if (_metrics.isAbsent())
-          return false;
-        metrics.voltage = _metrics.get().voltage;
-        metrics.energy = _metrics.get().energy;
-        if (getState() == State::OUTPUT_ROUTING) {
-          metrics.apparentPower = _metrics.get().apparentPower;
-          metrics.current = _metrics.get().current;
-          metrics.dimmedVoltage = _metrics.get().dimmedVoltage;
-          metrics.power = _metrics.get().power;
-          metrics.powerFactor = _metrics.get().powerFactor;
-          metrics.resistance = _metrics.get().resistance;
-          metrics.thdi = _metrics.get().thdi;
+        if (_metrics.isPresent()) {
+          metrics.voltage = _metrics.get().voltage;
+          metrics.energy = _metrics.get().energy;
+          if (getState() == State::OUTPUT_ROUTING) {
+            metrics.apparentPower = _metrics.get().apparentPower;
+            metrics.current = _metrics.get().current;
+            metrics.dimmedVoltage = _metrics.get().dimmedVoltage;
+            metrics.power = _metrics.get().power;
+            metrics.powerFactor = _metrics.get().powerFactor;
+            metrics.resistance = _metrics.get().resistance;
+            metrics.thdi = _metrics.get().thdi;
+          }
+          return true;
         }
-        return true;
+        return false;
+      }
+
+      bool calculateMetrics(Metrics& metrics, float gridVoltage) const {
+        if (gridVoltage > 0 && config.calibratedResistance > 0) {
+          metrics.voltage = gridVoltage;
+          metrics.resistance = config.calibratedResistance;
+          if (getState() == State::OUTPUT_ROUTING) {
+            Mycila::Dimmer::Metrics dimmerMetrics;
+            if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
+              metrics.dimmedVoltage = dimmerMetrics.voltage;
+              metrics.current = dimmerMetrics.current;
+              metrics.apparentPower = dimmerMetrics.apparentPower;
+              metrics.power = dimmerMetrics.power;
+              metrics.powerFactor = dimmerMetrics.powerFactor;
+              metrics.thdi = dimmerMetrics.thdi;
+              return true;
+            }
+          }
+        }
+        return false;
+      }
+
+      std::optional<float> readRoutedPower() const {
+        if (getState() != State::OUTPUT_ROUTING)
+          return 0.0f;
+        if (_metrics.isPresent())
+          return _metrics.get().power;
+        return std::nullopt;
+      }
+
+      std::optional<float> calculateRoutedPower(float gridVoltage) const {
+        if (getState() != State::OUTPUT_ROUTING)
+          return 0.0f;
+        if (gridVoltage > 0) {
+          Mycila::Dimmer::Metrics dimmerMetrics;
+          if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
+            return dimmerMetrics.power;
+          }
+        }
+        return std::nullopt;
+      }
+
+      std::optional<float> readRoutedCurrent() const {
+        if (getState() != State::OUTPUT_ROUTING)
+          return 0.0f;
+        if (_metrics.isPresent())
+          return _metrics.get().current;
+        return std::nullopt;
+      }
+
+      std::optional<float> calculateRoutedCurrent(float gridVoltage) const {
+        if (getState() != State::OUTPUT_ROUTING)
+          return 0.0f;
+        if (gridVoltage > 0) {
+          Mycila::Dimmer::Metrics dimmerMetrics;
+          if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
+            return dimmerMetrics.current;
+          }
+        }
+        return std::nullopt;
+      }
+
+      std::optional<float> readResistance() const {
+        if (_metrics.isPresent())
+          return _metrics.get().resistance;
+        return std::nullopt;
       }
 
       bool calculateHarmonics(float* array, size_t n) const {

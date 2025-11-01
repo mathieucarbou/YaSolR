@@ -171,7 +171,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
     }
     LOGE(TAG, "DFRobot Dimmer type not supported: %s", type);
     delete dfRobotDimmer;
-    return new Mycila::VirtualDimmer();
+    return new Mycila::Dimmer();
   }
 
   if (isZeroCrossingBased(type)) {
@@ -181,7 +181,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
   }
 
   LOGE(TAG, "Dimmer type not supported: %s", type);
-  return new Mycila::VirtualDimmer();
+  return new Mycila::Dimmer();
 }
 
 static Mycila::Relay* createBypassRelay(const char* keyType, const char* keyPin) {
@@ -364,8 +364,8 @@ void yasolr_init_router() {
   router.metrics().setExpiration(10000); // aggregated metrics for all outputs from JSY local or remote (fast)
 
   // outputs
-  dimmer1 = new Mycila::VirtualDimmer();
-  dimmer2 = new Mycila::VirtualDimmer();
+  dimmer1 = new Mycila::Dimmer();
+  dimmer2 = new Mycila::Dimmer();
   output1.setDimmer(dimmer1);
   output2.setDimmer(dimmer2);
   router.addOutput(output1);
