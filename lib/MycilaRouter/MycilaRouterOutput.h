@@ -9,6 +9,8 @@
 #include <MycilaRelay.h>
 #include <math.h>
 
+#include <cstdio>
+
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
 #endif
@@ -106,7 +108,7 @@ namespace Mycila {
           for (size_t i = 0; i < 11; i++) {
             if (!std::isnan(harmonics[i])) {
               char key[8];
-              snprintf(key, sizeof(key), "h%d", (int)(2 * i + 1));
+              snprintf(key, sizeof(key), "h%d", static_cast<int>(2 * i + 1));
               harm[key] = harmonics[i];
             }
           }
