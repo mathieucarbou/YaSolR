@@ -196,7 +196,7 @@ namespace Mycila {
         _dimmer->setDutyCycle(powerToDivert / maxPower);
 
         // returns the real used power as per the dimmer state
-        return maxPower * powerToDivert;
+        return powerToDivert;
       }
 
       // bypass
