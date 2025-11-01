@@ -363,7 +363,6 @@ static void publishData() {
   mqtt->publish((baseTopic + "/router/energy").c_str(), std::to_string(routerMeasurements->energy));
   mqtt->publish((baseTopic + "/router/power_factor").c_str(), std::isnan(routerMeasurements->powerFactor) ? "0" : std::to_string(routerMeasurements->powerFactor));
   mqtt->publish((baseTopic + "/router/power").c_str(), std::to_string(routerMeasurements->power));
-  mqtt->publish((baseTopic + "/router/thdi").c_str(), std::isnan(routerMeasurements->thdi) ? "0" : std::to_string(routerMeasurements->thdi));
   delete routerMeasurements;
   routerMeasurements = nullptr;
   yield();

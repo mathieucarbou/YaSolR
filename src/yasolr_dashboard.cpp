@@ -124,10 +124,8 @@ static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR
 
 static int16_t _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static uint16_t _routedPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
-static uint8_t _routerTHDiHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_044 " (W)");
 static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_052 " (W)");
-static dash::BarChart<int8_t, uint8_t> _routerTHDiHistory(dashboard, YASOLR_LBL_055 " (%)");
 
 #ifdef APP_MODEL_PRO
 static const char* _outputHarmonicsHistoryX[11] = {"H1", "H3", "H5", "H7", "H9", "H11", "H13", "H15", "H17", "H19", "H21"};
@@ -460,7 +458,6 @@ void YaSolR::Website::begin() {
 
   _gridPowerHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
   _routedPowerHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
-  _routerTHDiHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
 #if APP_MODEL_PRO
   _output1ResistanceCalibration.onPush([]() { _calibrate(0); });
@@ -520,7 +517,6 @@ void YaSolR::Website::begin() {
 
   _gridPowerHistory.setSize(FULL_SIZE);
   _routedPowerHistory.setSize(FULL_SIZE);
-  _routerTHDiHistory.setSize(FULL_SIZE);
 
   // tab: output 1
 
@@ -1427,7 +1423,6 @@ void YaSolR::Website::updateCards() {
   _routerPower.setValue(routerMetrics.power);
   _routerApparentPower.setValue(routerMetrics.apparentPower);
   _routerPowerFactor.setValue(routerMetrics.powerFactor);
-  _routerTHDi.setValue(routerMetrics.thdi);
   _routerCurrent.setValue(routerMetrics.current);
   _routerResistance.setValue(routerMetrics.resistance);
   _routerEnergy.setValue(routerMetrics.energy);
@@ -1617,7 +1612,6 @@ void YaSolR::Website::updateCharts() {
   // shift array
   memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY));
   memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], sizeof(_routedPowerHistoryY) - sizeof(*_routedPowerHistoryY));
-  memmove(&_routerTHDiHistoryY[0], &_routerTHDiHistoryY[1], sizeof(_routerTHDiHistoryY) - sizeof(*_routerTHDiHistoryY));
 
   // set new value
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
@@ -1625,20 +1619,20 @@ void YaSolR::Website::updateCharts() {
   Mycila::Router::Metrics* routerMetrics = new Mycila::Router::Metrics();
   router.readMeasurements(*routerMetrics);
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routerMetrics->power);
-  _routerTHDiHistoryY[YASOLR_GRAPH_POINTS - 1] = std::isnan(routerMetrics->thdi) ? 0 : std::round(routerMetrics->thdi);
   delete routerMetrics;
   routerMetrics = nullptr;
 
   // update charts
   _gridPowerHistory.setY(_gridPowerHistoryY, YASOLR_GRAPH_POINTS);
   _routedPowerHistory.setY(_routedPowerHistoryY, YASOLR_GRAPH_POINTS);
-  _routerTHDiHistory.setY(_routerTHDiHistoryY, YASOLR_GRAPH_POINTS);
 
+#ifdef APP_MODEL_PRO
   // harmonics
   output1.readHarmonics(_output1HarmonicsHistoryY, 11);
   output2.readHarmonics(_output2HarmonicsHistoryY, 11);
   _output1HarmonicsHistory.setY(_output1HarmonicsHistoryY, 11);
   _output2HarmonicsHistory.setY(_output2HarmonicsHistoryY, 11);
+#endif
 }
 
 void YaSolR::Website::updatePIDCharts() {

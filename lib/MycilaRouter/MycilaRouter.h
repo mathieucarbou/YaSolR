@@ -30,7 +30,6 @@ namespace Mycila {
           float power = 0;
           float powerFactor = NAN;
           float resistance = NAN;
-          float thdi = NAN;
           float voltage = NAN;
       } Metrics;
 
@@ -115,8 +114,6 @@ namespace Mycila {
           dest["power_factor"] = metrics.powerFactor;
         if (!std::isnan(metrics.resistance))
           dest["resistance"] = metrics.resistance;
-        if (!std::isnan(metrics.thdi))
-          dest["thdi"] = metrics.thdi;
         if (!std::isnan(metrics.voltage))
           dest["voltage"] = metrics.voltage;
       }
@@ -141,7 +138,6 @@ namespace Mycila {
           metrics.source = Source::METRICS_PER_OUTPUT;
           metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
           metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-          metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
           return;
         }
 
