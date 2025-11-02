@@ -73,7 +73,7 @@ static void onData(AsyncUDPPacket packet) {
         .voltage = doc["channel2"]["voltage"] | NAN,
       });
       router.metrics().update({
-        .source = Mycila::Router::Source::METRICS_AGGREGATED,
+        .source = Mycila::Router::Source::METRICS_COMBINED,
         .apparentPower = doc["channel1"]["apparent_power"] | NAN,
         .current = doc["channel1"]["current"] | NAN,
         .energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)), // if the clamp is installed reversed

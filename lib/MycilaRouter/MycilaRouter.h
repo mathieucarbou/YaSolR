@@ -18,8 +18,8 @@ namespace Mycila {
   class Router {
     public:
       enum class Source {
-        METRICS_PER_OUTPUT,
-        METRICS_AGGREGATED,
+        METRICS_INDIVIDUAL,
+        METRICS_COMBINED,
         METRICS_CALCULATED,
         METRICS_UNKNOWN
       };
@@ -93,14 +93,14 @@ namespace Mycila {
 
       static void toJson(const JsonObject& dest, const Metrics& metrics) {
         switch (metrics.source) {
-          case Source::METRICS_AGGREGATED:
-            dest["source"] = "aggregated";
+          case Source::METRICS_COMBINED:
+            dest["source"] = "combined";
             break;
           case Source::METRICS_CALCULATED:
             dest["source"] = "calculated";
             break;
-          case Source::METRICS_PER_OUTPUT:
-            dest["source"] = "output";
+          case Source::METRICS_INDIVIDUAL:
+            dest["source"] = "individual";
             break;
           default:
             dest["source"] = "unknown";
@@ -129,7 +129,7 @@ namespace Mycila {
 
         for (size_t i = 0; i < _outputs.size(); i++) {
           if (_outputs[i]->readMeasurements(outputMetrics)) {
-            metrics.source = Source::METRICS_PER_OUTPUT;
+            metrics.source = Source::METRICS_INDIVIDUAL;
             // Note: energy is not accurate in the case of a virtual bypass through dimmer
             metrics.energy += outputMetrics.energy;
             metrics.apparentPower += outputMetrics.apparentPower;
@@ -139,8 +139,7 @@ namespace Mycila {
         }
 
         // we found some pzem ? we are done
-        if (metrics.source == Source::METRICS_PER_OUTPUT) {
-          metrics.source = Source::METRICS_PER_OUTPUT;
+        if (metrics.source == Source::METRICS_INDIVIDUAL) {
           metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
           metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
           metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
@@ -151,7 +150,7 @@ namespace Mycila {
         if (_metrics.isPresent()) {
           // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
           memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
-          metrics.source = Source::METRICS_AGGREGATED;
+          metrics.source = Source::METRICS_COMBINED;
           return true;
         }
 

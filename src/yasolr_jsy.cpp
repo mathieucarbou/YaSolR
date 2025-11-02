@@ -47,7 +47,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
           .voltage = data.channel2().voltage,
         });
         router.metrics().update({
-          .source = Mycila::Router::Source::METRICS_AGGREGATED,
+          .source = Mycila::Router::Source::METRICS_COMBINED,
           .apparentPower = data.channel1().apparentPower,
           .current = data.channel1().current,
           .energy = data.channel1().activeEnergy + data.channel1().activeEnergyReturned, // if the clamp is installed reversed
