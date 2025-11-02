@@ -50,8 +50,8 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
           .source = Mycila::Router::Source::METRICS_AGGREGATED,
           .apparentPower = data.channel1().apparentPower,
           .current = data.channel1().current,
-          .energy = data.channel1().activeEnergy,
-          .power = data.channel1().activePower,
+          .energy = data.channel1().activeEnergy + data.channel1().activeEnergyReturned, // if the clamp is installed reversed
+          .power = std::abs(data.channel1().activePower),                                // if the clamp is installed reversed
           .powerFactor = data.channel1().powerFactor,
           .resistance = data.channel1().resistance(),
           .thdi = data.channel1().thdi(),
