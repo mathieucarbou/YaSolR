@@ -271,11 +271,15 @@ void yasolr_init_config() {
       output2.config.bypassTimeoutSec = config.getInt(KEY_OUTPUT2_BYPASS_TIMEOUT);
 
     } else if (key == KEY_NTP_TIMEZONE) {
-      Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+      reconfigureQueue.push([]() {
+        Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+      });
 
     } else if (key == KEY_NTP_SERVER) {
       if (!config.getBool(KEY_ENABLE_AP_MODE))
-        Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
+        reconfigureQueue.push([]() {
+          Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
+        });
 
     } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_MODE_P || key == KEY_PID_MODE_D || key == KEY_PID_SETPOINT) {
       reconfigureQueue.push(yasolr_configure_pid);
