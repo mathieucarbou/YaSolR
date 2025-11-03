@@ -9,13 +9,10 @@ Mycila::PZEM* pzemO2 = nullptr;
 Mycila::Task* pzemO1PairingTask = nullptr;
 Mycila::Task* pzemO2PairingTask = nullptr;
 
-Mycila::TaskManager* pzemTaskManager = nullptr;
 static Mycila::Task* pzemTask = nullptr;
 
-static void start_task_manager() {
-  if (pzemTaskManager == nullptr) {
-    pzemTaskManager = new Mycila::TaskManager("y-pzem");
-
+static void init_read_task() {
+  if (pzemTask == nullptr) {
     pzemTask = new Mycila::Task("PZEM", [](void* params) {
       if (pzemO1) {
         pzemO1->read();
@@ -28,15 +25,13 @@ static void start_task_manager() {
     });
 
     pzemTask->setEnabledWhen([]() { return (!pzemO1PairingTask || pzemO1PairingTask->paused()) && (!pzemO2PairingTask || pzemO2PairingTask->paused()); });
-    pzemTaskManager->addTask(*pzemTask);
+    pzemTask->setInterval(1000);
+
+    unsafeTaskManager.addTask(*pzemTask);
 
     if (config.getBool(KEY_ENABLE_DEBUG)) {
       pzemTask->enableProfiling();
     }
-
-    assert(pzemTaskManager->asyncStart(4096, 5, 1, 100, true));
-
-    Mycila::TaskMonitor.addTask(pzemTaskManager->name());
 
     grid.metrics(Mycila::Grid::Source::PZEM).setExpiration(10000);
   }
@@ -44,7 +39,7 @@ static void start_task_manager() {
 
 void yasolr_configure_output1_pzem() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
-    start_task_manager();
+    init_read_task();
 
     if (pzemO1 == nullptr) {
       LOGI(TAG, "Enable Output 1 PZEM with UART %s", config.get(KEY_PZEM_UART));
@@ -157,7 +152,7 @@ void yasolr_configure_output1_pzem() {
 
 void yasolr_configure_output2_pzem() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
-    start_task_manager();
+    init_read_task();
 
     if (pzemO2 == nullptr) {
       LOGI(TAG, "Enable Output 2 PZEM with UART %s", config.get(KEY_PZEM_UART));

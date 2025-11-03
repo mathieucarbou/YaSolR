@@ -141,8 +141,6 @@ void rest_api() {
     coreTaskManager.toJson(tasks[coreTaskManager.name()].to<JsonObject>());
     if (jsyTaskManager)
       jsyTaskManager->toJson(tasks[jsyTaskManager->name()].to<JsonObject>());
-    if (pzemTaskManager)
-      pzemTaskManager->toJson(tasks[pzemTaskManager->name()].to<JsonObject>());
     unsafeTaskManager.toJson(tasks[unsafeTaskManager.name()].to<JsonObject>());
 
     if (victron)

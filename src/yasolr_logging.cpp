@@ -84,8 +84,6 @@ void yasolr_configure_logging() {
         unsafeTaskManager.log();
         if (jsyTaskManager)
           jsyTaskManager->log();
-        if (pzemTaskManager)
-          pzemTaskManager->log();
       });
 
       loggingTask->setInterval(30000);

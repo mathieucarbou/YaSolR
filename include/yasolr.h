@@ -119,7 +119,6 @@ extern Mycila::PZEM* pzemO1;
 extern Mycila::PZEM* pzemO2;
 extern Mycila::Task* pzemO1PairingTask;
 extern Mycila::Task* pzemO2PairingTask;
-extern Mycila::TaskManager* pzemTaskManager;
 extern void yasolr_configure_output1_pzem();
 extern void yasolr_configure_output2_pzem();
 
