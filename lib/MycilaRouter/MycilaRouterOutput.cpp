@@ -61,7 +61,7 @@ bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
 
   _dimmer->setDutyCycle(dutyCycle);
 
-  LOGD(TAG, "Set Dimmer '%s' duty to %f", _name, _dimmer->getDutyCycle());
+  LOGI(TAG, "Set Dimmer '%s' duty to %f", _name, _dimmer->getDutyCycle());
 
   return true;
 }
@@ -223,14 +223,14 @@ void Mycila::RouterOutput::_switchBypass(bool state, bool log) {
     if (isBypassRelayEnabled()) {
       // we have a relay in-place: use it
       if (log && !isBypassRelayOn()) {
-        LOGD(TAG, "Turning Bypass Relay '%s' ON", _name);
+        LOGI(TAG, "Turning Bypass Relay '%s' ON", _name);
       }
       _dimmer->off();
       _relay->setState(true);
     } else {
       // we don't have a relay: use the dimmer
       if (log) {
-        LOGD(TAG, "Turning Dimmer '%s' ON", _name);
+        LOGI(TAG, "Turning Dimmer '%s' ON", _name);
       }
       _dimmer->on();
     }
@@ -238,12 +238,12 @@ void Mycila::RouterOutput::_switchBypass(bool state, bool log) {
     // we want to deactivate bypass
     if (isBypassRelayEnabled()) {
       if (log && isBypassRelayOn()) {
-        LOGD(TAG, "Turning Bypass Relay '%s' OFF", _name);
+        LOGI(TAG, "Turning Bypass Relay '%s' OFF", _name);
       }
       _relay->setState(false);
     } else {
       if (log) {
-        LOGD(TAG, "Turning Dimmer '%s' OFF", _name);
+        LOGI(TAG, "Turning Dimmer '%s' OFF", _name);
       }
       _dimmer->off();
     }

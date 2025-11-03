@@ -201,9 +201,11 @@ static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_L
 // tab: debug
 
 static dash::ToggleButtonCard _debugMode(dashboard, YASOLR_LBL_083);
-static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
-static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
+static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
+static dash::SeparatorCard<const char*> _startupLogsSep(dashboard, YASOLR_LBL_042);
+static dash::ToggleButtonCard _startupLogsToggle(dashboard, YASOLR_LBL_041);
+static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 
 // tab: network
 
@@ -617,11 +619,14 @@ void YaSolR::Website::begin() {
   // tab: debug
 
   _debugMode.setTab(_debugTab);
-  _debugInfo.setTab(_debugTab);
-  _startupLogs.setTab(_debugTab);
   _consoleLink.setTab(_debugTab);
+  _debugInfo.setTab(_debugTab);
+  _startupLogsSep.setTab(_debugTab);
+  _startupLogsToggle.setTab(_debugTab);
+  _startupLogs.setTab(_debugTab);
 
   _boolConfig(_debugMode, KEY_ENABLE_DEBUG);
+  _boolConfig(_startupLogsToggle, KEY_ENABLE_DEBUG_BOOT);
 
   // tab: network
 
@@ -1231,6 +1236,7 @@ void YaSolR::Website::initCards() {
   // tab: debug
 
   _debugMode.setValue(config.getBool(KEY_ENABLE_DEBUG));
+  _startupLogsToggle.setValue(config.getBool(KEY_ENABLE_DEBUG_BOOT));
   _debugInfo.setValue("/api/debug");
   _startupLogs.setValue("/api" YASOLR_LOG_FILE);
   _consoleLink.setValue("/console");

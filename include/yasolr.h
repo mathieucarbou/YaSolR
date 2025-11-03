@@ -81,6 +81,7 @@ extern float yasolr_frequency();
 // logging
 extern void yasolr_init_logging();
 extern void yasolr_configure_logging();
+extern void yasolr_init_persistent_logging();
 
 // JSY
 extern Mycila::JSY* jsy;

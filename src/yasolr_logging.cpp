@@ -22,11 +22,16 @@ class LogStream : public Print {
       if (_fileSize > LOG_STREAM_FILE_SIZE)
         return 0;
       File file = LittleFS.open(YASOLR_LOG_FILE, "a");
-      if (!file)
+      if (!file || !size)
         return 0;
-      size_t written = file.write(buffer, size);
-      file.close();
+      const size_t written = file.write(buffer, size);
       _fileSize += written;
+      if (buffer[size - 1] == '\n') {
+        const std::string timestamp = Mycila::Time::getLocalStr(); // NOLINT
+        _fileSize += file.write((const uint8_t*)timestamp.c_str(), timestamp.length());
+        _fileSize += file.write(' ');
+      }
+      file.close();
       return written;
     }
 
@@ -61,20 +66,22 @@ void yasolr_init_logging() {
   esp_log_set_vprintf(log_redirect_vprintf);
 }
 
+void yasolr_init_persistent_logging() {
+  if (config.getBool(KEY_ENABLE_DEBUG_BOOT)) {
+    LOGI(TAG, "Enable Persistent Logging for this boot session");
+
+    if (LittleFS.remove(YASOLR_LOG_FILE))
+      LOGI(TAG, "Previous log file removed");
+
+    logStream = new LogStream();
+  }
+}
+
 void yasolr_configure_logging() {
   if (config.getBool(KEY_ENABLE_DEBUG)) {
     esp_log_level_set("*", ESP_LOG_VERBOSE);
     esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
     LOGI(TAG, "Enable Debug Mode");
-
-    if (logStream == nullptr) {
-      LOGI(TAG, "Saving logs on disk to " YASOLR_LOG_FILE);
-
-      if (LittleFS.remove(YASOLR_LOG_FILE))
-        LOGI(TAG, "Previous log file removed");
-
-      logStream = new LogStream();
-    }
 
     if (loggingTask == nullptr) {
       loggingTask = new Mycila::Task("Debug", [](void* params) {
@@ -100,14 +107,6 @@ void yasolr_configure_logging() {
       unsafeTaskManager.removeTask(*loggingTask);
       delete loggingTask;
       loggingTask = nullptr;
-    }
-
-    if (logStream != nullptr) {
-      delete logStream;
-      logStream = nullptr;
-
-      if (LittleFS.remove(YASOLR_LOG_FILE))
-        LOGI(TAG, "Previous log file removed");
     }
   }
 }

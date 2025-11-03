@@ -233,7 +233,7 @@ static void subscribe() {
     mqtt->subscribe(output1TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       float t;
       if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
-        LOGD(TAG, "Output 1 Temperature from MQTT: %f", t);
+        LOGI(TAG, "Output 1 Temperature from MQTT: %f", t);
         output1.temperature().update(t);
       }
     });
@@ -246,7 +246,7 @@ static void subscribe() {
     mqtt->subscribe(output2TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       float t;
       if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
-        LOGD(TAG, "Output 2 Temperature from MQTT: %f", t);
+        LOGI(TAG, "Output 2 Temperature from MQTT: %f", t);
         output2.temperature().update(t);
       }
     });

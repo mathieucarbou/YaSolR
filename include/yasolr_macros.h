@@ -113,6 +113,7 @@
 
 #define KEY_ENABLE_AP_MODE             "ap_mode_enable"
 #define KEY_ENABLE_DEBUG               "debug_enable"
+#define KEY_ENABLE_DEBUG_BOOT          "dbg_boot_enable"
 #define KEY_ENABLE_DISPLAY             "disp_enable"
 #define KEY_ENABLE_DS18_SYSTEM         "ds18_sys_enable"
 #define KEY_ENABLE_HA_DISCOVERY        "ha_disco_enable"
