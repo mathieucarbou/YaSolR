@@ -25,7 +25,7 @@ static void init_read_task() {
     });
 
     pzemTask->setEnabledWhen([]() { return (!pzemO1PairingTask || pzemO1PairingTask->paused()) && (!pzemO2PairingTask || pzemO2PairingTask->paused()); });
-    pzemTask->setInterval(1000);
+    pzemTask->setInterval(200);
 
     unsafeTaskManager.addTask(*pzemTask);
 
