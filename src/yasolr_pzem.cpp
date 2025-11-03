@@ -34,7 +34,7 @@ static void start_task_manager() {
       pzemTask->enableProfiling();
     }
 
-    assert(pzemTaskManager->asyncStart(4096, 5, 0, 100, true));
+    assert(pzemTaskManager->asyncStart(4096, 5, 1, 100, true));
 
     Mycila::TaskMonitor.addTask(pzemTaskManager->name());
 
