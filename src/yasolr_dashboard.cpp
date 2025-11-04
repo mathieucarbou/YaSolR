@@ -45,6 +45,7 @@ static int8_t _historyX[YASOLR_GRAPH_POINTS] = {0};
 static dash::StatisticValue<const char*> _appName(dashboard, YASOLR_LBL_001);
 static dash::StatisticValue<const char*> _appModel(dashboard, YASOLR_LBL_002);
 static dash::StatisticValue<const char*> _appVersion(dashboard, YASOLR_LBL_003);
+static dash::StatisticValue<const char*> _appLastVersion(dashboard, YASOLR_LBL_043);
 static dash::StatisticValue<const char*> _appManufacturer(dashboard, YASOLR_LBL_004);
 static dash::StatisticValue<uint32_t> _deviceBootCount(dashboard, YASOLR_LBL_005);
 static dash::StatisticValue<const char*> _deviceBootReason(dashboard, YASOLR_LBL_192);
@@ -57,7 +58,6 @@ static dash::StatisticValue<const char*> _deviceID(dashboard, YASOLR_LBL_010);
 static dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011);
 static dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
 static dash::StatisticValue<const char*> _firmwareBuildTimestamp(dashboard, YASOLR_LBL_014);
-static dash::StatisticValue<const char*> _firmwareFilename(dashboard, YASOLR_LBL_015);
 static dash::StatisticValue<uint32_t> _gridEnergy(dashboard, YASOLR_LBL_016);
 static dash::StatisticValue<uint32_t> _gridEnergyReturned(dashboard, YASOLR_LBL_017);
 static dash::StatisticValue<float, 1> _gridFrequency(dashboard, YASOLR_LBL_018);
@@ -92,6 +92,9 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 #endif
 
 // home
+#ifdef APP_MODEL_PRO
+static dash::LinkCard<const char*> _updateLink(dashboard, YASOLR_LBL_135);
+#endif
 
 static dash::SeparatorCard<const char*> _overviewSep1(dashboard, YASOLR_LBL_039);
 static dash::FeedbackCard _output1State(dashboard, YASOLR_LBL_046);
@@ -186,26 +189,6 @@ static float _output2HarmonicsHistoryY[11] = {0};
 static float _output2HarmonicCurrentsHistoryY[11] = {0};
 static dash::BarChart<const char*, float> _output2HarmonicsHistory(dashboard, YASOLR_LBL_037);
 static dash::BarChart<const char*, float> _output2HarmonicCurrentsHistory(dashboard, YASOLR_LBL_038);
-
-// tab: system
-
-static dash::LinkCard<const char*> _configBackup(dashboard, YASOLR_LBL_079);
-static dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_080, ".txt");
-static dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
-static dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
-static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
-static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
-static dash::FileUploadCard<const char*> _safebootUpload(dashboard, YASOLR_LBL_193, ".bin,.bin.gz");
-static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_LBL_194);
-
-// tab: debug
-
-static dash::ToggleButtonCard _debugMode(dashboard, YASOLR_LBL_083);
-static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
-static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
-static dash::SeparatorCard<const char*> _startupLogsSep(dashboard, YASOLR_LBL_042);
-static dash::ToggleButtonCard _startupLogsToggle(dashboard, YASOLR_LBL_041);
-static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 
 // tab: network
 
@@ -412,6 +395,26 @@ static dash::InputCard<const char*> _output2AutoStartTime(dashboard, YASOLR_LBL_
 static dash::InputCard<const char*> _output2AutoStoptTime(dashboard, YASOLR_LBL_068);
 static dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_069);
 static dash::SliderCard<float, 1> _output2BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
+
+// tab: system
+
+static dash::LinkCard<const char*> _configBackup(dashboard, YASOLR_LBL_079);
+static dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_080, ".txt");
+static dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
+static dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
+static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
+static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
+static dash::FileUploadCard<const char*> _safebootUpload(dashboard, YASOLR_LBL_193, ".bin,.bin.gz");
+static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_LBL_194);
+
+// tab: debug
+
+static dash::ToggleButtonCard _debugMode(dashboard, YASOLR_LBL_083);
+static dash::LinkCard<const char*> _consoleLink(dashboard, YASOLR_LBL_084);
+static dash::LinkCard<const char*> _debugInfo(dashboard, YASOLR_LBL_178);
+static dash::SeparatorCard<const char*> _startupLogsSep(dashboard, YASOLR_LBL_042);
+static dash::ToggleButtonCard _startupLogsToggle(dashboard, YASOLR_LBL_041);
+static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 #endif
 
 static void _calibrate(size_t outputIndex) {
@@ -530,8 +533,11 @@ void YaSolR::Website::begin() {
 
   // tab: home
 
+  _updateLink.setSize(FULL_SIZE);
   _gridPowerHistory.setSize(FULL_SIZE);
   _routedPowerHistory.setSize(FULL_SIZE);
+
+  _updateLink.setValue("https://github.com/mathieucarbou/YaSolR-Pro/releases");
 
   // tab: output 1
 
@@ -1038,6 +1044,7 @@ void YaSolR::Website::initCards() {
   _appName.setValue(Mycila::AppInfo.name.c_str());
   _appModel.setValue(Mycila::AppInfo.model.c_str());
   _appVersion.setValue(Mycila::AppInfo.version.c_str());
+  _appLastVersion.setValue(Mycila::AppInfo.latestVersion.length() ? Mycila::AppInfo.latestVersion.c_str() : "N/A");
   _appManufacturer.setValue(Mycila::AppInfo.manufacturer.c_str());
   _deviceBootCount.setValue(Mycila::System::getBootCount());
   _deviceBootReason.setValue(Mycila::System::getLastRebootReason());
@@ -1046,7 +1053,6 @@ void YaSolR::Website::initCards() {
   _deviceModel.setValue(ESP.getChipModel());
   _firmwareBuildHash.setValue(Mycila::AppInfo.buildHash.c_str());
   _firmwareBuildTimestamp.setValue(Mycila::AppInfo.buildDate.c_str());
-  _firmwareFilename.setValue(Mycila::AppInfo.firmware.c_str());
   _networkHostname.setValue(espConnect.getConfig().hostname.c_str());
 
   if (mode == Mycila::ESPConnect::Mode::AP) {
@@ -1150,6 +1156,9 @@ void YaSolR::Website::initCards() {
   _output2RelaySwitchCount.setDisplay(output2.isBypassRelayEnabled());
   _relay1SwitchCount.setDisplay(relay1 && relay1->isEnabled());
   _relay2SwitchCount.setDisplay(relay2 && relay2->isEnabled());
+
+  // overview
+  _updateLink.setDisplay(Mycila::AppInfo.isOutdated());
 
   // tabs
 

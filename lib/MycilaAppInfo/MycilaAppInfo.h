@@ -15,6 +15,8 @@ namespace Mycila {
 
       void toJson(const JsonObject& root) const;
 
+      bool isOutdated() const { return !latestVersion.empty() && latestVersion != version; }
+
     public:
       const std::string id;
       const std::string name;
@@ -23,7 +25,7 @@ namespace Mycila {
       const std::string nameModel;
       const std::string nameModelVersion;
       const std::string manufacturer;
-      const std::string firmware;
+      const std::string buildEnv;
       const std::string buildBranch;
       const std::string buildHash;
       const std::string buildDate;
@@ -32,6 +34,7 @@ namespace Mycila {
       const std::string defaultMqttClientId;
       const bool debug;
       const bool trial;
+      std::string latestVersion = "";
   };
 
   extern AppInfoClass AppInfo;

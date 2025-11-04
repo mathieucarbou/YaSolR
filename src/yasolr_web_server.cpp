@@ -350,10 +350,10 @@ void rest_api() {
     root["device"]["uptime"] = Mycila::System::getUptime();
 
     root["firmware"]["build"]["branch"] = Mycila::AppInfo.buildBranch;
+    root["firmware"]["build"]["env"] = Mycila::AppInfo.buildEnv;
     root["firmware"]["build"]["hash"] = Mycila::AppInfo.buildHash;
     root["firmware"]["build"]["timestamp"] = Mycila::AppInfo.buildDate;
     root["firmware"]["debug"] = Mycila::AppInfo.debug;
-    root["firmware"]["filename"] = Mycila::AppInfo.firmware;
 
     root["network"]["eth"]["ip_address"] = espConnect.getIPAddress(Mycila::ESPConnect::Mode::ETH).toString();
     root["network"]["eth"]["mac_address"] = espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH);

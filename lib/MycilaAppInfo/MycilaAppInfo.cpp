@@ -32,7 +32,7 @@
 extern const char* __COMPILED_APP_VERSION__;
 extern const char* __COMPILED_BUILD_BRANCH__;
 extern const char* __COMPILED_BUILD_HASH__;
-extern const char* __COMPILED_BUILD_NAME__;
+extern const char* __COMPILED_BUILD_ENV__;
 extern const char* __COMPILED_BUILD_TIMESTAMP__;
 extern const char* __COMPILED_BUILD_BOARD__;
 
@@ -43,28 +43,29 @@ Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr()),
                                        nameModel(name + " " + model),
                                        nameModelVersion(name + " " + model + " " + version),
                                        manufacturer(APP_MANUFACTURER),
-                                       firmware(std::string(APP_NAME) + (std::isdigit(version[0]) ? "-v" : "-") + version.substr(0, version.find("_")) + "-" + __COMPILED_BUILD_NAME__ + ".bin"),
+                                       buildEnv(__COMPILED_BUILD_ENV__),
                                        buildBranch(__COMPILED_BUILD_BRANCH__),
                                        buildHash(__COMPILED_BUILD_HASH__),
                                        buildDate(__COMPILED_BUILD_TIMESTAMP__),
                                        buildBoard(__COMPILED_BUILD_BOARD__),
                                        defaultHostname(Mycila::string::toLowerCase(name + "-" + id)),
                                        defaultMqttClientId(Mycila::string::toLowerCase(name + "_" + id)),
-                                       debug(firmware.find("debug") != std::string::npos),
-                                       trial(firmware.find("trial") != std::string::npos) {}
+                                       debug(buildEnv.find("debug") != std::string::npos),
+                                       trial(buildEnv.find("trial") != std::string::npos) {}
 
 void Mycila::AppInfoClass::toJson(const JsonObject& root) const {
   root["build_board"] = buildBoard;
   root["build_date"] = buildDate;
+  root["build_env"] = buildEnv;
   root["build_hash"] = buildHash;
   root["debug"] = debug;
-  root["firmware"] = firmware;
   root["id"] = id;
   root["manufacturer"] = manufacturer;
   root["model"] = model;
   root["name"] = name;
   root["trial"] = trial;
   root["version"] = version;
+  root["latest_version"] = latestVersion;
 }
 
 namespace Mycila {

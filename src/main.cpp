@@ -22,6 +22,7 @@ void setup() {
   yasolr_init_relays();
   yasolr_init_router();
   yasolr_init_web_server();
+  yasolr_init_version_check();
   yasolr_init_network();
 
   // DS18 first since we need to wait and loop

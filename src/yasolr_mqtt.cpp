@@ -284,10 +284,10 @@ static void publishStaticData() {
   yield();
 
   mqtt->publish((baseTopic + "/system/firmware/build/branch").c_str(), Mycila::AppInfo.buildBranch, true);
+  mqtt->publish((baseTopic + "/system/firmware/build/env").c_str(), Mycila::AppInfo.buildEnv, true);
   mqtt->publish((baseTopic + "/system/firmware/build/hash").c_str(), Mycila::AppInfo.buildHash, true);
   mqtt->publish((baseTopic + "/system/firmware/build/timestamp").c_str(), Mycila::AppInfo.buildDate, true);
   mqtt->publish((baseTopic + "/system/firmware/debug").c_str(), YASOLR_BOOL(Mycila::AppInfo.debug), true);
-  mqtt->publish((baseTopic + "/system/firmware/filename").c_str(), Mycila::AppInfo.firmware, true);
   yield();
 
   mqtt->publish((baseTopic + "/system/network/eth/mac_address").c_str(), espConnect.getMACAddress(Mycila::ESPConnect::Mode::ETH), true);
@@ -416,7 +416,6 @@ static void haDiscovery() {
   haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("network_wifi_quality", "Net: WiFi Signal", "/system/network/wifi/quality", nullptr, "mdi:signal", "%", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("network_wifi_rssi", "Net: WiFi RSSI", "/system/network/wifi/rssi", "signal_strength", "mdi:signal", "dBm", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("device_id", "Device: ID", "/system/device/id", nullptr, "mdi:identifier", Mycila::HA::Category::DIAGNOSTIC));
-  haDiscovery->publish(std::make_unique<Mycila::HA::Value>("firmware_filename", "Firmware", "/system/firmware/filename", nullptr, "mdi:file", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("network_eth_mac_address", "Net: Eth MAC Address", "/system/network/eth/mac_address", nullptr, "mdi:lan", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("network_hostname", "Net: Hostname", "/system/network/hostname", nullptr, "mdi:lan", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("network_ip_address", "Net: IPv4 Address", "/system/network/ip_address", nullptr, "mdi:ip", Mycila::HA::Category::DIAGNOSTIC));

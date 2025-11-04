@@ -82,12 +82,14 @@ void yasolr_init_network() {
           LOGI(TAG, "WiFi SSID: %s", espConnect.getWiFiSSID().c_str());
         }
         networkStartTask.resume();
+        versionCheckTask.setEnabled(true);
         break;
       case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
         LOGW(TAG, "Unable to connect to any network!");
         break;
       case Mycila::ESPConnect::State::NETWORK_DISCONNECTED:
         LOGW(TAG, "Disconnected!");
+        versionCheckTask.setEnabled(false);
         break;
       case Mycila::ESPConnect::State::NETWORK_RECONNECTING:
         LOGI(TAG, "Trying to reconnect");

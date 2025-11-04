@@ -62,7 +62,7 @@ def do_main():
             f'const char* __COMPILED_APP_VERSION__ = "{version[1:] if tagPattern.match(version)  else version}";\n'
             f'const char* __COMPILED_BUILD_BRANCH__ = "{branch}";\n'
             f'const char* __COMPILED_BUILD_HASH__ = "{short_hash}";\n'
-            f'const char* __COMPILED_BUILD_NAME__ = "{env["PIOENV"]}";\n'
+            f'const char* __COMPILED_BUILD_ENV__ = "{env["PIOENV"]}";\n'
             f'const char* __COMPILED_BUILD_TIMESTAMP__ = "{datetime.now(timezone.utc).isoformat()}";\n'
             f'const char* __COMPILED_BUILD_BOARD__ = "{env.get("BOARD")}";\n'
         )

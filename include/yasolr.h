@@ -12,6 +12,7 @@
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
 #include <FastCRC32.h>
+#include <HTTPClient.h>
 #include <HardwareSerial.h>
 #include <LittleFS.h>
 #include <StreamString.h>
@@ -165,3 +166,7 @@ extern void yasolr_configure_pid();
 extern Mycila::Victron* victron;
 extern Mycila::Task* victronConnectTask;
 extern void yasolr_configure_victron();
+
+// version check
+extern Mycila::Task versionCheckTask;
+extern void yasolr_init_version_check();
