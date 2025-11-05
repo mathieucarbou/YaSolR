@@ -14,7 +14,7 @@ void yasolr_configure_router_ds18() {
       LOGI(TAG, "Enable system DS18");
 
       ds18Sys = new Mycila::DS18();
-      ds18Sys->begin(config.getLong(KEY_PIN_ROUTER_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
+      ds18Sys->begin(static_cast<int8_t>(config.getLong(KEY_PIN_ROUTER_DS18)), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
 
       if (ds18Sys->isEnabled()) {
         ds18Sys->listen([](float temperature, bool changed) {
@@ -45,7 +45,7 @@ void yasolr_configure_output1_ds18() {
       LOGI(TAG, "Enable output 1 DS18");
 
       ds18O1 = new Mycila::DS18();
-      ds18O1->begin(config.getLong(KEY_PIN_OUTPUT1_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
+      ds18O1->begin(static_cast<int8_t>(config.getInt(KEY_PIN_OUTPUT1_DS18)), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
 
       if (ds18O1->isEnabled()) {
         ds18O1->listen([](float temperature, bool changed) {
@@ -82,7 +82,7 @@ void yasolr_configure_output2_ds18() {
       LOGI(TAG, "Enable output 2 DS18");
 
       ds18O2 = new Mycila::DS18();
-      ds18O2->begin(config.getLong(KEY_PIN_OUTPUT2_DS18), YASOLR_DS18_SEARCH_MAX_RETRY);
+      ds18O2->begin(static_cast<int8_t>(config.getLong(KEY_PIN_OUTPUT2_DS18)), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
 
       if (ds18O2->isEnabled()) {
         ds18O2->listen([](float temperature, bool changed) {
