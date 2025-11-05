@@ -988,7 +988,7 @@ Then you just have to report it in the `Hardware Config` page.
 
 **Using the automatic detection feature**
 
-- `Resistance Detection`: start the automatic detection of the resistance value of the loads connected to Output 1 and 2
+- `Resistance Calibration`: start the automatic detection of the resistance value of the loads connected to Output 1 and 2
 
 This is the easiest way to calibrate the resistance values: when a PZEM or JSY is installed, the router will be able to automatically calculate the resistance.
 For that, click on the corresponding buttons and wait about 10-15 seconds.

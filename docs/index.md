@@ -173,7 +173,7 @@ Here is a list of all supported devices:
 - `Dimmer Duty Limiter`: Set a limit to the dimmer power to avoid routing too much power
 - `Dimmer Temperature Limiter`: Set a limit to the dimmer to stop it when a temperature is reached. This temperature can be different than the temperature used in auto bypass mode.
 - `Statistics`: Harmonic information, power factor, energy, routed power, etc
-- `Automatic Resistance Detection`: if a JSY or PZEM is installed, automatically discover and save the resistance value of the connected load.
+- `Automatic Resistance Calibration`: if a JSY or PZEM is installed, automatically discover and save the resistance value of the connected load.
 - `Dimmer Range Remapping`: Remap the dimmer duty to a different range (e.g. 10-80%).
   Some dimmers (especially voltage regulator controlled through a PWM-analog conversion), are working between 1-8V so remapping the duty is necessary.
 - `Zero-Cross Pulse Analysis`: YaSolR will analyze ZC pulses from the Zero-Cross Detection and display the average pulse length and period
