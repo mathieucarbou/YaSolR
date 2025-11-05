@@ -50,7 +50,7 @@ bool Mycila::RouterOutput::setDimmerDutyCycle(float dutyCycle) {
   }
 
   if (dutyCycle > 0 && isDimmerTemperatureLimitReached()) {
-    LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
+    LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, static_cast<float>(config.dimmerTempLimit));
     return false;
   }
 
