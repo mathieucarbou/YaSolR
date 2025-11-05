@@ -163,7 +163,7 @@ namespace Mycila {
           return 0;
         }
 
-        if (availablePowerToDivert <= 0) {
+        if (availablePowerToDivert <= 0 || gridVoltage <= 0) {
           _dimmer->off();
           return 0;
         }
