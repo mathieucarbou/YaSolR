@@ -55,10 +55,15 @@ namespace Mycila {
       void divert(float gridVoltage, float gridPower) {
         if (isCalibrationRunning())
           return;
-        float powerToDivert = _pidController->compute(gridPower);
+        const float powerToDivert = _pidController->compute(gridPower);
+        float routedPower = 0;
         for (const auto& output : _outputs) {
-          const float usedPower = output->autoDivert(gridVoltage, powerToDivert);
-          powerToDivert = std::max(0.0f, powerToDivert - usedPower);
+          routedPower += output->autoDivert(gridVoltage, std::max(0.0f, powerToDivert - routedPower));
+        }
+        // we have some grid power to divert and grid voltage but we cannot divert
+        // reset the PID so that we can start fresh once we will divert
+        if (!routedPower) {
+          _pidController->reset(0);
         }
       }
 
