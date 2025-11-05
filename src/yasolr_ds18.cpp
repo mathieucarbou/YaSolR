@@ -9,7 +9,7 @@ Mycila::DS18* ds18O2 = nullptr;
 Mycila::DS18* ds18Sys = nullptr;
 
 void yasolr_configure_router_ds18() {
-  if (config.getBool(KEY_ENABLE_DS18_SYSTEM)) {
+  if (config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
     if (ds18Sys == nullptr) {
       LOGI(TAG, "Enable system DS18");
 

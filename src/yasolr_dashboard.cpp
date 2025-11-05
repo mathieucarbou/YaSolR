@@ -93,6 +93,7 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 
 // home
 #ifdef APP_MODEL_PRO
+static dash::FeedbackCard _warnings(dashboard, YASOLR_LBL_162);
 static dash::LinkCard<const char*> _updateLink(dashboard, YASOLR_LBL_135);
 #endif
 
@@ -211,7 +212,7 @@ static dash::TimeSyncCard _ntpSync(dashboard, YASOLR_LBL_091);
 
 // tab: mqtt
 
-static dash::FeedbackToggleButtonCard _mqtt(dashboard, YASOLR_LBL_095);
+static dash::ToggleButtonCard _mqtt(dashboard, YASOLR_LBL_095);
 static dash::InputCard<const char*> _mqttServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _mqttPort(dashboard, YASOLR_LBL_097);
 static dash::InputCard<const char*> _mqttUser(dashboard, YASOLR_LBL_098);
@@ -289,48 +290,48 @@ static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, "SDA");
 // grid
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012 ": " YASOLR_LBL_133);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-static dash::FeedbackToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
+static dash::ToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
 static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
 static dash::SeparatorCard<const char*> _victronSep(dashboard, YASOLR_LBL_195);
-static dash::FeedbackToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
+static dash::ToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
-static dash::FeedbackToggleButtonCard _output1Dimmer(dashboard, YASOLR_LBL_050);
+static dash::ToggleButtonCard _output1Dimmer(dashboard, YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_BF "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_BF "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_BF "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output1PZEMSep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_133);
-static dash::FeedbackToggleButtonCard _output1PZEM(dashboard, "PZEM");
+static dash::ToggleButtonCard _output1PZEM(dashboard, "PZEM");
 static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 1 bypass relay
 static dash::SeparatorCard<const char*> _output1Sep2(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
-static dash::FeedbackToggleButtonCard _output1Relay(dashboard, YASOLR_LBL_134);
+static dash::ToggleButtonCard _output1Relay(dashboard, YASOLR_LBL_134);
 static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 1 ds18
 static dash::SeparatorCard<const char*> _output1Sep3(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
-static dash::FeedbackToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
+static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
 
 // output 2 dimmer
 static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
-static dash::FeedbackToggleButtonCard _output2Dimmer(dashboard, YASOLR_LBL_050);
+static dash::ToggleButtonCard _output2Dimmer(dashboard, YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_BF "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_BF "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_BF "," YASOLR_DIMMER_ZC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output2PZEMSep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_133);
-static dash::FeedbackToggleButtonCard _output2PZEM(dashboard, "PZEM");
+static dash::ToggleButtonCard _output2PZEM(dashboard, "PZEM");
 static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 2 bypass relay
 static dash::SeparatorCard<const char*> _output2Sep2(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
-static dash::FeedbackToggleButtonCard _output2Relay(dashboard, YASOLR_LBL_134);
+static dash::ToggleButtonCard _output2Relay(dashboard, YASOLR_LBL_134);
 static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
 
 // output 2 ds18
 static dash::SeparatorCard<const char*> _output2Sep3(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
-static dash::FeedbackToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_132);
+static dash::ToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_132);
 
 // relay1
 static dash::SeparatorCard<const char*> _relay1Sep(dashboard, YASOLR_LBL_074);
@@ -355,13 +356,13 @@ static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10,
 
 // System
 static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_078);
-static dash::FeedbackToggleButtonCard _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
-static dash::FeedbackToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
+static dash::ToggleButtonCard _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
+static dash::ToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
 
 // tab: output 1 config
 
 static dash::SeparatorCard<const char*> _output1ConfigSep0(dashboard, YASOLR_LBL_140);
-static dash::FeedbackInputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
+static dash::InputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
 static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
 static dash::SeparatorCard<const char*> _output1ConfigSep3(dashboard, YASOLR_LBL_107);
 static dash::PercentageSliderCard _output1ExcessRatio(dashboard, YASOLR_LBL_112);
@@ -380,7 +381,7 @@ static dash::SliderCard<float, 1> _output1BypassTimeout(dashboard, YASOLR_LBL_20
 // tab: output 2 config
 
 static dash::SeparatorCard<const char*> _output2ConfigSep0(dashboard, YASOLR_LBL_140);
-static dash::FeedbackInputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_145);
+static dash::InputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_145);
 static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
 static dash::SeparatorCard<const char*> _output2ConfigSep3(dashboard, YASOLR_LBL_107);
 static dash::PercentageSliderCard _output2ExcessRatio(dashboard, YASOLR_LBL_112);
@@ -534,6 +535,7 @@ void YaSolR::Website::begin() {
   // tab: home
 
   _updateLink.setSize(FULL_SIZE);
+  _warnings.setSize(FULL_SIZE);
   _gridPowerHistory.setSize(FULL_SIZE);
   _routedPowerHistory.setSize(FULL_SIZE);
 
@@ -956,7 +958,7 @@ void YaSolR::Website::begin() {
   _routerSep.setTab(_hardwareConfigTab);
   _routerDS18.setTab(_hardwareConfigTab);
   _led.setTab(_hardwareConfigTab);
-  _boolConfig(_routerDS18, KEY_ENABLE_DS18_SYSTEM);
+  _boolConfig(_routerDS18, KEY_ENABLE_SYSTEM_DS18);
   _boolConfig(_led, KEY_ENABLE_LIGHTS);
 
   // tab: output 1 config
@@ -1171,7 +1173,7 @@ void YaSolR::Website::initCards() {
 
   _relay1Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
   _relay2Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
-  _routerDS18State.setDisplay(config.getBool(KEY_ENABLE_DS18_SYSTEM));
+  _routerDS18State.setDisplay(config.getBool(KEY_ENABLE_SYSTEM_DS18));
 
   // tab: output 1
 
@@ -1346,23 +1348,31 @@ void YaSolR::Website::initCards() {
       _gridFreq.setValue("Auto-detect");
       break;
   }
+  _jsy.setValue(config.getBool(KEY_ENABLE_JSY));
   _jsyRemote.setValue(config.getBool(KEY_ENABLE_JSY_REMOTE));
+  _victron.setValue(config.getBool(KEY_ENABLE_VICTRON_MODBUS));
   _victronServer.setValue(config.get(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.getInt(KEY_VICTRON_MODBUS_PORT));
 
   // output 1 dimmer
+  _output1Dimmer.setValue(config.getBool(KEY_ENABLE_OUTPUT1_DIMMER));
   _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));
   _output1DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MIN)), static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MAX))});
+  _output1PZEM.setValue(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
   _output1PZEMSync.setDisplay(dimmer1Enabled && pzem1Enabled);
+  _output1DS18.setValue(config.getBool(KEY_ENABLE_OUTPUT1_DS18));
 
   // output 1 bypass relay
   _output1Relay.setValue(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
   _output1RelayType.setValue(config.get(KEY_OUTPUT1_RELAY_TYPE));
 
   // output 2 dimmer
+  _output2Dimmer.setValue(config.getBool(KEY_ENABLE_OUTPUT2_DIMMER));
   _output2DimmerType.setValue(config.get(KEY_OUTPUT2_DIMMER_TYPE));
   _output2DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MIN)), static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MAX))});
+  _output2PZEM.setValue(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
   _output2PZEMSync.setDisplay(dimmer2Enabled && pzem2Enabled);
+  _output2DS18.setValue(config.getBool(KEY_ENABLE_OUTPUT2_DS18));
 
   // output 2 bypass relay
   _output2Relay.setValue(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
@@ -1380,20 +1390,22 @@ void YaSolR::Website::initCards() {
   _relay2Load.setValue(config.getInt(KEY_RELAY2_LOAD));
   _relay2Tolerance.setValue(config.getInt(KEY_RELAY2_TOLERANCE));
 
-  // router led
-  _status(_led, KEY_ENABLE_LIGHTS, lights.isEnabled());
-
   // display
   _display.setValue(config.getBool(KEY_ENABLE_DISPLAY));
   _displayType.setValue(config.get(KEY_DISPLAY_TYPE));
   _displayRotation.setValue(config.getInt(KEY_DISPLAY_ROTATION));
   _displaySpeed.setValue(config.getInt(KEY_DISPLAY_SPEED));
 
+  // led
+  _led.setValue(config.getBool(KEY_ENABLE_LIGHTS));
+
+  // DS18 system
+  _routerDS18.setValue(config.getBool(KEY_ENABLE_SYSTEM_DS18));
+
   // tab: output 1 config
 
   _output1ConfigSep0.setDisplay(dimmer1Enabled);
   _output1ResistanceInput.setValue(config.getFloat(KEY_OUTPUT1_RESISTANCE));
-  _output1ResistanceInput.setStatus(_output1ResistanceInput.value() > 0 ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
   _output1ResistanceInput.setDisplay(dimmer1Enabled);
   _output1ResistanceCalibration.setDisplay((dimmer1Enabled && jsyEnabled) || (dimmer1Enabled && pzem1Enabled));
   _output1ConfigSep1.setDisplay(dimmer1Enabled);
@@ -1423,7 +1435,6 @@ void YaSolR::Website::initCards() {
 
   _output2ConfigSep0.setDisplay(dimmer2Enabled);
   _output2ResistanceInput.setValue(config.getFloat(KEY_OUTPUT2_RESISTANCE));
-  _output2ResistanceInput.setStatus(_output2ResistanceInput.value() > 0 ? dash::Status::SUCCESS : dash::Status::DANGER); // needs to be after set value
   _output2ResistanceInput.setDisplay(dimmer2Enabled);
   _output2ResistanceCalibration.setDisplay((dimmer2Enabled && jsyEnabled) || (dimmer2Enabled && pzem2Enabled));
   _output2ConfigSep1.setDisplay(dimmer2Enabled);
@@ -1573,21 +1584,8 @@ void YaSolR::Website::updateCards() {
     _output2PZEMSync.setIndicator(true, dash::Status::DANGER);
   }
 
-  if (router.isCalibrationRunning()) {
-    _output1ResistanceCalibration.setIndicator(true, dash::Status::WARNING);
-  } else if (output1.config.calibratedResistance > 0) {
-    _output1ResistanceCalibration.setIndicator(true, dash::Status::SUCCESS);
-  } else {
-    _output1ResistanceCalibration.setIndicator(true, dash::Status::DANGER);
-  }
-
-  if (router.isCalibrationRunning()) {
-    _output2ResistanceCalibration.setIndicator(true, dash::Status::WARNING);
-  } else if (output2.config.calibratedResistance > 0) {
-    _output2ResistanceCalibration.setIndicator(true, dash::Status::SUCCESS);
-  } else {
-    _output2ResistanceCalibration.setIndicator(true, dash::Status::DANGER);
-  }
+  _output1ResistanceCalibration.setIndicator(true, router.isCalibrationRunning() ? dash::Status::DANGER : dash::Status::SUCCESS);
+  _output2ResistanceCalibration.setIndicator(true, router.isCalibrationRunning() ? dash::Status::DANGER : dash::Status::SUCCESS);
 #else
   _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
   _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
@@ -1638,21 +1636,110 @@ void YaSolR::Website::updateCards() {
     _output2Bypass.setMessage(bypassUptime && output2.isBypassOn() ? Mycila::Time::toDHHMMSS(bypassUptime) : "");
   }
 
-  // tab: mqtt
+  // ERRORS & WARNINGS
 
-  _status(_mqtt, KEY_ENABLE_MQTT, mqtt && mqtt->isEnabled(), mqtt && mqtt->isConnected(), mqtt && mqtt->getLastError() ? mqtt->getLastError() : YASOLR_LBL_113);
+  _warnings.setFeedback("", dash::Status::NONE);
 
-  // tab: hardware
+  // mqtt
+  if (_warnings.status() == dash::Status::NONE && mqtt && config.getBool(KEY_ENABLE_MQTT)) {
+    if (!mqtt->isEnabled()) {
+      _warnings.setFeedback("Unable to activate MQTT: configuration error!", dash::Status::DANGER);
+    } else if (!mqtt->isConnected()) {
+      _warnings.setFeedback("MQTT disconnected: " + std::string(mqtt->getLastError() ? mqtt->getLastError() : "Unknown error"), dash::Status::WARNING);
+    }
+  }
+  // leds
+  if (_warnings.status() == dash::Status::NONE && config.getBool(KEY_ENABLE_LIGHTS)) {
+    if (!lights.isEnabled()) {
+      _warnings.setFeedback("Unable to activate system LEDS: configuration error!", dash::Status::DANGER);
+    }
+  }
+  // jsy
+  if (_warnings.status() == dash::Status::NONE && jsy && config.getBool(KEY_ENABLE_JSY)) {
+    if (!jsy->isEnabled()) {
+      _warnings.setFeedback("Unable to activate JSY: configuration error!", dash::Status::DANGER);
+    } else if (!jsy->isConnected()) {
+      _warnings.setFeedback("JSY disconnected from grid!", dash::Status::WARNING);
+    }
+  }
+  // victron
+  if (_warnings.status() == dash::Status::NONE && victron && config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
+    if (victron->hasError()) {
+      _warnings.setFeedback("Victron communication error: " + victron->getLastError(), dash::Status::WARNING);
+    }
+  }
+  // pzem output 1
+  if (_warnings.status() == dash::Status::NONE && pzemO1 && config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+    if (!pzemO1->isEnabled()) {
+      _warnings.setFeedback("Unable to activate PZEM for Output 1: configuration error!", dash::Status::DANGER);
+    } else if (pzemO1->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
+      _warnings.setFeedback("Output 1 PZEM has incorrect device address!", dash::Status::DANGER);
+    } else if (!pzemO1->isConnected()) {
+      _warnings.setFeedback("Output 1 PZEM disconnected from grid!", dash::Status::WARNING);
+    }
+  }
+  // pzem output 2
+  if (_warnings.status() == dash::Status::NONE && pzemO2 && config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+    if (!pzemO2->isEnabled()) {
+      _warnings.setFeedback("Unable to activate PZEM for Output 2: configuration error!", dash::Status::DANGER);
+    } else if (pzemO2->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {
+      _warnings.setFeedback("Output 2 PZEM has incorrect device address!", dash::Status::DANGER);
+    } else if (!pzemO2->isConnected()) {
+      _warnings.setFeedback("Output 2 PZEM disconnected from grid!", dash::Status::WARNING);
+    }
+  }
+  // output 1 dimmer + resistance
+  if (_warnings.status() == dash::Status::NONE && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
+    if (!output1.isDimmerEnabled()) {
+      _warnings.setFeedback("Unable to activate Output 1 Dimmer: configuration error!", dash::Status::DANGER);
+    } else if (!output1.isDimmerOnline()) {
+      _warnings.setFeedback("Output 1 Dimmer disconnected from grid!", dash::Status::WARNING);
+    } else if (std::isnan(output1.config.calibratedResistance) || output1.config.calibratedResistance <= 0) {
+      _warnings.setFeedback("Output 1 Resistance not calibrated!", dash::Status::WARNING);
+    }
+  }
+  // output 2 dimmer + resistance
+  if (_warnings.status() == dash::Status::NONE && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
+    if (!output2.isDimmerEnabled()) {
+      _warnings.setFeedback("Unable to activate Output 2 Dimmer: configuration error!", dash::Status::DANGER);
+    } else if (!output2.isDimmerOnline()) {
+      _warnings.setFeedback("Output 2 Dimmer disconnected from grid!", dash::Status::WARNING);
+    } else if (std::isnan(output2.config.calibratedResistance) || output2.config.calibratedResistance <= 0) {
+      _warnings.setFeedback("Output 2 Resistance not calibrated!", dash::Status::WARNING);
+    }
+  }
+  // DS18 system
+  if (_warnings.status() == dash::Status::NONE && ds18Sys && config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
+    if (!ds18Sys->isEnabled()) {
+      _warnings.setFeedback("Unable to activate System DS18: configuration error!", dash::Status::DANGER);
+    } else if (ds18Sys->getLastTime() == 0) {
+      _warnings.setFeedback("System DS18: waiting for data...", dash::Status::WARNING);
+    } else if (ds18Sys->isExpired()) {
+      _warnings.setFeedback("System DS18 communication error!", dash::Status::WARNING);
+    }
+  }
+  // DS18 output 1
+  if (_warnings.status() == dash::Status::NONE && ds18O1 && config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
+    if (!ds18O1->isEnabled()) {
+      _warnings.setFeedback("Unable to activate Output 1 DS18: configuration error!", dash::Status::DANGER);
+    } else if (ds18O1->getLastTime() == 0) {
+      _warnings.setFeedback("Output 1 DS18: waiting for data...", dash::Status::WARNING);
+    } else if (ds18O1->isExpired()) {
+      _warnings.setFeedback("Output 1 DS18 communication error!", dash::Status::WARNING);
+    }
+  }
+  // DS18 output 2
+  if (_warnings.status() == dash::Status::NONE && ds18O2 && config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
+    if (!ds18O2->isEnabled()) {
+      _warnings.setFeedback("Unable to activate Output 2 DS18: configuration error!", dash::Status::DANGER);
+    } else if (ds18O2->getLastTime() == 0) {
+      _warnings.setFeedback("Output 2 DS18: waiting for data...", dash::Status::WARNING);
+    } else if (ds18O2->isExpired()) {
+      _warnings.setFeedback("Output 2 DS18 communication error!", dash::Status::WARNING);
+    }
+  }
 
-  _status(_jsy, KEY_ENABLE_JSY, jsy && jsy->isEnabled(), jsy && jsy->isConnected(), YASOLR_LBL_110);
-  _status(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER, output1.isDimmerEnabled(), output1.isDimmerOnline(), YASOLR_LBL_146);
-  _status(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM, pzemO1 && pzemO1->isEnabled(), pzemO1 && pzemO1->isConnected() && pzemO1->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT1, pzemO1 && pzemO1->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
-  _status(_output1DS18, KEY_ENABLE_OUTPUT1_DS18, ds18O1 && ds18O1->isEnabled(), ds18O1 && ds18O1->getLastTime() > 0, YASOLR_LBL_114);
-  _status(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER, output2.isDimmerEnabled(), output2.isDimmerOnline(), YASOLR_LBL_146);
-  _status(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM, pzemO2 && pzemO2->isEnabled(), pzemO2 && pzemO2->isConnected() && pzemO2->getDeviceAddress() == YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2 && pzemO2->isConnected() ? YASOLR_LBL_180 : YASOLR_LBL_110);
-  _status(_output2DS18, KEY_ENABLE_OUTPUT2_DS18, ds18O2 && ds18O2->isEnabled(), ds18O2 && ds18O2->getLastTime() > 0, YASOLR_LBL_114);
-  _status(_routerDS18, KEY_ENABLE_DS18_SYSTEM, ds18Sys && ds18Sys->isEnabled(), ds18Sys && ds18Sys->getLastTime() > 0, YASOLR_LBL_114);
-  _status(_victron, KEY_ENABLE_VICTRON_MODBUS, victron, victron && !victron->hasError(), victron && victron->hasError() ? "Com. Error" : "");
+  _warnings.setDisplay(_warnings.status() != dash::Status::NONE);
 #endif
 }
 

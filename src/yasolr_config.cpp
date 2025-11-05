@@ -31,7 +31,7 @@ void yasolr_init_config() {
   config.configure(KEY_ENABLE_DEBUG, YASOLR_FALSE);
   config.configure(KEY_ENABLE_DEBUG_BOOT, YASOLR_FALSE);
   config.configure(KEY_ENABLE_DISPLAY, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_DS18_SYSTEM, YASOLR_FALSE);
+  config.configure(KEY_ENABLE_SYSTEM_DS18, YASOLR_FALSE);
   config.configure(KEY_ENABLE_HA_DISCOVERY, YASOLR_FALSE);
   config.configure(KEY_ENABLE_JSY_REMOTE, YASOLR_FALSE);
   config.configure(KEY_ENABLE_JSY, YASOLR_FALSE);
@@ -326,7 +326,7 @@ void yasolr_init_config() {
     } else if (key == KEY_ENABLE_LIGHTS) {
       reconfigureQueue.push(yasolr_configure_lights);
 
-    } else if (key == KEY_ENABLE_DS18_SYSTEM) {
+    } else if (key == KEY_ENABLE_SYSTEM_DS18) {
       reconfigureQueue.push(yasolr_configure_router_ds18);
 
     } else if (key == KEY_ENABLE_OUTPUT1_DS18) {

@@ -179,23 +179,6 @@ namespace YaSolR {
           card.setFeedback("(" YASOLR_LBL_156 ")", dash::Status::SUCCESS);
         }
       }
-
-      void _status(dash::FeedbackToggleButtonCard& card, const char* key, bool enabled, bool active = true, const char* err = "") {
-        const bool configEnabled = config.getBool(key);
-        card.setValue(configEnabled);
-        if (!configEnabled) {
-          card.setMessage("");
-        } else if (!enabled) {
-          card.setStatus(dash::Status::WARNING);
-          card.setMessage(YASOLR_LBL_124);
-        } else if (!active) {
-          card.setStatus(dash::Status::WARNING);
-          card.setMessage(err);
-        } else {
-          card.setStatus(dash::Status::SUCCESS);
-          card.setMessage("");
-        }
-      }
 #endif
   };
 } // namespace YaSolR
