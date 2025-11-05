@@ -183,7 +183,7 @@ void yasolr_init_config() {
       output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
 
     } else if (key == KEY_ENABLE_OUTPUT1_AUTO_DIMMER) {
-      if(config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER)) {
+      if (config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER)) {
         output1.config.autoDimmer = true;
       } else {
         output1.config.autoDimmer = false;
@@ -233,7 +233,7 @@ void yasolr_init_config() {
       output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
 
     } else if (key == KEY_ENABLE_OUTPUT2_AUTO_DIMMER) {
-      if(config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER)) {
+      if (config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER)) {
         output2.config.autoDimmer = true;
       } else {
         output2.config.autoDimmer = false;
