@@ -4,8 +4,11 @@
  */
 #include <yasolr_dashboard.h>
 
+#include <algorithm>
 #include <string>
 #include <unordered_map>
+#include <utility>
+#include <vector>
 
 #ifdef APP_MODEL_OSS
   #define LineChart                BarChart
@@ -17,6 +20,40 @@
 
 #ifdef APP_MODEL_PRO
 static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
+
+// activation errors
+static constexpr const char* ERR_ACT_JSY = "Unable to activate JSY: configuration error!";
+static constexpr const char* ERR_ACT_MQTT = "Unable to activate MQTT: configuration error!";
+static constexpr const char* ERR_ACT_O1_DIMMER = "Unable to activate Output 1 Dimmer: configuration error!";
+static constexpr const char* ERR_ACT_O1_DS18 = "Unable to activate Output 1 DS18: configuration error!";
+static constexpr const char* ERR_ACT_O1_PZEM = "Unable to activate Output 1 PZEM: configuration error!";
+static constexpr const char* ERR_ACT_O2_DIMMER = "Unable to activate Output 2 Dimmer: configuration error!";
+static constexpr const char* ERR_ACT_O2_DS18 = "Unable to activate Output 2 DS18: configuration error!";
+static constexpr const char* ERR_ACT_O2_PZEM = "Unable to activate Output 2 PZEM: configuration error!";
+static constexpr const char* ERR_ACT_SYS_DS18 = "Unable to activate System DS18: configuration error!";
+// resistance missing
+static constexpr const char* ERR_RESIST_CAL_O1 = "Output 1 Resistance not calibrated!";
+static constexpr const char* ERR_RESIST_CAL_O2 = "Output 2 Resistance not calibrated!";
+// pzem wrong address
+static constexpr const char* ERR_PZEM_ADDR_O1 = "Output 1 PZEM has incorrect device address!";
+static constexpr const char* ERR_PZEM_ADDR_O2 = "Output 2 PZEM has incorrect device address!";
+// ds18 starting
+static constexpr const char* ERR_DS18_WAIT_O1 = "Output 1 DS18: waiting for data...";
+static constexpr const char* ERR_DS18_WAIT_O2 = "Output 2 DS18: waiting for data...";
+static constexpr const char* ERR_DS18_WAIT_SYS = "System DS18: waiting for data...";
+// ds18 failures
+static constexpr const char* ERR_DS18_COM_O1 = "Output 1 DS18 communication error!";
+static constexpr const char* ERR_DS18_COM_O2 = "Output 2 DS18 communication error!";
+static constexpr const char* ERR_DS18_COM_SYS = "System DS18 communication error!";
+// no grid electricity errors
+static constexpr const char* ERR_GRID_DIMMER_O1 = "Output 1 Dimmer disconnected from grid!";
+static constexpr const char* ERR_GRID_DIMMER_O2 = "Output 2 Dimmer disconnected from grid!";
+static constexpr const char* ERR_GRID_JSY = "JSY disconnected from grid!";
+static constexpr const char* ERR_GRID_PZEM_O1 = "Output 1 PZEM disconnected from grid!";
+static constexpr const char* ERR_GRID_PZEM_O2 = "Output 2 PZEM disconnected from grid!";
+// com errors
+static constexpr const char* ERR_MQTT_COM = "MQTT disconnected: more information in the logs!";
+static constexpr const char* ERR_VICTRON_COM = "Victron communication error: more information in the logs!";
 
 // tabs icons:
 // https://en.wikipedia.org/wiki/List_of_Unicode_characters#Miscellaneous_Symbols
@@ -93,7 +130,8 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 
 // home
 #ifdef APP_MODEL_PRO
-static dash::FeedbackCard _warnings(dashboard, YASOLR_LBL_162);
+static dash::FeedbackListCard<const char*> _warnings1(dashboard, YASOLR_LBL_162);
+static dash::FeedbackListCard<const char*> _warnings2(dashboard, YASOLR_LBL_162);
 static dash::LinkCard<const char*> _updateLink(dashboard, YASOLR_LBL_135);
 #endif
 
@@ -535,10 +573,15 @@ void YaSolR::Website::begin() {
   // tab: home
 
   _updateLink.setSize(FULL_SIZE);
-  _warnings.setSize(FULL_SIZE);
+  _warnings1.setSize({.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 6});
+  _warnings2.setSize({.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 6});
   _gridPowerHistory.setSize(FULL_SIZE);
   _routedPowerHistory.setSize(FULL_SIZE);
 
+  _warnings1.setStatus(dash::Status::DANGER);
+  _warnings2.setStatus(dash::Status::DANGER);
+  _warnings1.setDisplay(false);
+  _warnings2.setDisplay(false);
   _updateLink.setValue("https://github.com/mathieucarbou/YaSolR-Pro/releases");
 
   // tab: output 1
@@ -1637,109 +1680,130 @@ void YaSolR::Website::updateCards() {
   }
 
   // ERRORS & WARNINGS
-
-  _warnings.setFeedback("", dash::Status::NONE);
+  std::vector<const char*> errors;
+  errors.reserve(32);
 
   // mqtt
-  if (_warnings.status() == dash::Status::NONE && mqtt && config.getBool(KEY_ENABLE_MQTT)) {
+  if (mqtt && config.getBool(KEY_ENABLE_MQTT)) {
     if (!mqtt->isEnabled()) {
-      _warnings.setFeedback("Unable to activate MQTT: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_MQTT);
     } else if (!mqtt->isConnected()) {
-      _warnings.setFeedback("MQTT disconnected: " + std::string(mqtt->getLastError() ? mqtt->getLastError() : "Unknown error"), dash::Status::WARNING);
-    }
-  }
-  // leds
-  if (_warnings.status() == dash::Status::NONE && config.getBool(KEY_ENABLE_LIGHTS)) {
-    if (!lights.isEnabled()) {
-      _warnings.setFeedback("Unable to activate system LEDS: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_MQTT_COM);
     }
   }
   // jsy
-  if (_warnings.status() == dash::Status::NONE && jsy && config.getBool(KEY_ENABLE_JSY)) {
+  if (jsy && config.getBool(KEY_ENABLE_JSY)) {
     if (!jsy->isEnabled()) {
-      _warnings.setFeedback("Unable to activate JSY: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_JSY);
     } else if (!jsy->isConnected()) {
-      _warnings.setFeedback("JSY disconnected from grid!", dash::Status::WARNING);
+      errors.push_back(ERR_GRID_JSY);
     }
   }
   // victron
-  if (_warnings.status() == dash::Status::NONE && victron && config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
+  if (victron && config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
     if (victron->hasError()) {
-      _warnings.setFeedback("Victron communication error: " + victron->getLastError(), dash::Status::WARNING);
+      errors.push_back(ERR_VICTRON_COM);
     }
   }
   // pzem output 1
-  if (_warnings.status() == dash::Status::NONE && pzemO1 && config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+  if (pzemO1 && config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
     if (!pzemO1->isEnabled()) {
-      _warnings.setFeedback("Unable to activate PZEM for Output 1: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_O1_PZEM);
     } else if (pzemO1->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
-      _warnings.setFeedback("Output 1 PZEM has incorrect device address!", dash::Status::DANGER);
+      errors.push_back(ERR_PZEM_ADDR_O1);
     } else if (!pzemO1->isConnected()) {
-      _warnings.setFeedback("Output 1 PZEM disconnected from grid!", dash::Status::WARNING);
+      errors.push_back(ERR_GRID_PZEM_O1);
     }
   }
   // pzem output 2
-  if (_warnings.status() == dash::Status::NONE && pzemO2 && config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+  if (pzemO2 && config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
     if (!pzemO2->isEnabled()) {
-      _warnings.setFeedback("Unable to activate PZEM for Output 2: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_O2_PZEM);
     } else if (pzemO2->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {
-      _warnings.setFeedback("Output 2 PZEM has incorrect device address!", dash::Status::DANGER);
+      errors.push_back(ERR_PZEM_ADDR_O2);
     } else if (!pzemO2->isConnected()) {
-      _warnings.setFeedback("Output 2 PZEM disconnected from grid!", dash::Status::WARNING);
+      errors.push_back(ERR_GRID_PZEM_O2);
     }
   }
   // output 1 dimmer + resistance
-  if (_warnings.status() == dash::Status::NONE && config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
+  if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
     if (!output1.isDimmerEnabled()) {
-      _warnings.setFeedback("Unable to activate Output 1 Dimmer: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_O1_DIMMER);
     } else if (!output1.isDimmerOnline()) {
-      _warnings.setFeedback("Output 1 Dimmer disconnected from grid!", dash::Status::WARNING);
+      errors.push_back(ERR_GRID_DIMMER_O1);
     } else if (std::isnan(output1.config.calibratedResistance) || output1.config.calibratedResistance <= 0) {
-      _warnings.setFeedback("Output 1 Resistance not calibrated!", dash::Status::WARNING);
+      errors.push_back(ERR_RESIST_CAL_O1);
     }
   }
   // output 2 dimmer + resistance
-  if (_warnings.status() == dash::Status::NONE && config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
+  if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
     if (!output2.isDimmerEnabled()) {
-      _warnings.setFeedback("Unable to activate Output 2 Dimmer: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_O2_DIMMER);
     } else if (!output2.isDimmerOnline()) {
-      _warnings.setFeedback("Output 2 Dimmer disconnected from grid!", dash::Status::WARNING);
+      errors.push_back(ERR_GRID_DIMMER_O2);
     } else if (std::isnan(output2.config.calibratedResistance) || output2.config.calibratedResistance <= 0) {
-      _warnings.setFeedback("Output 2 Resistance not calibrated!", dash::Status::WARNING);
+      errors.push_back(ERR_RESIST_CAL_O2);
     }
   }
   // DS18 system
-  if (_warnings.status() == dash::Status::NONE && ds18Sys && config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
+  if (ds18Sys && config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
     if (!ds18Sys->isEnabled()) {
-      _warnings.setFeedback("Unable to activate System DS18: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_SYS_DS18);
     } else if (ds18Sys->getLastTime() == 0) {
-      _warnings.setFeedback("System DS18: waiting for data...", dash::Status::WARNING);
+      errors.push_back(ERR_DS18_WAIT_SYS);
     } else if (ds18Sys->isExpired()) {
-      _warnings.setFeedback("System DS18 communication error!", dash::Status::WARNING);
+      errors.push_back(ERR_DS18_COM_SYS);
     }
   }
   // DS18 output 1
-  if (_warnings.status() == dash::Status::NONE && ds18O1 && config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
+  if (ds18O1 && config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
     if (!ds18O1->isEnabled()) {
-      _warnings.setFeedback("Unable to activate Output 1 DS18: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_O1_DS18);
     } else if (ds18O1->getLastTime() == 0) {
-      _warnings.setFeedback("Output 1 DS18: waiting for data...", dash::Status::WARNING);
+      errors.push_back(ERR_DS18_WAIT_O1);
     } else if (ds18O1->isExpired()) {
-      _warnings.setFeedback("Output 1 DS18 communication error!", dash::Status::WARNING);
+      errors.push_back(ERR_DS18_COM_O1);
     }
   }
   // DS18 output 2
-  if (_warnings.status() == dash::Status::NONE && ds18O2 && config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
+  if (ds18O2 && config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
     if (!ds18O2->isEnabled()) {
-      _warnings.setFeedback("Unable to activate Output 2 DS18: configuration error!", dash::Status::DANGER);
+      errors.push_back(ERR_ACT_O2_DS18);
     } else if (ds18O2->getLastTime() == 0) {
-      _warnings.setFeedback("Output 2 DS18: waiting for data...", dash::Status::WARNING);
+      errors.push_back(ERR_DS18_WAIT_O2);
     } else if (ds18O2->isExpired()) {
-      _warnings.setFeedback("Output 2 DS18 communication error!", dash::Status::WARNING);
+      errors.push_back(ERR_DS18_COM_O2);
     }
   }
 
-  _warnings.setDisplay(_warnings.status() != dash::Status::NONE);
+  const size_t errCount = errors.size();
+  if (errCount) {
+    size_t max = std::min(errCount, static_cast<size_t>(5));
+    {
+      std::vector<const char*> selection;
+      selection.reserve(max);
+      for (size_t i = 0; i < max; i++) {
+        selection.push_back(errors[i]);
+      }
+
+      _warnings1.setMessages(std::move(selection));
+      _warnings1.setDisplay(true);
+    }
+    if (errCount > 5) {
+      max = 5 + std::min(errCount - 5, static_cast<size_t>(5));
+      std::vector<const char*> selection;
+      selection.reserve(max - 5);
+      for (size_t i = 5; i < max; i++) {
+        selection.push_back(errors[i]);
+      }
+
+      _warnings2.setMessages(std::move(selection));
+      _warnings2.setDisplay(true);
+    }
+  } else {
+    _warnings1.setDisplay(false);
+    _warnings2.setDisplay(false);
+  }
 #endif
 }
 
