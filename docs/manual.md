@@ -125,6 +125,13 @@ Here is a demo of the OTA update with SafeBoot:
 
 [![YaSolR OTA Update using SafeBoot mode](https://img.youtube.com/vi/9igXR-53qQ0/0.jpg)](https://www.youtube.com/watch?v=9igXR-53qQ0 "YaSolR OTA Update using SafeBoot mode")
 
+
+> ##### TIP
+>
+> If you do not see the SafeBoot page after a refresh, you can try flashing again the SafeBoot image from the [System](#system) section.
+>
+{: .block-tip }
+
 ### Captive Portal (Access Point) and WiFi
 
 > ##### TIP
