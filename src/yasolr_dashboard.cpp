@@ -1638,22 +1638,21 @@ void YaSolR::Website::updateCards() {
 #endif
 
 #ifdef APP_MODEL_PRO
-  Mycila::RouterOutput::Metrics outputMeasurements;
-
   // tab: output 1
 
-  if (!output1.readMeasurements(outputMeasurements))
-    output1.calculateMetrics(outputMeasurements, gridMetrics.voltage);
+  Mycila::RouterOutput::Metrics output1Measurements;
+  if (!output1.readMeasurements(output1Measurements))
+    output1.calculateMetrics(output1Measurements, gridMetrics.voltage);
 
   _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleOnline() * 100.0f);
-  _output1Power.setValue(outputMeasurements.power);
-  _output1ApparentPower.setValue(outputMeasurements.apparentPower);
-  _output1PowerFactor.setValue(outputMeasurements.powerFactor);
-  _output1THDi.setValue(outputMeasurements.thdi);
-  _output1Voltage.setValue(outputMeasurements.dimmedVoltage);
-  _output1Current.setValue(outputMeasurements.current);
-  _output1Resistance.setValue(outputMeasurements.resistance);
-  _output1Energy.setValue(outputMeasurements.energy);
+  _output1Power.setValue(output1Measurements.power);
+  _output1ApparentPower.setValue(output1Measurements.apparentPower);
+  _output1PowerFactor.setValue(output1Measurements.powerFactor);
+  _output1THDi.setValue(output1Measurements.thdi);
+  _output1Voltage.setValue(output1Measurements.dimmedVoltage);
+  _output1Current.setValue(output1Measurements.current);
+  _output1Resistance.setValue(output1Measurements.resistance);
+  _output1Energy.setValue(output1Measurements.energy);
 
   {
     const uint32_t bypassUptime = output1.getBypassUptime();
@@ -1662,18 +1661,19 @@ void YaSolR::Website::updateCards() {
 
   // tab: output 2
 
-  if (!output2.readMeasurements(outputMeasurements))
-    output2.calculateMetrics(outputMeasurements, gridMetrics.voltage);
+  Mycila::RouterOutput::Metrics output2Measurements;
+  if (!output2.readMeasurements(output2Measurements))
+    output2.calculateMetrics(output2Measurements, gridMetrics.voltage);
 
   _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleOnline() * 100.0f);
-  _output2Power.setValue(outputMeasurements.power);
-  _output2ApparentPower.setValue(outputMeasurements.apparentPower);
-  _output2PowerFactor.setValue(outputMeasurements.powerFactor);
-  _output2THDi.setValue(outputMeasurements.thdi);
-  _output2Voltage.setValue(outputMeasurements.dimmedVoltage);
-  _output2Current.setValue(outputMeasurements.current);
-  _output2Resistance.setValue(outputMeasurements.resistance);
-  _output2Energy.setValue(outputMeasurements.energy);
+  _output2Power.setValue(output2Measurements.power);
+  _output2ApparentPower.setValue(output2Measurements.apparentPower);
+  _output2PowerFactor.setValue(output2Measurements.powerFactor);
+  _output2THDi.setValue(output2Measurements.thdi);
+  _output2Voltage.setValue(output2Measurements.dimmedVoltage);
+  _output2Current.setValue(output2Measurements.current);
+  _output2Resistance.setValue(output2Measurements.resistance);
+  _output2Energy.setValue(output2Measurements.energy);
 
   {
     const uint32_t bypassUptime = output2.getBypassUptime();

@@ -73,11 +73,11 @@ static void onData(AsyncUDPPacket packet) {
         .voltage = doc["channel2"]["voltage"] | NAN,
       });
       router.metrics().update({
-        .source = Mycila::Router::Source::METRICS_COMBINED,
-        .apparentPower = doc["channel1"]["apparent_power"] | NAN,
-        .current = doc["channel1"]["current"] | NAN,
+        .source = Mycila::Router::Source::JSY_REMOTE,
+        .apparentPower = doc["channel1"]["apparent_power"] | 0.0f,
+        .current = doc["channel1"]["current"] | 0.0f,
         .energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)), // if the clamp is installed reversed
-        .power = std::abs(doc["channel1"]["active_power"] | NAN),                                                                                         // if the clamp is installed reversed
+        .power = std::abs(doc["channel1"]["active_power"] | 0.0f),                                                                                         // if the clamp is installed reversed
         .powerFactor = doc["channel1"]["power_factor"] | NAN,
         .resistance = doc["channel1"]["resistance"] | NAN,
         .thdi = doc["channel1"]["thdi_0"] | NAN,

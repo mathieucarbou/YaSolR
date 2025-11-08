@@ -18,13 +18,14 @@ namespace Mycila {
   class Router {
     public:
       enum class Source {
-        METRICS_INDIVIDUAL,
-        METRICS_COMBINED,
-        METRICS_CALCULATED,
-        METRICS_UNKNOWN
+        PZEM,
+        JSY,
+        JSY_REMOTE,
+        CALCULATED,
+        UNKNOWN
       };
       typedef struct {
-          Source source = Source::METRICS_UNKNOWN;
+          Source source = Source::UNKNOWN;
           float apparentPower = 0;
           float current = 0;
           uint32_t energy = 0;
@@ -98,14 +99,17 @@ namespace Mycila {
 
       static void toJson(const JsonObject& dest, const Metrics& metrics) {
         switch (metrics.source) {
-          case Source::METRICS_COMBINED:
-            dest["source"] = "combined";
+          case Source::JSY:
+            dest["source"] = "jsy";
             break;
-          case Source::METRICS_CALCULATED:
+          case Source::JSY_REMOTE:
+            dest["source"] = "jsy_remote";
+            break;
+          case Source::CALCULATED:
             dest["source"] = "calculated";
             break;
-          case Source::METRICS_INDIVIDUAL:
-            dest["source"] = "individual";
+          case Source::PZEM:
+            dest["source"] = "pzem";
             break;
           default:
             dest["source"] = "unknown";
@@ -129,12 +133,12 @@ namespace Mycila {
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
       bool readMeasurements(Metrics& metrics) const {
-        RouterOutput::Metrics outputMetrics;
-        metrics.source = Source::METRICS_UNKNOWN;
+        metrics.source = Source::UNKNOWN;
 
         for (size_t i = 0; i < _outputs.size(); i++) {
+          RouterOutput::Metrics outputMetrics;
           if (_outputs[i]->readMeasurements(outputMetrics)) {
-            metrics.source = Source::METRICS_INDIVIDUAL;
+            metrics.source = Source::PZEM;
             // Note: energy is not accurate in the case of a virtual bypass through dimmer
             metrics.energy += outputMetrics.energy;
             metrics.apparentPower += outputMetrics.apparentPower;
@@ -144,7 +148,7 @@ namespace Mycila {
         }
 
         // we found some pzem ? we are done
-        if (metrics.source == Source::METRICS_INDIVIDUAL) {
+        if (metrics.source == Source::PZEM) {
           metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
           metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
           metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
@@ -155,7 +159,6 @@ namespace Mycila {
         if (_metrics.isPresent()) {
           // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
           memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
-          metrics.source = Source::METRICS_COMBINED;
           return true;
         }
 
@@ -164,9 +167,9 @@ namespace Mycila {
 
       bool calculateMetrics(Metrics& metrics, float gridVoltage) const {
         if (gridVoltage > 0) {
-          RouterOutput::Metrics outputMetrics;
-          metrics.source = Source::METRICS_CALCULATED;
+          metrics.source = Source::CALCULATED;
           for (size_t i = 0; i < _outputs.size(); i++) {
+            RouterOutput::Metrics outputMetrics;
             if (_outputs[i]->calculateMetrics(outputMetrics, gridVoltage)) {
               metrics.energy += outputMetrics.energy;
               metrics.apparentPower += outputMetrics.apparentPower;
