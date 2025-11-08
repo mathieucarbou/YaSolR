@@ -30,7 +30,7 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params)
 void yasolr_init_system() {
   LOGI(TAG, "Initialize system");
 
-  Mycila::TaskManager::configureWDT(30, true);
+  Mycila::TaskManager::configureWDT(20, true);
   disableLoopWDT();
 
   Mycila::System::init(true, "fs");
