@@ -467,6 +467,12 @@ When setting a static IP, the router will try to connect with the static IP and 
 >
 > When using a board with Ethernet adapter, the static IP setting only applies to the Ethernet adapter, not the WiFi.
 > So if a WiFi SSID is configured to connect to, YaSolR will connect to the WiFi and will use DHCP to get an IP address.
+>
+> **ETH board users**: You are strongly advised to **set a fixed IP address in YaSolR Network config**. 
+> The reason is that the SafeBoot image uses another platform to make it tiny (not Arduino Core),
+> so the MAC address (and consequently IP address) might be different than YaSolR. 
+> So when restarting in SafeBoot mode, you will need to find the new IP address if you do not fix it.
+>
 {: .block-important }
 
 ### NTP
