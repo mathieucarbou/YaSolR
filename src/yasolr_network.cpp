@@ -98,7 +98,7 @@ void yasolr_init_network() {
         LOGI(TAG, "Starting Captive Portal %s for %" PRIu32 " seconds", espConnect.getAccessPointSSID().c_str(), espConnect.getCaptivePortalTimeout());
         break;
       case Mycila::ESPConnect::State::PORTAL_STARTED:
-        LOGI(TAG, "Captive Portal started at %s with IP address %s", espConnect.getWiFiSSID().c_str(), espConnect.getIPAddress().toString().c_str());
+        LOGI(TAG, "Captive Portal started at %s", espConnect.getWiFiSSID().c_str());
         break;
       case Mycila::ESPConnect::State::PORTAL_COMPLETE: {
         if (espConnect.getConfig().apMode) {
