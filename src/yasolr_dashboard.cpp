@@ -1315,6 +1315,7 @@ void YaSolR::Website::initCards() {
 
   // tab: mqtt
 
+  _mqtt.setValue(config.getBool(KEY_ENABLE_MQTT));
   _mqttServer.setValue(config.get(KEY_MQTT_SERVER));
   _mqttPort.setValue(config.getInt(KEY_MQTT_PORT));
   _mqttUser.setValue(config.get(KEY_MQTT_USERNAME));
