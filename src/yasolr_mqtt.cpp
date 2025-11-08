@@ -256,17 +256,18 @@ static void subscribe() {
 static void publishConfig() {
   LOGI(TAG, "Publishing config to MQTT");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
-
   for (auto& key : config.keys()) {
     const char* value = config.get(key);
     if (value[0] != '\0' && config.isPasswordKey(key))
       value = "********";
     mqtt->publish((baseTopic + "/config/" + key).c_str(), value, true);
   }
+  LOGI(TAG, "Published config to MQTT");
 }
 
 static void publishStaticData() {
-  LOGI(TAG, "Publishing static data to MQTT");
+  LOGI(TAG, "Publishing static data to MQTT...");
+
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
   mqtt->publish((baseTopic + "/system/app/manufacturer").c_str(), Mycila::AppInfo.manufacturer, true);
@@ -294,6 +295,8 @@ static void publishStaticData() {
   mqtt->publish((baseTopic + "/system/network/hostname").c_str(), espConnect.getConfig().hostname.c_str(), true);
   mqtt->publish((baseTopic + "/system/network/wifi/mac_address").c_str(), espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA), true);
   yield();
+
+  LOGI(TAG, "Published static data to MQTT");
 }
 
 static void publishData() {
@@ -487,6 +490,8 @@ static void haDiscovery() {
 
   haDiscovery->end();
   delete haDiscovery;
+
+  LOGI(TAG, "Published Home Assistant Discovery configuration");
 }
 
 void yasolr_configure_mqtt() {
