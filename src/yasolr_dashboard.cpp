@@ -441,10 +441,10 @@ static dash::LinkCard<const char*> _configBackup(dashboard, YASOLR_LBL_079);
 static dash::FileUploadCard<const char*> _configRestore(dashboard, YASOLR_LBL_080, ".txt");
 static dash::PushButtonCard _restart(dashboard, YASOLR_LBL_082);
 static dash::PushButtonCard _safeBoot(dashboard, YASOLR_LBL_081);
-static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
-static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 static dash::FileUploadCard<const char*> _safebootUpload(dashboard, YASOLR_LBL_193, ".bin,.bin.gz");
 static dash::FeedbackCard<const char*> _safebootUploadStatus(dashboard, YASOLR_LBL_194);
+static dash::PushButtonCard _reset(dashboard, YASOLR_LBL_086);
+static dash::PushButtonCard _energyReset(dashboard, YASOLR_LBL_085);
 
 // tab: debug
 
