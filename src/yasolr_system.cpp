@@ -6,8 +6,8 @@
 
 #include <esp_core_dump.h>
 
-Mycila::TaskManager coreTaskManager("y-core");
-Mycila::TaskManager unsafeTaskManager("y-unsafe");
+Mycila::TaskManager coreTaskManager("loopTask");
+Mycila::TaskManager unsafeTaskManager("unsafeTask");
 
 Mycila::Task resetTask("Reset", Mycila::Task::Type::ONCE, [](void* params) {
   LOGW("YaSolR", "Resetting %s", Mycila::AppInfo.nameModelVersion.c_str());
@@ -31,7 +31,6 @@ void yasolr_init_system() {
   LOGI(TAG, "Initialize system");
 
   Mycila::TaskManager::configureWDT(20, true);
-  disableLoopWDT();
 
   Mycila::System::init(true, "fs");
 

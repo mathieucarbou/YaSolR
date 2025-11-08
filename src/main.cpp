@@ -52,7 +52,6 @@ void setup() {
   yasolr_configure_victron();
 
   // STARTUP READY!
-  assert(coreTaskManager.asyncStart(4096, 5, 1, 100, true));
   assert(unsafeTaskManager.asyncStart(4096, 1, 1, 100, true));
   LOGI(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 
@@ -61,4 +60,4 @@ void setup() {
 }
 
 // Destroy default Arduino async task
-void loop() { vTaskDelete(NULL); }
+void loop() { coreTaskManager.loop(); }

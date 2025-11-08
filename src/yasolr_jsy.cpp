@@ -84,7 +84,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
 static void start_task_manager() {
   // setup JSY async task manager
   if (jsyTaskManager == nullptr) {
-    jsyTaskManager = new Mycila::TaskManager("y-jsy");
+    jsyTaskManager = new Mycila::TaskManager("jsyTask");
 
     jsyTask = new Mycila::Task("JSY", [](void* params) {
       if (jsy != nullptr)
@@ -97,7 +97,7 @@ static void start_task_manager() {
 
     jsyTaskManager->addTask(*jsyTask);
 
-    assert(jsyTaskManager->asyncStart(4096, 5, 0, 100, true));
+    assert(jsyTaskManager->asyncStart(4096, 1, 0, 100, true));
     Mycila::TaskMonitor.addTask(jsyTaskManager->name());
   }
 }
