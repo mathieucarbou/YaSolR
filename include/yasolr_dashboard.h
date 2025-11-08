@@ -137,7 +137,7 @@ namespace YaSolR {
 
       void _textConfig(dash::InputCard<const char*>& card, const char* key) {
         card.onChange([key, &card](const std::optional<const char*>& value) {
-          if(value.has_value()) {
+          if (value.has_value() && value.value()[0] != '\0') {
             config.set(key, value.value());
           } else {
             config.unset(key);
