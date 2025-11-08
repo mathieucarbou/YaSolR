@@ -107,9 +107,7 @@ void yasolr_init_network() {
         } else {
           LOGI(TAG, "Captive Portal: WiFi configured");
           LOGI(TAG, "WiFi SSID: %s", espConnect.getConfig().wifiSSID.c_str());
-          LOGI(TAG, "WiFi BSSID: %s", espConnect.getConfig().wifiBSSID.c_str());
           config.setBool(KEY_ENABLE_AP_MODE, false);
-          config.set(KEY_WIFI_BSSID, espConnect.getConfig().wifiBSSID);
           config.set(KEY_WIFI_SSID, espConnect.getConfig().wifiSSID);
           config.set(KEY_WIFI_PASSWORD, espConnect.getConfig().wifiPassword);
         }
