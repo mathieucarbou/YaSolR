@@ -23,9 +23,7 @@
   #else
     #define APP_MODEL "Pro"
   #endif
-#endif
-
-#ifdef APP_MODEL_OSS
+#else
   #define APP_MODEL "OSS"
 #endif
 
