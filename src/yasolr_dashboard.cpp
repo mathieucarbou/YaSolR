@@ -130,8 +130,7 @@ static dash::StatisticValue _trialRemainingTime(dashboard, "Trial Remaining Time
 
 // home
 #ifdef APP_MODEL_PRO
-static dash::FeedbackListCard<const char*> _warnings1(dashboard, YASOLR_LBL_162);
-static dash::FeedbackListCard<const char*> _warnings2(dashboard, YASOLR_LBL_162);
+static dash::FeedbackCard<const char*> _warning(dashboard, YASOLR_LBL_162);
 static dash::LinkCard<const char*> _updateLink(dashboard, YASOLR_LBL_135);
 #endif
 
@@ -573,15 +572,12 @@ void YaSolR::Website::begin() {
   // tab: home
 
   _updateLink.setSize(FULL_SIZE);
-  _warnings1.setSize({.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 6});
-  _warnings2.setSize({.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 6});
+  _warning.setSize(FULL_SIZE);
   _gridPowerHistory.setSize(FULL_SIZE);
   _routedPowerHistory.setSize(FULL_SIZE);
 
-  _warnings1.setStatus(dash::Status::DANGER);
-  _warnings2.setStatus(dash::Status::DANGER);
-  _warnings1.setDisplay(false);
-  _warnings2.setDisplay(false);
+  _warning.setStatus(dash::Status::DANGER);
+  _warning.setDisplay(false);
   _updateLink.setValue("https://github.com/mathieucarbou/YaSolR-Pro/releases");
 
   // tab: output 1
@@ -1680,130 +1676,158 @@ void YaSolR::Website::updateCards() {
     _output2Bypass.setMessage(bypassUptime && output2.isBypassOn() ? Mycila::Time::toDHHMMSS(bypassUptime) : "");
   }
 
-  // ERRORS & WARNINGS
-  std::vector<const char*> errors;
-  errors.reserve(32);
+  updateWarnings();
+
+#endif
+}
+
+void YaSolR::Website::updateWarnings() {
+#ifdef APP_MODEL_PRO
+  _warning.setDisplay(false);
 
   // mqtt
   if (mqtt && config.getBool(KEY_ENABLE_MQTT)) {
     if (!mqtt->isEnabled()) {
-      errors.push_back(ERR_ACT_MQTT);
+      _warning.setMessage(ERR_ACT_MQTT);
+      _warning.setDisplay(true);
+      return;
     } else if (!mqtt->isConnected()) {
-      errors.push_back(ERR_MQTT_COM);
+      _warning.setMessage(ERR_MQTT_COM);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // jsy
   if (jsy && config.getBool(KEY_ENABLE_JSY)) {
     if (!jsy->isEnabled()) {
-      errors.push_back(ERR_ACT_JSY);
+      _warning.setMessage(ERR_ACT_JSY);
+      _warning.setDisplay(true);
+      return;
     } else if (!jsy->isConnected()) {
-      errors.push_back(ERR_GRID_JSY);
+      _warning.setMessage(ERR_GRID_JSY);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // victron
   if (victron && config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
     if (victron->hasError()) {
-      errors.push_back(ERR_VICTRON_COM);
+      _warning.setMessage(ERR_VICTRON_COM);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // pzem output 1
   if (pzemO1 && config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
     if (!pzemO1->isEnabled()) {
-      errors.push_back(ERR_ACT_O1_PZEM);
+      _warning.setMessage(ERR_ACT_O1_PZEM);
+      _warning.setDisplay(true);
+      return;
     } else if (pzemO1->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
-      errors.push_back(ERR_PZEM_ADDR_O1);
+      _warning.setMessage(ERR_PZEM_ADDR_O1);
+      _warning.setDisplay(true);
+      return;
     } else if (!pzemO1->isConnected()) {
-      errors.push_back(ERR_GRID_PZEM_O1);
+      _warning.setMessage(ERR_GRID_PZEM_O1);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // pzem output 2
   if (pzemO2 && config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
     if (!pzemO2->isEnabled()) {
-      errors.push_back(ERR_ACT_O2_PZEM);
+      _warning.setMessage(ERR_ACT_O2_PZEM);
+      _warning.setDisplay(true);
+      return;
     } else if (pzemO2->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {
-      errors.push_back(ERR_PZEM_ADDR_O2);
+      _warning.setMessage(ERR_PZEM_ADDR_O2);
+      _warning.setDisplay(true);
+      return;
     } else if (!pzemO2->isConnected()) {
-      errors.push_back(ERR_GRID_PZEM_O2);
+      _warning.setMessage(ERR_GRID_PZEM_O2);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // output 1 dimmer + resistance
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
     if (!output1.isDimmerEnabled()) {
-      errors.push_back(ERR_ACT_O1_DIMMER);
+      _warning.setMessage(ERR_ACT_O1_DIMMER);
+      _warning.setDisplay(true);
+      return;
     } else if (!output1.isDimmerOnline()) {
-      errors.push_back(ERR_GRID_DIMMER_O1);
+      _warning.setMessage(ERR_GRID_DIMMER_O1);
+      _warning.setDisplay(true);
+      return;
     } else if (std::isnan(output1.config.calibratedResistance) || output1.config.calibratedResistance <= 0) {
-      errors.push_back(ERR_RESIST_CAL_O1);
+      _warning.setMessage(ERR_RESIST_CAL_O1);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // output 2 dimmer + resistance
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
     if (!output2.isDimmerEnabled()) {
-      errors.push_back(ERR_ACT_O2_DIMMER);
+      _warning.setMessage(ERR_ACT_O2_DIMMER);
+      _warning.setDisplay(true);
+      return;
     } else if (!output2.isDimmerOnline()) {
-      errors.push_back(ERR_GRID_DIMMER_O2);
+      _warning.setMessage(ERR_GRID_DIMMER_O2);
+      _warning.setDisplay(true);
+      return;
     } else if (std::isnan(output2.config.calibratedResistance) || output2.config.calibratedResistance <= 0) {
-      errors.push_back(ERR_RESIST_CAL_O2);
+      _warning.setMessage(ERR_RESIST_CAL_O2);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // DS18 system
   if (ds18Sys && config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
     if (!ds18Sys->isEnabled()) {
-      errors.push_back(ERR_ACT_SYS_DS18);
+      _warning.setMessage(ERR_ACT_SYS_DS18);
+      _warning.setDisplay(true);
+      return;
     } else if (ds18Sys->getLastTime() == 0) {
-      errors.push_back(ERR_DS18_WAIT_SYS);
+      _warning.setMessage(ERR_DS18_WAIT_SYS);
+      _warning.setDisplay(true);
+      return;
     } else if (ds18Sys->isExpired()) {
-      errors.push_back(ERR_DS18_COM_SYS);
+      _warning.setMessage(ERR_DS18_COM_SYS);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // DS18 output 1
   if (ds18O1 && config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
     if (!ds18O1->isEnabled()) {
-      errors.push_back(ERR_ACT_O1_DS18);
+      _warning.setMessage(ERR_ACT_O1_DS18);
+      _warning.setDisplay(true);
+      return;
     } else if (ds18O1->getLastTime() == 0) {
-      errors.push_back(ERR_DS18_WAIT_O1);
+      _warning.setMessage(ERR_DS18_WAIT_O1);
+      _warning.setDisplay(true);
+      return;
     } else if (ds18O1->isExpired()) {
-      errors.push_back(ERR_DS18_COM_O1);
+      _warning.setMessage(ERR_DS18_COM_O1);
+      _warning.setDisplay(true);
+      return;
     }
   }
   // DS18 output 2
   if (ds18O2 && config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
     if (!ds18O2->isEnabled()) {
-      errors.push_back(ERR_ACT_O2_DS18);
+      _warning.setMessage(ERR_ACT_O2_DS18);
+      _warning.setDisplay(true);
+      return;
     } else if (ds18O2->getLastTime() == 0) {
-      errors.push_back(ERR_DS18_WAIT_O2);
+      _warning.setMessage(ERR_DS18_WAIT_O2);
+      _warning.setDisplay(true);
+      return;
     } else if (ds18O2->isExpired()) {
-      errors.push_back(ERR_DS18_COM_O2);
+      _warning.setMessage(ERR_DS18_COM_O2);
+      _warning.setDisplay(true);
+      return;
     }
-  }
-
-  const size_t errCount = errors.size();
-  if (errCount) {
-    size_t max = std::min(errCount, static_cast<size_t>(5));
-    {
-      std::vector<const char*> selection;
-      selection.reserve(max);
-      for (size_t i = 0; i < max; i++) {
-        selection.push_back(errors[i]);
-      }
-
-      _warnings1.setMessages(std::move(selection));
-      _warnings1.setDisplay(true);
-    }
-    if (errCount > 5) {
-      max = 5 + std::min(errCount - 5, static_cast<size_t>(5));
-      std::vector<const char*> selection;
-      selection.reserve(max - 5);
-      for (size_t i = 5; i < max; i++) {
-        selection.push_back(errors[i]);
-      }
-
-      _warnings2.setMessages(std::move(selection));
-      _warnings2.setDisplay(true);
-    }
-  } else {
-    _warnings1.setDisplay(false);
-    _warnings2.setDisplay(false);
   }
 #endif
 }

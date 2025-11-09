@@ -15,6 +15,7 @@ namespace YaSolR {
       void begin();
       void initCards();
       void updateCards();
+      void updateWarnings();
       void updateCharts();
       void updatePIDCharts();
       void resetPIDCharts();
