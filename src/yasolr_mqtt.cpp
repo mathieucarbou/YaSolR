@@ -302,6 +302,8 @@ static void publishStaticData() {
 static void publishData() {
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
+  mqtt->publish((baseTopic + "/system/app/latest_version").c_str(), Mycila::AppInfo.latestVersion);
+
   Mycila::System::Memory* memory = new Mycila::System::Memory();
   Mycila::System::getMemory(*memory);
   mqtt->publish((baseTopic + "/system/device/heap/total").c_str(), std::to_string(memory->total));

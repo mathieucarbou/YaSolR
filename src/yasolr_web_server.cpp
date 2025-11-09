@@ -333,6 +333,7 @@ void rest_api() {
     root["app"]["model"] = Mycila::AppInfo.model;
     root["app"]["name"] = Mycila::AppInfo.name;
     root["app"]["version"] = Mycila::AppInfo.version;
+    root["app"]["latest_version"] = Mycila::AppInfo.latestVersion;
 
     root["device"]["boots"] = Mycila::System::getBootCount();
     root["device"]["cores"] = ESP.getChipCores();

@@ -1089,7 +1089,7 @@ void YaSolR::Website::initCards() {
   _appName.setValue(Mycila::AppInfo.name.c_str());
   _appModel.setValue(Mycila::AppInfo.model.c_str());
   _appVersion.setValue(Mycila::AppInfo.version.c_str());
-  _appLastVersion.setValue(Mycila::AppInfo.latestVersion.length() ? Mycila::AppInfo.latestVersion.c_str() : "N/A");
+  _appLastVersion.setValue(Mycila::AppInfo.latestVersion.c_str());
   _appManufacturer.setValue(Mycila::AppInfo.manufacturer.c_str());
   _deviceBootCount.setValue(Mycila::System::getBootCount());
   _deviceBootReason.setValue(Mycila::System::getLastRebootReason());

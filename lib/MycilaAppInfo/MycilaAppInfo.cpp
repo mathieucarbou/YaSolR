@@ -49,7 +49,8 @@ Mycila::AppInfoClass::AppInfoClass() : id(Mycila::System::getChipIDStr()),
                                        defaultHostname(Mycila::string::toLowerCase(name + "-" + id)),
                                        defaultMqttClientId(Mycila::string::toLowerCase(name + "_" + id)),
                                        debug(buildEnv.find("debug") != std::string::npos),
-                                       trial(buildEnv.find("trial") != std::string::npos) {}
+                                       trial(buildEnv.find("trial") != std::string::npos),
+                                       latestVersion(version) {}
 
 void Mycila::AppInfoClass::toJson(const JsonObject& root) const {
   root["build_board"] = buildBoard;

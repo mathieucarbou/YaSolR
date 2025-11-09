@@ -34,7 +34,7 @@ namespace Mycila {
       const std::string defaultMqttClientId;
       const bool debug;
       const bool trial;
-      std::string latestVersion = "";
+      std::string latestVersion;
   };
 
   extern AppInfoClass AppInfo;

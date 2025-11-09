@@ -25,11 +25,14 @@ Mycila::Task versionCheckTask("Version Check", [](void* params) {
     if (status == HTTP_CODE_OK) {
       if (https->getStream().find("\"tag_name\":")) {
         https->getStream().readStringUntil('v');
-        Mycila::AppInfo.latestVersion = https->getStream().readStringUntil('"').c_str();
-      }
-      if (Mycila::AppInfo.latestVersion.length()) {
-        ESP_LOGI(TAG, "Latest YaSolR version: %s", Mycila::AppInfo.latestVersion.c_str());
-        dashboardInitTask.resume();
+        std::string v = https->getStream().readStringUntil('"').c_str();
+        if (v.length()) {
+          Mycila::AppInfo.latestVersion = std::move(v);
+          ESP_LOGI(TAG, "Latest YaSolR version: %s", Mycila::AppInfo.latestVersion.c_str());
+          dashboardInitTask.resume();
+        } else {
+          ESP_LOGE(TAG, "Failed to find latest version in response");
+        }
       } else {
         ESP_LOGE(TAG, "Failed to parse HTTP response");
       }
