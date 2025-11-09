@@ -409,6 +409,9 @@ static void haDiscovery() {
                      512,
                      [](const char* topic, const std::string& payload) { mqtt->publish(topic, payload, true); });
 
+  // CLEAR REMOVED ENTRIES
+  haDiscovery->unpublish(std::make_unique<Mycila::HA::Value>("firmware_filename", nullptr, nullptr));
+
   // DIAGNOSTIC
 
   haDiscovery->publish(std::make_unique<Mycila::HA::Button>("device_restart", "Device: Restart", "/system/device/restart", "restart", nullptr, Mycila::HA::Category::DIAGNOSTIC));
