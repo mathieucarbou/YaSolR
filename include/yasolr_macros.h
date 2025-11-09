@@ -71,6 +71,7 @@
 #define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
 #define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
 #define YASOLR_MQTT_WILL_TOPIC             "/status"
+#define YASOLR_MQTT_WILL_TOPIC_HA          "~/status"
 #define YASOLR_PID_MODE_ERROR              "On Error"
 #define YASOLR_PID_MODE_INPUT              "On Input"
 #define YASOLR_PZEM_ADDRESS_OUTPUT1        0x01
@@ -86,6 +87,12 @@
 #define YASOLR_WEEK_DAYS                   "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_WEEK_DAYS_EMPTY             "none"
 #define YASOLR_ZC_EVENT_SHIFT_US           -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
+
+#ifdef APP_MODEL_PRO
+  #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR-Pro/releases/"
+#else
+  #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR/releases/"
+#endif 
 
 // UART
 
