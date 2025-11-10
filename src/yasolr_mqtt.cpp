@@ -37,26 +37,26 @@ static void connect() {
   if (secured) {
     // if a server certificate has been used, set it
     if (LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE)) {
-      LOGI(TAG, "Loading MQTT PEM server certificate");
+      ESP_LOGI(TAG, "Loading MQTT PEM server certificate");
       File serverCertFile = LittleFS.open(YASOLR_MQTT_SERVER_CERT_FILE, "r");
       mqttConfig.serverCert = serverCertFile.readString().c_str();
       serverCertFile.close();
-      LOGI(TAG, "Loaded MQTT server certificate:\n%s", mqttConfig.serverCert.c_str());
+      ESP_LOGI(TAG, "Loaded MQTT server certificate:\n%s", mqttConfig.serverCert.c_str());
     } else {
-      LOGI(TAG, "Using cacert bundle for MQTT");
+      ESP_LOGI(TAG, "Using cacert bundle for MQTT");
       // if no server certificate has been used, set default CA certs bundle
       mqttConfig.certBundle = ca_certs_bundle_start;
       mqttConfig.certBundleSize = static_cast<size_t>(ca_certs_bundle_end - ca_certs_bundle_start);
     }
   }
 
-  LOGI(TAG, "Connecting to MQTT broker %s://%s:%" PRIu16 "", (secured ? "mqtts" : "mqtt"), mqttConfig.server.c_str(), mqttConfig.port);
+  ESP_LOGI(TAG, "Connecting to MQTT broker %s://%s:%" PRIu16 "", (secured ? "mqtts" : "mqtt"), mqttConfig.server.c_str(), mqttConfig.port);
   mqtt->setAsync(false);
   mqtt->begin(mqttConfig);
 }
 
 static void subscribe() {
-  LOGI(TAG, "Subscribing to MQTT topics");
+  ESP_LOGI(TAG, "Subscribing to MQTT topics");
 
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
@@ -138,7 +138,7 @@ static void subscribe() {
   // grid power
   const char* gridPowerMQTTTopic = config.get(KEY_GRID_POWER_MQTT_TOPIC);
   if (gridPowerMQTTTopic[0] != '\0') {
-    LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
+    ESP_LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
     grid.metrics(Mycila::Grid::Source::MQTT).setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
     mqtt->subscribe(gridPowerMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       if (payload.length()) {
@@ -162,7 +162,7 @@ static void subscribe() {
         }
 
         if (!isnan(p)) {
-          LOGI(TAG, "Grid Power from MQTT: %f", p);
+          ESP_LOGI(TAG, "Grid Power from MQTT: %f", p);
           power->update(p);
           grid.metrics(Mycila::Grid::Source::MQTT).update({
             .apparentPower = NAN,
@@ -185,7 +185,7 @@ static void subscribe() {
   // grid voltage
   const char* gridVoltageMQTTTopic = config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC);
   if (gridVoltageMQTTTopic[0] != '\0') {
-    LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
+    ESP_LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
     grid.metrics(Mycila::Grid::Source::MQTT).setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
     mqtt->subscribe(gridVoltageMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       if (payload.length()) {
@@ -209,7 +209,7 @@ static void subscribe() {
         }
 
         if (!isnan(v)) {
-          LOGI(TAG, "Grid Voltage from MQTT: %f", v);
+          ESP_LOGI(TAG, "Grid Voltage from MQTT: %f", v);
           voltage->update(v);
           grid.metrics(Mycila::Grid::Source::MQTT).update({
             .apparentPower = NAN,
@@ -229,11 +229,11 @@ static void subscribe() {
   // output 1 temperature
   const char* output1TemperatureMQTTTopic = config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   if (output1TemperatureMQTTTopic[0] != '\0') {
-    LOGI(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic);
+    ESP_LOGI(TAG, "Reading Output 1 Temperature from MQTT topic: %s", output1TemperatureMQTTTopic);
     mqtt->subscribe(output1TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       float t;
       if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
-        LOGI(TAG, "Output 1 Temperature from MQTT: %f", t);
+        ESP_LOGI(TAG, "Output 1 Temperature from MQTT: %f", t);
         output1.temperature().update(t);
       }
     });
@@ -242,11 +242,11 @@ static void subscribe() {
   // output 2 temperature
   const char* output2TemperatureMQTTTopic = config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
   if (output2TemperatureMQTTTopic[0] != '\0') {
-    LOGI(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic);
+    ESP_LOGI(TAG, "Reading Output 2 Temperature from MQTT topic: %s", output2TemperatureMQTTTopic);
     mqtt->subscribe(output2TemperatureMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       float t;
       if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
-        LOGI(TAG, "Output 2 Temperature from MQTT: %f", t);
+        ESP_LOGI(TAG, "Output 2 Temperature from MQTT: %f", t);
         output2.temperature().update(t);
       }
     });
@@ -254,7 +254,7 @@ static void subscribe() {
 }
 
 static void publishConfig() {
-  LOGI(TAG, "Publishing config to MQTT");
+  ESP_LOGI(TAG, "Publishing config to MQTT");
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
   for (auto& key : config.keys()) {
     const char* value = config.get(key);
@@ -262,11 +262,11 @@ static void publishConfig() {
       value = "********";
     mqtt->publish((baseTopic + "/config/" + key).c_str(), value, true);
   }
-  LOGI(TAG, "Published config to MQTT");
+  ESP_LOGI(TAG, "Published config to MQTT");
 }
 
 static void publishStaticData() {
-  LOGI(TAG, "Publishing static data to MQTT...");
+  ESP_LOGI(TAG, "Publishing static data to MQTT...");
 
   const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
 
@@ -296,7 +296,7 @@ static void publishStaticData() {
   mqtt->publish((baseTopic + "/system/network/wifi/mac_address").c_str(), espConnect.getMACAddress(Mycila::ESPConnect::Mode::STA), true);
   yield();
 
-  LOGI(TAG, "Published static data to MQTT");
+  ESP_LOGI(TAG, "Published static data to MQTT");
 }
 
 static void publishData() {
@@ -393,7 +393,7 @@ static void publishData() {
 }
 
 static void haDiscovery() {
-  LOGI(TAG, "Publishing Home Assistant Discovery configuration");
+  ESP_LOGI(TAG, "Publishing Home Assistant Discovery configuration");
 
   Mycila::HA::Discovery* haDiscovery = new Mycila::HA::Discovery();
 
@@ -501,18 +501,18 @@ static void haDiscovery() {
   haDiscovery->end();
   delete haDiscovery;
 
-  LOGI(TAG, "Published Home Assistant Discovery configuration");
+  ESP_LOGI(TAG, "Published Home Assistant Discovery configuration");
 }
 
 void yasolr_configure_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
     if (mqtt == nullptr) {
       if (!config.getString(KEY_MQTT_SERVER).length()) {
-        LOGE(TAG, "MQTT server is not set");
+        ESP_LOGE(TAG, "MQTT server is not set");
         return;
       }
 
-      LOGI(TAG, "Enable MQTT");
+      ESP_LOGI(TAG, "Enable MQTT");
 
       voltage = new Mycila::ExpiringValue<float>(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
       power = new Mycila::ExpiringValue<float>(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
@@ -525,7 +525,7 @@ void yasolr_configure_mqtt() {
       haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::Task::Type::ONCE, [](void* params) { haDiscovery(); });
 
       mqtt->onConnect([](void) {
-        LOGI(TAG, "MQTT connected!");
+        ESP_LOGI(TAG, "MQTT connected!");
         haDiscoveryTask->resume();
         mqttPublishStaticTask->resume();
         mqttPublishConfigTask->resume();
@@ -557,7 +557,7 @@ void yasolr_configure_mqtt() {
     }
   } else {
     if (mqtt) {
-      LOGI(TAG, "Disable MQTT");
+      ESP_LOGI(TAG, "Disable MQTT");
 
       Mycila::TaskMonitor.removeTask("mqtt_task");
 

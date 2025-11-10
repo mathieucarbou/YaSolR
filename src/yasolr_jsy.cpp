@@ -109,11 +109,11 @@ void yasolr_configure_jsy() {
     // setup JSY if not done yet
     if (jsy == nullptr) {
       if (config.getString(KEY_JSY_UART) == YASOLR_UART_NONE) {
-        LOGE(TAG, "No UART selected for JSY");
+        ESP_LOGE(TAG, "No UART selected for JSY");
         return;
       }
 
-      LOGI(TAG, "Enable JSY with UART %s", config.get(KEY_JSY_UART));
+      ESP_LOGI(TAG, "Enable JSY with UART %s", config.get(KEY_JSY_UART));
 
       jsy = new Mycila::JSY();
 
@@ -126,7 +126,7 @@ void yasolr_configure_jsy() {
 #endif
 
       if (!jsy->isEnabled()) {
-        LOGE(TAG, "JSY failed to initialize!");
+        ESP_LOGE(TAG, "JSY failed to initialize!");
         jsy->end();
         delete jsy;
         jsy = nullptr;
@@ -145,7 +145,7 @@ void yasolr_configure_jsy() {
     // disable JSY if enabled but leave the task manager in case we re-enable it later
     // stopping the whole task manager is supported but not deleting it to free memory, so we can lave it as-is
     if (jsy != nullptr) {
-      LOGI(TAG, "Disable JSY");
+      ESP_LOGI(TAG, "Disable JSY");
 
       jsy->end();
       delete jsy;

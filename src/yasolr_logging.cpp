@@ -61,17 +61,17 @@ void yasolr_init_logging() {
     yield();
 #endif
 
-  LOGI(TAG, "Initialize logging");
+  ESP_LOGI(TAG, "Initialize logging");
   esp_log_level_set("*", ESP_LOG_INFO);
   esp_log_set_vprintf(log_redirect_vprintf);
 }
 
 void yasolr_init_persistent_logging() {
   if (config.getBool(KEY_ENABLE_DEBUG_BOOT)) {
-    LOGI(TAG, "Enable Persistent Logging for this boot session");
+    ESP_LOGI(TAG, "Enable Persistent Logging for this boot session");
 
     if (LittleFS.remove(YASOLR_LOG_FILE))
-      LOGI(TAG, "Previous log file removed");
+      ESP_LOGI(TAG, "Previous log file removed");
 
     logStream = new LogStream();
   }
@@ -81,11 +81,11 @@ void yasolr_configure_logging() {
   if (config.getBool(KEY_ENABLE_DEBUG)) {
     esp_log_level_set("*", ESP_LOG_VERBOSE);
     esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
-    LOGI(TAG, "Enable Debug Mode");
+    ESP_LOGI(TAG, "Enable Debug Mode");
 
     if (loggingTask == nullptr) {
       loggingTask = new Mycila::Task("Debug", [](void* params) {
-        LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
+        ESP_LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
         Mycila::TaskMonitor.log();
         coreTaskManager.log();
         unsafeTaskManager.log();
@@ -101,7 +101,7 @@ void yasolr_configure_logging() {
 
   } else {
     esp_log_level_set("*", ESP_LOG_INFO);
-    LOGI(TAG, "Disable Debug Mode");
+    ESP_LOGI(TAG, "Disable Debug Mode");
 
     if (loggingTask != nullptr) {
       unsafeTaskManager.removeTask(*loggingTask);

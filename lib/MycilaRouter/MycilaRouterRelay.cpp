@@ -4,20 +4,6 @@
  */
 #include <MycilaRouterRelay.h>
 
-#ifdef MYCILA_LOGGER_SUPPORT
-  #include <MycilaLogger.h>
-extern Mycila::Logger logger;
-  #define LOGD(tag, format, ...) logger.debug(tag, format, ##__VA_ARGS__)
-  #define LOGI(tag, format, ...) logger.info(tag, format, ##__VA_ARGS__)
-  #define LOGW(tag, format, ...) logger.warn(tag, format, ##__VA_ARGS__)
-  #define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)
-#else
-  #define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
-  #define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
-  #define LOGW(tag, format, ...) ESP_LOGW(tag, format, ##__VA_ARGS__)
-  #define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
-#endif
-
 #define TAG "RELAY"
 
 bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
@@ -25,9 +11,9 @@ bool Mycila::RouterRelay::trySwitchRelay(bool state, uint32_t duration) {
     return false;
 
   if (duration)
-    LOGI(TAG, "Switching relay on pin %u %s for %u ms", _relay.getPin(), state ? "ON" : "OFF", duration);
+    ESP_LOGI(TAG, "Switching relay on pin %u %s for %u ms", _relay.getPin(), state ? "ON" : "OFF", duration);
   else
-    LOGI(TAG, "Switching relay on pin %u %s", _relay.getPin(), state ? "ON" : "OFF");
+    ESP_LOGI(TAG, "Switching relay on pin %u %s", _relay.getPin(), state ? "ON" : "OFF");
   _relay.setState(state, duration);
   return true;
 }
@@ -47,12 +33,12 @@ bool Mycila::RouterRelay::autoSwitch(float gridVoltage, float gridPower, float r
   // calculate the real load with the grid voltage
   const uint16_t adjustedLoad = getLoad(gridVoltage);
 
-  LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %" PRIu16 " W @ %" PRIu16 " V, Grid: %.1f W, Routed: %.1f W, Setpoint: %.1f W, Tolerance: %.2f %%", _relay.getPin(), _nominalLoad, nominalVoltage, adjustedLoad, static_cast<uint16_t>(gridVoltage), gridPower, routedPower, setpoint, _tolerance * 100.0f);
+  ESP_LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %" PRIu16 " W @ %" PRIu16 " V, Grid: %.1f W, Routed: %.1f W, Setpoint: %.1f W, Tolerance: %.2f %%", _relay.getPin(), _nominalLoad, nominalVoltage, adjustedLoad, static_cast<uint16_t>(gridVoltage), gridPower, routedPower, setpoint, _tolerance * 100.0f);
 
   if (_relay.isOff()) {
     const float relayRoomPower = setpoint + routedPower - gridPower;
     if (relayRoomPower >= adjustedLoad * (1.0f + _tolerance)) {
-      LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay.getPin(), "ON");
+      ESP_LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay.getPin(), "ON");
       _relay.setState(true);
       return true;
     }
@@ -62,7 +48,7 @@ bool Mycila::RouterRelay::autoSwitch(float gridVoltage, float gridPower, float r
   if (_relay.isOn()) {
     const float relayRoomPower = setpoint + routedPower - gridPower + adjustedLoad;
     if (relayRoomPower <= adjustedLoad * (1.0f - _tolerance)) {
-      LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay.getPin(), "OFF");
+      ESP_LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay.getPin(), "OFF");
       _relay.setState(false);
       return true;
     }

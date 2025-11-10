@@ -19,7 +19,7 @@ static Mycila::Task reconfigureTask("Reconfigure", [](void* params) {
 });
 
 void yasolr_init_config() {
-  LOGI(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
+  ESP_LOGI(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // setup config system
   config.begin("YASOLR");
@@ -145,12 +145,12 @@ void yasolr_init_config() {
   config.configure(KEY_WIFI_SSID);
 
   config.listen([]() {
-    LOGI(TAG, "Configuration restored!");
+    ESP_LOGI(TAG, "Configuration restored!");
     restartTask.resume();
   });
 
   config.listen([](const char* k, const std::string& newValue) {
-    LOGI(TAG, "'%s' => '%s'", k, newValue.c_str());
+    ESP_LOGI(TAG, "'%s' => '%s'", k, newValue.c_str());
     const std::string key = k;
 
     if (key == KEY_RELAY1_LOAD) {

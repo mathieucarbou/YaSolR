@@ -10,25 +10,25 @@ Mycila::TaskManager coreTaskManager("loopTask");
 Mycila::TaskManager unsafeTaskManager("unsafeTask");
 
 Mycila::Task resetTask("Reset", Mycila::Task::Type::ONCE, [](void* params) {
-  LOGW("YaSolR", "Resetting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  ESP_LOGW("YaSolR", "Resetting %s", Mycila::AppInfo.nameModelVersion.c_str());
   config.clear();
   Mycila::System::restart(500);
 });
 
 Mycila::Task restartTask("Restart", Mycila::Task::Type::ONCE, [](void* params) {
-  LOGW("YaSolR", "Restarting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  ESP_LOGW("YaSolR", "Restarting %s", Mycila::AppInfo.nameModelVersion.c_str());
   Mycila::System::restart(500);
 });
 
 Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params) {
-  LOGI(TAG, "Restarting %s in SafeBoot mode", Mycila::AppInfo.nameModelVersion.c_str());
+  ESP_LOGI(TAG, "Restarting %s in SafeBoot mode", Mycila::AppInfo.nameModelVersion.c_str());
   // save current network configuration so that it can be restored and used by safeboot
   espConnect.saveConfiguration();
   Mycila::System::restartFactory(YASOLR_SAFEBOOT_PARTITION_NAME);
 });
 
 void yasolr_init_system() {
-  LOGI(TAG, "Initialize system");
+  ESP_LOGI(TAG, "Initialize system");
 
   Mycila::TaskManager::configureWDT(60, true);
 
@@ -36,10 +36,10 @@ void yasolr_init_system() {
 
   esp_reset_reason_t reason = esp_reset_reason();
   if (reason == esp_reset_reason_t::ESP_RST_POWERON || reason == esp_reset_reason_t::ESP_RST_SW || reason == esp_reset_reason_t::ESP_RST_DEEPSLEEP) {
-    LOGI(TAG, "Erasing core dump");
+    ESP_LOGI(TAG, "Erasing core dump");
     esp_core_dump_image_erase();
   } else {
-    LOGE(TAG, "ESP32 resumed from a crash: please look at the core dump info!");
+    ESP_LOGE(TAG, "ESP32 resumed from a crash: please look at the core dump info!");
   }
 
   coreTaskManager.addTask(resetTask);

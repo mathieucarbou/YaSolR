@@ -46,19 +46,19 @@ static Mycila::Task lightsTask("Lights", [](void* params) {
 void yasolr_configure_lights() {
   if (config.getBool(KEY_ENABLE_LIGHTS)) {
     if (!lights.isEnabled()) {
-      LOGI(TAG, "Enable LEDs");
+      ESP_LOGI(TAG, "Enable LEDs");
       lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
     }
   } else {
     if (lights.isEnabled()) {
-      LOGI(TAG, "Disable LEDs");
+      ESP_LOGI(TAG, "Disable LEDs");
       lights.end();
     }
   }
 }
 
 void yasolr_init_lights() {
-  LOGI(TAG, "Initialize system lights");
+  ESP_LOGI(TAG, "Initialize system lights");
 
   lights.set(Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::ON, Mycila::TrafficLight::State::OFF);
 

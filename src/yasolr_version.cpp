@@ -52,7 +52,7 @@ Mycila::Task versionCheckTask("Version Check", [](void* params) {
 });
 
 void yasolr_init_version_check() {
-  LOGI(TAG, "Initialize version check");
+  ESP_LOGI(TAG, "Initialize version check");
   versionCheckTask.setEnabled(false);
   versionCheckTask.setInterval(3600000);
   unsafeTaskManager.addTask(versionCheckTask);

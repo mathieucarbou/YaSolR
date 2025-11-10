@@ -6,20 +6,6 @@
 
 #include <string>
 
-#ifdef MYCILA_LOGGER_SUPPORT
-  #include <MycilaLogger.h>
-extern Mycila::Logger logger;
-  #define LOGD(tag, format, ...) logger.debug(tag, format, ##__VA_ARGS__)
-  #define LOGI(tag, format, ...) logger.info(tag, format, ##__VA_ARGS__)
-  #define LOGW(tag, format, ...) logger.warn(tag, format, ##__VA_ARGS__)
-  #define LOGE(tag, format, ...) logger.error(tag, format, ##__VA_ARGS__)
-#else
-  #define LOGD(tag, format, ...) ESP_LOGD(tag, format, ##__VA_ARGS__)
-  #define LOGI(tag, format, ...) ESP_LOGI(tag, format, ##__VA_ARGS__)
-  #define LOGW(tag, format, ...) ESP_LOGW(tag, format, ##__VA_ARGS__)
-  #define LOGE(tag, format, ...) ESP_LOGE(tag, format, ##__VA_ARGS__)
-#endif
-
 #define TAG "VICTRON"
 
 // Define a function to parse a signed 16-bit integer from a Modbus message response
@@ -55,7 +41,7 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
     return;
   }
 
-  LOGI(TAG, "Connecting to Victron Modbus TCP Server %s:%" PRIu16 "", host, port);
+  ESP_LOGI(TAG, "Connecting to Victron Modbus TCP Server %s:%" PRIu16 "", host, port);
   _client = new ModbusClientTCPasync(IPAddress(host), port);
   _client->setTimeout(DEFAULTTIMEOUT);
   _client->setIdleTimeout(DEFAULTIDLETIME);
@@ -102,7 +88,7 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
 
 void Mycila::Victron::end() {
   if (_client) {
-    LOGI(TAG, "Disconnecting from Victron Modbus TCP Server");
+    ESP_LOGI(TAG, "Disconnecting from Victron Modbus TCP Server");
     _client->disconnect();
     delete _client;
     _client = nullptr;

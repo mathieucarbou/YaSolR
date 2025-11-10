@@ -31,7 +31,7 @@ static Mycila::Task routerTask("Router", [](void* params) {
   if ((output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled()) && micros() - pidController.getLastTime() > 2000000 && yasolr_divert()) {
     // Ensure the PID controller is called frequently enough.
     // This keeps the PID running even if the measurements are not frequent enough (like with MQTT).
-    LOGW(TAG, "Grid measurement system too slow!");
+    ESP_LOGW(TAG, "Grid measurement system too slow!");
   }
 
   output1.applyBypassTimeout();
@@ -54,20 +54,20 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
     if (semiPeriod) {
       // check for semi-period changes
       if (dimmer1->getPowerLUTSemiPeriod() != semiPeriod) {
-        LOGI(TAG, "Updating Output 1 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
+        ESP_LOGI(TAG, "Updating Output 1 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
         dimmer1->enablePowerLUT(true, semiPeriod);
         updateUI = true;
       }
       // check for dimmer online status
       if (!dimmer1->isOnline()) {
-        LOGI(TAG, "Switch Output 1 Dimmer online");
+        ESP_LOGI(TAG, "Switch Output 1 Dimmer online");
         dimmer1->setOnline(true);
         updateUI = true;
       }
     } else {
       unknownGridFreq = true;
       if (dimmer1->isOnline()) {
-        LOGW(TAG, "Switch Output 1 Dimmer offline");
+        ESP_LOGW(TAG, "Switch Output 1 Dimmer offline");
         dimmer1->setOnline(false);
       }
     }
@@ -77,27 +77,27 @@ static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
     if (semiPeriod) {
       // check for semi-period changes
       if (dimmer2->getPowerLUTSemiPeriod() != semiPeriod) {
-        LOGI(TAG, "Updating Output 2 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
+        ESP_LOGI(TAG, "Updating Output 2 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
         dimmer2->enablePowerLUT(true, semiPeriod);
         updateUI = true;
       }
       // check for dimmer online status
       if (!dimmer2->isOnline()) {
-        LOGI(TAG, "Switch Output 2 Dimmer online");
+        ESP_LOGI(TAG, "Switch Output 2 Dimmer online");
         dimmer2->setOnline(true);
         updateUI = true;
       }
     } else {
       unknownGridFreq = true;
       if (dimmer2->isOnline()) {
-        LOGW(TAG, "Switch Output 2 Dimmer offline");
+        ESP_LOGW(TAG, "Switch Output 2 Dimmer offline");
         dimmer2->setOnline(false);
       }
     }
   }
 
   if (unknownGridFreq) {
-    LOGW(TAG, "Unknown grid frequency!");
+    ESP_LOGW(TAG, "Unknown grid frequency!");
   }
 
   if (updateUI) {
@@ -137,7 +137,7 @@ static bool isDACBased(const char* type) {
 
 static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const char* keyPin) {
   const char* type = config.get(keyType);
-  LOGI(TAG, "Initializing dimmer %s for output %d", type, outputID);
+  ESP_LOGI(TAG, "Initializing dimmer %s for output %d", type, outputID);
 
   if (isThyristorBased(type)) {
     Mycila::ThyristorDimmer* thyristorDimmer = new Mycila::ThyristorDimmer();
@@ -169,7 +169,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
       dfRobotDimmer->setSKU(Mycila::DFRobotDimmer::SKU::DFR1073_GP8413);
       return dfRobotDimmer;
     }
-    LOGE(TAG, "DFRobot Dimmer type not supported: %s", type);
+    ESP_LOGE(TAG, "DFRobot Dimmer type not supported: %s", type);
     delete dfRobotDimmer;
     return new Mycila::Dimmer();
   }
@@ -180,7 +180,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
     // return bfDimmer;
   }
 
-  LOGE(TAG, "Dimmer type not supported: %s", type);
+  ESP_LOGE(TAG, "Dimmer type not supported: %s", type);
   return new Mycila::Dimmer();
 }
 
@@ -189,13 +189,13 @@ static Mycila::Relay* createBypassRelay(const char* keyType, const char* keyPin)
   relay->begin(config.getLong(keyPin), config.isEqual(keyType, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
   if (relay->isEnabled()) {
     relay->listen([](bool state) {
-      LOGI(TAG, "Output Relay changed to %s", state ? "ON" : "OFF");
+      ESP_LOGI(TAG, "Output Relay changed to %s", state ? "ON" : "OFF");
       if (mqttPublishTask)
         mqttPublishTask->requestEarlyRun();
     });
     return relay;
   } else {
-    LOGE(TAG, "Bypass Relay failed to initialize!");
+    ESP_LOGE(TAG, "Bypass Relay failed to initialize!");
     delete relay;
     return nullptr;
   }
@@ -212,14 +212,14 @@ static void configure_zcd() {
       (dimmer2 && strcmp(dimmer2->type(), "thyristor") == 0) ||
       (dimmer2 && strcmp(dimmer2->type(), "burst-fire") == 0)) {
     if (pulseAnalyzer == nullptr) {
-      LOGI(TAG, "Enable ZCD Pulse Analyzer");
+      ESP_LOGI(TAG, "Enable ZCD Pulse Analyzer");
       pulseAnalyzer = new Mycila::PulseAnalyzer();
       pulseAnalyzer->setZeroCrossEventShift(YASOLR_ZC_EVENT_SHIFT_US);
       pulseAnalyzer->onZeroCross(onZeroCross);
       pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
 
       if (!pulseAnalyzer->isEnabled()) {
-        LOGE(TAG, "ZCD Pulse Analyzer failed to initialize!");
+        ESP_LOGE(TAG, "ZCD Pulse Analyzer failed to initialize!");
         delete pulseAnalyzer;
         pulseAnalyzer = nullptr;
       }
@@ -227,7 +227,7 @@ static void configure_zcd() {
 
   } else {
     if (pulseAnalyzer != nullptr) {
-      LOGI(TAG, "Disable ZCD Pulse Analyzer");
+      ESP_LOGI(TAG, "Disable ZCD Pulse Analyzer");
       pulseAnalyzer->end();
       delete pulseAnalyzer;
       pulseAnalyzer = nullptr;
@@ -237,7 +237,7 @@ static void configure_zcd() {
 
 void yasolr_configure_output1_dimmer() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
-    LOGI(TAG, "Enable Output 1 Dimmer");
+    ESP_LOGI(TAG, "Enable Output 1 Dimmer");
     Mycila::Dimmer* old_dimmer1 = dimmer1;
     if (old_dimmer1)
       old_dimmer1->end();
@@ -247,21 +247,21 @@ void yasolr_configure_output1_dimmer() {
     dimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
     dimmer1->begin();
     if (!dimmer1->isEnabled()) {
-      LOGE(TAG, "Output 1 Dimmer failed to initialize!");
+      ESP_LOGE(TAG, "Output 1 Dimmer failed to initialize!");
     } else {
       configure_zcd();
     }
     output1.setDimmer(dimmer1);
     delete old_dimmer1;
   } else {
-    LOGI(TAG, "Disable Output 1 Dimmer");
+    ESP_LOGI(TAG, "Disable Output 1 Dimmer");
     dimmer1->end();
   }
 }
 
 void yasolr_configure_output2_dimmer() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
-    LOGI(TAG, "Enable Output 2 Dimmer");
+    ESP_LOGI(TAG, "Enable Output 2 Dimmer");
     Mycila::Dimmer* old_dimmer2 = dimmer2;
     if (old_dimmer2)
       old_dimmer2->end();
@@ -271,21 +271,21 @@ void yasolr_configure_output2_dimmer() {
     dimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
     dimmer2->begin();
     if (!dimmer2->isEnabled()) {
-      LOGE(TAG, "Output 2 Dimmer failed to initialize!");
+      ESP_LOGE(TAG, "Output 2 Dimmer failed to initialize!");
     } else {
       configure_zcd();
     }
     output2.setDimmer(dimmer2);
     delete old_dimmer2;
   } else {
-    LOGI(TAG, "Disable Output 2 Dimmer");
+    ESP_LOGI(TAG, "Disable Output 2 Dimmer");
     dimmer2->end();
   }
 }
 
 void yasolr_configure_output1_bypass_relay() {
   if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY)) {
-    LOGI(TAG, "Enable Output 1 Bypass Relay");
+    ESP_LOGI(TAG, "Enable Output 1 Bypass Relay");
     Mycila::Relay* old_relay1 = bypassRelay1;
     if (old_relay1)
       old_relay1->end();
@@ -295,7 +295,7 @@ void yasolr_configure_output1_bypass_relay() {
   } else {
     output1.setBypassRelay(nullptr);
     if (bypassRelay1) {
-      LOGI(TAG, "Disable Output 1 Bypass Relay");
+      ESP_LOGI(TAG, "Disable Output 1 Bypass Relay");
       bypassRelay1->end();
       delete bypassRelay1;
       bypassRelay1 = nullptr;
@@ -305,7 +305,7 @@ void yasolr_configure_output1_bypass_relay() {
 
 void yasolr_configure_output2_bypass_relay() {
   if (config.getBool(KEY_ENABLE_OUTPUT2_RELAY)) {
-    LOGI(TAG, "Enable Output 2 Bypass Relay");
+    ESP_LOGI(TAG, "Enable Output 2 Bypass Relay");
     Mycila::Relay* old_relay2 = bypassRelay2;
     if (old_relay2)
       old_relay2->end();
@@ -315,7 +315,7 @@ void yasolr_configure_output2_bypass_relay() {
   } else {
     output2.setBypassRelay(nullptr);
     if (bypassRelay2) {
-      LOGI(TAG, "Disable Output 2 Bypass Relay");
+      ESP_LOGI(TAG, "Disable Output 2 Bypass Relay");
       bypassRelay2->end();
       delete bypassRelay2;
       bypassRelay2 = nullptr;
@@ -353,11 +353,11 @@ void yasolr_configure_pid() {
 
   pidController.reset();
 
-  LOGI(TAG, "PID Controller configured");
+  ESP_LOGI(TAG, "PID Controller configured");
 }
 
 void yasolr_init_router() {
-  LOGI(TAG, "Initialize router outputs");
+  ESP_LOGI(TAG, "Initialize router outputs");
 
   // Router
 

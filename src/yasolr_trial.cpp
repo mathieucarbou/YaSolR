@@ -6,7 +6,7 @@
 
 void yasolr_init_trial() {
 #ifdef APP_MODEL_TRIAL
-  LOGI(TAG, "Initialize trial");
+  ESP_LOGI(TAG, "Initialize trial");
 
   Mycila::Trial.begin();
   Mycila::Trial.validate();

@@ -13,11 +13,11 @@ void yasolr_configure_victron() {
   if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
     if (victron == nullptr) {
       if (!config.getString(KEY_VICTRON_MODBUS_SERVER).length()) {
-        LOGE(TAG, "Victron Modbus TCP server is not set");
+        ESP_LOGE(TAG, "Victron Modbus TCP server is not set");
         return;
       }
 
-      LOGI(TAG, "Enable Victron Modbus TCP");
+      ESP_LOGI(TAG, "Enable Victron Modbus TCP");
 
       // Victron class handling Modbus TCP connection
       victron = new Mycila::Victron();
@@ -63,7 +63,7 @@ void yasolr_configure_victron() {
     }
   } else {
     if (victron != nullptr) {
-      LOGI(TAG, "Disable Victron Modbus TCP");
+      ESP_LOGI(TAG, "Disable Victron Modbus TCP");
 
       if (victronConnectTask) {
         unsafeTaskManager.removeTask(*victronConnectTask);

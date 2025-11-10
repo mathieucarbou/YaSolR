@@ -8,13 +8,13 @@ void setup() {
   yasolr_init_logging(); // init logging
   yasolr_init_system();  // init system (safeboot, restart, reset, etc)
 
-  LOGI(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  ESP_LOGI(TAG, "Booting %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   yasolr_init_config();             // load configuration from NVS
   yasolr_init_persistent_logging(); // configure persistent logging if enabled
   yasolr_configure_logging();       // configure logging
 
-  LOGI(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
+  ESP_LOGI(TAG, "Starting %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   yasolr_init_lights();
   yasolr_init_trial();
@@ -53,7 +53,7 @@ void setup() {
 
   // STARTUP READY!
   assert(unsafeTaskManager.asyncStart(4608, 1, 1, 100, true));
-  LOGI(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
+  ESP_LOGI(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // startup finished: do not save logs at next boot
   config.set(KEY_ENABLE_DEBUG_BOOT, YASOLR_FALSE);
