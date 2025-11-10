@@ -9,8 +9,8 @@
 
 Mycila::PID pidController;
 Mycila::Router router(pidController);
-Mycila::RouterOutput output1("output1");
-Mycila::RouterOutput output2("output2");
+Mycila::Router::Output output1("output1");
+Mycila::Router::Output output2("output2");
 
 // ZCD
 Mycila::PulseAnalyzer* pulseAnalyzer = nullptr;

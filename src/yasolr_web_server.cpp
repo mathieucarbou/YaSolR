@@ -479,12 +479,12 @@ void rest_api() {
     JsonObject root = response->getRoot();
 
     Mycila::Router::Metrics routerMeasurements;
-    Mycila::RouterOutput::Metrics outputMeasurements;
+    Mycila::Router::Output::Metrics outputMeasurements;
 
     float gridVoltage = grid.getVoltage().value_or(NAN);
 
     if (!router.readMeasurements(routerMeasurements)) {
-      router.calculateMetrics(routerMeasurements, gridVoltage);
+      router.computeMetrics(routerMeasurements, gridVoltage);
     }
 
     root["lights"] = lights.toString();
@@ -515,8 +515,8 @@ void rest_api() {
       }
 
       if (!output->readMeasurements(outputMeasurements))
-        output->calculateMetrics(outputMeasurements, gridVoltage);
-      Mycila::RouterOutput::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
+        output->computeMetrics(outputMeasurements, gridVoltage);
+      Mycila::Router::Output::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
     }
 
     response->setLength();

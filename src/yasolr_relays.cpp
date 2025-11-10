@@ -80,7 +80,7 @@ void yasolr_init_relays() {
 
     std::optional<float> routedPower = router.readTotalRoutedPower();
     if (!routedPower.has_value()) {
-      routedPower = router.calculateTotalRoutedPower(gridVoltage);
+      routedPower = router.computeTotalRoutedPower(gridVoltage);
     }
 
     if (isnan(gridPower) || isnan(gridVoltage) || !gridVoltage || !routedPower.has_value()) {

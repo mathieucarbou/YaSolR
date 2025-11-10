@@ -40,7 +40,7 @@ namespace YaSolR {
         });
       }
 
-      void _outputDimmerSlider(dash::SliderCard<float, 2>& card, Mycila::RouterOutput& output) {
+      void _outputDimmerSlider(dash::SliderCard<float, 2>& card, Mycila::Router::Output& output) {
         card.onChange([&card, &output, this](float value) {
           output.setDimmerDutyCycle(value / 100.0f);
           card.setValue(output.getDimmerDutyCycle() * 100.0f);
@@ -49,7 +49,7 @@ namespace YaSolR {
         });
       }
 
-      void _outputBypassSwitch(dash::ToggleButtonCard& card, Mycila::RouterOutput& output) {
+      void _outputBypassSwitch(dash::ToggleButtonCard& card, Mycila::Router::Output& output) {
         card.onChange([&card, &output, this](bool value) {
           output.setBypass(value);
           card.setValue(output.isBypassOn());

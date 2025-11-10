@@ -35,7 +35,6 @@
 #include <MycilaPulseAnalyzer.h>
 #include <MycilaRelay.h>
 #include <MycilaRouter.h>
-#include <MycilaRouterOutput.h>
 #include <MycilaString.h>
 #include <MycilaSystem.h>
 #include <MycilaTaskManager.h>
@@ -150,8 +149,8 @@ extern void yasolr_configure_relay2();
 extern Mycila::PID pidController;
 extern Mycila::PulseAnalyzer* pulseAnalyzer;
 extern Mycila::Router router;
-extern Mycila::RouterOutput output1;
-extern Mycila::RouterOutput output2;
+extern Mycila::Router::Output output1;
+extern Mycila::Router::Output output2;
 extern bool yasolr_divert();
 extern void yasolr_init_router();
 extern void yasolr_configure_output1_dimmer();

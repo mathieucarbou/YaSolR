@@ -347,7 +347,7 @@ static void publishData() {
 
   Mycila::Router::Metrics routerMeasurements;
   if (!router.readMeasurements(routerMeasurements)) {
-    router.calculateMetrics(routerMeasurements, gridMetrics.voltage);
+    router.computeMetrics(routerMeasurements, gridMetrics.voltage);
   }
 
   float virtual_grid_power = gridMetrics.power - routerMeasurements.power;

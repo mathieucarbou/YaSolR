@@ -119,7 +119,7 @@ void yasolr_configure_display() {
             case 6: {
               std::optional<float> routedPower = router.readTotalRoutedPower();
               if (!routedPower.has_value()) {
-                routedPower = router.calculateTotalRoutedPower(grid.getVoltage().value_or(NAN));
+                routedPower = router.computeTotalRoutedPower(grid.getVoltage().value_or(NAN));
               }
               display->home.printf("Router P: %9d W", static_cast<int>(std::round(routedPower.value_or(0))));
               wrote = true;

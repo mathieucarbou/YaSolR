@@ -1513,7 +1513,7 @@ void YaSolR::Website::updateCards() {
 
   Mycila::Router::Metrics routerMetrics;
   if (!router.readMeasurements(routerMetrics)) {
-    router.calculateMetrics(routerMetrics, gridMetrics.voltage);
+    router.computeMetrics(routerMetrics, gridMetrics.voltage);
   }
 
   _routerPower.setValue(routerMetrics.power);
@@ -1550,15 +1550,15 @@ void YaSolR::Website::updateCards() {
   // home
 
   switch (output1.getState()) {
-    case Mycila::RouterOutput::State::OUTPUT_DISABLED:
-    case Mycila::RouterOutput::State::OUTPUT_IDLE:
+    case Mycila::Router::Output::State::OUTPUT_DISABLED:
+    case Mycila::Router::Output::State::OUTPUT_IDLE:
       _output1State.setFeedback(output1.getStateName(), dash::Status::INFO);
       break;
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_AUTO:
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_MANUAL:
+    case Mycila::Router::Output::State::OUTPUT_BYPASS_AUTO:
+    case Mycila::Router::Output::State::OUTPUT_BYPASS_MANUAL:
       _output1State.setFeedback(output1.getStateName(), dash::Status::WARNING);
       break;
-    case Mycila::RouterOutput::State::OUTPUT_ROUTING:
+    case Mycila::Router::Output::State::OUTPUT_ROUTING:
       _output1State.setFeedback(output1.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output1.getDimmerDutyCycleOnline() * 100.0f)) + " %", dash::Status::SUCCESS);
       break;
     default:
@@ -1570,15 +1570,15 @@ void YaSolR::Website::updateCards() {
   _output1Bypass.setValue(output1.isBypassOn());
 
   switch (output2.getState()) {
-    case Mycila::RouterOutput::State::OUTPUT_DISABLED:
-    case Mycila::RouterOutput::State::OUTPUT_IDLE:
+    case Mycila::Router::Output::State::OUTPUT_DISABLED:
+    case Mycila::Router::Output::State::OUTPUT_IDLE:
       _output2State.setFeedback(output2.getStateName(), dash::Status::INFO);
       break;
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_AUTO:
-    case Mycila::RouterOutput::State::OUTPUT_BYPASS_MANUAL:
+    case Mycila::Router::Output::State::OUTPUT_BYPASS_AUTO:
+    case Mycila::Router::Output::State::OUTPUT_BYPASS_MANUAL:
       _output2State.setFeedback(output2.getStateName(), dash::Status::WARNING);
       break;
-    case Mycila::RouterOutput::State::OUTPUT_ROUTING:
+    case Mycila::Router::Output::State::OUTPUT_ROUTING:
       _output2State.setFeedback(output2.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output2.getDimmerDutyCycleOnline() * 100.0f)) + " %", dash::Status::SUCCESS);
       break;
     default:
@@ -1594,7 +1594,7 @@ void YaSolR::Website::updateCards() {
   if (relay1) {
     _relay1Switch.setValue(relay1->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay1->getLoad(gridMetrics.voltage);
+    uint16_t load = relay1->computeLoad(gridMetrics.voltage);
     _relay1Switch.setMessage(relay1->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }
@@ -1602,7 +1602,7 @@ void YaSolR::Website::updateCards() {
   if (relay2) {
     _relay2Switch.setValue(relay2->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay2->getLoad(gridMetrics.voltage);
+    uint16_t load = relay2->computeLoad(gridMetrics.voltage);
     _relay2Switch.setMessage(relay2->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }
@@ -1636,9 +1636,9 @@ void YaSolR::Website::updateCards() {
 #ifdef APP_MODEL_PRO
   // tab: output 1
 
-  Mycila::RouterOutput::Metrics output1Measurements;
+  Mycila::Router::Output::Metrics output1Measurements;
   if (!output1.readMeasurements(output1Measurements))
-    output1.calculateMetrics(output1Measurements, gridMetrics.voltage);
+    output1.computeMetrics(output1Measurements, gridMetrics.voltage);
 
   _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleOnline() * 100.0f);
   _output1Power.setValue(output1Measurements.power);
@@ -1657,9 +1657,9 @@ void YaSolR::Website::updateCards() {
 
   // tab: output 2
 
-  Mycila::RouterOutput::Metrics output2Measurements;
+  Mycila::Router::Output::Metrics output2Measurements;
   if (!output2.readMeasurements(output2Measurements))
-    output2.calculateMetrics(output2Measurements, gridMetrics.voltage);
+    output2.computeMetrics(output2Measurements, gridMetrics.voltage);
 
   _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleOnline() * 100.0f);
   _output2Power.setValue(output2Measurements.power);
@@ -1840,7 +1840,7 @@ void YaSolR::Website::updateCharts() {
   // set new value
   std::optional<float> routedPower = router.readTotalRoutedPower();
   if (!routedPower.has_value()) {
-    routedPower = router.calculateTotalRoutedPower(grid.getVoltage().value_or(NAN));
+    routedPower = router.computeTotalRoutedPower(grid.getVoltage().value_or(NAN));
   }
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routedPower.value_or(0));
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
@@ -1851,12 +1851,12 @@ void YaSolR::Website::updateCharts() {
 
 #ifdef APP_MODEL_PRO
   // harmonics
-  output1.calculateHarmonics(_output1HarmonicLevelY, 11);
-  output2.calculateHarmonics(_output2HarmonicLevelsY, 11);
+  output1.computeHarmonics(_output1HarmonicLevelY, 11);
+  output2.computeHarmonics(_output2HarmonicLevelsY, 11);
 
   std::optional<float> h1Current = output1.readRoutedCurrent();
   if (!h1Current.has_value()) {
-    h1Current = output1.calculateRoutedCurrent(grid.getVoltage().value_or(NAN));
+    h1Current = output1.computeRoutedCurrent(grid.getVoltage().value_or(NAN));
   }
   for (size_t i = 0; i < 11; i++) {
     _output1HarmonicCurrentY[i] = h1Current.value_or(0) * _output1HarmonicLevelY[i] / 100.0f;
@@ -1864,7 +1864,7 @@ void YaSolR::Website::updateCharts() {
 
   h1Current = output2.readRoutedCurrent();
   if (!h1Current.has_value()) {
-    h1Current = output2.calculateRoutedCurrent(grid.getVoltage().value_or(NAN));
+    h1Current = output2.computeRoutedCurrent(grid.getVoltage().value_or(NAN));
   }
   for (size_t i = 0; i < 11; i++) {
     _output2HarmonicCurrentY[i] = h1Current.value_or(0) * _output2HarmonicLevelsY[i] / 100.0f;
