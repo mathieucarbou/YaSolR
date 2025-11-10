@@ -97,7 +97,7 @@ static void start_task_manager() {
 
     jsyTaskManager->addTask(*jsyTask);
 
-    assert(jsyTaskManager->asyncStart(4096, 1, 0, 100, true));
+    assert(jsyTaskManager->asyncStart(2048, 1, 0, 100, true));
     Mycila::TaskMonitor.addTask(jsyTaskManager->name());
   }
 }
