@@ -48,7 +48,8 @@ static void onData(AsyncUDPPacket packet) {
     case MYCILA_JSY_MK_163:
     case MYCILA_JSY_MK_227:
     case MYCILA_JSY_MK_229: {
-      grid.metrics(Mycila::Grid::Source::JSY_REMOTE).update({
+      grid.updateMetrics({
+        .source = Mycila::Grid::Source::JSY_REMOTE,
         .apparentPower = doc["apparent_power"] | NAN,
         .current = doc["current"] | NAN,
         .energy = doc["active_energy_imported"] | static_cast<uint32_t>(0),
@@ -62,7 +63,8 @@ static void onData(AsyncUDPPacket packet) {
     }
     case MYCILA_JSY_MK_193:
     case MYCILA_JSY_MK_194: {
-      grid.metrics(Mycila::Grid::Source::JSY_REMOTE).update({
+      grid.updateMetrics({
+        .source = Mycila::Grid::Source::JSY_REMOTE,
         .apparentPower = doc["channel2"]["apparent_power"] | NAN,
         .current = doc["channel2"]["current"] | NAN,
         .energy = doc["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0),
@@ -72,12 +74,12 @@ static void onData(AsyncUDPPacket packet) {
         .powerFactor = doc["channel2"]["power_factor"] | NAN,
         .voltage = doc["channel2"]["voltage"] | NAN,
       });
-      router.metrics().update({
+      router.updateMetrics({
         .source = Mycila::Router::Source::JSY_REMOTE,
         .apparentPower = doc["channel1"]["apparent_power"] | 0.0f,
         .current = doc["channel1"]["current"] | 0.0f,
         .energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)), // if the clamp is installed reversed
-        .power = std::abs(doc["channel1"]["active_power"] | 0.0f),                                                                                         // if the clamp is installed reversed
+        .power = std::abs(doc["channel1"]["active_power"] | 0.0f),                                                                                        // if the clamp is installed reversed
         .powerFactor = doc["channel1"]["power_factor"] | NAN,
         .resistance = doc["channel1"]["resistance"] | NAN,
         .thdi = doc["channel1"]["thdi_0"] | NAN,
@@ -87,7 +89,8 @@ static void onData(AsyncUDPPacket packet) {
     }
     case MYCILA_JSY_MK_333: {
       JsonObject aggregate = doc["aggregate"].as<JsonObject>();
-      grid.metrics(Mycila::Grid::Source::JSY_REMOTE).update({
+      grid.updateMetrics({
+        .source = Mycila::Grid::Source::JSY_REMOTE,
         .apparentPower = aggregate["apparent_power"] | NAN,
         .current = aggregate["current"] | NAN,
         .energy = aggregate["active_energy_imported"] | static_cast<uint32_t>(0),
@@ -115,8 +118,6 @@ void yasolr_configure_jsy_remote() {
 
       udp = new AsyncUDP();
       udp->onPacket(onData);
-
-      grid.metrics(Mycila::Grid::Source::JSY_REMOTE).setExpiration(10000);
 
       udpMessageRateBuffer = new Mycila::CircularBuffer<float, 15>();
 

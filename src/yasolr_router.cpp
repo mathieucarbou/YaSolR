@@ -359,10 +359,6 @@ void yasolr_configure_pid() {
 void yasolr_init_router() {
   ESP_LOGI(TAG, "Initialize router outputs");
 
-  // Router
-
-  router.metrics().setExpiration(10000); // aggregated metrics for all outputs from JSY local or remote (fast)
-
   // outputs
   dimmer1 = new Mycila::Dimmer();
   dimmer2 = new Mycila::Dimmer();
@@ -384,7 +380,6 @@ void yasolr_init_router() {
   output1.config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
   output1.config.excessPowerRatio = config.getFloat(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
   output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
-  output1.metrics().setExpiration(10000);                                  // local is fast
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // configure output 2
@@ -400,7 +395,6 @@ void yasolr_init_router() {
   output2.config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);
   output2.config.excessPowerRatio = config.getFloat(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;
   output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
-  output2.metrics().setExpiration(10000);                                  // local is fast
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // Routing Tasks

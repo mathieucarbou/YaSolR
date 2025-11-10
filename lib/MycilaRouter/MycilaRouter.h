@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <cstdio>
 #include <string>
+#include <utility>
 #include <vector>
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -140,7 +141,9 @@ namespace Mycila {
               float excessPowerRatio = 0.0f;
           } Config;
 
-          explicit Output(const char* name) : _name(name) {}
+          explicit Output(const char* name) : _name(name) {
+            _metrics.setExpiration(10000);
+          }
 
           // dimmer is mandatory
           void setDimmer(Dimmer* dimmer) { _dimmer = dimmer; }
@@ -236,13 +239,16 @@ namespace Mycila {
 
           // metrics
 
-          ExpiringValue<Metrics>& metrics() { return _metrics; }
+          void updateMetrics(Metrics metrics) {
+            _metrics.update(std::move(metrics));
+          }
 
           bool readMeasurements(Metrics& metrics) const {
             if (_metrics.isPresent()) {
               if (getState() == State::ROUTING) {
                 memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
               } else {
+                metrics.source = _metrics.get().source;
                 metrics.energy = _metrics.get().energy;
               }
               return true;
@@ -357,14 +363,12 @@ namespace Mycila {
       // Router //
       ////////////
 
-      explicit Router(PID& pidController) : _pidController(&pidController) {}
+      explicit Router(PID& pidController) : _pidController(&pidController) {
+        _metrics.setExpiration(10000);
+      }
 
       void addOutput(Output& output) { _outputs.push_back(&output); }
       const std::vector<Output*>& getOutputs() const { return _outputs; }
-
-      // aggregated measurements for all outputs combined, if available
-      ExpiringValue<Metrics>& metrics() { return _metrics; }
-      const ExpiringValue<Metrics>& metrics() const { return _metrics; }
 
       bool isAutoDimmerEnabled() const {
         for (const auto& output : _outputs) {
@@ -406,6 +410,10 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float voltage) const;
 #endif
+
+      void updateMetrics(Metrics metrics) {
+        _metrics.update(std::move(metrics));
+      }
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
       bool readMeasurements(Metrics& metrics) const {

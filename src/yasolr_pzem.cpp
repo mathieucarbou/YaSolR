@@ -32,8 +32,6 @@ static void init_read_task() {
     if (config.getBool(KEY_ENABLE_DEBUG)) {
       pzemTask->enableProfiling();
     }
-
-    grid.metrics(Mycila::Grid::Source::PZEM).setExpiration(10000);
   }
 }
 
@@ -58,7 +56,8 @@ void yasolr_configure_output1_pzem() {
       if (pzemO1->isEnabled()) {
         pzemO1->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            grid.metrics(Mycila::Grid::Source::PZEM).update({
+            grid.updateMetrics({
+              .source = Mycila::Grid::Source::PZEM,
               .apparentPower = NAN,
               .current = NAN,
               .energy = 0,
@@ -68,7 +67,7 @@ void yasolr_configure_output1_pzem() {
               .powerFactor = NAN,
               .voltage = data.voltage,
             });
-            output1.metrics().update({
+            output1.updateMetrics({
               .source = Mycila::Router::Source::PZEM,
               .apparentPower = data.apparentPower,
               .current = data.current,
@@ -171,7 +170,8 @@ void yasolr_configure_output2_pzem() {
       if (pzemO2->isEnabled()) {
         pzemO2->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            grid.metrics(Mycila::Grid::Source::PZEM).update({
+            grid.updateMetrics({
+              .source = Mycila::Grid::Source::PZEM,
               .apparentPower = NAN,
               .current = NAN,
               .energy = 0,
@@ -181,7 +181,7 @@ void yasolr_configure_output2_pzem() {
               .powerFactor = NAN,
               .voltage = data.voltage,
             });
-            output2.metrics().update({
+            output2.updateMetrics({
               .source = Mycila::Router::Source::PZEM,
               .apparentPower = data.apparentPower,
               .current = data.current,

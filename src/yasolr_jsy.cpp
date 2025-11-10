@@ -22,7 +22,8 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
       case MYCILA_JSY_MK_163:
       case MYCILA_JSY_MK_227:
       case MYCILA_JSY_MK_229:
-        grid.metrics(Mycila::Grid::Source::JSY).update({
+        grid.updateMetrics({
+          .source = Mycila::Grid::Source::JSY,
           .apparentPower = data.single().apparentPower,
           .current = data.single().current,
           .energy = data.single().activeEnergyImported,
@@ -36,7 +37,8 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
 
       case MYCILA_JSY_MK_193:
       case MYCILA_JSY_MK_194:
-        grid.metrics(Mycila::Grid::Source::JSY).update({
+        grid.updateMetrics({
+          .source = Mycila::Grid::Source::JSY,
           .apparentPower = data.channel2().apparentPower,
           .current = data.channel2().current,
           .energy = data.channel2().activeEnergyImported,
@@ -46,7 +48,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
           .powerFactor = data.channel2().powerFactor,
           .voltage = data.channel2().voltage,
         });
-        router.metrics().update({
+        router.updateMetrics({
           .source = Mycila::Router::Source::JSY,
           .apparentPower = data.channel1().apparentPower,
           .current = data.channel1().current,
@@ -60,7 +62,8 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
         break;
 
       case MYCILA_JSY_MK_333:
-        grid.metrics(Mycila::Grid::Source::JSY).update({
+        grid.updateMetrics({
+          .source = Mycila::Grid::Source::JSY,
           .apparentPower = data.aggregate.apparentPower,
           .current = data.aggregate.current,
           .energy = data.aggregate.activeEnergyImported,
@@ -136,8 +139,6 @@ void yasolr_configure_jsy() {
 
       if (jsy->getBaudRate() != jsy->getMaxAvailableBaudRate())
         jsy->setBaudRate(jsy->getMaxAvailableBaudRate());
-
-      grid.metrics(Mycila::Grid::Source::JSY).setExpiration(10000);
 
       jsyData = new Mycila::JSY::Data();
       jsy->setCallback(jsy_callback);

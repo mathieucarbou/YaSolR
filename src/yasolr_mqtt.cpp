@@ -139,7 +139,6 @@ static void subscribe() {
   const char* gridPowerMQTTTopic = config.get(KEY_GRID_POWER_MQTT_TOPIC);
   if (gridPowerMQTTTopic[0] != '\0') {
     ESP_LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
-    grid.metrics(Mycila::Grid::Source::MQTT).setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
     mqtt->subscribe(gridPowerMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       if (payload.length()) {
         float p = NAN;
@@ -164,7 +163,8 @@ static void subscribe() {
         if (!isnan(p)) {
           ESP_LOGI(TAG, "Grid Power from MQTT: %f", p);
           power->update(p);
-          grid.metrics(Mycila::Grid::Source::MQTT).update({
+          grid.updateMetrics({
+            .source = Mycila::Grid::Source::MQTT,
             .apparentPower = NAN,
             .current = NAN,
             .energy = 0,
@@ -186,7 +186,6 @@ static void subscribe() {
   const char* gridVoltageMQTTTopic = config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC);
   if (gridVoltageMQTTTopic[0] != '\0') {
     ESP_LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
-    grid.metrics(Mycila::Grid::Source::MQTT).setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
     mqtt->subscribe(gridVoltageMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
       if (payload.length()) {
         float v = NAN;
@@ -211,7 +210,8 @@ static void subscribe() {
         if (!isnan(v)) {
           ESP_LOGI(TAG, "Grid Voltage from MQTT: %f", v);
           voltage->update(v);
-          grid.metrics(Mycila::Grid::Source::MQTT).update({
+          grid.updateMetrics({
+            .source = Mycila::Grid::Source::MQTT,
             .apparentPower = NAN,
             .current = NAN,
             .energy = 0,

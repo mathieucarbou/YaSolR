@@ -7,6 +7,7 @@
 #include <MycilaExpiringValue.h>
 
 #include <optional>
+#include <utility>
 
 #ifdef MYCILA_JSON_SUPPORT
   #include <ArduinoJson.h>
@@ -16,6 +17,7 @@ namespace Mycila {
   class Grid {
     public:
       enum class Source {
+        UNKNOWN,
         JSY,
         JSY_REMOTE,
         MQTT,
@@ -24,6 +26,7 @@ namespace Mycila {
       };
 
       typedef struct {
+          Source source = Source::UNKNOWN;
           float apparentPower = NAN;
           float current = NAN;
           uint32_t energy = 0;
@@ -63,40 +66,50 @@ namespace Mycila {
         }
       }
 
-      ExpiringValue<Metrics>& metrics(Source source) {
-        switch (source) {
+      void updateMetrics(Metrics metrics) {
+        switch (metrics.source) {
           case Source::JSY: {
             if (_jsyMetrics == nullptr) {
               _jsyMetrics = new ExpiringValue<Metrics>();
+              _jsyMetrics->setExpiration(10000);
             }
-            return *_jsyMetrics;
+            _jsyMetrics->update(std::move(metrics));
+            break;
           }
           case Source::JSY_REMOTE: {
             if (_jsyRemoteMetrics == nullptr) {
               _jsyRemoteMetrics = new ExpiringValue<Metrics>();
+              _jsyRemoteMetrics->setExpiration(10000);
             }
-            return *_jsyRemoteMetrics;
+            _jsyRemoteMetrics->update(std::move(metrics));
+            break;
           }
           case Source::MQTT: {
             if (_mqttMetrics == nullptr) {
               _mqttMetrics = new ExpiringValue<Metrics>();
+              _mqttMetrics->setExpiration(60000);
             }
-            return *_mqttMetrics;
+            _mqttMetrics->update(std::move(metrics));
+            break;
           }
           case Source::PZEM: {
             if (_pzemMetrics == nullptr) {
               _pzemMetrics = new ExpiringValue<Metrics>();
+              _pzemMetrics->setExpiration(10000);
             }
-            return *_pzemMetrics;
+            _pzemMetrics->update(std::move(metrics));
+            break;
           }
           case Source::VICTRON: {
             if (_victronMetrics == nullptr) {
               _victronMetrics = new ExpiringValue<Metrics>();
+              _victronMetrics->setExpiration(10000);
             }
-            return *_victronMetrics;
+            _victronMetrics->update(std::move(metrics));
+            break;
           }
           default:
-            throw std::runtime_error("Unknown Grid Source");
+            break;
         }
       }
 
@@ -227,53 +240,60 @@ namespace Mycila {
           delete measurements;
         }
 
-        JsonObject mqtt = root["source"]["mqtt"].to<JsonObject>();
+        JsonArray sources = root["sources"].to<JsonArray>();
+
         if (_mqttMetrics != nullptr && _mqttMetrics->isPresent()) {
-          mqtt["enabled"] = true;
-          mqtt["time"] = _mqttMetrics->getLastUpdateTime();
+          JsonObject mqtt = sources.add<JsonObject>();
           toJson(mqtt, _mqttMetrics->get());
-        } else {
-          mqtt["enabled"] = false;
+          mqtt["time"] = _mqttMetrics->getLastUpdateTime();
         }
 
-        JsonObject victron = root["source"]["victron"].to<JsonObject>();
         if (_victronMetrics != nullptr && _victronMetrics->isPresent()) {
-          victron["enabled"] = true;
-          victron["time"] = _victronMetrics->getLastUpdateTime();
+          JsonObject victron = sources.add<JsonObject>();
           toJson(victron, _victronMetrics->get());
-        } else {
-          victron["enabled"] = false;
+          victron["time"] = _victronMetrics->getLastUpdateTime();
         }
 
-        JsonObject jsyRemote = root["source"]["jsy_remote"].to<JsonObject>();
         if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent()) {
-          jsyRemote["enabled"] = true;
-          jsyRemote["time"] = _jsyRemoteMetrics->getLastUpdateTime();
+          JsonObject jsyRemote = sources.add<JsonObject>();
           toJson(jsyRemote, _jsyRemoteMetrics->get());
-        } else {
-          jsyRemote["enabled"] = false;
+          jsyRemote["time"] = _jsyRemoteMetrics->getLastUpdateTime();
         }
 
-        JsonObject jsy = root["source"]["jsy"].to<JsonObject>();
         if (_jsyMetrics != nullptr && _jsyMetrics->isPresent()) {
-          jsy["enabled"] = true;
-          jsy["time"] = _jsyMetrics->getLastUpdateTime();
+          JsonObject jsy = sources.add<JsonObject>();
           toJson(jsy, _jsyMetrics->get());
-        } else {
-          jsy["enabled"] = false;
+          jsy["time"] = _jsyMetrics->getLastUpdateTime();
         }
 
-        JsonObject pzem = root["source"]["pzem"].to<JsonObject>();
         if (_pzemMetrics != nullptr && _pzemMetrics->isPresent()) {
-          pzem["enabled"] = true;
-          pzem["time"] = _pzemMetrics->getLastUpdateTime();
+          JsonObject pzem = sources.add<JsonObject>();
           toJson(pzem, _pzemMetrics->get());
-        } else {
-          pzem["enabled"] = false;
+          pzem["time"] = _pzemMetrics->getLastUpdateTime();
         }
       }
 
       static void toJson(const JsonObject& dest, const Metrics& metrics) {
+        switch (metrics.source) {
+          case Source::JSY:
+            dest["source"] = "jsy";
+            break;
+          case Source::JSY_REMOTE:
+            dest["source"] = "jsy_remote";
+            break;
+          case Source::MQTT:
+            dest["source"] = "mqtt";
+            break;
+          case Source::PZEM:
+            dest["source"] = "pzem";
+            break;
+          case Source::VICTRON:
+            dest["source"] = "victron";
+            break;
+          default:
+            dest["source"] = "unknown";
+            break;
+        }
         if (!std::isnan(metrics.apparentPower))
           dest["apparent_power"] = metrics.apparentPower;
         if (!std::isnan(metrics.current))

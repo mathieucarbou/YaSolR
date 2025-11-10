@@ -6,6 +6,9 @@
 
 #include <MycilaUtilities.h>
 
+#include <string>
+#include <utility>
+
 #define TAG "ROUTER"
 
 /////////////
@@ -138,20 +141,19 @@ void Mycila::Router::Output::toJson(const JsonObject& root, float gridVoltage) c
     delete metrics;
   }
 
+  JsonArray sources = root["sources"].to<JsonArray>();
+
   {
     Metrics* metrics = new Metrics();
     computeMetrics(*metrics, gridVoltage);
-    Router::toJson(root["metrics"].to<JsonObject>(), *metrics);
+    Router::toJson(sources.add<JsonObject>(), *metrics);
     delete metrics;
   }
 
-  JsonObject source = root["source"].to<JsonObject>();
   if (_metrics.isPresent()) {
-    source["enabled"] = true;
-    source["time"] = _metrics.getLastUpdateTime();
+    JsonObject source = sources.add<JsonObject>();
     Router::toJson(source, _metrics.get());
-  } else {
-    source["enabled"] = false;
+    source["time"] = _metrics.getLastUpdateTime();
   }
 
   _dimmer->toJson(root["dimmer"].to<JsonObject>());
@@ -374,21 +376,27 @@ void Mycila::Router::Output::_switchBypass(bool state, bool log) {
 ////////////
 
 #ifdef MYCILA_JSON_SUPPORT
-void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
+void Mycila::Router::toJson(const JsonObject& root, float gridVoltage) const {
   {
     Metrics* routerMeasurements = new Metrics();
     readMeasurements(*routerMeasurements);
-    toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+    Router::toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
     delete routerMeasurements;
   }
 
-  JsonObject source = root["source"].to<JsonObject>();
+  JsonArray sources = root["sources"].to<JsonArray>();
+
+  {
+    Metrics* metrics = new Metrics();
+    computeMetrics(*metrics, gridVoltage);
+    Router::toJson(sources.add<JsonObject>(), *metrics);
+    delete metrics;
+  }
+
   if (_metrics.isPresent()) {
-    source["enabled"] = true;
+    JsonObject source = sources.add<JsonObject>();
+    Router::toJson(source, _metrics.get());
     source["time"] = _metrics.getLastUpdateTime();
-    toJson(source, _metrics.get());
-  } else {
-    source["enabled"] = false;
   }
 }
 #endif
