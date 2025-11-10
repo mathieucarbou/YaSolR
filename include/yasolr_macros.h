@@ -92,7 +92,7 @@
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR-Pro/releases/"
 #else
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR/releases/"
-#endif 
+#endif
 
 // UART
 
