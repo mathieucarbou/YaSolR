@@ -5,14 +5,14 @@
 #include <yasolr.h>
 #include <yasolr_dashboard.h>
 
-Mycila::RouterRelay* relay1 = nullptr;
-Mycila::RouterRelay* relay2 = nullptr;
+Mycila::Router::Relay* relay1 = nullptr;
+Mycila::Router::Relay* relay2 = nullptr;
 
 void yasolr_configure_relay1() {
   if (config.getBool(KEY_ENABLE_RELAY1)) {
     if (relay1 == nullptr) {
       ESP_LOGI(TAG, "Enable Relay 1");
-      relay1 = new Mycila::RouterRelay();
+      relay1 = new Mycila::Router::Relay();
       relay1->relay().begin(config.getLong(KEY_PIN_RELAY1), config.isEqual(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
       if (relay1->relay().isEnabled()) {
         relay1->setNominalLoad(config.getLong(KEY_RELAY1_LOAD));
@@ -43,7 +43,7 @@ void yasolr_configure_relay2() {
   if (config.getBool(KEY_ENABLE_RELAY2)) {
     if (relay2 == nullptr) {
       ESP_LOGI(TAG, "Enable Relay 2");
-      relay2 = new Mycila::RouterRelay();
+      relay2 = new Mycila::Router::Relay();
       relay2->relay().begin(config.getLong(KEY_PIN_RELAY2), config.isEqual(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
       if (relay2->relay().isEnabled()) {
         relay2->setNominalLoad(config.getLong(KEY_RELAY2_LOAD));

@@ -36,7 +36,6 @@
 #include <MycilaRelay.h>
 #include <MycilaRouter.h>
 #include <MycilaRouterOutput.h>
-#include <MycilaRouterRelay.h>
 #include <MycilaString.h>
 #include <MycilaSystem.h>
 #include <MycilaTaskManager.h>
@@ -141,8 +140,8 @@ extern void yasolr_init_system();
 extern void yasolr_init_trial();
 
 // Relays
-extern Mycila::RouterRelay* relay1;
-extern Mycila::RouterRelay* relay2;
+extern Mycila::Router::Relay* relay1;
+extern Mycila::Router::Relay* relay2;
 extern void yasolr_init_relays();
 extern void yasolr_configure_relay1();
 extern void yasolr_configure_relay2();
