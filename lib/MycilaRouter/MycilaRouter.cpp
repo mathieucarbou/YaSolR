@@ -131,13 +131,19 @@ void Mycila::Router::Output::toJson(const JsonObject& root, float gridVoltage) c
     root["temperature"] = t;
   }
 
-  Metrics metrics;
+  {
+    Metrics* metrics = new Metrics();
+    readMeasurements(*metrics);
+    Router::toJson(root["measurements"].to<JsonObject>(), *metrics);
+    delete metrics;
+  }
 
-  readMeasurements(metrics);
-  Router::toJson(root["measurements"].to<JsonObject>(), metrics);
-
-  computeMetrics(metrics, gridVoltage);
-  Router::toJson(root["metrics"].to<JsonObject>(), metrics);
+  {
+    Metrics* metrics = new Metrics();
+    computeMetrics(*metrics, gridVoltage);
+    Router::toJson(root["metrics"].to<JsonObject>(), *metrics);
+    delete metrics;
+  }
 
   JsonObject source = root["source"].to<JsonObject>();
   if (_metrics.isPresent()) {
@@ -369,9 +375,12 @@ void Mycila::Router::Output::_switchBypass(bool state, bool log) {
 
 #ifdef MYCILA_JSON_SUPPORT
 void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
-  Metrics routerMeasurements;
-  readMeasurements(routerMeasurements);
-  toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
+  {
+    Metrics* routerMeasurements = new Metrics();
+    readMeasurements(*routerMeasurements);
+    toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+    delete routerMeasurements;
+  }
 
   JsonObject source = root["source"].to<JsonObject>();
   if (_metrics.isPresent()) {

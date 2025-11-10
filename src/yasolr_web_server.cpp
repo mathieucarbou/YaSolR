@@ -395,9 +395,10 @@ void rest_api() {
   webServer.on("/api/grid", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
-    Mycila::Grid::Metrics metrics;
-    grid.readMeasurements(metrics);
-    Mycila::Grid::toJson(root, metrics);
+    Mycila::Grid::Metrics* metrics = new Mycila::Grid::Metrics();
+    grid.readMeasurements(*metrics);
+    Mycila::Grid::toJson(root, *metrics);
+    delete metrics;
     response->setLength();
     request->send(response);
   });
@@ -478,13 +479,6 @@ void rest_api() {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
 
-    float gridVoltage = grid.getVoltage().value_or(NAN);
-
-    Mycila::Router::Metrics routerMeasurements;
-    if (!router.readMeasurements(routerMeasurements)) {
-      router.computeMetrics(routerMeasurements, gridVoltage);
-    }
-
     root["lights"] = lights.toString();
     if (relay1)
       root["relay1"] = YASOLR_STATE(relay1->isOn());
@@ -495,11 +489,20 @@ void rest_api() {
       if (!std::isnan(t))
         root["temperature"] = t;
     }
-    float virtual_grid_power = grid.getPower().value_or(NAN) - routerMeasurements.power;
+
+    const float gridVoltage = grid.getVoltage().value_or(NAN);
+
+    Mycila::Router::Metrics* routerMeasurements = new Mycila::Router::Metrics();
+    if (!router.readMeasurements(*routerMeasurements)) {
+      router.computeMetrics(*routerMeasurements, gridVoltage);
+    }
+
+    const float virtual_grid_power = grid.getPower().value_or(NAN) - routerMeasurements->power;
     if (!std::isnan(virtual_grid_power))
       root["virtual_grid_power"] = virtual_grid_power;
 
-    Mycila::Router::toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
+    Mycila::Router::toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+    delete routerMeasurements;
 
     for (const auto& output : router.getOutputs()) {
       JsonObject json = root[output->getName()].to<JsonObject>();
@@ -512,10 +515,11 @@ void rest_api() {
         json["temperature"] = t;
       }
 
-      Mycila::Router::Metrics outputMeasurements;
-      if (!output->readMeasurements(outputMeasurements))
-        output->computeMetrics(outputMeasurements, gridVoltage);
-      Mycila::Router::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
+      Mycila::Router::Metrics* outputMeasurements = new Mycila::Router::Metrics();
+      if (!output->readMeasurements(*outputMeasurements))
+        output->computeMetrics(*outputMeasurements, gridVoltage);
+      Mycila::Router::toJson(json["measurements"].to<JsonObject>(), *outputMeasurements);
+      delete outputMeasurements;
     }
 
     response->setLength();
