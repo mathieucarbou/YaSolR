@@ -62,16 +62,16 @@ static constexpr const char* ERR_VICTRON_COM = "Victron communication error: mor
 // tabs are declared early in order to have the smallest IDs that never change
 static dash::Tab _output1Tab(dashboard, YASOLR_LBL_046, dash::Icon::ZAP_ICON);
 static dash::Tab _output2Tab(dashboard, YASOLR_LBL_070, dash::Icon::ZAP_ICON);
-static dash::Tab _pidTab(dashboard, YASOLR_LBL_159, dash::Icon::RECYCLE_ICON);
-static dash::Tab _networkTab(dashboard, YASOLR_LBL_087, dash::Icon::WIFI_ICON);
-static dash::Tab _ntpTab(dashboard, YASOLR_LBL_158, dash::Icon::CLOCK_ICON);
-static dash::Tab _mqttTab(dashboard, YASOLR_LBL_095, dash::Icon::CLOUD_UPLOAD_ICON);
-static dash::Tab _gpioTab(dashboard, YASOLR_LBL_108, dash::Icon::CABLE_ICON);
-static dash::Tab _hardwareConfigTab(dashboard, YASOLR_LBL_177, dash::Icon::CPU_ICON);
+static const dash::Tab _pidTab(dashboard, YASOLR_LBL_159, dash::Icon::RECYCLE_ICON);
+static const dash::Tab _networkTab(dashboard, YASOLR_LBL_087, dash::Icon::WIFI_ICON);
+static const dash::Tab _ntpTab(dashboard, YASOLR_LBL_158, dash::Icon::CLOCK_ICON);
+static const dash::Tab _mqttTab(dashboard, YASOLR_LBL_095, dash::Icon::CLOUD_UPLOAD_ICON);
+static const dash::Tab _gpioTab(dashboard, YASOLR_LBL_108, dash::Icon::CABLE_ICON);
+static const dash::Tab _hardwareConfigTab(dashboard, YASOLR_LBL_177, dash::Icon::CPU_ICON);
 static dash::Tab _output1ConfigTab(dashboard, YASOLR_LBL_138, dash::Icon::COG_ICON);
 static dash::Tab _output2ConfigTab(dashboard, YASOLR_LBL_139, dash::Icon::COG_ICON);
-static dash::Tab _systemTab(dashboard, YASOLR_LBL_078, dash::Icon::MONITOR_COG_ICON);
-static dash::Tab _debugTab(dashboard, YASOLR_LBL_083, dash::Icon::BUG_ICON);
+static const dash::Tab _systemTab(dashboard, YASOLR_LBL_078, dash::Icon::MONITOR_COG_ICON);
+static const dash::Tab _debugTab(dashboard, YASOLR_LBL_083, dash::Icon::BUG_ICON);
 
 #endif
 

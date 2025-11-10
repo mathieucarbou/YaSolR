@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-Mycila::Task versionCheckTask("Version Check", [](void* params) {
+Mycila::Task versionCheckTask("Version Check", []() {
   ESP_LOGI(TAG, "Checking latest YaSolR version...");
 
   NetworkClientSecure* client = new NetworkClientSecure();

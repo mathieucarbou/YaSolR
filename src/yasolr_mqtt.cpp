@@ -531,11 +531,11 @@ void yasolr_configure_mqtt() {
       power = new Mycila::ExpiringValue<float>(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
 
       mqtt = new Mycila::MQTT();
-      mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, [](void* params) { connect(); });
-      mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, [](void* params) { publishConfig(); });
-      mqttPublishStaticTask = new Mycila::Task("MQTT Publish Static Data", Mycila::Task::Type::ONCE, [](void* params) { publishStaticData(); });
-      mqttPublishTask = new Mycila::Task("MQTT Publish", [](void* params) { publishData(); });
-      haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::Task::Type::ONCE, [](void* params) { haDiscovery(); });
+      mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, []() { connect(); });
+      mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, []() { publishConfig(); });
+      mqttPublishStaticTask = new Mycila::Task("MQTT Publish Static Data", Mycila::Task::Type::ONCE, []() { publishStaticData(); });
+      mqttPublishTask = new Mycila::Task("MQTT Publish", []() { publishData(); });
+      haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::Task::Type::ONCE, []() { haDiscovery(); });
 
       mqtt->onConnect([](void) {
         ESP_LOGI(TAG, "MQTT connected!");

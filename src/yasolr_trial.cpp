@@ -11,7 +11,7 @@ void yasolr_init_trial() {
   Mycila::Trial.begin();
   Mycila::Trial.validate();
 
-  Mycila::Task* trialTask = new Mycila::Task("Trial", [](void* params) { Mycila::Trial.validate(); });
+  Mycila::Task* trialTask = new Mycila::Task("Trial", []() { Mycila::Trial.validate(); });
   trialTask->setInterval(30000);
   coreTaskManager.addTask(*trialTask);
 #endif

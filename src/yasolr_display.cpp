@@ -40,7 +40,7 @@ void yasolr_configure_display() {
 
       display->setActive(true);
 
-      displayTask = new Mycila::Task("Display", [](void* params) {
+      displayTask = new Mycila::Task("Display", []() {
         if (lastDisplayUpdate && millis() - lastDisplayUpdate < config.getLong(KEY_DISPLAY_SPEED) * 1000)
           return;
 

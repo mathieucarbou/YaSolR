@@ -117,7 +117,7 @@ void yasolr_configure_output2_ds18() {
 void yasolr_init_ds18() {
   ESP_LOGI(TAG, "Initialize DS18 reading task");
 
-  Mycila::Task* ds18Task = new Mycila::Task("DS18", [](void* params) {
+  Mycila::Task* ds18Task = new Mycila::Task("DS18", []() {
     if (ds18Sys) {
       ds18Sys->read();
       yield();

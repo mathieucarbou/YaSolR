@@ -73,7 +73,7 @@ void yasolr_configure_relay2() {
 void yasolr_init_relays() {
   ESP_LOGI(TAG, "Initialize relays");
 
-  Mycila::Task* relayTask = new Mycila::Task("Relay", [](void* params) {
+  Mycila::Task* relayTask = new Mycila::Task("Relay", []() {
     float gridPower = grid.getPower().value_or(NAN);
     float gridVoltage = grid.getVoltage().value_or(NAN);
     float setpoint = pidController.getSetpoint();

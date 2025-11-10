@@ -84,7 +84,7 @@ void yasolr_configure_logging() {
     ESP_LOGI(TAG, "Enable Debug Mode");
 
     if (loggingTask == nullptr) {
-      loggingTask = new Mycila::Task("Debug", [](void* params) {
+      loggingTask = new Mycila::Task("Debug", []() {
         ESP_LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
         Mycila::TaskMonitor.log();
         coreTaskManager.log();

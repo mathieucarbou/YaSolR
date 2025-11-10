@@ -6,7 +6,7 @@
 
 Mycila::TrafficLight lights;
 
-static Mycila::Task lightsTask("Lights", [](void* params) {
+static Mycila::Task lightsTask("Lights", []() {
   if (safeBootTask.scheduled()) {
     lights.setAllOn();
     return;

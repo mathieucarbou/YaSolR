@@ -20,17 +20,15 @@ extern const uint8_t config_html_gz_end[] asm("_binary__pio_embed_config_html_gz
 AsyncWebServer webServer(80);
 ESPDash dashboard(webServer, "/dashboard", false);
 Mycila::ESPConnect espConnect(webServer);
-
-static AsyncAuthenticationMiddleware authMiddleware;
 YaSolR::Website website;
 
-Mycila::Task dashboardInitTask("Init Dashboard", Mycila::Task::Type::ONCE, [](void* params) {
+Mycila::Task dashboardInitTask("Init Dashboard", Mycila::Task::Type::ONCE, []() {
   website.initCards();
   website.updateCards();
   dashboard.sendUpdates();
 });
 
-Mycila::Task dashboardUpdateTask("Dashboard", [](void* params) {
+Mycila::Task dashboardUpdateTask("Dashboard", []() {
   if (website.realTimePIDEnabled())
     website.updatePIDCharts();
   website.updateCards();
@@ -560,13 +558,15 @@ void yasolr_init_web_server() {
   ESP_LOGI(TAG, "Initialize web server");
 
   // Middleware
-
-  authMiddleware.setAuthType(AsyncAuthType::AUTH_DIGEST);
-  authMiddleware.setRealm("YaSolR");
-  authMiddleware.setUsername(YASOLR_ADMIN_USERNAME);
-  authMiddleware.setPassword(config.get(KEY_ADMIN_PASSWORD));
-  authMiddleware.generateHash();
-  webServer.addMiddleware(&authMiddleware);
+  if (config.get(KEY_ADMIN_PASSWORD)[0] != '\0') {
+    AsyncAuthenticationMiddleware* authMiddleware = new AsyncAuthenticationMiddleware();
+    authMiddleware->setAuthType(AsyncAuthType::AUTH_DIGEST);
+    authMiddleware->setRealm("YaSolR");
+    authMiddleware->setUsername(YASOLR_ADMIN_USERNAME);
+    authMiddleware->setPassword(config.get(KEY_ADMIN_PASSWORD));
+    authMiddleware->generateHash();
+    webServer.addMiddleware(authMiddleware);
+  }
 
   rewrites();
   routes();

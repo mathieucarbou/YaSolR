@@ -90,7 +90,7 @@ static void start_task_manager() {
   if (jsyTaskManager == nullptr) {
     jsyTaskManager = new Mycila::TaskManager("jsyTask");
 
-    jsyTask = new Mycila::Task("JSY", [](void* params) {
+    jsyTask = new Mycila::Task("JSY", []() {
       if (jsy != nullptr)
         jsy->read();
     });

@@ -9,18 +9,18 @@
 Mycila::TaskManager coreTaskManager("loopTask");
 Mycila::TaskManager unsafeTaskManager("unsafeTask");
 
-Mycila::Task resetTask("Reset", Mycila::Task::Type::ONCE, [](void* params) {
+Mycila::Task resetTask("Reset", Mycila::Task::Type::ONCE, []() {
   ESP_LOGW("YaSolR", "Resetting %s", Mycila::AppInfo.nameModelVersion.c_str());
   config.clear();
   Mycila::System::restart(500);
 });
 
-Mycila::Task restartTask("Restart", Mycila::Task::Type::ONCE, [](void* params) {
+Mycila::Task restartTask("Restart", Mycila::Task::Type::ONCE, []() {
   ESP_LOGW("YaSolR", "Restarting %s", Mycila::AppInfo.nameModelVersion.c_str());
   Mycila::System::restart(500);
 });
 
-Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, [](void* params) {
+Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, []() {
   ESP_LOGI(TAG, "Restarting %s in SafeBoot mode", Mycila::AppInfo.nameModelVersion.c_str());
   // save current network configuration so that it can be restored and used by safeboot
   espConnect.saveConfiguration();

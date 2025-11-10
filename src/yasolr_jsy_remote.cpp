@@ -121,7 +121,7 @@ void yasolr_configure_jsy_remote() {
 
       udpMessageRateBuffer = new Mycila::CircularBuffer<float, 15>();
 
-      jsyRemoteTask = new Mycila::Task("Remote JSY", Mycila::Task::Type::ONCE, [](void* params) {
+      jsyRemoteTask = new Mycila::Task("Remote JSY", Mycila::Task::Type::ONCE, []() {
         const uint16_t udpPort = config.getLong(KEY_UDP_PORT);
         ESP_LOGI(TAG, "Enable Remote JSY Listener on port %" PRIu16, udpPort);
         udp->listen(udpPort);

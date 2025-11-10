@@ -44,7 +44,7 @@ void yasolr_configure_victron() {
       });
 
       // task called once network is up to connect
-      victronConnectTask = new Mycila::Task("Victron Connect", Mycila::Task::Type::ONCE, [](void* params) {
+      victronConnectTask = new Mycila::Task("Victron Connect", Mycila::Task::Type::ONCE, []() {
         victron->end();
         const char* server = config.get(KEY_VICTRON_MODBUS_SERVER);
         uint16_t port = static_cast<uint16_t>(config.getLong(KEY_VICTRON_MODBUS_PORT));
@@ -52,7 +52,7 @@ void yasolr_configure_victron() {
       });
 
       // reader
-      victronReadTask = new Mycila::Task("Victron Read", [](void* params) { victron->read(); });
+      victronReadTask = new Mycila::Task("Victron Read", []() { victron->read(); });
       victronReadTask->setInterval(500);
 
       // I/O tasks pinned to unsafe task manager

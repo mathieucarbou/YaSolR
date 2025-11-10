@@ -13,7 +13,7 @@ static Mycila::Task* pzemTask = nullptr;
 
 static void init_read_task() {
   if (pzemTask == nullptr) {
-    pzemTask = new Mycila::Task("PZEM", [](void* params) {
+    pzemTask = new Mycila::Task("PZEM", []() {
       if (pzemO1) {
         pzemO1->read();
         yield();
@@ -81,7 +81,7 @@ void yasolr_configure_output1_pzem() {
           }
         });
 
-        pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::Task::Type::ONCE, [](void* params) {
+        pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::Task::Type::ONCE, []() {
           ESP_LOGI(TAG, "Pairing connected PZEM to Output 1");
           pzemO1->end();
 
@@ -195,7 +195,7 @@ void yasolr_configure_output2_pzem() {
           }
         });
 
-        pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::Task::Type::ONCE, [](void* params) {
+        pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::Task::Type::ONCE, []() {
           ESP_LOGI(TAG, "Pairing connected PZEM to Output 2");
           pzemO2->end();
 

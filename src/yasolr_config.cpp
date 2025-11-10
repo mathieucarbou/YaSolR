@@ -11,7 +11,7 @@
 Mycila::Config config;
 
 static std::queue<std::function<void()>> reconfigureQueue;
-static Mycila::Task reconfigureTask("Reconfigure", [](void* params) {
+static Mycila::Task reconfigureTask("Reconfigure", []() {
   auto fn = reconfigureQueue.front();
   reconfigureQueue.pop();
   fn();

@@ -25,9 +25,9 @@ static Mycila::Relay* bypassRelay2 = nullptr;
 
 // tasks
 
-static Mycila::Task calibrationTask("Calibration", [](void* params) { router.continueCalibration(); });
+static Mycila::Task calibrationTask("Calibration", []() { router.continueCalibration(); });
 
-static Mycila::Task routerTask("Router", [](void* params) {
+static Mycila::Task routerTask("Router", []() {
   if ((output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled()) && micros() - pidController.getLastTime() > 2000000 && yasolr_divert()) {
     // Ensure the PID controller is called frequently enough.
     // This keeps the PID running even if the measurements are not frequent enough (like with MQTT).
@@ -43,7 +43,7 @@ static Mycila::Task routerTask("Router", [](void* params) {
   output2.applyAutoBypass();
 });
 
-static Mycila::Task frequencyMonitorTask("Frequency", [](void* params) {
+static Mycila::Task frequencyMonitorTask("Frequency", []() {
   const float frequency = yasolr_frequency();
   const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
 
