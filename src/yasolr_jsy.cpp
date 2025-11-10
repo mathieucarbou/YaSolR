@@ -55,6 +55,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
           .powerFactor = data.channel1().powerFactor,
           .resistance = data.channel1().resistance(),
           .thdi = data.channel1().thdi(),
+          .voltage = data.channel1().dimmedVoltage(),
         });
         break;
 

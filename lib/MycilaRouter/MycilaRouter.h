@@ -38,7 +38,7 @@ namespace Mycila {
         PZEM,
         JSY,
         JSY_REMOTE,
-        CALCULATED,
+        COMPUTED,
         UNKNOWN
       };
 
@@ -51,7 +51,12 @@ namespace Mycila {
           float powerFactor = NAN;
           float resistance = NAN;
           float thdi = NAN;
+          float voltage = NAN;
       } Metrics;
+
+#ifdef MYCILA_JSON_SUPPORT
+      static void toJson(const JsonObject& dest, const Metrics& metrics);
+#endif
 
       //////////////////
       // Router Relay //
@@ -109,28 +114,16 @@ namespace Mycila {
         public:
           enum class State {
             // output disabled
-            OUTPUT_DISABLED = 0,
+            UNUSED,
             // idle
-            OUTPUT_IDLE,
+            IDLE,
             // excess power sent to load
-            OUTPUT_ROUTING,
+            ROUTING,
             // full power sent to load through relay (manual trigger)
-            OUTPUT_BYPASS_MANUAL,
+            BYPASS_MANUAL,
             // full power sent to load through relay (auto trigger)
-            OUTPUT_BYPASS_AUTO
+            BYPASS_AUTO
           };
-
-          typedef struct {
-              float apparentPower = 0;
-              float current = 0;
-              float dimmedVoltage = 0;
-              uint32_t energy = 0;
-              float power = 0;
-              float powerFactor = NAN;
-              float resistance = NAN;
-              float thdi = NAN;
-              float voltage = NAN;
-          } Metrics;
 
           typedef struct {
               float calibratedResistance = NAN;
@@ -158,14 +151,14 @@ namespace Mycila {
 
           State getState() const {
             if (!isDimmerOnline() && !isBypassRelayEnabled())
-              return State::OUTPUT_DISABLED;
+              return State::UNUSED;
             if (_autoBypassEnabled)
-              return State::OUTPUT_BYPASS_AUTO;
+              return State::BYPASS_AUTO;
             if (_manualBypassEnabled)
-              return State::OUTPUT_BYPASS_MANUAL;
+              return State::BYPASS_MANUAL;
             if (_dimmer->isOn())
-              return State::OUTPUT_ROUTING;
-            return State::OUTPUT_IDLE;
+              return State::ROUTING;
+            return State::IDLE;
           }
           const char* getStateName() const;
           const char* getName() const { return _name; }
@@ -173,7 +166,6 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
           void toJson(const JsonObject& root, float gridVoltage) const;
-          static void toJson(const JsonObject& dest, const Metrics& metrics);
 #endif
 
           // dimmer
@@ -248,16 +240,10 @@ namespace Mycila {
 
           bool readMeasurements(Metrics& metrics) const {
             if (_metrics.isPresent()) {
-              metrics.voltage = _metrics.get().voltage;
-              metrics.energy = _metrics.get().energy;
-              if (getState() == State::OUTPUT_ROUTING) {
-                metrics.apparentPower = _metrics.get().apparentPower;
-                metrics.current = _metrics.get().current;
-                metrics.dimmedVoltage = _metrics.get().dimmedVoltage;
-                metrics.power = _metrics.get().power;
-                metrics.powerFactor = _metrics.get().powerFactor;
-                metrics.resistance = _metrics.get().resistance;
-                metrics.thdi = _metrics.get().thdi;
+              if (getState() == State::ROUTING) {
+                memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
+              } else {
+                metrics.energy = _metrics.get().energy;
               }
               return true;
             }
@@ -266,12 +252,12 @@ namespace Mycila {
 
           bool computeMetrics(Metrics& metrics, float gridVoltage) const {
             if (gridVoltage > 0 && config.calibratedResistance > 0) {
-              metrics.voltage = gridVoltage;
+              metrics.source = Source::COMPUTED;
               metrics.resistance = config.calibratedResistance;
-              if (getState() == State::OUTPUT_ROUTING) {
+              if (getState() == State::ROUTING) {
                 Mycila::Dimmer::Metrics dimmerMetrics;
                 if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
-                  metrics.dimmedVoltage = dimmerMetrics.voltage;
+                  metrics.voltage = dimmerMetrics.voltage;
                   metrics.current = dimmerMetrics.current;
                   metrics.apparentPower = dimmerMetrics.apparentPower;
                   metrics.power = dimmerMetrics.power;
@@ -285,7 +271,7 @@ namespace Mycila {
           }
 
           std::optional<float> readRoutedPower() const {
-            if (getState() != State::OUTPUT_ROUTING)
+            if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
               return _metrics.get().power;
@@ -293,7 +279,7 @@ namespace Mycila {
           }
 
           std::optional<float> computeRoutedPower(float gridVoltage) const {
-            if (getState() != State::OUTPUT_ROUTING)
+            if (getState() != State::ROUTING)
               return 0.0f;
             if (gridVoltage > 0) {
               Mycila::Dimmer::Metrics dimmerMetrics;
@@ -305,7 +291,7 @@ namespace Mycila {
           }
 
           std::optional<float> readRoutedCurrent() const {
-            if (getState() != State::OUTPUT_ROUTING)
+            if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
               return _metrics.get().current;
@@ -313,7 +299,7 @@ namespace Mycila {
           }
 
           std::optional<float> computeRoutedCurrent(float gridVoltage) const {
-            if (getState() != State::OUTPUT_ROUTING)
+            if (getState() != State::ROUTING)
               return 0.0f;
             if (gridVoltage > 0) {
               Mycila::Dimmer::Metrics dimmerMetrics;
@@ -334,7 +320,7 @@ namespace Mycila {
             if (array == nullptr || n == 0)
               return false;
 
-            if (getState() != State::OUTPUT_ROUTING) {
+            if (getState() != State::ROUTING) {
               // Initialize all values to 0
               for (size_t i = 0; i < n; i++) {
                 array[i] = 0.0f;
@@ -418,53 +404,7 @@ namespace Mycila {
       bool isCalibrationRunning() const { return _calibrationRunning; }
 
 #ifdef MYCILA_JSON_SUPPORT
-      void toJson(const JsonObject& root, float voltage) const {
-        Metrics routerMeasurements;
-        readMeasurements(routerMeasurements);
-        toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
-
-        JsonObject source = root["source"].to<JsonObject>();
-        if (_metrics.isPresent()) {
-          source["enabled"] = true;
-          source["time"] = _metrics.getLastUpdateTime();
-          toJson(source, _metrics.get());
-        } else {
-          source["enabled"] = false;
-        }
-      }
-
-      static void toJson(const JsonObject& dest, const Metrics& metrics) {
-        switch (metrics.source) {
-          case Source::JSY:
-            dest["source"] = "jsy";
-            break;
-          case Source::JSY_REMOTE:
-            dest["source"] = "jsy_remote";
-            break;
-          case Source::CALCULATED:
-            dest["source"] = "computed";
-            break;
-          case Source::PZEM:
-            dest["source"] = "pzem";
-            break;
-          default:
-            dest["source"] = "unknown";
-            break;
-        }
-        if (!std::isnan(metrics.apparentPower))
-          dest["apparent_power"] = metrics.apparentPower;
-        if (!std::isnan(metrics.current))
-          dest["current"] = metrics.current;
-        dest["energy"] = metrics.energy;
-        if (!std::isnan(metrics.power))
-          dest["power"] = metrics.power;
-        if (!std::isnan(metrics.powerFactor))
-          dest["power_factor"] = metrics.powerFactor;
-        if (!std::isnan(metrics.resistance))
-          dest["resistance"] = metrics.resistance;
-        if (!std::isnan(metrics.thdi))
-          dest["thdi"] = metrics.thdi;
-      }
+      void toJson(const JsonObject& root, float voltage) const;
 #endif
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
@@ -472,7 +412,7 @@ namespace Mycila {
         metrics.source = Source::UNKNOWN;
 
         for (size_t i = 0; i < _outputs.size(); i++) {
-          Output::Metrics outputMetrics;
+          Metrics outputMetrics;
           if (_outputs[i]->readMeasurements(outputMetrics)) {
             metrics.source = Source::PZEM;
             // Note: energy is not accurate in the case of a virtual bypass through dimmer
@@ -503,9 +443,9 @@ namespace Mycila {
 
       bool computeMetrics(Metrics& metrics, float gridVoltage) const {
         if (gridVoltage > 0) {
-          metrics.source = Source::CALCULATED;
+          metrics.source = Source::COMPUTED;
           for (size_t i = 0; i < _outputs.size(); i++) {
-            Output::Metrics outputMetrics;
+            Metrics outputMetrics;
             if (_outputs[i]->computeMetrics(outputMetrics, gridVoltage)) {
               metrics.energy += outputMetrics.energy;
               metrics.apparentPower += outputMetrics.apparentPower;

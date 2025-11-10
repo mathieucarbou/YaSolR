@@ -81,6 +81,7 @@ static void onData(AsyncUDPPacket packet) {
         .powerFactor = doc["channel1"]["power_factor"] | NAN,
         .resistance = doc["channel1"]["resistance"] | NAN,
         .thdi = doc["channel1"]["thdi_0"] | NAN,
+        .voltage = doc["channel1"]["dimmed_voltage"] | NAN,
       });
       break;
     }

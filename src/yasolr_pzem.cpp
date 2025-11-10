@@ -69,15 +69,15 @@ void yasolr_configure_output1_pzem() {
               .voltage = data.voltage,
             });
             output1.metrics().update({
+              .source = Mycila::Router::Source::PZEM,
               .apparentPower = data.apparentPower,
               .current = data.current,
-              .dimmedVoltage = data.dimmedVoltage(),
               .energy = data.activeEnergy,
               .power = data.activePower,
               .powerFactor = data.powerFactor,
               .resistance = data.resistance(),
               .thdi = data.thdi(),
-              .voltage = data.voltage,
+              .voltage = data.dimmedVoltage(),
             });
           }
         });
@@ -182,15 +182,15 @@ void yasolr_configure_output2_pzem() {
               .voltage = data.voltage,
             });
             output2.metrics().update({
+              .source = Mycila::Router::Source::PZEM,
               .apparentPower = data.apparentPower,
               .current = data.current,
-              .dimmedVoltage = data.dimmedVoltage(),
               .energy = data.activeEnergy,
               .power = data.activePower,
               .powerFactor = data.powerFactor,
               .resistance = data.resistance(),
               .thdi = data.thdi(),
-              .voltage = data.voltage,
+              .voltage = data.dimmedVoltage(),
             });
           }
         });

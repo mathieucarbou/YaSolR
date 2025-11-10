@@ -8,6 +8,46 @@
 
 #define TAG "ROUTER"
 
+/////////////
+// Metrics //
+/////////////
+
+void Mycila::Router::toJson(const JsonObject& dest, const Metrics& metrics) {
+  switch (metrics.source) {
+    case Source::JSY:
+      dest["source"] = "jsy";
+      break;
+    case Source::JSY_REMOTE:
+      dest["source"] = "jsy_remote";
+      break;
+    case Source::COMPUTED:
+      dest["source"] = "computed";
+      break;
+    case Source::PZEM:
+      dest["source"] = "pzem";
+      break;
+    default:
+      dest["source"] = "unknown";
+      break;
+  }
+
+  dest["energy"] = metrics.energy;
+  if (!std::isnan(metrics.voltage))
+    dest["voltage"] = metrics.voltage;
+  if (!std::isnan(metrics.current))
+    dest["current"] = metrics.current;
+  if (!std::isnan(metrics.power))
+    dest["power"] = metrics.power;
+  if (!std::isnan(metrics.apparentPower))
+    dest["apparent_power"] = metrics.apparentPower;
+  if (!std::isnan(metrics.powerFactor))
+    dest["power_factor"] = metrics.powerFactor;
+  if (!std::isnan(metrics.resistance))
+    dest["resistance"] = metrics.resistance;
+  if (!std::isnan(metrics.thdi))
+    dest["thdi"] = metrics.thdi;
+}
+
 //////////////////
 // Router Relay //
 //////////////////
@@ -69,7 +109,7 @@ bool Mycila::Router::Relay::autoSwitch(float gridVoltage, float gridPower, float
 ////////////
 
 static const char* StateNames[] = {
-  "DISABLED",
+  "UNUSED",
   "IDLE",
   "ROUTING",
   "BYPASS_MANUAL",
@@ -94,16 +134,16 @@ void Mycila::Router::Output::toJson(const JsonObject& root, float gridVoltage) c
   Metrics metrics;
 
   readMeasurements(metrics);
-  toJson(root["measurements"].to<JsonObject>(), metrics);
+  Router::toJson(root["measurements"].to<JsonObject>(), metrics);
 
   computeMetrics(metrics, gridVoltage);
-  toJson(root["metrics"].to<JsonObject>(), metrics);
+  Router::toJson(root["metrics"].to<JsonObject>(), metrics);
 
   JsonObject source = root["source"].to<JsonObject>();
   if (_metrics.isPresent()) {
     source["enabled"] = true;
     source["time"] = _metrics.getLastUpdateTime();
-    toJson(source, _metrics.get());
+    Router::toJson(source, _metrics.get());
   } else {
     source["enabled"] = false;
   }
@@ -111,26 +151,6 @@ void Mycila::Router::Output::toJson(const JsonObject& root, float gridVoltage) c
   _dimmer->toJson(root["dimmer"].to<JsonObject>());
   if (_relay)
     _relay->toJson(root["relay"].to<JsonObject>());
-}
-
-void Mycila::Router::Output::toJson(const JsonObject& dest, const Metrics& metrics) {
-  if (!std::isnan(metrics.apparentPower))
-    dest["apparent_power"] = metrics.apparentPower;
-  if (!std::isnan(metrics.current))
-    dest["current"] = metrics.current;
-  dest["energy"] = metrics.energy;
-  if (!std::isnan(metrics.power))
-    dest["power"] = metrics.power;
-  if (!std::isnan(metrics.powerFactor))
-    dest["power_factor"] = metrics.powerFactor;
-  if (!std::isnan(metrics.resistance))
-    dest["resistance"] = metrics.resistance;
-  if (!std::isnan(metrics.thdi))
-    dest["thdi"] = metrics.thdi;
-  if (!std::isnan(metrics.voltage))
-    dest["voltage"] = metrics.voltage;
-  if (!std::isnan(metrics.dimmedVoltage))
-    dest["voltage_dimmed"] = metrics.dimmedVoltage;
 }
 #endif
 
@@ -346,6 +366,23 @@ void Mycila::Router::Output::_switchBypass(bool state, bool log) {
 ////////////
 // Router //
 ////////////
+
+#ifdef MYCILA_JSON_SUPPORT
+void Mycila::Router::toJson(const JsonObject& root, float voltage) const {
+  Metrics routerMeasurements;
+  readMeasurements(routerMeasurements);
+  toJson(root["measurements"].to<JsonObject>(), routerMeasurements);
+
+  JsonObject source = root["source"].to<JsonObject>();
+  if (_metrics.isPresent()) {
+    source["enabled"] = true;
+    source["time"] = _metrics.getLastUpdateTime();
+    toJson(source, _metrics.get());
+  } else {
+    source["enabled"] = false;
+  }
+}
+#endif
 
 void Mycila::Router::beginCalibration(size_t outputIndex, CalibrationCallback cb) {
   if (_calibrationRunning) {

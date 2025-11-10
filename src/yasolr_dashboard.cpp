@@ -1144,13 +1144,13 @@ void YaSolR::Website::initCards() {
   // home
 
   // initialize values for OSS components which cannot be hidden
-  _output1State.setFeedback("DISABLED", dash::Status::INFO);
+  _output1State.setFeedback("UNUSED", dash::Status::INFO);
   _output1DS18State.setValue(NAN);
   _output1DimmerSlider.setValue(0);
   _output1Bypass.setValue(false);
 
   // initialize values for OSS components which cannot be hidden
-  _output2State.setFeedback("DISABLED", dash::Status::INFO);
+  _output2State.setFeedback("UNUSED", dash::Status::INFO);
   _output2DS18State.setValue(NAN);
   _output2DimmerSlider.setValue(0);
   _output2Bypass.setValue(false);
@@ -1550,15 +1550,15 @@ void YaSolR::Website::updateCards() {
   // home
 
   switch (output1.getState()) {
-    case Mycila::Router::Output::State::OUTPUT_DISABLED:
-    case Mycila::Router::Output::State::OUTPUT_IDLE:
+    case Mycila::Router::Output::State::UNUSED:
+    case Mycila::Router::Output::State::IDLE:
       _output1State.setFeedback(output1.getStateName(), dash::Status::INFO);
       break;
-    case Mycila::Router::Output::State::OUTPUT_BYPASS_AUTO:
-    case Mycila::Router::Output::State::OUTPUT_BYPASS_MANUAL:
+    case Mycila::Router::Output::State::BYPASS_AUTO:
+    case Mycila::Router::Output::State::BYPASS_MANUAL:
       _output1State.setFeedback(output1.getStateName(), dash::Status::WARNING);
       break;
-    case Mycila::Router::Output::State::OUTPUT_ROUTING:
+    case Mycila::Router::Output::State::ROUTING:
       _output1State.setFeedback(output1.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output1.getDimmerDutyCycleOnline() * 100.0f)) + " %", dash::Status::SUCCESS);
       break;
     default:
@@ -1570,15 +1570,15 @@ void YaSolR::Website::updateCards() {
   _output1Bypass.setValue(output1.isBypassOn());
 
   switch (output2.getState()) {
-    case Mycila::Router::Output::State::OUTPUT_DISABLED:
-    case Mycila::Router::Output::State::OUTPUT_IDLE:
+    case Mycila::Router::Output::State::UNUSED:
+    case Mycila::Router::Output::State::IDLE:
       _output2State.setFeedback(output2.getStateName(), dash::Status::INFO);
       break;
-    case Mycila::Router::Output::State::OUTPUT_BYPASS_AUTO:
-    case Mycila::Router::Output::State::OUTPUT_BYPASS_MANUAL:
+    case Mycila::Router::Output::State::BYPASS_AUTO:
+    case Mycila::Router::Output::State::BYPASS_MANUAL:
       _output2State.setFeedback(output2.getStateName(), dash::Status::WARNING);
       break;
-    case Mycila::Router::Output::State::OUTPUT_ROUTING:
+    case Mycila::Router::Output::State::ROUTING:
       _output2State.setFeedback(output2.getStateName() + std::string(" ") + std::to_string(static_cast<uint16_t>(output2.getDimmerDutyCycleOnline() * 100.0f)) + " %", dash::Status::SUCCESS);
       break;
     default:
@@ -1636,7 +1636,7 @@ void YaSolR::Website::updateCards() {
 #ifdef APP_MODEL_PRO
   // tab: output 1
 
-  Mycila::Router::Output::Metrics output1Measurements;
+  Mycila::Router::Metrics output1Measurements;
   if (!output1.readMeasurements(output1Measurements))
     output1.computeMetrics(output1Measurements, gridMetrics.voltage);
 
@@ -1645,7 +1645,7 @@ void YaSolR::Website::updateCards() {
   _output1ApparentPower.setValue(output1Measurements.apparentPower);
   _output1PowerFactor.setValue(output1Measurements.powerFactor);
   _output1THDi.setValue(output1Measurements.thdi);
-  _output1Voltage.setValue(output1Measurements.dimmedVoltage);
+  _output1Voltage.setValue(output1Measurements.voltage);
   _output1Current.setValue(output1Measurements.current);
   _output1Resistance.setValue(output1Measurements.resistance);
   _output1Energy.setValue(output1Measurements.energy);
@@ -1657,7 +1657,7 @@ void YaSolR::Website::updateCards() {
 
   // tab: output 2
 
-  Mycila::Router::Output::Metrics output2Measurements;
+  Mycila::Router::Metrics output2Measurements;
   if (!output2.readMeasurements(output2Measurements))
     output2.computeMetrics(output2Measurements, gridMetrics.voltage);
 
@@ -1666,7 +1666,7 @@ void YaSolR::Website::updateCards() {
   _output2ApparentPower.setValue(output2Measurements.apparentPower);
   _output2PowerFactor.setValue(output2Measurements.powerFactor);
   _output2THDi.setValue(output2Measurements.thdi);
-  _output2Voltage.setValue(output2Measurements.dimmedVoltage);
+  _output2Voltage.setValue(output2Measurements.voltage);
   _output2Current.setValue(output2Measurements.current);
   _output2Resistance.setValue(output2Measurements.resistance);
   _output2Energy.setValue(output2Measurements.energy);

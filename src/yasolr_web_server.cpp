@@ -478,11 +478,9 @@ void rest_api() {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
 
-    Mycila::Router::Metrics routerMeasurements;
-    Mycila::Router::Output::Metrics outputMeasurements;
-
     float gridVoltage = grid.getVoltage().value_or(NAN);
 
+    Mycila::Router::Metrics routerMeasurements;
     if (!router.readMeasurements(routerMeasurements)) {
       router.computeMetrics(routerMeasurements, gridVoltage);
     }
@@ -514,9 +512,10 @@ void rest_api() {
         json["temperature"] = t;
       }
 
+      Mycila::Router::Metrics outputMeasurements;
       if (!output->readMeasurements(outputMeasurements))
         output->computeMetrics(outputMeasurements, gridVoltage);
-      Mycila::Router::Output::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
+      Mycila::Router::toJson(json["measurements"].to<JsonObject>(), outputMeasurements);
     }
 
     response->setLength();
