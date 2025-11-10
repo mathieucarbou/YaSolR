@@ -7,6 +7,9 @@
 #include <HTTPClient.h>
 #include <NetworkClientSecure.h>
 
+#include <string>
+#include <utility>
+
 Mycila::Task versionCheckTask("Version Check", [](void* params) {
   ESP_LOGI(TAG, "Checking latest YaSolR version...");
 
