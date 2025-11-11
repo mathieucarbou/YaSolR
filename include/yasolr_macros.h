@@ -220,8 +220,8 @@
 
 #define KEY_PIN_I2C_SCL        "pin_i2c_scl"
 #define KEY_PIN_I2C_SDA        "pin_i2c_sda"
-#define KEY_PIN_JSY_TX         "pin_jsy_tx"
 #define KEY_PIN_JSY_RX         "pin_jsy_rx"
+#define KEY_PIN_JSY_TX         "pin_jsy_tx"
 #define KEY_PIN_LIGHTS_GREEN   "pin_lights_g"
 #define KEY_PIN_LIGHTS_RED     "pin_lights_r"
 #define KEY_PIN_LIGHTS_YELLOW  "pin_lights_y"
