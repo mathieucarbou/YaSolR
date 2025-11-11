@@ -29,10 +29,10 @@ Mycila::Task dashboardInitTask("Init Dashboard", Mycila::Task::Type::ONCE, []() 
 });
 
 Mycila::Task dashboardUpdateTask("Dashboard", []() {
-  if (website.realTimePIDEnabled())
-    website.updatePIDCharts();
   website.updateCards();
   website.updateCharts();
+  if (website.realTimePIDEnabled())
+    website.updatePIDCharts();
   dashboard.sendUpdates();
 });
 
