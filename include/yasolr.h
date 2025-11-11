@@ -12,7 +12,6 @@
 #include <ESPAsyncWebServer.h>
 #include <ESPmDNS.h>
 #include <FastCRC32.h>
-#include <HTTPClient.h>
 #include <HardwareSerial.h>
 #include <LittleFS.h>
 #include <StreamString.h>
