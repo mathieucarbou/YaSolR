@@ -31,8 +31,11 @@ Mycila::Task dashboardInitTask("Init Dashboard", Mycila::Task::Type::ONCE, []() 
 Mycila::Task dashboardUpdateTask("Dashboard", []() {
   website.updateCards();
   website.updateCharts();
-  if (website.realTimePIDEnabled())
-    website.updatePIDCharts();
+  if (website.realTimePIDEnabled()) {
+    website.updatePIDCharts(); // costly
+  } else {
+    website.updateWarnings(); // costly, do it only if real-time PID is disabled
+  }
   dashboard.sendUpdates();
 });
 

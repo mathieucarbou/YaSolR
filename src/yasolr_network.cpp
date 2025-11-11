@@ -28,12 +28,12 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
     if (jsyRemoteTask)
       jsyRemoteTask->resume();
 
-    if (mqttConnectTask)
-      mqttConnectTask->resume();
-
     if (victronConnectTask) {
       victronConnectTask->resume();
     }
+
+    if (mqttConnectTask)
+      mqttConnectTask->resume(10000); // delay mqtt startup by 10 seconds to let other services start first in order to avoid too much memory consumption at once
   }
 });
 
@@ -82,14 +82,13 @@ void yasolr_init_network() {
           ESP_LOGI(TAG, "WiFi SSID: %s", espConnect.getWiFiSSID().c_str());
         }
         networkStartTask.resume();
-        versionCheckTask.setEnabled(true);
+        versionCheckTask.resume(60000); // delay version check by 1 minute after network is connected to avoid heap consumption peak at startup
         break;
       case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
         ESP_LOGW(TAG, "Unable to connect to any network!");
         break;
       case Mycila::ESPConnect::State::NETWORK_DISCONNECTED:
         ESP_LOGW(TAG, "Disconnected!");
-        versionCheckTask.setEnabled(false);
         break;
       case Mycila::ESPConnect::State::NETWORK_RECONNECTING:
         ESP_LOGI(TAG, "Trying to reconnect");

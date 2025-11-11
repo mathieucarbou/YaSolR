@@ -10,7 +10,7 @@
 #include <string>
 #include <utility>
 
-Mycila::Task versionCheckTask("Version Check", []() {
+Mycila::Task versionCheckTask("Version Check", Mycila::Task::Type::ONCE, []() {
   ESP_LOGI(TAG, "Checking latest YaSolR version...");
 
   NetworkClientSecure* client = new NetworkClientSecure();
@@ -49,11 +49,14 @@ Mycila::Task versionCheckTask("Version Check", []() {
   https->end();
   delete https;
   delete client;
+
+  versionCheckTask.resume(3600000);
+
+  dashboardInitTask.resume();
 });
 
 void yasolr_init_version_check() {
   ESP_LOGI(TAG, "Initialize version check");
-  versionCheckTask.setEnabled(false);
-  versionCheckTask.setInterval(3600000);
+  versionCheckTask.setEnabledWhen([]() { return espConnect.getState() == Mycila::ESPConnect::State::NETWORK_CONNECTED && !dashboard.isAsyncAccessInProgress(); });
   unsafeTaskManager.addTask(versionCheckTask);
 }
