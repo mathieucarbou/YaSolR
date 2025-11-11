@@ -1165,7 +1165,6 @@ void YaSolR::Website::initCards() {
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool output1TempReceived = !output1.temperature().neverUpdated();
   const bool pzem1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_PZEM);
 
   const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
@@ -1173,7 +1172,6 @@ void YaSolR::Website::initCards() {
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  const bool output2TempReceived = !output2.temperature().neverUpdated();
   const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM);
 
   // statistics
@@ -1203,8 +1201,8 @@ void YaSolR::Website::initCards() {
 
   // tabs
 
-  _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled || output1TempReceived);
-  _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled || output2TempReceived);
+  _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled || config.getBool(KEY_ENABLE_OUTPUT1_DS18));
+  _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled || config.getBool(KEY_ENABLE_OUTPUT2_DS18));
   _output1ConfigTab.setDisplay(dimmer1Enabled || output1RelayEnabled);
   _output2ConfigTab.setDisplay(dimmer2Enabled || output2RelayEnabled);
 
