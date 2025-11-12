@@ -88,6 +88,12 @@ void rest_api() {
 
   // debug
 
+  // simulate a crash
+  webServer.on("/api/debug/crash", HTTP_GET, [](AsyncWebServerRequest* request) {
+    volatile int* p = nullptr;
+    *p = 42;
+  });
+
   webServer.on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();

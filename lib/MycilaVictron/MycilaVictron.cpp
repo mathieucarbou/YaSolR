@@ -5,6 +5,7 @@
 #include <MycilaVictron.h>
 
 #include <string>
+#include <utility>
 
 #define TAG "VICTRON"
 
@@ -137,7 +138,6 @@ void Mycila::Victron::read() {
 void Mycila::Victron::_setError(ModbusError&& error, uint32_t token) {
   std::string msg;
   msg.reserve(128);
-  msg.clear();
   msg = "Error ";
   msg += std::to_string((int)error); // NOLINT
   msg += ": ";
@@ -145,7 +145,7 @@ void Mycila::Victron::_setError(ModbusError&& error, uint32_t token) {
   msg += ", token: ";
   msg += std::to_string(token);
 
-  _lastError = msg;
+  _lastError = std::move(msg);
 
   if (_callback) {
     _callback(EventType::EVT_ERROR);
