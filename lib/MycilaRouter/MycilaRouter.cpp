@@ -426,7 +426,7 @@ void Mycila::Router::beginCalibration(size_t outputIndex, CalibrationCallback cb
   ESP_LOGI(TAG, "Starting calibration");
   _calibrationStep = 1;
   _calibrationOutputIndex = outputIndex;
-  _calibrationCallback = cb;
+  _calibrationCallback = std::move(cb);
   _calibrationRunning = true;
 }
 

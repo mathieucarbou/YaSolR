@@ -11,6 +11,7 @@
 #endif
 
 #include <string>
+#include <utility>
 
 namespace Mycila {
   class Victron {
@@ -22,7 +23,7 @@ namespace Mycila {
 
       typedef std::function<void(EventType eventType)> Callback;
 
-      void setCallback(Callback callback) { _callback = callback; }
+      void setCallback(Callback callback) { _callback = std::move(callback); }
 
       void begin(const char* host, uint16_t port = 502);
       void end();
