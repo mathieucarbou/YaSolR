@@ -79,7 +79,11 @@ void yasolr_init_persistent_logging() {
 
 void yasolr_configure_logging() {
   if (config.getBool(KEY_ENABLE_DEBUG)) {
-    esp_log_level_set("*", ESP_LOG_VERBOSE);
+    esp_log_level_set("*", ESP_LOG_DEBUG);
+    esp_log_level_set("esp_core_dump_elf", ESP_LOG_INFO);
+    esp_log_level_set("esp_core_dump_port", ESP_LOG_INFO);
+    esp_log_level_set("esp_netif_lwip", ESP_LOG_INFO);
+    esp_log_level_set("nvs", ESP_LOG_INFO);
     esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
     ESP_LOGI(TAG, "Enable Debug Mode");
 
