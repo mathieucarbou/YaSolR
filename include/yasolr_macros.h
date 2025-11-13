@@ -42,44 +42,44 @@
 
 // default settings
 
-#define YASOLR_ADMIN_USERNAME              "admin"
-#define YASOLR_DIMMER_LSA_GP8211S          "LSA + DAC GP8211S (DFR1071)"
-#define YASOLR_DIMMER_LSA_GP8403           "LSA + DAC GP8403 (DFR0971)"
-#define YASOLR_DIMMER_LSA_GP8413           "LSA + DAC GP8413 (DFR1073)"
-#define YASOLR_DIMMER_LSA_PWM              "LSA + PWM->Analog 0-10V only"
-#define YASOLR_DIMMER_LSA_PWM_ZCD          "LSA + PWM->Analog 0-10V + ZCD"
-#define YASOLR_DIMMER_RANDOM_SSR           "Random SSR + ZCD"
-#define YASOLR_DIMMER_RANDOM_SSR_BF        "Random SSR + ZCD (Burst Fire)"
-#define YASOLR_DIMMER_ROBODYN              "Robodyn 24A / 40A"
-#define YASOLR_DIMMER_ROBODYN_BF           "Robodyn 24A / 40A (Burst Fire)"
-#define YASOLR_DIMMER_TRIAC                "Triac + ZCD"
-#define YASOLR_DIMMER_TRIAC_BF             "Triac + ZCD (Burst Fire)"
-#define YASOLR_DIMMER_ZC_SSR               "Zero-crossing SSR"
-#define YASOLR_DS18_SEARCH_MAX_RETRY       30
-#define YASOLR_GRAPH_POINTS                60
-#define YASOLR_HA_DISCOVERY_TOPIC          "homeassistant"
-#define YASOLR_HIDDEN_PWD                  "********"
-#define YASOLR_LOG_FILE                    "/logs.txt"
-#define YASOLR_MQTT_KEEPALIVE              60
-#define YASOLR_MQTT_MEASUREMENT_EXPIRATION 60000
-#define YASOLR_MQTT_SERVER_CERT_FILE       "/mqtt-server.pem"
-#define YASOLR_MQTT_WILL_TOPIC             "/status"
-#define YASOLR_MQTT_WILL_TOPIC_HA          "~/status"
-#define YASOLR_PID_MODE_ERROR              "On Error"
-#define YASOLR_PID_MODE_INPUT              "On Input"
-#define YASOLR_PZEM_ADDRESS_OUTPUT1        0x01
-#define YASOLR_PZEM_ADDRESS_OUTPUT2        0x02
-#define YASOLR_RELAY_TYPE_NC               "NC"
-#define YASOLR_RELAY_TYPE_NO               "NO"
-#define YASOLR_SAFEBOOT_PARTITION_NAME     "safeboot" // See: https://github.com/mathieucarbou/MycilaSafeBoot
-#define YASOLR_SAFEBOOT_PARTITION_SIZE     655360     // See: https://github.com/mathieucarbou/MycilaSafeBoot
-#define YASOLR_SERIAL_BAUDRATE             115200
-#define YASOLR_UART_1_NAME                 "Serial1"
-#define YASOLR_UART_2_NAME                 "Serial2"
-#define YASOLR_UART_NONE                   "N/A"
-#define YASOLR_WEEK_DAYS                   "sun,mon,tue,wed,thu,fri,sat"
-#define YASOLR_WEEK_DAYS_EMPTY             "none"
-#define YASOLR_ZC_EVENT_SHIFT_US           -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
+#define YASOLR_ADMIN_USERNAME                "admin"
+#define YASOLR_DIMMER_LSA_GP8211S            "LSA + DAC GP8211S (DFR1071)"
+#define YASOLR_DIMMER_LSA_GP8403             "LSA + DAC GP8403 (DFR0971)"
+#define YASOLR_DIMMER_LSA_GP8413             "LSA + DAC GP8413 (DFR1073)"
+#define YASOLR_DIMMER_LSA_PWM                "LSA + PWM->Analog 0-10V only"
+#define YASOLR_DIMMER_LSA_PWM_ZCD            "LSA + PWM->Analog 0-10V + ZCD"
+#define YASOLR_DIMMER_RANDOM_SSR             "Random SSR + ZCD"
+#define YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "Random SSR + ZCD (Cycle Stealing)"
+#define YASOLR_DIMMER_ROBODYN                "Robodyn 24A / 40A"
+#define YASOLR_DIMMER_ROBODYN_CYCLE_STEAL    "Robodyn 24A / 40A (Cycle Stealing)"
+#define YASOLR_DIMMER_TRIAC                  "Triac + ZCD"
+#define YASOLR_DIMMER_TRIAC_CYCLE_STEAL      "Triac + ZCD (Cycle Stealing)"
+#define YASOLR_DIMMER_ZC_SSR                 "Zero-crossing SSR"
+#define YASOLR_DS18_SEARCH_MAX_RETRY         30
+#define YASOLR_GRAPH_POINTS                  60
+#define YASOLR_HA_DISCOVERY_TOPIC            "homeassistant"
+#define YASOLR_HIDDEN_PWD                    "********"
+#define YASOLR_LOG_FILE                      "/logs.txt"
+#define YASOLR_MQTT_KEEPALIVE                60
+#define YASOLR_MQTT_MEASUREMENT_EXPIRATION   60000
+#define YASOLR_MQTT_SERVER_CERT_FILE         "/mqtt-server.pem"
+#define YASOLR_MQTT_WILL_TOPIC               "/status"
+#define YASOLR_MQTT_WILL_TOPIC_HA            "~/status"
+#define YASOLR_PID_MODE_ERROR                "On Error"
+#define YASOLR_PID_MODE_INPUT                "On Input"
+#define YASOLR_PZEM_ADDRESS_OUTPUT1          0x01
+#define YASOLR_PZEM_ADDRESS_OUTPUT2          0x02
+#define YASOLR_RELAY_TYPE_NC                 "NC"
+#define YASOLR_RELAY_TYPE_NO                 "NO"
+#define YASOLR_SAFEBOOT_PARTITION_NAME       "safeboot" // See: https://github.com/mathieucarbou/MycilaSafeBoot
+#define YASOLR_SAFEBOOT_PARTITION_SIZE       655360     // See: https://github.com/mathieucarbou/MycilaSafeBoot
+#define YASOLR_SERIAL_BAUDRATE               115200
+#define YASOLR_UART_1_NAME                   "Serial1"
+#define YASOLR_UART_2_NAME                   "Serial2"
+#define YASOLR_UART_NONE                     "N/A"
+#define YASOLR_WEEK_DAYS                     "sun,mon,tue,wed,thu,fri,sat"
+#define YASOLR_WEEK_DAYS_EMPTY               "none"
+#define YASOLR_ZC_EVENT_SHIFT_US             -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
 
 #ifdef APP_MODEL_PRO
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR-Pro/releases/"

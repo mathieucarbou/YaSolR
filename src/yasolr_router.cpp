@@ -107,11 +107,11 @@ static Mycila::Task frequencyMonitorTask("Frequency", []() {
 
 // functions
 
-// these dimmers work in burst fire mode
-static bool isZeroCrossingBased(const char* type) {
-  return strcmp(type, YASOLR_DIMMER_ROBODYN_BF) == 0 ||
-         strcmp(type, YASOLR_DIMMER_RANDOM_SSR_BF) == 0 ||
-         strcmp(type, YASOLR_DIMMER_TRIAC_BF) == 0 ||
+// these dimmers work in Cycle Stealing mode
+static bool isCycleStealingBased(const char* type) {
+  return strcmp(type, YASOLR_DIMMER_ROBODYN_CYCLE_STEAL) == 0 ||
+         strcmp(type, YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL) == 0 ||
+         strcmp(type, YASOLR_DIMMER_TRIAC_CYCLE_STEAL) == 0 ||
          strcmp(type, YASOLR_DIMMER_ZC_SSR) == 0;
 }
 
@@ -174,10 +174,10 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
     return new Mycila::Dimmer();
   }
 
-  if (isZeroCrossingBased(type)) {
-    // Mycila::BurstFireDimmer* bfDimmer = new Mycila::BurstFireDimmer();
-    // bfDimmer->setPin((gpio_num_t)config.getInt(keyPin));
-    // return bfDimmer;
+  if (isCycleStealingBased(type)) {
+    Mycila::CycleStealingDimmer* csDimmer = new Mycila::CycleStealingDimmer();
+    csDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    return csDimmer;
   }
 
   ESP_LOGE(TAG, "Dimmer type not supported: %s", type);
@@ -203,14 +203,14 @@ static Mycila::Relay* createBypassRelay(const char* keyType, const char* keyPin)
 
 static void ARDUINO_ISR_ATTR onZeroCross(int16_t delayUntilZero, void* arg) {
   Mycila::ThyristorDimmer::onZeroCross(delayUntilZero, arg);
-  // Mycila::BurstFireDimmer::onZeroCross(delayUntilZero, arg);
+  Mycila::CycleStealingDimmer::onZeroCross(delayUntilZero, arg);
 }
 
 static void configure_zcd() {
   if ((dimmer1 && strcmp(dimmer1->type(), "thyristor") == 0) ||
-      (dimmer1 && strcmp(dimmer1->type(), "burst-fire") == 0) ||
+      (dimmer1 && strcmp(dimmer1->type(), "cycle-stealing") == 0) ||
       (dimmer2 && strcmp(dimmer2->type(), "thyristor") == 0) ||
-      (dimmer2 && strcmp(dimmer2->type(), "burst-fire") == 0)) {
+      (dimmer2 && strcmp(dimmer2->type(), "cycle-stealing") == 0)) {
     if (pulseAnalyzer == nullptr) {
       ESP_LOGI(TAG, "Enable ZCD Pulse Analyzer");
       pulseAnalyzer = new Mycila::PulseAnalyzer();
