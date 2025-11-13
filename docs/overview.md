@@ -13,7 +13,7 @@ description: Overview
   - [RobotDyn and Solid State Relay (SSR)](#robotdyn-and-solid-state-relay-ssr)
 - [Phase Control](#phase-control)
   - [Harmonics](#harmonics)
-- [Burst Fire Control](#burst-fire-control)
+- [Cycle Stealing Control](#cycle-stealing-control)
   - [Flickering](#flickering)
 - [Recommendations to reduce harmonics and flickering](#recommendations-to-reduce-harmonics-and-flickering)
 - [References](#references)
@@ -60,13 +60,13 @@ Here are below some examples of how a ZCD circuit works by looking at 2 differen
 | [![ZCD](assets/img/measurements/Oscillo_ZCD.jpeg)](assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
 
 When the AC voltage curve crosses the Zero point, the ZCD circuit sends a pulse (with a custom duration) to the controller board, which now knows that the voltage is at zero.
-The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or RobotDyn) to activate it, based on the excess power, or if using burst fire control, to know when to let the current pass and for how many semi-periods.
+The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or RobotDyn) to activate it, based on the excess power, or if using Cycle Stealing control, to know when to let the current pass and for how many semi-periods.
 
 ### The Importance of a good ZCD circuit
 
 Using a good ZCD circuit producing a reliable pulse is very important.
 
-If the pulses are not reliable, some short flickering could be caused by a mis-detection of the zero point or by the existence of spurious pulses (false-positives), and consequently cause the TRIAC to fire at the wrong time, or the calculations for the burst fire sequence to be wrong.
+If the pulses are not reliable, some short flickering could be caused by a mis-detection of the zero point or by the existence of spurious pulses (false-positives), and consequently cause the TRIAC to fire at the wrong time, or the calculations for the Cycle Stealing sequence to be wrong.
 These are visible if you plug an incandescent light bulb to the dimmer output: the bulb will flicker from time to time.
 The effect on a water tank resistance is even bigger: it will create some spurious spikes of power consumption, that the router will try to compensate just after by considerably reducing the dimming level.
 This creates some waves instead of keeping the import and export at a near-0 level.
@@ -104,10 +104,10 @@ A Solid State Relay is a relay that does not have any moving parts and is based 
 It can be turned on and off very fast.
 
 A **Zero-Cross SSR** is a relay that will only close or open when the voltage curve is at 0.
-It won't generate any harmonics and is not able to do Phase Control, but it can be used for Burst Fire Control.
+It won't generate any harmonics and is not able to do Phase Control, but it can be used for Cycle Stealing Control.
 
 A **Random** SSR is a relay that can be turned on and off at any point in time, at any voltage level.
-It can be used for Phase Control and Burst Fire Control.
+It can be used for Phase Control and Cycle Stealing Control.
 If activated when the voltage curve is not at 0, it will generate harmonics.
 
 Due to the nature of SSR, the more they are used (switched on/off), the more they will heat up.
@@ -188,9 +188,9 @@ Some studies were done to determine the level of harmonics a Solar Router would 
 
 To put things in perspective, it is important to remember that a Solar Router will adapt the TRIAC angle based on the excess power, so **the router will not always be dimming at 90 degrees**, at the worst case scenario.
 
-## Burst Fire Control
+## Cycle Stealing Control
 
-Burst Fire Control will let a complete or half complete voltage curve pass or not, and this control is done from the zero point up to the next.
+Cycle Stealing Control will let a complete or half complete voltage curve pass or not, and this control is done from the zero point up to the next.
 So the sin wave is not chopped like in Phase Control, but we decide to let pass or not a complete period or half period.
 
 50Hz current has a voltage curve with a period of 20 ms decoupled in 2 half-periods: one positive, one negative, so the zero voltage is crossed twice per period.
@@ -199,12 +199,15 @@ A measuring device like JSY makes about 300 ms to see a new value, which gives u
 This method can use a simple Zero-Cross Solid State Relay: a relay that will only close or open when the voltage curve is at 0.
 So there is no load at that time of switching, thus, no harmonics.
 
+![](https://mathieu.carbou.me/MycilaDimmer/assets/img/measurements/cycle_stealing_10ms.jpeg)
+
 **This method is not as accurate as Phase Control, but still provides good results, depending on the load.**
 
 ### Flickering
 
-The main problem with Burst Fire Control is that some kind of arrangements can cause flickering when the nominal load is big (big power tanks), visible on light bulbs that are close-by.
+The main problem with Cycle Stealing Control is that some kind of arrangements can cause flickering when the nominal load is big (big power tanks), visible on light bulbs that are close-by.
 This is caused by a sudden voltage drop in the house, caused by a sudden current flow at the request of the big water tank resistance.
+This effects highly depends on the quality implementation of the Cycle Stealing algorithm. For exemple, burst fire (which is not used in YaSolR) is more prone to flickering because the dimmer is turned of and on for complete periods.
 
 ## Recommendations to reduce harmonics and flickering
 

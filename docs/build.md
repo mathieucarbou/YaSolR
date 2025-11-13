@@ -84,7 +84,7 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router!
 > ##### TIP
 >
 > - RobotDyn includes Zero-Cross Detection circuit
-> - Supports **Phase Control** and **Burst mode**
+> - Supports **Phase Control** and **Cycle Stealing**
 > - Reuse your Shelly EM or 3EM and send through MQTT grid power and voltage
 > - You can also use a SSR and ZCD module instead of the RobotDyn
 {: .block-tip }
@@ -113,7 +113,7 @@ The _Minimalist_ build uses inexpensive and easy to use components to start a ro
 > ##### TIP
 >
 > - RobotDyn includes Zero-Cross Detection circuit
-> - Supports **Phase Control** and **Burst mode**
+> - Supports **Phase Control** and **Cycle Stealing**
 {: .block-tip }
 
 > ##### WARNING
@@ -138,7 +138,7 @@ This is an improved version of the _Minimalist_ build using the new JSY-MK-194G 
 > ##### TIP
 >
 > - JSY-MK-194G includes a Zero-Cross Detection circuit
-> - Supports **Phase Control** and **Burst mode**
+> - Supports **Phase Control** and **Cycle Stealing**
 {: .block-tip }
 
 > ##### WARNING
@@ -163,7 +163,7 @@ See the [RobotDyn](#robotdyn) section for more information.
 > ##### TIP
 >
 > - RobotDyn includes Zero-Cross Detection circuit
-> - Supports **Phase Control** and **Burst mode**
+> - Supports **Phase Control** and **Cycle Stealing**
 {: .block-tip }
 
 > ##### WARNING
@@ -191,7 +191,7 @@ The _Elite_ build is for people who want to use a Random SSR instead of a RobotD
 > - The **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR directly without the need of an external ZCD module.
 > - Dedicated ZCD circuit with a good pulse
 > - Dedicated Random SSR (models up to 100A)
-> - Supports **Phase Control** and **Burst mode**
+> - Supports **Phase Control** and **Cycle Stealing**
 > - Other types of Heat Sink are available: the image above is just an example. Pick one according to your load.
 > - All the components can be easily attached onto a DIN rail
 {: .block-tip }
@@ -212,7 +212,7 @@ There are multiple ways to control a voltage regulator with YaSolR.
 > ##### TIP
 >
 > - Dedicated hardware supporting high loads
-> - Supports **Phase Control** and **Burst mode**
+> - Supports **Phase Control** and **Cycle Stealing**
 > - Heat sink are bigger and better quality: bigger models are also available
 {: .block-tip }
 
@@ -425,7 +425,7 @@ In case of the RobotDyn 40A, you can install it vertically.
 - Verify that the **output AC voltage** is in the range (example: 24-480V AC)
 - Verify the **SSR amperage**: usually, it should be 2-3 times the nominal current of your resistive load (example: 40A SSR for a 3000W resistance).
   For induction loads, it should be 4-7 times the nominal current.
-- **Zero Cross SSR** (which is the default for most SSR): for the bypass relay or external relays with resistive loads, or when using Burst modulation routing algorithm
+- **Zero Cross SSR** (which is the default for most SSR): for the bypass relay or external relays with resistive loads, or when using Cycle Stealing modulation routing algorithm
 - **Random SSR**: if you chose to not use the RobotDyn but a Random SSR for Phase Control, or external relays with inductive loads (pump, motors)
 
 ## Where to buy ?
@@ -457,8 +457,8 @@ Links are provided for reference only, you can find them on other websites.
 
 |                                                                        |                                                                                                                                                                                                           |
 | :--------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="./assets/img/hardware/RobotDyn_24A.jpeg" style="width:150px"> | [RobotDyn AC Dimmer 24A/600V](https://www.rbdimmer.com/fr/) Includes ZCD, supports **Phase Control** and **Burst mode**                                                           |
-| <img src="./assets/img/hardware/RobotDyn_40A.jpeg" style="width:150px"> | [RobotDyn AC Dimmer 40A/800V](https://www.rbdimmer.com/fr/) Includes ZCD, supports **Phase Control** and **Burst mode**                                                            |
+| <img src="./assets/img/hardware/RobotDyn_24A.jpeg" style="width:150px"> | [RobotDyn AC Dimmer 24A/600V](https://www.rbdimmer.com/fr/) Includes ZCD, supports **Phase Control** and **Cycle Stealing**                                                           |
+| <img src="./assets/img/hardware/RobotDyn_40A.jpeg" style="width:150px"> | [RobotDyn AC Dimmer 40A/800V](https://www.rbdimmer.com/fr/) Includes ZCD, supports **Phase Control** and **Cycle Stealing**                                                            |
 | <img src="./assets/img/hardware/BTA40-800B.jpeg" style="width:150px">  | Triac BTA40-800B RD91 [here](https://fr.aliexpress.com/item/32892486601.html) or [here](https://fr.aliexpress.com/item/1005001762265497.html) if you want / need to replace the Triac inside your RobotDyn |
 | <img src="./assets/img/hardware/Heat_Sink.jpeg" style="width:150px">   | [Heat Sink for Random SSR and Triac](https://fr.aliexpress.com/item/1005004879389236.html) (there are many more types available: take a big heat sink placed vertically)                                  |
 
@@ -477,8 +477,8 @@ Links are provided for reference only, you can find them on other websites.
 
 | **Random and Zero-Cross SSR**                                           |                                                                                                                                                                                                                                                                                                                                          |
 | :---------------------------------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px">   | [LCTC Random Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://www.aliexpress.com/item/1005004084038828.html), ([Other LCTC vendor link](https://fr.aliexpress.com/item/1005004863817921.html)). Supports **Phase Control** and **Burst mode**, See [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-) below |
-| <img src="./assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px">   | [Zero-Cross Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://fr.aliexpress.com/item/1005003216482476.html) Supports **Burst mode**, See [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-) below                                                                                                            |
+| <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px">   | [LCTC Random Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://www.aliexpress.com/item/1005004084038828.html), ([Other LCTC vendor link](https://fr.aliexpress.com/item/1005004863817921.html)). Supports **Phase Control** and **Cycle Stealing**, See [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-) below |
+| <img src="./assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px">   | [Zero-Cross Solid State Relay (SSR) that can be controlled by a 3.3V DC signal](https://fr.aliexpress.com/item/1005003216482476.html) Supports **Cycle Stealing**, See [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-) below                                                                                                            |
 | <img src="./assets/img/hardware/SSR_Heat_Sink.png" style="width:150px"> | [Heat Sink for SSR](https://fr.aliexpress.com/item/32739226601.html) (there are many more types available: take a big heat sink placed vertically)                                                                                                                                                                                       |
 
 ### Zero-Cross Detection Modules
@@ -513,8 +513,8 @@ This ZCD circuit won't be as good as a specialized one, but it can be enough for
 
 |                                                                                            |                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | :----------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px">                     | [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Burst mode**                                                                                                                                                                                                                                                                                               |
-| <img src="./assets/img/hardware/LCTC_Voltage_Regulator_220V_40A.jpeg" style="width:150px"> | [LCTC Voltage Regulator 220V / 40A](https://fr.aliexpress.com/item/1005005008018888.html) or [more models without heat sink but 60A, 80A, etc](https://fr.aliexpress.com/item/20000003997748.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Burst mode**                                                                                                                                                                   |
+| <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px">                     | [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Cycle Stealing**                                                                                                                                                                                                                                                                                               |
+| <img src="./assets/img/hardware/LCTC_Voltage_Regulator_220V_40A.jpeg" style="width:150px"> | [LCTC Voltage Regulator 220V / 40A](https://fr.aliexpress.com/item/1005005008018888.html) or [more models without heat sink but 60A, 80A, etc](https://fr.aliexpress.com/item/20000003997748.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Cycle Stealing**                                                                                                                                                                   |
 | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px">                     | [3.3V PWM Signal to 0-10V Convertor ](https://fr.aliexpress.com/item/1005004859012736.html) or [this link](https://fr.aliexpress.com/item/1005006859312414.html) or [this link](https://fr.aliexpress.com/item/1005007211285500.html) or [this link](https://fr.aliexpress.com/item/1005006822631244.html). Required to use the voltage regulators to convert the ESP32 pulse signal on 3.3V to an analogic output from 0-10V (external 12V power supply required) |
 | <img src="./assets/img/hardware/DFR0971.jpg" style="width:150px">                          | [DAC: DFR0971 (based on GP8403), DFR1073 (based on GP8413), DFR1071 (based on GP8211S)](https://www.dfrobot.com/blog-13458.html) |
 | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px">                   | [Heat Sink 10-60A for Voltage Regulators](https://fr.aliexpress.com/item/1005001541419957.html) or [this link](https://fr.aliexpress.com/item/32823649189.html) or [this link](https://fr.aliexpress.com/item/1005003670939186.html) or [this link](https://fr.aliexpress.com/item/1005001541419957.html)                                                                                                                                                                                                                                                                                                                                                                |
