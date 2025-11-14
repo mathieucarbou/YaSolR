@@ -102,32 +102,6 @@ namespace YaSolR {
         });
       }
 
-      template <uint8_t Precision>
-      void _numConfig(dash::FeedbackInputCard<float, Precision>& card, const char* key) {
-        card.onChange([key, &card](const std::optional<float>& value) {
-          if (value.has_value()) {
-            config.set(key, dash::to_string<float, Precision>(value.value()));
-          } else {
-            config.unset(key);
-          }
-          card.setValue(config.getFloat(key));
-          dashboard.refresh(card);
-        });
-      }
-
-      template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
-      void _numConfig(dash::FeedbackInputCard<T>& card, const char* key) {
-        card.onChange([key, &card, this](const std::optional<T> value) {
-          if (value.has_value()) {
-            config.set(key, std::to_string(value.value()));
-          } else {
-            config.unset(key);
-          }
-          card.setValue(config.getInt(key));
-          dashboard.refresh(card);
-        });
-      }
-
       void _passwordConfig(dash::PasswordCard& card, const char* key) {
         card.onChange([key, &card, this](const std::optional<const char*>& value) {
           config.set(key, value.value_or(""));
