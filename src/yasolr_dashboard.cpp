@@ -1797,6 +1797,8 @@ void YaSolR::Website::updateWarnings() {
       }
       _warnings2.setMessages(std::move(selection));
       _warnings2.setDisplay(true);
+    } else {
+      _warnings2.setDisplay(false);
     }
   } else {
     _warnings1.setDisplay(false);
