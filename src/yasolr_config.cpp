@@ -149,8 +149,8 @@ void yasolr_init_config() {
     restartTask.resume();
   });
 
-  config.listen([](const char* k, const std::string& newValue) {
-    ESP_LOGI(TAG, "'%s' => '%s'", k, newValue.c_str());
+  config.listen([](const char* k, const char* newValue) {
+    ESP_LOGI(TAG, "'%s' => '%s'", k, newValue);
     const std::string key = k;
 
     if (key == KEY_RELAY1_LOAD) {
