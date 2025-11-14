@@ -45,11 +45,11 @@ void yasolr_configure_output1_pzem() {
       pzemO1 = new Mycila::PZEM();
       pzemO1->setSharedSerial(true);
 
-      if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+      if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
         pzemO1->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
 
 #if SOC_UART_NUM > 2
-      if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+      if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
         pzemO1->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
 #endif
 
@@ -85,11 +85,11 @@ void yasolr_configure_output1_pzem() {
           ESP_LOGI(TAG, "Pairing connected PZEM to Output 1");
           pzemO1->end();
 
-          if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+          if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
             pzemO1->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 
 #if SOC_UART_NUM > 2
-          if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+          if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
             pzemO1->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 #endif
 
@@ -159,11 +159,11 @@ void yasolr_configure_output2_pzem() {
       pzemO2 = new Mycila::PZEM();
       pzemO2->setSharedSerial(true);
 
-      if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+      if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
         pzemO2->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
 
 #if SOC_UART_NUM > 2
-      if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+      if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
         pzemO2->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
 #endif
 
@@ -199,11 +199,11 @@ void yasolr_configure_output2_pzem() {
           ESP_LOGI(TAG, "Pairing connected PZEM to Output 2");
           pzemO2->end();
 
-          if (config.getString(KEY_PZEM_UART) == YASOLR_UART_1_NAME)
+          if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
             pzemO2->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 
 #if SOC_UART_NUM > 2
-          if (config.getString(KEY_PZEM_UART) == YASOLR_UART_2_NAME)
+          if (strcmp(config.get(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
             pzemO2->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 #endif
 

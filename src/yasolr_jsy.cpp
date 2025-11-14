@@ -112,7 +112,7 @@ void yasolr_configure_jsy() {
 
     // setup JSY if not done yet
     if (jsy == nullptr) {
-      if (config.getString(KEY_JSY_UART) == YASOLR_UART_NONE) {
+      if (strcmp(config.get(KEY_JSY_UART), YASOLR_UART_NONE) == 0) {
         ESP_LOGE(TAG, "No UART selected for JSY");
         return;
       }
@@ -121,11 +121,11 @@ void yasolr_configure_jsy() {
 
       jsy = new Mycila::JSY();
 
-      if (config.getString(KEY_JSY_UART) == YASOLR_UART_1_NAME)
+      if (strcmp(config.get(KEY_JSY_UART), YASOLR_UART_1_NAME) == 0)
         jsy->begin(Serial1, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
 
 #if SOC_UART_NUM > 2
-      if (config.getString(KEY_JSY_UART) == YASOLR_UART_2_NAME)
+      if (strcmp(config.get(KEY_JSY_UART), YASOLR_UART_2_NAME) == 0)
         jsy->begin(Serial2, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
 #endif
 

@@ -25,13 +25,13 @@ static void connect() {
   bool secured = config.getBool(KEY_MQTT_SECURED);
 
   Mycila::MQTT::Config mqttConfig;
-  mqttConfig.server = config.getString(KEY_MQTT_SERVER);
+  mqttConfig.server = config.get(KEY_MQTT_SERVER);
   mqttConfig.port = static_cast<uint16_t>(config.getLong(KEY_MQTT_PORT));
   mqttConfig.secured = secured;
-  mqttConfig.username = config.getString(KEY_MQTT_USERNAME);
-  mqttConfig.password = config.getString(KEY_MQTT_PASSWORD);
+  mqttConfig.username = config.get(KEY_MQTT_USERNAME);
+  mqttConfig.password = config.get(KEY_MQTT_PASSWORD);
   mqttConfig.clientId = Mycila::AppInfo.defaultMqttClientId;
-  mqttConfig.willTopic = config.getString(KEY_MQTT_TOPIC) + YASOLR_MQTT_WILL_TOPIC;
+  mqttConfig.willTopic = std::string(config.get(KEY_MQTT_TOPIC)) + YASOLR_MQTT_WILL_TOPIC;
   mqttConfig.keepAlive = YASOLR_MQTT_KEEPALIVE;
 
   if (secured) {
@@ -58,7 +58,7 @@ static void connect() {
 static void subscribe() {
   ESP_LOGI(TAG, "Subscribing to MQTT topics");
 
-  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
+  std::string baseTopic = config.get(KEY_MQTT_TOPIC);
 
   // config
 
@@ -255,7 +255,7 @@ static void subscribe() {
 
 static void publishConfig() {
   ESP_LOGI(TAG, "Publishing config to MQTT");
-  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
+  std::string baseTopic = config.get(KEY_MQTT_TOPIC);
   for (auto& key : config.keys()) {
     const char* value = config.get(key);
     if (value[0] != '\0' && config.isPasswordKey(key))
@@ -268,7 +268,7 @@ static void publishConfig() {
 static void publishStaticData() {
   ESP_LOGI(TAG, "Publishing static data to MQTT...");
 
-  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
+  std::string baseTopic = config.get(KEY_MQTT_TOPIC);
 
   mqtt->publish((baseTopic + "/system/app/manufacturer").c_str(), Mycila::AppInfo.manufacturer, true);
   mqtt->publish((baseTopic + "/system/app/model").c_str(), Mycila::AppInfo.model, true);
@@ -300,7 +300,7 @@ static void publishStaticData() {
 }
 
 static void publishData() {
-  const std::string& baseTopic = config.getString(KEY_MQTT_TOPIC);
+  std::string baseTopic = config.get(KEY_MQTT_TOPIC);
 
   mqtt->publish((baseTopic + "/system/app/latest_version").c_str(), Mycila::AppInfo.latestVersion);
 
@@ -520,7 +520,7 @@ static void haDiscovery() {
 void yasolr_configure_mqtt() {
   if (config.getBool(KEY_ENABLE_MQTT)) {
     if (mqtt == nullptr) {
-      if (!config.getString(KEY_MQTT_SERVER).length()) {
+      if (strlen(config.get(KEY_MQTT_SERVER)) == 0) {
         ESP_LOGE(TAG, "MQTT server is not set");
         return;
       }

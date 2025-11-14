@@ -45,11 +45,11 @@ void yasolr_init_network() {
 
   // Network Manager
   Mycila::ESPConnect::Config espConnectConfig;
-  espConnectConfig.hostname = config.getString(KEY_HOSTNAME);
+  espConnectConfig.hostname = config.get(KEY_HOSTNAME);
   espConnectConfig.apMode = config.getBool(KEY_ENABLE_AP_MODE);
-  espConnectConfig.wifiBSSID = config.getString(KEY_WIFI_BSSID);
-  espConnectConfig.wifiSSID = config.getString(KEY_WIFI_SSID);
-  espConnectConfig.wifiPassword = config.getString(KEY_WIFI_PASSWORD);
+  espConnectConfig.wifiBSSID = config.get(KEY_WIFI_BSSID);
+  espConnectConfig.wifiSSID = config.get(KEY_WIFI_SSID);
+  espConnectConfig.wifiPassword = config.get(KEY_WIFI_PASSWORD);
   espConnectConfig.ipConfig.ip.fromString(config.get(KEY_NET_IP));
   espConnectConfig.ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
   espConnectConfig.ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));

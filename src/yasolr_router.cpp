@@ -344,8 +344,8 @@ void yasolr_configure_pid() {
   pidController.setTimeSampling(false);
   pidController.setIntegralCorrectionMode(Mycila::PID::IntegralCorrectionMode::CLAMP);
 
-  pidController.setProportionalMode(config.getString(KEY_PID_MODE_P) == YASOLR_PID_MODE_ERROR ? Mycila::PID::ProportionalMode::ON_ERROR : Mycila::PID::ProportionalMode::ON_INPUT);
-  pidController.setDerivativeMode(config.getString(KEY_PID_MODE_D) == YASOLR_PID_MODE_ERROR ? Mycila::PID::DerivativeMode::ON_ERROR : Mycila::PID::DerivativeMode::ON_INPUT);
+  pidController.setProportionalMode(strcmp(config.get(KEY_PID_MODE_P), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::ProportionalMode::ON_ERROR : Mycila::PID::ProportionalMode::ON_INPUT);
+  pidController.setDerivativeMode(strcmp(config.get(KEY_PID_MODE_D), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::DerivativeMode::ON_ERROR : Mycila::PID::DerivativeMode::ON_INPUT);
 
   pidController.setSetpoint(config.getFloat(KEY_PID_SETPOINT));
   pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));

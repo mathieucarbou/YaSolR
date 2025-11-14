@@ -12,7 +12,7 @@ static Mycila::Task* victronReadTask = nullptr;
 void yasolr_configure_victron() {
   if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
     if (victron == nullptr) {
-      if (!config.getString(KEY_VICTRON_MODBUS_SERVER).length()) {
+      if (strlen(config.get(KEY_VICTRON_MODBUS_SERVER)) == 0) {
         ESP_LOGE(TAG, "Victron Modbus TCP server is not set");
         return;
       }

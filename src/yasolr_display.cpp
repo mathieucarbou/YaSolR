@@ -22,12 +22,12 @@ void yasolr_configure_display() {
 
       display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 
-      const std::string& displayType = config.getString(KEY_DISPLAY_TYPE);
-      if (displayType == "SSD1306")
+      const char* displayType = config.get(KEY_DISPLAY_TYPE);
+      if (strcmp(displayType, "SSD1306") == 0)
         display->begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
-      else if (displayType == "SH1107")
+      else if (strcmp(displayType, "SH1107") == 0)
         display->begin(Mycila::EasyDisplayType::SH1107, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
-      else if (displayType == "SH1106")
+      else if (strcmp(displayType, "SH1106") == 0)
         display->begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
 
       if (!display->isEnabled()) {
