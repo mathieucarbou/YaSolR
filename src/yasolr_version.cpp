@@ -58,5 +58,9 @@ Mycila::Task versionCheckTask("Version Check", Mycila::Task::Type::ONCE, []() {
 void yasolr_init_version_check() {
   ESP_LOGI(TAG, "Initialize version check");
   versionCheckTask.setEnabledWhen([]() { return espConnect.getState() == Mycila::ESPConnect::State::NETWORK_CONNECTED && !dashboard.isAsyncAccessInProgress(); });
+
+  if (config.getBool(KEY_ENABLE_DEBUG))
+    versionCheckTask.enableProfiling();
+
   unsafeTaskManager.addTask(versionCheckTask);
 }
