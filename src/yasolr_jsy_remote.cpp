@@ -128,8 +128,6 @@ void yasolr_configure_jsy_remote() {
       });
 
       coreTaskManager.addTask(*jsyRemoteTask);
-
-      Mycila::TaskMonitor.addTask("async_udp"); // AsyncUDP (stack size cannot be set)
     }
   } else {
     if (jsyRemoteTask != nullptr) {

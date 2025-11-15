@@ -621,8 +621,4 @@ void yasolr_init_web_server() {
     dashboardUpdateTask.enableProfiling();
     dashboardInitTask.enableProfiling();
   }
-
-  // Task Monitor
-
-  Mycila::TaskMonitor.addTask("async_tcp"); // AsyncTCP (set stack size with CONFIG_ASYNC_TCP_STACK_SIZE)
 }

@@ -33,6 +33,7 @@ static constexpr const char* ERR_ACT_O2_DIMMER = "Unable to activate Output 2 Di
 static constexpr const char* ERR_ACT_O2_DS18 = "Unable to activate Output 2 DS18: configuration error!";
 static constexpr const char* ERR_ACT_O2_PZEM = "Unable to activate Output 2 PZEM: configuration error!";
 static constexpr const char* ERR_ACT_SYS_DS18 = "Unable to activate System DS18: configuration error!";
+static constexpr const char* ERR_ACT_VICTRON = "Unable to activate Victron Modbus: configuration error!";
 // resistance missing
 static constexpr const char* ERR_RESIST_CAL_O1 = "Output 1 Resistance not calibrated!";
 static constexpr const char* ERR_RESIST_CAL_O2 = "Output 2 Resistance not calibrated!";
@@ -1687,30 +1688,32 @@ void YaSolR::Website::updateWarnings() {
   size_t count = 0;
 
   // mqtt
-  if (mqtt && config.getBool(KEY_ENABLE_MQTT)) {
-    if (!mqtt->isEnabled()) {
+  if (config.getBool(KEY_ENABLE_MQTT)) {
+    if (!mqtt || !mqtt->isEnabled()) {
       errors[count++] = ERR_ACT_MQTT;
     } else if (!mqtt->isConnected()) {
       errors[count++] = ERR_MQTT_COM;
     }
   }
   // jsy
-  if (jsy && config.getBool(KEY_ENABLE_JSY)) {
-    if (!jsy->isEnabled()) {
+  if (config.getBool(KEY_ENABLE_JSY)) {
+    if (!jsy || !jsy->isEnabled()) {
       errors[count++] = ERR_ACT_JSY;
     } else if (!jsy->isConnected()) {
       errors[count++] = ERR_GRID_JSY;
     }
   }
   // victron
-  if (victron && config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
-    if (victron->hasError()) {
+  if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
+    if (!victron) {
+      errors[count++] = ERR_ACT_VICTRON;
+    } else if (victron->hasError()) {
       errors[count++] = ERR_VICTRON_COM;
     }
   }
   // pzem output 1
-  if (pzemO1 && config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
-    if (!pzemO1->isEnabled()) {
+  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+    if (!pzemO1 || !pzemO1->isEnabled()) {
       errors[count++] = ERR_ACT_O1_PZEM;
     } else if (pzemO1->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
       errors[count++] = ERR_PZEM_ADDR_O1;
@@ -1719,8 +1722,8 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // pzem output 2
-  if (pzemO2 && config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
-    if (!pzemO2->isEnabled()) {
+  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+    if (!pzemO2 || !pzemO2->isEnabled()) {
       errors[count++] = ERR_ACT_O2_PZEM;
     } else if (pzemO2->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {
       errors[count++] = ERR_PZEM_ADDR_O2;
@@ -1749,8 +1752,8 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // DS18 system
-  if (ds18Sys && config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
-    if (!ds18Sys->isEnabled()) {
+  if (config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
+    if (!ds18Sys || !ds18Sys->isEnabled()) {
       errors[count++] = ERR_ACT_SYS_DS18;
     } else if (ds18Sys->getLastTime() == 0) {
       errors[count++] = ERR_DS18_WAIT_SYS;
@@ -1759,8 +1762,8 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // DS18 output 1
-  if (ds18O1 && config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
-    if (!ds18O1->isEnabled()) {
+  if (config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
+    if (!ds18O1 || !ds18O1->isEnabled()) {
       errors[count++] = ERR_ACT_O1_DS18;
     } else if (ds18O1->getLastTime() == 0) {
       errors[count++] = ERR_DS18_WAIT_O1;
@@ -1769,8 +1772,8 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // DS18 output 2
-  if (ds18O2 && config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
-    if (!ds18O2->isEnabled()) {
+  if (config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
+    if (!ds18O2 || !ds18O2->isEnabled()) {
       errors[count++] = ERR_ACT_O2_DS18;
     } else if (ds18O2->getLastTime() == 0) {
       errors[count++] = ERR_DS18_WAIT_O2;

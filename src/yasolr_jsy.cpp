@@ -145,10 +145,7 @@ void yasolr_configure_jsy() {
       jsyTaskManager->asyncStop();
       jsyTask->setEnabled(false);
       jsy->end();
-
-      while (jsyTask->running()) {
-        delay(10);
-      }
+      jsyTaskManager->waitForAllTasksToComplete();
 
       delete jsyTaskManager;
       jsyTaskManager = nullptr;

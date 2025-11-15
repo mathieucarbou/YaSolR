@@ -99,6 +99,8 @@ namespace YaSolR {
           config.set(key, std::to_string(value));
           card.setValue(config.getInt(key));
           dashboard.refresh(card);
+          // GPIO page may need to be revalidated
+          dashboardInitTask.resume();
         });
       }
 

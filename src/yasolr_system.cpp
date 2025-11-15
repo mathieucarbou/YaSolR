@@ -31,8 +31,6 @@ void yasolr_init_system() {
   ESP_LOGI(TAG, "Initialize system");
 
   // disableLoopWDT();
-  // disableCore0WDT();
-  // disableCore1WDT();
   Mycila::TaskManager::configureWDT(60, true);
 
   Mycila::System::init(true, "fs");
@@ -49,6 +47,8 @@ void yasolr_init_system() {
   coreTaskManager.addTask(restartTask);
   coreTaskManager.addTask(safeBootTask);
 
-  Mycila::TaskMonitor.addTask(coreTaskManager.name());   // YaSolR
-  Mycila::TaskMonitor.addTask(unsafeTaskManager.name()); // YaSolR
+  Mycila::TaskMonitor.addTask(coreTaskManager.name());
+  Mycila::TaskMonitor.addTask(unsafeTaskManager.name());
+  Mycila::TaskMonitor.addTask("async_tcp");
+  Mycila::TaskMonitor.addTask("async_udp"); // also activated in CP mode (by network ?)
 }
