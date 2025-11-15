@@ -30,6 +30,9 @@ Mycila::Task safeBootTask("SafeBoot", Mycila::Task::Type::ONCE, []() {
 void yasolr_init_system() {
   ESP_LOGI(TAG, "Initialize system");
 
+  // disableLoopWDT();
+  // disableCore0WDT();
+  // disableCore1WDT();
   Mycila::TaskManager::configureWDT(60, true);
 
   Mycila::System::init(true, "fs");

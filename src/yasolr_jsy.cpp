@@ -85,31 +85,8 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
   }
 }
 
-static void start_task_manager() {
-  // setup JSY async task manager
-  if (jsyTaskManager == nullptr) {
-    jsyTaskManager = new Mycila::TaskManager("jsyTask");
-
-    jsyTask = new Mycila::Task("JSY", []() {
-      if (jsy != nullptr)
-        jsy->read();
-    });
-
-    if (config.getBool(KEY_ENABLE_DEBUG)) {
-      jsyTask->enableProfiling();
-    }
-
-    jsyTaskManager->addTask(*jsyTask);
-
-    assert(jsyTaskManager->asyncStart(2048, 1, 0, 100, true));
-    Mycila::TaskMonitor.addTask(jsyTaskManager->name());
-  }
-}
-
 void yasolr_configure_jsy() {
   if (config.getBool(KEY_ENABLE_JSY)) {
-    start_task_manager();
-
     // setup JSY if not done yet
     if (jsy == nullptr) {
       if (strcmp(config.get(KEY_JSY_UART), YASOLR_UART_NONE) == 0) {
@@ -142,6 +119,21 @@ void yasolr_configure_jsy() {
 
       jsyData = new Mycila::JSY::Data();
       jsy->setCallback(jsy_callback);
+
+      // setup JSY task
+      jsyTask = new Mycila::Task("JSY", []() {
+        if (jsy != nullptr)
+          jsy->read();
+      });
+      if (config.getBool(KEY_ENABLE_DEBUG)) {
+        jsyTask->enableProfiling();
+      }
+
+      // setup JSY task manager
+      jsyTaskManager = new Mycila::TaskManager("jsyTask");
+      jsyTaskManager->addTask(*jsyTask);
+      assert(jsyTaskManager->asyncStart(2048, 1, 0, 100, true));
+      Mycila::TaskMonitor.addTask(jsyTaskManager->name());
     }
   } else {
     // disable JSY if enabled but leave the task manager in case we re-enable it later
@@ -149,7 +141,21 @@ void yasolr_configure_jsy() {
     if (jsy != nullptr) {
       ESP_LOGI(TAG, "Disable JSY");
 
+      Mycila::TaskMonitor.removeTask(jsyTaskManager->name());
+      jsyTaskManager->asyncStop();
+      jsyTask->setEnabled(false);
       jsy->end();
+
+      while (jsyTask->running()) {
+        delay(10);
+      }
+
+      delete jsyTaskManager;
+      jsyTaskManager = nullptr;
+
+      delete jsyTask;
+      jsyTask = nullptr;
+
       delete jsy;
       jsy = nullptr;
 
