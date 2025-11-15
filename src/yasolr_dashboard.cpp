@@ -25,7 +25,7 @@ static const char* errors[10] = {};
 
 // activation errors
 static constexpr const char* ERR_ACT_JSY = "Unable to activate JSY: configuration error!";
-static constexpr const char* ERR_ACT_MQTT = "Unable to activate MQTT: configuration error!";
+static constexpr const char* ERR_ACT_MQTT = "MQTT not yet started (MQTT should start 10 seconds after boot)";
 static constexpr const char* ERR_ACT_O1_DIMMER = "Unable to activate Output 1 Dimmer: configuration error!";
 static constexpr const char* ERR_ACT_O1_DS18 = "Unable to activate Output 1 DS18: configuration error!";
 static constexpr const char* ERR_ACT_O1_PZEM = "Unable to activate Output 1 PZEM: configuration error!";
