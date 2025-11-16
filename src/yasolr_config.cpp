@@ -28,7 +28,7 @@ void yasolr_init_config() {
   config.configure(KEY_DISPLAY_SPEED, "3");
   config.configure(KEY_DISPLAY_TYPE, "SH1106");
   config.configure(KEY_ENABLE_AP_MODE, YASOLR_FALSE);
-  config.configure(KEY_ENABLE_DEBUG, YASOLR_FALSE);
+  config.configure(KEY_ENABLE_DEBUG, YASOLR_TRUE);
   config.configure(KEY_ENABLE_DEBUG_BOOT, YASOLR_FALSE);
   config.configure(KEY_ENABLE_DISPLAY, YASOLR_FALSE);
   config.configure(KEY_ENABLE_SYSTEM_DS18, YASOLR_FALSE);
