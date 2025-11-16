@@ -234,7 +234,10 @@ static void subscribe() {
       float t;
       if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
         ESP_LOGI(TAG, "Output 1 Temperature from MQTT: %f", t);
-        output1.temperature().update(t);
+        if (!output1.temperature().update(t).has_value()) {
+          // if this is the first time we get the temperature, we can trigger the dashboard init task
+          dashboardInitTask.resume();
+        }
       }
     });
   }
@@ -247,7 +250,10 @@ static void subscribe() {
       float t;
       if (std::from_chars(payload.begin(), payload.end(), t).ec == std::errc{}) {
         ESP_LOGI(TAG, "Output 2 Temperature from MQTT: %f", t);
-        output2.temperature().update(t);
+        if (!output2.temperature().update(t).has_value()) {
+          // if this is the first time we get the temperature, we can trigger the dashboard init task
+          dashboardInitTask.resume();
+        }
       }
     });
   }

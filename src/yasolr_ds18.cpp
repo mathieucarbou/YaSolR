@@ -49,8 +49,16 @@ void yasolr_configure_output1_ds18() {
 
       if (ds18O1->isEnabled()) {
         ds18O1->listen([](float temperature, bool changed) {
+          // update the temperature in the output
+          if (!output1.temperature().update(temperature).has_value()) {
+            // if this is the first time we get the temperature, we can trigger the dashboard init task
+            dashboardInitTask.resume();
+          }
+
           if (changed) {
             ESP_LOGI(TAG, "Output 1 Temperature changed to %.02f °C", temperature);
+            if (mqttPublishTask)
+              mqttPublishTask->requestEarlyRun();
           }
         });
       } else {
@@ -78,8 +86,16 @@ void yasolr_configure_output2_ds18() {
 
       if (ds18O2->isEnabled()) {
         ds18O2->listen([](float temperature, bool changed) {
+          // update the temperature in the output
+          if (!output2.temperature().update(temperature).has_value()) {
+            // if this is the first time we get the temperature, we can trigger the dashboard init task
+            dashboardInitTask.resume();
+          }
+
           if (changed) {
             ESP_LOGI(TAG, "Output 2 Temperature changed to %.02f °C", temperature);
+            if (mqttPublishTask)
+              mqttPublishTask->requestEarlyRun();
           }
         });
         ds18O2 = new Mycila::DS18();
