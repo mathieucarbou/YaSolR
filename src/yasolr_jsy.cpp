@@ -132,7 +132,7 @@ void yasolr_configure_jsy() {
       // setup JSY task manager
       jsyTaskManager = new Mycila::TaskManager("jsyTask");
       jsyTaskManager->addTask(*jsyTask);
-      assert(jsyTaskManager->asyncStart(2048, 1, 0, 100, true));
+      assert(jsyTaskManager->asyncStart(3072, 1, 0, 100, true));
       Mycila::TaskMonitor.addTask(jsyTaskManager->name());
     }
   } else {
