@@ -63,28 +63,32 @@ static void onData(AsyncUDPPacket packet) {
     }
     case MYCILA_JSY_MK_193:
     case MYCILA_JSY_MK_194: {
-      grid.updateMetrics({
-        .source = Mycila::Grid::Source::JSY_REMOTE,
-        .apparentPower = doc["channel2"]["apparent_power"] | NAN,
-        .current = doc["channel2"]["current"] | NAN,
-        .energy = doc["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0),
-        .energyReturned = doc["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0),
-        .frequency = doc["channel2"]["frequency"] | NAN,
-        .power = doc["channel2"]["active_power"] | NAN,
-        .powerFactor = doc["channel2"]["power_factor"] | NAN,
-        .voltage = doc["channel2"]["voltage"] | NAN,
-      });
-      router.updateMetrics({
-        .source = Mycila::Router::Source::JSY_REMOTE,
-        .apparentPower = doc["channel1"]["apparent_power"] | 0.0f,
-        .current = doc["channel1"]["current"] | 0.0f,
-        .energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)), // if the clamp is installed reversed
-        .power = std::abs(doc["channel1"]["active_power"] | 0.0f),                                                                                        // if the clamp is installed reversed
-        .powerFactor = doc["channel1"]["power_factor"] | NAN,
-        .resistance = doc["channel1"]["resistance"] | NAN,
-        .thdi = doc["channel1"]["thdi_0"] | NAN,
-        .voltage = doc["channel1"]["dimmed_voltage"] | NAN,
-      });
+      if (doc["channel2"].is<JsonObject>()) {
+        grid.updateMetrics({
+          .source = Mycila::Grid::Source::JSY_REMOTE,
+          .apparentPower = doc["channel2"]["apparent_power"] | NAN,
+          .current = doc["channel2"]["current"] | NAN,
+          .energy = doc["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0),
+          .energyReturned = doc["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0),
+          .frequency = doc["channel2"]["frequency"] | NAN,
+          .power = doc["channel2"]["active_power"] | NAN,
+          .powerFactor = doc["channel2"]["power_factor"] | NAN,
+          .voltage = doc["channel2"]["voltage"] | NAN,
+        });
+      }
+      if (doc["channel1"].is<JsonObject>()) {
+        router.updateMetrics({
+          .source = Mycila::Router::Source::JSY_REMOTE,
+          .apparentPower = doc["channel1"]["apparent_power"] | 0.0f,
+          .current = doc["channel1"]["current"] | 0.0f,
+          .energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)), // if the clamp is installed reversed
+          .power = std::abs(doc["channel1"]["active_power"] | 0.0f),                                                                                        // if the clamp is installed reversed
+          .powerFactor = doc["channel1"]["power_factor"] | NAN,
+          .resistance = doc["channel1"]["resistance"] | NAN,
+          .thdi = doc["channel1"]["thdi_0"] | NAN,
+          .voltage = doc["channel1"]["dimmed_voltage"] | NAN,
+        });
+      }
       break;
     }
     case MYCILA_JSY_MK_333: {
