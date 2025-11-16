@@ -379,9 +379,10 @@ namespace Mycila {
         return false;
       }
 
-      void divert(float gridVoltage, float gridPower) {
+      // returns true if some power were diverted
+      bool divert(float gridVoltage, float gridPower) {
         if (isCalibrationRunning())
-          return;
+          return false;
         const float powerToDivert = _pidController->compute(gridPower);
         float routedPower = 0;
         for (const auto& output : _outputs) {
@@ -389,9 +390,11 @@ namespace Mycila {
         }
         // we have some grid power to divert and grid voltage but we cannot divert
         // reset the PID so that we can start fresh once we will divert
-        if (!routedPower) {
+        if (routedPower <= 0) {
           _pidController->reset(0);
+          return false;
         }
+        return true;
       }
 
       void noDivert() {

@@ -327,11 +327,11 @@ bool yasolr_divert() {
   std::optional<float> voltage = grid.getVoltage();
   std::optional<float> power = grid.getPower();
   if (voltage.has_value() && power.has_value()) {
-    router.divert(voltage.value(), power.value());
+    bool diverted = router.divert(voltage.value(), power.value());
     if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }
-    return true;
+    return diverted;
   } else {
     // pause routing if grid voltage or power are not available
     router.noDivert();
