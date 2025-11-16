@@ -160,6 +160,7 @@ void yasolr_configure_jsy() {
       jsyData = nullptr;
 
       grid.deleteMetrics(Mycila::Grid::Source::JSY);
+      router.deleteMetrics(Mycila::Router::Source::JSY);
     }
   }
 }

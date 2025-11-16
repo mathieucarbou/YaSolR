@@ -147,6 +147,7 @@ void yasolr_configure_jsy_remote() {
       udpMessageRateBuffer = nullptr;
 
       grid.deleteMetrics(Mycila::Grid::Source::JSY_REMOTE);
+      router.deleteMetrics(Mycila::Router::Source::JSY_REMOTE);
     }
   }
 }
