@@ -62,7 +62,12 @@ void yasolr_init_logging() {
 #endif
 
   ESP_LOGI(TAG, "Initialize logging");
-  esp_log_level_set("*", ESP_LOG_INFO);
+  esp_log_level_set("*", ESP_LOG_DEBUG);
+  esp_log_level_set("esp_core_dump_elf", ESP_LOG_INFO);
+  esp_log_level_set("esp_core_dump_port", ESP_LOG_INFO);
+  esp_log_level_set("esp_netif_lwip", ESP_LOG_INFO);
+  esp_log_level_set("nvs", ESP_LOG_INFO);
+  esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
   esp_log_set_vprintf(log_redirect_vprintf);
 }
 

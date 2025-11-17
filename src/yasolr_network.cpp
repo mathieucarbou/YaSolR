@@ -19,7 +19,7 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
   if (!config.getBool(KEY_ENABLE_AP_MODE)) {
     // NTP
     ESP_LOGI(TAG, "Enable NTP");
-    Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
+    Mycila::NTP.sync(config.getString(KEY_NTP_SERVER));
 
     // mDNS
     ESP_LOGI(TAG, "Enable mDNS");
@@ -41,22 +41,22 @@ void yasolr_init_network() {
   ESP_LOGI(TAG, "Initialize networking");
 
   // NTP
-  Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+  Mycila::NTP.setTimeZone(config.getString(KEY_NTP_TIMEZONE));
 
   // Network Manager
   Mycila::ESPConnect::Config espConnectConfig;
-  espConnectConfig.hostname = config.get(KEY_HOSTNAME);
+  espConnectConfig.hostname = config.getString(KEY_HOSTNAME);
   espConnectConfig.apMode = config.getBool(KEY_ENABLE_AP_MODE);
-  espConnectConfig.wifiBSSID = config.get(KEY_WIFI_BSSID);
-  espConnectConfig.wifiSSID = config.get(KEY_WIFI_SSID);
-  espConnectConfig.wifiPassword = config.get(KEY_WIFI_PASSWORD);
-  espConnectConfig.ipConfig.ip.fromString(config.get(KEY_NET_IP));
-  espConnectConfig.ipConfig.gateway.fromString(config.get(KEY_NET_GATEWAY));
-  espConnectConfig.ipConfig.subnet.fromString(config.get(KEY_NET_SUBNET));
-  espConnectConfig.ipConfig.dns.fromString(config.get(KEY_NET_DNS));
+  espConnectConfig.wifiBSSID = config.getString(KEY_WIFI_BSSID);
+  espConnectConfig.wifiSSID = config.getString(KEY_WIFI_SSID);
+  espConnectConfig.wifiPassword = config.getString(KEY_WIFI_PASSWORD);
+  espConnectConfig.ipConfig.ip.fromString(config.getString(KEY_NET_IP));
+  espConnectConfig.ipConfig.gateway.fromString(config.getString(KEY_NET_GATEWAY));
+  espConnectConfig.ipConfig.subnet.fromString(config.getString(KEY_NET_SUBNET));
+  espConnectConfig.ipConfig.dns.fromString(config.getString(KEY_NET_DNS));
   espConnect.setAutoRestart(true);
   espConnect.setBlocking(false);
-  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), config.get(KEY_ADMIN_PASSWORD), espConnectConfig);
+  espConnect.begin(Mycila::AppInfo.defaultHostname.c_str(), config.getString(KEY_ADMIN_PASSWORD), espConnectConfig);
 
   espConnect.listen([](Mycila::ESPConnect::State previous, Mycila::ESPConnect::State state) {
     ESP_LOGI(TAG, "NetworkState: %s => %s", espConnect.getStateName(previous), espConnect.getStateName(state));
@@ -107,8 +107,8 @@ void yasolr_init_network() {
           ESP_LOGI(TAG, "Captive Portal: WiFi configured");
           ESP_LOGI(TAG, "WiFi SSID: %s", espConnect.getConfig().wifiSSID.c_str());
           config.setBool(KEY_ENABLE_AP_MODE, false);
-          config.set(KEY_WIFI_SSID, espConnect.getConfig().wifiSSID);
-          config.set(KEY_WIFI_PASSWORD, espConnect.getConfig().wifiPassword);
+          config.setString(KEY_WIFI_SSID, espConnect.getConfig().wifiSSID);
+          config.setString(KEY_WIFI_PASSWORD, espConnect.getConfig().wifiPassword);
         }
         break;
       }

@@ -136,7 +136,7 @@ static bool isDACBased(const char* type) {
 }
 
 static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const char* keyPin) {
-  const char* type = config.get(keyType);
+  const char* type = config.getString(keyType);
   ESP_LOGI(TAG, "Initializing dimmer %s for output %d", type, outputID);
 
   if (isThyristorBased(type)) {
@@ -344,8 +344,8 @@ void yasolr_configure_pid() {
   pidController.setTimeSampling(false);
   pidController.setIntegralCorrectionMode(Mycila::PID::IntegralCorrectionMode::CLAMP);
 
-  pidController.setProportionalMode(strcmp(config.get(KEY_PID_MODE_P), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::ProportionalMode::ON_ERROR : Mycila::PID::ProportionalMode::ON_INPUT);
-  pidController.setDerivativeMode(strcmp(config.get(KEY_PID_MODE_D), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::DerivativeMode::ON_ERROR : Mycila::PID::DerivativeMode::ON_INPUT);
+  pidController.setProportionalMode(strcmp(config.getString(KEY_PID_MODE_P), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::ProportionalMode::ON_ERROR : Mycila::PID::ProportionalMode::ON_INPUT);
+  pidController.setDerivativeMode(strcmp(config.getString(KEY_PID_MODE_D), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::DerivativeMode::ON_ERROR : Mycila::PID::DerivativeMode::ON_INPUT);
 
   pidController.setSetpoint(config.getFloat(KEY_PID_SETPOINT));
   pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
@@ -371,30 +371,30 @@ void yasolr_init_router() {
   output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   output1.config.autoStartTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_START);
-  output1.config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
+  output1.config.autoStartTime = config.getString(KEY_OUTPUT1_TIME_START);
   output1.config.autoStopTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_STOP);
-  output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
+  output1.config.autoStopTime = config.getString(KEY_OUTPUT1_TIME_STOP);
   output1.config.bypassTimeoutSec = config.getInt(KEY_OUTPUT1_BYPASS_TIMEOUT);
   output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
   output1.config.dimmerTempLimit = config.getInt(KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
   output1.config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
   output1.config.excessPowerRatio = config.getFloat(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
-  output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
+  output1.config.weekDays = config.getString(KEY_OUTPUT1_DAYS);
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // configure output 2
   output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
   output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   output2.config.autoStartTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_START);
-  output2.config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
+  output2.config.autoStartTime = config.getString(KEY_OUTPUT2_TIME_START);
   output2.config.autoStopTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_STOP);
-  output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
+  output2.config.autoStopTime = config.getString(KEY_OUTPUT2_TIME_STOP);
   output2.config.bypassTimeoutSec = config.getInt(KEY_OUTPUT2_BYPASS_TIMEOUT);
   output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
   output2.config.dimmerTempLimit = config.getInt(KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
   output2.config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);
   output2.config.excessPowerRatio = config.getFloat(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;
-  output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
+  output2.config.weekDays = config.getString(KEY_OUTPUT2_DAYS);
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // Routing Tasks

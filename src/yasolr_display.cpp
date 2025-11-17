@@ -22,7 +22,7 @@ void yasolr_configure_display() {
 
       display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
 
-      const char* displayType = config.get(KEY_DISPLAY_TYPE);
+      const char* displayType = config.getString(KEY_DISPLAY_TYPE);
       if (strcmp(displayType, "SSD1306") == 0)
         display->begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
       else if (strcmp(displayType, "SH1107") == 0)

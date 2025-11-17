@@ -19,6 +19,7 @@
 #include <MycilaAppInfo.h>
 #include <MycilaCircularBuffer.h>
 #include <MycilaConfig.h>
+#include <MycilaConfigStorageNVS.h>
 #include <MycilaDS18.h>
 #include <MycilaDimmer.h>
 #include <MycilaESPConnect.h>

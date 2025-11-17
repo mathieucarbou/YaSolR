@@ -569,12 +569,12 @@ void yasolr_init_web_server() {
   ESP_LOGI(TAG, "Initialize web server");
 
   // Middleware
-  if (config.get(KEY_ADMIN_PASSWORD)[0] != '\0') {
+  if (config.getString(KEY_ADMIN_PASSWORD)[0] != '\0') {
     AsyncAuthenticationMiddleware* authMiddleware = new AsyncAuthenticationMiddleware();
     authMiddleware->setAuthType(AsyncAuthType::AUTH_DIGEST);
     authMiddleware->setRealm("YaSolR");
     authMiddleware->setUsername(YASOLR_ADMIN_USERNAME);
-    authMiddleware->setPassword(config.get(KEY_ADMIN_PASSWORD));
+    authMiddleware->setPassword(config.getString(KEY_ADMIN_PASSWORD));
     authMiddleware->generateHash();
     webServer.addMiddleware(authMiddleware);
   }

@@ -8,7 +8,8 @@
 #include <queue>
 #include <string>
 
-Mycila::Config config;
+Mycila::ConfigStorageNVS storage;
+Mycila::Config config(storage);
 
 static std::queue<std::function<void()>> reconfigureQueue;
 static Mycila::Task reconfigureTask("Reconfigure", []() {
@@ -22,7 +23,6 @@ void yasolr_init_config() {
   ESP_LOGI(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // setup config system
-  config.begin("YASOLR");
   config.configure(KEY_ADMIN_PASSWORD);
   config.configure(KEY_DISPLAY_ROTATION, "0");
   config.configure(KEY_DISPLAY_SPEED, "3");
@@ -144,6 +144,9 @@ void yasolr_init_config() {
   config.configure(KEY_WIFI_PASSWORD);
   config.configure(KEY_WIFI_SSID);
 
+  // init and preload
+  config.begin("YASOLR", true);
+
   config.listen([]() {
     ESP_LOGI(TAG, "Configuration restored!");
     restartTask.resume();
@@ -212,13 +215,13 @@ void yasolr_init_config() {
       output1.config.autoStopTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_STOP);
 
     } else if (key == KEY_OUTPUT1_TIME_START) {
-      output1.config.autoStartTime = config.get(KEY_OUTPUT1_TIME_START);
+      output1.config.autoStartTime = config.getString(KEY_OUTPUT1_TIME_START);
 
     } else if (key == KEY_OUTPUT1_TIME_STOP) {
-      output1.config.autoStopTime = config.get(KEY_OUTPUT1_TIME_STOP);
+      output1.config.autoStopTime = config.getString(KEY_OUTPUT1_TIME_STOP);
 
     } else if (key == KEY_OUTPUT1_DAYS) {
-      output1.config.weekDays = config.get(KEY_OUTPUT1_DAYS);
+      output1.config.weekDays = config.getString(KEY_OUTPUT1_DAYS);
 
     } else if (key == KEY_OUTPUT1_EXCESS_LIMITER) {
       output1.config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
@@ -262,13 +265,13 @@ void yasolr_init_config() {
       output2.config.autoStopTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_STOP);
 
     } else if (key == KEY_OUTPUT2_TIME_START) {
-      output2.config.autoStartTime = config.get(KEY_OUTPUT2_TIME_START);
+      output2.config.autoStartTime = config.getString(KEY_OUTPUT2_TIME_START);
 
     } else if (key == KEY_OUTPUT2_TIME_STOP) {
-      output2.config.autoStopTime = config.get(KEY_OUTPUT2_TIME_STOP);
+      output2.config.autoStopTime = config.getString(KEY_OUTPUT2_TIME_STOP);
 
     } else if (key == KEY_OUTPUT2_DAYS) {
-      output2.config.weekDays = config.get(KEY_OUTPUT2_DAYS);
+      output2.config.weekDays = config.getString(KEY_OUTPUT2_DAYS);
 
     } else if (key == KEY_OUTPUT2_EXCESS_LIMITER) {
       output2.config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);
@@ -281,13 +284,13 @@ void yasolr_init_config() {
 
     } else if (key == KEY_NTP_TIMEZONE) {
       reconfigureQueue.push([]() {
-        Mycila::NTP.setTimeZone(config.get(KEY_NTP_TIMEZONE));
+        Mycila::NTP.setTimeZone(config.getString(KEY_NTP_TIMEZONE));
       });
 
     } else if (key == KEY_NTP_SERVER) {
       if (!config.getBool(KEY_ENABLE_AP_MODE))
         reconfigureQueue.push([]() {
-          Mycila::NTP.sync(config.get(KEY_NTP_SERVER));
+          Mycila::NTP.sync(config.getString(KEY_NTP_SERVER));
         });
 
     } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_MODE_P || key == KEY_PID_MODE_D || key == KEY_PID_SETPOINT) {

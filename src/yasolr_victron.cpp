@@ -14,7 +14,7 @@ static Mycila::Task* victronReadTask = nullptr;
 void yasolr_configure_victron() {
   if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
     if (victron == nullptr) {
-      if (strlen(config.get(KEY_VICTRON_MODBUS_SERVER)) == 0) {
+      if (strlen(config.getString(KEY_VICTRON_MODBUS_SERVER)) == 0) {
         ESP_LOGE(TAG, "Victron Modbus TCP server is not set");
         return;
       }
@@ -44,7 +44,7 @@ void yasolr_configure_victron() {
       // task called once network is up to connect
       victronConnectTask = new Mycila::Task("Victron Connect", Mycila::Task::Type::ONCE, []() {
         victron->end();
-        const char* server = config.get(KEY_VICTRON_MODBUS_SERVER);
+        const char* server = config.getString(KEY_VICTRON_MODBUS_SERVER);
         uint16_t port = static_cast<uint16_t>(config.getLong(KEY_VICTRON_MODBUS_PORT));
         victron->begin(server, port);
       });

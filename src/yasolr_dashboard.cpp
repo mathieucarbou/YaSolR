@@ -461,16 +461,16 @@ static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 
 static void _calibrate(size_t outputIndex) {
   if (!router.isCalibrationRunning()) {
-    config.set(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
-    config.set(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);
-    config.set(KEY_OUTPUT1_DIMMER_LIMIT, "100", false);
-    config.set(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_FALSE, false);
-    config.set(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_FALSE, false);
-    config.set(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
+    config.setString(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
+    config.setString(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);
+    config.setString(KEY_OUTPUT1_DIMMER_LIMIT, "100", false);
+    config.setString(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_FALSE, false);
+    config.setString(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_FALSE, false);
+    config.setString(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
 
     router.beginCalibration(outputIndex, []() {
-      config.set(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(output1.config.calibratedResistance, 2));
-      config.set(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(output2.config.calibratedResistance, 2));
+      config.setString(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(output1.config.calibratedResistance, 2));
+      config.setString(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(output2.config.calibratedResistance, 2));
     });
 
     // because we set false to trigger events
@@ -705,8 +705,8 @@ void YaSolR::Website::begin() {
   _textConfig(_gateway, KEY_NET_GATEWAY);
   _textConfig(_dnsServer, KEY_NET_DNS);
   _hostnameWidget.onChange([](const std::optional<std::string>& value) {
-    config.set(KEY_HOSTNAME, value.value_or(""));
-    _hostnameWidget.setValue(config.get(KEY_HOSTNAME));
+    config.setString(KEY_HOSTNAME, value.value_or(""));
+    _hostnameWidget.setValue(config.getString(KEY_HOSTNAME));
     dashboard.refresh(_hostnameWidget);
   });
 
@@ -719,7 +719,7 @@ void YaSolR::Website::begin() {
   _textConfig(_ntpServer, KEY_NTP_SERVER);
 
   _ntpTimezone.onChange([](const char* value) {
-    config.set(KEY_NTP_TIMEZONE, value);
+    config.setString(KEY_NTP_TIMEZONE, value);
     _ntpTimezone.setValue(value);
     dashboard.refresh(_ntpTimezone);
   });
@@ -813,13 +813,13 @@ void YaSolR::Website::begin() {
   _numConfig(_pidKd, KEY_PID_KD);
 
   _pidPMode.onChange([](const char* value) {
-    config.set(KEY_PID_MODE_P, value);
+    config.setString(KEY_PID_MODE_P, value);
     _pidPMode.setValue(value);
     dashboard.refresh(_pidPMode);
   });
 
   _pidDMode.onChange([](const char* value) {
-    config.set(KEY_PID_MODE_D, value);
+    config.setString(KEY_PID_MODE_D, value);
     _pidDMode.setValue(value);
     dashboard.refresh(_pidDMode);
   });
@@ -908,12 +908,12 @@ void YaSolR::Website::begin() {
 
   _gridFreq.onChange([](const char* value) {
     if (strcmp(value, "50 Hz") == 0)
-      config.set(KEY_GRID_FREQUENCY, "50");
+      config.setString(KEY_GRID_FREQUENCY, "50");
     else if (strcmp(value, "60 Hz") == 0)
-      config.set(KEY_GRID_FREQUENCY, "60");
+      config.setString(KEY_GRID_FREQUENCY, "60");
     else
       config.unset(KEY_GRID_FREQUENCY);
-    _gridFreq.setValue(config.get(KEY_GRID_FREQUENCY));
+    _gridFreq.setValue(config.getString(KEY_GRID_FREQUENCY));
     dashboard.refresh(_gridFreq);
   });
 
@@ -1038,7 +1038,7 @@ void YaSolR::Website::begin() {
   _output1BypassTimeout.onChange([](float value) {
     _output1BypassTimeout.setValue(value);
     uint16_t seconds = static_cast<uint16_t>(value * 3600.0f);
-    config.set(KEY_OUTPUT1_BYPASS_TIMEOUT, std::to_string(seconds));
+    config.setString(KEY_OUTPUT1_BYPASS_TIMEOUT, std::to_string(seconds));
     dashboard.refresh(_output1BypassTimeout);
   });
 
@@ -1073,7 +1073,7 @@ void YaSolR::Website::begin() {
   _output2BypassTimeout.onChange([](float value) {
     _output2BypassTimeout.setValue(value);
     uint16_t seconds = static_cast<uint16_t>(value * 3600.0f);
-    config.set(KEY_OUTPUT2_BYPASS_TIMEOUT, std::to_string(seconds));
+    config.setString(KEY_OUTPUT2_BYPASS_TIMEOUT, std::to_string(seconds));
     dashboard.refresh(_output2BypassTimeout);
   });
 #endif
@@ -1298,48 +1298,48 @@ void YaSolR::Website::initCards() {
 
   // tab: network
 
-  _hostnameWidget.setValue(config.get(KEY_HOSTNAME));
-  _wifiSSID.setValue(config.get(KEY_WIFI_SSID));
-  _wifiBSSID.setValue(config.get(KEY_WIFI_BSSID));
-  _wifiPwd.setValue(config.get(KEY_WIFI_PASSWORD));
-  _staticIP.setValue(config.get(KEY_NET_IP));
-  _subnetMask.setValue(config.get(KEY_NET_SUBNET));
-  _gateway.setValue(config.get(KEY_NET_GATEWAY));
-  _dnsServer.setValue(config.get(KEY_NET_DNS));
-  _adminPwd.setValue(config.get(KEY_ADMIN_PASSWORD));
+  _hostnameWidget.setValue(config.getString(KEY_HOSTNAME));
+  _wifiSSID.setValue(config.getString(KEY_WIFI_SSID));
+  _wifiBSSID.setValue(config.getString(KEY_WIFI_BSSID));
+  _wifiPwd.setValue(config.getString(KEY_WIFI_PASSWORD));
+  _staticIP.setValue(config.getString(KEY_NET_IP));
+  _subnetMask.setValue(config.getString(KEY_NET_SUBNET));
+  _gateway.setValue(config.getString(KEY_NET_GATEWAY));
+  _dnsServer.setValue(config.getString(KEY_NET_DNS));
+  _adminPwd.setValue(config.getString(KEY_ADMIN_PASSWORD));
   _apMode.setValue(config.getBool(KEY_ENABLE_AP_MODE));
 
   // tab: ntp
 
-  _ntpServer.setValue(config.get(KEY_NTP_SERVER));
-  _ntpTimezone.setValue(config.get(KEY_NTP_TIMEZONE));
+  _ntpServer.setValue(config.getString(KEY_NTP_SERVER));
+  _ntpTimezone.setValue(config.getString(KEY_NTP_TIMEZONE));
 
   // tab: mqtt
 
   _mqtt.setValue(config.getBool(KEY_ENABLE_MQTT));
-  _mqttServer.setValue(config.get(KEY_MQTT_SERVER));
+  _mqttServer.setValue(config.getString(KEY_MQTT_SERVER));
   _mqttPort.setValue(config.getInt(KEY_MQTT_PORT));
-  _mqttUser.setValue(config.get(KEY_MQTT_USERNAME));
-  _mqttPwd.setValue(config.get(KEY_MQTT_PASSWORD));
+  _mqttUser.setValue(config.getString(KEY_MQTT_USERNAME));
+  _mqttPwd.setValue(config.getString(KEY_MQTT_PASSWORD));
   _mqttSecured.setValue(config.getBool(KEY_MQTT_SECURED));
   _mqttServerCert.setValue("/api/config/mqttServerCertificate");
   _mqttServerCert.setDisplay(!serverCertExists);
   _mqttServerCertDelete.setDisplay(serverCertExists);
-  _mqttTopic.setValue(config.get(KEY_MQTT_TOPIC));
+  _mqttTopic.setValue(config.getString(KEY_MQTT_TOPIC));
   _mqttPublishInterval.setValue(config.getInt(KEY_MQTT_PUBLISH_INTERVAL));
 
-  _mqttGridVoltage.setValue(config.get(KEY_GRID_VOLTAGE_MQTT_TOPIC));
-  _mqttGridPower.setValue(config.get(KEY_GRID_POWER_MQTT_TOPIC));
-  _mqttTempO1.setValue(config.get(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC));
-  _mqttTempO2.setValue(config.get(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
+  _mqttGridVoltage.setValue(config.getString(KEY_GRID_VOLTAGE_MQTT_TOPIC));
+  _mqttGridPower.setValue(config.getString(KEY_GRID_POWER_MQTT_TOPIC));
+  _mqttTempO1.setValue(config.getString(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC));
+  _mqttTempO2.setValue(config.getString(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
 
   _haDiscovery.setValue(config.getBool(KEY_ENABLE_HA_DISCOVERY));
-  _haDiscoveryTopic.setValue(config.get(KEY_HA_DISCOVERY_TOPIC));
+  _haDiscoveryTopic.setValue(config.getString(KEY_HA_DISCOVERY_TOPIC));
 
   // tab: pid
 
-  _pidPMode.setValue(config.get(KEY_PID_MODE_P));
-  _pidDMode.setValue(config.get(KEY_PID_MODE_D));
+  _pidPMode.setValue(config.getString(KEY_PID_MODE_P));
+  _pidDMode.setValue(config.getString(KEY_PID_MODE_D));
   _pidSetpoint.setValue(config.getInt(KEY_PID_SETPOINT));
   _pidKp.setValue(config.getFloat(KEY_PID_KP));
   _pidKi.setValue(config.getFloat(KEY_PID_KI));
@@ -1376,8 +1376,8 @@ void YaSolR::Website::initCards() {
   _pinout(_pinLEDRed, KEY_PIN_LIGHTS_RED, pinout);
   _pinout(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW, pinout);
 
-  _serialJsy.setValue(config.get(KEY_JSY_UART));
-  _serialPZEM.setValue(config.get(KEY_PZEM_UART));
+  _serialJsy.setValue(config.getString(KEY_JSY_UART));
+  _serialPZEM.setValue(config.getString(KEY_PZEM_UART));
 
   // tab: hardware
 
@@ -1396,12 +1396,12 @@ void YaSolR::Website::initCards() {
   _jsy.setValue(config.getBool(KEY_ENABLE_JSY));
   _jsyRemote.setValue(config.getBool(KEY_ENABLE_JSY_REMOTE));
   _victron.setValue(config.getBool(KEY_ENABLE_VICTRON_MODBUS));
-  _victronServer.setValue(config.get(KEY_VICTRON_MODBUS_SERVER));
+  _victronServer.setValue(config.getString(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.getInt(KEY_VICTRON_MODBUS_PORT));
 
   // output 1 dimmer
   _output1Dimmer.setValue(config.getBool(KEY_ENABLE_OUTPUT1_DIMMER));
-  _output1DimmerType.setValue(config.get(KEY_OUTPUT1_DIMMER_TYPE));
+  _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
   _output1DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MIN)), static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MAX))});
   _output1PZEM.setValue(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
   _output1PZEMSync.setDisplay(dimmer1Enabled && pzem1Enabled);
@@ -1409,11 +1409,11 @@ void YaSolR::Website::initCards() {
 
   // output 1 bypass relay
   _output1Relay.setValue(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
-  _output1RelayType.setValue(config.get(KEY_OUTPUT1_RELAY_TYPE));
+  _output1RelayType.setValue(config.getString(KEY_OUTPUT1_RELAY_TYPE));
 
   // output 2 dimmer
   _output2Dimmer.setValue(config.getBool(KEY_ENABLE_OUTPUT2_DIMMER));
-  _output2DimmerType.setValue(config.get(KEY_OUTPUT2_DIMMER_TYPE));
+  _output2DimmerType.setValue(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
   _output2DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MIN)), static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MAX))});
   _output2PZEM.setValue(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
   _output2PZEMSync.setDisplay(dimmer2Enabled && pzem2Enabled);
@@ -1421,23 +1421,23 @@ void YaSolR::Website::initCards() {
 
   // output 2 bypass relay
   _output2Relay.setValue(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
-  _output2RelayType.setValue(config.get(KEY_OUTPUT2_RELAY_TYPE));
+  _output2RelayType.setValue(config.getString(KEY_OUTPUT2_RELAY_TYPE));
 
   // relay1
   _relay1.setValue(config.getBool(KEY_ENABLE_RELAY1));
-  _relay1Type.setValue(config.get(KEY_RELAY1_TYPE));
+  _relay1Type.setValue(config.getString(KEY_RELAY1_TYPE));
   _relay1Load.setValue(config.getInt(KEY_RELAY1_LOAD));
   _relay1Tolerance.setValue(config.getInt(KEY_RELAY1_TOLERANCE));
 
   // relay2
   _relay2.setValue(config.getBool(KEY_ENABLE_RELAY2));
-  _relay2Type.setValue(config.get(KEY_RELAY2_TYPE));
+  _relay2Type.setValue(config.getString(KEY_RELAY2_TYPE));
   _relay2Load.setValue(config.getInt(KEY_RELAY2_LOAD));
   _relay2Tolerance.setValue(config.getInt(KEY_RELAY2_TOLERANCE));
 
   // display
   _display.setValue(config.getBool(KEY_ENABLE_DISPLAY));
-  _displayType.setValue(config.get(KEY_DISPLAY_TYPE));
+  _displayType.setValue(config.getString(KEY_DISPLAY_TYPE));
   _displayRotation.setValue(config.getInt(KEY_DISPLAY_ROTATION));
   _displaySpeed.setValue(config.getInt(KEY_DISPLAY_SPEED));
 
@@ -1467,11 +1467,11 @@ void YaSolR::Website::initCards() {
   _output1AutoStartTemp.setDisplay(bypass1Possible);
   _output1AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT1_TEMPERATURE_STOP));
   _output1AutoStoptTemp.setDisplay(bypass1Possible);
-  _output1AutoStartTime.setValue(config.get(KEY_OUTPUT1_TIME_START));
+  _output1AutoStartTime.setValue(config.getString(KEY_OUTPUT1_TIME_START));
   _output1AutoStartTime.setDisplay(bypass1Possible);
-  _output1AutoStoptTime.setValue(config.get(KEY_OUTPUT1_TIME_STOP));
+  _output1AutoStoptTime.setValue(config.getString(KEY_OUTPUT1_TIME_STOP));
   _output1AutoStoptTime.setDisplay(bypass1Possible);
-  _output1AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.get(KEY_OUTPUT1_DAYS));
+  _output1AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.getString(KEY_OUTPUT1_DAYS));
   _output1AutoStartWDays.setDisplay(bypass1Possible);
   _output1BypassTimeout.setValue(config.getFloat(KEY_OUTPUT1_BYPASS_TIMEOUT) / 3600.0f);
   _output1BypassTimeout.setDisplay(bypass1Possible);
@@ -1496,11 +1496,11 @@ void YaSolR::Website::initCards() {
   _output2AutoStartTemp.setDisplay(bypass2Possible);
   _output2AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT2_TEMPERATURE_STOP));
   _output2AutoStoptTemp.setDisplay(bypass2Possible);
-  _output2AutoStartTime.setValue(config.get(KEY_OUTPUT2_TIME_START));
+  _output2AutoStartTime.setValue(config.getString(KEY_OUTPUT2_TIME_START));
   _output2AutoStartTime.setDisplay(bypass2Possible);
-  _output2AutoStoptTime.setValue(config.get(KEY_OUTPUT2_TIME_STOP));
+  _output2AutoStoptTime.setValue(config.getString(KEY_OUTPUT2_TIME_STOP));
   _output2AutoStoptTime.setDisplay(bypass2Possible);
-  _output2AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.get(KEY_OUTPUT2_DAYS));
+  _output2AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.getString(KEY_OUTPUT2_DAYS));
   _output2AutoStartWDays.setDisplay(bypass2Possible);
   _output2BypassTimeout.setValue(config.getFloat(KEY_OUTPUT2_BYPASS_TIMEOUT) / 3600.0f);
   _output2BypassTimeout.setDisplay(bypass2Possible);
