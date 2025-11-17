@@ -4,6 +4,8 @@
  */
 #include <yasolr.h>
 
+#include <utility>
+
 AsyncUDP* udp = nullptr;
 Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
 Mycila::Task* jsyRemoteTask = nullptr;
@@ -38,77 +40,69 @@ static void onData(AsyncUDPPacket packet) {
 
   JsonDocument doc;
   deserializeMsgPack(doc, buffer + 5, size);
-  // serializeJsonPretty(doc, Serial);
+
+  Mycila::Grid::Metrics metrics;
+  metrics.source = Mycila::Grid::Source::JSY_REMOTE;
 
   switch (doc["model"].as<uint16_t>()) {
-    case MYCILA_JSY_MK_1031:
-      // JSY1030 has no sign: it cannot be used to measure the grid
-      break;
-
     case MYCILA_JSY_MK_163:
     case MYCILA_JSY_MK_227:
     case MYCILA_JSY_MK_229: {
-      grid.updateMetrics({
-        .source = Mycila::Grid::Source::JSY_REMOTE,
-        .apparentPower = doc["apparent_power"] | NAN,
-        .current = doc["current"] | NAN,
-        .energy = doc["active_energy_imported"] | static_cast<uint32_t>(0),
-        .energyReturned = doc["active_energy_returned"] | static_cast<uint32_t>(0),
-        .frequency = doc["frequency"] | NAN,
-        .power = doc["active_power"] | NAN,
-        .powerFactor = doc["power_factor"] | NAN,
-        .voltage = doc["voltage"] | NAN,
-      });
+      metrics.apparentPower = doc["apparent_power"] | NAN;
+      metrics.current = doc["current"] | NAN;
+      metrics.energy = doc["active_energy_imported"] | static_cast<uint32_t>(0);
+      metrics.energyReturned = doc["active_energy_returned"] | static_cast<uint32_t>(0);
+      metrics.frequency = doc["frequency"] | NAN;
+      metrics.power = doc["active_power"] | NAN;
+      metrics.powerFactor = doc["power_factor"] | NAN;
+      metrics.voltage = doc["voltage"] | NAN;
       break;
     }
     case MYCILA_JSY_MK_193:
     case MYCILA_JSY_MK_194: {
-      if (doc["channel2"].is<JsonObject>()) {
-        grid.updateMetrics({
-          .source = Mycila::Grid::Source::JSY_REMOTE,
-          .apparentPower = doc["channel2"]["apparent_power"] | NAN,
-          .current = doc["channel2"]["current"] | NAN,
-          .energy = doc["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0),
-          .energyReturned = doc["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0),
-          .frequency = doc["channel2"]["frequency"] | NAN,
-          .power = doc["channel2"]["active_power"] | NAN,
-          .powerFactor = doc["channel2"]["power_factor"] | NAN,
-          .voltage = doc["channel2"]["voltage"] | NAN,
-        });
-      }
       if (doc["channel1"].is<JsonObject>()) {
-        router.updateMetrics({
-          .source = Mycila::Router::Source::JSY_REMOTE,
-          .apparentPower = doc["channel1"]["apparent_power"] | 0.0f,
-          .current = doc["channel1"]["current"] | 0.0f,
-          .energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)), // if the clamp is installed reversed
-          .power = std::abs(doc["channel1"]["active_power"] | 0.0f),                                                                                        // if the clamp is installed reversed
-          .powerFactor = doc["channel1"]["power_factor"] | NAN,
-          .resistance = doc["channel1"]["resistance"] | NAN,
-          .thdi = doc["channel1"]["thdi_0"] | NAN,
-          .voltage = doc["channel1"]["dimmed_voltage"] | NAN,
-        });
+        Mycila::Router::Metrics routerMetrics;
+        routerMetrics.source = Mycila::Router::Source::JSY_REMOTE;
+        routerMetrics.apparentPower = doc["channel1"]["apparent_power"] | 0.0f;
+        routerMetrics.current = doc["channel1"]["current"] | 0.0f;
+        routerMetrics.energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
+        routerMetrics.power = std::abs(doc["channel1"]["active_power"] | 0.0f);                                                                                        // if the clamp is installed reversed
+        routerMetrics.powerFactor = doc["channel1"]["power_factor"] | NAN;
+        routerMetrics.resistance = doc["channel1"]["resistance"] | NAN;
+        routerMetrics.thdi = doc["channel1"]["thdi_0"] | NAN;
+        routerMetrics.voltage = doc["channel1"]["dimmed_voltage"] | NAN;
+        router.updateMetrics(std::move(routerMetrics));
+      }
+      if (doc["channel2"].is<JsonObject>()) {
+        metrics.apparentPower = doc["channel2"]["apparent_power"] | NAN;
+        metrics.current = doc["channel2"]["current"] | NAN;
+        metrics.energy = doc["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0);
+        metrics.energyReturned = doc["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0);
+        metrics.frequency = doc["channel2"]["frequency"] | NAN;
+        metrics.power = doc["channel2"]["active_power"] | NAN;
+        metrics.powerFactor = doc["channel2"]["power_factor"] | NAN;
+        metrics.voltage = doc["channel2"]["voltage"] | NAN;
       }
       break;
     }
     case MYCILA_JSY_MK_333: {
       JsonObject aggregate = doc["aggregate"].as<JsonObject>();
-      grid.updateMetrics({
-        .source = Mycila::Grid::Source::JSY_REMOTE,
-        .apparentPower = aggregate["apparent_power"] | NAN,
-        .current = aggregate["current"] | NAN,
-        .energy = aggregate["active_energy_imported"] | static_cast<uint32_t>(0),
-        .energyReturned = aggregate["active_energy_returned"] | static_cast<uint32_t>(0),
-        .frequency = aggregate["frequency"] | NAN,
-        .power = aggregate["active_power"] | NAN,
-        .powerFactor = aggregate["power_factor"] | NAN,
-        .voltage = aggregate["voltage"] | NAN,
-      });
+      metrics.apparentPower = aggregate["apparent_power"] | NAN;
+      metrics.current = aggregate["current"] | NAN;
+      metrics.energy = aggregate["active_energy_imported"] | static_cast<uint32_t>(0);
+      metrics.energyReturned = aggregate["active_energy_returned"] | static_cast<uint32_t>(0);
+      metrics.frequency = aggregate["frequency"] | NAN;
+      metrics.power = aggregate["active_power"] | NAN;
+      metrics.powerFactor = aggregate["power_factor"] | NAN;
+      metrics.voltage = aggregate["voltage"] | NAN;
       break;
     }
     default:
-      break;
+      // unknown model => do not divert
+      return;
   }
+
+  grid.updateMetrics(std::move(metrics));
 
   if (grid.isUsing(Mycila::Grid::Source::JSY_REMOTE)) {
     yasolr_divert();

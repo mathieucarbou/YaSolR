@@ -25,7 +25,8 @@ namespace Mycila {
         VICTRON,
       };
 
-      typedef struct {
+      class Metrics {
+        public:
           Source source = Source::UNKNOWN;
           float apparentPower = NAN;
           float current = NAN;
@@ -35,7 +36,56 @@ namespace Mycila {
           float power = NAN;
           float powerFactor = NAN;
           float voltage = NAN;
-      } Metrics;
+
+          Metrics() = default;
+          Metrics(Metrics&& other) noexcept {
+            source = other.source;
+            apparentPower = other.apparentPower;
+            current = other.current;
+            energy = other.energy;
+            energyReturned = other.energyReturned;
+            frequency = other.frequency;
+            power = other.power;
+            powerFactor = other.powerFactor;
+            voltage = other.voltage;
+
+            other.source = Source::UNKNOWN;
+            other.apparentPower = NAN;
+            other.current = NAN;
+            other.energy = 0;
+            other.energyReturned = 0;
+            other.frequency = NAN;
+            other.power = NAN;
+            other.powerFactor = NAN;
+            other.voltage = NAN;
+          }
+          Metrics& operator=(Metrics&& other) noexcept {
+            if (this != &other) {
+              source = other.source;
+              apparentPower = other.apparentPower;
+              current = other.current;
+              energy = other.energy;
+              energyReturned = other.energyReturned;
+              frequency = other.frequency;
+              power = other.power;
+              powerFactor = other.powerFactor;
+              voltage = other.voltage;
+
+              other.source = Source::UNKNOWN;
+              other.apparentPower = NAN;
+              other.current = NAN;
+              other.energy = 0;
+              other.energyReturned = 0;
+              other.frequency = NAN;
+              other.power = NAN;
+              other.powerFactor = NAN;
+              other.voltage = NAN;
+            }
+            return *this;
+          }
+          Metrics(const Metrics& other) = delete;
+          Metrics& operator=(const Metrics& other) = delete;
+      };
 
       // sources
 

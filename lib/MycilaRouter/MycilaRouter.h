@@ -43,7 +43,8 @@ namespace Mycila {
         UNKNOWN
       };
 
-      typedef struct {
+      class Metrics {
+        public:
           Source source = Source::UNKNOWN;
           float apparentPower = 0;
           float current = 0;
@@ -53,7 +54,56 @@ namespace Mycila {
           float resistance = NAN;
           float thdi = NAN;
           float voltage = NAN;
-      } Metrics;
+
+          Metrics() = default;
+          Metrics(Metrics&& other) noexcept {
+            source = other.source;
+            apparentPower = other.apparentPower;
+            current = other.current;
+            energy = other.energy;
+            power = other.power;
+            powerFactor = other.powerFactor;
+            resistance = other.resistance;
+            thdi = other.thdi;
+            voltage = other.voltage;
+
+            other.source = Source::UNKNOWN;
+            other.apparentPower = 0;
+            other.current = 0;
+            other.energy = 0;
+            other.power = 0;
+            other.powerFactor = NAN;
+            other.resistance = NAN;
+            other.thdi = NAN;
+            other.voltage = NAN;
+          }
+          Metrics& operator=(Metrics&& other) noexcept {
+            if (this != &other) {
+              source = other.source;
+              apparentPower = other.apparentPower;
+              current = other.current;
+              energy = other.energy;
+              power = other.power;
+              powerFactor = other.powerFactor;
+              resistance = other.resistance;
+              thdi = other.thdi;
+              voltage = other.voltage;
+
+              other.source = Source::UNKNOWN;
+              other.apparentPower = 0;
+              other.current = 0;
+              other.energy = 0;
+              other.power = 0;
+              other.powerFactor = NAN;
+              other.resistance = NAN;
+              other.thdi = NAN;
+              other.voltage = NAN;
+            }
+            return *this;
+          }
+          Metrics(const Metrics& other) = delete;
+          Metrics& operator=(const Metrics& other) = delete;
+      };
 
 #ifdef MYCILA_JSON_SUPPORT
       static void toJson(const JsonObject& dest, const Metrics& metrics) {

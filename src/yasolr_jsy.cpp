@@ -4,6 +4,8 @@
  */
 #include <yasolr.h>
 
+#include <utility>
+
 Mycila::JSY* jsy = nullptr;
 Mycila::TaskManager* jsyTaskManager = nullptr;
 
@@ -14,70 +16,63 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
   if (*jsyData != data) {
     *jsyData = data;
 
-    switch (data.model) {
-      case MYCILA_JSY_MK_1031:
-        // JSY1030 has no sign: it cannot be used to measure the grid
-        break;
+    Mycila::Grid::Metrics metrics;
+    metrics.source = Mycila::Grid::Source::JSY;
 
+    switch (data.model) {
       case MYCILA_JSY_MK_163:
       case MYCILA_JSY_MK_227:
-      case MYCILA_JSY_MK_229:
-        grid.updateMetrics({
-          .source = Mycila::Grid::Source::JSY,
-          .apparentPower = data.single().apparentPower,
-          .current = data.single().current,
-          .energy = data.single().activeEnergyImported,
-          .energyReturned = data.single().activeEnergyReturned,
-          .frequency = data.single().frequency,
-          .power = data.single().activePower,
-          .powerFactor = data.single().powerFactor,
-          .voltage = data.single().voltage,
-        });
+      case MYCILA_JSY_MK_229: {
+        metrics.apparentPower = data.single().apparentPower;
+        metrics.current = data.single().current;
+        metrics.energy = data.single().activeEnergyImported;
+        metrics.energyReturned = data.single().activeEnergyReturned;
+        metrics.frequency = data.single().frequency;
+        metrics.power = data.single().activePower;
+        metrics.powerFactor = data.single().powerFactor;
+        metrics.voltage = data.single().voltage;
         break;
-
+      }
       case MYCILA_JSY_MK_193:
-      case MYCILA_JSY_MK_194:
-        grid.updateMetrics({
-          .source = Mycila::Grid::Source::JSY,
-          .apparentPower = data.channel2().apparentPower,
-          .current = data.channel2().current,
-          .energy = data.channel2().activeEnergyImported,
-          .energyReturned = data.channel2().activeEnergyReturned,
-          .frequency = data.aggregate.frequency,
-          .power = data.channel2().activePower,
-          .powerFactor = data.channel2().powerFactor,
-          .voltage = data.channel2().voltage,
-        });
-        router.updateMetrics({
-          .source = Mycila::Router::Source::JSY,
-          .apparentPower = data.channel1().apparentPower,
-          .current = data.channel1().current,
-          .energy = data.channel1().activeEnergy + data.channel1().activeEnergyReturned, // if the clamp is installed reversed
-          .power = std::abs(data.channel1().activePower),                                // if the clamp is installed reversed
-          .powerFactor = data.channel1().powerFactor,
-          .resistance = data.channel1().resistance(),
-          .thdi = data.channel1().thdi(),
-          .voltage = data.channel1().dimmedVoltage(),
-        });
-        break;
+      case MYCILA_JSY_MK_194: {
+        Mycila::Router::Metrics routerMetrics;
+        routerMetrics.source = Mycila::Router::Source::JSY;
+        routerMetrics.apparentPower = data.channel1().apparentPower;
+        routerMetrics.current = data.channel1().current;
+        routerMetrics.energy = data.channel1().activeEnergy + data.channel1().activeEnergyReturned; // if the clamp is installed reversed
+        routerMetrics.power = std::abs(data.channel1().activePower);                                // if the clamp is installed reversed
+        routerMetrics.powerFactor = data.channel1().powerFactor;
+        routerMetrics.resistance = data.channel1().resistance();
+        routerMetrics.thdi = data.channel1().thdi();
+        routerMetrics.voltage = data.channel1().dimmedVoltage();
+        router.updateMetrics(std::move(routerMetrics));
 
-      case MYCILA_JSY_MK_333:
-        grid.updateMetrics({
-          .source = Mycila::Grid::Source::JSY,
-          .apparentPower = data.aggregate.apparentPower,
-          .current = data.aggregate.current,
-          .energy = data.aggregate.activeEnergyImported,
-          .energyReturned = data.aggregate.activeEnergyReturned,
-          .frequency = data.aggregate.frequency,
-          .power = data.aggregate.activePower,
-          .powerFactor = data.aggregate.powerFactor,
-          .voltage = data.aggregate.voltage,
-        });
+        metrics.apparentPower = data.channel2().apparentPower;
+        metrics.current = data.channel2().current;
+        metrics.energy = data.channel2().activeEnergyImported;
+        metrics.energyReturned = data.channel2().activeEnergyReturned;
+        metrics.frequency = data.aggregate.frequency;
+        metrics.power = data.channel2().activePower;
+        metrics.powerFactor = data.channel2().powerFactor;
+        metrics.voltage = data.channel2().voltage;
         break;
-
+      }
+      case MYCILA_JSY_MK_333: {
+        metrics.apparentPower = data.aggregate.apparentPower;
+        metrics.current = data.aggregate.current;
+        metrics.energy = data.aggregate.activeEnergyImported;
+        metrics.energyReturned = data.aggregate.activeEnergyReturned;
+        metrics.frequency = data.aggregate.frequency;
+        metrics.power = data.aggregate.activePower;
+        metrics.powerFactor = data.aggregate.powerFactor;
+        metrics.voltage = data.aggregate.voltage;
+        break;
+      }
       default:
-        break;
+        return; // unknown model => do not divert
     }
+
+    grid.updateMetrics(std::move(metrics));
 
     if (grid.isUsing(Mycila::Grid::Source::JSY)) {
       yasolr_divert();

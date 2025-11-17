@@ -4,6 +4,8 @@
  */
 #include <yasolr.h>
 
+#include <utility>
+
 Mycila::PZEM* pzemO1 = nullptr;
 Mycila::PZEM* pzemO2 = nullptr;
 Mycila::Task* pzemO1PairingTask = nullptr;
@@ -56,28 +58,23 @@ void yasolr_configure_output1_pzem() {
       if (pzemO1->isEnabled()) {
         pzemO1->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            grid.updateMetrics({
-              .source = Mycila::Grid::Source::PZEM,
-              .apparentPower = NAN,
-              .current = NAN,
-              .energy = 0,
-              .energyReturned = 0,
-              .frequency = data.frequency,
-              .power = NAN,
-              .powerFactor = NAN,
-              .voltage = data.voltage,
-            });
-            output1.updateMetrics({
-              .source = Mycila::Router::Source::PZEM,
-              .apparentPower = data.apparentPower,
-              .current = data.current,
-              .energy = data.activeEnergy,
-              .power = data.activePower,
-              .powerFactor = data.powerFactor,
-              .resistance = data.resistance(),
-              .thdi = data.thdi(),
-              .voltage = data.dimmedVoltage(),
-            });
+            Mycila::Grid::Metrics metrics;
+            metrics.source = Mycila::Grid::Source::PZEM;
+            metrics.frequency = data.frequency;
+            metrics.voltage = data.voltage;
+            grid.updateMetrics(std::move(metrics));
+
+            Mycila::Router::Metrics routerMetrics;
+            routerMetrics.source = Mycila::Router::Source::PZEM;
+            routerMetrics.apparentPower = data.apparentPower;
+            routerMetrics.current = data.current;
+            routerMetrics.energy = data.activeEnergy;
+            routerMetrics.power = data.activePower;
+            routerMetrics.powerFactor = data.powerFactor;
+            routerMetrics.resistance = data.resistance();
+            routerMetrics.thdi = data.thdi();
+            routerMetrics.voltage = data.dimmedVoltage();
+            output1.updateMetrics(std::move(routerMetrics));
           }
         });
 
@@ -170,28 +167,23 @@ void yasolr_configure_output2_pzem() {
       if (pzemO2->isEnabled()) {
         pzemO2->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            grid.updateMetrics({
-              .source = Mycila::Grid::Source::PZEM,
-              .apparentPower = NAN,
-              .current = NAN,
-              .energy = 0,
-              .energyReturned = 0,
-              .frequency = data.frequency,
-              .power = NAN,
-              .powerFactor = NAN,
-              .voltage = data.voltage,
-            });
-            output2.updateMetrics({
-              .source = Mycila::Router::Source::PZEM,
-              .apparentPower = data.apparentPower,
-              .current = data.current,
-              .energy = data.activeEnergy,
-              .power = data.activePower,
-              .powerFactor = data.powerFactor,
-              .resistance = data.resistance(),
-              .thdi = data.thdi(),
-              .voltage = data.dimmedVoltage(),
-            });
+            Mycila::Grid::Metrics metrics;
+            metrics.source = Mycila::Grid::Source::PZEM;
+            metrics.frequency = data.frequency;
+            metrics.voltage = data.voltage;
+            grid.updateMetrics(std::move(metrics));
+
+            Mycila::Router::Metrics routerMetrics;
+            routerMetrics.source = Mycila::Router::Source::PZEM;
+            routerMetrics.apparentPower = data.apparentPower;
+            routerMetrics.current = data.current;
+            routerMetrics.energy = data.activeEnergy;
+            routerMetrics.power = data.activePower;
+            routerMetrics.powerFactor = data.powerFactor;
+            routerMetrics.resistance = data.resistance();
+            routerMetrics.thdi = data.thdi();
+            routerMetrics.voltage = data.dimmedVoltage();
+            output2.updateMetrics(std::move(routerMetrics));
           }
         });
 

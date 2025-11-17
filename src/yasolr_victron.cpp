@@ -4,6 +4,8 @@
  */
 #include <yasolr.h>
 
+#include <utility>
+
 Mycila::Victron* victron = nullptr;
 Mycila::Task* victronConnectTask = nullptr;
 
@@ -25,17 +27,13 @@ void yasolr_configure_victron() {
       // when receiving data from Victron, update grid metrics
       victron->setCallback([](Mycila::Victron::EventType eventType) {
         if (eventType == Mycila::Victron::EventType::EVT_READ) {
-          grid.updateMetrics({
-            .source = Mycila::Grid::Source::VICTRON,
-            .apparentPower = NAN,
-            .current = victron->getCurrent(),
-            .energy = 0,
-            .energyReturned = 0,
-            .frequency = victron->getFrequency(),
-            .power = victron->getPower(),
-            .powerFactor = NAN,
-            .voltage = victron->getVoltage(),
-          });
+          Mycila::Grid::Metrics metrics;
+          metrics.source = Mycila::Grid::Source::VICTRON;
+          metrics.current = victron->getCurrent();
+          metrics.frequency = victron->getFrequency();
+          metrics.power = victron->getPower();
+          metrics.voltage = victron->getVoltage();
+          grid.updateMetrics(std::move(metrics));
 
           if (grid.isUsing(Mycila::Grid::Source::VICTRON)) {
             yasolr_divert();

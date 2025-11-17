@@ -5,6 +5,7 @@
 #include <yasolr.h>
 
 #include <string>
+#include <utility>
 
 extern const uint8_t ca_certs_bundle_start[] asm("_binary__pio_embed_cacerts_bin_start");
 extern const uint8_t ca_certs_bundle_end[] asm("_binary__pio_embed_cacerts_bin_end");
@@ -163,17 +164,11 @@ static void subscribe() {
         if (!isnan(p)) {
           ESP_LOGI(TAG, "Grid Power from MQTT: %f", p);
           power->update(p);
-          grid.updateMetrics({
-            .source = Mycila::Grid::Source::MQTT,
-            .apparentPower = NAN,
-            .current = NAN,
-            .energy = 0,
-            .energyReturned = 0,
-            .frequency = NAN,
-            .power = power->orElse(NAN),
-            .powerFactor = NAN,
-            .voltage = voltage->orElse(NAN),
-          });
+          Mycila::Grid::Metrics metrics;
+          metrics.source = Mycila::Grid::Source::MQTT;
+          metrics.power = power->orElse(NAN);
+          metrics.voltage = voltage->orElse(NAN);
+          grid.updateMetrics(std::move(metrics));
           if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
             yasolr_divert();
           }
@@ -210,17 +205,11 @@ static void subscribe() {
         if (!isnan(v)) {
           ESP_LOGI(TAG, "Grid Voltage from MQTT: %f", v);
           voltage->update(v);
-          grid.updateMetrics({
-            .source = Mycila::Grid::Source::MQTT,
-            .apparentPower = NAN,
-            .current = NAN,
-            .energy = 0,
-            .energyReturned = 0,
-            .frequency = NAN,
-            .power = power->orElse(NAN),
-            .powerFactor = NAN,
-            .voltage = voltage->orElse(NAN),
-          });
+          Mycila::Grid::Metrics metrics;
+          metrics.source = Mycila::Grid::Source::MQTT;
+          metrics.power = power->orElse(NAN);
+          metrics.voltage = voltage->orElse(NAN);
+          grid.updateMetrics(std::move(metrics));
         }
       }
     });
