@@ -290,7 +290,8 @@ void rest_api() {
       const AsyncWebParameter* p = request->getParam(i);
       if (p->isPost() && !p->isFile()) {
         const char* keyRef = config.keyRef(p->name().c_str());
-        settings[keyRef] = p->value().c_str();
+        if (keyRef)
+          settings[keyRef] = p->value().c_str();
       }
     }
     request->send(200);
@@ -304,7 +305,8 @@ void rest_api() {
       for (size_t i = 0; i < pcount; i++) {
         const AsyncWebParameter* p = request->getParam(i);
         const char* keyRef = config.keyRef(p->name().c_str());
-        settings[keyRef] = p->value().c_str();
+        if (keyRef)
+          settings[keyRef] = p->value().c_str();
       }
       config.set(settings);
     }
