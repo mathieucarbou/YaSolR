@@ -123,7 +123,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 - **[Shelly Solar Diverter Script V17](../downloads/auto_diverter_v17.js)**: Introduced POWER_RATIO and POWER_LIMIT to better share the available power to divert between multiple dimmers and fixed issue with standby and full power modes impacting the power sharing
 
-- **[Shelly Solar Diverter Script V18](../downloads/auto_diverter_v18.js) ([minified](../downloads/auto_diverter_v18.min.js))**:
+- **[Shelly Solar Diverter Script V18](../downloads/auto_diverter_v18.js)**:
   - Removed GRID_SOURCE.PHASES: use `GRID_SOURCE.TYPE` instead with "EM", "3EM" or "MQTT"
   - `OUT_MIN` and `OUT_MAX` moved to the `PID` section
   - New PID implementation (same algorithm used in YaSolR router): https://mathieu.carbou.me/MycilaUtilities/pid
@@ -134,7 +134,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
     - `GET /script/1/status?<dimmerName>=standby|auto` => set a dimmer mode to `standby` (force off) or `auto` (normal),
   - Bypass handling: the script reads a Shelly switch (config `SHELLY_SWITCH_ID`) to detect bypass activation; set a negative `SHELLY_SWITCH_ID` to disable reading the switch
 
-- **[Shelly Solar Diverter Script V19](../downloads/auto_diverter_v19.js) ([minified](../downloads/auto_diverter_v19.min.js))**:
+- **[Shelly Solar Diverter Script V19](../downloads/auto_diverter_v19.js)**:
   - Reduce call count to avoid Uncaught Error: Too many calls in progress
   - Changed config for BYPASS mode and clarified its usage and operation
   - Clarified doc for GRID_SOURCE.TYPE
@@ -144,7 +144,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
     - `GET /script/1/status?reset=1` => resets all dimmer & PID states
     - `GET /script/1/status?setpoint=<value>` => sets PID setpoint on the fly
 
-- **[Shelly Solar Diverter Script V20](../downloads/auto_diverter_v20.js) ([minified](../downloads/auto_diverter_v20.min.js))**:
+- **[Shelly Solar Diverter Script V20](../downloads/auto_diverter_v20.js)**:
   - Fix dimmer sharing with POWER_RATIO and POWER_LIMIT
   - Moved BYPASS to global config section
   - Added "api" BYPASS option
@@ -154,7 +154,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
   - Improved doc and logging
   - Code refactoring
 
-- **[Shelly Solar Diverter Script V21](../downloads/auto_diverter_v21.js) ([minified](../downloads/auto_diverter_v21.min.js))**:
+- **[Shelly Solar Diverter Script V21](../downloads/auto_diverter_v21.js)**:
   - Improved throttling function to avoid overlapping calls when execution time is longer than tick rate
   - Code cleanup
   - Added API: `/script/1/status?all=standby|auto|bypass` to set all dimmers to standby, auto or bypass
