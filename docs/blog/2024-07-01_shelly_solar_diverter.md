@@ -51,26 +51,31 @@ A router can also schedule some forced heating of the water tank to ensure the w
 ## Shelly Solar Diverter Features
 
 - ⚙️ **Core capabilities**
+
   - 🔌 Unlimited dimmers (outputs)
   - 🧭 PID controller (new algorithm — simpler and more efficient)
   - 🔁 Excess sharing amongst dimmers (proportional sharing with `POWER_RATIO`)
   - 🔥 Bypass (force heating) with automatic dimmer turn-off
 
 - 🔧 **Per-output controls**
+
   - ⚡ Per-output power limiting (`POWER_LIMIT`)
   - 📊 Per-output min/max duty cycle support (MIN / MAX)
   - 🔢 Use LUT-based dimming (`USE_POWER_LUT`) for more accurate power matching
 
 - 🌐 **Configuration & integrations**
+
   - 🧩 Simplified configuration (reorganized `PID` and `DIMMERS` sections)
   - 🌩️ Support for Shelly EM, 3EM and MQTT as measurement sources (`GRID_SOURCE.TYPE`)
   - 🧰 Support for Shelly virtual components (dynamic config values)
 
 - 🔁 **Routing & responsiveness**
+
   - 🧠 Routing managed by the PID controller proportional to measurements
   - ⚡ Better responsiveness, especially with MQTT (closed-loop MQTT updates)
 
 - 🛠️ **API & control**
+
   - 🛰️ REST endpoint to read status and change debug level (`/script/1/status?debug=...`)
   - 📴 REST endpoint to set a dimmer to `standby` or `auto` or `bypass` (e.g. `?boiler=standby`)
   - 🔄 Support for physical forced full-power via contactor or virtual forced mode (EM relay)
@@ -124,6 +129,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 - **[Shelly Solar Diverter Script V17](../downloads/auto_diverter_v17.js)**: Introduced POWER_RATIO and POWER_LIMIT to better share the available power to divert between multiple dimmers and fixed issue with standby and full power modes impacting the power sharing
 
 - **[Shelly Solar Diverter Script V18](../downloads/auto_diverter_v18.js)**:
+
   - Removed GRID_SOURCE.PHASES: use `GRID_SOURCE.TYPE` instead with "EM", "3EM" or "MQTT"
   - `OUT_MIN` and `OUT_MAX` moved to the `PID` section
   - New PID implementation (same algorithm used in YaSolR router): https://mathieu.carbou.me/MycilaUtilities/pid
@@ -135,6 +141,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
   - Bypass handling: the script reads a Shelly switch (config `SHELLY_SWITCH_ID`) to detect bypass activation; set a negative `SHELLY_SWITCH_ID` to disable reading the switch
 
 - **[Shelly Solar Diverter Script V19](../downloads/auto_diverter_v19.js)**:
+
   - Reduce call count to avoid Uncaught Error: Too many calls in progress
   - Changed config for BYPASS mode and clarified its usage and operation
   - Clarified doc for GRID_SOURCE.TYPE
@@ -145,6 +152,7 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
     - `GET /script/1/status?setpoint=<value>` => sets PID setpoint on the fly
 
 - **[Shelly Solar Diverter Script V20](../downloads/auto_diverter_v20.js)**:
+
   - Fix dimmer sharing with POWER_RATIO and POWER_LIMIT
   - Moved BYPASS to global config section
   - Added "api" BYPASS option
@@ -155,17 +163,24 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
   - Code refactoring
 
 - **[Shelly Solar Diverter Script V21](../downloads/auto_diverter_v21.js)**:
+
   - Improved throttling function to avoid overlapping calls when execution time is longer than tick rate
   - Code cleanup
   - Added API: `/script/1/status?all=standby|auto|bypass` to set all dimmers to standby, auto or bypass
+
+- **[Shelly Solar Diverter Script V22](../downloads/auto_diverter_v22.js)**:
+  - Removed `PID.INTERVAL_S` config (not used anymore)
+  - Fix: memory leak due to increasing call stack when using throttling
+  - Fix: too many HTTP calls triggered due to not waiting for the HTTP calls to finish before starting a new one
+  - Fix: incorrect support of "skipping" attribute when skipping dimmer calls
 
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
 
 | [Shelly Pro EM - 50](https://www.shelly.com/fr/products/shop/proem-1x50a) (optional) | [Shelly Pro Dimmer 0/1-10V PM](https://www.shelly.com/fr/products/shelly-pro-dimmer-0-1-10v-pm) ou [Shelly Dimmer 0/1-10V PM Gen3](https://www.shelly.com/products/shelly-0-1-10v-dimmer-pm-gen3) | [Shelly Plus Add-On](https://www.shelly.com/fr/products/shop/shelly-plus-add-on) (optional) | [Temperature Sensor DS18B20](https://www.shelly.com/fr/products/shop/temperature-sensor-ds18B20) (optional) | Voltage Regulator<br>- [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html)<br>- [LCTC DTY-220V40P1](https://fr.aliexpress.com/item/1005005008018888.html) |
-| :----------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                  ![](../assets/img/hardware/Shelly_Pro_EM_50.jpeg)                   |                       ![](../assets/img/hardware/Shelly_Pro_Dimmer-10V.jpeg) ![](../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                       |                        ![](../assets/img/hardware/Shelly_Addon.jpeg)                        |                                ![](../assets/img/hardware/Shelly_DS18.jpeg)                                 |                             ![](../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
+| :----------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+|                  ![](../assets/img/hardware/Shelly_Pro_EM_50.jpeg)                   |                                             ![](../assets/img/hardware/Shelly_Pro_Dimmer-10V.jpeg) ![](../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                                             |                        ![](../assets/img/hardware/Shelly_Addon.jpeg)                        |                                ![](../assets/img/hardware/Shelly_DS18.jpeg)                                 |                             ![](../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
 
 Some additional hardware are required depending on the installation.
 **Please select the amperage according to your needs.**
@@ -259,7 +274,6 @@ _Shelly Pro EM 50 is optional: the script can be installed directly on the Shell
 Edit the `CONFIG` object to match your installation. v18 simplified and reorganized the configuration:
 
 - `GRID_SOURCE.TYPE`: "EM", "3EM" or "MQTT" (use `MQTT` when the script is installed directly on a dimmer and reads grid power/voltage from MQTT topics).
-- `PID`: now contains INTERVAL_S, P_MODE, D_MODE, SETPOINT, OUT_MIN, OUT_MAX and the PID gains (KP, KI, KD).
 - `DIMMERS`: named dimmer entries (example uses `boiler`) with per-dimmer options such as `IP`, `RESISTANCE`, `POWER_RATIO`, `POWER_LIMIT`, `BYPASS_THROUGH_EM_RELAY`, `USE_POWER_LUT`, `DIMMER_TURN_OFF_DELAY`, `MIN`, `MAX`.
 
 Example minimal default configuration for v18:
@@ -301,8 +315,6 @@ const CONFIG = {
   // - https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
   // - https://yasolr.carbou.me/manual#pid
   PID: {
-    // PID trigger update interval in seconds
-    INTERVAL_S: 1,
     // Proportional Mode:
     // - "error" (proportional on error),
     // - "input" (proportional on measurement),
@@ -326,7 +338,7 @@ const CONFIG = {
     // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
     KI: 0.3,
     // PID Derivative Gain = keep it low
-    KD: 0.05
+    KD: 0.05,
   },
 
   // DIMMER LIST
@@ -368,7 +380,7 @@ const CONFIG = {
     //   MIN: 0,
     //   MAX: 9100,
     // }
-  }
+  },
 };
 ```
 
@@ -502,7 +514,6 @@ Sample response (v18):
     },
     "SEMI_PERIOD": 10000,
     "PID": {
-      "INTERVAL_S": 1,
       "P_MODE": "input",
       "D_MODE": "input",
       "SETPOINT": 1500,
