@@ -154,7 +154,7 @@ void yasolr_init_config() {
   });
 
   config.listen([](const char* k, const Mycila::config::Value& newValue) {
-    ESP_LOGI(TAG, "'%s' => '%s'", k, Mycila::config::toString(newValue).c_str());
+    ESP_LOGI(TAG, "'%s' => '%s'", k, newValue.as<const char*>());
 
     const std::string key = k;
 
