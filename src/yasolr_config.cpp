@@ -8,8 +8,9 @@
 #include <queue>
 #include <string>
 
-Mycila::ConfigStorageNVS storage;
-Mycila::Config config(storage);
+Mycila::config::NVS storage;
+Mycila::config::Config configNew(storage);
+Mycila::config::ConfigV10 config(configNew);
 
 static std::queue<std::function<void()>> reconfigureQueue;
 static Mycila::Task reconfigureTask("Reconfigure", []() {
@@ -152,8 +153,9 @@ void yasolr_init_config() {
     restartTask.resume();
   });
 
-  config.listen([](const char* k, const char* newValue) {
-    ESP_LOGI(TAG, "'%s' => '%s'", k, newValue);
+  config.listen([](const char* k, const Mycila::config::Value& newValue) {
+    ESP_LOGI(TAG, "'%s' => '%s'", k, Mycila::config::toString(newValue).c_str());
+
     const std::string key = k;
 
     if (key == KEY_RELAY1_LOAD) {

@@ -19,6 +19,7 @@
 #include <MycilaAppInfo.h>
 #include <MycilaCircularBuffer.h>
 #include <MycilaConfig.h>
+#include <MycilaConfigV10.h>
 #include <MycilaConfigStorageNVS.h>
 #include <MycilaDS18.h>
 #include <MycilaDimmer.h>
@@ -66,7 +67,7 @@ extern Mycila::Task dashboardUpdateTask;
 extern void yasolr_init_web_server();
 
 // Config
-extern Mycila::Config config;
+extern Mycila::config::ConfigV10 config;
 extern void yasolr_init_config();
 
 // Network
