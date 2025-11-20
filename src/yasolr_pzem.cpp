@@ -31,14 +31,14 @@ static void init_read_task() {
 
     unsafeTaskManager.addTask(*pzemTask);
 
-    if (config.getBool(KEY_ENABLE_DEBUG)) {
+    if (config.get<bool>(KEY_ENABLE_DEBUG)) {
       pzemTask->enableProfiling();
     }
   }
 }
 
 void yasolr_configure_output1_pzem() {
-  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
     init_read_task();
 
     if (pzemO1 == nullptr) {
@@ -48,11 +48,11 @@ void yasolr_configure_output1_pzem() {
       pzemO1->setSharedSerial(true);
 
       if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-        pzemO1->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
+        pzemO1->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
 
 #if SOC_UART_NUM > 2
       if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-        pzemO1->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
+        pzemO1->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
 #endif
 
       if (pzemO1->isEnabled()) {
@@ -83,17 +83,17 @@ void yasolr_configure_output1_pzem() {
           pzemO1->end();
 
           if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-            pzemO1->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+            pzemO1->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 
 #if SOC_UART_NUM > 2
           if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-            pzemO1->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+            pzemO1->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 #endif
 
           switch (pzemO1->getDeviceAddress()) {
             case YASOLR_PZEM_ADDRESS_OUTPUT1:
               // already paired
-              if (!config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+              if (!config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
                 // stop PZEM if it was not enabled
                 pzemO1->end();
               }
@@ -107,7 +107,7 @@ void yasolr_configure_output1_pzem() {
             default:
               // found a device
               if (pzemO1->setDeviceAddress(YASOLR_PZEM_ADDRESS_OUTPUT1)) {
-                if (!config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+                if (!config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
                   // stop PZEM if it was not enabled
                   pzemO1->end();
                 }
@@ -121,7 +121,7 @@ void yasolr_configure_output1_pzem() {
 
         unsafeTaskManager.addTask(*pzemO1PairingTask);
 
-        if (config.getBool(KEY_ENABLE_DEBUG))
+        if (config.get<bool>(KEY_ENABLE_DEBUG))
           pzemO1PairingTask->enableProfiling();
 
       } else {
@@ -147,7 +147,7 @@ void yasolr_configure_output1_pzem() {
 }
 
 void yasolr_configure_output2_pzem() {
-  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
     init_read_task();
 
     if (pzemO2 == nullptr) {
@@ -157,11 +157,11 @@ void yasolr_configure_output2_pzem() {
       pzemO2->setSharedSerial(true);
 
       if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-        pzemO2->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
+        pzemO2->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
 
 #if SOC_UART_NUM > 2
       if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-        pzemO2->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
+        pzemO2->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
 #endif
 
       if (pzemO2->isEnabled()) {
@@ -192,17 +192,17 @@ void yasolr_configure_output2_pzem() {
           pzemO2->end();
 
           if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-            pzemO2->begin(Serial1, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+            pzemO2->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 
 #if SOC_UART_NUM > 2
           if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-            pzemO2->begin(Serial2, config.getLong(KEY_PIN_PZEM_RX), config.getLong(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
+            pzemO2->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
 #endif
 
           switch (pzemO2->getDeviceAddress()) {
             case YASOLR_PZEM_ADDRESS_OUTPUT2:
               // already paired
-              if (!config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+              if (!config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
                 // stop PZEM if it was not enabled
                 pzemO2->end();
               }
@@ -216,7 +216,7 @@ void yasolr_configure_output2_pzem() {
             default:
               // found a device
               if (pzemO2->setDeviceAddress(YASOLR_PZEM_ADDRESS_OUTPUT2)) {
-                if (!config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+                if (!config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
                   // stop PZEM if it was not enabled
                   pzemO2->end();
                 }
@@ -230,7 +230,7 @@ void yasolr_configure_output2_pzem() {
 
         unsafeTaskManager.addTask(*pzemO2PairingTask);
 
-        if (config.getBool(KEY_ENABLE_DEBUG))
+        if (config.get<bool>(KEY_ENABLE_DEBUG))
           pzemO2PairingTask->enableProfiling();
 
       } else {

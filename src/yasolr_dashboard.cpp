@@ -281,9 +281,9 @@ static int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_MODE_ERROR "," YASOLR_PID_MODE_INPUT);
 static dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_148, YASOLR_PID_MODE_ERROR "," YASOLR_PID_MODE_INPUT);
-static dash::InputCard<int> _pidOutMin(dashboard, YASOLR_LBL_164);
-static dash::InputCard<int> _pidOutMax(dashboard, YASOLR_LBL_165);
-static dash::InputCard<int> _pidSetpoint(dashboard, YASOLR_LBL_163);
+static dash::InputCard<int16_t> _pidOutMin(dashboard, YASOLR_LBL_164);
+static dash::InputCard<int16_t> _pidOutMax(dashboard, YASOLR_LBL_165);
+static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
@@ -299,32 +299,32 @@ static dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_1
 
 static dash::SeparatorCard<const char*> _gpioTitle(dashboard, YASOLR_LBL_126);
 static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_076);
-static dash::FeedbackInputCard<int32_t> _pinZCD(dashboard, YASOLR_LBL_125);
+static dash::FeedbackInputCard<int8_t> _pinZCD(dashboard, YASOLR_LBL_125);
 static dash::DropdownCard<const char*> _serialJsy(dashboard, YASOLR_LBL_150, YASOLR_UART_CHOICES);
-static dash::FeedbackInputCard<int32_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
-static dash::FeedbackInputCard<int32_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
+static dash::FeedbackInputCard<int8_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
+static dash::FeedbackInputCard<int8_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
 static dash::DropdownCard<const char*> _serialPZEM(dashboard, YASOLR_LBL_152, YASOLR_UART_CHOICES);
-static dash::FeedbackInputCard<int32_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
-static dash::FeedbackInputCard<int32_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
+static dash::FeedbackInputCard<int8_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
+static dash::FeedbackInputCard<int8_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
 static dash::SeparatorCard<const char*> _gpioSep1(dashboard, YASOLR_LBL_046);
-static dash::FeedbackInputCard<int32_t> _pinDimmerO1(dashboard, YASOLR_LBL_050);
-static dash::FeedbackInputCard<int32_t> _pinRelayO1(dashboard, YASOLR_LBL_134);
-static dash::FeedbackInputCard<int32_t> _pinDS18O1(dashboard, YASOLR_LBL_132);
+static dash::FeedbackInputCard<int8_t> _pinDimmerO1(dashboard, YASOLR_LBL_050);
+static dash::FeedbackInputCard<int8_t> _pinRelayO1(dashboard, YASOLR_LBL_134);
+static dash::FeedbackInputCard<int8_t> _pinDS18O1(dashboard, YASOLR_LBL_132);
 static dash::SeparatorCard<const char*> _gpioSep2(dashboard, YASOLR_LBL_070);
-static dash::FeedbackInputCard<int32_t> _pinDimmerO2(dashboard, YASOLR_LBL_050);
-static dash::FeedbackInputCard<int32_t> _pinRelayO2(dashboard, YASOLR_LBL_134);
-static dash::FeedbackInputCard<int32_t> _pinDS18O2(dashboard, YASOLR_LBL_132);
+static dash::FeedbackInputCard<int8_t> _pinDimmerO2(dashboard, YASOLR_LBL_050);
+static dash::FeedbackInputCard<int8_t> _pinRelayO2(dashboard, YASOLR_LBL_134);
+static dash::FeedbackInputCard<int8_t> _pinDS18O2(dashboard, YASOLR_LBL_132);
 static dash::SeparatorCard<const char*> _gpioSep3(dashboard, YASOLR_LBL_071);
-static dash::FeedbackInputCard<int32_t> _pinRelay1(dashboard, YASOLR_LBL_074);
-static dash::FeedbackInputCard<int32_t> _pinRelay2(dashboard, YASOLR_LBL_077);
+static dash::FeedbackInputCard<int8_t> _pinRelay1(dashboard, YASOLR_LBL_074);
+static dash::FeedbackInputCard<int8_t> _pinRelay2(dashboard, YASOLR_LBL_077);
 static dash::SeparatorCard<const char*> _gpioSep5(dashboard, YASOLR_LBL_078);
-static dash::FeedbackInputCard<int32_t> _pinDS18Router(dashboard, YASOLR_LBL_132);
-static dash::FeedbackInputCard<int32_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
-static dash::FeedbackInputCard<int32_t> _pinLEDYellow(dashboard, YASOLR_LBL_120);
-static dash::FeedbackInputCard<int32_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
+static dash::FeedbackInputCard<int8_t> _pinDS18Router(dashboard, YASOLR_LBL_132);
+static dash::FeedbackInputCard<int8_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
+static dash::FeedbackInputCard<int8_t> _pinLEDYellow(dashboard, YASOLR_LBL_120);
+static dash::FeedbackInputCard<int8_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
 static dash::SeparatorCard<const char*> _gpioSep6(dashboard, YASOLR_LBL_111);
-static dash::FeedbackInputCard<int32_t> _pinI2CSCL(dashboard, "SCL");
-static dash::FeedbackInputCard<int32_t> _pinI2CSDA(dashboard, "SDA");
+static dash::FeedbackInputCard<int8_t> _pinI2CSCL(dashboard, "SCL");
+static dash::FeedbackInputCard<int8_t> _pinI2CSDA(dashboard, "SDA");
 
 // tab: hardware
 
@@ -461,16 +461,16 @@ static dash::LinkCard<const char*> _startupLogs(dashboard, YASOLR_LBL_184);
 
 static void _calibrate(size_t outputIndex) {
   if (!router.isCalibrationRunning()) {
-    config.setString(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, YASOLR_FALSE, false);
-    config.setString(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, YASOLR_FALSE, false);
-    config.setString(KEY_OUTPUT1_DIMMER_LIMIT, "100", false);
-    config.setString(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, YASOLR_FALSE, false);
-    config.setString(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, YASOLR_FALSE, false);
-    config.setString(KEY_OUTPUT2_DIMMER_LIMIT, "100", false);
+    config.set<bool>(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, false, false);
+    config.set<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, false, false);
+    config.set<uint8_t>(KEY_OUTPUT1_DIMMER_LIMIT, static_cast<uint8_t>(100), false);
+    config.set<bool>(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, false, false);
+    config.set<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, false, false);
+    config.set<uint8_t>(KEY_OUTPUT2_DIMMER_LIMIT, static_cast<uint8_t>(100), false);
 
     router.beginCalibration(outputIndex, []() {
-      config.setString(KEY_OUTPUT1_RESISTANCE, Mycila::string::to_string(output1.config.calibratedResistance, 2));
-      config.setString(KEY_OUTPUT2_RESISTANCE, Mycila::string::to_string(output2.config.calibratedResistance, 2));
+      config.set<float>(KEY_OUTPUT1_RESISTANCE, output1.config.calibratedResistance);
+      config.set<float>(KEY_OUTPUT2_RESISTANCE, output2.config.calibratedResistance);
     });
 
     // because we set false to trigger events
@@ -907,13 +907,16 @@ void YaSolR::Website::begin() {
   _numConfig(_victronPort, KEY_VICTRON_MODBUS_PORT);
 
   _gridFreq.onChange([](const char* value) {
-    if (strcmp(value, "50 Hz") == 0)
-      config.setString(KEY_GRID_FREQUENCY, "50");
-    else if (strcmp(value, "60 Hz") == 0)
-      config.setString(KEY_GRID_FREQUENCY, "60");
-    else
+    if (strcmp(value, "50 Hz") == 0) {
+      config.set<uint8_t>(KEY_GRID_FREQUENCY, static_cast<uint8_t>(50));
+      _gridFreq.setValue("50 Hz");
+    } else if (strcmp(value, "60 Hz") == 0) {
+      config.set<uint8_t>(KEY_GRID_FREQUENCY, static_cast<uint8_t>(60));
+      _gridFreq.setValue("60 Hz");
+    } else {
       config.unset(KEY_GRID_FREQUENCY);
-    _gridFreq.setValue(config.getString(KEY_GRID_FREQUENCY));
+      _gridFreq.setValue("Auto-detect");
+    }
     dashboard.refresh(_gridFreq);
   });
 
@@ -1037,8 +1040,7 @@ void YaSolR::Website::begin() {
   _daysConfig(_output1AutoStartWDays, KEY_OUTPUT1_DAYS);
   _output1BypassTimeout.onChange([](float value) {
     _output1BypassTimeout.setValue(value);
-    uint16_t seconds = static_cast<uint16_t>(value * 3600.0f);
-    config.setString(KEY_OUTPUT1_BYPASS_TIMEOUT, std::to_string(seconds));
+    config.set<uint16_t>(KEY_OUTPUT1_BYPASS_TIMEOUT, static_cast<uint16_t>(value * 3600.0f));
     dashboard.refresh(_output1BypassTimeout);
   });
 
@@ -1072,8 +1074,7 @@ void YaSolR::Website::begin() {
   _daysConfig(_output2AutoStartWDays, KEY_OUTPUT2_DAYS);
   _output2BypassTimeout.onChange([](float value) {
     _output2BypassTimeout.setValue(value);
-    uint16_t seconds = static_cast<uint16_t>(value * 3600.0f);
-    config.setString(KEY_OUTPUT2_BYPASS_TIMEOUT, std::to_string(seconds));
+    config.set<uint16_t>(KEY_OUTPUT2_BYPASS_TIMEOUT, static_cast<uint16_t>(value * 3600.0f));
     dashboard.refresh(_output2BypassTimeout);
   });
 #endif
@@ -1163,27 +1164,27 @@ void YaSolR::Website::initCards() {
   _output2Bypass.setValue(false);
 
 #ifdef APP_MODEL_PRO
-  const bool jsyEnabled = config.getBool(KEY_ENABLE_JSY);
+  const bool jsyEnabled = config.get<bool>(KEY_ENABLE_JSY);
   const bool pidViewEnabled = realTimePIDEnabled();
   const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
 
-  const bool dimmer1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_DIMMER);
-  const bool output1RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT1_RELAY);
+  const bool dimmer1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER);
+  const bool output1RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY);
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
-  const bool autoDimmer1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-  const bool autoBypass1Activated = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool pzem1Enabled = config.getBool(KEY_ENABLE_OUTPUT1_PZEM);
+  const bool autoDimmer1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
+  const bool autoBypass1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
+  const bool pzem1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM);
 
-  const bool dimmer2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_DIMMER);
-  const bool output2RelayEnabled = config.getBool(KEY_ENABLE_OUTPUT2_RELAY);
+  const bool dimmer2Enabled = config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER);
+  const bool output2RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY);
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
-  const bool autoDimmer2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-  const bool autoBypass2Activated = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  const bool pzem2Enabled = config.getBool(KEY_ENABLE_OUTPUT2_PZEM);
+  const bool autoDimmer2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
+  const bool autoBypass2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
+  const bool pzem2Enabled = config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM);
 
   // statistics
 
-  _udpMessageRateBuffer.setDisplay(config.getBool(KEY_ENABLE_JSY_REMOTE));
+  _udpMessageRateBuffer.setDisplay(config.get<bool>(KEY_ENABLE_JSY_REMOTE));
   _networkAPIP.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   _networkAPMAC.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   #ifdef ESPCONNECT_ETH_SUPPORT
@@ -1208,16 +1209,16 @@ void YaSolR::Website::initCards() {
 
   // tabs
 
-  _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled || config.getBool(KEY_ENABLE_OUTPUT1_DS18));
-  _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled || config.getBool(KEY_ENABLE_OUTPUT2_DS18));
+  _output1Tab.setDisplay(dimmer1Enabled || output1RelayEnabled || config.get<bool>(KEY_ENABLE_OUTPUT1_DS18));
+  _output2Tab.setDisplay(dimmer2Enabled || output2RelayEnabled || config.get<bool>(KEY_ENABLE_OUTPUT2_DS18));
   _output1ConfigTab.setDisplay(dimmer1Enabled || output1RelayEnabled);
   _output2ConfigTab.setDisplay(dimmer2Enabled || output2RelayEnabled);
 
   // overview
 
-  _relay1Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY1));
-  _relay2Switch.setDisplay(config.getBool(KEY_ENABLE_RELAY2));
-  _routerDS18State.setDisplay(config.getBool(KEY_ENABLE_SYSTEM_DS18));
+  _relay1Switch.setDisplay(config.get<bool>(KEY_ENABLE_RELAY1));
+  _relay2Switch.setDisplay(config.get<bool>(KEY_ENABLE_RELAY2));
+  _routerDS18State.setDisplay(config.get<bool>(KEY_ENABLE_SYSTEM_DS18));
 
   // tab: output 1
 
@@ -1247,7 +1248,7 @@ void YaSolR::Website::initCards() {
   _output1Energy.setDisplay(dimmer1Enabled && pzem1Enabled);
   _output1BypassAuto.setDisplay(bypass1Possible);
   _output1Bypass.setDisplay(bypass1Possible);
-  _output1DS18State.setDisplay(config.getBool(KEY_ENABLE_OUTPUT1_DS18));
+  _output1DS18State.setDisplay(config.get<bool>(KEY_ENABLE_OUTPUT1_DS18));
 
   // tab: output 2
 
@@ -1277,7 +1278,7 @@ void YaSolR::Website::initCards() {
   _output2Energy.setDisplay(dimmer2Enabled && pzem2Enabled);
   _output2BypassAuto.setDisplay(bypass2Possible);
   _output2Bypass.setDisplay(bypass2Possible);
-  _output2DS18State.setDisplay(config.getBool(KEY_ENABLE_OUTPUT2_DS18));
+  _output2DS18State.setDisplay(config.get<bool>(KEY_ENABLE_OUTPUT2_DS18));
 
   // tab: system
 
@@ -1290,8 +1291,8 @@ void YaSolR::Website::initCards() {
 
   // tab: debug
 
-  _debugMode.setValue(config.getBool(KEY_ENABLE_DEBUG));
-  _startupLogsToggle.setValue(config.getBool(KEY_ENABLE_DEBUG_BOOT));
+  _debugMode.setValue(config.get<bool>(KEY_ENABLE_DEBUG));
+  _startupLogsToggle.setValue(config.get<bool>(KEY_ENABLE_DEBUG_BOOT));
   _debugInfo.setValue("/api/debug");
   _startupLogs.setValue("/api" YASOLR_LOG_FILE);
   _consoleLink.setValue("/console");
@@ -1307,7 +1308,7 @@ void YaSolR::Website::initCards() {
   _gateway.setValue(config.getString(KEY_NET_GATEWAY));
   _dnsServer.setValue(config.getString(KEY_NET_DNS));
   _adminPwd.setValue(config.getString(KEY_ADMIN_PASSWORD));
-  _apMode.setValue(config.getBool(KEY_ENABLE_AP_MODE));
+  _apMode.setValue(config.get<bool>(KEY_ENABLE_AP_MODE));
 
   // tab: ntp
 
@@ -1316,36 +1317,36 @@ void YaSolR::Website::initCards() {
 
   // tab: mqtt
 
-  _mqtt.setValue(config.getBool(KEY_ENABLE_MQTT));
+  _mqtt.setValue(config.get<bool>(KEY_ENABLE_MQTT));
   _mqttServer.setValue(config.getString(KEY_MQTT_SERVER));
-  _mqttPort.setValue(config.getInt(KEY_MQTT_PORT));
+  _mqttPort.setValue(config.get<uint16_t>(KEY_MQTT_PORT));
   _mqttUser.setValue(config.getString(KEY_MQTT_USERNAME));
   _mqttPwd.setValue(config.getString(KEY_MQTT_PASSWORD));
-  _mqttSecured.setValue(config.getBool(KEY_MQTT_SECURED));
+  _mqttSecured.setValue(config.get<bool>(KEY_MQTT_SECURED));
   _mqttServerCert.setValue("/api/config/mqttServerCertificate");
   _mqttServerCert.setDisplay(!serverCertExists);
   _mqttServerCertDelete.setDisplay(serverCertExists);
   _mqttTopic.setValue(config.getString(KEY_MQTT_TOPIC));
-  _mqttPublishInterval.setValue(config.getInt(KEY_MQTT_PUBLISH_INTERVAL));
+  _mqttPublishInterval.setValue(config.get<uint8_t>(KEY_MQTT_PUBLISH_INTERVAL));
 
   _mqttGridVoltage.setValue(config.getString(KEY_GRID_VOLTAGE_MQTT_TOPIC));
   _mqttGridPower.setValue(config.getString(KEY_GRID_POWER_MQTT_TOPIC));
   _mqttTempO1.setValue(config.getString(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC));
   _mqttTempO2.setValue(config.getString(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC));
 
-  _haDiscovery.setValue(config.getBool(KEY_ENABLE_HA_DISCOVERY));
+  _haDiscovery.setValue(config.get<bool>(KEY_ENABLE_HA_DISCOVERY));
   _haDiscoveryTopic.setValue(config.getString(KEY_HA_DISCOVERY_TOPIC));
 
   // tab: pid
 
   _pidPMode.setValue(config.getString(KEY_PID_MODE_P));
   _pidDMode.setValue(config.getString(KEY_PID_MODE_D));
-  _pidSetpoint.setValue(config.getInt(KEY_PID_SETPOINT));
-  _pidKp.setValue(config.getFloat(KEY_PID_KP));
-  _pidKi.setValue(config.getFloat(KEY_PID_KI));
-  _pidKd.setValue(config.getFloat(KEY_PID_KD));
-  _pidOutMin.setValue(config.getInt(KEY_PID_OUT_MIN));
-  _pidOutMax.setValue(config.getInt(KEY_PID_OUT_MAX));
+  _pidKp.setValue(config.get<float>(KEY_PID_KP));
+  _pidKi.setValue(config.get<float>(KEY_PID_KI));
+  _pidKd.setValue(config.get<float>(KEY_PID_KD));
+  _pidSetpoint.setValue(config.get<int16_t>(KEY_PID_SETPOINT));
+  _pidOutMin.setValue(config.get<int16_t>(KEY_PID_OUT_MIN));
+  _pidOutMax.setValue(config.get<int16_t>(KEY_PID_OUT_MAX));
 
   _pidInputHistory.setDisplay(pidViewEnabled);
   _pidOutputHistory.setDisplay(pidViewEnabled);
@@ -1355,7 +1356,7 @@ void YaSolR::Website::initCards() {
 
   // tab: gpio
 
-  std::unordered_map<int32_t, dash::FeedbackInputCard<int32_t>*> pinout = {};
+  std::unordered_map<int8_t, dash::FeedbackInputCard<int8_t>*> pinout = {};
   _pinout(_pinDimmerO1, KEY_PIN_OUTPUT1_DIMMER, pinout);
   _pinout(_pinDS18O1, KEY_PIN_OUTPUT1_DS18, pinout);
   _pinout(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY, pinout);
@@ -1382,7 +1383,7 @@ void YaSolR::Website::initCards() {
   // tab: hardware
 
   // grid
-  switch (config.getInt(KEY_GRID_FREQUENCY)) {
+  switch (config.get<uint8_t>(KEY_GRID_FREQUENCY)) {
     case 50:
       _gridFreq.setValue("50 Hz");
       break;
@@ -1393,79 +1394,79 @@ void YaSolR::Website::initCards() {
       _gridFreq.setValue("Auto-detect");
       break;
   }
-  _jsy.setValue(config.getBool(KEY_ENABLE_JSY));
-  _jsyRemote.setValue(config.getBool(KEY_ENABLE_JSY_REMOTE));
-  _victron.setValue(config.getBool(KEY_ENABLE_VICTRON_MODBUS));
+  _jsy.setValue(config.get<bool>(KEY_ENABLE_JSY));
+  _jsyRemote.setValue(config.get<bool>(KEY_ENABLE_JSY_REMOTE));
+  _victron.setValue(config.get<bool>(KEY_ENABLE_VICTRON_MODBUS));
   _victronServer.setValue(config.getString(KEY_VICTRON_MODBUS_SERVER));
-  _victronPort.setValue(config.getInt(KEY_VICTRON_MODBUS_PORT));
+  _victronPort.setValue(config.get<uint16_t>(KEY_VICTRON_MODBUS_PORT));
 
   // output 1 dimmer
-  _output1Dimmer.setValue(config.getBool(KEY_ENABLE_OUTPUT1_DIMMER));
+  _output1Dimmer.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER));
   _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
-  _output1DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MIN)), static_cast<uint8_t>(config.getInt(KEY_OUTPUT1_DIMMER_MAX))});
-  _output1PZEM.setValue(config.getBool(KEY_ENABLE_OUTPUT1_PZEM));
+  _output1DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX)});
+  _output1PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM));
   _output1PZEMSync.setDisplay(dimmer1Enabled && pzem1Enabled);
-  _output1DS18.setValue(config.getBool(KEY_ENABLE_OUTPUT1_DS18));
+  _output1DS18.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_DS18));
 
   // output 1 bypass relay
-  _output1Relay.setValue(config.getBool(KEY_ENABLE_OUTPUT1_RELAY));
+  _output1Relay.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY));
   _output1RelayType.setValue(config.getString(KEY_OUTPUT1_RELAY_TYPE));
 
   // output 2 dimmer
-  _output2Dimmer.setValue(config.getBool(KEY_ENABLE_OUTPUT2_DIMMER));
+  _output2Dimmer.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER));
   _output2DimmerType.setValue(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
-  _output2DimmerMapper.setValue({static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MIN)), static_cast<uint8_t>(config.getInt(KEY_OUTPUT2_DIMMER_MAX))});
-  _output2PZEM.setValue(config.getBool(KEY_ENABLE_OUTPUT2_PZEM));
+  _output2DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MAX)});
+  _output2PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM));
   _output2PZEMSync.setDisplay(dimmer2Enabled && pzem2Enabled);
-  _output2DS18.setValue(config.getBool(KEY_ENABLE_OUTPUT2_DS18));
+  _output2DS18.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_DS18));
 
   // output 2 bypass relay
-  _output2Relay.setValue(config.getBool(KEY_ENABLE_OUTPUT2_RELAY));
+  _output2Relay.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY));
   _output2RelayType.setValue(config.getString(KEY_OUTPUT2_RELAY_TYPE));
 
   // relay1
-  _relay1.setValue(config.getBool(KEY_ENABLE_RELAY1));
+  _relay1.setValue(config.get<bool>(KEY_ENABLE_RELAY1));
   _relay1Type.setValue(config.getString(KEY_RELAY1_TYPE));
-  _relay1Load.setValue(config.getInt(KEY_RELAY1_LOAD));
-  _relay1Tolerance.setValue(config.getInt(KEY_RELAY1_TOLERANCE));
+  _relay1Load.setValue(config.get<uint16_t>(KEY_RELAY1_LOAD));
+  _relay1Tolerance.setValue(config.get<uint8_t>(KEY_RELAY1_TOLERANCE));
 
   // relay2
-  _relay2.setValue(config.getBool(KEY_ENABLE_RELAY2));
+  _relay2.setValue(config.get<bool>(KEY_ENABLE_RELAY2));
   _relay2Type.setValue(config.getString(KEY_RELAY2_TYPE));
-  _relay2Load.setValue(config.getInt(KEY_RELAY2_LOAD));
-  _relay2Tolerance.setValue(config.getInt(KEY_RELAY2_TOLERANCE));
+  _relay2Load.setValue(config.get<uint16_t>(KEY_RELAY2_LOAD));
+  _relay2Tolerance.setValue(config.get<uint8_t>(KEY_RELAY2_TOLERANCE));
 
   // display
-  _display.setValue(config.getBool(KEY_ENABLE_DISPLAY));
+  _display.setValue(config.get<bool>(KEY_ENABLE_DISPLAY));
   _displayType.setValue(config.getString(KEY_DISPLAY_TYPE));
-  _displayRotation.setValue(config.getInt(KEY_DISPLAY_ROTATION));
-  _displaySpeed.setValue(config.getInt(KEY_DISPLAY_SPEED));
+  _displayRotation.setValue(config.get<uint16_t>(KEY_DISPLAY_ROTATION));
+  _displaySpeed.setValue(config.get<uint8_t>(KEY_DISPLAY_SPEED));
 
   // led
-  _led.setValue(config.getBool(KEY_ENABLE_LIGHTS));
+  _led.setValue(config.get<bool>(KEY_ENABLE_LIGHTS));
 
   // DS18 system
-  _routerDS18.setValue(config.getBool(KEY_ENABLE_SYSTEM_DS18));
+  _routerDS18.setValue(config.get<bool>(KEY_ENABLE_SYSTEM_DS18));
 
   // tab: output 1 config
 
   _output1ConfigSep0.setDisplay(dimmer1Enabled);
-  _output1ResistanceInput.setValue(config.getFloat(KEY_OUTPUT1_RESISTANCE));
+  _output1ResistanceInput.setValue(config.get<float>(KEY_OUTPUT1_RESISTANCE));
   _output1ResistanceInput.setDisplay(dimmer1Enabled);
   _output1ResistanceCalibration.setDisplay((dimmer1Enabled && jsyEnabled) || (dimmer1Enabled && pzem1Enabled));
   _output1ConfigSep1.setDisplay(dimmer1Enabled);
-  _output1DimmerDutyLimiter.setValue(config.getInt(KEY_OUTPUT1_DIMMER_LIMIT));
+  _output1DimmerDutyLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_LIMIT));
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
-  _output1DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT1_DIMMER_TEMP_LIMITER));
+  _output1DimmerTempLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_TEMP_LIMITER));
   _output1DimmerTempLimiter.setDisplay(dimmer1Enabled);
-  _output1ExcessLimiter.setValue(config.getInt(KEY_OUTPUT1_EXCESS_LIMITER));
+  _output1ExcessLimiter.setValue(config.get<uint16_t>(KEY_OUTPUT1_EXCESS_LIMITER));
   _output1ExcessLimiter.setDisplay(dimmer1Enabled);
-  _output1ExcessRatio.setValue(config.getInt(KEY_OUTPUT1_EXCESS_RATIO));
+  _output1ExcessRatio.setValue(config.get<uint8_t>(KEY_OUTPUT1_EXCESS_RATIO));
   _output1ExcessRatio.setDisplay(dimmer1Enabled);
   _output1ConfigSep2.setDisplay(bypass1Possible);
-  _output1AutoStartTemp.setValue(config.getInt(KEY_OUTPUT1_TEMPERATURE_START));
+  _output1AutoStartTemp.setValue(config.get<uint8_t>(KEY_OUTPUT1_TEMPERATURE_START));
   _output1AutoStartTemp.setDisplay(bypass1Possible);
-  _output1AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT1_TEMPERATURE_STOP));
+  _output1AutoStoptTemp.setValue(config.get<uint8_t>(KEY_OUTPUT1_TEMPERATURE_STOP));
   _output1AutoStoptTemp.setDisplay(bypass1Possible);
   _output1AutoStartTime.setValue(config.getString(KEY_OUTPUT1_TIME_START));
   _output1AutoStartTime.setDisplay(bypass1Possible);
@@ -1473,28 +1474,28 @@ void YaSolR::Website::initCards() {
   _output1AutoStoptTime.setDisplay(bypass1Possible);
   _output1AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT1_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.getString(KEY_OUTPUT1_DAYS));
   _output1AutoStartWDays.setDisplay(bypass1Possible);
-  _output1BypassTimeout.setValue(config.getFloat(KEY_OUTPUT1_BYPASS_TIMEOUT) / 3600.0f);
+  _output1BypassTimeout.setValue(config.get<uint16_t>(KEY_OUTPUT1_BYPASS_TIMEOUT) / 3600.0f);
   _output1BypassTimeout.setDisplay(bypass1Possible);
 
   // tab: output 2 config
 
   _output2ConfigSep0.setDisplay(dimmer2Enabled);
-  _output2ResistanceInput.setValue(config.getFloat(KEY_OUTPUT2_RESISTANCE));
+  _output2ResistanceInput.setValue(config.get<float>(KEY_OUTPUT2_RESISTANCE));
   _output2ResistanceInput.setDisplay(dimmer2Enabled);
   _output2ResistanceCalibration.setDisplay((dimmer2Enabled && jsyEnabled) || (dimmer2Enabled && pzem2Enabled));
   _output2ConfigSep1.setDisplay(dimmer2Enabled);
-  _output2DimmerDutyLimiter.setValue(config.getInt(KEY_OUTPUT2_DIMMER_LIMIT));
+  _output2DimmerDutyLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_LIMIT));
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
-  _output2DimmerTempLimiter.setValue(config.getInt(KEY_OUTPUT2_DIMMER_TEMP_LIMITER));
+  _output2DimmerTempLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_TEMP_LIMITER));
   _output2DimmerTempLimiter.setDisplay(dimmer2Enabled);
-  _output2ExcessLimiter.setValue(config.getInt(KEY_OUTPUT2_EXCESS_LIMITER));
+  _output2ExcessLimiter.setValue(config.get<uint16_t>(KEY_OUTPUT2_EXCESS_LIMITER));
   _output2ExcessLimiter.setDisplay(dimmer2Enabled);
-  _output2ExcessRatio.setValue(config.getInt(KEY_OUTPUT2_EXCESS_RATIO));
+  _output2ExcessRatio.setValue(config.get<uint8_t>(KEY_OUTPUT2_EXCESS_RATIO));
   _output2ExcessRatio.setDisplay(dimmer2Enabled);
   _output2ConfigSep2.setDisplay(bypass2Possible);
-  _output2AutoStartTemp.setValue(config.getInt(KEY_OUTPUT2_TEMPERATURE_START));
+  _output2AutoStartTemp.setValue(config.get<uint8_t>(KEY_OUTPUT2_TEMPERATURE_START));
   _output2AutoStartTemp.setDisplay(bypass2Possible);
-  _output2AutoStoptTemp.setValue(config.getInt(KEY_OUTPUT2_TEMPERATURE_STOP));
+  _output2AutoStoptTemp.setValue(config.get<uint8_t>(KEY_OUTPUT2_TEMPERATURE_STOP));
   _output2AutoStoptTemp.setDisplay(bypass2Possible);
   _output2AutoStartTime.setValue(config.getString(KEY_OUTPUT2_TIME_START));
   _output2AutoStartTime.setDisplay(bypass2Possible);
@@ -1502,7 +1503,7 @@ void YaSolR::Website::initCards() {
   _output2AutoStoptTime.setDisplay(bypass2Possible);
   _output2AutoStartWDays.setValue(config.isEqual(KEY_OUTPUT2_DAYS, YASOLR_WEEK_DAYS_EMPTY) ? "" : config.getString(KEY_OUTPUT2_DAYS));
   _output2AutoStartWDays.setDisplay(bypass2Possible);
-  _output2BypassTimeout.setValue(config.getFloat(KEY_OUTPUT2_BYPASS_TIMEOUT) / 3600.0f);
+  _output2BypassTimeout.setValue(config.get<uint16_t>(KEY_OUTPUT2_BYPASS_TIMEOUT) / 3600.0f);
   _output2BypassTimeout.setDisplay(bypass2Possible);
 #endif
 }
@@ -1688,7 +1689,7 @@ void YaSolR::Website::updateWarnings() {
   size_t count = 0;
 
   // mqtt
-  if (config.getBool(KEY_ENABLE_MQTT)) {
+  if (config.get<bool>(KEY_ENABLE_MQTT)) {
     if (!mqtt || !mqtt->isEnabled()) {
       errors[count++] = ERR_ACT_MQTT;
     } else if (!mqtt->isConnected()) {
@@ -1696,7 +1697,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // jsy
-  if (config.getBool(KEY_ENABLE_JSY)) {
+  if (config.get<bool>(KEY_ENABLE_JSY)) {
     if (!jsy || !jsy->isEnabled()) {
       errors[count++] = ERR_ACT_JSY;
     } else if (!jsy->isConnected()) {
@@ -1704,7 +1705,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // victron
-  if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
+  if (config.get<bool>(KEY_ENABLE_VICTRON_MODBUS)) {
     if (!victron) {
       errors[count++] = ERR_ACT_VICTRON;
     } else if (victron->hasError()) {
@@ -1712,7 +1713,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // pzem output 1
-  if (config.getBool(KEY_ENABLE_OUTPUT1_PZEM)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
     if (!pzemO1 || !pzemO1->isEnabled()) {
       errors[count++] = ERR_ACT_O1_PZEM;
     } else if (pzemO1->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
@@ -1722,7 +1723,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // pzem output 2
-  if (config.getBool(KEY_ENABLE_OUTPUT2_PZEM)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
     if (!pzemO2 || !pzemO2->isEnabled()) {
       errors[count++] = ERR_ACT_O2_PZEM;
     } else if (pzemO2->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {
@@ -1732,7 +1733,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // output 1 dimmer + resistance
-  if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER)) {
     if (!output1.isDimmerEnabled()) {
       errors[count++] = ERR_ACT_O1_DIMMER;
     } else if (!output1.isDimmerOnline()) {
@@ -1742,7 +1743,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // output 2 dimmer + resistance
-  if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER)) {
     if (!output2.isDimmerEnabled()) {
       errors[count++] = ERR_ACT_O2_DIMMER;
     } else if (!output2.isDimmerOnline()) {
@@ -1752,7 +1753,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // DS18 system
-  if (config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
+  if (config.get<bool>(KEY_ENABLE_SYSTEM_DS18)) {
     if (!ds18Sys || !ds18Sys->isEnabled()) {
       errors[count++] = ERR_ACT_SYS_DS18;
     } else if (ds18Sys->getLastTime() == 0) {
@@ -1762,7 +1763,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // DS18 output 1
-  if (config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT1_DS18)) {
     if (!ds18O1 || !ds18O1->isEnabled()) {
       errors[count++] = ERR_ACT_O1_DS18;
     } else if (ds18O1->getLastTime() == 0) {
@@ -1772,7 +1773,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // DS18 output 2
-  if (config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT2_DS18)) {
     if (!ds18O2 || !ds18O2->isEnabled()) {
       errors[count++] = ERR_ACT_O2_DS18;
     } else if (ds18O2->getLastTime() == 0) {

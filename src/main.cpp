@@ -56,7 +56,7 @@ void setup() {
   ESP_LOGI(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // startup finished: do not save logs at next boot
-  config.setString(KEY_ENABLE_DEBUG_BOOT, YASOLR_FALSE);
+  config.set<bool>(KEY_ENABLE_DEBUG_BOOT, false);
 }
 
 // Destroy default Arduino async task

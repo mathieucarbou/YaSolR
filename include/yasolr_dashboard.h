@@ -25,17 +25,17 @@ namespace YaSolR {
     private:
       void _boolConfig(dash::ToggleButtonCard& card, const char* key) {
         card.onChange([key, &card, this](bool value) {
-          config.setBool(key, value);
-          card.setValue(config.getBool(key));
+          config.set<bool>(key, value);
+          card.setValue(config.get<bool>(key));
           dashboard.refresh(card);
         });
       }
 
-      template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
+      template <typename T = Mycila::config::Value, std::enable_if_t<std::is_integral_v<T>, bool> = true>
       void _sliderConfig(dash::SliderCard<T>& card, const char* key) {
         card.onChange([key, &card](const T& value) {
-          config.setString(key, std::to_string(value));
-          card.setValue(static_cast<T>(config.getInt(key)));
+          config.set<T>(key, value);
+          card.setValue(config.get<T>(key));
           dashboard.refresh(card);
         });
       }
@@ -67,15 +67,15 @@ namespace YaSolR {
         });
       }
 
-      template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
+      template <typename T = Mycila::config::Value, std::enable_if_t<std::is_integral_v<T>, bool> = true>
       void _numConfig(dash::InputCard<T>& card, const char* key) {
         card.onChange([key, &card](const std::optional<T>& value) {
           if (value.has_value()) {
-            config.setString(key, std::to_string(value.value()));
+            config.set<T>(key, value.value());
           } else {
             config.unset(key);
           }
-          card.setValue(static_cast<T>(config.getInt(key)));
+          card.setValue(config.get<T>(key));
           dashboard.refresh(card);
         });
       }
@@ -84,20 +84,20 @@ namespace YaSolR {
       void _numConfig(dash::InputCard<float, Precision>& card, const char* key) {
         card.onChange([key, &card](const std::optional<float>& value) {
           if (value.has_value()) {
-            config.setString(key, dash::to_string<float, Precision>(value.value()));
+            config.set<float>(key, value.value());
           } else {
             config.unset(key);
           }
-          card.setValue(config.getFloat(key));
+          card.setValue(config.get<float>(key));
           dashboard.refresh(card);
         });
       }
 
-      template <typename T, std::enable_if_t<std::is_integral_v<T>, bool> = true>
+      template <typename T = Mycila::config::Value, std::enable_if_t<std::is_integral_v<T>, bool> = true>
       void _numConfig(dash::DropdownCard<T>& card, const char* key) {
         card.onChange([key, &card](const T& value) {
-          config.setString(key, std::to_string(value));
-          card.setValue(config.getInt(key));
+          config.set<T>(key, value);
+          card.setValue(config.get<T>(key));
           dashboard.refresh(card);
           // GPIO page may need to be revalidated
           dashboardInitTask.resume();
@@ -134,15 +134,15 @@ namespace YaSolR {
 
       void _rangeConfig(dash::RangeSliderCard<uint8_t>& card, const char* keyMin, const char* keyMax) {
         card.onChange([keyMin, keyMax, &card](const dash::Range<uint8_t>& range) {
-          config.setString(keyMin, std::to_string(range.low()));
-          config.setString(keyMax, std::to_string(range.high()));
-          card.setValue({static_cast<uint8_t>(config.getInt(keyMin)), static_cast<uint8_t>(config.getInt(keyMax))});
+          config.set<uint8_t>(keyMin, range.low());
+          config.set<uint8_t>(keyMax, range.high());
+          card.setValue({config.get<uint8_t>(keyMin), config.get<uint8_t>(keyMax)});
           dashboard.refresh(card);
         });
       }
 
-      void _pinout(dash::FeedbackInputCard<int32_t>& card, const char* key, std::unordered_map<int32_t, dash::FeedbackInputCard<int32_t>*>& pinout) {
-        int32_t pin = config.getInt(key);
+      void _pinout(dash::FeedbackInputCard<int8_t>& card, const char* key, std::unordered_map<int8_t, dash::FeedbackInputCard<int8_t>*>& pinout) {
+        int8_t pin = config.get<int8_t>(key);
         card.setValue(pin);
         if (pin == GPIO_NUM_NC) {
           card.setFeedback("(" YASOLR_LBL_115 ")", dash::Status::INFO);

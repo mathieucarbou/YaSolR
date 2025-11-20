@@ -23,11 +23,11 @@ static Mycila::ExpiringValue<float>* power = nullptr;
 static void connect() {
   mqtt->end();
 
-  bool secured = config.getBool(KEY_MQTT_SECURED);
+  bool secured = config.get<bool>(KEY_MQTT_SECURED);
 
   Mycila::MQTT::Config mqttConfig;
   mqttConfig.server = config.getString(KEY_MQTT_SERVER);
-  mqttConfig.port = static_cast<uint16_t>(config.getLong(KEY_MQTT_PORT));
+  mqttConfig.port = config.get<uint16_t>(KEY_MQTT_PORT);
   mqttConfig.secured = secured;
   mqttConfig.username = config.getString(KEY_MQTT_USERNAME);
   mqttConfig.password = config.getString(KEY_MQTT_PASSWORD);
@@ -252,8 +252,8 @@ static void publishConfig() {
   ESP_LOGI(TAG, "Publishing config to MQTT");
   std::string baseTopic = config.getString(KEY_MQTT_TOPIC);
   for (auto& key : config.keys()) {
-    const char* value = config.getString(key.name);
-    if (value[0] != '\0' && config.isPasswordKey(key.name))
+    const char* value = config.get(key.name).toString().c_str();
+    if (value[0] != '\0' && key.isPasswordKey())
       value = "********";
     mqtt->publish((baseTopic + "/config/" + key.name).c_str(), value, true);
   }
@@ -513,9 +513,9 @@ static void haDiscovery() {
 }
 
 void yasolr_configure_mqtt() {
-  if (config.getBool(KEY_ENABLE_MQTT)) {
+  if (config.get<bool>(KEY_ENABLE_MQTT)) {
     if (mqtt == nullptr) {
-      if (strlen(config.getString(KEY_MQTT_SERVER)) == 0) {
+      if (config.isEmpty(KEY_MQTT_SERVER)) {
         ESP_LOGE(TAG, "MQTT server is not set");
         return;
       }
@@ -541,11 +541,11 @@ void yasolr_configure_mqtt() {
 
       subscribe();
 
-      haDiscoveryTask->setEnabledWhen([]() { return mqtt->isConnected() && config.getBool(KEY_ENABLE_HA_DISCOVERY) && !config.isEmpty(KEY_HA_DISCOVERY_TOPIC); });
+      haDiscoveryTask->setEnabledWhen([]() { return mqtt->isConnected() && config.get<bool>(KEY_ENABLE_HA_DISCOVERY) && !config.isEmpty(KEY_HA_DISCOVERY_TOPIC); });
       mqttPublishConfigTask->setEnabledWhen([]() { return mqtt->isConnected(); });
       mqttPublishStaticTask->setEnabledWhen([]() { return mqtt->isConnected(); });
       mqttPublishTask->setEnabledWhen([]() { return mqtt->isConnected(); });
-      mqttPublishTask->setInterval(config.getLong(KEY_MQTT_PUBLISH_INTERVAL) * 1000);
+      mqttPublishTask->setInterval(config.get<uint8_t>(KEY_MQTT_PUBLISH_INTERVAL) * 1000);
 
       unsafeTaskManager.addTask(*mqttConnectTask);
       unsafeTaskManager.addTask(*haDiscoveryTask);
@@ -555,7 +555,7 @@ void yasolr_configure_mqtt() {
 
       Mycila::TaskMonitor.addTask("mqtt_task"); // MQTT (set stack size with MYCILA_MQTT_STACK_SIZE)
 
-      if (config.getBool(KEY_ENABLE_DEBUG)) {
+      if (config.get<bool>(KEY_ENABLE_DEBUG)) {
         haDiscoveryTask->enableProfiling();
         mqttConnectTask->enableProfiling();
         mqttPublishConfigTask->enableProfiling();

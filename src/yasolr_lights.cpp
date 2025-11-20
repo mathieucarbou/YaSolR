@@ -44,10 +44,10 @@ static Mycila::Task lightsTask("Lights", []() {
 });
 
 void yasolr_configure_lights() {
-  if (config.getBool(KEY_ENABLE_LIGHTS)) {
+  if (config.get<bool>(KEY_ENABLE_LIGHTS)) {
     if (!lights.isEnabled()) {
       ESP_LOGI(TAG, "Enable LEDs");
-      lights.begin(config.getLong(KEY_PIN_LIGHTS_GREEN), config.getLong(KEY_PIN_LIGHTS_YELLOW), config.getLong(KEY_PIN_LIGHTS_RED));
+      lights.begin(config.get<int8_t>(KEY_PIN_LIGHTS_GREEN), config.get<int8_t>(KEY_PIN_LIGHTS_YELLOW), config.get<int8_t>(KEY_PIN_LIGHTS_RED));
     }
   } else {
     if (lights.isEnabled()) {

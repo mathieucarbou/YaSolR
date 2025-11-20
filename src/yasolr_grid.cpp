@@ -8,7 +8,7 @@ Mycila::Grid grid;
 
 float yasolr_frequency() {
   // 1. check if frequency is set in config
-  float frequency = config.getFloat(KEY_GRID_FREQUENCY);
+  float frequency = config.get<uint8_t>(KEY_GRID_FREQUENCY);
   if ((frequency >= 49.0f && frequency <= 51.0f) || (frequency >= 59.0f && frequency <= 61.0f))
     return frequency;
 

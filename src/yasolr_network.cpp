@@ -16,7 +16,7 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
     request->send(404);
   });
 
-  if (!config.getBool(KEY_ENABLE_AP_MODE)) {
+  if (!config.get<bool>(KEY_ENABLE_AP_MODE)) {
     // NTP
     ESP_LOGI(TAG, "Enable NTP");
     Mycila::NTP.sync(config.getString(KEY_NTP_SERVER));
@@ -46,7 +46,7 @@ void yasolr_init_network() {
   // Network Manager
   Mycila::ESPConnect::Config espConnectConfig;
   espConnectConfig.hostname = config.getString(KEY_HOSTNAME);
-  espConnectConfig.apMode = config.getBool(KEY_ENABLE_AP_MODE);
+  espConnectConfig.apMode = config.get<bool>(KEY_ENABLE_AP_MODE);
   espConnectConfig.wifiBSSID = config.getString(KEY_WIFI_BSSID);
   espConnectConfig.wifiSSID = config.getString(KEY_WIFI_SSID);
   espConnectConfig.wifiPassword = config.getString(KEY_WIFI_PASSWORD);
@@ -102,11 +102,11 @@ void yasolr_init_network() {
       case Mycila::ESPConnect::State::PORTAL_COMPLETE: {
         if (espConnect.getConfig().apMode) {
           ESP_LOGI(TAG, "Captive Portal: Access Point configured");
-          config.setBool(KEY_ENABLE_AP_MODE, true);
+          config.set<bool>(KEY_ENABLE_AP_MODE, true);
         } else {
           ESP_LOGI(TAG, "Captive Portal: WiFi configured");
           ESP_LOGI(TAG, "WiFi SSID: %s", espConnect.getConfig().wifiSSID.c_str());
-          config.setBool(KEY_ENABLE_AP_MODE, false);
+          config.set<bool>(KEY_ENABLE_AP_MODE, false);
           config.setString(KEY_WIFI_SSID, espConnect.getConfig().wifiSSID);
           config.setString(KEY_WIFI_PASSWORD, espConnect.getConfig().wifiPassword);
         }
@@ -120,7 +120,7 @@ void yasolr_init_network() {
     }
   });
 
-  if (config.getBool(KEY_ENABLE_DEBUG))
+  if (config.get<bool>(KEY_ENABLE_DEBUG))
     networkStartTask.enableProfiling();
 
   networkManagerTask.setInterval(200);

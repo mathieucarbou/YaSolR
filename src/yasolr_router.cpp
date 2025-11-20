@@ -141,18 +141,18 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
 
   if (isThyristorBased(type)) {
     Mycila::ThyristorDimmer* thyristorDimmer = new Mycila::ThyristorDimmer();
-    thyristorDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    thyristorDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     return thyristorDimmer;
   }
 
   if (isPWMBased(type)) {
     Mycila::PWMDimmer* pwmDimmer = new Mycila::PWMDimmer();
-    pwmDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    pwmDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     return pwmDimmer;
   }
 
   if (isDACBased(type)) {
-    Wire.begin(config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_PIN_I2C_SCL));
+    Wire.begin(config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<int8_t>(KEY_PIN_I2C_SCL));
     Mycila::DFRobotDimmer* dfRobotDimmer = new Mycila::DFRobotDimmer();
     dfRobotDimmer->setWire(Wire);
     dfRobotDimmer->setOutput(Mycila::DFRobotDimmer::Output::RANGE_0_10V);
@@ -176,7 +176,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
 
   if (isCycleStealingBased(type)) {
     Mycila::CycleStealingDimmer* csDimmer = new Mycila::CycleStealingDimmer();
-    csDimmer->setPin((gpio_num_t)config.getInt(keyPin));
+    csDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     return csDimmer;
   }
 
@@ -186,7 +186,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
 
 static Mycila::Relay* createBypassRelay(const char* keyType, const char* keyPin) {
   Mycila::Relay* relay = new Mycila::Relay();
-  relay->begin(config.getLong(keyPin), config.isEqual(keyType, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+  relay->begin(config.get<int8_t>(keyPin), config.isEqual(keyType, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
   if (relay->isEnabled()) {
     relay->listen([](bool state) {
       ESP_LOGI(TAG, "Output Relay changed to %s", state ? "ON" : "OFF");
@@ -216,7 +216,7 @@ static void configure_zcd() {
       pulseAnalyzer = new Mycila::PulseAnalyzer();
       pulseAnalyzer->setZeroCrossEventShift(YASOLR_ZC_EVENT_SHIFT_US);
       pulseAnalyzer->onZeroCross(onZeroCross);
-      pulseAnalyzer->begin(config.getLong(KEY_PIN_ZCD));
+      pulseAnalyzer->begin(config.get<int8_t>(KEY_PIN_ZCD));
 
       if (!pulseAnalyzer->isEnabled()) {
         ESP_LOGE(TAG, "ZCD Pulse Analyzer failed to initialize!");
@@ -236,15 +236,15 @@ static void configure_zcd() {
 }
 
 void yasolr_configure_output1_dimmer() {
-  if (config.getBool(KEY_ENABLE_OUTPUT1_DIMMER)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER)) {
     ESP_LOGI(TAG, "Enable Output 1 Dimmer");
     Mycila::Dimmer* old_dimmer1 = dimmer1;
     if (old_dimmer1)
       old_dimmer1->end();
     dimmer1 = createDimmer(1, KEY_OUTPUT1_DIMMER_TYPE, KEY_PIN_OUTPUT1_DIMMER);
-    dimmer1->setDutyCycleMin(config.getFloat(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
-    dimmer1->setDutyCycleMax(config.getFloat(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
-    dimmer1->setDutyCycleLimit(config.getFloat(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
+    dimmer1->setDutyCycleMin(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
+    dimmer1->setDutyCycleMax(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
+    dimmer1->setDutyCycleLimit(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
     dimmer1->begin();
     if (!dimmer1->isEnabled()) {
       ESP_LOGE(TAG, "Output 1 Dimmer failed to initialize!");
@@ -260,15 +260,15 @@ void yasolr_configure_output1_dimmer() {
 }
 
 void yasolr_configure_output2_dimmer() {
-  if (config.getBool(KEY_ENABLE_OUTPUT2_DIMMER)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER)) {
     ESP_LOGI(TAG, "Enable Output 2 Dimmer");
     Mycila::Dimmer* old_dimmer2 = dimmer2;
     if (old_dimmer2)
       old_dimmer2->end();
     dimmer2 = createDimmer(2, KEY_OUTPUT2_DIMMER_TYPE, KEY_PIN_OUTPUT2_DIMMER);
-    dimmer2->setDutyCycleMin(config.getFloat(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
-    dimmer2->setDutyCycleMax(config.getFloat(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
-    dimmer2->setDutyCycleLimit(config.getFloat(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
+    dimmer2->setDutyCycleMin(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
+    dimmer2->setDutyCycleMax(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
+    dimmer2->setDutyCycleLimit(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
     dimmer2->begin();
     if (!dimmer2->isEnabled()) {
       ESP_LOGE(TAG, "Output 2 Dimmer failed to initialize!");
@@ -284,7 +284,7 @@ void yasolr_configure_output2_dimmer() {
 }
 
 void yasolr_configure_output1_bypass_relay() {
-  if (config.getBool(KEY_ENABLE_OUTPUT1_RELAY)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY)) {
     ESP_LOGI(TAG, "Enable Output 1 Bypass Relay");
     Mycila::Relay* old_relay1 = bypassRelay1;
     if (old_relay1)
@@ -304,7 +304,7 @@ void yasolr_configure_output1_bypass_relay() {
 }
 
 void yasolr_configure_output2_bypass_relay() {
-  if (config.getBool(KEY_ENABLE_OUTPUT2_RELAY)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY)) {
     ESP_LOGI(TAG, "Enable Output 2 Bypass Relay");
     Mycila::Relay* old_relay2 = bypassRelay2;
     if (old_relay2)
@@ -347,9 +347,9 @@ void yasolr_configure_pid() {
   pidController.setProportionalMode(strcmp(config.getString(KEY_PID_MODE_P), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::ProportionalMode::ON_ERROR : Mycila::PID::ProportionalMode::ON_INPUT);
   pidController.setDerivativeMode(strcmp(config.getString(KEY_PID_MODE_D), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::DerivativeMode::ON_ERROR : Mycila::PID::DerivativeMode::ON_INPUT);
 
-  pidController.setSetpoint(config.getFloat(KEY_PID_SETPOINT));
-  pidController.setTunings(config.getFloat(KEY_PID_KP), config.getFloat(KEY_PID_KI), config.getFloat(KEY_PID_KD));
-  pidController.setOutputLimits(config.getFloat(KEY_PID_OUT_MIN), config.getFloat(KEY_PID_OUT_MAX));
+  pidController.setSetpoint(config.get<int16_t>(KEY_PID_SETPOINT));
+  pidController.setTunings(config.get<float>(KEY_PID_KP), config.get<float>(KEY_PID_KI), config.get<float>(KEY_PID_KD));
+  pidController.setOutputLimits(config.get<int16_t>(KEY_PID_OUT_MIN), config.get<int16_t>(KEY_PID_OUT_MAX));
 
   pidController.reset();
 
@@ -368,32 +368,32 @@ void yasolr_init_router() {
   router.addOutput(output2);
 
   // configure output 1
-  output1.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  output1.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
-  output1.config.autoStartTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_START);
+  output1.config.autoBypass = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
+  output1.config.autoDimmer = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
+  output1.config.autoStartTemperature = config.get<uint8_t>(KEY_OUTPUT1_TEMPERATURE_START);
   output1.config.autoStartTime = config.getString(KEY_OUTPUT1_TIME_START);
-  output1.config.autoStopTemperature = config.getLong(KEY_OUTPUT1_TEMPERATURE_STOP);
+  output1.config.autoStopTemperature = config.get<uint8_t>(KEY_OUTPUT1_TEMPERATURE_STOP);
   output1.config.autoStopTime = config.getString(KEY_OUTPUT1_TIME_STOP);
-  output1.config.bypassTimeoutSec = config.getInt(KEY_OUTPUT1_BYPASS_TIMEOUT);
-  output1.config.calibratedResistance = config.getFloat(KEY_OUTPUT1_RESISTANCE);
-  output1.config.dimmerTempLimit = config.getInt(KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
-  output1.config.excessPowerLimiter = config.getInt(KEY_OUTPUT1_EXCESS_LIMITER);
-  output1.config.excessPowerRatio = config.getFloat(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
+  output1.config.bypassTimeoutSec = config.get<uint16_t>(KEY_OUTPUT1_BYPASS_TIMEOUT);
+  output1.config.calibratedResistance = config.get<float>(KEY_OUTPUT1_RESISTANCE);
+  output1.config.dimmerTempLimit = config.get<uint8_t>(KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
+  output1.config.excessPowerLimiter = config.get<uint16_t>(KEY_OUTPUT1_EXCESS_LIMITER);
+  output1.config.excessPowerRatio = config.get<uint8_t>(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
   output1.config.weekDays = config.getString(KEY_OUTPUT1_DAYS);
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // configure output 2
-  output2.config.autoBypass = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  output2.config.autoDimmer = config.getBool(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
-  output2.config.autoStartTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_START);
+  output2.config.autoBypass = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
+  output2.config.autoDimmer = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
+  output2.config.autoStartTemperature = config.get<uint8_t>(KEY_OUTPUT2_TEMPERATURE_START);
   output2.config.autoStartTime = config.getString(KEY_OUTPUT2_TIME_START);
-  output2.config.autoStopTemperature = config.getLong(KEY_OUTPUT2_TEMPERATURE_STOP);
+  output2.config.autoStopTemperature = config.get<uint8_t>(KEY_OUTPUT2_TEMPERATURE_STOP);
   output2.config.autoStopTime = config.getString(KEY_OUTPUT2_TIME_STOP);
-  output2.config.bypassTimeoutSec = config.getInt(KEY_OUTPUT2_BYPASS_TIMEOUT);
-  output2.config.calibratedResistance = config.getFloat(KEY_OUTPUT2_RESISTANCE);
-  output2.config.dimmerTempLimit = config.getInt(KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
-  output2.config.excessPowerLimiter = config.getInt(KEY_OUTPUT2_EXCESS_LIMITER);
-  output2.config.excessPowerRatio = config.getFloat(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;
+  output2.config.bypassTimeoutSec = config.get<uint16_t>(KEY_OUTPUT2_BYPASS_TIMEOUT);
+  output2.config.calibratedResistance = config.get<float>(KEY_OUTPUT2_RESISTANCE);
+  output2.config.dimmerTempLimit = config.get<uint8_t>(KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
+  output2.config.excessPowerLimiter = config.get<uint16_t>(KEY_OUTPUT2_EXCESS_LIMITER);
+  output2.config.excessPowerRatio = config.get<uint8_t>(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;
   output2.config.weekDays = config.getString(KEY_OUTPUT2_DAYS);
   output2.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
@@ -401,12 +401,12 @@ void yasolr_init_router() {
 
   routerTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   routerTask.setInterval(500);
-  if (config.getBool(KEY_ENABLE_DEBUG))
+  if (config.get<bool>(KEY_ENABLE_DEBUG))
     routerTask.enableProfiling();
 
   calibrationTask.setEnabledWhen([]() { return router.isCalibrationRunning(); });
   calibrationTask.setInterval(1000);
-  if (config.getBool(KEY_ENABLE_DEBUG))
+  if (config.get<bool>(KEY_ENABLE_DEBUG))
     calibrationTask.enableProfiling();
 
   frequencyMonitorTask.setInterval(2000);

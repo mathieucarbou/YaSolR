@@ -9,12 +9,12 @@ Mycila::DS18* ds18O2 = nullptr;
 Mycila::DS18* ds18Sys = nullptr;
 
 void yasolr_configure_router_ds18() {
-  if (config.getBool(KEY_ENABLE_SYSTEM_DS18)) {
+  if (config.get<bool>(KEY_ENABLE_SYSTEM_DS18)) {
     if (ds18Sys == nullptr) {
       ESP_LOGI(TAG, "Enable system DS18");
 
       ds18Sys = new Mycila::DS18();
-      ds18Sys->begin(static_cast<int8_t>(config.getLong(KEY_PIN_ROUTER_DS18)), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
+      ds18Sys->begin(config.get<int8_t>(KEY_PIN_ROUTER_DS18), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
 
       if (ds18Sys->isEnabled()) {
         ds18Sys->listen([](float temperature, bool changed) {
@@ -40,12 +40,12 @@ void yasolr_configure_router_ds18() {
 }
 
 void yasolr_configure_output1_ds18() {
-  if (config.getBool(KEY_ENABLE_OUTPUT1_DS18)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT1_DS18)) {
     if (ds18O1 == nullptr) {
       ESP_LOGI(TAG, "Enable output 1 DS18");
 
       ds18O1 = new Mycila::DS18();
-      ds18O1->begin(static_cast<int8_t>(config.getInt(KEY_PIN_OUTPUT1_DS18)), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
+      ds18O1->begin(config.get<int8_t>(KEY_PIN_OUTPUT1_DS18), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
 
       if (ds18O1->isEnabled()) {
         ds18O1->listen([](float temperature, bool changed) {
@@ -77,12 +77,12 @@ void yasolr_configure_output1_ds18() {
 }
 
 void yasolr_configure_output2_ds18() {
-  if (config.getBool(KEY_ENABLE_OUTPUT2_DS18)) {
+  if (config.get<bool>(KEY_ENABLE_OUTPUT2_DS18)) {
     if (ds18O2 == nullptr) {
       ESP_LOGI(TAG, "Enable output 2 DS18");
 
       ds18O2 = new Mycila::DS18();
-      ds18O2->begin(static_cast<int8_t>(config.getLong(KEY_PIN_OUTPUT2_DS18)), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
+      ds18O2->begin(config.get<int8_t>(KEY_PIN_OUTPUT2_DS18), static_cast<uint8_t>(YASOLR_DS18_SEARCH_MAX_RETRY));
 
       if (ds18O2->isEnabled()) {
         ds18O2->listen([](float temperature, bool changed) {
@@ -134,7 +134,7 @@ void yasolr_init_ds18() {
 
   ds18Task->setInterval(10000);
 
-  if (config.getBool(KEY_ENABLE_DEBUG))
+  if (config.get<bool>(KEY_ENABLE_DEBUG))
     ds18Task->enableProfiling();
 
   unsafeTaskManager.addTask(*ds18Task);

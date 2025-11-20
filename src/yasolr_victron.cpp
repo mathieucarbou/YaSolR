@@ -12,7 +12,7 @@ Mycila::Task* victronConnectTask = nullptr;
 static Mycila::Task* victronReadTask = nullptr;
 
 void yasolr_configure_victron() {
-  if (config.getBool(KEY_ENABLE_VICTRON_MODBUS)) {
+  if (config.get<bool>(KEY_ENABLE_VICTRON_MODBUS)) {
     if (victron == nullptr) {
       if (strlen(config.getString(KEY_VICTRON_MODBUS_SERVER)) == 0) {
         ESP_LOGE(TAG, "Victron Modbus TCP server is not set");
@@ -45,7 +45,7 @@ void yasolr_configure_victron() {
       victronConnectTask = new Mycila::Task("Victron Connect", Mycila::Task::Type::ONCE, []() {
         victron->end();
         const char* server = config.getString(KEY_VICTRON_MODBUS_SERVER);
-        uint16_t port = static_cast<uint16_t>(config.getLong(KEY_VICTRON_MODBUS_PORT));
+        uint16_t port = config.get<uint16_t>(KEY_VICTRON_MODBUS_PORT);
         victron->begin(server, port);
       });
 
@@ -57,7 +57,7 @@ void yasolr_configure_victron() {
       unsafeTaskManager.addTask(*victronConnectTask);
       unsafeTaskManager.addTask(*victronReadTask);
 
-      if (config.getBool(KEY_ENABLE_DEBUG)) {
+      if (config.get<bool>(KEY_ENABLE_DEBUG)) {
         victronConnectTask->enableProfiling();
         victronReadTask->enableProfiling();
       }

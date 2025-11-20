@@ -81,7 +81,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
 }
 
 void yasolr_configure_jsy() {
-  if (config.getBool(KEY_ENABLE_JSY)) {
+  if (config.get<bool>(KEY_ENABLE_JSY)) {
     // setup JSY if not done yet
     if (jsy == nullptr) {
       if (strcmp(config.getString(KEY_JSY_UART), YASOLR_UART_NONE) == 0) {
@@ -94,11 +94,11 @@ void yasolr_configure_jsy() {
       jsy = new Mycila::JSY();
 
       if (strcmp(config.getString(KEY_JSY_UART), YASOLR_UART_1_NAME) == 0)
-        jsy->begin(Serial1, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
+        jsy->begin(Serial1, config.get<int8_t>(KEY_PIN_JSY_RX), config.get<int8_t>(KEY_PIN_JSY_TX));
 
 #if SOC_UART_NUM > 2
       if (strcmp(config.getString(KEY_JSY_UART), YASOLR_UART_2_NAME) == 0)
-        jsy->begin(Serial2, config.getLong(KEY_PIN_JSY_RX), config.getLong(KEY_PIN_JSY_TX));
+        jsy->begin(Serial2, config.get<int8_t>(KEY_PIN_JSY_RX), config.get<int8_t>(KEY_PIN_JSY_TX));
 #endif
 
       if (!jsy->isEnabled()) {
@@ -120,7 +120,7 @@ void yasolr_configure_jsy() {
         if (jsy != nullptr)
           jsy->read();
       });
-      if (config.getBool(KEY_ENABLE_DEBUG)) {
+      if (config.get<bool>(KEY_ENABLE_DEBUG)) {
         jsyTask->enableProfiling();
       }
 

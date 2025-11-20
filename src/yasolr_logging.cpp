@@ -72,7 +72,7 @@ void yasolr_init_logging() {
 }
 
 void yasolr_init_persistent_logging() {
-  if (config.getBool(KEY_ENABLE_DEBUG_BOOT)) {
+  if (config.get<bool>(KEY_ENABLE_DEBUG_BOOT)) {
     ESP_LOGI(TAG, "Enable Persistent Logging for this boot session");
 
     if (LittleFS.remove(YASOLR_LOG_FILE))
@@ -83,7 +83,7 @@ void yasolr_init_persistent_logging() {
 }
 
 void yasolr_configure_logging() {
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
+  if (config.get<bool>(KEY_ENABLE_DEBUG)) {
     esp_log_level_set("*", ESP_LOG_DEBUG);
     esp_log_level_set("esp_core_dump_elf", ESP_LOG_INFO);
     esp_log_level_set("esp_core_dump_port", ESP_LOG_INFO);

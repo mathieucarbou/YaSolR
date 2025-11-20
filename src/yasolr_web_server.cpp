@@ -619,7 +619,7 @@ void yasolr_init_web_server() {
   coreTaskManager.addTask(dashboardInitTask);
   coreTaskManager.addTask(dashboardUpdateTask);
 
-  if (config.getBool(KEY_ENABLE_DEBUG)) {
+  if (config.get<bool>(KEY_ENABLE_DEBUG)) {
     dashboardUpdateTask.enableProfiling();
     dashboardInitTask.enableProfiling();
   }

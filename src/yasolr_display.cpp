@@ -16,7 +16,7 @@ static uint8_t startingInformation = 1;
 static uint32_t lastDisplayUpdate = 0;
 
 void yasolr_configure_display() {
-  if (config.getBool(KEY_ENABLE_DISPLAY)) {
+  if (config.get<bool>(KEY_ENABLE_DISPLAY)) {
     if (display == nullptr) {
       ESP_LOGI(TAG, "Enable display");
 
@@ -24,12 +24,11 @@ void yasolr_configure_display() {
 
       const char* displayType = config.getString(KEY_DISPLAY_TYPE);
       if (strcmp(displayType, "SSD1306") == 0)
-        display->begin(Mycila::EasyDisplayType::SSD1306, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
+        display->begin(Mycila::EasyDisplayType::SSD1306, config.get<int8_t>(KEY_PIN_I2C_SCL), config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<uint16_t>(KEY_DISPLAY_ROTATION));
       else if (strcmp(displayType, "SH1107") == 0)
-        display->begin(Mycila::EasyDisplayType::SH1107, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
+        display->begin(Mycila::EasyDisplayType::SH1107, config.get<int8_t>(KEY_PIN_I2C_SCL), config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<uint16_t>(KEY_DISPLAY_ROTATION));
       else if (strcmp(displayType, "SH1106") == 0)
-        display->begin(Mycila::EasyDisplayType::SH1106, config.getLong(KEY_PIN_I2C_SCL), config.getLong(KEY_PIN_I2C_SDA), config.getLong(KEY_DISPLAY_ROTATION));
-
+        display->begin(Mycila::EasyDisplayType::SH1106, config.get<int8_t>(KEY_PIN_I2C_SCL), config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<uint16_t>(KEY_DISPLAY_ROTATION));
       if (!display->isEnabled()) {
         ESP_LOGE(TAG, "Display failed to initialize!");
         display->end();
@@ -41,7 +40,7 @@ void yasolr_configure_display() {
       display->setActive(true);
 
       displayTask = new Mycila::Task("Display", []() {
-        if (lastDisplayUpdate && millis() - lastDisplayUpdate < config.getLong(KEY_DISPLAY_SPEED) * 1000)
+        if (lastDisplayUpdate && millis() - lastDisplayUpdate < config.get<uint8_t>(KEY_DISPLAY_SPEED) * 1000)
           return;
 
         // Serial.printf("clear()\n");
@@ -212,7 +211,7 @@ void yasolr_configure_display() {
       });
 
       displayTask->setInterval(1000);
-      if (config.getBool(KEY_ENABLE_DEBUG))
+      if (config.get<bool>(KEY_ENABLE_DEBUG))
         displayTask->enableProfiling();
 
       coreTaskManager.addTask(*displayTask);
