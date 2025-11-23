@@ -526,6 +526,15 @@ namespace Mycila {
       void beginCalibration(size_t outputIndex, CalibrationCallback cb = nullptr);
       void continueCalibration();
       bool isCalibrationRunning() const { return _calibrationRunning; }
+      bool isCalibrationRunning(size_t outputIndex) const { return isCalibrationRunning() && _calibrationOutputIndex == outputIndex; }
+      uint8_t getCalibrationCompletion(size_t outputIndex) const {
+        if (!isCalibrationRunning(outputIndex))
+          return 0;
+        if (_calibrationStartTime == 0)
+          return 0;
+        // calibration lasts 10 seconds
+        return std::min(100, static_cast<int>((millis() - _calibrationStartTime) / 100));
+      }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float gridVoltage) const {
@@ -704,6 +713,7 @@ namespace Mycila {
       // 4: cleanup
       uint8_t _calibrationStep = 0;
       uint32_t _calibrationStartTime = 0;
+      uint32_t _calibrationStepStartTime = 0;
       size_t _calibrationOutputIndex = 0;
       bool _calibrationRunning = false;
       CalibrationCallback _calibrationCallback = nullptr;

@@ -167,8 +167,8 @@ static dash::SliderCard<float, 2> _output2DimmerSlider(dashboard, YASOLR_LBL_070
 static dash::ToggleButtonCard _output2Bypass(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_051);
 static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_147);
 static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_147);
-static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
-static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
+static dash::ToggleButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_186);
+static dash::ToggleButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_186);
 #endif
 
 static int16_t _gridPowerHistoryY[YASOLR_GRAPH_POINTS] = {0};
@@ -404,7 +404,8 @@ static dash::ToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129
 
 static dash::SeparatorCard<const char*> _output1ConfigSep0(dashboard, YASOLR_LBL_140);
 static dash::InputCard<float, 2> _output1ResistanceInput(dashboard, YASOLR_LBL_145);
-static dash::IndicatorButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::PushButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::ProgressCard<uint8_t> _output1ResistanceCalibrationStatus(dashboard, YASOLR_LBL_186, 0, 100, "%");
 static dash::SeparatorCard<const char*> _output1ConfigSep3(dashboard, YASOLR_LBL_107);
 static dash::PercentageSliderCard _output1ExcessRatio(dashboard, YASOLR_LBL_112);
 static dash::InputCard<uint16_t> _output1ExcessLimiter(dashboard, YASOLR_LBL_061);
@@ -423,7 +424,8 @@ static dash::SliderCard<float, 1> _output1BypassTimeout(dashboard, YASOLR_LBL_20
 
 static dash::SeparatorCard<const char*> _output2ConfigSep0(dashboard, YASOLR_LBL_140);
 static dash::InputCard<float, 2> _output2ResistanceInput(dashboard, YASOLR_LBL_145);
-static dash::IndicatorButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::PushButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_186);
+static dash::ProgressCard<uint8_t> _output2ResistanceCalibrationStatus(dashboard, YASOLR_LBL_186, 0, 100, "%");
 static dash::SeparatorCard<const char*> _output2ConfigSep3(dashboard, YASOLR_LBL_107);
 static dash::PercentageSliderCard _output2ExcessRatio(dashboard, YASOLR_LBL_112);
 static dash::InputCard<uint16_t> _output2ExcessLimiter(dashboard, YASOLR_LBL_061);
@@ -468,9 +470,11 @@ static void _calibrate(size_t outputIndex) {
     config.set<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, false, false);
     config.set<uint8_t>(KEY_OUTPUT2_DIMMER_LIMIT, static_cast<uint8_t>(100), false);
 
-    router.beginCalibration(outputIndex, []() {
-      config.set<float>(KEY_OUTPUT1_RESISTANCE, output1.config.calibratedResistance);
-      config.set<float>(KEY_OUTPUT2_RESISTANCE, output2.config.calibratedResistance);
+    router.beginCalibration(outputIndex, [outputIndex]() {
+      if (outputIndex == 0)
+        config.set<float>(KEY_OUTPUT1_RESISTANCE, output1.config.calibratedResistance);
+      else if (outputIndex == 1)
+        config.set<float>(KEY_OUTPUT2_RESISTANCE, output2.config.calibratedResistance);
     });
 
     // because we set false to trigger events
@@ -1015,6 +1019,7 @@ void YaSolR::Website::begin() {
   _output1ConfigSep0.setTab(_output1ConfigTab);
   _output1ResistanceInput.setTab(_output1ConfigTab);
   _output1ResistanceCalibration.setTab(_output1ConfigTab);
+  _output1ResistanceCalibrationStatus.setTab(_output1ConfigTab);
   _output1ConfigSep1.setTab(_output1ConfigTab);
   _output1DimmerDutyLimiter.setTab(_output1ConfigTab);
   _output1DimmerTempLimiter.setTab(_output1ConfigTab);
@@ -1049,6 +1054,7 @@ void YaSolR::Website::begin() {
   _output2ConfigSep0.setTab(_output2ConfigTab);
   _output2ResistanceInput.setTab(_output2ConfigTab);
   _output2ResistanceCalibration.setTab(_output2ConfigTab);
+  _output2ResistanceCalibrationStatus.setTab(_output2ConfigTab);
   _output2ConfigSep1.setTab(_output2ConfigTab);
   _output2DimmerDutyLimiter.setTab(_output2ConfigTab);
   _output2DimmerTempLimiter.setTab(_output2ConfigTab);
@@ -1451,9 +1457,7 @@ void YaSolR::Website::initCards() {
   // tab: output 1 config
 
   _output1ConfigSep0.setDisplay(dimmer1Enabled);
-  _output1ResistanceInput.setValue(config.get<float>(KEY_OUTPUT1_RESISTANCE));
   _output1ResistanceInput.setDisplay(dimmer1Enabled);
-  _output1ResistanceCalibration.setDisplay((dimmer1Enabled && jsyEnabled) || (dimmer1Enabled && pzem1Enabled));
   _output1ConfigSep1.setDisplay(dimmer1Enabled);
   _output1DimmerDutyLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_LIMIT));
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
@@ -1480,9 +1484,7 @@ void YaSolR::Website::initCards() {
   // tab: output 2 config
 
   _output2ConfigSep0.setDisplay(dimmer2Enabled);
-  _output2ResistanceInput.setValue(config.get<float>(KEY_OUTPUT2_RESISTANCE));
   _output2ResistanceInput.setDisplay(dimmer2Enabled);
-  _output2ResistanceCalibration.setDisplay((dimmer2Enabled && jsyEnabled) || (dimmer2Enabled && pzem2Enabled));
   _output2ConfigSep1.setDisplay(dimmer2Enabled);
   _output2DimmerDutyLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_LIMIT));
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
@@ -1613,26 +1615,7 @@ void YaSolR::Website::updateCards() {
 #endif
   }
 
-#ifdef APP_MODEL_PRO
-  if (pzemO1PairingTask && pzemO1PairingTask->scheduled()) {
-    _output1PZEMSync.setIndicator(true, dash::Status::WARNING);
-  } else if (pzemO1 && pzemO1->isConnected()) {
-    _output1PZEMSync.setIndicator(true, dash::Status::SUCCESS);
-  } else {
-    _output1PZEMSync.setIndicator(true, dash::Status::DANGER);
-  }
-
-  if (pzemO2PairingTask && pzemO2PairingTask->scheduled()) {
-    _output2PZEMSync.setIndicator(true, dash::Status::WARNING);
-  } else if (pzemO2 && pzemO2->isConnected()) {
-    _output2PZEMSync.setIndicator(true, dash::Status::SUCCESS);
-  } else {
-    _output2PZEMSync.setIndicator(true, dash::Status::DANGER);
-  }
-
-  _output1ResistanceCalibration.setIndicator(true, router.isCalibrationRunning() ? dash::Status::DANGER : dash::Status::SUCCESS);
-  _output2ResistanceCalibration.setIndicator(true, router.isCalibrationRunning() ? dash::Status::DANGER : dash::Status::SUCCESS);
-#else
+#ifndef APP_MODEL_PRO
   _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
   _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
   _output1ResistanceCalibration.setValue(router.isCalibrationRunning());
@@ -1680,6 +1663,32 @@ void YaSolR::Website::updateCards() {
   {
     const uint32_t bypassUptime = output2.getBypassUptime();
     _output2Bypass.setMessage(bypassUptime && output2.isBypassOn() ? Mycila::Time::toDHHMMSS(bypassUptime) : "");
+  }
+
+  // tab output 1 config
+  _output1ResistanceInput.setValue(config.get<float>(KEY_OUTPUT1_RESISTANCE));
+  _output1ResistanceCalibration.setDisplay(!router.isCalibrationRunning(0) && _output1ResistanceInput.displayed());
+  _output1ResistanceCalibrationStatus.setValue(router.getCalibrationCompletion(0));
+  _output1ResistanceCalibrationStatus.setDisplay(router.isCalibrationRunning(0));
+  if (pzemO1PairingTask && pzemO1PairingTask->scheduled()) {
+    _output1PZEMSync.setIndicator(true, dash::Status::WARNING);
+  } else if (pzemO1 && pzemO1->isConnected()) {
+    _output1PZEMSync.setIndicator(true, dash::Status::SUCCESS);
+  } else {
+    _output1PZEMSync.setIndicator(true, dash::Status::DANGER);
+  }
+
+  // tab output 2 config
+  _output2ResistanceInput.setValue(config.get<float>(KEY_OUTPUT2_RESISTANCE));
+  _output2ResistanceCalibration.setDisplay(!router.isCalibrationRunning(1) && _output2ResistanceInput.displayed());
+  _output2ResistanceCalibrationStatus.setValue(router.getCalibrationCompletion(1));
+  _output2ResistanceCalibrationStatus.setDisplay(router.isCalibrationRunning(1));
+  if (pzemO2PairingTask && pzemO2PairingTask->scheduled()) {
+    _output2PZEMSync.setIndicator(true, dash::Status::WARNING);
+  } else if (pzemO2 && pzemO2->isConnected()) {
+    _output2PZEMSync.setIndicator(true, dash::Status::SUCCESS);
+  } else {
+    _output2PZEMSync.setIndicator(true, dash::Status::DANGER);
   }
 #endif
 }
