@@ -1012,6 +1012,8 @@ Any previously set value will be erased.
 To use this feature, make sure that the resistance will really draw some current.
 It won't work if the water heater has already reached its threshold temperature.
 
+[![](assets/img/screenshots/calibration.gif)](assets/img/screenshots/calibration.gif)
+
 #### Excess Configuration
 
 Excess Configuration allows to configure how the excess power is routed to the outputs.
