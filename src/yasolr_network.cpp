@@ -23,6 +23,7 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
 
     // mDNS
     ESP_LOGI(TAG, "Enable mDNS");
+    MDNS.begin(espConnect.getConfig().hostname.c_str());
     MDNS.addService("http", "tcp", 80);
 
     if (jsyRemoteTask)
