@@ -280,10 +280,9 @@ static int16_t _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_MODE_ERROR "," YASOLR_PID_MODE_INPUT);
-static dash::DropdownCard<const char*> _pidDMode(dashboard, YASOLR_LBL_148, YASOLR_PID_MODE_ERROR "," YASOLR_PID_MODE_INPUT);
+static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<int16_t> _pidOutMin(dashboard, YASOLR_LBL_164);
 static dash::InputCard<int16_t> _pidOutMax(dashboard, YASOLR_LBL_165);
-static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
@@ -786,7 +785,6 @@ void YaSolR::Website::begin() {
   _pidDTermHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
   _pidPMode.setTab(_pidTab);
-  _pidDMode.setTab(_pidTab);
   _pidSetpoint.setTab(_pidTab);
   _pidOutMin.setTab(_pidTab);
   _pidOutMax.setTab(_pidTab);
@@ -794,8 +792,6 @@ void YaSolR::Website::begin() {
   _pidKi.setTab(_pidTab);
   _pidKd.setTab(_pidTab);
   _pidRealTime.setTab(_pidTab);
-
-  _pidRealTime.setSize(FULL_SIZE);
 
   _pidInputHistory.setTab(_pidTab);
   _pidOutputHistory.setTab(_pidTab);
@@ -820,12 +816,6 @@ void YaSolR::Website::begin() {
     config.setString(KEY_PID_MODE_P, value);
     _pidPMode.setValue(value);
     dashboard.refresh(_pidPMode);
-  });
-
-  _pidDMode.onChange([](const char* value) {
-    config.setString(KEY_PID_MODE_D, value);
-    _pidDMode.setValue(value);
-    dashboard.refresh(_pidDMode);
   });
 
   _pidRealTime.onChange([this](bool value) {
@@ -1346,7 +1336,6 @@ void YaSolR::Website::initCards() {
   // tab: pid
 
   _pidPMode.setValue(config.getString(KEY_PID_MODE_P));
-  _pidDMode.setValue(config.getString(KEY_PID_MODE_D));
   _pidKp.setValue(config.get<float>(KEY_PID_KP));
   _pidKi.setValue(config.get<float>(KEY_PID_KI));
   _pidKd.setValue(config.get<float>(KEY_PID_KD));

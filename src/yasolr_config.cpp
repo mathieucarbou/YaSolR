@@ -107,7 +107,6 @@ void yasolr_init_config() {
   config.configure(KEY_PID_KD, 0.05f);
   config.configure(KEY_PID_KI, 0.3f);
   config.configure(KEY_PID_KP, 0.1f);
-  config.configure(KEY_PID_MODE_D, YASOLR_PID_MODE_ERROR);
   config.configure(KEY_PID_MODE_P, YASOLR_PID_MODE_INPUT);
   config.configure(KEY_PID_OUT_MAX, static_cast<int16_t>(4000));
   config.configure(KEY_PID_OUT_MIN, static_cast<int16_t>(-300));
@@ -309,7 +308,7 @@ void yasolr_init_config() {
           Mycila::NTP.sync(config.getString(KEY_NTP_SERVER));
         });
 
-    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_MODE_P || key == KEY_PID_MODE_D || key == KEY_PID_SETPOINT) {
+    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_MODE_P || key == KEY_PID_SETPOINT) {
       reconfigureQueue.push(yasolr_configure_pid);
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {

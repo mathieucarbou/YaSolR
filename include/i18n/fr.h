@@ -151,7 +151,7 @@
 #define YASOLR_LBL_145 "Résistance (Ω)"
 // #define YASOLR_LBL_146 "Fréquence du réseau inconnue"
 #define YASOLR_LBL_147 "Association du PZEM"
-#define YASOLR_LBL_148 "Dérivée"
+// #define YASOLR_LBL_148 "Dérivée"
 #define YASOLR_LBL_149 "Micro-contrôleur: Mémoire Heap Libre Min à vie (bytes)"
 #define YASOLR_LBL_150 "JSY Serial"
 #define YASOLR_LBL_151 "Type"

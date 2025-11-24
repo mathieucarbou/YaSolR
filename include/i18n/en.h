@@ -151,7 +151,7 @@
 #define YASOLR_LBL_145 "Resistance (Ω)"
 // #define YASOLR_LBL_146 "Unknown grid frequency"
 #define YASOLR_LBL_147 "PZEM Pairing"
-#define YASOLR_LBL_148 "Derivative"
+// #define YASOLR_LBL_148 "Derivative"
 #define YASOLR_LBL_149 "Device: Heap Memory Free Min Lifetime (bytes)"
 #define YASOLR_LBL_150 "JSY Serial"
 #define YASOLR_LBL_151 "Type"

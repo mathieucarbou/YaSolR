@@ -197,7 +197,6 @@
 #define KEY_PID_KD                         "pid_kd"
 #define KEY_PID_KI                         "pid_ki"
 #define KEY_PID_KP                         "pid_kp"
-#define KEY_PID_MODE_D                     "pid_mode_d"
 #define KEY_PID_MODE_P                     "pid_mode_p"
 #define KEY_PID_OUT_MAX                    "pid_out_max"
 #define KEY_PID_OUT_MIN                    "pid_out_min"
