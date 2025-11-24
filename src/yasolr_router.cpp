@@ -8,6 +8,7 @@
 #include <string>
 
 Mycila::PID pidController;
+Mycila::PIDAutoTuner autoTuner(2500.0f, Mycila::PIDAutoTuner::TuningRule::AMIGO);
 Mycila::Router router;
 Mycila::Router::Output output1("output1");
 Mycila::Router::Output output2("output2");
@@ -331,7 +332,36 @@ bool yasolr_divert() {
   std::optional<float> power = grid.getPower();
 
   if (voltage.has_value() && power.has_value()) {
-    float powerToDivert = pidController.compute(power.value());
+    float powerToDivert = 0;
+
+    if (autoTuner.isRunning()) {
+      // During auto-tuning, we need to provide feedback on actual diverted power
+      // First, get the requested power from tuner
+      powerToDivert = autoTuner.update(power.value(), 0); // Initial call to get request
+
+      // Divert that power and get actual diverted amount
+      float diverted = router.divert(voltage.value(), powerToDivert);
+
+      // Update tuner with actual feedback (call again with actual diverted)
+      autoTuner.update(power.value(), diverted);
+
+      if (autoTuner.isComplete()) {
+        autoTuner.applyToController(pidController);
+        pidController.resume();
+        // config.set(KEY_PID_KP, pidController.getKp());
+        // config.set(KEY_PID_KI, pidController.getKi());
+        // config.set(KEY_PID_KD, pidController.getKd());
+        dashboardInitTask.resume();
+      } else if (autoTuner.isFailed()) {
+        pidController.resume();
+      }
+
+      return diverted;
+
+    } else {
+      powerToDivert = pidController.compute(power.value());
+    }
+
     float diverted = router.divert(voltage.value(), powerToDivert);
 
     if (diverted <= 0) {
@@ -339,7 +369,6 @@ bool yasolr_divert() {
       // reset the PID so that we can start fresh once we will divert
       pidController.reset(0);
     }
-
     if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }

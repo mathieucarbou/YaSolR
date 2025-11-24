@@ -287,6 +287,8 @@ static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
+static dash::ToggleButtonCard _pidAutoTune(dashboard, "Auto-Tune");
+static dash::PushButtonCard _pidReset(dashboard, "Reset");
 static dash::ToggleButtonCard _pidRealTime(dashboard, YASOLR_LBL_169);
 
 static dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
@@ -793,9 +795,9 @@ void YaSolR::Website::begin() {
   _pidKp.setTab(_pidTab);
   _pidKi.setTab(_pidTab);
   _pidKd.setTab(_pidTab);
+  _pidAutoTune.setTab(_pidTab);
+  _pidReset.setTab(_pidTab);
   _pidRealTime.setTab(_pidTab);
-
-  _pidRealTime.setSize(FULL_SIZE);
 
   _pidInputHistory.setTab(_pidTab);
   _pidOutputHistory.setTab(_pidTab);
@@ -826,6 +828,25 @@ void YaSolR::Website::begin() {
     config.setString(KEY_PID_MODE_D, value);
     _pidDMode.setValue(value);
     dashboard.refresh(_pidDMode);
+  });
+
+  _pidAutoTune.onChange([this](bool value) {
+    _pidAutoTune.setValue(value);
+    if (value)
+      autoTuner.start(pidController.getSetpoint(), grid.getPower().value_or(0.0f));
+    else
+      autoTuner.stop();
+    dashboard.refresh(_pidAutoTune);
+    dashboardInitTask.resume();
+  });
+
+  _pidReset.onPush([this]() {
+    pidController.setKp(config.get<float>(KEY_PID_KP));
+    pidController.setKi(config.get<float>(KEY_PID_KI));
+    pidController.setKd(config.get<float>(KEY_PID_KD));
+    pidController.reset(0);
+    resetPIDCharts();
+    dashboardInitTask.resume();
   });
 
   _pidRealTime.onChange([this](bool value) {
@@ -1347,12 +1368,13 @@ void YaSolR::Website::initCards() {
 
   _pidPMode.setValue(config.getString(KEY_PID_MODE_P));
   _pidDMode.setValue(config.getString(KEY_PID_MODE_D));
-  _pidKp.setValue(config.get<float>(KEY_PID_KP));
-  _pidKi.setValue(config.get<float>(KEY_PID_KI));
-  _pidKd.setValue(config.get<float>(KEY_PID_KD));
+  _pidKp.setValue(pidController.getKp());
+  _pidKi.setValue(pidController.getKi());
+  _pidKd.setValue(pidController.getKd());
   _pidSetpoint.setValue(config.get<int16_t>(KEY_PID_SETPOINT));
   _pidOutMin.setValue(config.get<int16_t>(KEY_PID_OUT_MIN));
   _pidOutMax.setValue(config.get<int16_t>(KEY_PID_OUT_MAX));
+  _pidAutoTune.setValue(autoTuner.isRunning());
 
   _pidInputHistory.setDisplay(pidViewEnabled);
   _pidOutputHistory.setDisplay(pidViewEnabled);

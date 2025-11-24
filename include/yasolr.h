@@ -31,6 +31,7 @@
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
 #include <MycilaPID.h>
+#include <MycilaPIDAutoTuner.h>
 #include <MycilaPZEM.h>
 #include <MycilaPulseAnalyzer.h>
 #include <MycilaRelay.h>
@@ -147,6 +148,7 @@ extern void yasolr_configure_relay2();
 
 // router
 extern Mycila::PID pidController;
+extern Mycila::PIDAutoTuner autoTuner;
 extern Mycila::PulseAnalyzer* pulseAnalyzer;
 extern Mycila::Router router;
 extern Mycila::Router::Output output1;
