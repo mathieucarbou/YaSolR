@@ -287,7 +287,7 @@ static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
-static dash::ToggleButtonCard _pidView(dashboard, YASOLR_LBL_169);
+static dash::ToggleButtonCard _pidRealTime(dashboard, YASOLR_LBL_169);
 
 static dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
 static dash::LineChart<int8_t, int16_t> _pidOutputHistory(dashboard, YASOLR_LBL_171);
@@ -793,9 +793,9 @@ void YaSolR::Website::begin() {
   _pidKp.setTab(_pidTab);
   _pidKi.setTab(_pidTab);
   _pidKd.setTab(_pidTab);
-  _pidView.setTab(_pidTab);
+  _pidRealTime.setTab(_pidTab);
 
-  _pidView.setSize(FULL_SIZE);
+  _pidRealTime.setSize(FULL_SIZE);
 
   _pidInputHistory.setTab(_pidTab);
   _pidOutputHistory.setTab(_pidTab);
@@ -828,11 +828,11 @@ void YaSolR::Website::begin() {
     dashboard.refresh(_pidDMode);
   });
 
-  _pidView.onChange([this](bool value) {
-    _pidView.setValue(value);
+  _pidRealTime.onChange([this](bool value) {
+    _pidRealTime.setValue(value);
     if (value)
       resetPIDCharts();
-    dashboard.refresh(_pidView);
+    dashboard.refresh(_pidRealTime);
     dashboardInitTask.resume();
   });
 
@@ -1902,7 +1902,7 @@ void YaSolR::Website::resetPIDCharts() {
 
 bool YaSolR::Website::realTimePIDEnabled() const {
 #ifdef APP_MODEL_PRO
-  return _pidView.optional().value_or(false);
+  return _pidRealTime.optional().value_or(false);
 #else
   return false;
 #endif
