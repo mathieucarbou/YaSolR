@@ -365,7 +365,7 @@ void yasolr_configure_pid() {
   pidController.setTunings(config.get<float>(KEY_PID_KP), config.get<float>(KEY_PID_KI), config.get<float>(KEY_PID_KD));
   pidController.setOutputLimits(config.get<int16_t>(KEY_PID_OUT_MIN), config.get<int16_t>(KEY_PID_OUT_MAX));
 
-  pidController.reset();
+  pidController.reset(0);
 
   ESP_LOGI(TAG, "PID Controller configured");
 }
