@@ -6,7 +6,6 @@
 
 #include <MycilaDimmer.h>
 #include <MycilaExpiringValue.h>
-#include <MycilaPID.h>
 #include <MycilaRelay.h>
 
 #include <math.h>
@@ -482,8 +481,6 @@ namespace Mycila {
       // Router //
       ////////////
 
-      explicit Router(PID& pidController) : _pidController(&pidController) {}
-
       void addOutput(Output& output) { _outputs.push_back(&output); }
       const std::vector<Output*>& getOutputs() const { return _outputs; }
 
@@ -497,21 +494,14 @@ namespace Mycila {
       }
 
       // returns true if some power were diverted
-      bool divert(float gridVoltage, float gridPower) {
+      float divert(const float gridVoltage, const float powerToDivert) {
         if (isCalibrationRunning())
           return false;
-        const float powerToDivert = _pidController->compute(gridPower);
         float routedPower = 0;
         for (const auto& output : _outputs) {
           routedPower += output->autoDivert(gridVoltage, std::max(0.0f, powerToDivert - routedPower));
         }
-        // we have some grid power to divert and grid voltage but we cannot divert
-        // reset the PID so that we can start fresh once we will divert
-        if (routedPower <= 0) {
-          _pidController->reset(0);
-          return false;
-        }
-        return true;
+        return routedPower;
       }
 
       void noDivert() {
@@ -700,7 +690,6 @@ namespace Mycila {
       }
 
     private:
-      PID* _pidController;
       std::vector<Output*> _outputs;
       ExpiringValue<Metrics>* _jsyMetrics;
       ExpiringValue<Metrics>* _jsyRemoteMetrics;

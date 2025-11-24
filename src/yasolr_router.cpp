@@ -8,7 +8,7 @@
 #include <string>
 
 Mycila::PID pidController;
-Mycila::Router router(pidController);
+Mycila::Router router;
 Mycila::Router::Output output1("output1");
 Mycila::Router::Output output2("output2");
 
@@ -324,14 +324,28 @@ void yasolr_configure_output2_bypass_relay() {
 }
 
 bool yasolr_divert() {
+  if (router.isCalibrationRunning())
+    return false;
+
   std::optional<float> voltage = grid.getVoltage();
   std::optional<float> power = grid.getPower();
+
   if (voltage.has_value() && power.has_value()) {
-    bool diverted = router.divert(voltage.value(), power.value());
+    float powerToDivert = pidController.compute(power.value());
+    float diverted = router.divert(voltage.value(), powerToDivert);
+
+    if (diverted <= 0) {
+      // we have some grid power to divert and grid voltage but we cannot divert
+      // reset the PID so that we can start fresh once we will divert
+      pidController.reset(0);
+    }
+
     if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }
+
     return diverted;
+
   } else {
     // pause routing if grid voltage or power are not available
     router.noDivert();
