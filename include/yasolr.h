@@ -127,6 +127,10 @@ extern Mycila::TrafficLight lights;
 extern void yasolr_init_lights();
 extern void yasolr_configure_lights();
 
+// PID
+extern Mycila::PID pidController;
+extern void yasolr_configure_pid();
+
 // System
 extern Mycila::Task resetTask;
 extern Mycila::Task restartTask;
@@ -146,7 +150,6 @@ extern void yasolr_configure_relay1();
 extern void yasolr_configure_relay2();
 
 // router
-extern Mycila::PID pidController;
 extern Mycila::PulseAnalyzer* pulseAnalyzer;
 extern Mycila::Router router;
 extern Mycila::Router::Output output1;
@@ -157,7 +160,6 @@ extern void yasolr_configure_output1_dimmer();
 extern void yasolr_configure_output2_dimmer();
 extern void yasolr_configure_output1_bypass_relay();
 extern void yasolr_configure_output2_bypass_relay();
-extern void yasolr_configure_pid();
 
 // victron
 extern Mycila::Victron* victron;
