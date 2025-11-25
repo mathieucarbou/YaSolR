@@ -334,17 +334,11 @@ bool yasolr_divert() {
     float powerToDivert = pidController.compute(power.value());
     float diverted = router.divert(voltage.value(), powerToDivert);
 
-    if (diverted <= 0) {
-      // we have some grid power to divert and grid voltage but we cannot divert
-      // reset the PID so that we can start fresh once we will divert
-      pidController.reset(0);
-    }
-
     if (website.realTimePIDEnabled()) {
       dashboardUpdateTask.requestEarlyRun();
     }
 
-    return diverted;
+    return diverted > 0;
 
   } else {
     // pause routing if grid voltage or power are not available
@@ -361,9 +355,6 @@ void yasolr_configure_pid() {
   pidController.setSetpoint(config.get<int16_t>(KEY_PID_SETPOINT));
   pidController.setTunings(config.get<float>(KEY_PID_KP), config.get<float>(KEY_PID_KI), config.get<float>(KEY_PID_KD));
   pidController.setOutputLimits(config.get<int16_t>(KEY_PID_OUT_MIN), config.get<int16_t>(KEY_PID_OUT_MAX));
-
-  pidController.reset(0);
-
   ESP_LOGI(TAG, "PID Controller configured");
 }
 
