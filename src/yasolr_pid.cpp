@@ -15,5 +15,7 @@ void yasolr_configure_pid() {
   pidController.setSetpoint(config.get<int16_t>(KEY_PID_SETPOINT));
   pidController.setTunings(config.get<float>(KEY_PID_KP), config.get<float>(KEY_PID_KI), config.get<float>(KEY_PID_KD));
   pidController.setOutputLimits(config.get<int16_t>(KEY_PID_OUT_MIN), config.get<int16_t>(KEY_PID_OUT_MAX));
+  // pidController.setFilterTimeConstant(1.0f, 0.33f);
+  pidController.setFilterAlpha(1.0f - config.get<uint8_t>(KEY_PID_NOISE) / 100.0f);
   ESP_LOGI(TAG, "PID Controller configured");
 }

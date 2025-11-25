@@ -198,6 +198,7 @@
 #define KEY_PID_KI                         "pid_ki"
 #define KEY_PID_KP                         "pid_kp"
 #define KEY_PID_MODE_P                     "pid_mode_p"
+#define KEY_PID_NOISE                      "pid_noise"
 #define KEY_PID_OUT_MAX                    "pid_out_max"
 #define KEY_PID_OUT_MIN                    "pid_out_min"
 #define KEY_PID_SETPOINT                   "pid_setpoint"

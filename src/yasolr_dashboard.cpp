@@ -280,9 +280,10 @@ static int16_t _pidPTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidITermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static int16_t _pidDTermHistoryY[YASOLR_GRAPH_POINTS] = {0};
 static dash::DropdownCard<const char*> _pidPMode(dashboard, YASOLR_LBL_160, YASOLR_PID_MODE_ERROR "," YASOLR_PID_MODE_INPUT);
-static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<int16_t> _pidOutMin(dashboard, YASOLR_LBL_164);
 static dash::InputCard<int16_t> _pidOutMax(dashboard, YASOLR_LBL_165);
+static dash::SliderCard<uint8_t> _pidNoiseRemoval(dashboard, YASOLR_LBL_148, 0, 100, 1, "%");
+static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
@@ -791,6 +792,7 @@ void YaSolR::Website::begin() {
   _pidKp.setTab(_pidTab);
   _pidKi.setTab(_pidTab);
   _pidKd.setTab(_pidTab);
+  _pidNoiseRemoval.setTab(_pidTab);
   _pidRealTime.setTab(_pidTab);
 
   _pidInputHistory.setTab(_pidTab);
@@ -799,6 +801,7 @@ void YaSolR::Website::begin() {
   _pidITermHistory.setTab(_pidTab);
   _pidDTermHistory.setTab(_pidTab);
 
+  _pidRealTime.setSize(FULL_SIZE);
   _pidInputHistory.setSize(FULL_SIZE);
   _pidOutputHistory.setSize(FULL_SIZE);
   _pidPTermHistory.setSize(FULL_SIZE);
@@ -811,6 +814,7 @@ void YaSolR::Website::begin() {
   _numConfig(_pidKp, KEY_PID_KP);
   _numConfig(_pidKi, KEY_PID_KI);
   _numConfig(_pidKd, KEY_PID_KD);
+  _sliderConfig(_pidNoiseRemoval, KEY_PID_NOISE);
 
   _pidPMode.onChange([](const char* value) {
     config.setString(KEY_PID_MODE_P, value);
@@ -1339,6 +1343,7 @@ void YaSolR::Website::initCards() {
   _pidKp.setValue(config.get<float>(KEY_PID_KP));
   _pidKi.setValue(config.get<float>(KEY_PID_KI));
   _pidKd.setValue(config.get<float>(KEY_PID_KD));
+  _pidNoiseRemoval.setValue(config.get<uint8_t>(KEY_PID_NOISE));
   _pidSetpoint.setValue(config.get<int16_t>(KEY_PID_SETPOINT));
   _pidOutMin.setValue(config.get<int16_t>(KEY_PID_OUT_MIN));
   _pidOutMax.setValue(config.get<int16_t>(KEY_PID_OUT_MAX));
