@@ -279,6 +279,7 @@ You can change the PID settings at runtime and the effect will appear immediatel
 - `Kd`: `0.05`
 - `Output Min`: `-300`
 - `Output Max`: `4000`
+- `Noise Reduction`: `0`
 - `Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)
 
 Here are some other values that seem to work well depending on the load, ZCD module, etc:
@@ -325,7 +326,7 @@ YaSolR supports two modes for the proportional and derivative terms:
 - `On Error`: the proportional and derivative terms are based on the error (difference between setpoint and measured value)
 - `On Input`: the proportional and derivative terms are based on the measured value differences (grid power)
 
-In most cases, `On Input` mode is preferred because it avoids the derivative kick effect when a sudden change happens (for example when the grid power goes from 0W to 3000W).
+In most cases, `On Input` mode is preferred because it avoids overshoots (going beyond the setpoint) and is more stable.
 This is the default mode used in YaSolR, but you can try the other mode if you want and see what is happening live in the graphs.
 
 #### Clamping
@@ -340,38 +341,53 @@ In the case of YaSolR, the clamping is done with `Output Min` and `Output Max` v
 - `Output Max`: same thing but in relationship to the load. If you have a 3kW load, you can set it to 4000W for example.
   It should be set to a value higher than your maximum load power.
 
-#### Proportional / Derivative on measurements (input)
+#### Proportional on measurements (input)
 
-**YaSolR PID controller is using by default proportional on input (measured value) and derivative on input (measured value)**.
+**YaSolR PID controller is using by default proportional on measurements**.
 
-- Kp: the proportional gain, is used to control the weight of the integral of input differences
-- Ki: the integral gain, is used to control the weight of the accumulated errors against setpoint
+- Kp: the proportional gain, is used to control the weight of the integral of errors
+- Ki: the integral gain, is used to control the weight of the integral of input differences
 - Kd: the derivative gain, is used to control the weight of the error
 
 **Effects:**
 
-- Increasing Kp will make the controller slowdown more to avoid overshoot.
-- Increasing Ki will make the controller react more strongly to accumulated errors.
-  If Ki is too high, it can lead to overshoot and instability.
+- Increasing Ki will make the controller react more strongly to changes but too much increase will create oscillations
+- Increasing Kp will make the controller slowdown
 - Increasing Kd will make the controller react more strongly to a sudden change of grid power
 
-#### Proportional / Derivative on measurements (input)
+#### Noise Reduction Filter
 
-If you are familiar with PID, you'll notice that this definition differs from a more classic PID based on error: proportional on error, integral on error, derivative on error.
-A more traditional PID controller is controlled with these gains:
+YaSolR provides a noise reduction filter to smooth the input signal of the PID controller.
+This can be beneficial in some cases where the grid power measurement is noisy and creates oscillations in the PID output.
 
-- Kp: the proportional gain, is used to control the weight of the current error against setpoint
-- Ki: the integral gain, is used to control the weight of the accumulated errors against setpoint
-- Kd: the derivative gain, is used to control the weight of the error rate of change
+**The valus is set to 0% by default (no filtering).**
 
-**Effects:**
+- 0%: no filtering
+- 30%: Light filtering - fast response, some noise reduction
+- 40%: Moderate filtering - balanced (recommended when used)
+- 80%: Heavy filtering - slow response, maximum noise smoothing
 
-- Increasing Kp will make the controller react more strongly to changes in input.
-  If Kp is too high, it can lead to oscillations around the setpoint.
-- Increasing Ki will make the controller react more strongly to accumulated errors.
-  If Ki is too high, it can lead to overshoot and instability.
-- Increasing Kd will make the controller react more strongly to the rate of change of the input.
-  If Kd is too high, it can lead to noise amplification and instability.
+**When to use it ?**
+
+When your grid consumption is generally stable: only considering appliances, not the solar production.
+So you do not have a lot of appliances turning on and off often.
+In this case, activating this filter will help to smooth the input signal and avoid oscillations even more.
+
+**Examples:**
+
+No filtering, during a "calm" period on the grid we can see spikes with an amplitude of 40 Watts.
+
+[![](assets/img/screenshots/noise-reduction-off.png)](assets/img/screenshots/noise-reduction-off.png)
+
+50% filtering, during a "calm" period on the grid we can see that spike amplitude is attenuated with an amplitude of 20 Watts.
+
+[![](assets/img/screenshots/noise-reduction-on.png)](assets/img/screenshots/noise-reduction-on.png)
+
+> ##### WARNING
+>
+> Noise Reduction is a double-edged sword: while it smooths the input signal, it also slows down the PID reaction time.
+>
+{: .block-warning }
 
 #### Simulation
 
