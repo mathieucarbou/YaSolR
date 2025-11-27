@@ -46,61 +46,47 @@ static Mycila::Task frequencyMonitorTask("Frequency", []() {
   const float frequency = yasolr_frequency();
   const uint16_t semiPeriod = frequency > 0 ? 500000.0f / frequency : 0;
 
-  bool updateUI = false;
-  bool unknownGridFreq = false;
-
-  if (dimmer1 && dimmer1->isEnabled()) {
-    if (semiPeriod) {
-      // check for semi-period changes
-      if (dimmer1->getPowerLUTSemiPeriod() != semiPeriod) {
-        ESP_LOGI(TAG, "Updating Output 1 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
-        dimmer1->enablePowerLUT(true, semiPeriod);
-        updateUI = true;
-      }
-      // check for dimmer online status
-      if (!dimmer1->isOnline()) {
-        ESP_LOGI(TAG, "Switch Output 1 Dimmer online");
-        dimmer1->setOnline(true);
-        updateUI = true;
-      }
-    } else {
-      unknownGridFreq = true;
-      if (dimmer1->isOnline()) {
-        ESP_LOGW(TAG, "Switch Output 1 Dimmer offline");
-        dimmer1->setOnline(false);
-      }
+  if (semiPeriod) {
+    // first update dimmer semi-period if changed before switching dimmers online
+    if (Mycila::Dimmer::getSemiPeriod() != semiPeriod) {
+      ESP_LOGI(TAG, "Updating dimmer semi-period to: %" PRIu16 " us", semiPeriod);
+      Mycila::Dimmer::setSemiPeriod(semiPeriod);
+      dashboardInitTask.resume();
     }
-  }
 
-  if (dimmer2 && dimmer2->isEnabled()) {
-    if (semiPeriod) {
-      // check for semi-period changes
-      if (dimmer2->getPowerLUTSemiPeriod() != semiPeriod) {
-        ESP_LOGI(TAG, "Updating Output 2 Dimmer semi-period to: %" PRIu16 " us", semiPeriod);
-        dimmer2->enablePowerLUT(true, semiPeriod);
-        updateUI = true;
-      }
-      // check for dimmer online status
-      if (!dimmer2->isOnline()) {
-        ESP_LOGI(TAG, "Switch Output 2 Dimmer online");
-        dimmer2->setOnline(true);
-        updateUI = true;
-      }
-    } else {
-      unknownGridFreq = true;
-      if (dimmer2->isOnline()) {
-        ESP_LOGW(TAG, "Switch Output 2 Dimmer offline");
-        dimmer2->setOnline(false);
-      }
+    if (dimmer1 && dimmer1->isEnabled() && !dimmer1->isOnline()) {
+      ESP_LOGI(TAG, "Switch Output 1 Dimmer online");
+      dimmer1->setOnline(true);
+      dashboardInitTask.resume();
     }
-  }
 
-  if (unknownGridFreq) {
+    if (dimmer2 && dimmer2->isEnabled() && !dimmer2->isOnline()) {
+      ESP_LOGI(TAG, "Switch Output 2 Dimmer online");
+      dimmer2->setOnline(true);
+      dashboardInitTask.resume();
+    }
+
+  } else {
     ESP_LOGW(TAG, "Unknown grid frequency!");
-  }
 
-  if (updateUI) {
-    dashboardInitTask.resume();
+    if (dimmer1 && dimmer1->isEnabled() && dimmer1->isOnline()) {
+      ESP_LOGW(TAG, "Switch Output 1 Dimmer offline");
+      dimmer1->setOnline(false);
+      dashboardInitTask.resume();
+    }
+
+    if (dimmer2 && dimmer2->isEnabled() && dimmer2->isOnline()) {
+      ESP_LOGW(TAG, "Switch Output 2 Dimmer offline");
+      dimmer2->setOnline(false);
+      dashboardInitTask.resume();
+    }
+
+    // remove semi-period to avoid using wrong value
+    if (Mycila::Dimmer::getSemiPeriod() != semiPeriod) {
+      ESP_LOGI(TAG, "Updating dimmer semi-period to: %" PRIu16 " us", semiPeriod);
+      Mycila::Dimmer::setSemiPeriod(semiPeriod);
+      dashboardInitTask.resume();
+    }
   }
 });
 
@@ -244,6 +230,7 @@ void yasolr_configure_output1_dimmer() {
     dimmer1->setDutyCycleMin(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
     dimmer1->setDutyCycleMax(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
     dimmer1->setDutyCycleLimit(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
+    dimmer1->enablePowerLUT(true);
     dimmer1->begin();
     if (!dimmer1->isEnabled()) {
       ESP_LOGE(TAG, "Output 1 Dimmer failed to initialize!");
