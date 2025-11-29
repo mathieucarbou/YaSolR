@@ -170,7 +170,7 @@ static void subscribe() {
           metrics.voltage = voltage->orElse(NAN);
           grid.updateMetrics(std::move(metrics));
           if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
-            yasolr_run_pid();
+            pidTask.requestEarlyRun();
           }
         }
       }

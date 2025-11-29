@@ -75,7 +75,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
     grid.updateMetrics(std::move(metrics));
 
     if (grid.isUsing(Mycila::Grid::Source::JSY)) {
-      yasolr_run_pid();
+      pidTask.requestEarlyRun();
     }
   }
 }

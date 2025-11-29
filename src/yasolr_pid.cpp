@@ -7,17 +7,9 @@
 
 Mycila::PID pidController;
 
-static Mycila::Task pidTask("PID", []() {
-  if ((output1.isAutoDimmerEnabled() || output2.isAutoDimmerEnabled()) && micros() - pidController.getLastTime() > 2000000 && yasolr_run_pid()) {
-    // Ensure the PID controller is called frequently enough.
-    // This keeps the PID running even if the measurements are not frequent enough (like with MQTT).
-    ESP_LOGW(TAG, "Grid measurement system too slow!");
-  }
-});
-
-bool yasolr_run_pid() {
+Mycila::Task pidTask("PID", []() {
   if (router.isCalibrationRunning())
-    return false;
+    return;
 
   std::optional<float> voltage = grid.getVoltage();
   std::optional<float> power = grid.getPower();
@@ -30,14 +22,15 @@ bool yasolr_run_pid() {
       dashboardUpdateTask.requestEarlyRun();
     }
 
-    return diverted > 0;
+    if (diverted > 0 && pidTask.lastEndTime() > 0 && millis() - pidTask.lastEndTime() >= 2000) {
+      ESP_LOGW(TAG, "Grid measurement system too slow!");
+    }
 
   } else {
     // pause routing if grid voltage or power are not available
     router.noDivert();
-    return false;
   }
-}
+});
 
 void yasolr_init_pid() {
   pidController.setReverse(false);
@@ -45,7 +38,7 @@ void yasolr_init_pid() {
   pidController.setIntegralCorrectionMode(Mycila::PID::IntegralCorrectionMode::CLAMP);
 
   pidTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
-  pidTask.setInterval(200);
+  pidTask.setInterval(2000);
   if (config.get<bool>(KEY_ENABLE_DEBUG))
     pidTask.enableProfiling();
   coreTaskManager.addTask(pidTask);

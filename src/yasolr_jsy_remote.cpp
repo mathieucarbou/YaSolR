@@ -105,7 +105,7 @@ static void onData(AsyncUDPPacket packet) {
   grid.updateMetrics(std::move(metrics));
 
   if (grid.isUsing(Mycila::Grid::Source::JSY_REMOTE)) {
-    yasolr_run_pid();
+    pidTask.requestEarlyRun();
   }
 }
 

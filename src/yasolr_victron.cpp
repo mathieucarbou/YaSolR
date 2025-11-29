@@ -36,7 +36,7 @@ void yasolr_configure_victron() {
           grid.updateMetrics(std::move(metrics));
 
           if (grid.isUsing(Mycila::Grid::Source::VICTRON)) {
-            yasolr_run_pid();
+            pidTask.requestEarlyRun();
           }
         }
       });

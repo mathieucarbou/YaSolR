@@ -129,9 +129,9 @@ extern void yasolr_configure_lights();
 
 // PID
 extern Mycila::PID pidController;
+extern Mycila::Task pidTask;
 extern void yasolr_init_pid();
 extern void yasolr_configure_pid();
-extern bool yasolr_run_pid();
 
 // System
 extern Mycila::Task resetTask;
