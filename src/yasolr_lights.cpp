@@ -62,6 +62,6 @@ void yasolr_init_lights() {
 
   lights.set(Mycila::TrafficLight::State::OFF, Mycila::TrafficLight::State::ON, Mycila::TrafficLight::State::OFF);
 
-  lightsTask.setInterval(200);
+  lightsTask.setInterval(300);
   coreTaskManager.addTask(lightsTask);
 }

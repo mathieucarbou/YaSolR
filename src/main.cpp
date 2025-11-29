@@ -61,4 +61,7 @@ void setup() {
 }
 
 // Destroy default Arduino async task
-void loop() { coreTaskManager.loop(); }
+void loop() {
+  coreTaskManager.loop();
+  espConnect.loop();
+}

@@ -357,6 +357,8 @@ void yasolr_init_router() {
     calibrationTask.enableProfiling();
 
   frequencyMonitorTask.setInterval(2000);
+  if (config.get<bool>(KEY_ENABLE_DEBUG))
+    frequencyMonitorTask.enableProfiling();
 
   coreTaskManager.addTask(frequencyMonitorTask);
   coreTaskManager.addTask(routerTask);

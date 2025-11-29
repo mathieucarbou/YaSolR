@@ -4,8 +4,6 @@
  */
 #include <yasolr.h>
 
-static Mycila::Task networkManagerTask("ESPConnect", []() { espConnect.loop(); });
-
 static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, []() {
   ESP_LOGI(TAG, "Enable Network Services");
 
@@ -124,8 +122,5 @@ void yasolr_init_network() {
   if (config.get<bool>(KEY_ENABLE_DEBUG))
     networkStartTask.enableProfiling();
 
-  networkManagerTask.setInterval(200);
-
   coreTaskManager.addTask(networkStartTask);
-  coreTaskManager.addTask(networkManagerTask);
 }
