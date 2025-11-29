@@ -24,6 +24,7 @@ void setup() {
   yasolr_init_web_server();
   yasolr_init_version_check();
   yasolr_init_network();
+  yasolr_init_pid();
 
   // DS18 first since we need to wait and loop
   yasolr_configure_output1_ds18();

@@ -129,7 +129,9 @@ extern void yasolr_configure_lights();
 
 // PID
 extern Mycila::PID pidController;
+extern void yasolr_init_pid();
 extern void yasolr_configure_pid();
+extern bool yasolr_run_pid();
 
 // System
 extern Mycila::Task resetTask;
@@ -154,7 +156,6 @@ extern Mycila::PulseAnalyzer* pulseAnalyzer;
 extern Mycila::Router router;
 extern Mycila::Router::Output output1;
 extern Mycila::Router::Output output2;
-extern bool yasolr_divert();
 extern void yasolr_init_router();
 extern void yasolr_configure_output1_dimmer();
 extern void yasolr_configure_output2_dimmer();
