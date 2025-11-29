@@ -450,16 +450,17 @@ Here are other interesting links about PID controllers:
   - The Access Point when activated
   - The Captive Portal when the router restarts and no WiFi is available
 
-> ##### WARNING
->
-> The password MUST be more than 8 characters long otherwise the device will fail to start AP mode or the Captive Portal for recovery if it needs to.
->
-{: .block-warning }
-
 - `Hostname`: the hostname of the device, if you need to change it.
 - `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
   You will need to connect to its WiFi to access the dashboard again.
 - `Admin Password`: the password used to access the router, even in AP mode, or the captive portal. If you loose it, you will need to do a factory reset of the device.
+
+> ##### IMPORTANT
+>
+> The username is always `admin`.
+> The password MUST be more than 8 characters long otherwise the device will fail to start AP mode or the Captive Portal for recovery if it needs to.
+>
+{: .block-warning }
 
 **WiFi settings:**
 
