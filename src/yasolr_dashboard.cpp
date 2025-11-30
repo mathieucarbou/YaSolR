@@ -287,6 +287,7 @@ static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
+static dash::DropdownCard<const char*> _pidTrigger(dashboard, YASOLR_LBL_110, YASOLR_PID_TRIGGER_INTERVAL "," YASOLR_PID_TRIGGER_MEASURE);
 static dash::SliderCard<uint16_t> _pidInterval(dashboard, YASOLR_LBL_146, 100, 2000, 100, "ms");
 static dash::ToggleButtonCard _pidRealTime(dashboard, YASOLR_LBL_169);
 
@@ -794,6 +795,7 @@ void YaSolR::Website::begin() {
   _pidKi.setTab(_pidTab);
   _pidKd.setTab(_pidTab);
   _pidNoiseRemoval.setTab(_pidTab);
+  _pidTrigger.setTab(_pidTab);
   _pidInterval.setTab(_pidTab);
   _pidRealTime.setTab(_pidTab);
 
@@ -803,7 +805,6 @@ void YaSolR::Website::begin() {
   _pidITermHistory.setTab(_pidTab);
   _pidDTermHistory.setTab(_pidTab);
 
-  // _pidRealTime.setSize(FULL_SIZE);
   _pidInputHistory.setSize(FULL_SIZE);
   _pidOutputHistory.setSize(FULL_SIZE);
   _pidPTermHistory.setSize(FULL_SIZE);
@@ -823,6 +824,12 @@ void YaSolR::Website::begin() {
     config.setString(KEY_PID_MODE_P, value);
     _pidPMode.setValue(value);
     dashboard.refresh(_pidPMode);
+  });
+
+  _pidTrigger.onChange([](const char* value) {
+    config.setString(KEY_PID_TRIGGER, value);
+    _pidTrigger.setValue(value);
+    dashboard.refresh(_pidTrigger);
   });
 
   _pidRealTime.onChange([this](bool value) {
@@ -1347,11 +1354,13 @@ void YaSolR::Website::initCards() {
   _pidKi.setValue(config.get<float>(KEY_PID_KI));
   _pidKd.setValue(config.get<float>(KEY_PID_KD));
   _pidNoiseRemoval.setValue(config.get<uint8_t>(KEY_PID_NOISE));
+  _pidTrigger.setValue(config.getString(KEY_PID_TRIGGER));
   _pidInterval.setValue(config.get<uint16_t>(KEY_PID_INTERVAL));
   _pidSetpoint.setValue(config.get<int16_t>(KEY_PID_SETPOINT));
   _pidOutMin.setValue(config.get<int16_t>(KEY_PID_OUT_MIN));
   _pidOutMax.setValue(config.get<int16_t>(KEY_PID_OUT_MAX));
 
+  _pidInterval.setDisplay(config.isEqual(KEY_PID_TRIGGER, YASOLR_PID_TRIGGER_INTERVAL));
   _pidInputHistory.setDisplay(pidViewEnabled);
   _pidOutputHistory.setDisplay(pidViewEnabled);
   _pidPTermHistory.setDisplay(pidViewEnabled);

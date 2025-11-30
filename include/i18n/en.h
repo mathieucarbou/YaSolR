@@ -113,7 +113,7 @@
 #define YASOLR_LBL_107 "Excess Configuration"
 #define YASOLR_LBL_108 "GPIO"
 #define YASOLR_LBL_109 "Unknown"
-// #define YASOLR_LBL_110 "No electricity"
+#define YASOLR_LBL_110 "Trigger"
 #define YASOLR_LBL_111 "I2C (Display, DFRobot)"
 #define YASOLR_LBL_112 "Excess Ratio"
 #define YASOLR_LBL_113 "Disconnected"

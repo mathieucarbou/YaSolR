@@ -104,15 +104,16 @@ void yasolr_init_config() {
   config.configure(KEY_OUTPUT2_TEMPERATURE_STOP, static_cast<uint8_t>(60));
   config.configure(KEY_OUTPUT2_TIME_START, "22:00");
   config.configure(KEY_OUTPUT2_TIME_STOP, "06:00");
-  config.configure(KEY_PID_INTERVAL, static_cast<uint16_t>(100));
+  config.configure(KEY_PID_INTERVAL, static_cast<uint16_t>(2000));
   config.configure(KEY_PID_KD, 0.0f);
-  config.configure(KEY_PID_KI, 0.6f);
-  config.configure(KEY_PID_KP, 0.3f);
-  config.configure(KEY_PID_MODE_P, YASOLR_PID_MODE_ERROR);
-  config.configure(KEY_PID_NOISE, static_cast<uint8_t>(40));
+  config.configure(KEY_PID_KI, 0.3f);
+  config.configure(KEY_PID_KP, 0.1f);
+  config.configure(KEY_PID_MODE_P, YASOLR_PID_MODE_INPUT);
+  config.configure(KEY_PID_NOISE, static_cast<uint8_t>(0));
   config.configure(KEY_PID_OUT_MAX, static_cast<int16_t>(4000));
   config.configure(KEY_PID_OUT_MIN, static_cast<int16_t>(-300));
   config.configure(KEY_PID_SETPOINT, static_cast<int16_t>(0));
+  config.configure(KEY_PID_TRIGGER, YASOLR_PID_TRIGGER_MEASURE);
   config.configure(KEY_PIN_I2C_SCL, static_cast<int8_t>(YASOLR_I2C_SCL_PIN));
   config.configure(KEY_PIN_I2C_SDA, static_cast<int8_t>(YASOLR_I2C_SDA_PIN));
   config.configure(KEY_PIN_JSY_RX, static_cast<int8_t>(YASOLR_JSY_RX_PIN));
@@ -310,7 +311,7 @@ void yasolr_init_config() {
           Mycila::NTP.sync(config.getString(KEY_NTP_SERVER));
         });
 
-    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_MODE_P || key == KEY_PID_SETPOINT || key == KEY_PID_NOISE || key == KEY_PID_INTERVAL) {
+    } else if (key == KEY_PID_KP || key == KEY_PID_KI || key == KEY_PID_KD || key == KEY_PID_OUT_MIN || key == KEY_PID_OUT_MAX || key == KEY_PID_MODE_P || key == KEY_PID_SETPOINT || key == KEY_PID_NOISE || key == KEY_PID_INTERVAL || key == KEY_PID_TRIGGER) {
       reconfigureQueue.push(yasolr_configure_pid);
 
     } else if (key == KEY_MQTT_PUBLISH_INTERVAL) {

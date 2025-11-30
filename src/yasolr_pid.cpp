@@ -38,7 +38,6 @@ Mycila::Task pidTask("PID", []() {
 
 void yasolr_init_pid() {
   pidController.setReverse(false);
-  pidController.setTimeSampling(true);
   pidController.setIntegralCorrectionMode(Mycila::PID::IntegralCorrectionMode::CLAMP);
 
   pidTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
@@ -48,13 +47,18 @@ void yasolr_init_pid() {
 }
 
 void yasolr_configure_pid() {
-  pidTask.setInterval(config.get<uint16_t>(KEY_PID_INTERVAL));
+  if (config.isEqual(KEY_PID_TRIGGER, YASOLR_PID_TRIGGER_MEASURE)) {
+    pidController.setTimeSampling(false);
+    pidTask.setInterval(2000); // will be triggered each 2 sec at most
+  } else {
+    pidController.setTimeSampling(true);
+    pidTask.setInterval(config.get<uint16_t>(KEY_PID_INTERVAL));
+  }
 
   pidController.setProportionalMode(strcmp(config.getString(KEY_PID_MODE_P), YASOLR_PID_MODE_ERROR) == 0 ? Mycila::PID::ProportionalMode::ON_ERROR : Mycila::PID::ProportionalMode::ON_INPUT);
   pidController.setSetpoint(config.get<int16_t>(KEY_PID_SETPOINT));
   pidController.setTunings(config.get<float>(KEY_PID_KP), config.get<float>(KEY_PID_KI), config.get<float>(KEY_PID_KD));
   pidController.setOutputLimits(config.get<int16_t>(KEY_PID_OUT_MIN), config.get<int16_t>(KEY_PID_OUT_MAX));
-  // pidController.setFilterTimeConstant(1.0f, 0.33f);
   pidController.setFilterAlpha(1.0f - config.get<uint8_t>(KEY_PID_NOISE) / 100.0f);
 
   ESP_LOGI(TAG, "PID Controller configured");

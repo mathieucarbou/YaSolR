@@ -113,7 +113,7 @@
 #define YASOLR_LBL_107 "Attribution de surplus"
 #define YASOLR_LBL_108 "GPIO"
 #define YASOLR_LBL_109 "Inconnu"
-// #define YASOLR_LBL_110 "Pas d'électricité"
+#define YASOLR_LBL_110 "Déclencheur"
 #define YASOLR_LBL_111 "I2C (Écran, DFRobot)"
 #define YASOLR_LBL_112 "Ratio du surplus"
 #define YASOLR_LBL_113 "Déconnecté"

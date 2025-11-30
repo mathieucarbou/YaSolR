@@ -67,6 +67,8 @@
 #define YASOLR_MQTT_WILL_TOPIC_HA            "~/status"
 #define YASOLR_PID_MODE_ERROR                "On Error"
 #define YASOLR_PID_MODE_INPUT                "On Input"
+#define YASOLR_PID_TRIGGER_INTERVAL          "Interval"
+#define YASOLR_PID_TRIGGER_MEASURE           "New Measure"
 #define YASOLR_PZEM_ADDRESS_OUTPUT1          0x01
 #define YASOLR_PZEM_ADDRESS_OUTPUT2          0x02
 #define YASOLR_RELAY_TYPE_NC                 "NC"
@@ -203,6 +205,7 @@
 #define KEY_PID_OUT_MAX                    "pid_out_max"
 #define KEY_PID_OUT_MIN                    "pid_out_min"
 #define KEY_PID_SETPOINT                   "pid_setpoint"
+#define KEY_PID_TRIGGER                    "pid_trigger"
 #define KEY_PZEM_UART                      "pzem_uart"
 #define KEY_RELAY1_LOAD                    "relay1_load"
 #define KEY_RELAY1_TOLERANCE               "relay1_tol"
