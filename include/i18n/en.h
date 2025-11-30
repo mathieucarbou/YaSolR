@@ -149,7 +149,7 @@
 #define YASOLR_LBL_143 "Display Type"
 #define YASOLR_LBL_144 "Display Rotation (°)"
 #define YASOLR_LBL_145 "Resistance (Ω)"
-// #define YASOLR_LBL_146 "Unknown grid frequency"
+#define YASOLR_LBL_146 "Max Interval"
 #define YASOLR_LBL_147 "PZEM Pairing"
 #define YASOLR_LBL_148 "Noise Reduction Filter"
 #define YASOLR_LBL_149 "Device: Heap Memory Free Min Lifetime (bytes)"

@@ -287,6 +287,7 @@ static dash::InputCard<int16_t> _pidSetpoint(dashboard, YASOLR_LBL_163);
 static dash::InputCard<float, 4> _pidKp(dashboard, YASOLR_LBL_166);
 static dash::InputCard<float, 4> _pidKi(dashboard, YASOLR_LBL_167);
 static dash::InputCard<float, 4> _pidKd(dashboard, YASOLR_LBL_168);
+static dash::SliderCard<uint16_t> _pidInterval(dashboard, YASOLR_LBL_146, 100, 2000, 100, "ms");
 static dash::ToggleButtonCard _pidRealTime(dashboard, YASOLR_LBL_169);
 
 static dash::LineChart<int8_t, int16_t> _pidInputHistory(dashboard, YASOLR_LBL_170);
@@ -793,6 +794,7 @@ void YaSolR::Website::begin() {
   _pidKi.setTab(_pidTab);
   _pidKd.setTab(_pidTab);
   _pidNoiseRemoval.setTab(_pidTab);
+  _pidInterval.setTab(_pidTab);
   _pidRealTime.setTab(_pidTab);
 
   _pidInputHistory.setTab(_pidTab);
@@ -801,7 +803,7 @@ void YaSolR::Website::begin() {
   _pidITermHistory.setTab(_pidTab);
   _pidDTermHistory.setTab(_pidTab);
 
-  _pidRealTime.setSize(FULL_SIZE);
+  // _pidRealTime.setSize(FULL_SIZE);
   _pidInputHistory.setSize(FULL_SIZE);
   _pidOutputHistory.setSize(FULL_SIZE);
   _pidPTermHistory.setSize(FULL_SIZE);
@@ -815,6 +817,7 @@ void YaSolR::Website::begin() {
   _numConfig(_pidKi, KEY_PID_KI);
   _numConfig(_pidKd, KEY_PID_KD);
   _sliderConfig(_pidNoiseRemoval, KEY_PID_NOISE);
+  _sliderConfig(_pidInterval, KEY_PID_INTERVAL);
 
   _pidPMode.onChange([](const char* value) {
     config.setString(KEY_PID_MODE_P, value);
@@ -1344,6 +1347,7 @@ void YaSolR::Website::initCards() {
   _pidKi.setValue(config.get<float>(KEY_PID_KI));
   _pidKd.setValue(config.get<float>(KEY_PID_KD));
   _pidNoiseRemoval.setValue(config.get<uint8_t>(KEY_PID_NOISE));
+  _pidInterval.setValue(config.get<uint16_t>(KEY_PID_INTERVAL));
   _pidSetpoint.setValue(config.get<int16_t>(KEY_PID_SETPOINT));
   _pidOutMin.setValue(config.get<int16_t>(KEY_PID_OUT_MIN));
   _pidOutMax.setValue(config.get<int16_t>(KEY_PID_OUT_MAX));

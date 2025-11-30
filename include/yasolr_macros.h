@@ -194,6 +194,7 @@
 #define KEY_OUTPUT2_TIME_START             "o2_time_start"
 #define KEY_OUTPUT2_TIME_STOP              "o2_time_stop"
 #define KEY_OUTPUT2_TIME_STOP              "o2_time_stop"
+#define KEY_PID_INTERVAL                   "pid_itvl"
 #define KEY_PID_KD                         "pid_kd"
 #define KEY_PID_KI                         "pid_ki"
 #define KEY_PID_KP                         "pid_kp"
