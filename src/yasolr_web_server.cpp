@@ -294,8 +294,9 @@ void rest_api() {
           settings[keyRef] = p->value().c_str();
       }
     }
+    if (settings.size())
+      config.set(settings);
     request->send(200);
-    config.set(settings);
   });
 
   webServer.on("/api/config", HTTP_GET, [](AsyncWebServerRequest* request) {
@@ -305,10 +306,16 @@ void rest_api() {
       for (size_t i = 0; i < pcount; i++) {
         const AsyncWebParameter* p = request->getParam(i);
         const char* keyRef = config.keyRef(p->name().c_str());
-        if (keyRef)
-          settings[keyRef] = p->value().c_str();
+        if (keyRef) {
+          if (p->value().isEmpty()) {
+            config.unset(keyRef);
+          } else {
+            settings[keyRef] = p->value().c_str();
+          }
+        }
       }
-      config.set(settings);
+      if (settings.size())
+        config.set(settings);
     }
 
     AsyncJsonResponse* response = new AsyncJsonResponse(false);
