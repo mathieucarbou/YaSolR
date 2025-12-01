@@ -39,6 +39,7 @@ Mycila::Task pidTask("PID", []() {
 void yasolr_init_pid() {
   pidController.setReverse(false);
   pidController.setIntegralCorrectionMode(Mycila::PID::IntegralCorrectionMode::CLAMP);
+  pidController.reset(0);
 
   pidTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
   if (config.get<bool>(KEY_ENABLE_DEBUG))
