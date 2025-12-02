@@ -174,6 +174,11 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
   - Fix: too many HTTP calls triggered due to not waiting for the HTTP calls to finish before starting a new one
   - Fix: incorrect support of "skipping" attribute when skipping dimmer calls
 
+- **[Shelly Solar Diverter Script V23](../downloads/auto_diverter_v23.js)**:
+  - Put back the same PID logic than in v17 with a threshold to switch between HIGH and LOW PID parameters
+  - Removed `D_MODE` parameter because both input and error modes lead to the same result for the derivative PID factor
+  - Simplified `callDimmers` function to add a state machine to avoid a stack overflow with several dimmers
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
@@ -318,12 +323,7 @@ const CONFIG = {
     // Proportional Mode:
     // - "error" (proportional on error),
     // - "input" (proportional on measurement),
-    // - "both" (proportional on 50% error and 50% measurement)
     P_MODE: "input",
-    // Derivative Mode:
-    // - "error" (derivative on error),
-    // - "input" (derivative on measurement)
-    D_MODE: "input",
     // Target Grid Power (W)
     SETPOINT: -100,
     // Output Minimum (W): should be below the SETPOINT value, like 300-400W below.
@@ -331,14 +331,32 @@ const CONFIG = {
     // Output Maximum (W): should be above the nominal power of the load, ideally your maximum possible excess power, like your solar production peak power
     // I set below, the the available power to divert will be limited to this value globally for all dimmers.
     OUT_MAX: 6000,
-    // PID Proportional Gain
-    // Also try with 0.1, 0.2, 0.3
-    KP: 0.1,
-    // PID Integral Gain
-    // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
-    KI: 0.3,
-    // PID Derivative Gain = keep it low
-    KD: 0.05,
+    // At which power to switch between HIGH and LOW PID parameters
+    HIGH_LOW_SWITCH: 200,
+    // PID Parameters to use when grid power is far away from setpoint
+    HIGH: {
+      // PID Proportional Gain
+      // Also try with 0.1, 0.2, 0.3
+      KP: 0.2,
+      // PID Integral Gain
+      // Also try with 0.2, 0.3, 0.4, 0.5, 0.6 but keep it higher than Kp
+      KI: 0.4,
+      // PID Derivative Gain = keep it low
+      KD: 0.05,
+      // Output Minimum (W): should be below the SETPOINT value, like 300W below.
+      OUT_MIN: -300,
+      // Output Maximum (W): should be above the nominal power of the load, ideally your maximum possible excess power, like your solar production peak power
+      // I set below, the the available power to divert will be limited to this value globally for all dimmers.
+      OUT_MAX: 2000,
+    },
+    // PID Parameters to use when grid power is near the setpoint
+    LOW: {
+      KP: 0.1,         // half of HIGH.KP
+      KI: 0.2,         // half of HIGH.KI
+      KD: 0.05,        // same as HIGH.KD
+      OUT_MIN: -300,   // same as HIGH.OUT_MIN
+      OUT_MAX: 2000,   // same as HIGH.OUT_MAX
+    }
   },
 
   // DIMMER LIST
@@ -371,16 +389,16 @@ const CONFIG = {
       MAX: 100,
     },
     // pool_heater: {
-    //   IP: "192.168.125.99",
-    //   RESISTANCE: 0,
+    //   IP: "192.168.123.4",
+    //   RESISTANCE: 85,
     //   POWER_RATIO: 1.0,
     //   POWER_LIMIT: 0,
     //   USE_POWER_LUT: true,
     //   DIMMER_TURN_OFF_DELAY: 5 * 60 * 1000,
     //   MIN: 0,
-    //   MAX: 9100,
+    //   MAX: 100,
     // }
-  },
+  }
 };
 ```
 
