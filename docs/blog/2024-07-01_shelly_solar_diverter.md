@@ -179,6 +179,9 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
   - Removed `D_MODE` parameter because both input and error modes lead to the same result for the derivative PID factor
   - Simplified `callDimmers` function to add a state machine to avoid a stack overflow with several dimmers
 
+- **[Shelly Solar Diverter Script V24](../downloads/auto_diverter_v24.js)** ([No LUT version](../downloads/auto_diverter_v24-no-lut.js)):
+  - Reduced stack memory used (less variables stored in call stacks)
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
