@@ -252,8 +252,9 @@ static void publishConfig() {
   ESP_LOGI(TAG, "Publishing config to MQTT");
   std::string baseTopic = config.getString(KEY_MQTT_TOPIC);
   for (auto& key : config.keys()) {
-    const char* value = config.get(key.name).toString().c_str();
-    if (value[0] != '\0' && key.isPasswordKey())
+    std::string value = config.get(key.name).toString();
+    // ESP_LOGD(TAG, "%s: %s", key.name, value.c_str());
+    if (value.length() && key.isPasswordKey())
       value = "********";
     mqtt->publish((baseTopic + "/config/" + key.name).c_str(), value, true);
   }
