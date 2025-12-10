@@ -265,10 +265,10 @@ You can read more about harmonics in the [overview](#overview) section.
 
 ### PID
 
-> ##### DANGER
+> ##### WARNING
 >
 > For advanced users only.
-{: .block-danger }
+{: .block-warning }
 
 [![](assets/img/screenshots/Default_NR_OFF.jpeg)](assets/img/screenshots/Default_NR_OFF.jpeg)
 
