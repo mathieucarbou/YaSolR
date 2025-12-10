@@ -15,7 +15,14 @@ description: Manual
   - [Overview](#overview)
   - [Output 1 and 2](#output-1-and-2)
   - [PID](#pid)
-  - [PID Tuning](#pid-tuning)
+    - [Proportional Mode](#proportional-mode)
+    - [Clamping (Output Min/Max)](#clamping-output-minmax)
+    - [Noise Reduction](#noise-reduction)
+    - [Setpoint](#setpoint)
+    - [Gains (Kp, Ki, Kd)](#gains-kp-ki-kd)
+    - [Trigger](#trigger)
+    - [Tuning](#tuning)
+    - [References](#references)
   - [Network](#network)
   - [NTP](#ntp)
   - [MQTT](#mqtt)
@@ -124,7 +131,6 @@ To update the firmware through OTA, please follow these steps:
 Here is a demo of the OTA update with SafeBoot:
 
 [![YaSolR OTA Update using SafeBoot mode](https://img.youtube.com/vi/9igXR-53qQ0/0.jpg)](https://www.youtube.com/watch?v=9igXR-53qQ0 "YaSolR OTA Update using SafeBoot mode")
-
 
 > ##### TIP
 >
@@ -264,9 +270,9 @@ You can read more about harmonics in the [overview](#overview) section.
 > For advanced users only.
 {: .block-danger }
 
-[![](assets/img/screenshots/app-pid_tuning.jpeg)](assets/img/screenshots/app-pid_tuning.jpeg)
+[![](assets/img/screenshots/Default_NR_OFF.jpeg)](assets/img/screenshots/Default_NR_OFF.jpeg)
 
-This page allows to tune the PID algorithm used to control the automatic routing.
+This page allows to configure the PID algorithm used to control the automatic routing.
 Use only if you know what you are doing and know how to tweak a PID controller.
 
 You can change the PID settings at runtime and the effect will appear immediately.
@@ -274,90 +280,52 @@ You can change the PID settings at runtime and the effect will appear immediatel
 **Default Settings**
 
 - `Proportional Mode`: `On Input`
-- `Kp`: `0.1`
-- `Ki`: `0.3`
-- `Kd`: `0.05`
 - `Output Min`: `-300`
 - `Output Max`: `4000`
 - `Noise Reduction`: `0`
+- `Setpoint`: `0`
+- `Kp`: `0.1`
+- `Ki`: `0.3`
+- `Kd`: `0.0`
+- `Trigger`: `New Measure`
 - `Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)
 
-Here are some other values that seem to work well depending on the load, ZCD module, etc:
-
-- `Kp`: `0.3`, `Ki`: `0.6`, `Kd`: `0.1`
-- `Kp`: `0.3`, `Ki`: `0.4`, `Kd`: `0.1`
-
-You can simulate the PID parameters in the **[Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/)**
+I also did an **[Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/)** to help you understand how the PID is working and to test different settings.
 
 [![](assets/img/screenshots/pid_simulator.jpeg)](assets/img/screenshots/pid_simulator.jpeg)
 
-**Regular PID trigger**
+#### Proportional Mode
 
-For example, if a new MQTT measurement comes and the PID detects that it should decrease step by step the load because the grid power has increased, then, if no new measurement is coming in the next 2 seconds, it will automatically continue to decrease step by step until a new measurement is received. Same applied if it has to increase the load.
+Determines how the PID proportional term (Kp) is calculated.
 
-Such behavior will have 2 beneficial effect:
+1. `On Error`: the proportional term is based on the error (difference between setpoint and measured value): `P = Kp * error`
 
-1. The PID will be more likely to reach the setpoint faster since the PID loop will keep on sending corrections instead of stopping
-2. The PID constantly changing the power going to the load will also have an effect to trigger a new measurement. This is especially true for devices like Shelly, which are not sending updates if the power does not change. With Shellys this is possible to not have any update for more than 1 minute (which will then stop the routing). To counter that, the PID will continue slowly change the load so that the Shelly will see a power change and consequently send a MQTT event, which will refresh the PID. This allows a closed loop control without lacking measurement.
+2. `On Input`: the proportional term is based on the measured value differences (grid power): `P += Kp * (last_measured - measured)`
 
-> ##### TIP
->
-> If you find better settings, please do not hesitate to share them with the community.
->
-{: .block-tip }
+`On Error` is the classic way to compute the proportional term, but it can create overshoots (going beyond the setpoint) and oscillations more than `On Input`.
+`On Input` is usually preferred for a router since it helps avoid overshoots and is more stable around setpoint.
 
-### PID Tuning
+You definitely need to test.
 
-The first thing to really understand about a router / diverter is that **its efficiency is directly linked to the frequency of measurements and the speed of reaction of the router**.
-The faster the router will react to a change in grid power, the better it will truly optimize the self-consumption.
+When `Trigger` is set to `New Measure`, I found best results with `On Input`.
+When `Trigger` is set to `Interval`, I found best results with `On Error`.
 
-For example, a JSY (connected or remote) can provide several measurements per second and the router will react directly to these changes.
-So a change of grid power is immediately detected and corrected to adjust the routed power.
+#### Clamping (Output Min/Max)
 
-At the opposite, if your measurements are coming from MQTT at an infrequent rate (typical for Home Assistant),
-the router will only react to past measurements and will apply corrections based on some old data.
-So it will create consumption and export peaks because the computed correction a few seconds ago is not valid anymore.
-
-Whether measurements are frequent or not, the PID controller will try to adapt to the situation in order to smooth grid power and avoid as much as possible oscillations.
-If no measurement is received for a long time (2 seconds), the PID controller will be called again with the last measurement which will have the effect to slowly continuing to apply the same correction until a new measurement is received.
-
-YaSolR supports two modes for the proportional and derivative terms:
-
-- `On Error`: the proportional and derivative terms are based on the error (difference between setpoint and measured value)
-- `On Input`: the proportional and derivative terms are based on the measured value differences (grid power)
-
-In most cases, `On Input` mode is preferred because it avoids overshoots (going beyond the setpoint) and is more stable.
-This is the default mode used in YaSolR, but you can try the other mode if you want and see what is happening live in the graphs.
-
-#### Clamping
-
-A PID Controller usually offers an anti-windup mechanism to avoid the integral term to grow too much when the output is saturated (for example, to much consumption or too much solar production so the dimmer is set at 0% or 100%).
-
-In the case of YaSolR, the clamping is done with `Output Min` and `Output Max` values.
+These are the minimum and maximum output values of the PID controller in order to clamp it.
 
 - `Output Min`: the minimum output value of the PID controller (negative values are allowed).
-  It should be set to a value lower than your setpoint.
+  It should be set to a value lower than your setpoint, but not too close to let room for the PID to work.
   The idea is to allow the PID Controller to continue to work in the range of [`Output Min`, `Setpoint`] to smooth any sudden change but this min value should still be close to the setpoint in order for the PID to react quickly.
-- `Output Max`: same thing but in relationship to the load. If you have a 3kW load, you can set it to 4000W for example.
+
+- `Output Max`: same thing but in relationship your maximum routed power. If you have a 3kW load, you can set it to 4000W for example.
   It should be set to a value higher than your maximum load power.
+  But if your solar production is lower than your load, then use your solar production.
+  For example, if you have a 3kW load but only 2kW of solar production, set it to 2000W because this is not likely that you will even be able to route 2000W to the load.
 
-#### Proportional on measurements (input)
+#### Noise Reduction
 
-**YaSolR PID controller is using by default proportional on measurements**.
-
-- Kp: the proportional gain, is used to control the weight of the integral of errors
-- Ki: the integral gain, is used to control the weight of the integral of input differences
-- Kd: the derivative gain, is used to control the weight of the error
-
-**Effects:**
-
-- Increasing Ki will make the controller react more strongly to changes but too much increase will create oscillations
-- Increasing Kp will make the controller slowdown
-- Increasing Kd will make the controller react more strongly to a sudden change of grid power
-
-#### Noise Reduction Filter
-
-YaSolR provides a noise reduction filter to smooth the input signal of the PID controller.
+YaSolR provides a noise reduction filter (EMA) to smooth the input signal of the PID controller.
 This can be beneficial in some cases where the grid power measurement is noisy and creates oscillations in the PID output.
 
 **The valus is set to 0% by default (no filtering).**
@@ -377,11 +345,11 @@ In this case, activating this filter will help to smooth the input signal and av
 
 No filtering, during a "calm" period on the grid we can see spikes with an amplitude of 40 Watts.
 
-[![](assets/img/screenshots/noise-reduction-off.png)](assets/img/screenshots/noise-reduction-off.png)
+[![](assets/img/screenshots/Default_NR_OFF.jpeg)](assets/img/screenshots/Default_NR_OFF.jpeg)
 
-50% filtering, during a "calm" period on the grid we can see that spike amplitude is attenuated with an amplitude of 20 Watts.
+40% filtering, during a "calm" period on the grid we can see that spike amplitude is attenuated.
 
-[![](assets/img/screenshots/noise-reduction-on.png)](assets/img/screenshots/noise-reduction-on.png)
+[![](assets/img/screenshots/Default_NR_ON.jpeg)](assets/img/screenshots/Default_NR_ON.jpeg)
 
 > ##### WARNING
 >
@@ -389,15 +357,96 @@ No filtering, during a "calm" period on the grid we can see spikes with an ampli
 >
 {: .block-warning }
 
-#### Simulation
+#### Setpoint
+
+The setpoint is the target grid power that you want to achieve.
+
+It is usually 0, but could well be a negative value if you want to export a bit of power to the grid instead of trying to reach 0W.
+
+It could also be a positive value if you want to keep a minimum grid consumption for some reason, or test in the evening the router.
+
+#### Gains (Kp, Ki, Kd)
+
+- `Kp`: the proportional gain, is used to weight the error (`On Error` mode) or the input differences (`On Input` mode)
+
+- `Ki`: the integral gain, is used to weight the accumulated errors over time
+
+- `Kd`: the derivative gain, is used to control the weight of the error differences (last error - current error)
+
+Usually, the PID output is mostly tracked by the integral term (Ki) because it accumulates the error over time and will continue to adjust the output until the error is zero (setpoint reached).
+
+The proportional term (Kp) is used to react quickly to sudden changes, but too much Kp will create oscillations around the setpoint.
+In `On Input` mode, Kp is used to smooth the PID output and avoid overshoots. It acts a little bit like a damper / break.
+
+The derivative term (Kd) is used to react to changes in the error.
+This is usually not used in a router because it acts the opposite way of the integral term and can create instability.
+**You can leave this value to zero.**
+
+I found best results with:
+
+- `Ki` set to 1/3 or 2/3 (0.3, 0.6), depending on `Trigger` and `Proportional Mode`
+- `Kp` set to a lower value or equal to `Ki`
+- `Kd` kept to `0`
+
+[![](assets/img/screenshots/Reaction_aux_mesures.jpeg)](assets/img/screenshots/Reaction_aux_mesures.jpeg)
+
+#### Trigger
+
+The trigger determines when the PID controller is called to compute a new output value.
+
+- `New Measure`: the PID controller is called each time a new grid power measurement is received.
+  With a JSY or JSY Remote, this is happening several times per second.
+  With MQTT, this is random and sometimes no value can come for more than a second, which is very bad.
+  `Proportional Mode` can be set to `On Input` in this case: it leads to better stability and avoids overshoots.
+
+- `Interval`: the PID controller is called at a regular interval (from 100ms to 2s).
+  This is useful when measurements are not frequent enough (like with MQTT) to keep the PID working and adjusting the output in order to keep forcing a change in the load and consequently trigger new measurements.
+  In this case, `Proportional Mode` can be set to `On Error`: it leads to a faster reaction to reach the setpoint.
+
+**Examples with MQTT with a different trigger mode.**
+
+| [![](assets/img/screenshots/MQTT_aux_mesures.jpeg)](assets/img/screenshots/MQTT_aux_mesures.jpeg) | [![](assets/img/screenshots/MQTT_aux_500ms.jpeg)](assets/img/screenshots/MQTT_aux_500ms.jpeg) |
+
+Note: I forgot to switch the proportional mode to `On Error` in the second screenshot. But usually, with a slow measurement source like MQTT, it is better to use `On Input`.
+
+**Example with JSY**
+
+| [![](assets/img/screenshots/Reaction_aux_mesures.jpeg)](assets/img/screenshots/Reaction_aux_mesures.jpeg) | [![](assets/img/screenshots/Reaction_aux_100ms_avec_reduct_bruit.jpeg)](assets/img/screenshots/Reaction_aux_100ms_avec_reduct_bruit.jpeg) |
+
+#### Tuning
+
+The first thing to really understand about a router / diverter is that **its efficiency is directly linked to the frequency of measurements and the speed of reaction of the router**.
+The faster the router will react to a change in grid power, the better it will truly optimize the self-consumption.
+
+For example, a JSY (connected or remote) can provide several measurements per second and the router will react directly to these changes.
+So a change of grid power is immediately detected and corrected to adjust the routed power.
+
+At the opposite, if your measurements are coming from MQTT at an infrequent rate (typical for Home Assistant),
+the router will only react to past measurements and will apply corrections based on some old data.
+So it will create consumption and export peaks because the computed correction a few seconds ago is not valid anymore.
+
+Whether measurements are frequent or not, the PID controller will try to adapt to the situation in order to smooth grid power and avoid as much as possible oscillations.
+If no measurement is received for a long time (2 seconds), the PID controller will be called again with the last measurement which will have the effect to slowly continuing to apply the same correction until a new measurement is received.
+
+**Graphs**
+
+`Real-time Data` option can be activated to see the PID action in real time in the graphs (but takes more resources).
+
+Displayed graphs:
+
+- The PID Input, which is the measured grid power, smoothed by the Noise Reduction filter if activated
+- The PID output, which is the available routed power computed by the PID controller
+- The proportional, integral and derivative terms of the PID controller
 
 Try to play with the PID settings to see how it reacts to changes in grid power with the Real-time Data option activated.
+
+If you mess up the PID settings, you can always go back to the default settings, stop and restart the automatic routing.
 
 To facilitate the tuning, do not forget that you can set a setpoint of any value, so you can still simulate a situation in the late evening where you want the PID to stabilize your grid consumption at 2000W for testing.
 
 > ##### IMPORTANT
 >
-> - Do not leave `Real-time Data` option always activated because the data flow is so high that it impacts the device performance.
+> Do not leave the real-time option always activated because the data flow is so high that it impacts the device performance.
 >
 {: .block-important }
 
@@ -484,9 +533,9 @@ When setting a static IP, the router will try to connect with the static IP and 
 > When using a board with Ethernet adapter, the static IP setting only applies to the Ethernet adapter, not the WiFi.
 > So if a WiFi SSID is configured to connect to, YaSolR will connect to the WiFi and will use DHCP to get an IP address.
 >
-> **ETH board users**: You are strongly advised to **set a fixed IP address in YaSolR Network config**. 
+> **ETH board users**: You are strongly advised to **set a fixed IP address in YaSolR Network config**.
 > The reason is that the SafeBoot image uses another platform to make it tiny (not Arduino Core),
-> so the MAC address (and consequently IP address) might be different than YaSolR. 
+> so the MAC address (and consequently IP address) might be different than YaSolR.
 > So when restarting in SafeBoot mode, you will need to find the new IP address if you do not fix it.
 >
 {: .block-important }
