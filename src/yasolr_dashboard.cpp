@@ -1161,18 +1161,6 @@ void YaSolR::Website::initCards() {
 
   // home
 
-  // initialize values for OSS components which cannot be hidden
-  _output1State.setFeedback("UNUSED", dash::Status::INFO);
-  _output1DS18State.setValue(NAN);
-  _output1DimmerSlider.setValue(0);
-  _output1Bypass.setValue(false);
-
-  // initialize values for OSS components which cannot be hidden
-  _output2State.setFeedback("UNUSED", dash::Status::INFO);
-  _output2DS18State.setValue(NAN);
-  _output2DimmerSlider.setValue(0);
-  _output2Bypass.setValue(false);
-
 #ifdef APP_MODEL_PRO
   const bool jsyEnabled = config.get<bool>(KEY_ENABLE_JSY);
   const bool pidViewEnabled = realTimePIDEnabled();
