@@ -27,7 +27,7 @@ namespace YaSolR {
         card.onChange([key, &card, this](bool value) {
           config.set<bool>(key, value);
           card.setValue(config.get<bool>(key));
-          dashboard.refresh(card);
+          dashboardInitTask.resume();
         });
       }
 
@@ -36,7 +36,7 @@ namespace YaSolR {
         card.onChange([key, &card](const T& value) {
           config.set<T>(key, value);
           card.setValue(config.get<T>(key));
-          dashboard.refresh(card);
+          dashboardInitTask.resume();
         });
       }
 
@@ -44,8 +44,7 @@ namespace YaSolR {
         card.onChange([&card, &output, this](float value) {
           output.setDimmerDutyCycle(value / 100.0f);
           card.setValue(output.getDimmerDutyCycle() * 100.0f);
-          dashboard.refresh(card);
-          dashboardUpdateTask.requestEarlyRun();
+          dashboardInitTask.resume();
         });
       }
 
@@ -53,8 +52,7 @@ namespace YaSolR {
         card.onChange([&card, &output, this](bool value) {
           output.setBypass(value);
           card.setValue(output.isBypassOn());
-          dashboard.refresh(card);
-          dashboardUpdateTask.requestEarlyRun();
+          dashboardInitTask.resume();
         });
       }
 
@@ -63,7 +61,7 @@ namespace YaSolR {
         card.onChange([key, &card, this](const char* value) {
           config.setString(key, value[0] ? value : YASOLR_WEEK_DAYS_EMPTY);
           card.setValue(value);
-          dashboard.refresh(card);
+          dashboardInitTask.resume();
         });
       }
 
@@ -76,7 +74,7 @@ namespace YaSolR {
             config.unset(key);
           }
           card.setValue(config.get<T>(key));
-          dashboard.refresh(card);
+          dashboardInitTask.resume();
         });
       }
 
@@ -89,7 +87,7 @@ namespace YaSolR {
             config.unset(key);
           }
           card.setValue(config.get<float>(key));
-          dashboard.refresh(card);
+          dashboardInitTask.resume();
         });
       }
 
@@ -98,7 +96,6 @@ namespace YaSolR {
         card.onChange([key, &card](const T& value) {
           config.set<T>(key, value);
           card.setValue(config.get<T>(key));
-          dashboard.refresh(card);
           // GPIO page may need to be revalidated
           dashboardInitTask.resume();
         });
