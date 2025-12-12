@@ -68,9 +68,13 @@ static void subscribe() {
     if (end == std::string::npos)
       return;
     const std::size_t start = topic.rfind("/", end - 1);
-    const char* key = config.keyRef(topic.substr(start + 1, end - start - 1).c_str());
-    if (key)
-      config.setString(key, std::string(payload));
+    const Mycila::config::Key* key = config.key(topic.substr(start + 1, end - start - 1).c_str());
+    if (key != nullptr) {
+      std::optional<Mycila::config::Value> converted = Mycila::config::Value::fromString(std::string(payload).c_str(), key->defaultValue);
+      if (converted.has_value()) {
+        config.set(key->name, std::move(converted.value()));
+      }
+    }
   });
 
   // relays
