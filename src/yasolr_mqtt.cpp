@@ -300,7 +300,17 @@ static void publishStaticData() {
 }
 
 static void publishData() {
-  std::string baseTopic = config.getString(KEY_MQTT_TOPIC);
+  const std::string baseTopic = config.getString(KEY_MQTT_TOPIC);
+
+  Mycila::Grid::Metrics* gridMetrics = new Mycila::Grid::Metrics();
+  grid.readMeasurements(*gridMetrics);
+
+  Mycila::Router::Metrics* routerMeasurements = new Mycila::Router::Metrics();
+  if (!router.readMeasurements(*routerMeasurements)) {
+    router.computeMetrics(*routerMeasurements, gridMetrics->voltage);
+  }
+
+  const float virtual_grid_power = gridMetrics->power - routerMeasurements->power;
 
   mqtt->publish((baseTopic + "/system/app/latest_version").c_str(), Mycila::AppInfo.latestVersion);
 
@@ -347,16 +357,6 @@ static void publishData() {
   }
 
   {
-    Mycila::Grid::Metrics* gridMetrics = new Mycila::Grid::Metrics();
-    grid.readMeasurements(*gridMetrics);
-
-    Mycila::Router::Metrics* routerMeasurements = new Mycila::Router::Metrics();
-    if (!router.readMeasurements(*routerMeasurements)) {
-      router.computeMetrics(*routerMeasurements, gridMetrics->voltage);
-    }
-
-    float virtual_grid_power = gridMetrics->power - routerMeasurements->power;
-
     mqtt->publish((baseTopic + "/grid/apparent_power").c_str(), std::to_string(gridMetrics->apparentPower));
     mqtt->publish((baseTopic + "/grid/current").c_str(), std::to_string(gridMetrics->current));
     mqtt->publish((baseTopic + "/grid/energy").c_str(), std::to_string(gridMetrics->energy));
@@ -376,9 +376,6 @@ static void publishData() {
 
     mqtt->publish((baseTopic + "/router/virtual_grid_power").c_str(), std::isnan(virtual_grid_power) ? "0" : std::to_string(virtual_grid_power));
 
-    delete gridMetrics;
-    delete routerMeasurements;
-
     yield();
   }
 
@@ -394,14 +391,32 @@ static void publishData() {
 
     for (const auto& output : router.getOutputs()) {
       const std::string outputTopic = baseTopic + "/router/" + output->getName();
+
+      Mycila::Router::Metrics* outputMeasurements = new Mycila::Router::Metrics();
+      if (!output->readMeasurements(*outputMeasurements)) {
+        router.computeMetrics(*outputMeasurements, gridMetrics->voltage);
+      }
+
       mqtt->publish((outputTopic + "/state").c_str(), output->getStateName());
       mqtt->publish((outputTopic + "/bypass").c_str(), YASOLR_STATE(output->isBypassOn()));
       mqtt->publish((outputTopic + "/dimmer").c_str(), YASOLR_STATE(output->isDimmerOn()));
       mqtt->publish((outputTopic + "/duty_cycle").c_str(), std::to_string(output->getDimmerDutyCycle() * 100.0f));
       mqtt->publish((outputTopic + "/temperature").c_str(), std::to_string(output->temperature().orElse(0)));
+
+      mqtt->publish((outputTopic + "/apparent_power").c_str(), std::to_string(outputMeasurements->apparentPower));
+      mqtt->publish((outputTopic + "/current").c_str(), std::to_string(outputMeasurements->current));
+      mqtt->publish((outputTopic + "/energy").c_str(), std::to_string(outputMeasurements->energy));
+      mqtt->publish((outputTopic + "/power_factor").c_str(), std::isnan(outputMeasurements->powerFactor) ? "0" : std::to_string(outputMeasurements->powerFactor));
+      mqtt->publish((outputTopic + "/power").c_str(), std::to_string(outputMeasurements->power));
+      mqtt->publish((outputTopic + "/thdi").c_str(), std::isnan(outputMeasurements->thdi) ? "0" : std::to_string(outputMeasurements->thdi));
+
+      delete outputMeasurements;
     }
 
     yield();
+
+    delete gridMetrics;
+    delete routerMeasurements;
   }
 }
 
@@ -502,6 +517,9 @@ static void haDiscovery() {
   haDiscovery->publish(std::make_unique<Mycila::HA::Number>("output1_dimmer_duty", "Output 1 Dimmer Duty Cycle", "~/router/output1/duty_cycle/set", "~/router/output1/duty_cycle", Mycila::HA::NumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler"));
   haDiscovery->publish(std::make_unique<Mycila::HA::Outlet>("output1_relay", "Output 1 Bypass", "~/router/output1/bypass/set", "~/router/output1/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output1_temperature", "Output 1 Temperature", "~/router/output1/temperature", "temperature", "mdi:thermometer", "°C"));
+  haDiscovery->publish(std::make_unique<Mycila::HA::Counter>("output1_energy", "Output 1 Energy", "~/router/output1/energy", "energy", nullptr, "Wh"));
+  haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output1_power", "Output 1 Power", "~/router/output1/power", "power", nullptr, "W"));
+  haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output1_power_factor", "Output 1 Power Factor", "~/router/output1/power_factor", "power_factor"));
   yield();
 
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("output2_state", "Output 2", "~/router/output2/state"));
@@ -509,6 +527,9 @@ static void haDiscovery() {
   haDiscovery->publish(std::make_unique<Mycila::HA::Number>("output2_dimmer_duty", "Output 2 Dimmer Duty Cycle", "~/router/output2/duty_cycle/set", "~/router/output2/duty_cycle", Mycila::HA::NumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler"));
   haDiscovery->publish(std::make_unique<Mycila::HA::Outlet>("output2_relay", "Output 2 Bypass", "~/router/output2/bypass/set", "~/router/output2/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output2_temperature", "Output 2 Temperature", "~/router/output2/temperature", "temperature", "mdi:thermometer", "°C"));
+  haDiscovery->publish(std::make_unique<Mycila::HA::Counter>("output2_energy", "Output 2 Energy", "~/router/output2/energy", "energy", nullptr, "Wh"));
+  haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output2_power", "Output 2 Power", "~/router/output2/power", "power", nullptr, "W"));
+  haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output2_power_factor", "Output 2 Power Factor", "~/router/output2/power_factor", "power_factor"));
   yield();
 
   haDiscovery->end();
