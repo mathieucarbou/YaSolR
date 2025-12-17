@@ -81,7 +81,6 @@ void yasolr_init_network() {
           ESP_LOGI(TAG, "WiFi SSID: %s", espConnect.getWiFiSSID().c_str());
         }
         networkStartTask.resume();
-        versionCheckTask.resume(60000); // delay version check by 1 minute after network is connected to avoid heap consumption peak at startup
         break;
       case Mycila::ESPConnect::State::NETWORK_TIMEOUT:
         ESP_LOGW(TAG, "Unable to connect to any network!");

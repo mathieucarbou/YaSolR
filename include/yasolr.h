@@ -168,5 +168,4 @@ extern Mycila::Task* victronConnectTask;
 extern void yasolr_configure_victron();
 
 // version check
-extern Mycila::Task versionCheckTask;
 extern void yasolr_init_version_check();
