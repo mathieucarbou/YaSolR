@@ -107,6 +107,7 @@ void rest_api() {
     espConnect.toJson(root["network"].to<JsonObject>());
 
     pidController.toJson(root["pid"].to<JsonObject>());
+
     if (pulseAnalyzer)
       pulseAnalyzer->toJson(root["pulse_analyzer"].to<JsonObject>());
 
