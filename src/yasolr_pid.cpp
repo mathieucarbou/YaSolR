@@ -15,14 +15,22 @@ Mycila::Task pidTask("PID", []() {
   std::optional<float> power = grid.getPower();
 
   if (voltage.has_value() && power.has_value()) {
-    float powerToDivert = pidController.compute(power.value());
+    float gridPower = power.value();
+    float powerToDivert = pidController.compute(gridPower);
     float diverted = router.divert(voltage.value(), powerToDivert);
 
     if (diverted > 0) {
+      // check if the measurement system is too slow
+      // For example, MQTT does not always refresh fast enough
       if (pidTask.lastEndTime() > 0 && millis() - pidTask.lastEndTime() >= 2000) {
         ESP_LOGW(TAG, "Grid measurement system too slow!");
       }
-    } else {
+
+    } else if (gridPower < 0) {
+      // We are injecting to the grid but the PID did not divert anything (maybe because of output limits or auto-divert is disabled)
+      // In that case, we reset the PID to avoid the accumulations or errors reaching the PID max value, which would create a big diverting spike once we start diverting.
+      // Note: we do not reset the PID when grid power is positive to allow accumulation of errors reaching the output min value. This helps absorb big load changes such as EV charging which stops.
+      // See for more info https://github.com/mathieucarbou/YaSolR/discussions/158.
       pidController.reset(0);
     }
 
