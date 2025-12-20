@@ -359,8 +359,10 @@ static void publishData() {
   {
     mqtt->publish((baseTopic + "/grid/apparent_power").c_str(), std::to_string(gridMetrics->apparentPower));
     mqtt->publish((baseTopic + "/grid/current").c_str(), std::to_string(gridMetrics->current));
-    mqtt->publish((baseTopic + "/grid/energy").c_str(), std::to_string(gridMetrics->energy));
-    mqtt->publish((baseTopic + "/grid/energy_returned").c_str(), std::to_string(gridMetrics->energyReturned));
+    if (gridMetrics->energy)
+      mqtt->publish((baseTopic + "/grid/energy").c_str(), std::to_string(gridMetrics->energy));
+    if (gridMetrics->energyReturned)
+      mqtt->publish((baseTopic + "/grid/energy_returned").c_str(), std::to_string(gridMetrics->energyReturned));
     mqtt->publish((baseTopic + "/grid/frequency").c_str(), std::to_string(gridMetrics->frequency));
     mqtt->publish((baseTopic + "/grid/online").c_str(), YASOLR_BOOL(grid.isConnected()));
     mqtt->publish((baseTopic + "/grid/power").c_str(), std::to_string(gridMetrics->power));
@@ -369,7 +371,8 @@ static void publishData() {
 
     mqtt->publish((baseTopic + "/router/apparent_power").c_str(), std::to_string(routerMeasurements->apparentPower));
     mqtt->publish((baseTopic + "/router/current").c_str(), std::to_string(routerMeasurements->current));
-    mqtt->publish((baseTopic + "/router/energy").c_str(), std::to_string(routerMeasurements->energy));
+    if (routerMeasurements->energy)
+      mqtt->publish((baseTopic + "/router/energy").c_str(), std::to_string(routerMeasurements->energy));
     mqtt->publish((baseTopic + "/router/power_factor").c_str(), std::isnan(routerMeasurements->powerFactor) ? "0" : std::to_string(routerMeasurements->powerFactor));
     mqtt->publish((baseTopic + "/router/power").c_str(), std::to_string(routerMeasurements->power));
     mqtt->publish((baseTopic + "/router/thdi").c_str(), std::isnan(routerMeasurements->thdi) ? "0" : std::to_string(routerMeasurements->thdi));
@@ -405,7 +408,8 @@ static void publishData() {
 
       mqtt->publish((outputTopic + "/apparent_power").c_str(), std::to_string(outputMeasurements->apparentPower));
       mqtt->publish((outputTopic + "/current").c_str(), std::to_string(outputMeasurements->current));
-      mqtt->publish((outputTopic + "/energy").c_str(), std::to_string(outputMeasurements->energy));
+      if (outputMeasurements->energy)
+        mqtt->publish((outputTopic + "/energy").c_str(), std::to_string(outputMeasurements->energy));
       mqtt->publish((outputTopic + "/power_factor").c_str(), std::isnan(outputMeasurements->powerFactor) ? "0" : std::to_string(outputMeasurements->powerFactor));
       mqtt->publish((outputTopic + "/power").c_str(), std::to_string(outputMeasurements->power));
       mqtt->publish((outputTopic + "/thdi").c_str(), std::isnan(outputMeasurements->thdi) ? "0" : std::to_string(outputMeasurements->thdi));
