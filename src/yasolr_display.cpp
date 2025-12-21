@@ -51,24 +51,6 @@ void yasolr_configure_display() {
 
           switch (info) {
             case 1: {
-              display->home.printf("%-21.21s", Mycila::AppInfo.nameModelVersion.c_str());
-              wrote = true;
-              break;
-            }
-            case 2: {
-              display->home.printf("Uptime: %13.13s", Mycila::Time::toDHHMMSS(Mycila::System::getUptime()).c_str());
-              wrote = true;
-              break;
-            }
-            case 3: {
-              struct tm timeInfo;
-              if (Mycila::NTP.isSynced() && getLocalTime(&timeInfo, 5)) {
-                display->home.printf("Time:        %02u:%02u:%02u", timeInfo.tm_hour, timeInfo.tm_min, timeInfo.tm_sec);
-                wrote = true;
-              }
-              break;
-            }
-            case 4: {
               switch (espConnect.getState()) {
                 case Mycila::ESPConnect::State::AP_STARTING:
                   display->home.printf("Starting Access Point");
@@ -110,12 +92,12 @@ void yasolr_configure_display() {
               wrote = true;
               break;
             }
-            case 5: {
+            case 2: {
               display->home.printf("Grid   P: %9d W", static_cast<int>(std::round(grid.getPower().value_or(0))));
               wrote = true;
               break;
             }
-            case 6: {
+            case 3: {
               std::optional<float> routedPower = router.readTotalRoutedPower();
               if (!routedPower.has_value()) {
                 routedPower = router.computeTotalRoutedPower(grid.getVoltage().value_or(NAN));
@@ -124,8 +106,8 @@ void yasolr_configure_display() {
               wrote = true;
               break;
             }
-            case 7: {
-              if (ds18Sys && ds18Sys->getTemperature()) {
+            case 4: {
+              if (ds18Sys && ds18Sys->getTemperature().has_value()) {
                 display->home.printf("Router T: %8.1f ", ds18Sys->getTemperature().value());
                 display->home.printf("\xb0");
                 display->home.printf("C");
@@ -133,20 +115,25 @@ void yasolr_configure_display() {
               }
               break;
             }
-            case 8: {
-              display->home.printf("Output 1: %11.11s", output1.getStateName());
-              wrote = true;
-              break;
-            }
-            case 9: {
-              if (output1.isDimmerEnabled()) {
-                display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(std::round(output1.getDimmerDutyCycleOnline() * 100.0f)));
+            case 5: {
+              if (output1.getState() != Mycila::Router::Output::State::UNUSED) {
+                display->home.printf("Output 1: %11.11s", output1.getStateName());
                 wrote = true;
               }
               break;
             }
-            case 10: {
-              if (output1.temperature()) {
+            case 6: {
+              if (output1.getState() != Mycila::Router::Output::State::UNUSED) {
+                float duty = output1.getDimmerDutyCycleOnline();
+                if (duty > 0) {
+                  display->home.printf("Output 1 Duty: %4d %%", static_cast<int>(std::round(output1.getDimmerDutyCycleOnline() * 100.0f)));
+                  wrote = true;
+                }
+              }
+              break;
+            }
+            case 7: {
+              if (output1.temperature().isPresent()) {
                 display->home.printf("Output 1 T: %6.1f ", output1.temperature().get());
                 display->home.printf("\xb0");
                 display->home.printf("C");
@@ -154,20 +141,25 @@ void yasolr_configure_display() {
               }
               break;
             }
-            case 11: {
-              display->home.printf("Output 2: %11.11s", output2.getStateName());
-              wrote = true;
-              break;
-            }
-            case 12: {
-              if (output2.isDimmerEnabled()) {
-                display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(std::round(output2.getDimmerDutyCycleOnline() * 100.0f)));
+            case 8: {
+              if (output2.getState() != Mycila::Router::Output::State::UNUSED) {
+                display->home.printf("Output 2: %11.11s", output2.getStateName());
                 wrote = true;
               }
               break;
             }
-            case 13: {
-              if (output2.temperature()) {
+            case 9: {
+              if (output2.getState() != Mycila::Router::Output::State::UNUSED) {
+                float duty = output2.getDimmerDutyCycleOnline();
+                if (duty > 0) {
+                  display->home.printf("Output 2 Duty: %4d %%", static_cast<int>(std::round(output2.getDimmerDutyCycleOnline() * 100.0f)));
+                  wrote = true;
+                }
+              }
+              break;
+            }
+            case 10: {
+              if (output2.temperature().isPresent()) {
                 display->home.printf("Output 2 T: %6.1f ", output2.temperature().get());
                 display->home.printf("\xb0");
                 display->home.printf("C");
@@ -175,14 +167,14 @@ void yasolr_configure_display() {
               }
               break;
             }
-            case 14: {
+            case 11: {
               if (relay1 && relay1->isEnabled()) {
                 display->home.printf("Relay 1: %12s", YASOLR_STATE(relay1->isOn()));
                 wrote = true;
               }
               break;
             }
-            case 15: {
+            case 12: {
               if (relay2 && relay2->isEnabled()) {
                 display->home.printf("Relay 2: %12s", YASOLR_STATE(relay2->isOn()));
                 wrote = true;
