@@ -98,7 +98,6 @@ void yasolr_configure_output2_ds18() {
               mqttPublishTask->requestEarlyRun();
           }
         });
-        ds18O2 = new Mycila::DS18();
       } else {
         ESP_LOGE(TAG, "Output 2 DS18 failed to initialize!");
         delete ds18O2;
