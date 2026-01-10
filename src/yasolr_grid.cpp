@@ -13,7 +13,7 @@ float yasolr_frequency() {
     return frequency;
 
   // 2. check if frequency is set from a measurement devices (PZEM, JSY, ...)
-  frequency = std::round(grid.getFrequency().value_or(NAN));
+  frequency = std::round(grid.getFrequency().value_or(0));
   if ((frequency >= 48.0f && frequency <= 52.0f) || (frequency >= 58.0f && frequency <= 62.0f))
     return frequency;
 
@@ -24,5 +24,5 @@ float yasolr_frequency() {
       return frequency;
   }
 
-  return NAN;
+  return 0.0f;
 }

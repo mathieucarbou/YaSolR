@@ -45,14 +45,14 @@ namespace Mycila {
       class Metrics {
         public:
           Source source = Source::UNKNOWN;
-          float apparentPower = 0;
-          float current = 0;
+          float apparentPower = 0.0f;
+          float current = 0.0f;
           uint32_t energy = 0;
-          float power = 0;
-          float powerFactor = NAN;
-          float resistance = NAN;
-          float thdi = NAN;
-          float voltage = NAN;
+          float power = 0.0f;
+          float powerFactor = 0.0f;
+          float resistance = 0.0f;
+          float thdi = 0.0f;
+          float voltage = 0.0f;
 
           Metrics() = default;
           Metrics(Metrics&& other) noexcept {
@@ -67,14 +67,14 @@ namespace Mycila {
             voltage = other.voltage;
 
             other.source = Source::UNKNOWN;
-            other.apparentPower = 0;
-            other.current = 0;
+            other.apparentPower = 0.0f;
+            other.current = 0.0f;
             other.energy = 0;
-            other.power = 0;
-            other.powerFactor = NAN;
-            other.resistance = NAN;
-            other.thdi = NAN;
-            other.voltage = NAN;
+            other.power = 0.0f;
+            other.powerFactor = 0.0f;
+            other.resistance = 0.0f;
+            other.thdi = 0.0f;
+            other.voltage = 0.0f;
           }
           Metrics& operator=(Metrics&& other) noexcept {
             if (this != &other) {
@@ -89,19 +89,37 @@ namespace Mycila {
               voltage = other.voltage;
 
               other.source = Source::UNKNOWN;
-              other.apparentPower = 0;
-              other.current = 0;
+              other.apparentPower = 0.0f;
+              other.current = 0.0f;
               other.energy = 0;
-              other.power = 0;
-              other.powerFactor = NAN;
-              other.resistance = NAN;
-              other.thdi = NAN;
-              other.voltage = NAN;
+              other.power = 0.0f;
+              other.powerFactor = 0.0f;
+              other.resistance = 0.0f;
+              other.thdi = 0.0f;
+              other.voltage = 0.0f;
             }
             return *this;
           }
           Metrics(const Metrics& other) = delete;
           Metrics& operator=(const Metrics& other) = delete;
+
+          void zeroNaN() {
+            // zero NaN values
+            if (std::isnan(apparentPower))
+              apparentPower = 0.0f;
+            if (std::isnan(current))
+              current = 0.0f;
+            if (std::isnan(power))
+              power = 0.0f;
+            if (std::isnan(powerFactor))
+              powerFactor = 0.0f;
+            if (std::isnan(resistance))
+              resistance = 0.0f;
+            if (std::isnan(thdi))
+              thdi = 0.0f;
+            if (std::isnan(voltage))
+              voltage = 0.0f;
+          }
       };
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -125,20 +143,13 @@ namespace Mycila {
         }
 
         dest["energy"] = metrics.energy;
-        if (!std::isnan(metrics.voltage))
-          dest["voltage"] = metrics.voltage;
-        if (!std::isnan(metrics.current))
-          dest["current"] = metrics.current;
-        if (!std::isnan(metrics.power))
-          dest["power"] = metrics.power;
-        if (!std::isnan(metrics.apparentPower))
-          dest["apparent_power"] = metrics.apparentPower;
-        if (!std::isnan(metrics.powerFactor))
-          dest["power_factor"] = metrics.powerFactor;
-        if (!std::isnan(metrics.resistance))
-          dest["resistance"] = metrics.resistance;
-        if (!std::isnan(metrics.thdi))
-          dest["thdi"] = metrics.thdi;
+        dest["voltage"] = metrics.voltage;
+        dest["current"] = metrics.current;
+        dest["power"] = metrics.power;
+        dest["apparent_power"] = metrics.apparentPower;
+        dest["power_factor"] = metrics.powerFactor;
+        dest["resistance"] = metrics.resistance;
+        dest["thdi"] = metrics.thdi;
       }
 #endif
 
@@ -210,7 +221,7 @@ namespace Mycila {
           };
 
           typedef struct {
-              float calibratedResistance = NAN;
+              float calibratedResistance = 0.0f;
               bool autoDimmer = false;
               uint8_t dimmerTempLimit = 0;
               bool autoBypass = false;
@@ -256,9 +267,8 @@ namespace Mycila {
             root["enabled"] = isDimmerOnline();
             root["state"] = getStateName();
             root["elapsed"] = getBypassUptime();
-            float t = _temperature.orElse(NAN);
-            if (!std::isnan(t)) {
-              root["temperature"] = t;
+            if (_temperature.isPresent()) {
+              root["temperature"] = _temperature.get();
             }
 
             {
@@ -358,6 +368,7 @@ namespace Mycila {
           // metrics
 
           void updateMetrics(Metrics metrics) {
+            metrics.zeroNaN();
             _metrics.update(std::move(metrics));
           }
 
@@ -369,6 +380,7 @@ namespace Mycila {
                 metrics.source = _metrics.get().source;
                 metrics.energy = _metrics.get().energy;
               }
+              metrics.zeroNaN();
               return true;
             }
             return false;
@@ -387,6 +399,7 @@ namespace Mycila {
                   metrics.power = dimmerMetrics.power;
                   metrics.powerFactor = dimmerMetrics.powerFactor;
                   metrics.thdi = dimmerMetrics.thdi;
+                  metrics.zeroNaN();
                   return true;
                 }
               }
@@ -574,6 +587,7 @@ namespace Mycila {
       }
 
       void updateMetrics(Metrics metrics) {
+        metrics.zeroNaN();
         switch (metrics.source) {
           case Source::JSY: {
             if (_jsyMetrics == nullptr) {
@@ -614,9 +628,9 @@ namespace Mycila {
 
         // we found some pzem ? we are done
         if (metrics.source == Source::PZEM) {
-          metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
-          metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-          metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
+          metrics.powerFactor = metrics.apparentPower > 0 ? metrics.power / metrics.apparentPower : 0;
+          metrics.resistance = metrics.current > 0 ? metrics.power / (metrics.current * metrics.current) : 0;
+          metrics.thdi = metrics.powerFactor > 0 ? 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f) : 0;
           return true;
         }
 
@@ -647,9 +661,9 @@ namespace Mycila {
               metrics.power += outputMetrics.power;
             }
           }
-          metrics.powerFactor = metrics.apparentPower == 0 ? NAN : metrics.power / metrics.apparentPower;
-          metrics.resistance = metrics.current == 0 ? NAN : metrics.power / (metrics.current * metrics.current);
-          metrics.thdi = metrics.powerFactor == 0 ? NAN : 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f);
+          metrics.powerFactor = metrics.apparentPower > 0 ? metrics.power / metrics.apparentPower : 0;
+          metrics.resistance = metrics.current > 0 ? metrics.power / (metrics.current * metrics.current) : 0;
+          metrics.thdi = metrics.powerFactor > 0 ? 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f) : 0;
           return true;
         }
         return false;
@@ -658,27 +672,37 @@ namespace Mycila {
       std::optional<float> readTotalRoutedPower() const {
         float power = 0;
         for (size_t i = 0; i < _outputs.size(); i++) {
-          power += _outputs[i]->readRoutedPower().value_or(NAN);
+          std::optional<float> outputPower = _outputs[i]->readRoutedPower();
+          if (outputPower.has_value()) {
+            power += outputPower.value();
+          } else {
+            // at least one output has no routed power info
+            // we cannot return a valid total power
+            // so we try to get it from JSY or remote JSY
+            if (_jsyMetrics && _jsyMetrics->isPresent())
+              return _jsyMetrics->get().power;
+            if (_jsyRemoteMetrics && _jsyRemoteMetrics->isPresent())
+              return _jsyRemoteMetrics->get().power;
+            // otherwise we do not have any valid total power
+            return std::nullopt;
+          }
         }
-        if (!std::isnan(power)) {
-          return power;
-        }
-        if (_jsyMetrics && _jsyMetrics->isPresent())
-          return _jsyMetrics->get().power;
-        if (_jsyRemoteMetrics && _jsyRemoteMetrics->isPresent())
-          return _jsyRemoteMetrics->get().power;
-        return std::nullopt;
+        return power;
       }
 
       std::optional<float> computeTotalRoutedPower(float gridVoltage) const {
         float power = 0;
         for (size_t i = 0; i < _outputs.size(); i++) {
-          power += _outputs[i]->computeRoutedPower(gridVoltage).value_or(NAN);
+          std::optional<float> outputPower = _outputs[i]->computeRoutedPower(gridVoltage);
+          if (outputPower.has_value()) {
+            power += outputPower.value();
+          } else {
+            // at least one output has no routed power info
+            // we cannot return a valid total power
+            return std::nullopt;
+          }
         }
-        if (!std::isnan(power)) {
-          return power;
-        }
-        return std::nullopt;
+        return power;
       }
 
       std::optional<float> readResistance() const {

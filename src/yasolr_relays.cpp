@@ -74,24 +74,24 @@ void yasolr_init_relays() {
   ESP_LOGI(TAG, "Initialize relays");
 
   Mycila::Task* relayTask = new Mycila::Task("Relay", []() {
-    float gridPower = grid.getPower().value_or(NAN);
-    float gridVoltage = grid.getVoltage().value_or(NAN);
+    std::optional<float> gridPower = grid.getPower();
+    std::optional<float> gridVoltage = grid.getVoltage();
+    std::optional<float> routedPower = router.readTotalRoutedPower();
     float setpoint = pidController.getSetpoint();
 
-    std::optional<float> routedPower = router.readTotalRoutedPower();
-    if (!routedPower.has_value()) {
-      routedPower = router.computeTotalRoutedPower(gridVoltage);
+    if (!routedPower.has_value() && gridVoltage.has_value()) {
+      routedPower = router.computeTotalRoutedPower(gridVoltage.value());
     }
 
-    if (isnan(gridPower) || isnan(gridVoltage) || !gridVoltage || !routedPower.has_value()) {
+    if (!gridPower.has_value() || !gridVoltage.has_value() || !routedPower.has_value()) {
       ESP_LOGW(TAG, "Cannot auto switch relays: missing grid power, grid voltage or routed power");
       return;
     }
 
-    if (relay1 && relay1->autoSwitch(gridVoltage, gridPower, routedPower.value(), setpoint))
+    if (relay1 && relay1->autoSwitch(gridVoltage.value(), gridPower.value(), routedPower.value(), setpoint))
       return;
 
-    if (relay2 && relay2->autoSwitch(gridVoltage, gridPower, routedPower.value(), setpoint))
+    if (relay2 && relay2->autoSwitch(gridVoltage.value(), gridPower.value(), routedPower.value(), setpoint))
       return;
   });
 

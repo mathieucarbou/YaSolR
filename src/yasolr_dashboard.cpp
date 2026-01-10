@@ -1226,11 +1226,11 @@ void YaSolR::Website::initCards() {
   _output1DimmerSliderRO.setValue(0);
   _output1Power.setValue(0);
   _output1ApparentPower.setValue(0);
-  _output1PowerFactor.setValue(NAN);
-  _output1THDi.setValue(NAN);
+  _output1PowerFactor.setValue(0);
+  _output1THDi.setValue(0);
   _output1Voltage.setValue(0);
   _output1Current.setValue(0);
-  _output1Resistance.setValue(NAN);
+  _output1Resistance.setValue(0);
   _output1Energy.setValue(0);
 
   _output1DimmerAuto.setDisplay(dimmer1Enabled);
@@ -1256,11 +1256,11 @@ void YaSolR::Website::initCards() {
   _output2DimmerSliderRO.setValue(0);
   _output2Power.setValue(0);
   _output2ApparentPower.setValue(0);
-  _output2PowerFactor.setValue(NAN);
-  _output2THDi.setValue(NAN);
+  _output2PowerFactor.setValue(0);
+  _output2THDi.setValue(0);
   _output2Voltage.setValue(0);
   _output2Current.setValue(0);
-  _output2Resistance.setValue(NAN);
+  _output2Resistance.setValue(0);
   _output2Energy.setValue(0);
 
   _output2DimmerAuto.setDisplay(dimmer2Enabled);
@@ -1568,7 +1568,7 @@ void YaSolR::Website::updateCards() {
       _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
       break;
   }
-  _output1DS18State.setValue(output1.temperature().orElse(NAN));
+  _output1DS18State.setValue(output1.temperature().orElse(0.0f));
   _output1DimmerSlider.setValue(output1.getDimmerDutyCycle() * 100.0f);
   _output1Bypass.setValue(output1.isBypassOn());
 
@@ -1588,7 +1588,7 @@ void YaSolR::Website::updateCards() {
       _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
       break;
   }
-  _output2DS18State.setValue(output2.temperature().orElse(NAN));
+  _output2DS18State.setValue(output2.temperature().orElse(0.0f));
   _output2DimmerSlider.setValue(output2.getDimmerDutyCycle() * 100.0f);
   _output2Bypass.setValue(output2.isBypassOn());
 
@@ -1742,7 +1742,7 @@ void YaSolR::Website::updateWarnings() {
       errors[count++] = ERR_ACT_O1_DIMMER;
     } else if (!output1.isDimmerOnline()) {
       errors[count++] = ERR_GRID_DIMMER_O1;
-    } else if (std::isnan(output1.config.calibratedResistance) || output1.config.calibratedResistance <= 0) {
+    } else if (!output1.config.calibratedResistance) {
       errors[count++] = ERR_RESIST_CAL_O1;
     }
   }
@@ -1752,7 +1752,7 @@ void YaSolR::Website::updateWarnings() {
       errors[count++] = ERR_ACT_O2_DIMMER;
     } else if (!output2.isDimmerOnline()) {
       errors[count++] = ERR_GRID_DIMMER_O2;
-    } else if (std::isnan(output2.config.calibratedResistance) || output2.config.calibratedResistance <= 0) {
+    } else if (!output2.config.calibratedResistance) {
       errors[count++] = ERR_RESIST_CAL_O2;
     }
   }
@@ -1816,14 +1816,16 @@ void YaSolR::Website::updateWarnings() {
 }
 
 void YaSolR::Website::updateCharts() {
+  std::optional<float> gridVoltage = grid.getVoltage();
+
   // shift array
   memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY));
   memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], sizeof(_routedPowerHistoryY) - sizeof(*_routedPowerHistoryY));
 
   // set new value
   std::optional<float> routedPower = router.readTotalRoutedPower();
-  if (!routedPower.has_value()) {
-    routedPower = router.computeTotalRoutedPower(grid.getVoltage().value_or(NAN));
+  if (!routedPower.has_value() && gridVoltage.has_value()) {
+    routedPower = router.computeTotalRoutedPower(gridVoltage.value());
   }
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routedPower.value_or(0));
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
@@ -1838,16 +1840,16 @@ void YaSolR::Website::updateCharts() {
   output2.computeHarmonics(_output2HarmonicLevelsY, 11);
 
   std::optional<float> h1Current = output1.readRoutedCurrent();
-  if (!h1Current.has_value()) {
-    h1Current = output1.computeRoutedCurrent(grid.getVoltage().value_or(NAN));
+  if (!h1Current.has_value() && gridVoltage.has_value()) {
+    h1Current = output1.computeRoutedCurrent(gridVoltage.value());
   }
   for (size_t i = 0; i < 11; i++) {
     _output1HarmonicCurrentY[i] = h1Current.value_or(0) * _output1HarmonicLevelY[i] / 100.0f;
   }
 
   h1Current = output2.readRoutedCurrent();
-  if (!h1Current.has_value()) {
-    h1Current = output2.computeRoutedCurrent(grid.getVoltage().value_or(NAN));
+  if (!h1Current.has_value() && gridVoltage.has_value()) {
+    h1Current = output2.computeRoutedCurrent(gridVoltage.value());
   }
   for (size_t i = 0; i < 11; i++) {
     _output2HarmonicCurrentY[i] = h1Current.value_or(0) * _output2HarmonicLevelsY[i] / 100.0f;

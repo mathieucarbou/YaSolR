@@ -63,10 +63,10 @@ static void onData(AsyncUDPPacket packet) {
       if (doc["channel1"].is<JsonObject>()) {
         Mycila::Router::Metrics routerMetrics;
         routerMetrics.source = Mycila::Router::Source::JSY_REMOTE;
-        routerMetrics.apparentPower = doc["channel1"]["apparent_power"] | 0.0f;
-        routerMetrics.current = doc["channel1"]["current"] | 0.0f;
+        routerMetrics.apparentPower = doc["channel1"]["apparent_power"] | NAN;
+        routerMetrics.current = doc["channel1"]["current"] | NAN;
         routerMetrics.energy = (doc["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (doc["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
-        routerMetrics.power = std::abs(doc["channel1"]["active_power"] | 0.0f);                                                                                        // if the clamp is installed reversed
+        routerMetrics.power = std::abs(doc["channel1"]["active_power"] | NAN);                                                                                         // if the clamp is installed reversed
         routerMetrics.powerFactor = doc["channel1"]["power_factor"] | NAN;
         routerMetrics.resistance = doc["channel1"]["resistance"] | NAN;
         routerMetrics.thdi = doc["channel1"]["thdi_0"] | NAN;

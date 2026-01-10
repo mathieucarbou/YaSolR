@@ -502,21 +502,21 @@ void rest_api() {
     if (relay2)
       root["relay2"] = YASOLR_STATE(relay2->isOn());
     if (ds18Sys) {
-      float t = ds18Sys->getTemperature().value_or(NAN);
-      if (!std::isnan(t))
-        root["temperature"] = t;
+      std::optional<float> temperature = ds18Sys->getTemperature();
+      if (temperature.has_value())
+        root["temperature"] = temperature.value();
     }
 
-    const float gridVoltage = grid.getVoltage().value_or(NAN);
+    std::optional<float> gridVoltage = grid.getVoltage();
+    std::optional<float> gridPower = grid.getPower();
 
     Mycila::Router::Metrics* routerMeasurements = new Mycila::Router::Metrics();
-    if (!router.readMeasurements(*routerMeasurements)) {
-      router.computeMetrics(*routerMeasurements, gridVoltage);
+    if (!router.readMeasurements(*routerMeasurements) && gridVoltage.has_value()) {
+      router.computeMetrics(*routerMeasurements, gridVoltage.value());
     }
 
-    const float virtual_grid_power = grid.getPower().value_or(NAN) - routerMeasurements->power;
-    if (!std::isnan(virtual_grid_power))
-      root["virtual_grid_power"] = virtual_grid_power;
+    if (gridPower.has_value())
+      root["virtual_grid_power"] = gridPower.value() - routerMeasurements->power;
 
     Mycila::Router::toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
     delete routerMeasurements;
@@ -527,14 +527,13 @@ void rest_api() {
       json["bypass"] = YASOLR_STATE(output->isBypassOn());
       json["dimmer"] = YASOLR_STATE(output->isDimmerOn());
       json["duty_cycle"] = output->getDimmerDutyCycle() * 100.0f;
-      float t = output->temperature().orElse(NAN);
-      if (!std::isnan(t)) {
-        json["temperature"] = t;
+      if (output->temperature().isPresent()) {
+        json["temperature"] = output->temperature().get();
       }
 
       Mycila::Router::Metrics* outputMeasurements = new Mycila::Router::Metrics();
-      if (!output->readMeasurements(*outputMeasurements))
-        output->computeMetrics(*outputMeasurements, gridVoltage);
+      if (!output->readMeasurements(*outputMeasurements) && gridVoltage.has_value())
+        output->computeMetrics(*outputMeasurements, gridVoltage.value());
       Mycila::Router::toJson(json["measurements"].to<JsonObject>(), *outputMeasurements);
       delete outputMeasurements;
     }
