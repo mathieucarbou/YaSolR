@@ -101,7 +101,7 @@ static void onData(AsyncUDPPacket& packet) {
   // this is a new message ?
   if (reassembledMessage == nullptr) {
     // check message validity
-    if (len < 10 || buffer[0] != YASOLR_UDP_MSG_TYPE_JSY_DATA) {
+    if (len <= 13 || buffer[0] != YASOLR_UDP_MSG_TYPE_JSY_DATA) {
       return;
     }
 
@@ -154,6 +154,19 @@ static void onData(AsyncUDPPacket& packet) {
     lastPacketTime = millis();
   }
 
+  // we are waiting for more packets ?
+  if (reassembledMessageRemaining) {
+    // check for timeout (10 seconds) in case a sender disappears mid-message
+    if (millis() - lastPacketTime > 10000) {
+      ESP_LOGD(TAG, "[UDP] Timeout waiting for more packets from sender: %02X:%02X:%02X:%02X:%02X:%02X", reassembledMessageMAC[0], reassembledMessageMAC[1], reassembledMessageMAC[2], reassembledMessageMAC[3], reassembledMessageMAC[4], reassembledMessageMAC[5]);
+      delete[] reassembledMessage;
+      reassembledMessage = nullptr;
+      reassembledMessageIndex = 0;
+      reassembledMessageRemaining = 0;
+    }
+    return;
+  }
+
   // assemble packets
   if (reassembledMessage != nullptr) {
     // check that the packet comes from the same sender
@@ -182,19 +195,6 @@ static void onData(AsyncUDPPacket& packet) {
 
     // track the time of last packet
     lastPacketTime = millis();
-  }
-
-  // we are waiting for more packets ?
-  if (reassembledMessageRemaining) {
-    // check for timeout (10 seconds) in case a sender disappears mid-message
-    if (millis() - lastPacketTime > 10000) {
-      ESP_LOGD(TAG, "[UDP] Timeout waiting for more packets from sender: %02X:%02X:%02X:%02X:%02X:%02X", reassembledMessageMAC[0], reassembledMessageMAC[1], reassembledMessageMAC[2], reassembledMessageMAC[3], reassembledMessageMAC[4], reassembledMessageMAC[5]);
-      delete[] reassembledMessage;
-      reassembledMessage = nullptr;
-      reassembledMessageIndex = 0;
-      reassembledMessageRemaining = 0;
-    }
-    return;
   }
 
   // we have finished reassembling packets
