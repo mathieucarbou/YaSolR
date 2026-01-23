@@ -102,6 +102,7 @@ static void onData(AsyncUDPPacket& packet) {
   if (reassembledMessage == nullptr) {
     // check message validity
     if (len <= 13 || buffer[0] != YASOLR_UDP_MSG_TYPE_JSY_DATA) {
+      ESP_LOGD(TAG, "[UDP] Invalid packet received of size %" PRIu32 ", not coming from a supported Mycila JSY App version!", len);
       return;
     }
 
