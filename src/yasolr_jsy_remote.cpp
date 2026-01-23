@@ -11,17 +11,49 @@ AsyncUDP* udp = nullptr;
 Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer = nullptr;
 Mycila::Task* jsyRemoteTask = nullptr;
 
-static uint8_t* reassembledMessage = nullptr;
-static uint32_t reassembledMessageID = 0;
-static size_t reassembledMessageIndex = 0;
-static size_t reassembledMessageRemaining = 0;
-static uint8_t reassembledMessageMAC[6] = {0};
-static IPAddress reassembledMessageInterface;
-static uint32_t lastPacketTime = 0;
+class UDPMessage {
+  public:
+    explicit UDPMessage(size_t dataSize) : data(new uint8_t[dataSize + 13]), remaining(dataSize + 13), index(0), lastPacketTime(millis()) {}
+
+    ~UDPMessage() {
+      delete[] data;
+    }
+
+    void append(const uint8_t* buffer, size_t len) {
+      const size_t n = std::min(remaining, len);
+      // ESP_LOGD(TAG, "[UDP] Appending packet of size %" PRIu32 " to message buffer at position %" PRIu32, n, index);
+      memcpy(data + index, buffer, n);
+      index += n;
+      remaining -= n;
+    }
+
+    bool crcValid() {
+      FastCRC32 crc32;
+      crc32.add(data, index - 4);
+      uint32_t crc = crc32.calc();
+      return memcmp(&crc, data + index - 4, 4) == 0;
+    }
+
+    DeserializationError parseMsgPack(JsonDocument& doc) {
+      return deserializeMsgPack(doc, data + 9, index - 13);
+    }
+
+    uint8_t* data = nullptr;
+    size_t remaining = 0;
+    size_t index = 0;
+    uint32_t lastPacketTime = 0;
+    uint8_t sourceMAC[6] = {0};
+    IPAddress interface;
+};
+
+static uint32_t lastMessageID = 0;
+static UDPMessage* reassembledMessage = nullptr;
 
 static void processJSON(const JsonDocument& doc) {
   Mycila::Grid::Metrics metrics;
   metrics.source = Mycila::Grid::Source::JSY_REMOTE;
+
+  // ESP_LOGD(TAG, "[UDP] JSY Model: %" PRIu16, doc["model"].as<uint16_t>());
 
   switch (doc["model"].as<uint16_t>()) {
     case MYCILA_JSY_MK_163:
@@ -85,18 +117,29 @@ static void processJSON(const JsonDocument& doc) {
   if (grid.isUsing(Mycila::Grid::Source::JSY_REMOTE)) {
     pidTask.requestEarlyRun();
   }
+
+  udpMessageRateBuffer->add(millis() / 1000.0f);
 }
 
 static void onData(AsyncUDPPacket& packet) {
   // buffer[0] == MYCILA_UDP_MSG_TYPE_JSY_DATA (1)
-  // buffer[1] == size_t (4)
-  // buffer[5] == MsgPack (?)
-  // buffer[5 + size] == CRC32 (4)
+  // buffer[1] == message ID (4) - uint32_t
+  // buffer[5] == jsonSize (4) - size_t
+  // buffer[9] == MsgPack (?)
+  // buffer[9 + size] == CRC32 (4)
 
   const size_t len = packet.length();
   const uint8_t* buffer = packet.data();
 
   // ESP_LOGD(TAG, "[UDP] Received packet of size %" PRIu32, len);
+
+  // if we are waiting for more packets, check for timeout (10 seconds) in case a sender disappears mid-message
+  // we free the buffer and reset state before processing the new packet
+  if (reassembledMessage && reassembledMessage->remaining && millis() - reassembledMessage->lastPacketTime > 10000) {
+    ESP_LOGD(TAG, "[UDP] Timeout waiting for more packets from sender: %02X:%02X:%02X:%02X:%02X:%02X", reassembledMessage->sourceMAC[0], reassembledMessage->sourceMAC[1], reassembledMessage->sourceMAC[2], reassembledMessage->sourceMAC[3], reassembledMessage->sourceMAC[4], reassembledMessage->sourceMAC[5]);
+    delete reassembledMessage;
+    reassembledMessage = nullptr;
+  }
 
   // this is a new message ?
   if (reassembledMessage == nullptr) {
@@ -106,126 +149,98 @@ static void onData(AsyncUDPPacket& packet) {
       return;
     }
 
-    uint32_t messageID = 0;
-
     // extract message ID
+    uint32_t messageID = 0;
     memcpy(&messageID, buffer + 1, 4);
 
-    if (messageID == reassembledMessageID) {
+    // check for duplicate message ID
+    if (messageID == lastMessageID) {
       ESP_LOGD(TAG, "[UDP] Received duplicate message ID: %" PRIu32 ". Please remove WiFi SSID or disconnect ETH!", messageID);
       return;
     }
 
     // extract message size
-    memcpy(&reassembledMessageRemaining, buffer + 5, 4);
+    size_t jsonSize = 0;
+    memcpy(&jsonSize, buffer + 5, 4);
 
-    // a message must have a length
-    if (!reassembledMessageRemaining) {
+    // validate message size
+    if (!jsonSize) {
       ESP_LOGD(TAG, "[UDP] Invalid message size: 0");
       return;
     }
 
-    if (reassembledMessageRemaining > 4096) { // arbitrary limit to avoid memory exhaustion
-      ESP_LOGD(TAG, "[UDP] Message size too large: %" PRIu32, reassembledMessageRemaining);
-      reassembledMessageRemaining = 0;
+    // arbitrary limit to avoid memory exhaustion
+    if (jsonSize > 4096) {
+      ESP_LOGD(TAG, "[UDP] Message size too large: %" PRIu32, jsonSize);
       return;
     }
 
-    reassembledMessageRemaining += 13; // add header and CRC32 size
+    // compute total reassembled message size and allocate buffer
+    // ESP_LOGD(TAG, "[UDP] Allocating new message buffer of size %" PRIu32, jsonSize + 13);
+    reassembledMessage = new (std::nothrow) UDPMessage(jsonSize);
 
-    // ESP_LOGD(TAG, "[UDP] Allocating new message of size %" PRIu32, reassembledMessageRemaining);
-
-    // allocate new message buffer
-    reassembledMessageIndex = 0;
-    reassembledMessage = new uint8_t[reassembledMessageRemaining];
+    if (reassembledMessage == nullptr) {
+      ESP_LOGD(TAG, "[UDP] Failed to allocate memory for data size %" PRIu32, jsonSize);
+      return;
+    }
 
     // save last message ID
-    reassembledMessageID = messageID;
+    lastMessageID = messageID;
 
     // save sender MAC address
-    packet.remoteMac(reassembledMessageMAC);
+    packet.remoteMac(reassembledMessage->sourceMAC);
 
     // save interface IP address
-    reassembledMessageInterface = packet.localIP();
-    if (reassembledMessageInterface == IPAddress()) {
-      reassembledMessageInterface = packet.localIPv6();
+    reassembledMessage->interface = packet.localIP();
+    if (reassembledMessage->interface == IPAddress()) {
+      reassembledMessage->interface = packet.localIPv6();
     }
 
-    // track the time of last packet
-    lastPacketTime = millis();
-  }
+  } else {
+    // ESP_LOGD(TAG, "[UDP] Validating next packet");
 
-  // we are waiting for more packets ?
-  if (reassembledMessageRemaining) {
-    // check for timeout (10 seconds) in case a sender disappears mid-message
-    if (millis() - lastPacketTime > 10000) {
-      ESP_LOGD(TAG, "[UDP] Timeout waiting for more packets from sender: %02X:%02X:%02X:%02X:%02X:%02X", reassembledMessageMAC[0], reassembledMessageMAC[1], reassembledMessageMAC[2], reassembledMessageMAC[3], reassembledMessageMAC[4], reassembledMessageMAC[5]);
-      delete[] reassembledMessage;
-      reassembledMessage = nullptr;
-      reassembledMessageIndex = 0;
-      reassembledMessageRemaining = 0;
-    }
-    return;
-  }
-
-  // assemble packets
-  if (reassembledMessage != nullptr) {
     // check that the packet comes from the same sender
     uint8_t mac[6];
     packet.remoteMac(mac);
-    if (memcmp(mac, reassembledMessageMAC, 6) != 0) {
-      ESP_LOGD(TAG, "[UDP] Discarding packet from different sender. Expected: %02X:%02X:%02X:%02X:%02X:%02X, got %02X:%02X:%02X:%02X:%02X:%02X", reassembledMessageMAC[0], reassembledMessageMAC[1], reassembledMessageMAC[2], reassembledMessageMAC[3], reassembledMessageMAC[4], reassembledMessageMAC[5], mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+    if (memcmp(mac, reassembledMessage->sourceMAC, 6) != 0) {
+      ESP_LOGD(TAG, "[UDP] Discarding packet from different sender. Expected: %02X:%02X:%02X:%02X:%02X:%02X, got %02X:%02X:%02X:%02X:%02X:%02X", reassembledMessage->sourceMAC[0], reassembledMessage->sourceMAC[1], reassembledMessage->sourceMAC[2], reassembledMessage->sourceMAC[3], reassembledMessage->sourceMAC[4], reassembledMessage->sourceMAC[5], mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
       return;
     }
 
     // check if the packet comes by the same interface
-    if (packet.localIP() != reassembledMessageInterface && packet.localIPv6() != reassembledMessageInterface) {
-      if (packet.localIP() == IPAddress()) {
-        ESP_LOGD(TAG, "[UDP] Discarding packet from different interface. Expected: %s, got %s", reassembledMessageInterface.toString().c_str(), packet.localIP().toString().c_str());
-      } else {
-        ESP_LOGD(TAG, "[UDP] Discarding packet from different interface. Expected: %s, got %s", reassembledMessageInterface.toString().c_str(), packet.localIPv6().toString().c_str());
-      }
+    if (packet.localIP() != reassembledMessage->interface && packet.localIPv6() != reassembledMessage->interface) {
+      ESP_LOGD(TAG, "[UDP] Discarding packet from different interface. Expected: %s, got IPv4: %s, IPv6: %s", reassembledMessage->interface.toString().c_str(), packet.localIP().toString().c_str(), packet.localIPv6().toString().c_str());
       return;
     }
 
-    size_t n = std::min(reassembledMessageRemaining, len);
-    // ESP_LOGD(TAG, "[UDP] Appending packet of size %" PRIu32, n);
-    memcpy(reassembledMessage + reassembledMessageIndex, buffer, n);
-    reassembledMessageIndex += n;
-    reassembledMessageRemaining -= n;
+    // additional packet validated
+    reassembledMessage->lastPacketTime = millis();
+  }
 
-    // track the time of last packet
-    lastPacketTime = millis();
+  // assemble packets
+  reassembledMessage->append(buffer, len);
+
+  if (reassembledMessage->remaining) {
+    // ESP_LOGD(TAG, "[UDP] Waiting for more packets to complete message. Remaining size: %" PRIu32, reassembledMessage->remaining);
+    return;
   }
 
   // we have finished reassembling packets
-  // ESP_LOGD(TAG, "[UDP] Reassembled full message of size %" PRIu32, reassembledMessageIndex);
-
-  // CRC32 check (last 4 bytes are the CRC32)
-  FastCRC32 crc32;
-  crc32.add(reassembledMessage, reassembledMessageIndex - 4);
-  uint32_t crc = crc32.calc();
-
   // verify CRC32
-  if (memcmp(&crc, reassembledMessage + reassembledMessageIndex - 4, 4) != 0) {
-    ESP_LOGD(TAG, "[UDP] CRC32 mismatch - expected 0x%08" PRIX32 ", got 0x%08" PRIX32, crc, *((uint32_t*)(reassembledMessage + reassembledMessageIndex - 4))); // NOLINT
-    delete[] reassembledMessage;
+  if (!reassembledMessage->crcValid()) {
+    ESP_LOGD(TAG, "[UDP] CRC32 mismatch");
+    delete reassembledMessage;
     reassembledMessage = nullptr;
-    reassembledMessageIndex = 0;
-    reassembledMessageRemaining = 0;
     return;
   }
 
   // extract message
-  // ESP_LOGD(TAG, "[UDP] CRC32 valid - parsing message");
   JsonDocument doc;
-  DeserializationError err = deserializeMsgPack(doc, reassembledMessage + 9, reassembledMessageIndex - 13);
+  DeserializationError err = reassembledMessage->parseMsgPack(doc);
 
   // cleanup reassembled message buffer
-  delete[] reassembledMessage;
+  delete reassembledMessage;
   reassembledMessage = nullptr;
-  reassembledMessageIndex = 0;
-  reassembledMessageRemaining = 0;
 
   if (err) {
     ESP_LOGD(TAG, "[UDP] Failed to parse MsgPack: %s", err.c_str());
@@ -233,8 +248,6 @@ static void onData(AsyncUDPPacket& packet) {
   }
 
   processJSON(doc);
-
-  udpMessageRateBuffer->add(millis() / 1000.0f);
 }
 
 void yasolr_configure_jsy_remote() {
