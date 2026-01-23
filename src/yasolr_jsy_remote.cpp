@@ -12,9 +12,11 @@ Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer = nullptr;
 Mycila::Task* jsyRemoteTask = nullptr;
 
 static uint8_t* reassembledMessage = nullptr;
+static uint32_t reassembledMessageID = 0;
 static size_t reassembledMessageIndex = 0;
 static size_t reassembledMessageRemaining = 0;
 static uint8_t reassembledMessageMAC[6] = {0};
+static IPAddress reassembledMessageInterface;
 static uint32_t lastPacketTime = 0;
 
 static void processJSON(const JsonDocument& doc) {
@@ -83,8 +85,6 @@ static void processJSON(const JsonDocument& doc) {
   if (grid.isUsing(Mycila::Grid::Source::JSY_REMOTE)) {
     pidTask.requestEarlyRun();
   }
-
-  udpMessageRateBuffer->add(millis() / 1000.0f);
 }
 
 static void onData(AsyncUDPPacket& packet) {
@@ -101,11 +101,22 @@ static void onData(AsyncUDPPacket& packet) {
   // this is a new message ?
   if (reassembledMessage == nullptr) {
     // check message validity
-    if (len < 10 || buffer[0] != YASOLR_UDP_MSG_TYPE_JSY_DATA)
+    if (len < 10 || buffer[0] != YASOLR_UDP_MSG_TYPE_JSY_DATA) {
       return;
+    }
+
+    uint32_t messageID = 0;
+
+    // extract message ID
+    memcpy(&messageID, buffer + 1, 4);
+
+    if (messageID == reassembledMessageID) {
+      ESP_LOGD(TAG, "[UDP] Received duplicate message ID: %" PRIu32 ". Please remove WiFi SSID or disconnect ETH!", messageID);
+      return;
+    }
 
     // extract message size
-    memcpy(&reassembledMessageRemaining, buffer + 1, 4);
+    memcpy(&reassembledMessageRemaining, buffer + 5, 4);
 
     // a message must have a length
     if (!reassembledMessageRemaining) {
@@ -119,7 +130,7 @@ static void onData(AsyncUDPPacket& packet) {
       return;
     }
 
-    reassembledMessageRemaining += 9; // add header and CRC32 size
+    reassembledMessageRemaining += 13; // add header and CRC32 size
 
     // ESP_LOGD(TAG, "[UDP] Allocating new message of size %" PRIu32, reassembledMessageRemaining);
 
@@ -127,8 +138,17 @@ static void onData(AsyncUDPPacket& packet) {
     reassembledMessageIndex = 0;
     reassembledMessage = new uint8_t[reassembledMessageRemaining];
 
+    // save last message ID
+    reassembledMessageID = messageID;
+
     // save sender MAC address
     packet.remoteMac(reassembledMessageMAC);
+
+    // save interface IP address
+    reassembledMessageInterface = packet.localIP();
+    if (reassembledMessageInterface == IPAddress()) {
+      reassembledMessageInterface = packet.localIPv6();
+    }
 
     // track the time of last packet
     lastPacketTime = millis();
@@ -141,6 +161,16 @@ static void onData(AsyncUDPPacket& packet) {
     packet.remoteMac(mac);
     if (memcmp(mac, reassembledMessageMAC, 6) != 0) {
       ESP_LOGD(TAG, "[UDP] Discarding packet from different sender. Expected: %02X:%02X:%02X:%02X:%02X:%02X, got %02X:%02X:%02X:%02X:%02X:%02X", reassembledMessageMAC[0], reassembledMessageMAC[1], reassembledMessageMAC[2], reassembledMessageMAC[3], reassembledMessageMAC[4], reassembledMessageMAC[5], mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+      return;
+    }
+
+    // check if the packet comes by the same interface
+    if (packet.localIP() != reassembledMessageInterface && packet.localIPv6() != reassembledMessageInterface) {
+      if (packet.localIP() == IPAddress()) {
+        ESP_LOGD(TAG, "[UDP] Discarding packet from different interface. Expected: %s, got %s", reassembledMessageInterface.toString().c_str(), packet.localIP().toString().c_str());
+      } else {
+        ESP_LOGD(TAG, "[UDP] Discarding packet from different interface. Expected: %s, got %s", reassembledMessageInterface.toString().c_str(), packet.localIPv6().toString().c_str());
+      }
       return;
     }
 
@@ -188,7 +218,7 @@ static void onData(AsyncUDPPacket& packet) {
   // extract message
   // ESP_LOGD(TAG, "[UDP] CRC32 valid - parsing message");
   JsonDocument doc;
-  DeserializationError err = deserializeMsgPack(doc, reassembledMessage + 5, reassembledMessageIndex - 9);
+  DeserializationError err = deserializeMsgPack(doc, reassembledMessage + 9, reassembledMessageIndex - 13);
 
   // cleanup reassembled message buffer
   delete[] reassembledMessage;
@@ -202,6 +232,8 @@ static void onData(AsyncUDPPacket& packet) {
   }
 
   processJSON(doc);
+
+  udpMessageRateBuffer->add(millis() / 1000.0f);
 }
 
 void yasolr_configure_jsy_remote() {
