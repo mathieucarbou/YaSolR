@@ -142,7 +142,7 @@ Here is a demo of the OTA update with SafeBoot:
 
 > ##### TIP
 >
-> Captive Portal and Access Point address: [http://192.168.4.1/](http://192.168.4.1/)
+> Captive Portal and Access Point address: [http://4.3.2.1/](http://4.3.2.1/)
 {: .block-tip }
 
 A captive portal (Access Point) is started for the first time to configure the WiFi network, or when the application starts and cannot join an already configured WiFi network fro 15 seconds.
