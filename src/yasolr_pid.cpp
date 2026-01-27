@@ -26,7 +26,7 @@ Mycila::Task pidTask("PID", []() {
         ESP_LOGW(TAG, "Grid measurement system too slow!");
       }
 
-    } else if (gridPower < 0) {
+    } else if (gridPower < pidController.getSetpoint()) {
       // We are injecting to the grid but the PID did not divert anything (maybe because of output limits or auto-divert is disabled)
       // In that case, we reset the PID to avoid the accumulations or errors reaching the PID max value, which would create a big diverting spike once we start diverting.
       // Note: we do not reset the PID when grid power is positive to allow accumulation of errors reaching the output min value. This helps absorb big load changes such as EV charging which stops.
