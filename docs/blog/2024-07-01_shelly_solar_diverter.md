@@ -187,6 +187,10 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
   - Now calling all dimmers in parallel
   - Waiting globally for all dimmers to be processed before starting a new divert cycle (Measurement, PID, Divert)
 
+- **[Shelly Solar Diverter Script V26](../downloads/auto_diverter_v26.js)**:
+  - Fixed PID proportional term calculation (clamping in input mode)
+  - Reset PID terms when no power is routed and there is some excess power to avoid integral windup
+
 ## Hardware
 
 All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
