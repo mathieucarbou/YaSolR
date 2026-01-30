@@ -111,7 +111,7 @@ void yasolr_init_config() {
   config.configure(KEY_PID_MODE_P, YASOLR_PID_MODE_INPUT);
   config.configure(KEY_PID_NOISE, static_cast<uint8_t>(0));
   config.configure(KEY_PID_OUT_MAX, static_cast<int16_t>(4000));
-  config.configure(KEY_PID_OUT_MIN, static_cast<int16_t>(-300));
+  config.configure(KEY_PID_OUT_MIN, static_cast<int16_t>(-800));
   config.configure(KEY_PID_SETPOINT, static_cast<int16_t>(0));
   config.configure(KEY_PID_TRIGGER, YASOLR_PID_TRIGGER_MEASURE);
   config.configure(KEY_PIN_I2C_SCL, static_cast<int8_t>(YASOLR_I2C_SCL_PIN));
