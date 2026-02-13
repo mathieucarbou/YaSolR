@@ -177,8 +177,8 @@ static dash::LineChart<int8_t, int16_t> _gridPowerHistory(dashboard, YASOLR_LBL_
 static dash::AreaChart<int8_t, uint16_t> _routedPowerHistory(dashboard, YASOLR_LBL_052 " (W)");
 
 #ifdef APP_MODEL_PRO
-static const char* _outputHarmonicLevelX[11] = {"H1", "H3", "H5", "H7", "H9", "H11", "H13", "H15", "H17", "H19", "H21"};
-static const char* _outputHarmonicCurrentX[11] = {"I1", "I3", "I5", "I7", "I9", "I11", "I13", "I15", "I17", "I19", "I21"};
+static const char* _outputHarmonicLevelX[YASOLR_HARMONICS] = {"H1", "H3", "H5", "H7", "H9", "H11", "H13", "H15", "H17", "H19", "H21"};
+static const char* _outputHarmonicCurrentX[YASOLR_HARMONICS] = {"I1", "I3", "I5", "I7", "I9", "I11", "I13", "I15", "I17", "I19", "I21"};
 
 // tab: output 1
 
@@ -201,8 +201,8 @@ static dash::EnergyCard<uint32_t> _output1Energy(dashboard, YASOLR_LBL_059, "Wh"
 
 static dash::TemperatureCard<float, 2> _output1DS18State(dashboard, YASOLR_LBL_048);
 
-static float _output1HarmonicLevelY[11] = {0};
-static float _output1HarmonicCurrentY[11] = {0};
+static float _output1HarmonicLevelY[YASOLR_HARMONICS] = {0};
+static float _output1HarmonicCurrentY[YASOLR_HARMONICS] = {0};
 static dash::BarChart<const char*, float> _output1HarmonicLevels(dashboard, YASOLR_LBL_037);
 static dash::BarChart<const char*, float> _output1HarmonicCurrents(dashboard, YASOLR_LBL_038);
 
@@ -227,8 +227,8 @@ static dash::EnergyCard<uint32_t> _output2Energy(dashboard, YASOLR_LBL_059, "Wh"
 
 static dash::TemperatureCard<float, 2> _output2DS18State(dashboard, YASOLR_LBL_048);
 
-static float _output2HarmonicLevelsY[11] = {0};
-static float _output2HarmonicCurrentY[11] = {0};
+static float _output2HarmonicLevelsY[YASOLR_HARMONICS] = {0};
+static float _output2HarmonicCurrentY[YASOLR_HARMONICS] = {0};
 static dash::BarChart<const char*, float> _output2HarmonicLevels(dashboard, YASOLR_LBL_037);
 static dash::BarChart<const char*, float> _output2HarmonicCurrents(dashboard, YASOLR_LBL_038);
 
@@ -614,11 +614,11 @@ void YaSolR::Website::begin() {
 
   _output1HarmonicLevels.setTab(_output1Tab);
   _output1HarmonicLevels.setSize(FULL_SIZE);
-  _output1HarmonicLevels.setX(_outputHarmonicLevelX, 11);
+  _output1HarmonicLevels.setX(_outputHarmonicLevelX, YASOLR_HARMONICS);
 
   _output1HarmonicCurrents.setTab(_output1Tab);
   _output1HarmonicCurrents.setSize(FULL_SIZE);
-  _output1HarmonicCurrents.setX(_outputHarmonicCurrentX, 11);
+  _output1HarmonicCurrents.setX(_outputHarmonicCurrentX, YASOLR_HARMONICS);
 
   _boolConfig(_output1DimmerAuto, KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   _boolConfig(_output1BypassAuto, KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
@@ -644,11 +644,11 @@ void YaSolR::Website::begin() {
 
   _output2HarmonicLevels.setTab(_output2Tab);
   _output2HarmonicLevels.setSize(FULL_SIZE);
-  _output2HarmonicLevels.setX(_outputHarmonicLevelX, 11);
+  _output2HarmonicLevels.setX(_outputHarmonicLevelX, YASOLR_HARMONICS);
 
   _output2HarmonicCurrents.setTab(_output2Tab);
   _output2HarmonicCurrents.setSize(FULL_SIZE);
-  _output2HarmonicCurrents.setX(_outputHarmonicCurrentX, 11);
+  _output2HarmonicCurrents.setX(_outputHarmonicCurrentX, YASOLR_HARMONICS);
 
   _boolConfig(_output2DimmerAuto, KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   _boolConfig(_output2BypassAuto, KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -1167,6 +1167,7 @@ void YaSolR::Website::initCards() {
   const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
 
   const bool dimmer1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER);
+  const bool dimmer1CycleStealing = yasolr_isCycleStealingBased(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
   const bool output1RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY);
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -1174,6 +1175,7 @@ void YaSolR::Website::initCards() {
   const bool pzem1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM);
 
   const bool dimmer2Enabled = config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER);
+  const bool dimmer2CycleStealing = yasolr_isCycleStealingBased(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
   const bool output2RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY);
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
@@ -1248,6 +1250,9 @@ void YaSolR::Website::initCards() {
   _output1Bypass.setDisplay(bypass1Possible);
   _output1DS18State.setDisplay(config.get<bool>(KEY_ENABLE_OUTPUT1_DS18));
 
+  _output1HarmonicLevels.setDisplay(dimmer1Enabled && !dimmer1CycleStealing);
+  _output1HarmonicCurrents.setDisplay(dimmer1Enabled && !dimmer1CycleStealing);
+
   // tab: output 2
 
   _output2DimmerAuto.setValue(autoDimmer2Activated);
@@ -1277,6 +1282,9 @@ void YaSolR::Website::initCards() {
   _output2BypassAuto.setDisplay(bypass2Possible);
   _output2Bypass.setDisplay(bypass2Possible);
   _output2DS18State.setDisplay(config.get<bool>(KEY_ENABLE_OUTPUT2_DS18));
+
+  _output2HarmonicLevels.setDisplay(dimmer2Enabled && !dimmer2CycleStealing);
+  _output2HarmonicCurrents.setDisplay(dimmer2Enabled && !dimmer2CycleStealing);
 
   // tab: system
 
@@ -1835,30 +1843,33 @@ void YaSolR::Website::updateCharts() {
   _routedPowerHistory.setY(_routedPowerHistoryY, YASOLR_GRAPH_POINTS);
 
 #ifdef APP_MODEL_PRO
-  // harmonics
-  output1.computeHarmonics(_output1HarmonicLevelY, 11);
-  output2.computeHarmonics(_output2HarmonicLevelsY, 11);
-
-  std::optional<float> h1Current = output1.readRoutedCurrent();
-  if (!h1Current.has_value() && gridVoltage.has_value()) {
-    h1Current = output1.computeRoutedCurrent(gridVoltage.value());
-  }
-  for (size_t i = 0; i < 11; i++) {
-    _output1HarmonicCurrentY[i] = h1Current.value_or(0) * _output1HarmonicLevelY[i] / 100.0f;
-  }
-
-  h1Current = output2.readRoutedCurrent();
-  if (!h1Current.has_value() && gridVoltage.has_value()) {
-    h1Current = output2.computeRoutedCurrent(gridVoltage.value());
-  }
-  for (size_t i = 0; i < 11; i++) {
-    _output2HarmonicCurrentY[i] = h1Current.value_or(0) * _output2HarmonicLevelsY[i] / 100.0f;
+  // output 1 harmonics
+  if (_output1HarmonicLevels.displayed()) {
+    output1.computeHarmonics(_output1HarmonicLevelY, YASOLR_HARMONICS);
+    std::optional<float> current = output1.readRoutedCurrent();
+    if (!current.has_value() && gridVoltage.has_value()) {
+      current = output1.computeRoutedCurrent(gridVoltage.value());
+    }
+    for (size_t i = 0; i < YASOLR_HARMONICS; i++) {
+      _output1HarmonicCurrentY[i] = current.value_or(0) * _output1HarmonicLevelY[i] / 100.0f;
+    }
+    _output1HarmonicLevels.setY(_output1HarmonicLevelY, YASOLR_HARMONICS);
+    _output1HarmonicCurrents.setY(_output1HarmonicCurrentY, YASOLR_HARMONICS);
   }
 
-  _output1HarmonicLevels.setY(_output1HarmonicLevelY, 11);
-  _output2HarmonicLevels.setY(_output2HarmonicLevelsY, 11);
-  _output1HarmonicCurrents.setY(_output1HarmonicCurrentY, 11);
-  _output2HarmonicCurrents.setY(_output2HarmonicCurrentY, 11);
+  // output 2 harmonics
+  if (_output2HarmonicLevels.displayed()) {
+    output2.computeHarmonics(_output2HarmonicLevelsY, YASOLR_HARMONICS);
+    std::optional<float> current = output2.readRoutedCurrent();
+    if (!current.has_value() && gridVoltage.has_value()) {
+      current = output2.computeRoutedCurrent(gridVoltage.value());
+    }
+    for (size_t i = 0; i < YASOLR_HARMONICS; i++) {
+      _output2HarmonicCurrentY[i] = current.value_or(0) * _output2HarmonicLevelsY[i] / 100.0f;
+    }
+    _output2HarmonicLevels.setY(_output2HarmonicLevelsY, YASOLR_HARMONICS);
+    _output2HarmonicCurrents.setY(_output2HarmonicCurrentY, YASOLR_HARMONICS);
+  }
 #endif
 }
 

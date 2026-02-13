@@ -82,6 +82,7 @@
 #define YASOLR_WEEK_DAYS                     "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_WEEK_DAYS_EMPTY               "none"
 #define YASOLR_ZC_EVENT_SHIFT_US             -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
+#define YASOLR_HARMONICS                     11
 
 #ifdef APP_MODEL_PRO
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR-Pro/releases/"

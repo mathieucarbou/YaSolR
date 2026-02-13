@@ -161,6 +161,10 @@ extern void yasolr_configure_output1_dimmer();
 extern void yasolr_configure_output2_dimmer();
 extern void yasolr_configure_output1_bypass_relay();
 extern void yasolr_configure_output2_bypass_relay();
+extern bool yasolr_isThyristorBased(const char* type);
+extern bool yasolr_isPWMBased(const char* type);
+extern bool yasolr_isDACBased(const char* type);
+extern bool yasolr_isCycleStealingBased(const char* type);
 
 // victron
 extern Mycila::Victron* victron;

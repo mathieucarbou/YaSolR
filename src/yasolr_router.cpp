@@ -87,7 +87,7 @@ static Mycila::Task frequencyMonitorTask("Frequency", []() {
 // functions
 
 // these dimmers work in Cycle Stealing mode
-static bool isCycleStealingBased(const char* type) {
+bool yasolr_isCycleStealingBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_ROBODYN_CYCLE_STEAL) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL) == 0 ||
          strcmp(type, YASOLR_DIMMER_TRIAC_CYCLE_STEAL) == 0 ||
@@ -95,7 +95,7 @@ static bool isCycleStealingBased(const char* type) {
 }
 
 // these dimmers work with phase control and need ZCD
-static bool isThyristorBased(const char* type) {
+bool yasolr_isThyristorBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
          strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
@@ -103,12 +103,12 @@ static bool isThyristorBased(const char* type) {
 }
 
 // these dimmers work with phase control by sending a PWM signal to an analog convertor to control a voltage regulator
-static bool isPWMBased(const char* type) {
+bool yasolr_isPWMBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM) == 0;
 }
 
 // these dimmers work with phase control by sending a duty to a DAC (Digital-to-Analog Converter) to control a voltage regulator
-static bool isDACBased(const char* type) {
+bool yasolr_isDACBased(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_GP8211S) == 0 ||
          strcmp(type, YASOLR_DIMMER_LSA_GP8403) == 0 ||
          strcmp(type, YASOLR_DIMMER_LSA_GP8413) == 0;
@@ -118,19 +118,19 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
   const char* type = config.getString(keyType);
   ESP_LOGI(TAG, "Initializing dimmer %s for output %d", type, outputID);
 
-  if (isThyristorBased(type)) {
+  if (yasolr_isThyristorBased(type)) {
     Mycila::ThyristorDimmer* thyristorDimmer = new Mycila::ThyristorDimmer();
     thyristorDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     return thyristorDimmer;
   }
 
-  if (isPWMBased(type)) {
+  if (yasolr_isPWMBased(type)) {
     Mycila::PWMDimmer* pwmDimmer = new Mycila::PWMDimmer();
     pwmDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     return pwmDimmer;
   }
 
-  if (isDACBased(type)) {
+  if (yasolr_isDACBased(type)) {
     Wire.begin(config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<int8_t>(KEY_PIN_I2C_SCL));
     Mycila::DFRobotDimmer* dfRobotDimmer = new Mycila::DFRobotDimmer();
     dfRobotDimmer->setWire(Wire);
@@ -153,7 +153,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
     return new Mycila::Dimmer();
   }
 
-  if (isCycleStealingBased(type)) {
+  if (yasolr_isCycleStealingBased(type)) {
     Mycila::CycleStealingDimmer* csDimmer = new Mycila::CycleStealingDimmer();
     csDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     return csDimmer;
