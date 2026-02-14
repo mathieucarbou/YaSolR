@@ -389,7 +389,7 @@ static void publishData() {
 
     mqtt->publish((baseTopic + "/router/relay1").c_str(), relay1 ? YASOLR_STATE(relay1->isOn()) : YASOLR_OFF);
     mqtt->publish((baseTopic + "/router/relay2").c_str(), relay2 ? YASOLR_STATE(relay2->isOn()) : YASOLR_OFF);
-    mqtt->publish((baseTopic + "/router/temperature").c_str(), ds18Sys ? std::to_string(ds18Sys->getTemperature().value_or(0)) : "0");
+    mqtt->publish((baseTopic + "/router/temperature").c_str(), ds18Sys && ds18Sys->getTemperature().value_or(0.0f) > 0 ? std::to_string(ds18Sys->getTemperature().value_or(0.0f)) : "0");
 
     for (const auto& output : router.getOutputs()) {
       const std::string outputTopic = baseTopic + "/router/" + output->getName();
@@ -403,7 +403,7 @@ static void publishData() {
       mqtt->publish((outputTopic + "/bypass").c_str(), YASOLR_STATE(output->isBypassOn()));
       mqtt->publish((outputTopic + "/dimmer").c_str(), YASOLR_STATE(output->isDimmerOn()));
       mqtt->publish((outputTopic + "/duty_cycle").c_str(), std::to_string(output->getDimmerDutyCycle() * 100.0f));
-      mqtt->publish((outputTopic + "/temperature").c_str(), std::to_string(output->temperature().orElse(0)));
+      mqtt->publish((outputTopic + "/temperature").c_str(), output->temperature().orElse(0.0f) > 0 ? std::to_string(output->temperature().orElse(0.0f)) : "0");
 
       mqtt->publish((outputTopic + "/apparent_power").c_str(), std::to_string(outputMeasurements->apparentPower));
       mqtt->publish((outputTopic + "/current").c_str(), std::to_string(outputMeasurements->current));

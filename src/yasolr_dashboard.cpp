@@ -1576,7 +1576,7 @@ void YaSolR::Website::updateCards() {
       _output1State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
       break;
   }
-  _output1DS18State.setValue(output1.temperature().orElse(0.0f));
+  _output1DS18State.setValue(output1.temperature().orElse(0.0f) > 0 ? output1.temperature().orElse(0.0f) : 0.0f);
   _output1DimmerSlider.setValue(output1.getDimmerDutyCycle() * 100.0f);
   _output1Bypass.setValue(output1.isBypassOn());
 
@@ -1596,11 +1596,11 @@ void YaSolR::Website::updateCards() {
       _output2State.setFeedback(YASOLR_LBL_109, dash::Status::DANGER);
       break;
   }
-  _output2DS18State.setValue(output2.temperature().orElse(0.0f));
+  _output2DS18State.setValue(output2.temperature().orElse(0.0f) > 0 ? output2.temperature().orElse(0.0f) : 0.0f);
   _output2DimmerSlider.setValue(output2.getDimmerDutyCycle() * 100.0f);
   _output2Bypass.setValue(output2.isBypassOn());
 
-  _routerDS18State.setValue(ds18Sys ? ds18Sys->getTemperature().value_or(0.0f) : 0);
+  _routerDS18State.setValue(ds18Sys && ds18Sys->getTemperature().value_or(0.0f) > 0 ? ds18Sys->getTemperature().value_or(0.0f) : 0.0f);
 
   if (relay1) {
     _relay1Switch.setValue(relay1->isOn());

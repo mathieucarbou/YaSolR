@@ -108,8 +108,8 @@ void yasolr_configure_display() {
               break;
             }
             case 4: {
-              if (ds18Sys && ds18Sys->getTemperature().has_value()) {
-                display->home.printf("Router T: %8.1f ", ds18Sys->getTemperature().value());
+              if (ds18Sys && ds18Sys->getTemperature().value_or(0.0f) > 0) {
+                display->home.printf("Router T: %8.1f ", ds18Sys->getTemperature().value_or(0.0f));
                 display->home.printf("\xb0");
                 display->home.printf("C");
                 wrote = true;
@@ -134,7 +134,7 @@ void yasolr_configure_display() {
               break;
             }
             case 7: {
-              if (output1.temperature().isPresent()) {
+              if (output1.temperature().orElse(0.0f) > 0) {
                 display->home.printf("Output 1 T: %6.1f ", output1.temperature().get());
                 display->home.printf("\xb0");
                 display->home.printf("C");
@@ -160,7 +160,7 @@ void yasolr_configure_display() {
               break;
             }
             case 10: {
-              if (output2.temperature().isPresent()) {
+              if (output2.temperature().orElse(0.0f) > 0) {
                 display->home.printf("Output 2 T: %6.1f ", output2.temperature().get());
                 display->home.printf("\xb0");
                 display->home.printf("C");
