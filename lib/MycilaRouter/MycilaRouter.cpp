@@ -347,14 +347,14 @@ void Mycila::Router::continueCalibration() {
       break;
     }
     case 2:
-      ESP_LOGI(TAG, "Activating %s dimmer at 50%", _outputs[_calibrationOutputIndex]->getName());
-      _outputs[_calibrationOutputIndex]->setDimmerDutyCycle(.5);
+      ESP_LOGI(TAG, "Activating %s dimmer at 100%", _outputs[_calibrationOutputIndex]->getName());
+      _outputs[_calibrationOutputIndex]->setDimmerDutyCycle(1);
       _calibrationStepStartTime = millis();
       _calibrationStep++;
       break;
 
     case 3:
-      if (millis() - _calibrationStepStartTime > 5000) {
+      if (millis() - _calibrationStepStartTime > 10000) {
         ESP_LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
 
         std::optional<float> resistance = _outputs[_calibrationOutputIndex]->readResistance();
@@ -363,24 +363,6 @@ void Mycila::Router::continueCalibration() {
         }
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = resistance.value_or(0);
-
-        ESP_LOGI(TAG, "Activating %s dimmer at 100%", _outputs[_calibrationOutputIndex]->getName());
-        _outputs[_calibrationOutputIndex]->setDimmerDutyCycle(1);
-        _calibrationStepStartTime = millis();
-        _calibrationStep++;
-      }
-      break;
-
-    case 4:
-      if (millis() - _calibrationStepStartTime > 5000) {
-        ESP_LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
-
-        std::optional<float> resistance = _outputs[_calibrationOutputIndex]->readResistance();
-        if (!resistance.has_value()) {
-          resistance = readResistance();
-        }
-
-        _outputs[_calibrationOutputIndex]->config.calibratedResistance = (_outputs[_calibrationOutputIndex]->config.calibratedResistance + resistance.value_or(0)) / 2;
 
         ESP_LOGI(TAG, "Turning off %s dimmer", _outputs[_calibrationOutputIndex]->getName());
         _outputs[_calibrationOutputIndex]->setDimmerOff();
