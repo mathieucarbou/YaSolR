@@ -84,22 +84,28 @@ void yasolr_configure_jsy() {
   if (config.get<bool>(KEY_ENABLE_JSY)) {
     // setup JSY if not done yet
     if (jsy == nullptr) {
-      if (strcmp(config.getString(KEY_JSY_UART), YASOLR_UART_NONE) == 0) {
-        ESP_LOGE(TAG, "No UART selected for JSY");
+      const bool serial1AssignedToJSY = config.isEqual(KEY_PIN_SERIAL1_DEV, YASOLR_UART_DEVICE_JSY);
+      const bool serial2AssignedToJSY = config.isEqual(KEY_PIN_SERIAL2_DEV, YASOLR_UART_DEVICE_JSY);
+
+      if (!serial1AssignedToJSY && !serial2AssignedToJSY) {
+        ESP_LOGE(TAG, "Unable to activate JSY: JSY was not assigned to any UART (Serial1 or Serial2)");
         return;
       }
 
-      ESP_LOGI(TAG, "Enable JSY with UART %s", config.getString(KEY_JSY_UART));
+      if (serial1AssignedToJSY && serial2AssignedToJSY) {
+        ESP_LOGE(TAG, "Unable to activate JSY: YaSolR does not yet support running with 2 JSY");
+        return;
+      }
 
-      jsy = new Mycila::JSY();
-
-      if (strcmp(config.getString(KEY_JSY_UART), YASOLR_UART_1_NAME) == 0)
-        jsy->begin(Serial1, config.get<int8_t>(KEY_PIN_JSY_RX), config.get<int8_t>(KEY_PIN_JSY_TX));
-
-#if SOC_UART_NUM > 2
-      if (strcmp(config.getString(KEY_JSY_UART), YASOLR_UART_2_NAME) == 0)
-        jsy->begin(Serial2, config.get<int8_t>(KEY_PIN_JSY_RX), config.get<int8_t>(KEY_PIN_JSY_TX));
-#endif
+      if (serial1AssignedToJSY) {
+        ESP_LOGI(TAG, "Enable JSY on UART Serial1");
+        jsy = new Mycila::JSY();
+        jsy->begin(Serial1, config.get<int8_t>(KEY_PIN_SERIAL1_RX), config.get<int8_t>(KEY_PIN_SERIAL1_TX));
+      } else { // serial2AssignedToJSY == true
+        ESP_LOGI(TAG, "Enable JSY on UART Serial2");
+        jsy = new Mycila::JSY();
+        jsy->begin(Serial2, config.get<int8_t>(KEY_PIN_SERIAL2_RX), config.get<int8_t>(KEY_PIN_SERIAL2_TX));
+      }
 
       if (!jsy->isEnabled()) {
         ESP_LOGE(TAG, "JSY failed to initialize!");

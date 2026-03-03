@@ -37,25 +37,79 @@ static void init_read_task() {
   }
 }
 
+static Mycila::PZEM* init_pzem(const char* label, const uint8_t address, Mycila::PZEM* existing = nullptr) {
+  const bool serial1AssignedToPZEM = config.isEqual(KEY_PIN_SERIAL1_DEV, YASOLR_UART_DEVICE_PZEM);
+  const bool serial2AssignedToPZEM = config.isEqual(KEY_PIN_SERIAL2_DEV, YASOLR_UART_DEVICE_PZEM);
+
+  if (!serial1AssignedToPZEM && !serial2AssignedToPZEM) {
+    ESP_LOGE(TAG, "Unable to activate %s PZEM: PZEM was not assigned to any UART (Serial1 or Serial2)", label);
+    return nullptr;
+  }
+
+  if (serial1AssignedToPZEM && serial2AssignedToPZEM) {
+    ESP_LOGE(TAG, "Unable to activate %s PZEM: YaSolR does not yet support running with one PZEM per UART", label);
+    return nullptr;
+  }
+
+  Mycila::PZEM* pzem = nullptr;
+
+  if (serial1AssignedToPZEM) {
+    ESP_LOGI(TAG, "Enable %s PZEM on UART Serial1", label);
+    pzem = existing == nullptr ? new Mycila::PZEM() : existing;
+    pzem->setSharedSerial(true);
+    pzem->begin(Serial1, config.get<int8_t>(KEY_PIN_SERIAL1_RX), config.get<int8_t>(KEY_PIN_SERIAL1_TX), address);
+  } else { // serial2AssignedToPZEM == true
+    ESP_LOGI(TAG, "Enable %s PZEM on UART Serial2", label);
+    pzem = existing == nullptr ? new Mycila::PZEM() : existing;
+    pzem->setSharedSerial(true);
+    pzem->begin(Serial2, config.get<int8_t>(KEY_PIN_SERIAL2_RX), config.get<int8_t>(KEY_PIN_SERIAL2_TX), address);
+  }
+
+  if (!pzem->isEnabled()) {
+    ESP_LOGE(TAG, "%s PZEM failed to initialize!", label);
+    pzem->end();
+
+    if (existing == nullptr) {
+      delete pzem;
+      pzem = nullptr;
+    }
+  }
+
+  return pzem;
+}
+
+static bool pair(const char* label, const uint8_t toAddress, Mycila::PZEM* pzem) {
+  ESP_LOGI(TAG, "Pairing connected PZEM to %s", label);
+
+  pzem->end();
+  init_pzem(label, MYCILA_PZEM_ADDRESS_GENERAL, pzem);
+  const uint8_t deviceAddress = pzem->getDeviceAddress();
+
+  // already paired
+  if (deviceAddress == toAddress) {
+    ESP_LOGW(TAG, "PZEM already paired to %s", label);
+    return true;
+  }
+
+  // no device found or cannot set address
+  if (deviceAddress == MYCILA_PZEM_ADDRESS_UNKNOWN || !pzem->setDeviceAddress(toAddress)) {
+    ESP_LOGE(TAG, "Failed to pair PZEM to %s: make sure only PZEM of %s is powered and connected to Serial RX/TX!", label, label);
+    pzem->end();
+    return false;
+  }
+
+  ESP_LOGI(TAG, "PZEM has been paired to %s", label);
+  return true;
+}
+
 void yasolr_configure_output1_pzem() {
   if (config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
     init_read_task();
 
     if (pzemO1 == nullptr) {
-      ESP_LOGI(TAG, "Enable Output 1 PZEM with UART %s", config.getString(KEY_PZEM_UART));
+      pzemO1 = init_pzem("Output 1", YASOLR_PZEM_ADDRESS_OUTPUT1, nullptr);
 
-      pzemO1 = new Mycila::PZEM();
-      pzemO1->setSharedSerial(true);
-
-      if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-        pzemO1->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
-
-#if SOC_UART_NUM > 2
-      if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-        pzemO1->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT1);
-#endif
-
-      if (pzemO1->isEnabled()) {
+      if (pzemO1) {
         pzemO1->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
             Mycila::Grid::Metrics metrics;
@@ -80,56 +134,14 @@ void yasolr_configure_output1_pzem() {
 
         pzemO1PairingTask = new Mycila::Task("PZEM Pairing 0x01", Mycila::Task::Type::ONCE, []() {
           ESP_LOGI(TAG, "Pairing connected PZEM to Output 1");
-          pzemO1->end();
-
-          if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-            pzemO1->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
-
-#if SOC_UART_NUM > 2
-          if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-            pzemO1->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
-#endif
-
-          switch (pzemO1->getDeviceAddress()) {
-            case YASOLR_PZEM_ADDRESS_OUTPUT1:
-              // already paired
-              if (!config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
-                // stop PZEM if it was not enabled
-                pzemO1->end();
-              }
-              ESP_LOGW(TAG, "PZEM already paired to Output 1");
-              break;
-            case MYCILA_PZEM_ADDRESS_UNKNOWN:
-              // no device found
-              pzemO1->end();
-              ESP_LOGE(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
-              break;
-            default:
-              // found a device
-              if (pzemO1->setDeviceAddress(YASOLR_PZEM_ADDRESS_OUTPUT1)) {
-                if (!config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
-                  // stop PZEM if it was not enabled
-                  pzemO1->end();
-                }
-                ESP_LOGI(TAG, "PZEM has been paired to Output 1");
-              } else {
-                pzemO1->end();
-                ESP_LOGE(TAG, "Failed to pair PZEM to Output 1: make sure only PZEM of Output 1 is powered and connected to Serial RX/TX!");
-              }
-          }
+          pair("Output 1", YASOLR_PZEM_ADDRESS_OUTPUT1, pzemO1);
         });
 
         unsafeTaskManager.addTask(*pzemO1PairingTask);
 
         if (config.get<bool>(KEY_ENABLE_DEBUG))
           pzemO1PairingTask->enableProfiling();
-
-      } else {
-        ESP_LOGE(TAG, "PZEM for Output 1 failed to initialize!");
-        pzemO1->end();
-        delete pzemO1;
-        pzemO1 = nullptr;
-      }
+      };
     }
   } else {
     if (pzemO1 != nullptr) {
@@ -151,20 +163,9 @@ void yasolr_configure_output2_pzem() {
     init_read_task();
 
     if (pzemO2 == nullptr) {
-      ESP_LOGI(TAG, "Enable Output 2 PZEM with UART %s", config.getString(KEY_PZEM_UART));
+      pzemO2 = init_pzem("Output 2", YASOLR_PZEM_ADDRESS_OUTPUT2, nullptr);
 
-      pzemO2 = new Mycila::PZEM();
-      pzemO2->setSharedSerial(true);
-
-      if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-        pzemO2->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
-
-#if SOC_UART_NUM > 2
-      if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-        pzemO2->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), YASOLR_PZEM_ADDRESS_OUTPUT2);
-#endif
-
-      if (pzemO2->isEnabled()) {
+      if (pzemO2) {
         pzemO2->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
             Mycila::Grid::Metrics metrics;
@@ -189,43 +190,7 @@ void yasolr_configure_output2_pzem() {
 
         pzemO2PairingTask = new Mycila::Task("PZEM Pairing 0x02", Mycila::Task::Type::ONCE, []() {
           ESP_LOGI(TAG, "Pairing connected PZEM to Output 2");
-          pzemO2->end();
-
-          if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_1_NAME) == 0)
-            pzemO2->begin(Serial1, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
-
-#if SOC_UART_NUM > 2
-          if (strcmp(config.getString(KEY_PZEM_UART), YASOLR_UART_2_NAME) == 0)
-            pzemO2->begin(Serial2, config.get<int8_t>(KEY_PIN_PZEM_RX), config.get<int8_t>(KEY_PIN_PZEM_TX), MYCILA_PZEM_ADDRESS_GENERAL);
-#endif
-
-          switch (pzemO2->getDeviceAddress()) {
-            case YASOLR_PZEM_ADDRESS_OUTPUT2:
-              // already paired
-              if (!config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
-                // stop PZEM if it was not enabled
-                pzemO2->end();
-              }
-              ESP_LOGW(TAG, "PZEM already paired to Output 2");
-              break;
-            case MYCILA_PZEM_ADDRESS_UNKNOWN:
-              // no device found
-              pzemO2->end();
-              ESP_LOGE(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
-              break;
-            default:
-              // found a device
-              if (pzemO2->setDeviceAddress(YASOLR_PZEM_ADDRESS_OUTPUT2)) {
-                if (!config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
-                  // stop PZEM if it was not enabled
-                  pzemO2->end();
-                }
-                ESP_LOGI(TAG, "PZEM has been paired to Output 2");
-              } else {
-                pzemO2->end();
-                ESP_LOGE(TAG, "Failed to pair PZEM to Output 2: make sure only PZEM of Output 2 is powered and connected to Serial RX/TX!");
-              }
-          }
+          pair("Output 2", YASOLR_PZEM_ADDRESS_OUTPUT2, pzemO2);
         });
 
         unsafeTaskManager.addTask(*pzemO2PairingTask);
@@ -233,11 +198,6 @@ void yasolr_configure_output2_pzem() {
         if (config.get<bool>(KEY_ENABLE_DEBUG))
           pzemO2PairingTask->enableProfiling();
 
-      } else {
-        ESP_LOGE(TAG, "PZEM for Output 2 failed to initialize!");
-        pzemO2->end();
-        delete pzemO2;
-        pzemO2 = nullptr;
       }
     }
   } else {

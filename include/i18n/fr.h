@@ -155,7 +155,7 @@
 #define YASOLR_LBL_149 "Micro-contrôleur: Mémoire Heap Libre Min à vie (bytes)"
 #define YASOLR_LBL_150 "JSY Serial"
 #define YASOLR_LBL_151 "Type"
-#define YASOLR_LBL_152 "PZEM Serial"
+// #define YASOLR_LBL_152 "PZEM Serial"
 #define YASOLR_LBL_153 "Dupliqué"
 #define YASOLR_LBL_154 "Invalide"
 #define YASOLR_LBL_155 "Entrée"

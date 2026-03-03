@@ -300,14 +300,19 @@ static dash::LineChart<int8_t, int16_t> _pidDTermHistory(dashboard, YASOLR_LBL_1
 // tab: gpio
 
 static dash::SeparatorCard<const char*> _gpioTitle(dashboard, YASOLR_LBL_126);
+static dash::SeparatorCard<const char*> _gpioSep6(dashboard, YASOLR_LBL_111);
+static dash::FeedbackInputCard<int8_t> _pinI2CSCL(dashboard, "SCL");
+static dash::FeedbackInputCard<int8_t> _pinI2CSDA(dashboard, "SDA");
+static dash::SeparatorCard<const char*> _gpioSep7(dashboard, "Serial1 (JSY, PZEM)");
+static dash::FeedbackInputCard<int8_t> _pinSerial1RX(dashboard, "RX");
+static dash::FeedbackInputCard<int8_t> _pinSerial1TX(dashboard, "TX");
+static dash::DropdownCard<const char*> _pinSerial1Device(dashboard, YASOLR_LBL_150, YASOLR_UART_DEVICES);
+static dash::SeparatorCard<const char*> _gpioSep8(dashboard, "Serial2 (JSY, PZEM)");
+static dash::FeedbackInputCard<int8_t> _pinSerial2RX(dashboard, "RX");
+static dash::FeedbackInputCard<int8_t> _pinSerial2TX(dashboard, "TX");
+static dash::DropdownCard<const char*> _pinSerial2Device(dashboard, YASOLR_LBL_150, YASOLR_UART_DEVICES);
 static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_076);
 static dash::FeedbackInputCard<int8_t> _pinZCD(dashboard, YASOLR_LBL_125);
-static dash::DropdownCard<const char*> _serialJsy(dashboard, YASOLR_LBL_150, YASOLR_UART_CHOICES);
-static dash::FeedbackInputCard<int8_t> _pinJsyRX(dashboard, YASOLR_LBL_116);
-static dash::FeedbackInputCard<int8_t> _pinJsyTX(dashboard, YASOLR_LBL_117);
-static dash::DropdownCard<const char*> _serialPZEM(dashboard, YASOLR_LBL_152, YASOLR_UART_CHOICES);
-static dash::FeedbackInputCard<int8_t> _pinPZEMRX(dashboard, YASOLR_LBL_121);
-static dash::FeedbackInputCard<int8_t> _pinPZEMTX(dashboard, YASOLR_LBL_122);
 static dash::SeparatorCard<const char*> _gpioSep1(dashboard, YASOLR_LBL_046);
 static dash::FeedbackInputCard<int8_t> _pinDimmerO1(dashboard, YASOLR_LBL_050);
 static dash::FeedbackInputCard<int8_t> _pinRelayO1(dashboard, YASOLR_LBL_134);
@@ -324,9 +329,6 @@ static dash::FeedbackInputCard<int8_t> _pinDS18Router(dashboard, YASOLR_LBL_132)
 static dash::FeedbackInputCard<int8_t> _pinLEDGreen(dashboard, YASOLR_LBL_118);
 static dash::FeedbackInputCard<int8_t> _pinLEDYellow(dashboard, YASOLR_LBL_120);
 static dash::FeedbackInputCard<int8_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
-static dash::SeparatorCard<const char*> _gpioSep6(dashboard, YASOLR_LBL_111);
-static dash::FeedbackInputCard<int8_t> _pinI2CSCL(dashboard, "SCL");
-static dash::FeedbackInputCard<int8_t> _pinI2CSDA(dashboard, "SDA");
 
 // tab: hardware
 
@@ -855,12 +857,6 @@ void YaSolR::Website::begin() {
   _pinRelay1.setTab(_gpioTab);
   _pinRelay2.setTab(_gpioTab);
   _gpioSep4.setTab(_gpioTab);
-  _serialJsy.setTab(_gpioTab);
-  _pinJsyRX.setTab(_gpioTab);
-  _pinJsyTX.setTab(_gpioTab);
-  _serialPZEM.setTab(_gpioTab);
-  _pinPZEMRX.setTab(_gpioTab);
-  _pinPZEMTX.setTab(_gpioTab);
   _pinZCD.setTab(_gpioTab);
   _gpioSep5.setTab(_gpioTab);
   _pinDS18Router.setTab(_gpioTab);
@@ -870,31 +866,39 @@ void YaSolR::Website::begin() {
   _gpioSep6.setTab(_gpioTab);
   _pinI2CSCL.setTab(_gpioTab);
   _pinI2CSDA.setTab(_gpioTab);
+  _gpioSep7.setTab(_gpioTab);
+  _pinSerial1RX.setTab(_gpioTab);
+  _pinSerial1TX.setTab(_gpioTab);
+  _pinSerial1Device.setTab(_gpioTab);
+  _gpioSep8.setTab(_gpioTab);
+  _pinSerial2RX.setTab(_gpioTab);
+  _pinSerial2TX.setTab(_gpioTab);
+  _pinSerial2Device.setTab(_gpioTab);
 
   _gpioTitle.setSubtitle(YASOLR_LBL_131);
 
   _numConfig(_pinDimmerO1, KEY_PIN_OUTPUT1_DIMMER);
-  _numConfig(_pinDS18O1, KEY_PIN_OUTPUT1_DS18);
-  _numConfig(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY);
   _numConfig(_pinDimmerO2, KEY_PIN_OUTPUT2_DIMMER);
+  _numConfig(_pinDS18O1, KEY_PIN_OUTPUT1_DS18);
   _numConfig(_pinDS18O2, KEY_PIN_OUTPUT2_DS18);
-  _numConfig(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY);
-  _numConfig(_pinRelay1, KEY_PIN_RELAY1);
-  _numConfig(_pinRelay2, KEY_PIN_RELAY2);
-  _numConfig(_pinJsyRX, KEY_PIN_JSY_RX);
-  _numConfig(_pinJsyTX, KEY_PIN_JSY_TX);
-  _numConfig(_pinPZEMRX, KEY_PIN_PZEM_RX);
-  _numConfig(_pinPZEMTX, KEY_PIN_PZEM_TX);
-  _numConfig(_pinZCD, KEY_PIN_ZCD);
+  _numConfig(_pinDS18Router, KEY_PIN_ROUTER_DS18);
   _numConfig(_pinI2CSCL, KEY_PIN_I2C_SCL);
   _numConfig(_pinI2CSDA, KEY_PIN_I2C_SDA);
-  _numConfig(_pinDS18Router, KEY_PIN_ROUTER_DS18);
   _numConfig(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN);
   _numConfig(_pinLEDRed, KEY_PIN_LIGHTS_RED);
   _numConfig(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW);
+  _numConfig(_pinRelay1, KEY_PIN_RELAY1);
+  _numConfig(_pinRelay2, KEY_PIN_RELAY2);
+  _numConfig(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY);
+  _numConfig(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY);
+  _numConfig(_pinSerial1RX, KEY_PIN_SERIAL1_RX);
+  _numConfig(_pinSerial1TX, KEY_PIN_SERIAL1_TX);
+  _numConfig(_pinSerial2RX, KEY_PIN_SERIAL2_RX);
+  _numConfig(_pinSerial2TX, KEY_PIN_SERIAL2_TX);
+  _numConfig(_pinZCD, KEY_PIN_ZCD);
 
-  _textConfig(_serialJsy, KEY_JSY_UART);
-  _textConfig(_serialPZEM, KEY_PZEM_UART);
+  _textConfig(_pinSerial1Device, KEY_PIN_SERIAL1_DEV);
+  _textConfig(_pinSerial2Device, KEY_PIN_SERIAL2_DEV);
 
   // tab: hardware
 
@@ -1367,27 +1371,27 @@ void YaSolR::Website::initCards() {
 
   std::unordered_map<int8_t, dash::FeedbackInputCard<int8_t>*> pinout = {};
   _pinout(_pinDimmerO1, KEY_PIN_OUTPUT1_DIMMER, pinout);
-  _pinout(_pinDS18O1, KEY_PIN_OUTPUT1_DS18, pinout);
-  _pinout(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY, pinout);
   _pinout(_pinDimmerO2, KEY_PIN_OUTPUT2_DIMMER, pinout);
+  _pinout(_pinDS18O1, KEY_PIN_OUTPUT1_DS18, pinout);
   _pinout(_pinDS18O2, KEY_PIN_OUTPUT2_DS18, pinout);
-  _pinout(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY, pinout);
-  _pinout(_pinRelay1, KEY_PIN_RELAY1, pinout);
-  _pinout(_pinRelay2, KEY_PIN_RELAY2, pinout);
-  _pinout(_pinJsyRX, KEY_PIN_JSY_RX, pinout);
-  _pinout(_pinJsyTX, KEY_PIN_JSY_TX, pinout);
-  _pinout(_pinPZEMRX, KEY_PIN_PZEM_RX, pinout);
-  _pinout(_pinPZEMTX, KEY_PIN_PZEM_TX, pinout);
-  _pinout(_pinZCD, KEY_PIN_ZCD, pinout);
+  _pinout(_pinDS18Router, KEY_PIN_ROUTER_DS18, pinout);
   _pinout(_pinI2CSCL, KEY_PIN_I2C_SCL, pinout);
   _pinout(_pinI2CSDA, KEY_PIN_I2C_SDA, pinout);
-  _pinout(_pinDS18Router, KEY_PIN_ROUTER_DS18, pinout);
   _pinout(_pinLEDGreen, KEY_PIN_LIGHTS_GREEN, pinout);
   _pinout(_pinLEDRed, KEY_PIN_LIGHTS_RED, pinout);
   _pinout(_pinLEDYellow, KEY_PIN_LIGHTS_YELLOW, pinout);
+  _pinout(_pinRelay1, KEY_PIN_RELAY1, pinout);
+  _pinout(_pinRelay2, KEY_PIN_RELAY2, pinout);
+  _pinout(_pinRelayO1, KEY_PIN_OUTPUT1_RELAY, pinout);
+  _pinout(_pinRelayO2, KEY_PIN_OUTPUT2_RELAY, pinout);
+  _pinout(_pinSerial1RX, KEY_PIN_SERIAL1_RX, pinout);
+  _pinout(_pinSerial1TX, KEY_PIN_SERIAL1_TX, pinout);
+  _pinout(_pinSerial2RX, KEY_PIN_SERIAL2_RX, pinout);
+  _pinout(_pinSerial2TX, KEY_PIN_SERIAL2_TX, pinout);
+  _pinout(_pinZCD, KEY_PIN_ZCD, pinout);
 
-  _serialJsy.setValue(config.getString(KEY_JSY_UART));
-  _serialPZEM.setValue(config.getString(KEY_PZEM_UART));
+  _pinSerial1Device.setValue(config.getString(KEY_PIN_SERIAL1_DEV));
+  _pinSerial2Device.setValue(config.getString(KEY_PIN_SERIAL2_DEV));
 
   // tab: hardware
 

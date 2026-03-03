@@ -58,6 +58,7 @@
 #define YASOLR_DS18_SEARCH_MAX_RETRY         30
 #define YASOLR_GRAPH_POINTS                  60
 #define YASOLR_HA_DISCOVERY_TOPIC            "homeassistant"
+#define YASOLR_HARMONICS                     11
 #define YASOLR_HIDDEN_PWD                    "********"
 #define YASOLR_LOG_FILE                      "/logs.txt"
 #define YASOLR_MQTT_KEEPALIVE                60
@@ -76,30 +77,18 @@
 #define YASOLR_SAFEBOOT_PARTITION_NAME       "safeboot" // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SAFEBOOT_PARTITION_SIZE       655360     // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SERIAL_BAUDRATE               115200
-#define YASOLR_UART_1_NAME                   "Serial1"
-#define YASOLR_UART_2_NAME                   "Serial2"
-#define YASOLR_UART_NONE                     "N/A"
+#define YASOLR_UART_DEVICE_JSY               "JSY"
+#define YASOLR_UART_DEVICE_NONE              "N/A"
+#define YASOLR_UART_DEVICE_PZEM              "PZEM"
+#define YASOLR_UART_DEVICES                  "N/A,JSY,PZEM"
 #define YASOLR_WEEK_DAYS                     "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_WEEK_DAYS_EMPTY               "none"
 #define YASOLR_ZC_EVENT_SHIFT_US             -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
-#define YASOLR_HARMONICS                     11
 
 #ifdef APP_MODEL_PRO
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR-Pro/releases/"
 #else
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR/releases/"
-#endif
-
-// UART
-
-#if SOC_UART_NUM > 2
-  #define YASOLR_UART_CHOICES YASOLR_UART_NONE "," YASOLR_UART_1_NAME "," YASOLR_UART_2_NAME
-  #define JSY_UART_DEFAULT    YASOLR_UART_2_NAME
-  #define PZEM_UART_DEFAULT   YASOLR_UART_1_NAME
-#else
-  #define YASOLR_UART_CHOICES YASOLR_UART_NONE "," YASOLR_UART_1_NAME
-  #define JSY_UART_DEFAULT    YASOLR_UART_1_NAME
-  #define PZEM_UART_DEFAULT   YASOLR_UART_NONE
 #endif
 
 // UDP communication
@@ -150,7 +139,6 @@
 #define KEY_GRID_VOLTAGE_MQTT_TOPIC        "grid_volt_mqtt"
 #define KEY_HA_DISCOVERY_TOPIC             "ha_disco_topic"
 #define KEY_HOSTNAME                       "hostname"
-#define KEY_JSY_UART                       "jsy_uart"
 #define KEY_MQTT_PASSWORD                  "mqtt_pwd"
 #define KEY_MQTT_PORT                      "mqtt_port"
 #define KEY_MQTT_PUBLISH_INTERVAL          "mqtt_pub_itvl"
@@ -207,7 +195,6 @@
 #define KEY_PID_OUT_MIN                    "pid_out_min"
 #define KEY_PID_SETPOINT                   "pid_setpoint"
 #define KEY_PID_TRIGGER                    "pid_trigger"
-#define KEY_PZEM_UART                      "pzem_uart"
 #define KEY_RELAY1_LOAD                    "relay1_load"
 #define KEY_RELAY1_TOLERANCE               "relay1_tol"
 #define KEY_RELAY1_TYPE                    "relay1_type"
@@ -225,8 +212,6 @@
 
 #define KEY_PIN_I2C_SCL        "pin_i2c_scl"
 #define KEY_PIN_I2C_SDA        "pin_i2c_sda"
-#define KEY_PIN_JSY_RX         "pin_jsy_rx"
-#define KEY_PIN_JSY_TX         "pin_jsy_tx"
 #define KEY_PIN_LIGHTS_GREEN   "pin_lights_g"
 #define KEY_PIN_LIGHTS_RED     "pin_lights_r"
 #define KEY_PIN_LIGHTS_YELLOW  "pin_lights_y"
@@ -236,11 +221,15 @@
 #define KEY_PIN_OUTPUT2_DIMMER "pin_o2_dim"
 #define KEY_PIN_OUTPUT2_DS18   "pin_o2_ds18"
 #define KEY_PIN_OUTPUT2_RELAY  "pin_o2_relay"
-#define KEY_PIN_PZEM_RX        "pin_pzem_rx"
-#define KEY_PIN_PZEM_TX        "pin_pzem_tx"
 #define KEY_PIN_RELAY1         "pin_relay1"
 #define KEY_PIN_RELAY2         "pin_relay2"
 #define KEY_PIN_ROUTER_DS18    "pin_ds18"
+#define KEY_PIN_SERIAL1_DEV    "pin_serial1_dev"
+#define KEY_PIN_SERIAL1_RX     "pin_serial1_rx"
+#define KEY_PIN_SERIAL1_TX     "pin_serial1_tx"
+#define KEY_PIN_SERIAL2_DEV    "pin_serial2_dev"
+#define KEY_PIN_SERIAL2_RX     "pin_serial2_rx"
+#define KEY_PIN_SERIAL2_TX     "pin_serial2_tx"
 #define KEY_PIN_ZCD            "pin_zcd"
 
 // pinout
@@ -290,15 +279,15 @@
 #ifndef YASOLR_ZCD_PIN
   #define YASOLR_ZCD_PIN -1
 #endif
-#ifndef YASOLR_JSY_RX_PIN
-  #define YASOLR_JSY_RX_PIN -1
+#ifndef YASOLR_SERIAL2_RX_PIN
+  #define YASOLR_SERIAL2_RX_PIN -1
 #endif
-#ifndef YASOLR_JSY_TX_PIN
-  #define YASOLR_JSY_TX_PIN -1
+#ifndef YASOLR_SERIAL2_TX_PIN
+  #define YASOLR_SERIAL2_TX_PIN -1
 #endif
-#ifndef YASOLR_PZEM_RX_PIN
-  #define YASOLR_PZEM_RX_PIN -1
+#ifndef YASOLR_SERIAL1_RX_PIN
+  #define YASOLR_SERIAL1_RX_PIN -1
 #endif
-#ifndef YASOLR_PZEM_TX_PIN
-  #define YASOLR_PZEM_TX_PIN -1
+#ifndef YASOLR_SERIAL1_TX_PIN
+  #define YASOLR_SERIAL1_TX_PIN -1
 #endif
