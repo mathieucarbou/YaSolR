@@ -273,8 +273,9 @@ namespace Mycila {
 
             {
               Metrics* metrics = new Metrics();
-              readMeasurements(*metrics);
-              Router::toJson(root["measurements"].to<JsonObject>(), *metrics);
+              if (readMeasurements(*metrics)) {
+                Router::toJson(root["measurements"].to<JsonObject>(), *metrics);
+              }
               delete metrics;
             }
 
@@ -282,8 +283,9 @@ namespace Mycila {
 
             {
               Metrics* metrics = new Metrics();
-              computeMetrics(*metrics, gridVoltage);
-              Router::toJson(sources.add<JsonObject>(), *metrics);
+              if (computeMetrics(*metrics, gridVoltage)) {
+                Router::toJson(sources.add<JsonObject>(), *metrics);
+              }
               delete metrics;
             }
 
@@ -543,8 +545,9 @@ namespace Mycila {
       void toJson(const JsonObject& root, float gridVoltage) const {
         {
           Metrics* routerMeasurements = new Metrics();
-          readMeasurements(*routerMeasurements);
-          Router::toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+          if (readMeasurements(*routerMeasurements)) {
+            Router::toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+          }
           delete routerMeasurements;
         }
 
@@ -552,8 +555,9 @@ namespace Mycila {
 
         {
           Metrics* metrics = new Metrics();
-          computeMetrics(*metrics, gridVoltage);
-          Router::toJson(sources.add<JsonObject>(), *metrics);
+          if (computeMetrics(*metrics, gridVoltage)) {
+            Router::toJson(sources.add<JsonObject>(), *metrics);
+          }
           delete metrics;
         }
 
@@ -617,7 +621,7 @@ namespace Mycila {
         for (size_t i = 0; i < _outputs.size(); i++) {
           Router::Metrics outputMetrics;
           if (_outputs[i]->readMeasurements(outputMetrics)) {
-            metrics.source = Source::PZEM;
+            metrics.source = outputMetrics.source;
             // Note: energy is not accurate in the case of a virtual bypass through dimmer
             metrics.energy += outputMetrics.energy;
             metrics.apparentPower += outputMetrics.apparentPower;
