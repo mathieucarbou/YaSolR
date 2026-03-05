@@ -345,7 +345,7 @@ static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
 static dash::ToggleButtonCard _output1Dimmer(dashboard, YASOLR_LBL_050);
-static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_ZC_SSR);
+static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output1PZEMSep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_133);
 static dash::ToggleButtonCard _output1PZEM(dashboard, "PZEM");
@@ -363,7 +363,7 @@ static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
 // output 2 dimmer
 static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
 static dash::ToggleButtonCard _output2Dimmer(dashboard, YASOLR_LBL_050);
-static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_ZC_SSR);
+static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output2PZEMSep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_133);
 static dash::ToggleButtonCard _output2PZEM(dashboard, "PZEM");
@@ -1171,7 +1171,7 @@ void YaSolR::Website::initCards() {
   const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
 
   const bool dimmer1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER);
-  const bool dimmer1CycleStealing = yasolr_isCycleStealingBased(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
+  const bool dimmer1CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
   const bool output1RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY);
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
@@ -1179,7 +1179,7 @@ void YaSolR::Website::initCards() {
   const bool pzem1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM);
 
   const bool dimmer2Enabled = config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER);
-  const bool dimmer2CycleStealing = yasolr_isCycleStealingBased(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
+  const bool dimmer2CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
   const bool output2RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY);
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);

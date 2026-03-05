@@ -52,9 +52,9 @@
 #define YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "Random SSR + ZCD (Cycle Stealing)"
 #define YASOLR_DIMMER_ROBODYN                "Robodyn 24A / 40A"
 #define YASOLR_DIMMER_ROBODYN_CYCLE_STEAL    "Robodyn 24A / 40A (Cycle Stealing)"
+#define YASOLR_DIMMER_SYNC_SSR               "Synchronous SSR (Cycle Stealing)"
 #define YASOLR_DIMMER_TRIAC                  "Triac + ZCD"
 #define YASOLR_DIMMER_TRIAC_CYCLE_STEAL      "Triac + ZCD (Cycle Stealing)"
-#define YASOLR_DIMMER_ZC_SSR                 "Zero-crossing SSR"
 #define YASOLR_DS18_SEARCH_MAX_RETRY         30
 #define YASOLR_GRAPH_POINTS                  60
 #define YASOLR_HA_DISCOVERY_TOPIC            "homeassistant"

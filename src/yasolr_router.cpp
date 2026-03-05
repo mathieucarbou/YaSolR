@@ -86,53 +86,66 @@ static Mycila::Task frequencyMonitorTask("Frequency", []() {
 
 // functions
 
-// these dimmers work in Cycle Stealing mode
-bool yasolr_isCycleStealingBased(const char* type) {
+// these dimmers work with the Mycila::CycleStealingDimmer implementation
+bool yasolr_isCycleStealingDimmer(const char* type) {
   return strcmp(type, YASOLR_DIMMER_ROBODYN_CYCLE_STEAL) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL) == 0 ||
          strcmp(type, YASOLR_DIMMER_TRIAC_CYCLE_STEAL) == 0 ||
-         strcmp(type, YASOLR_DIMMER_ZC_SSR) == 0;
+         strcmp(type, YASOLR_DIMMER_SYNC_SSR) == 0;
 }
 
-// these dimmers work with phase control and need ZCD
-bool yasolr_isThyristorBased(const char* type) {
+// these dimmers work with the Mycila::ThyristorDimmer implementation
+bool yasolr_isThyristorDimmer(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
          strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
          strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
 }
 
-// these dimmers work with phase control by sending a PWM signal to an analog convertor to control a voltage regulator
-bool yasolr_isPWMBased(const char* type) {
+// these dimmers work with the Mycila::PWMDimmer implementation
+bool yasolr_isPWMDimmer(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_PWM) == 0;
 }
 
-// these dimmers work with phase control by sending a duty to a DAC (Digital-to-Analog Converter) to control a voltage regulator
-bool yasolr_isDACBased(const char* type) {
+// these dimmers work with the Mycila::DACDimmer implementation
+bool yasolr_isDacDimmer(const char* type) {
   return strcmp(type, YASOLR_DIMMER_LSA_GP8211S) == 0 ||
          strcmp(type, YASOLR_DIMMER_LSA_GP8403) == 0 ||
          strcmp(type, YASOLR_DIMMER_LSA_GP8413) == 0;
+}
+
+bool yasolr_isZeroCrossDetectionRequired(const char* type) {
+  return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
+         strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
+         strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
+         strcmp(type, YASOLR_DIMMER_TRIAC) == 0 ||
+         strcmp(type, YASOLR_DIMMER_ROBODYN_CYCLE_STEAL) == 0 ||
+         strcmp(type, YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL) == 0 ||
+         strcmp(type, YASOLR_DIMMER_TRIAC_CYCLE_STEAL) == 0;
 }
 
 static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const char* keyPin) {
   const char* type = config.getString(keyType);
   ESP_LOGI(TAG, "Initializing dimmer %s for output %d", type, outputID);
 
-  if (yasolr_isThyristorBased(type)) {
+  if (yasolr_isThyristorDimmer(type)) {
     Mycila::ThyristorDimmer* thyristorDimmer = new Mycila::ThyristorDimmer();
     thyristorDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
+    thyristorDimmer->enablePowerLUT(true);
     return thyristorDimmer;
   }
 
-  if (yasolr_isPWMBased(type)) {
+  if (yasolr_isPWMDimmer(type)) {
     Mycila::PWMDimmer* pwmDimmer = new Mycila::PWMDimmer();
     pwmDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
+    pwmDimmer->enablePowerLUT(true);
     return pwmDimmer;
   }
 
-  if (yasolr_isDACBased(type)) {
+  if (yasolr_isDacDimmer(type)) {
     Wire.begin(config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<int8_t>(KEY_PIN_I2C_SCL));
     Mycila::DFRobotDimmer* dfRobotDimmer = new Mycila::DFRobotDimmer();
+    dfRobotDimmer->enablePowerLUT(true);
     dfRobotDimmer->setWire(Wire);
     dfRobotDimmer->setOutput(Mycila::DFRobotDimmer::Output::RANGE_0_10V);
     dfRobotDimmer->setChannel(outputID - 1);
@@ -153,7 +166,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
     return new Mycila::Dimmer();
   }
 
-  if (yasolr_isCycleStealingBased(type)) {
+  if (yasolr_isCycleStealingDimmer(type)) {
     Mycila::CycleStealingDimmer* csDimmer = new Mycila::CycleStealingDimmer();
     csDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     return csDimmer;
@@ -186,10 +199,8 @@ static void ARDUINO_ISR_ATTR onZeroCross(int16_t delayUntilZero, void* arg) {
 }
 
 static void configure_zcd() {
-  if ((dimmer1 && strcmp(dimmer1->type(), "thyristor") == 0) ||
-      (dimmer1 && strcmp(dimmer1->type(), "cycle-stealing") == 0) ||
-      (dimmer2 && strcmp(dimmer2->type(), "thyristor") == 0) ||
-      (dimmer2 && strcmp(dimmer2->type(), "cycle-stealing") == 0)) {
+  if (yasolr_isZeroCrossDetectionRequired(config.getString(KEY_OUTPUT1_DIMMER_TYPE)) ||
+      yasolr_isZeroCrossDetectionRequired(config.getString(KEY_OUTPUT2_DIMMER_TYPE))) {
     if (pulseAnalyzer == nullptr) {
       ESP_LOGI(TAG, "Enable ZCD Pulse Analyzer");
       pulseAnalyzer = new Mycila::PulseAnalyzer();
@@ -224,7 +235,6 @@ void yasolr_configure_output1_dimmer() {
     dimmer1->setDutyCycleMin(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
     dimmer1->setDutyCycleMax(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
     dimmer1->setDutyCycleLimit(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
-    dimmer1->enablePowerLUT(true);
     dimmer1->begin();
     if (!dimmer1->isEnabled()) {
       ESP_LOGE(TAG, "Output 1 Dimmer failed to initialize!");
