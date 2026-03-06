@@ -8,9 +8,9 @@
 #include <queue>
 #include <string>
 
-Mycila::config::NVS storage;
+static Mycila::config::NVS storage;
 Mycila::config::Config config(storage);
-Mycila::config::Migration migration(config);
+static Mycila::config::Migration migration(config);
 
 static std::queue<std::function<void()>> reconfigureQueue;
 static Mycila::Task reconfigureTask("Reconfigure", []() {
@@ -20,9 +20,83 @@ static Mycila::Task reconfigureTask("Reconfigure", []() {
   dashboardInitTask.resume();
 });
 
-void yasolr_init_config() {
-  ESP_LOGI(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
+static int8_t migrate_old_keys_uart(const char* old_key, const char* device) {
+  if (storage.hasKey(old_key)) {
+    const std::optional<Mycila::config::Str> uart = storage.loadString(old_key);
+    if (uart.has_value()) {
+      if (strcmp(uart.value().c_str(), "Serial1") == 0) {
+        ESP_LOGW(TAG, "%s=Serial1 => " KEY_PIN_SERIAL1_DEV "=%s", old_key, device);
+        storage.storeString(KEY_PIN_SERIAL1_DEV, device);
+        return 1;
+      } else if (strcmp(uart.value().c_str(), "Serial2") == 0) {
+        ESP_LOGW(TAG, "%s=Serial2 => " KEY_PIN_SERIAL2_DEV "=%s", old_key, device);
+        storage.storeString(KEY_PIN_SERIAL2_DEV, device);
+        return 2;
+      }
+    }
+    storage.remove(old_key);
+  }
+  return -1;
+}
 
+static void migrate_old_keys_uart_pin(const char* old_key, int8_t serial) {
+  if (storage.hasKey(old_key)) {
+    const std::optional<int8_t> pin = storage.loadI8(old_key);
+    if (pin.has_value()) {
+      switch (serial) {
+        case 1:
+          ESP_LOGW(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL1_RX "=%" PRIi8, old_key, pin.value(), pin.value());
+          storage.storeI8(KEY_PIN_SERIAL1_RX, pin.value());
+          break;
+        case 2:
+          ESP_LOGW(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL2_RX "=%" PRIi8, old_key, pin.value(), pin.value());
+          storage.storeI8(KEY_PIN_SERIAL2_RX, pin.value());
+          break;
+        default:
+          break;
+      }
+    }
+    storage.remove(old_key);
+  }
+}
+
+static void migrate_old_keys() {
+  // migrate old keys and values
+  {
+    storage.begin("YASOLR");
+    // jsy_uart (default: Serial2) => pin_serial1_dev or pin_serial2_dev
+    int8_t jsySerial = migrate_old_keys_uart("jsy_uart", YASOLR_UART_DEVICE_JSY);
+    // pin_jsy_rx => pin_serial2_rx or pin_serial1_rx
+    migrate_old_keys_uart_pin("pin_jsy_rx", jsySerial);
+    // pin_jsy_tx => pin_serial2_tx or pin_serial1_tx
+    migrate_old_keys_uart_pin("pin_jsy_tx", jsySerial);
+    // pzem_uart (default: Serial1) => pin_serial1_dev or pin_serial2_dev
+    int8_t pzemSerial = migrate_old_keys_uart("pzem_uart", YASOLR_UART_DEVICE_PZEM);
+    // pin_pzem_rx => pin_serial2_rx or pin_serial1_rx
+    migrate_old_keys_uart_pin("pin_pzem_rx", pzemSerial);
+    // pin_pzem_tx => pin_serial2_tx or pin_serial1_tx
+    migrate_old_keys_uart_pin("pin_pzem_tx", pzemSerial);
+    storage.end();
+  }
+
+  // migration from old config versions
+  {
+    migration.begin("YASOLR");
+    migration.migrate<Mycila::config::Str>(KEY_GRID_FREQUENCY, [](const Mycila::config::Str& from) -> std::optional<Mycila::config::Value> {
+      if (from == "50 Hz") {
+        return static_cast<uint8_t>(50);
+      } else if (from == "60 Hz") {
+        return static_cast<uint8_t>(60);
+      } else {
+        return static_cast<uint8_t>(0);
+      }
+    });
+    migration.migrateFromString();
+    migration.end();
+  }
+}
+
+static void init_config() {
   // setup config system
   config.configure(KEY_ADMIN_PASSWORD);
   config.configure(KEY_DISPLAY_ROTATION, static_cast<uint16_t>(0));
@@ -146,22 +220,13 @@ void yasolr_init_config() {
   config.configure(KEY_WIFI_BSSID);
   config.configure(KEY_WIFI_PASSWORD);
   config.configure(KEY_WIFI_SSID);
+}
 
-  // migration from old config versions
-  migration.begin("YASOLR");
-  migration.migrate<Mycila::config::Str>(KEY_GRID_FREQUENCY, [](const Mycila::config::Str& from) -> std::optional<Mycila::config::Value> {
-    if (from == "50 Hz") {
-      return static_cast<uint8_t>(50);
-    } else if (from == "60 Hz") {
-      return static_cast<uint8_t>(60);
-    } else {
-      return static_cast<uint8_t>(0);
-    }
-  });
-  migration.migrateFromString();
-  migration.end();
+void yasolr_init_config() {
+  ESP_LOGI(TAG, "Configuring %s", Mycila::AppInfo.nameModelVersion.c_str());
 
-  // init and preload
+  init_config();
+  migrate_old_keys();
   config.begin("YASOLR", true);
 
   config.listen([]() {
