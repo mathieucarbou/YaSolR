@@ -341,7 +341,6 @@ static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
-static dash::ToggleButtonCard _output1Dimmer(dashboard, YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output1PZEMSep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_133);
@@ -359,7 +358,6 @@ static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
 
 // output 2 dimmer
 static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
-static dash::ToggleButtonCard _output2Dimmer(dashboard, YASOLR_LBL_050);
 static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::SeparatorCard<const char*> _output2PZEMSep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_133);
@@ -926,13 +924,11 @@ void YaSolR::Website::begin() {
 
   // output 1 dimmer
   _output1Sep1.setTab(_hardwareConfigTab);
-  _output1Dimmer.setTab(_hardwareConfigTab);
   _output1DimmerType.setTab(_hardwareConfigTab);
   _output1DimmerMapper.setTab(_hardwareConfigTab);
   _output1PZEMSep1.setTab(_hardwareConfigTab);
   _output1PZEM.setTab(_hardwareConfigTab);
   _output1PZEMSync.setTab(_hardwareConfigTab);
-  _boolConfig(_output1Dimmer, KEY_ENABLE_OUTPUT1_DIMMER);
   _textConfig(_output1DimmerType, KEY_OUTPUT1_DIMMER_TYPE);
   _rangeConfig(_output1DimmerMapper, KEY_OUTPUT1_DIMMER_MIN, KEY_OUTPUT1_DIMMER_MAX);
   _boolConfig(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM);
@@ -951,13 +947,11 @@ void YaSolR::Website::begin() {
 
   // output 2 dimmer
   _output2Sep1.setTab(_hardwareConfigTab);
-  _output2Dimmer.setTab(_hardwareConfigTab);
   _output2DimmerType.setTab(_hardwareConfigTab);
   _output2DimmerMapper.setTab(_hardwareConfigTab);
   _output2PZEMSep1.setTab(_hardwareConfigTab);
   _output2PZEM.setTab(_hardwareConfigTab);
   _output2PZEMSync.setTab(_hardwareConfigTab);
-  _boolConfig(_output2Dimmer, KEY_ENABLE_OUTPUT2_DIMMER);
   _textConfig(_output2DimmerType, KEY_OUTPUT2_DIMMER_TYPE);
   _rangeConfig(_output2DimmerMapper, KEY_OUTPUT2_DIMMER_MIN, KEY_OUTPUT2_DIMMER_MAX);
   _boolConfig(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM);
@@ -1161,7 +1155,7 @@ void YaSolR::Website::initCards() {
   const bool pidViewEnabled = realTimePIDEnabled();
   const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
 
-  const bool dimmer1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER);
+  const bool dimmer1Enabled = !config.isEmpty(KEY_OUTPUT1_DIMMER_TYPE);
   const bool dimmer1CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
   const bool output1RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY);
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
@@ -1169,7 +1163,7 @@ void YaSolR::Website::initCards() {
   const bool autoBypass1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   const bool pzem1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM);
 
-  const bool dimmer2Enabled = config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER);
+  const bool dimmer2Enabled = !config.isEmpty(KEY_OUTPUT2_DIMMER_TYPE);
   const bool dimmer2CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
   const bool output2RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY);
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
@@ -1410,7 +1404,6 @@ void YaSolR::Website::initCards() {
   _victronPort.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::VICTRON));
 
   // output 1 dimmer
-  _output1Dimmer.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER));
   _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
   _output1DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX)});
   _output1PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM));
@@ -1422,7 +1415,6 @@ void YaSolR::Website::initCards() {
   _output1RelayType.setValue(config.getString(KEY_OUTPUT1_RELAY_TYPE));
 
   // output 2 dimmer
-  _output2Dimmer.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER));
   _output2DimmerType.setValue(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
   _output2DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MAX)});
   _output2PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM));
@@ -1753,7 +1745,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // output 1 dimmer + resistance
-  if (config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER)) {
+  if (!config.isEmpty(KEY_OUTPUT1_DIMMER_TYPE)) {
     if (!output1.isDimmerEnabled()) {
       errors[count++] = ERR_ACT_O1_DIMMER;
     } else if (!output1.isDimmerOnline()) {
@@ -1763,7 +1755,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // output 2 dimmer + resistance
-  if (config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER)) {
+  if (!config.isEmpty(KEY_OUTPUT2_DIMMER_TYPE)) {
     if (!output2.isDimmerEnabled()) {
       errors[count++] = ERR_ACT_O2_DIMMER;
     } else if (!output2.isDimmerOnline()) {

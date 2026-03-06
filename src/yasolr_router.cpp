@@ -226,7 +226,7 @@ static void configure_zcd() {
 }
 
 void yasolr_configure_output1_dimmer() {
-  if (config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER)) {
+  if (!config.isEmpty(KEY_OUTPUT1_DIMMER_TYPE)) {
     ESP_LOGI(TAG, "Enable Output 1 Dimmer");
     Mycila::Dimmer* old_dimmer1 = dimmer1;
     if (old_dimmer1)
@@ -250,7 +250,7 @@ void yasolr_configure_output1_dimmer() {
 }
 
 void yasolr_configure_output2_dimmer() {
-  if (config.get<bool>(KEY_ENABLE_OUTPUT2_DIMMER)) {
+  if (!config.isEmpty(KEY_OUTPUT2_DIMMER_TYPE)) {
     ESP_LOGI(TAG, "Enable Output 2 Dimmer");
     Mycila::Dimmer* old_dimmer2 = dimmer2;
     if (old_dimmer2)

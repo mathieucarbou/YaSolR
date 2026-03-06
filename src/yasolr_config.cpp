@@ -102,7 +102,7 @@ static void migrate_old_keys() {
     // vic_mb_enable
     if (storage.hasKey("vic_mb_enable")) {
       ESP_LOGI(TAG, "vic_mb_enable => " KEY_GRID_SOURCE "=Victron");
-      if (storage.loadBool("vic_mb_enable"))
+      if (storage.loadBool("vic_mb_enable").value_or(false)) // enabled ?
         storage.storeString(KEY_GRID_SOURCE, "Victron");
       storage.remove("vic_mb_enable");
     }
@@ -110,16 +110,22 @@ static void migrate_old_keys() {
     // jsyr_enable
     if (storage.hasKey("jsyr_enable")) {
       ESP_LOGE(TAG, "Key 'jsyr_enable' must be migrated manually: Grid Source must be set to the correct JSY used remotely");
-      if(storage.hasKey("grid_source")) // migrated ?
+      if (storage.hasKey("grid_source")) // migrated ?
         storage.remove("jsyr_enable");
     }
 
     // jsy_enable
     if (storage.hasKey("jsy_enable")) {
       ESP_LOGE(TAG, "Key 'jsy_enable' must be migrated manually: Grid Source must be set to the correct JSY Serial and channel");
-      if(storage.hasKey("grid_source")) // migrated ?
+      if (storage.hasKey("grid_source")) // migrated ?
         storage.remove("jsy_enable");
     }
+
+    if (storage.hasKey("o1_dim_enable"))
+      storage.remove("o1_dim_enable");
+
+    if (storage.hasKey("o2_dim_enable"))
+      storage.remove("o2_dim_enable");
 
     storage.end();
   }
@@ -140,13 +146,11 @@ static void init_config() {
   config.configure(KEY_ENABLE_MQTT, false);
   config.configure(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, false);
   config.configure(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, false);
-  config.configure(KEY_ENABLE_OUTPUT1_DIMMER, false);
   config.configure(KEY_ENABLE_OUTPUT1_DS18, false);
   config.configure(KEY_ENABLE_OUTPUT1_PZEM, false);
   config.configure(KEY_ENABLE_OUTPUT1_RELAY, false);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, false);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, false);
-  config.configure(KEY_ENABLE_OUTPUT2_DIMMER, false);
   config.configure(KEY_ENABLE_OUTPUT2_DS18, false);
   config.configure(KEY_ENABLE_OUTPUT2_PZEM, false);
   config.configure(KEY_ENABLE_OUTPUT2_RELAY, false);
@@ -468,10 +472,10 @@ void yasolr_init_config() {
     } else if (key == KEY_ENABLE_OUTPUT2_PZEM) {
       reconfigureQueue.push(yasolr_configure_output2_pzem);
 
-    } else if (key == KEY_ENABLE_OUTPUT1_DIMMER) {
+    } else if (key == KEY_OUTPUT1_DIMMER_TYPE) {
       reconfigureQueue.push(yasolr_configure_output1_dimmer);
 
-    } else if (key == KEY_ENABLE_OUTPUT2_DIMMER) {
+    } else if (key == KEY_OUTPUT2_DIMMER_TYPE) {
       reconfigureQueue.push(yasolr_configure_output2_dimmer);
 
     } else if (key == KEY_ENABLE_OUTPUT1_RELAY) {
