@@ -153,7 +153,7 @@
 #define YASOLR_LBL_147 "Association du PZEM"
 #define YASOLR_LBL_148 "Réduction du bruit"
 #define YASOLR_LBL_149 "Micro-contrôleur: Mémoire Heap Libre Min à vie (bytes)"
-#define YASOLR_LBL_150 "JSY Serial"
+#define YASOLR_LBL_150 "Appareil de mesure"
 #define YASOLR_LBL_151 "Type"
 // #define YASOLR_LBL_152 "PZEM Serial"
 #define YASOLR_LBL_153 "Dupliqué"
