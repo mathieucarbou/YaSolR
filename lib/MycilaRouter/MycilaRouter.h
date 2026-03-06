@@ -166,12 +166,16 @@ namespace Mycila {
            * @brief Compute the load based on the grid voltage and the nominal load.
            */
           uint16_t computeLoad(float gridVoltage) const {
-            // detects the grid nominal voltage
-            const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
-            // compute the amperage of the given nominal power of connected load
-            const float resistance = static_cast<float>(nominalVoltage * nominalVoltage) / static_cast<float>(_nominalLoad);
-            // compute with the current voltage what the exact power of the load would be
-            return static_cast<uint16_t>(gridVoltage * gridVoltage / resistance);
+            if (gridVoltage > 0) {
+              // detects the grid nominal voltage
+              const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
+              // compute the amperage of the given nominal power of connected load
+              const float resistance = static_cast<float>(nominalVoltage * nominalVoltage) / static_cast<float>(_nominalLoad);
+              // compute with the current voltage what the exact power of the load would be
+              return static_cast<uint16_t>(gridVoltage * gridVoltage / resistance);
+            } else {
+              return 0;
+            }
           }
 
           void setTolerance(float tolerance) { _tolerance = tolerance; }
