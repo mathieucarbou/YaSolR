@@ -371,8 +371,7 @@ static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
 
 // display
 static dash::SeparatorCard<const char*> _displaySep(dashboard, YASOLR_LBL_127);
-static dash::ToggleButtonCard _display(dashboard, YASOLR_LBL_127);
-static dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, "SH1106,SH1107,SSD1306");
+static dash::DropdownCard<const char*> _displayType(dashboard, YASOLR_LBL_143, ",SH1106,SH1107,SSD1306");
 static dash::DropdownCard<uint16_t> _displayRotation(dashboard, YASOLR_LBL_144, "0,90,180,270");
 static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10, 1, "s");
 
@@ -964,12 +963,10 @@ void YaSolR::Website::begin() {
 
   // display
   _displaySep.setTab(_hardwareConfigTab);
-  _display.setTab(_hardwareConfigTab);
   _displayType.setTab(_hardwareConfigTab);
   _displayRotation.setTab(_hardwareConfigTab);
   _displaySpeed.setTab(_hardwareConfigTab);
-  _boolConfig(_display, KEY_ENABLE_DISPLAY);
-  _textConfig(_displayType, KEY_DISPLAY_TYPE);
+  _textConfig(_displayType, KEY_DISPLAY);
   _numConfig(_displayRotation, KEY_DISPLAY_ROTATION);
   _sliderConfig(_displaySpeed, KEY_DISPLAY_SPEED);
 
@@ -1414,8 +1411,7 @@ void YaSolR::Website::initCards() {
   _relay2Tolerance.setValue(config.get<uint8_t>(KEY_RELAY2_TOLERANCE));
 
   // display
-  _display.setValue(config.get<bool>(KEY_ENABLE_DISPLAY));
-  _displayType.setValue(config.getString(KEY_DISPLAY_TYPE));
+  _displayType.setValue(config.getString(KEY_DISPLAY));
   _displayRotation.setValue(config.get<uint16_t>(KEY_DISPLAY_ROTATION));
   _displaySpeed.setValue(config.get<uint8_t>(KEY_DISPLAY_SPEED));
 

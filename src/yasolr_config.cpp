@@ -56,6 +56,18 @@ static void migrate_old_keys() {
     migrate_relay_key("relay1_enable", KEY_RELAY1);
     migrate_relay_key("relay2_enable", KEY_RELAY2);
 
+    // migrate display
+    if (storage.hasKey("disp_enable")) {
+      if (storage.loadBool("disp_enable").value_or(false)) {
+        const char* type = storage.loadString(KEY_DISPLAY).value_or("SH1106").c_str();
+        ESP_LOGI(TAG, "disp_enable => %s=%s", KEY_DISPLAY, type);
+        storage.storeString(KEY_DISPLAY, type);
+      } else {
+        storage.remove(KEY_DISPLAY);
+      }
+      storage.remove("disp_enable");
+    }
+
     // vic_mb_enable
     if (storage.hasKey("vic_mb_enable")) {
       ESP_LOGI(TAG, "vic_mb_enable => " KEY_GRID_SOURCE "=Victron");
@@ -85,11 +97,10 @@ static void init_config() {
   config.configure(KEY_ADMIN_PASSWORD);
   config.configure(KEY_DISPLAY_ROTATION, static_cast<uint16_t>(0));
   config.configure(KEY_DISPLAY_SPEED, static_cast<uint8_t>(3));
-  config.configure(KEY_DISPLAY_TYPE, "SH1106");
+  config.configure(KEY_DISPLAY);
   config.configure(KEY_ENABLE_AP_MODE, false);
   config.configure(KEY_ENABLE_DEBUG_BOOT, false);
   config.configure(KEY_ENABLE_DEBUG, true);
-  config.configure(KEY_ENABLE_DISPLAY, false);
   config.configure(KEY_ENABLE_HA_DISCOVERY, false);
   config.configure(KEY_ENABLE_LIGHTS, false);
   config.configure(KEY_ENABLE_MQTT, false);
@@ -374,7 +385,7 @@ void yasolr_init_config() {
         haDiscoveryTask->resume();
       }
 
-    } else if (key == KEY_ENABLE_DISPLAY) {
+    } else if (key == KEY_DISPLAY) {
       reconfigureQueue.push(yasolr_configure_display);
 
     } else if (key == KEY_ENABLE_LIGHTS) {

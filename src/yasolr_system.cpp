@@ -6,8 +6,8 @@
 
 #include <esp_core_dump.h>
 
-Mycila::TaskManager coreTaskManager("loopTask");
-Mycila::TaskManager unsafeTaskManager("unsafeTask");
+Mycila::TaskManager coreTaskManager("loop");
+Mycila::TaskManager unsafeTaskManager("unsafe");
 
 Mycila::Task resetTask("Reset", Mycila::Task::Type::ONCE, []() {
   ESP_LOGW("YaSolR", "Resetting %s", Mycila::AppInfo.nameModelVersion.c_str());

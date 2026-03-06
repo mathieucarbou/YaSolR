@@ -106,7 +106,6 @@
 #define KEY_ENABLE_AP_MODE             "ap_mode_enable"
 #define KEY_ENABLE_DEBUG               "debug_enable"
 #define KEY_ENABLE_DEBUG_BOOT          "dbg_boot_enable"
-#define KEY_ENABLE_DISPLAY             "disp_enable"
 #define KEY_ENABLE_SYSTEM_DS18         "ds18_sys_enable"
 #define KEY_ENABLE_HA_DISCOVERY        "ha_disco_enable"
 #define KEY_ENABLE_LIGHTS              "lights_enable"
@@ -124,7 +123,7 @@
 
 #define KEY_DISPLAY_ROTATION               "disp_angle"
 #define KEY_DISPLAY_SPEED                  "disp_speed"
-#define KEY_DISPLAY_TYPE                   "disp_type"
+#define KEY_DISPLAY                        "disp_type"
 #define KEY_GRID_FREQUENCY                 "grid_freq"
 #define KEY_GRID_POWER_MQTT_TOPIC          "grid_pow_mqtt"
 #define KEY_GRID_SOURCE                    "grid_source"
