@@ -137,7 +137,7 @@ namespace Mycila {
 
       void updateMetrics(Metrics metrics) {
         if (_metrics.neverUpdated()) {
-          _metrics.setExpiration(_source == Source::MQTT ? 60000 : 10000);
+          _metrics.setExpiration(_source == Source::MQTT ? 120000 : 10000);
         }
         _metrics.update(std::move(metrics));
       }
