@@ -20,46 +20,6 @@ static Mycila::Task reconfigureTask("Reconfigure", []() {
   dashboardInitTask.resume();
 });
 
-static int8_t migrate_old_keys_uart(const char* old_key, const char* device) {
-  if (storage.hasKey(old_key)) {
-    const std::optional<Mycila::config::Str> uart = storage.loadString(old_key);
-    if (uart.has_value()) {
-      if (strcmp(uart.value().c_str(), "Serial1") == 0) {
-        ESP_LOGI(TAG, "%s=Serial1 => " KEY_PIN_SERIAL1_DEV "=%s", old_key, device);
-        storage.storeString(KEY_PIN_SERIAL1_DEV, device);
-        return 1;
-      } else if (strcmp(uart.value().c_str(), "Serial2") == 0) {
-        ESP_LOGI(TAG, "%s=Serial2 => " KEY_PIN_SERIAL2_DEV "=%s", old_key, device);
-        storage.storeString(KEY_PIN_SERIAL2_DEV, device);
-        return 2;
-      }
-    }
-    storage.remove(old_key);
-  }
-  return -1;
-}
-
-static void migrate_old_keys_uart_pin(const char* old_key, int8_t serial) {
-  if (storage.hasKey(old_key)) {
-    const std::optional<int8_t> pin = storage.loadI8(old_key);
-    if (pin.has_value()) {
-      switch (serial) {
-        case 1:
-          ESP_LOGI(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL1_RX "=%" PRIi8, old_key, pin.value(), pin.value());
-          storage.storeI8(KEY_PIN_SERIAL1_RX, pin.value());
-          break;
-        case 2:
-          ESP_LOGI(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL2_RX "=%" PRIi8, old_key, pin.value(), pin.value());
-          storage.storeI8(KEY_PIN_SERIAL2_RX, pin.value());
-          break;
-        default:
-          break;
-      }
-    }
-    storage.remove(old_key);
-  }
-}
-
 static void migrate_old_keys() {
   // migration from old config versions
   {
@@ -81,24 +41,6 @@ static void migrate_old_keys() {
   {
     storage.begin("YASOLR");
 
-    // jsy_uart (default: Serial2) => pin_serial1_dev or pin_serial2_dev
-    int8_t jsySerial = migrate_old_keys_uart("jsy_uart", YASOLR_UART_DEVICE_JSY);
-
-    // pin_jsy_rx => pin_serial2_rx or pin_serial1_rx
-    migrate_old_keys_uart_pin("pin_jsy_rx", jsySerial);
-
-    // pin_jsy_tx => pin_serial2_tx or pin_serial1_tx
-    migrate_old_keys_uart_pin("pin_jsy_tx", jsySerial);
-
-    // pzem_uart (default: Serial1) => pin_serial1_dev or pin_serial2_dev
-    int8_t pzemSerial = migrate_old_keys_uart("pzem_uart", YASOLR_UART_DEVICE_PZEM);
-
-    // pin_pzem_rx => pin_serial2_rx or pin_serial1_rx
-    migrate_old_keys_uart_pin("pin_pzem_rx", pzemSerial);
-
-    // pin_pzem_tx => pin_serial2_tx or pin_serial1_tx
-    migrate_old_keys_uart_pin("pin_pzem_tx", pzemSerial);
-
     // vic_mb_enable
     if (storage.hasKey("vic_mb_enable")) {
       ESP_LOGI(TAG, "vic_mb_enable => " KEY_GRID_SOURCE "=Victron");
@@ -107,25 +49,17 @@ static void migrate_old_keys() {
       storage.remove("vic_mb_enable");
     }
 
-    // jsyr_enable
-    if (storage.hasKey("jsyr_enable")) {
-      ESP_LOGE(TAG, "Key 'jsyr_enable' must be migrated manually: Grid Source must be set to the correct JSY used remotely");
-      if (storage.hasKey("grid_source")) // migrated ?
-        storage.remove("jsyr_enable");
-    }
-
-    // jsy_enable
-    if (storage.hasKey("jsy_enable")) {
-      ESP_LOGE(TAG, "Key 'jsy_enable' must be migrated manually: Grid Source must be set to the correct JSY Serial and channel");
-      if (storage.hasKey("grid_source")) // migrated ?
-        storage.remove("jsy_enable");
-    }
-
-    if (storage.hasKey("o1_dim_enable"))
-      storage.remove("o1_dim_enable");
-
-    if (storage.hasKey("o2_dim_enable"))
-      storage.remove("o2_dim_enable");
+    // these keys cannot be migrated
+    storage.remove("jsy_enable");
+    storage.remove("jsyr_enable");
+    storage.remove("jsy_uart");
+    storage.remove("pin_jsy_rx");
+    storage.remove("pin_jsy_tx");
+    storage.remove("pzem_uart");
+    storage.remove("pin_pzem_rx");
+    storage.remove("pin_pzem_tx");
+    storage.remove("o1_dim_enable");
+    storage.remove("o2_dim_enable");
 
     storage.end();
   }
@@ -182,7 +116,7 @@ static void init_config() {
   config.configure(KEY_OUTPUT1_DIMMER_MAX, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT1_DIMMER_MIN, static_cast<uint8_t>(0));
   config.configure(KEY_OUTPUT1_DIMMER_TEMP_LIMITER, static_cast<uint8_t>(0));
-  config.configure(KEY_OUTPUT1_DIMMER_TYPE, "");
+  config.configure(KEY_OUTPUT1_DIMMER_TYPE);
   config.configure(KEY_OUTPUT1_EXCESS_LIMITER, static_cast<uint16_t>(0));
   config.configure(KEY_OUTPUT1_EXCESS_RATIO, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
@@ -198,7 +132,7 @@ static void init_config() {
   config.configure(KEY_OUTPUT2_DIMMER_MAX, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT2_DIMMER_MIN, static_cast<uint8_t>(0));
   config.configure(KEY_OUTPUT2_DIMMER_TEMP_LIMITER, static_cast<uint8_t>(0));
-  config.configure(KEY_OUTPUT2_DIMMER_TYPE, "");
+  config.configure(KEY_OUTPUT2_DIMMER_TYPE);
   config.configure(KEY_OUTPUT2_EXCESS_LIMITER, static_cast<uint16_t>(0));
   config.configure(KEY_OUTPUT2_EXCESS_RATIO, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
@@ -232,10 +166,10 @@ static void init_config() {
   config.configure(KEY_PIN_RELAY1, static_cast<int8_t>(YASOLR_RELAY1_PIN));
   config.configure(KEY_PIN_RELAY2, static_cast<int8_t>(YASOLR_RELAY2_PIN));
   config.configure(KEY_PIN_ROUTER_DS18, static_cast<int8_t>(YASOLR_SYSTEM_TEMP_PIN));
-  config.configure(KEY_PIN_SERIAL1_DEV, YASOLR_UART_DEVICE_NONE);
+  config.configure(KEY_PIN_SERIAL1_DEV);
   config.configure(KEY_PIN_SERIAL1_RX, static_cast<int8_t>(YASOLR_SERIAL1_RX_PIN));
   config.configure(KEY_PIN_SERIAL1_TX, static_cast<int8_t>(YASOLR_SERIAL1_TX_PIN));
-  config.configure(KEY_PIN_SERIAL2_DEV, YASOLR_UART_DEVICE_NONE);
+  config.configure(KEY_PIN_SERIAL2_DEV);
   config.configure(KEY_PIN_SERIAL2_RX, static_cast<int8_t>(YASOLR_SERIAL2_RX_PIN));
   config.configure(KEY_PIN_SERIAL2_TX, static_cast<int8_t>(YASOLR_SERIAL2_TX_PIN));
   config.configure(KEY_PIN_ZCD, static_cast<int8_t>(YASOLR_ZCD_PIN));
