@@ -178,7 +178,7 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
 
 static Mycila::Relay* createBypassRelay(const char* keyType, const char* keyPin) {
   Mycila::Relay* relay = new Mycila::Relay();
-  relay->begin(config.get<int8_t>(keyPin), config.isEqual(keyType, YASOLR_RELAY_TYPE_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
+  relay->begin(config.get<int8_t>(keyPin), config.isEqual(keyType, YASOLR_RELAY_NC) ? Mycila::RelayType::NC : Mycila::RelayType::NO);
   if (relay->isEnabled()) {
     relay->listen([](bool state) {
       ESP_LOGI(TAG, "Output Relay changed to %s", state ? "ON" : "OFF");
@@ -199,8 +199,8 @@ static void ARDUINO_ISR_ATTR onZeroCross(int16_t delayUntilZero, void* arg) {
 }
 
 static void configure_zcd() {
-  if (yasolr_isZeroCrossDetectionRequired(config.getString(KEY_OUTPUT1_DIMMER_TYPE)) ||
-      yasolr_isZeroCrossDetectionRequired(config.getString(KEY_OUTPUT2_DIMMER_TYPE))) {
+  if (yasolr_isZeroCrossDetectionRequired(config.getString(KEY_OUTPUT1_DIMMER)) ||
+      yasolr_isZeroCrossDetectionRequired(config.getString(KEY_OUTPUT2_DIMMER))) {
     if (pulseAnalyzer == nullptr) {
       ESP_LOGI(TAG, "Enable ZCD Pulse Analyzer");
       pulseAnalyzer = new Mycila::PulseAnalyzer();
@@ -226,12 +226,12 @@ static void configure_zcd() {
 }
 
 void yasolr_configure_output1_dimmer() {
-  if (!config.isEmpty(KEY_OUTPUT1_DIMMER_TYPE)) {
+  if (!config.isEmpty(KEY_OUTPUT1_DIMMER)) {
     ESP_LOGI(TAG, "Enable Output 1 Dimmer");
     Mycila::Dimmer* old_dimmer1 = dimmer1;
     if (old_dimmer1)
       old_dimmer1->end();
-    dimmer1 = createDimmer(1, KEY_OUTPUT1_DIMMER_TYPE, KEY_PIN_OUTPUT1_DIMMER);
+    dimmer1 = createDimmer(1, KEY_OUTPUT1_DIMMER, KEY_PIN_OUTPUT1_DIMMER);
     dimmer1->setDutyCycleMin(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN) / 100.0f);
     dimmer1->setDutyCycleMax(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX) / 100.0f);
     dimmer1->setDutyCycleLimit(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_LIMIT) / 100.0f);
@@ -250,12 +250,12 @@ void yasolr_configure_output1_dimmer() {
 }
 
 void yasolr_configure_output2_dimmer() {
-  if (!config.isEmpty(KEY_OUTPUT2_DIMMER_TYPE)) {
+  if (!config.isEmpty(KEY_OUTPUT2_DIMMER)) {
     ESP_LOGI(TAG, "Enable Output 2 Dimmer");
     Mycila::Dimmer* old_dimmer2 = dimmer2;
     if (old_dimmer2)
       old_dimmer2->end();
-    dimmer2 = createDimmer(2, KEY_OUTPUT2_DIMMER_TYPE, KEY_PIN_OUTPUT2_DIMMER);
+    dimmer2 = createDimmer(2, KEY_OUTPUT2_DIMMER, KEY_PIN_OUTPUT2_DIMMER);
     dimmer2->setDutyCycleMin(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MIN) / 100.0f);
     dimmer2->setDutyCycleMax(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MAX) / 100.0f);
     dimmer2->setDutyCycleLimit(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_LIMIT) / 100.0f);
@@ -274,12 +274,12 @@ void yasolr_configure_output2_dimmer() {
 }
 
 void yasolr_configure_output1_bypass_relay() {
-  if (config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY)) {
+  if (!config.isEmpty(KEY_OUTPUT1_RELAY)) {
     ESP_LOGI(TAG, "Enable Output 1 Bypass Relay");
     Mycila::Relay* old_relay1 = bypassRelay1;
     if (old_relay1)
       old_relay1->end();
-    bypassRelay1 = createBypassRelay(KEY_OUTPUT1_RELAY_TYPE, KEY_PIN_OUTPUT1_RELAY);
+    bypassRelay1 = createBypassRelay(KEY_OUTPUT1_RELAY, KEY_PIN_OUTPUT1_RELAY);
     output1.setBypassRelay(bypassRelay1);
     delete old_relay1;
   } else {
@@ -294,12 +294,12 @@ void yasolr_configure_output1_bypass_relay() {
 }
 
 void yasolr_configure_output2_bypass_relay() {
-  if (config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY)) {
+  if (!config.isEmpty(KEY_OUTPUT2_RELAY)) {
     ESP_LOGI(TAG, "Enable Output 2 Bypass Relay");
     Mycila::Relay* old_relay2 = bypassRelay2;
     if (old_relay2)
       old_relay2->end();
-    bypassRelay2 = createBypassRelay(KEY_OUTPUT2_RELAY_TYPE, KEY_PIN_OUTPUT2_RELAY);
+    bypassRelay2 = createBypassRelay(KEY_OUTPUT2_RELAY, KEY_PIN_OUTPUT2_RELAY);
     output2.setBypassRelay(bypassRelay2);
     delete old_relay2;
   } else {

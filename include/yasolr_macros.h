@@ -62,7 +62,7 @@
 #define YASOLR_HIDDEN_PWD                    "********"
 #define YASOLR_LOG_FILE                      "/logs.txt"
 #define YASOLR_MQTT_KEEPALIVE                60
-#define YASOLR_MQTT_MEASUREMENT_EXPIRATION   60000
+#define YASOLR_MQTT_MEASUREMENT_EXPIRATION   120000
 #define YASOLR_MQTT_SERVER_CERT_FILE         "/mqtt-server.pem"
 #define YASOLR_MQTT_WILL_TOPIC               "/status"
 #define YASOLR_MQTT_WILL_TOPIC_HA            "~/status"
@@ -72,8 +72,9 @@
 #define YASOLR_PID_TRIGGER_MEASURE           "New Measure"
 #define YASOLR_PZEM_ADDRESS_OUTPUT1          0x01
 #define YASOLR_PZEM_ADDRESS_OUTPUT2          0x02
-#define YASOLR_RELAY_TYPE_NC                 "NC"
-#define YASOLR_RELAY_TYPE_NO                 "NO"
+#define YASOLR_RELAY_SELECTION               ",Normally Opened (NO),Normally Closed (NC)"
+#define YASOLR_RELAY_NC                      "Normally Closed (NC)"
+#define YASOLR_RELAY_NO                      "Normally Opened (NO)"
 #define YASOLR_SAFEBOOT_PARTITION_NAME       "safeboot" // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SAFEBOOT_PARTITION_SIZE       655360     // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SERIAL_BAUDRATE               115200
@@ -114,14 +115,10 @@
 #define KEY_ENABLE_OUTPUT1_AUTO_DIMMER "o1_ad_enable"
 #define KEY_ENABLE_OUTPUT1_DS18        "o1_ds18_enable"
 #define KEY_ENABLE_OUTPUT1_PZEM        "o1_pzem_enable"
-#define KEY_ENABLE_OUTPUT1_RELAY       "o1_relay_enable"
 #define KEY_ENABLE_OUTPUT2_AUTO_BYPASS "o2_ab_enable"
 #define KEY_ENABLE_OUTPUT2_AUTO_DIMMER "o2_ad_enable"
 #define KEY_ENABLE_OUTPUT2_DS18        "o2_ds18_enable"
 #define KEY_ENABLE_OUTPUT2_PZEM        "o2_pzem_enable"
-#define KEY_ENABLE_OUTPUT2_RELAY       "o2_relay_enable"
-#define KEY_ENABLE_RELAY1              "relay1_enable"
-#define KEY_ENABLE_RELAY2              "relay2_enable"
 
 // configuration keys
 
@@ -153,10 +150,10 @@
 #define KEY_OUTPUT1_DIMMER_MAX             "o1_dim_max"
 #define KEY_OUTPUT1_DIMMER_MIN             "o1_dim_min"
 #define KEY_OUTPUT1_DIMMER_TEMP_LIMITER    "o1_dim_max_t"
-#define KEY_OUTPUT1_DIMMER_TYPE            "o1_dim_type"
+#define KEY_OUTPUT1_DIMMER                 "o1_dim_type"
 #define KEY_OUTPUT1_EXCESS_LIMITER         "o1_excess_limit"
 #define KEY_OUTPUT1_EXCESS_RATIO           "o1_excess_ratio"
-#define KEY_OUTPUT1_RELAY_TYPE             "o1_relay_type"
+#define KEY_OUTPUT1_RELAY                  "o1_relay_type"
 #define KEY_OUTPUT1_RESISTANCE             "o1_resistance"
 #define KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC "o1_temp_mqtt"
 #define KEY_OUTPUT1_TEMPERATURE_START      "o1_temp_start"
@@ -169,10 +166,10 @@
 #define KEY_OUTPUT2_DIMMER_MAX             "o2_dim_max"
 #define KEY_OUTPUT2_DIMMER_MIN             "o2_dim_min"
 #define KEY_OUTPUT2_DIMMER_TEMP_LIMITER    "o2_dim_max_t"
-#define KEY_OUTPUT2_DIMMER_TYPE            "o2_dim_type"
+#define KEY_OUTPUT2_DIMMER                 "o2_dim_type"
 #define KEY_OUTPUT2_EXCESS_LIMITER         "o2_excess_limit"
 #define KEY_OUTPUT2_EXCESS_RATIO           "o2_excess_ratio"
-#define KEY_OUTPUT2_RELAY_TYPE             "o2_relay_type"
+#define KEY_OUTPUT2_RELAY                  "o2_relay_type"
 #define KEY_OUTPUT2_RESISTANCE             "o2_resistance"
 #define KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC "o2_temp_mqtt"
 #define KEY_OUTPUT2_TEMPERATURE_START      "o2_temp_start"
@@ -192,10 +189,10 @@
 #define KEY_PID_TRIGGER                    "pid_trigger"
 #define KEY_RELAY1_LOAD                    "relay1_load"
 #define KEY_RELAY1_TOLERANCE               "relay1_tol"
-#define KEY_RELAY1_TYPE                    "relay1_type"
+#define KEY_RELAY1                         "relay1_type"
 #define KEY_RELAY2_LOAD                    "relay2_load"
 #define KEY_RELAY2_TOLERANCE               "relay2_tol"
-#define KEY_RELAY2_TYPE                    "relay2_type"
+#define KEY_RELAY2                         "relay2_type"
 #define KEY_UDP_PORT                       "udp_port"
 #define KEY_VICTRON_MODBUS_PORT            "vic_mb_port"
 #define KEY_VICTRON_MODBUS_SERVER          "vic_mb_server"

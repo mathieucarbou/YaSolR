@@ -340,50 +340,32 @@ static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 
 // output 1 dimmer
-static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_050);
-static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
+static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046);
+static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_050, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::SeparatorCard<const char*> _output1PZEMSep1(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_133);
+static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
+static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
 static dash::ToggleButtonCard _output1PZEM(dashboard, "PZEM");
 static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
-// output 1 bypass relay
-static dash::SeparatorCard<const char*> _output1Sep2(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_134);
-static dash::ToggleButtonCard _output1Relay(dashboard, YASOLR_LBL_134);
-static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
-
-// output 1 ds18
-static dash::SeparatorCard<const char*> _output1Sep3(dashboard, YASOLR_LBL_046 ": " YASOLR_LBL_132);
-static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
-
-// output 2 dimmer
-static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_050);
-static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_151, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
+// output 2
+static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070);
+static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_050, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::SeparatorCard<const char*> _output2PZEMSep1(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_133);
+static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
+static dash::ToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_132);
 static dash::ToggleButtonCard _output2PZEM(dashboard, "PZEM");
 static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_147);
 
-// output 2 bypass relay
-static dash::SeparatorCard<const char*> _output2Sep2(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_134);
-static dash::ToggleButtonCard _output2Relay(dashboard, YASOLR_LBL_134);
-static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_151, "NO,NC");
-
-// output 2 ds18
-static dash::SeparatorCard<const char*> _output2Sep3(dashboard, YASOLR_LBL_070 ": " YASOLR_LBL_132);
-static dash::ToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_132);
-
 // relay1
 static dash::SeparatorCard<const char*> _relay1Sep(dashboard, YASOLR_LBL_074);
-static dash::ToggleButtonCard _relay1(dashboard, YASOLR_LBL_074);
-static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_151, "NO,NC");
+static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_074, YASOLR_RELAY_SELECTION);
 static dash::InputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
 static dash::PercentageSliderCard _relay1Tolerance(dashboard, YASOLR_LBL_198);
 
 // relay2
 static dash::SeparatorCard<const char*> _relay2Sep(dashboard, YASOLR_LBL_077);
-static dash::ToggleButtonCard _relay2(dashboard, YASOLR_LBL_077);
-static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_151, "NO,NC");
+static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_077, YASOLR_RELAY_SELECTION);
 static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
 
@@ -926,22 +908,19 @@ void YaSolR::Website::begin() {
   _output1Sep1.setTab(_hardwareConfigTab);
   _output1DimmerType.setTab(_hardwareConfigTab);
   _output1DimmerMapper.setTab(_hardwareConfigTab);
-  _output1PZEMSep1.setTab(_hardwareConfigTab);
+  _textConfig(_output1DimmerType, KEY_OUTPUT1_DIMMER);
+  _rangeConfig(_output1DimmerMapper, KEY_OUTPUT1_DIMMER_MIN, KEY_OUTPUT1_DIMMER_MAX);
+
+  // output 1 pzem
   _output1PZEM.setTab(_hardwareConfigTab);
   _output1PZEMSync.setTab(_hardwareConfigTab);
-  _textConfig(_output1DimmerType, KEY_OUTPUT1_DIMMER_TYPE);
-  _rangeConfig(_output1DimmerMapper, KEY_OUTPUT1_DIMMER_MIN, KEY_OUTPUT1_DIMMER_MAX);
   _boolConfig(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM);
 
   // output 1 bypass relay
-  _output1Sep2.setTab(_hardwareConfigTab);
-  _output1Relay.setTab(_hardwareConfigTab);
   _output1RelayType.setTab(_hardwareConfigTab);
-  _boolConfig(_output1Relay, KEY_ENABLE_OUTPUT1_RELAY);
-  _textConfig(_output1RelayType, KEY_OUTPUT1_RELAY_TYPE);
+  _textConfig(_output1RelayType, KEY_OUTPUT1_RELAY);
 
   // output 1 ds18
-  _output1Sep3.setTab(_hardwareConfigTab);
   _output1DS18.setTab(_hardwareConfigTab);
   _boolConfig(_output1DS18, KEY_ENABLE_OUTPUT1_DS18);
 
@@ -949,44 +928,37 @@ void YaSolR::Website::begin() {
   _output2Sep1.setTab(_hardwareConfigTab);
   _output2DimmerType.setTab(_hardwareConfigTab);
   _output2DimmerMapper.setTab(_hardwareConfigTab);
-  _output2PZEMSep1.setTab(_hardwareConfigTab);
+  _textConfig(_output2DimmerType, KEY_OUTPUT2_DIMMER);
+  _rangeConfig(_output2DimmerMapper, KEY_OUTPUT2_DIMMER_MIN, KEY_OUTPUT2_DIMMER_MAX);
+
+  // output 2 pzem
   _output2PZEM.setTab(_hardwareConfigTab);
   _output2PZEMSync.setTab(_hardwareConfigTab);
-  _textConfig(_output2DimmerType, KEY_OUTPUT2_DIMMER_TYPE);
-  _rangeConfig(_output2DimmerMapper, KEY_OUTPUT2_DIMMER_MIN, KEY_OUTPUT2_DIMMER_MAX);
   _boolConfig(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM);
 
   // output 2 bypass relay
-  _output2Sep2.setTab(_hardwareConfigTab);
-  _output2Relay.setTab(_hardwareConfigTab);
   _output2RelayType.setTab(_hardwareConfigTab);
-  _boolConfig(_output2Relay, KEY_ENABLE_OUTPUT2_RELAY);
-  _textConfig(_output2RelayType, KEY_OUTPUT2_RELAY_TYPE);
+  _textConfig(_output2RelayType, KEY_OUTPUT2_RELAY);
 
   // output 2 ds18
-  _output2Sep3.setTab(_hardwareConfigTab);
   _output2DS18.setTab(_hardwareConfigTab);
   _boolConfig(_output2DS18, KEY_ENABLE_OUTPUT2_DS18);
 
   // relay1
   _relay1Sep.setTab(_hardwareConfigTab);
-  _relay1.setTab(_hardwareConfigTab);
   _relay1Type.setTab(_hardwareConfigTab);
   _relay1Load.setTab(_hardwareConfigTab);
   _relay1Tolerance.setTab(_hardwareConfigTab);
-  _boolConfig(_relay1, KEY_ENABLE_RELAY1);
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
-  _textConfig(_relay1Type, KEY_RELAY1_TYPE);
+  _textConfig(_relay1Type, KEY_RELAY1);
   _sliderConfig(_relay1Tolerance, KEY_RELAY1_TOLERANCE);
 
   // relay2
   _relay2Sep.setTab(_hardwareConfigTab);
-  _relay2.setTab(_hardwareConfigTab);
   _relay2Type.setTab(_hardwareConfigTab);
   _relay2Load.setTab(_hardwareConfigTab);
   _relay2Tolerance.setTab(_hardwareConfigTab);
-  _boolConfig(_relay2, KEY_ENABLE_RELAY2);
-  _textConfig(_relay2Type, KEY_RELAY2_TYPE);
+  _textConfig(_relay2Type, KEY_RELAY2);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _sliderConfig(_relay2Tolerance, KEY_RELAY2_TOLERANCE);
 
@@ -1155,17 +1127,17 @@ void YaSolR::Website::initCards() {
   const bool pidViewEnabled = realTimePIDEnabled();
   const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
 
-  const bool dimmer1Enabled = !config.isEmpty(KEY_OUTPUT1_DIMMER_TYPE);
-  const bool dimmer1CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
-  const bool output1RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY);
+  const bool dimmer1Enabled = !config.isEmpty(KEY_OUTPUT1_DIMMER);
+  const bool dimmer1CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT1_DIMMER));
+  const bool output1RelayEnabled = !config.isEmpty(KEY_OUTPUT1_RELAY);
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   const bool pzem1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM);
 
-  const bool dimmer2Enabled = !config.isEmpty(KEY_OUTPUT2_DIMMER_TYPE);
-  const bool dimmer2CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
-  const bool output2RelayEnabled = config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY);
+  const bool dimmer2Enabled = !config.isEmpty(KEY_OUTPUT2_DIMMER);
+  const bool dimmer2CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT2_DIMMER));
+  const bool output2RelayEnabled = !config.isEmpty(KEY_OUTPUT2_RELAY);
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
@@ -1210,8 +1182,8 @@ void YaSolR::Website::initCards() {
 
   // overview
 
-  _relay1Switch.setDisplay(config.get<bool>(KEY_ENABLE_RELAY1));
-  _relay2Switch.setDisplay(config.get<bool>(KEY_ENABLE_RELAY2));
+  _relay1Switch.setDisplay(!config.isEmpty(KEY_RELAY1));
+  _relay2Switch.setDisplay(!config.isEmpty(KEY_RELAY2));
   _routerDS18State.setDisplay(config.get<bool>(KEY_ENABLE_SYSTEM_DS18));
 
   // tab: output 1
@@ -1404,36 +1376,40 @@ void YaSolR::Website::initCards() {
   _victronPort.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::VICTRON));
 
   // output 1 dimmer
-  _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER_TYPE));
+  _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER));
   _output1DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX)});
+
+  // output 1 pzem
   _output1PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM));
   _output1PZEMSync.setDisplay(dimmer1Enabled && pzem1Enabled && onlyOneUartForAllPZEM);
+
+  // output 1 ds18
   _output1DS18.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_DS18));
 
   // output 1 bypass relay
-  _output1Relay.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_RELAY));
-  _output1RelayType.setValue(config.getString(KEY_OUTPUT1_RELAY_TYPE));
+  _output1RelayType.setValue(config.getString(KEY_OUTPUT1_RELAY));
 
   // output 2 dimmer
-  _output2DimmerType.setValue(config.getString(KEY_OUTPUT2_DIMMER_TYPE));
+  _output2DimmerType.setValue(config.getString(KEY_OUTPUT2_DIMMER));
   _output2DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MAX)});
+
+  // output 2 pzem
   _output2PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM));
   _output2PZEMSync.setDisplay(dimmer2Enabled && pzem2Enabled && onlyOneUartForAllPZEM && onlyOneUartForAllPZEM);
+
+  // output 2 ds18
   _output2DS18.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_DS18));
 
   // output 2 bypass relay
-  _output2Relay.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_RELAY));
-  _output2RelayType.setValue(config.getString(KEY_OUTPUT2_RELAY_TYPE));
+  _output2RelayType.setValue(config.getString(KEY_OUTPUT2_RELAY));
 
   // relay1
-  _relay1.setValue(config.get<bool>(KEY_ENABLE_RELAY1));
-  _relay1Type.setValue(config.getString(KEY_RELAY1_TYPE));
+  _relay1Type.setValue(config.getString(KEY_RELAY1));
   _relay1Load.setValue(config.get<uint16_t>(KEY_RELAY1_LOAD));
   _relay1Tolerance.setValue(config.get<uint8_t>(KEY_RELAY1_TOLERANCE));
 
   // relay2
-  _relay2.setValue(config.get<bool>(KEY_ENABLE_RELAY2));
-  _relay2Type.setValue(config.getString(KEY_RELAY2_TYPE));
+  _relay2Type.setValue(config.getString(KEY_RELAY2));
   _relay2Load.setValue(config.get<uint16_t>(KEY_RELAY2_LOAD));
   _relay2Tolerance.setValue(config.get<uint8_t>(KEY_RELAY2_TOLERANCE));
 
@@ -1745,7 +1721,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // output 1 dimmer + resistance
-  if (!config.isEmpty(KEY_OUTPUT1_DIMMER_TYPE)) {
+  if (!config.isEmpty(KEY_OUTPUT1_DIMMER)) {
     if (!output1.isDimmerEnabled()) {
       errors[count++] = ERR_ACT_O1_DIMMER;
     } else if (!output1.isDimmerOnline()) {
@@ -1755,7 +1731,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // output 2 dimmer + resistance
-  if (!config.isEmpty(KEY_OUTPUT2_DIMMER_TYPE)) {
+  if (!config.isEmpty(KEY_OUTPUT2_DIMMER)) {
     if (!output2.isDimmerEnabled()) {
       errors[count++] = ERR_ACT_O2_DIMMER;
     } else if (!output2.isDimmerOnline()) {

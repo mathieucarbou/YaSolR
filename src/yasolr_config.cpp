@@ -20,18 +20,27 @@ static Mycila::Task reconfigureTask("Reconfigure", []() {
   dashboardInitTask.resume();
 });
 
+static void migrate_relay_key(const char* enableKey, const char* typeKey) {
+  if (storage.hasKey(enableKey)) {
+    if (storage.loadBool(enableKey).value_or(false)) {
+      const char* type = strcmp(storage.loadString(typeKey).value_or("").c_str(), "NC") == 0 ? YASOLR_RELAY_NC : YASOLR_RELAY_NO;
+      ESP_LOGI(TAG, "%s => %s=%s", enableKey, typeKey, type);
+      storage.storeString(typeKey, type);
+    } else {
+      storage.remove(typeKey);
+    }
+    storage.remove(enableKey);
+  }
+}
+
 static void migrate_old_keys() {
   // migration from old config versions
   {
     migration.begin("YASOLR");
     migration.migrate<Mycila::config::Str>(KEY_GRID_FREQUENCY, [](const Mycila::config::Str& from) -> std::optional<Mycila::config::Value> {
-      if (from == "50 Hz") {
-        return static_cast<uint8_t>(50);
-      } else if (from == "60 Hz") {
-        return static_cast<uint8_t>(60);
-      } else {
-        return static_cast<uint8_t>(0);
-      }
+      if (from == "50 Hz") return static_cast<uint8_t>(50);
+      if (from == "60 Hz") return static_cast<uint8_t>(60);
+      return static_cast<uint8_t>(0);
     });
     migration.migrateFromString();
     migration.end();
@@ -40,6 +49,12 @@ static void migrate_old_keys() {
   // migrate old keys and values
   {
     storage.begin("YASOLR");
+
+    // migrate relay
+    migrate_relay_key("o1_relay_enable", KEY_OUTPUT1_RELAY);
+    migrate_relay_key("o2_relay_enable", KEY_OUTPUT2_RELAY);
+    migrate_relay_key("relay1_enable", KEY_RELAY1);
+    migrate_relay_key("relay2_enable", KEY_RELAY2);
 
     // vic_mb_enable
     if (storage.hasKey("vic_mb_enable")) {
@@ -82,14 +97,10 @@ static void init_config() {
   config.configure(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, false);
   config.configure(KEY_ENABLE_OUTPUT1_DS18, false);
   config.configure(KEY_ENABLE_OUTPUT1_PZEM, false);
-  config.configure(KEY_ENABLE_OUTPUT1_RELAY, false);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, false);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, false);
   config.configure(KEY_ENABLE_OUTPUT2_DS18, false);
   config.configure(KEY_ENABLE_OUTPUT2_PZEM, false);
-  config.configure(KEY_ENABLE_OUTPUT2_RELAY, false);
-  config.configure(KEY_ENABLE_RELAY1, false);
-  config.configure(KEY_ENABLE_RELAY2, false);
   config.configure(KEY_ENABLE_SYSTEM_DS18, false);
   config.configure(KEY_GRID_FREQUENCY, static_cast<uint8_t>(0));
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
@@ -116,10 +127,10 @@ static void init_config() {
   config.configure(KEY_OUTPUT1_DIMMER_MAX, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT1_DIMMER_MIN, static_cast<uint8_t>(0));
   config.configure(KEY_OUTPUT1_DIMMER_TEMP_LIMITER, static_cast<uint8_t>(0));
-  config.configure(KEY_OUTPUT1_DIMMER_TYPE);
+  config.configure(KEY_OUTPUT1_DIMMER);
   config.configure(KEY_OUTPUT1_EXCESS_LIMITER, static_cast<uint16_t>(0));
   config.configure(KEY_OUTPUT1_EXCESS_RATIO, static_cast<uint8_t>(100));
-  config.configure(KEY_OUTPUT1_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
+  config.configure(KEY_OUTPUT1_RELAY);
   config.configure(KEY_OUTPUT1_RESISTANCE, 0.0f);
   config.configure(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT1_TEMPERATURE_START, static_cast<uint8_t>(50));
@@ -132,10 +143,10 @@ static void init_config() {
   config.configure(KEY_OUTPUT2_DIMMER_MAX, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT2_DIMMER_MIN, static_cast<uint8_t>(0));
   config.configure(KEY_OUTPUT2_DIMMER_TEMP_LIMITER, static_cast<uint8_t>(0));
-  config.configure(KEY_OUTPUT2_DIMMER_TYPE);
+  config.configure(KEY_OUTPUT2_DIMMER);
   config.configure(KEY_OUTPUT2_EXCESS_LIMITER, static_cast<uint16_t>(0));
   config.configure(KEY_OUTPUT2_EXCESS_RATIO, static_cast<uint8_t>(100));
-  config.configure(KEY_OUTPUT2_RELAY_TYPE, YASOLR_RELAY_TYPE_NO);
+  config.configure(KEY_OUTPUT2_RELAY);
   config.configure(KEY_OUTPUT2_RESISTANCE, 0.0f);
   config.configure(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT2_TEMPERATURE_START, static_cast<uint8_t>(50));
@@ -175,10 +186,10 @@ static void init_config() {
   config.configure(KEY_PIN_ZCD, static_cast<int8_t>(YASOLR_ZCD_PIN));
   config.configure(KEY_RELAY1_LOAD, static_cast<uint16_t>(0));
   config.configure(KEY_RELAY1_TOLERANCE, static_cast<uint8_t>(7));
-  config.configure(KEY_RELAY1_TYPE, YASOLR_RELAY_TYPE_NO);
+  config.configure(KEY_RELAY1);
   config.configure(KEY_RELAY2_LOAD, static_cast<uint16_t>(0));
   config.configure(KEY_RELAY2_TOLERANCE, static_cast<uint8_t>(7));
-  config.configure(KEY_RELAY2_TYPE, YASOLR_RELAY_TYPE_NO);
+  config.configure(KEY_RELAY2);
   config.configure(KEY_UDP_PORT, static_cast<uint16_t>(YASOLR_UDP_PORT));
   config.configure(KEY_VICTRON_MODBUS_PORT, static_cast<uint16_t>(502));
   config.configure(KEY_VICTRON_MODBUS_SERVER);
@@ -378,10 +389,10 @@ void yasolr_init_config() {
     } else if (key == KEY_ENABLE_OUTPUT2_DS18) {
       reconfigureQueue.push(yasolr_configure_output2_ds18);
 
-    } else if (key == KEY_ENABLE_RELAY1) {
+    } else if (key == KEY_RELAY1) {
       reconfigureQueue.push(yasolr_configure_relay1);
 
-    } else if (key == KEY_ENABLE_RELAY2) {
+    } else if (key == KEY_RELAY2) {
       reconfigureQueue.push(yasolr_configure_relay2);
 
     } else if (key == KEY_GRID_SOURCE) {
@@ -406,16 +417,16 @@ void yasolr_init_config() {
     } else if (key == KEY_ENABLE_OUTPUT2_PZEM) {
       reconfigureQueue.push(yasolr_configure_output2_pzem);
 
-    } else if (key == KEY_OUTPUT1_DIMMER_TYPE) {
+    } else if (key == KEY_OUTPUT1_DIMMER) {
       reconfigureQueue.push(yasolr_configure_output1_dimmer);
 
-    } else if (key == KEY_OUTPUT2_DIMMER_TYPE) {
+    } else if (key == KEY_OUTPUT2_DIMMER) {
       reconfigureQueue.push(yasolr_configure_output2_dimmer);
 
-    } else if (key == KEY_ENABLE_OUTPUT1_RELAY) {
+    } else if (key == KEY_OUTPUT1_RELAY) {
       reconfigureQueue.push(yasolr_configure_output1_bypass_relay);
 
-    } else if (key == KEY_ENABLE_OUTPUT2_RELAY) {
+    } else if (key == KEY_OUTPUT2_RELAY) {
       reconfigureQueue.push(yasolr_configure_output2_bypass_relay);
     }
 
