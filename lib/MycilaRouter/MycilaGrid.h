@@ -16,18 +16,55 @@
 namespace Mycila {
   class Grid {
     public:
-      enum class Source {
+      enum class SourceKind {
         UNKNOWN,
         JSY,
         JSY_REMOTE,
         MQTT,
-        PZEM,
         VICTRON,
+      };
+
+      enum class Source {
+        UNKNOWN,
+
+        MQTT,
+        VICTRON,
+
+        JSY_MK_163_SERIAL1,
+        JSY_MK_163_SERIAL2,
+        JSY_MK_163_REMOTE,
+
+        JSY_MK_227_SERIAL1,
+        JSY_MK_227_SERIAL2,
+        JSY_MK_227_REMOTE,
+
+        JSY_MK_229_SERIAL1,
+        JSY_MK_229_SERIAL2,
+        JSY_MK_229_REMOTE,
+
+        JSY_MK_193_CH1_SERIAL1,
+        JSY_MK_193_CH1_SERIAL2,
+        JSY_MK_193_CH1_REMOTE,
+
+        JSY_MK_193_CH2_SERIAL1,
+        JSY_MK_193_CH2_SERIAL2,
+        JSY_MK_193_CH2_REMOTE,
+
+        JSY_MK_194_CH1_SERIAL1,
+        JSY_MK_194_CH1_SERIAL2,
+        JSY_MK_194_CH1_REMOTE,
+
+        JSY_MK_194_CH2_SERIAL1,
+        JSY_MK_194_CH2_SERIAL2,
+        JSY_MK_194_CH2_REMOTE,
+
+        JSY_MK_333_SERIAL1,
+        JSY_MK_333_SERIAL2,
+        JSY_MK_333_REMOTE,
       };
 
       class Metrics {
         public:
-          Source source = Source::UNKNOWN;
           float apparentPower = NAN;
           float current = NAN;
           uint32_t energy = 0;
@@ -39,7 +76,6 @@ namespace Mycila {
 
           Metrics() = default;
           Metrics(Metrics&& other) noexcept {
-            source = other.source;
             apparentPower = other.apparentPower;
             current = other.current;
             energy = other.energy;
@@ -49,7 +85,6 @@ namespace Mycila {
             powerFactor = other.powerFactor;
             voltage = other.voltage;
 
-            other.source = Source::UNKNOWN;
             other.apparentPower = NAN;
             other.current = NAN;
             other.energy = 0;
@@ -61,7 +96,6 @@ namespace Mycila {
           }
           Metrics& operator=(Metrics&& other) noexcept {
             if (this != &other) {
-              source = other.source;
               apparentPower = other.apparentPower;
               current = other.current;
               energy = other.energy;
@@ -71,7 +105,6 @@ namespace Mycila {
               powerFactor = other.powerFactor;
               voltage = other.voltage;
 
-              other.source = Source::UNKNOWN;
               other.apparentPower = NAN;
               other.current = NAN;
               other.energy = 0;
@@ -89,180 +122,153 @@ namespace Mycila {
 
       // sources
 
-      void deleteMetrics(Source source) {
-        switch (source) {
-          case Source::JSY:
-            delete _jsyMetrics;
-            _jsyMetrics = nullptr;
-            break;
-          case Source::JSY_REMOTE:
-            delete _jsyRemoteMetrics;
-            _jsyRemoteMetrics = nullptr;
-            break;
-          case Source::MQTT:
-            delete _mqttMetrics;
-            _mqttMetrics = nullptr;
-            break;
-          case Source::PZEM:
-            delete _pzemMetrics;
-            _pzemMetrics = nullptr;
-            break;
-          case Source::VICTRON:
-            delete _victronMetrics;
-            _victronMetrics = nullptr;
-            break;
-          default:
-            throw std::runtime_error("Unknown Grid Source");
-        }
-      }
+      void setSource(Source source) { this->_source = source; }
+      Source getSource() const { return _source; }
+
+      void setSource(const char* src) { setSource(sourceFromString(src)); }
+      const char* getSourceString() const { return sourceToString(_source); }
+
+      SourceKind getSourceKind() { return sourceToKind(_source); }
+      bool isUsing(SourceKind kind) const { return sourceToKind(_source) == kind; }
+
+      bool isUsing(Source source) const { return _source == source; }
+
+      void clearMetrics() { _metrics.reset(); }
 
       void updateMetrics(Metrics metrics) {
-        switch (metrics.source) {
-          case Source::JSY: {
-            if (_jsyMetrics == nullptr) {
-              _jsyMetrics = new ExpiringValue<Metrics>();
-              _jsyMetrics->setExpiration(10000);
-            }
-            _jsyMetrics->update(std::move(metrics));
-            break;
-          }
-          case Source::JSY_REMOTE: {
-            if (_jsyRemoteMetrics == nullptr) {
-              _jsyRemoteMetrics = new ExpiringValue<Metrics>();
-              _jsyRemoteMetrics->setExpiration(10000);
-            }
-            _jsyRemoteMetrics->update(std::move(metrics));
-            break;
-          }
-          case Source::MQTT: {
-            if (_mqttMetrics == nullptr) {
-              _mqttMetrics = new ExpiringValue<Metrics>();
-              _mqttMetrics->setExpiration(60000);
-            }
-            _mqttMetrics->update(std::move(metrics));
-            break;
-          }
-          case Source::PZEM: {
-            if (_pzemMetrics == nullptr) {
-              _pzemMetrics = new ExpiringValue<Metrics>();
-              _pzemMetrics->setExpiration(10000);
-            }
-            _pzemMetrics->update(std::move(metrics));
-            break;
-          }
-          case Source::VICTRON: {
-            if (_victronMetrics == nullptr) {
-              _victronMetrics = new ExpiringValue<Metrics>();
-              _victronMetrics->setExpiration(10000);
-            }
-            _victronMetrics->update(std::move(metrics));
-            break;
-          }
-          default:
-            break;
+        if (_metrics.neverUpdated()) {
+          _metrics.setExpiration(_source == Source::MQTT ? 60000 : 10000);
         }
+        _metrics.update(std::move(metrics));
       }
 
-      bool isConnected() const { return getVoltage().has_value(); }
-
-      bool isUsing(Source source) const {
-        return currentSource().has_value() && currentSource().value() == source;
-      }
-
-      std::optional<Source> currentSource() const {
-        if (_mqttMetrics != nullptr && _mqttMetrics->isPresent() && !std::isnan(_mqttMetrics->get().power)) {
-          return Source::MQTT;
-        }
-        if (_victronMetrics != nullptr && _victronMetrics->isPresent() && !std::isnan(_victronMetrics->get().power)) {
-          return Source::VICTRON;
-        }
-        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent() && !std::isnan(_jsyRemoteMetrics->get().power)) {
-          return Source::JSY_REMOTE;
-        }
-        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent() && !std::isnan(_jsyMetrics->get().power)) {
-          return Source::JSY;
-        }
-        return std::nullopt;
-      }
+      bool isConnected() const { return _metrics.isPresent() && _metrics.get().voltage > 0; }
 
       std::optional<float> getPower() const {
-        if (_mqttMetrics != nullptr && _mqttMetrics->isPresent() && !std::isnan(_mqttMetrics->get().power)) {
-          return _mqttMetrics->get().power;
-        }
-        if (_victronMetrics != nullptr && _victronMetrics->isPresent() && !std::isnan(_victronMetrics->get().power)) {
-          return _victronMetrics->get().power;
-        }
-        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent() && !std::isnan(_jsyRemoteMetrics->get().power)) {
-          return _jsyRemoteMetrics->get().power;
-        }
-        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent() && !std::isnan(_jsyMetrics->get().power)) {
-          return _jsyMetrics->get().power;
+        if (_metrics.isPresent() && !std::isnan(_metrics.get().power)) {
+          return _metrics.get().power;
         }
         return std::nullopt;
       }
 
       std::optional<float> getVoltage() const {
-        if (_mqttMetrics != nullptr && _mqttMetrics->isPresent() && _mqttMetrics->get().voltage > 0) {
-          return _mqttMetrics->get().voltage;
-        }
-        if (_victronMetrics != nullptr && _victronMetrics->isPresent() && _victronMetrics->get().voltage > 0) {
-          return _victronMetrics->get().voltage;
-        }
-        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent() && _jsyRemoteMetrics->get().voltage > 0) {
-          return _jsyRemoteMetrics->get().voltage;
-        }
-        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent() && _jsyMetrics->get().voltage > 0) {
-          return _jsyMetrics->get().voltage;
-        }
-        if (_pzemMetrics != nullptr && _pzemMetrics->isPresent() && _pzemMetrics->get().voltage > 0) {
-          return _pzemMetrics->get().voltage;
+        if (_metrics.isPresent() && _metrics.get().voltage > 0) {
+          return _metrics.get().voltage;
         }
         return std::nullopt;
       }
 
       std::optional<float> getFrequency() const {
-        if (_mqttMetrics != nullptr && _mqttMetrics->isPresent() && _mqttMetrics->get().frequency > 0) {
-          return _mqttMetrics->get().frequency;
-        }
-        if (_victronMetrics != nullptr && _victronMetrics->isPresent() && _victronMetrics->get().frequency > 0) {
-          return _victronMetrics->get().frequency;
-        }
-        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent() && _jsyRemoteMetrics->get().frequency > 0) {
-          return _jsyRemoteMetrics->get().frequency;
-        }
-        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent() && _jsyMetrics->get().frequency > 0) {
-          return _jsyMetrics->get().frequency;
-        }
-        if (_pzemMetrics != nullptr && _pzemMetrics->isPresent() && _pzemMetrics->get().frequency > 0) {
-          return _pzemMetrics->get().frequency;
+        if (_metrics.isPresent() && _metrics.get().frequency > 0) {
+          return _metrics.get().frequency;
         }
         return std::nullopt;
       }
 
       // get the current grid measurements
-      // returns false if no measurements are available
-      // - if MQTT is connected, it has priority
-      // - if JSY remote is connected, it has second priority
-      // - if JSY is connected, it has lowest priority
       bool readMeasurements(Metrics& metrics) const {
-        if (_mqttMetrics != nullptr && _mqttMetrics->isPresent()) {
-          memcpy(&metrics, &_mqttMetrics->get(), sizeof(Metrics));
-          return true;
-        }
-        if (_victronMetrics != nullptr && _victronMetrics->isPresent()) {
-          memcpy(&metrics, &_victronMetrics->get(), sizeof(Metrics));
-          return true;
-        }
-        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent()) {
-          memcpy(&metrics, &_jsyRemoteMetrics->get(), sizeof(Metrics));
-          return true;
-        }
-        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent()) {
-          memcpy(&metrics, &_jsyMetrics->get(), sizeof(Metrics));
+        if (_metrics.isPresent()) {
+          memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
           return true;
         }
         return false;
       }
+
+      static SourceKind sourceToKind(Source source) {
+        switch (source) {
+          case Source::MQTT:                   return SourceKind::MQTT;
+          case Source::VICTRON:                return SourceKind::VICTRON;
+          case Source::JSY_MK_163_SERIAL1:     return SourceKind::JSY;
+          case Source::JSY_MK_163_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_163_REMOTE:      return SourceKind::JSY_REMOTE;
+          case Source::JSY_MK_227_SERIAL1:     return SourceKind::JSY;
+          case Source::JSY_MK_227_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_227_REMOTE:      return SourceKind::JSY_REMOTE;
+          case Source::JSY_MK_229_SERIAL1:     return SourceKind::JSY;
+          case Source::JSY_MK_229_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_229_REMOTE:      return SourceKind::JSY_REMOTE;
+          case Source::JSY_MK_193_CH1_SERIAL1: return SourceKind::JSY;
+          case Source::JSY_MK_193_CH1_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_193_CH1_REMOTE:  return SourceKind::JSY_REMOTE;
+          case Source::JSY_MK_193_CH2_SERIAL1: return SourceKind::JSY;
+          case Source::JSY_MK_193_CH2_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_193_CH2_REMOTE:  return SourceKind::JSY_REMOTE;
+          case Source::JSY_MK_194_CH1_SERIAL1: return SourceKind::JSY;
+          case Source::JSY_MK_194_CH1_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_194_CH1_REMOTE:  return SourceKind::JSY_REMOTE;
+          case Source::JSY_MK_194_CH2_SERIAL1: return SourceKind::JSY;
+          case Source::JSY_MK_194_CH2_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_194_CH2_REMOTE:  return SourceKind::JSY_REMOTE;
+          case Source::JSY_MK_333_SERIAL1:     return SourceKind::JSY;
+          case Source::JSY_MK_333_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_333_REMOTE:      return SourceKind::JSY_REMOTE;
+          default:                             return SourceKind::UNKNOWN;
+        }
+      }
+
+      static const char* sourceToString(Source source) {
+        switch (source) {
+          case Source::MQTT:                   return "MQTT";
+          case Source::VICTRON:                return "Victron";
+          case Source::JSY_MK_163_SERIAL1:     return "JSY-MK-163 (Serial1)";
+          case Source::JSY_MK_163_SERIAL2:     return "JSY-MK-163 (Serial2)";
+          case Source::JSY_MK_163_REMOTE:      return "JSY-MK-163 (Remote)";
+          case Source::JSY_MK_227_SERIAL1:     return "JSY-MK-227 (Serial1)";
+          case Source::JSY_MK_227_SERIAL2:     return "JSY-MK-227 (Serial2)";
+          case Source::JSY_MK_227_REMOTE:      return "JSY-MK-227 (Remote)";
+          case Source::JSY_MK_229_SERIAL1:     return "JSY-MK-229 (Serial1)";
+          case Source::JSY_MK_229_SERIAL2:     return "JSY-MK-229 (Serial2)";
+          case Source::JSY_MK_229_REMOTE:      return "JSY-MK-229 (Remote)";
+          case Source::JSY_MK_193_CH1_SERIAL1: return "JSY-MK-193 Channel 1 (Serial1)";
+          case Source::JSY_MK_193_CH1_SERIAL2: return "JSY-MK-193 Channel 1 (Serial2)";
+          case Source::JSY_MK_193_CH1_REMOTE:  return "JSY-MK-193 Channel 1 (Remote)";
+          case Source::JSY_MK_193_CH2_SERIAL1: return "JSY-MK-193 Channel 2 (Serial1)";
+          case Source::JSY_MK_193_CH2_SERIAL2: return "JSY-MK-193 Channel 2 (Serial2)";
+          case Source::JSY_MK_193_CH2_REMOTE:  return "JSY-MK-193 Channel 2 (Remote)";
+          case Source::JSY_MK_194_CH1_SERIAL1: return "JSY-MK-194 Channel 1 (Serial1)";
+          case Source::JSY_MK_194_CH1_SERIAL2: return "JSY-MK-194 Channel 1 (Serial2)";
+          case Source::JSY_MK_194_CH1_REMOTE:  return "JSY-MK-194 Channel 1 (Remote)";
+          case Source::JSY_MK_194_CH2_SERIAL1: return "JSY-MK-194 Channel 2 (Serial1)";
+          case Source::JSY_MK_194_CH2_SERIAL2: return "JSY-MK-194 Channel 2 (Serial2)";
+          case Source::JSY_MK_194_CH2_REMOTE:  return "JSY-MK-194 Channel 2 (Remote)";
+          case Source::JSY_MK_333_SERIAL1:     return "JSY-MK-333 (Serial1)";
+          case Source::JSY_MK_333_SERIAL2:     return "JSY-MK-333 (Serial2)";
+          case Source::JSY_MK_333_REMOTE:      return "JSY-MK-333 (Remote)";
+          default:                             return "Unknown";
+        }
+      }
+
+      static Source sourceFromString(const char* str) {
+        if (strcmp(str, "MQTT") == 0) return Source::MQTT;
+        if (strcmp(str, "Victron") == 0) return Source::VICTRON;
+        if (strcmp(str, "JSY-MK-163 (Serial1)") == 0) return Source::JSY_MK_163_SERIAL1;
+        if (strcmp(str, "JSY-MK-163 (Serial2)") == 0) return Source::JSY_MK_163_SERIAL2;
+        if (strcmp(str, "JSY-MK-163 (Remote)") == 0) return Source::JSY_MK_163_REMOTE;
+        if (strcmp(str, "JSY-MK-227 (Serial1)") == 0) return Source::JSY_MK_227_SERIAL1;
+        if (strcmp(str, "JSY-MK-227 (Serial2)") == 0) return Source::JSY_MK_227_SERIAL2;
+        if (strcmp(str, "JSY-MK-227 (Remote)") == 0) return Source::JSY_MK_227_REMOTE;
+        if (strcmp(str, "JSY-MK-229 (Serial1)") == 0) return Source::JSY_MK_229_SERIAL1;
+        if (strcmp(str, "JSY-MK-229 (Serial2)") == 0) return Source::JSY_MK_229_SERIAL2;
+        if (strcmp(str, "JSY-MK-229 (Remote)") == 0) return Source::JSY_MK_229_REMOTE;
+        if (strcmp(str, "JSY-MK-193 Channel 1 (Serial1)") == 0) return Source::JSY_MK_193_CH1_SERIAL1;
+        if (strcmp(str, "JSY-MK-193 Channel 1 (Serial2)") == 0) return Source::JSY_MK_193_CH1_SERIAL2;
+        if (strcmp(str, "JSY-MK-193 Channel 1 (Remote)") == 0) return Source::JSY_MK_193_CH1_REMOTE;
+        if (strcmp(str, "JSY-MK-193 Channel 2 (Serial1)") == 0) return Source::JSY_MK_193_CH2_SERIAL1;
+        if (strcmp(str, "JSY-MK-193 Channel 2 (Serial2)") == 0) return Source::JSY_MK_193_CH2_SERIAL2;
+        if (strcmp(str, "JSY-MK-193 Channel 2 (Remote)") == 0) return Source::JSY_MK_193_CH2_REMOTE;
+        if (strcmp(str, "JSY-MK-194 Channel 1 (Serial1)") == 0) return Source::JSY_MK_194_CH1_SERIAL1;
+        if (strcmp(str, "JSY-MK-194 Channel 1 (Serial2)") == 0) return Source::JSY_MK_194_CH1_SERIAL2;
+        if (strcmp(str, "JSY-MK-194 Channel 1 (Remote)") == 0) return Source::JSY_MK_194_CH1_REMOTE;
+        if (strcmp(str, "JSY-MK-194 Channel 2 (Serial1)") == 0) return Source::JSY_MK_194_CH2_SERIAL1;
+        if (strcmp(str, "JSY-MK-194 Channel 2 (Serial2)") == 0) return Source::JSY_MK_194_CH2_SERIAL2;
+        if (strcmp(str, "JSY-MK-194 Channel 2 (Remote)") == 0) return Source::JSY_MK_194_CH2_REMOTE;
+        if (strcmp(str, "JSY-MK-333 (Serial1)") == 0) return Source::JSY_MK_333_SERIAL1;
+        if (strcmp(str, "JSY-MK-333 (Serial2)") == 0) return Source::JSY_MK_333_SERIAL2;
+        if (strcmp(str, "JSY-MK-333 (Remote)") == 0) return Source::JSY_MK_333_REMOTE;
+        return Source::UNKNOWN;
+      }
+
+      static const char* getSources() { return ",MQTT,Victron,JSY-MK-163 (Serial1),JSY-MK-163 (Serial2),JSY-MK-163 (Remote),JSY-MK-227 (Serial1),JSY-MK-227 (Serial2),JSY-MK-227 (Remote),JSY-MK-229 (Serial1),JSY-MK-229 (Serial2),JSY-MK-229 (Remote),JSY-MK-193 Channel 1 (Serial1),JSY-MK-193 Channel 1 (Serial2),JSY-MK-193 Channel 1 (Remote),JSY-MK-193 Channel 2 (Serial1),JSY-MK-193 Channel 2 (Serial2),JSY-MK-193 Channel 2 (Remote),JSY-MK-194 Channel 1 (Serial1),JSY-MK-194 Channel 1 (Serial2),JSY-MK-194 Channel 1 (Remote),JSY-MK-194 Channel 2 (Serial1),JSY-MK-194 Channel 2 (Serial2),JSY-MK-194 Channel 2 (Remote),JSY-MK-333 (Serial1),JSY-MK-333 (Serial2),JSY-MK-333 (Remote)"; }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
@@ -290,60 +296,14 @@ namespace Mycila {
           delete measurements;
         }
 
-        JsonArray sources = root["sources"].to<JsonArray>();
-
-        if (_mqttMetrics != nullptr && _mqttMetrics->isPresent()) {
-          JsonObject mqtt = sources.add<JsonObject>();
-          toJson(mqtt, _mqttMetrics->get());
-          mqtt["time"] = _mqttMetrics->getLastUpdateTime();
-        }
-
-        if (_victronMetrics != nullptr && _victronMetrics->isPresent()) {
-          JsonObject victron = sources.add<JsonObject>();
-          toJson(victron, _victronMetrics->get());
-          victron["time"] = _victronMetrics->getLastUpdateTime();
-        }
-
-        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent()) {
-          JsonObject jsyRemote = sources.add<JsonObject>();
-          toJson(jsyRemote, _jsyRemoteMetrics->get());
-          jsyRemote["time"] = _jsyRemoteMetrics->getLastUpdateTime();
-        }
-
-        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent()) {
-          JsonObject jsy = sources.add<JsonObject>();
-          toJson(jsy, _jsyMetrics->get());
-          jsy["time"] = _jsyMetrics->getLastUpdateTime();
-        }
-
-        if (_pzemMetrics != nullptr && _pzemMetrics->isPresent()) {
-          JsonObject pzem = sources.add<JsonObject>();
-          toJson(pzem, _pzemMetrics->get());
-          pzem["time"] = _pzemMetrics->getLastUpdateTime();
+        if (_metrics.isPresent()) {
+          root["source"]["type"] = getSourceString();
+          root["source"]["time"] = _metrics.getLastUpdateTime();
+          toJson(root["source"], _metrics.get());
         }
       }
 
       static void toJson(const JsonObject& dest, const Metrics& metrics) {
-        switch (metrics.source) {
-          case Source::JSY:
-            dest["source"] = "jsy";
-            break;
-          case Source::JSY_REMOTE:
-            dest["source"] = "jsy_remote";
-            break;
-          case Source::MQTT:
-            dest["source"] = "mqtt";
-            break;
-          case Source::PZEM:
-            dest["source"] = "pzem";
-            break;
-          case Source::VICTRON:
-            dest["source"] = "victron";
-            break;
-          default:
-            dest["source"] = "unknown";
-            break;
-        }
         if (!std::isnan(metrics.apparentPower))
           dest["apparent_power"] = metrics.apparentPower;
         if (!std::isnan(metrics.current))
@@ -362,10 +322,7 @@ namespace Mycila {
 #endif
 
     private:
-      ExpiringValue<Metrics>* _jsyMetrics = nullptr;
-      ExpiringValue<Metrics>* _jsyRemoteMetrics = nullptr;
-      ExpiringValue<Metrics>* _mqttMetrics = nullptr;
-      ExpiringValue<Metrics>* _victronMetrics = nullptr;
-      ExpiringValue<Metrics>* _pzemMetrics = nullptr;
+      Source _source = Source::UNKNOWN;
+      ExpiringValue<Metrics> _metrics;
   };
 } // namespace Mycila

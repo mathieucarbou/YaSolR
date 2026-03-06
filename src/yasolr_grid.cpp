@@ -6,6 +6,10 @@
 
 Mycila::Grid grid;
 
+void yasolr_init_grid() {
+  grid.setSource(config.getString(KEY_GRID_SOURCE));
+}
+
 float yasolr_frequency() {
   // 1. check if frequency is set in config
   float frequency = config.get<uint8_t>(KEY_GRID_FREQUENCY);

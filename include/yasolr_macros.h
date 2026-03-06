@@ -109,8 +109,6 @@
 #define KEY_ENABLE_DISPLAY             "disp_enable"
 #define KEY_ENABLE_SYSTEM_DS18         "ds18_sys_enable"
 #define KEY_ENABLE_HA_DISCOVERY        "ha_disco_enable"
-#define KEY_ENABLE_JSY                 "jsy_enable"
-#define KEY_ENABLE_JSY_REMOTE          "jsyr_enable"
 #define KEY_ENABLE_LIGHTS              "lights_enable"
 #define KEY_ENABLE_MQTT                "mqtt_enable"
 #define KEY_ENABLE_OUTPUT1_AUTO_BYPASS "o1_ab_enable"
@@ -127,7 +125,6 @@
 #define KEY_ENABLE_OUTPUT2_RELAY       "o2_relay_enable"
 #define KEY_ENABLE_RELAY1              "relay1_enable"
 #define KEY_ENABLE_RELAY2              "relay2_enable"
-#define KEY_ENABLE_VICTRON_MODBUS      "vic_mb_enable"
 
 // configuration keys
 
@@ -136,6 +133,7 @@
 #define KEY_DISPLAY_TYPE                   "disp_type"
 #define KEY_GRID_FREQUENCY                 "grid_freq"
 #define KEY_GRID_POWER_MQTT_TOPIC          "grid_pow_mqtt"
+#define KEY_GRID_SOURCE                    "grid_source"
 #define KEY_GRID_VOLTAGE_MQTT_TOPIC        "grid_volt_mqtt"
 #define KEY_HA_DISCOVERY_TOPIC             "ha_disco_topic"
 #define KEY_HOSTNAME                       "hostname"

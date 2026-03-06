@@ -20,6 +20,7 @@ void setup() {
   yasolr_init_trial();
   yasolr_init_ds18();
   yasolr_init_relays();
+  yasolr_init_grid();
   yasolr_init_router();
   yasolr_init_web_server();
   yasolr_init_version_check();

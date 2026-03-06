@@ -54,6 +54,8 @@ static constexpr const char* ERR_GRID_DIMMER_O2 = "Output 2 Dimmer disconnected 
 static constexpr const char* ERR_GRID_JSY = "JSY disconnected from grid!";
 static constexpr const char* ERR_GRID_PZEM_O1 = "Output 1 PZEM disconnected from grid!";
 static constexpr const char* ERR_GRID_PZEM_O2 = "Output 2 PZEM disconnected from grid!";
+static constexpr const char* ERR_GRID_MQTT = "MQTT topics for power/voltage not correctly set";
+static constexpr const char* ERR_GRID_NONE = "No grid source configured!";
 // com errors
 static constexpr const char* ERR_MQTT_COM = "MQTT disconnected: more information in the logs!";
 static constexpr const char* ERR_VICTRON_COM = "Victron communication error: more information in the logs!";
@@ -98,8 +100,6 @@ static dash::StatisticValue<const char*> _deviceID(dashboard, YASOLR_LBL_010);
 static dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011);
 static dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
 static dash::StatisticValue<const char*> _firmwareBuildTimestamp(dashboard, YASOLR_LBL_014);
-static dash::StatisticValue<uint32_t> _gridEnergy(dashboard, YASOLR_LBL_016);
-static dash::StatisticValue<uint32_t> _gridEnergyReturned(dashboard, YASOLR_LBL_017);
 static dash::StatisticValue<float, 1> _gridFrequency(dashboard, YASOLR_LBL_018);
 static dash::StatisticValue<float, 2> _udpMessageRateBuffer(dashboard, YASOLR_LBL_157);
 static dash::StatisticValue<const char*> _networkHostname(dashboard, YASOLR_LBL_019);
@@ -335,10 +335,7 @@ static dash::FeedbackInputCard<int8_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
 // grid
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012 ": " YASOLR_LBL_133);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-static dash::ToggleButtonCard _jsy(dashboard, YASOLR_LBL_128);
-static dash::ToggleButtonCard _jsyRemote(dashboard, YASOLR_LBL_187);
-static dash::SeparatorCard<const char*> _victronSep(dashboard, YASOLR_LBL_195);
-static dash::ToggleButtonCard _victron(dashboard, YASOLR_LBL_195);
+static dash::DropdownCard<const char*> _gridSource(dashboard, YASOLR_LBL_114, Mycila::Grid::getSources());
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 
@@ -905,18 +902,13 @@ void YaSolR::Website::begin() {
   // grid
   _gridSep.setTab(_hardwareConfigTab);
   _gridFreq.setTab(_hardwareConfigTab);
-  _jsy.setTab(_hardwareConfigTab);
-  _jsyRemote.setTab(_hardwareConfigTab);
-  _victronSep.setTab(_hardwareConfigTab);
-  _victron.setTab(_hardwareConfigTab);
+  _gridSource.setTab(_hardwareConfigTab);
   _victronServer.setTab(_hardwareConfigTab);
   _victronPort.setTab(_hardwareConfigTab);
 
-  _boolConfig(_jsy, KEY_ENABLE_JSY);
-  _boolConfig(_jsyRemote, KEY_ENABLE_JSY_REMOTE);
-  _boolConfig(_victron, KEY_ENABLE_VICTRON_MODBUS);
-  _textConfig(_victronServer, KEY_VICTRON_MODBUS_SERVER);
   _numConfig(_victronPort, KEY_VICTRON_MODBUS_PORT);
+  _textConfig(_gridSource, KEY_GRID_SOURCE);
+  _textConfig(_victronServer, KEY_VICTRON_MODBUS_SERVER);
 
   _gridFreq.onChange([](const char* value) {
     if (strcmp(value, "50 Hz") == 0) {
@@ -1166,7 +1158,6 @@ void YaSolR::Website::initCards() {
   // home
 
 #ifdef APP_MODEL_PRO
-  const bool jsyEnabled = config.get<bool>(KEY_ENABLE_JSY);
   const bool pidViewEnabled = realTimePIDEnabled();
   const bool serverCertExists = LittleFS.exists(YASOLR_MQTT_SERVER_CERT_FILE);
 
@@ -1193,7 +1184,7 @@ void YaSolR::Website::initCards() {
 
   // statistics
 
-  _udpMessageRateBuffer.setDisplay(config.get<bool>(KEY_ENABLE_JSY_REMOTE));
+  _udpMessageRateBuffer.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::JSY_REMOTE));
   _networkAPIP.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   _networkAPMAC.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   #ifdef ESPCONNECT_ETH_SUPPORT
@@ -1300,7 +1291,7 @@ void YaSolR::Website::initCards() {
   _configBackup.setValue("/api/config/backup");
   _configRestore.setValue("/api/config/restore");
   _safebootUpload.setValue("/api/safeboot/upload");
-  _energyReset.setDisplay(jsyEnabled || pzem1Enabled || pzem2Enabled);
+  _energyReset.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::JSY) || pzem1Enabled || pzem2Enabled);
   _safebootUpload.setDisplay(true);
   _safebootUploadStatus.setDisplay(false);
 
@@ -1412,11 +1403,11 @@ void YaSolR::Website::initCards() {
       _gridFreq.setValue("Auto-detect");
       break;
   }
-  _jsy.setValue(config.get<bool>(KEY_ENABLE_JSY));
-  _jsyRemote.setValue(config.get<bool>(KEY_ENABLE_JSY_REMOTE));
-  _victron.setValue(config.get<bool>(KEY_ENABLE_VICTRON_MODBUS));
+  _gridSource.setValue(config.getString(KEY_GRID_SOURCE));
   _victronServer.setValue(config.getString(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.get<uint16_t>(KEY_VICTRON_MODBUS_PORT));
+  _victronServer.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::VICTRON));
+  _victronPort.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::VICTRON));
 
   // output 1 dimmer
   _output1Dimmer.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_DIMMER));
@@ -1524,16 +1515,14 @@ void YaSolR::Website::initCards() {
 
 void YaSolR::Website::updateCards() {
   // metrics
-  Mycila::Grid::Metrics gridMetrics;
-  grid.readMeasurements(gridMetrics);
-  _gridEnergy.setValue(gridMetrics.energy);
-  _gridEnergyReturned.setValue(gridMetrics.energyReturned);
-  _gridVoltage.setValue(gridMetrics.voltage);
-  _gridPower.setValue(gridMetrics.power);
+  const float gridVoltage = grid.getVoltage().value_or(0.0f);
+
+  _gridVoltage.setValue(gridVoltage);
+  _gridPower.setValue(grid.getPower().value_or(0.0f));
 
   Mycila::Router::Metrics routerMetrics;
   if (!router.readMeasurements(routerMetrics)) {
-    router.computeMetrics(routerMetrics, gridMetrics.voltage);
+    router.computeMetrics(routerMetrics, gridVoltage);
   }
 
   _routerPower.setValue(routerMetrics.power);
@@ -1614,7 +1603,7 @@ void YaSolR::Website::updateCards() {
   if (relay1) {
     _relay1Switch.setValue(relay1->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay1->computeLoad(gridMetrics.voltage);
+    uint16_t load = relay1->computeLoad(gridVoltage);
     _relay1Switch.setMessage(relay1->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }
@@ -1622,7 +1611,7 @@ void YaSolR::Website::updateCards() {
   if (relay2) {
     _relay2Switch.setValue(relay2->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay2->computeLoad(gridMetrics.voltage);
+    uint16_t load = relay2->computeLoad(gridVoltage);
     _relay2Switch.setMessage(relay2->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }
@@ -1639,7 +1628,7 @@ void YaSolR::Website::updateCards() {
 
   Mycila::Router::Metrics output1Measurements;
   if (!output1.readMeasurements(output1Measurements))
-    output1.computeMetrics(output1Measurements, gridMetrics.voltage);
+    output1.computeMetrics(output1Measurements, gridVoltage);
 
   _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleOnline() * 100.0f);
   _output1Power.setValue(output1Measurements.power);
@@ -1660,7 +1649,7 @@ void YaSolR::Website::updateCards() {
 
   Mycila::Router::Metrics output2Measurements;
   if (!output2.readMeasurements(output2Measurements))
-    output2.computeMetrics(output2Measurements, gridMetrics.voltage);
+    output2.computeMetrics(output2Measurements, gridVoltage);
 
   _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleOnline() * 100.0f);
   _output2Power.setValue(output2Measurements.power);
@@ -1717,8 +1706,18 @@ void YaSolR::Website::updateWarnings() {
       errors[count++] = ERR_MQTT_COM;
     }
   }
+  // no grid source
+  if (grid.isUsing(Mycila::Grid::SourceKind::UNKNOWN)) {
+    errors[count++] = ERR_GRID_NONE;
+  }
+  // mqtt grid source
+  if (grid.isUsing(Mycila::Grid::SourceKind::MQTT)) {
+    if (config.isEmpty(KEY_GRID_POWER_MQTT_TOPIC) || config.isEmpty(KEY_GRID_VOLTAGE_MQTT_TOPIC)) {
+      errors[count++] = ERR_GRID_MQTT;
+    }
+  }
   // jsy
-  if (config.get<bool>(KEY_ENABLE_JSY)) {
+  if (grid.isUsing(Mycila::Grid::SourceKind::JSY)) {
     if (!jsy || !jsy->isEnabled()) {
       errors[count++] = ERR_ACT_JSY;
     } else if (!jsy->isConnected()) {
@@ -1726,7 +1725,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // victron
-  if (config.get<bool>(KEY_ENABLE_VICTRON_MODBUS)) {
+  if (grid.isUsing(Mycila::Grid::SourceKind::VICTRON)) {
     if (!victron) {
       errors[count++] = ERR_ACT_VICTRON;
     } else if (victron->hasError()) {

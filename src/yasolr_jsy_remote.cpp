@@ -58,8 +58,6 @@ static uint32_t lastMessageID = 0;
 static UDPMessage* reassembledMessage = nullptr;
 
 static void processJSON(JsonDocument& doc) {
-  Mycila::Grid::Metrics metrics;
-  metrics.source = Mycila::Grid::Source::JSY_REMOTE;
   JsonObject root = doc.as<JsonObject>();
 
 #if YASOLR_DEBUG_UDP
@@ -70,6 +68,20 @@ static void processJSON(JsonDocument& doc) {
   DEBUG_UDP(TAG, "[UDP] JSY Data: %s", jsonString.c_str());
   DEBUG_UDP(TAG, "[UDP] JSY Model: %" PRIu16, root["model"].as<uint16_t>());
 #endif
+
+  switch (root["model"].as<uint16_t>()) {
+      // clang-format off
+    case MYCILA_JSY_MK_163: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_163_REMOTE)) return; else break;
+    case MYCILA_JSY_MK_227: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_227_REMOTE)) return; else break;
+    case MYCILA_JSY_MK_229: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_229_REMOTE)) return; else break;
+    case MYCILA_JSY_MK_193: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH1_REMOTE) && !grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH2_REMOTE)) return; else break;
+    case MYCILA_JSY_MK_194: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH1_REMOTE) && !grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH2_REMOTE)) return; else break;
+    case MYCILA_JSY_MK_333: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_333_REMOTE)) return; else break;
+    default: return; // unknown model => do not divert
+      // clang-format on
+  }
+
+  Mycila::Grid::Metrics metrics;
 
   switch (root["model"].as<uint16_t>()) {
     case MYCILA_JSY_MK_163:
@@ -88,27 +100,51 @@ static void processJSON(JsonDocument& doc) {
     case MYCILA_JSY_MK_193:
     case MYCILA_JSY_MK_194: {
       if (root["channel1"].is<JsonObject>()) {
-        Mycila::Router::Metrics routerMetrics;
-        routerMetrics.source = Mycila::Router::Source::JSY_REMOTE;
-        routerMetrics.apparentPower = root["channel1"]["apparent_power"] | NAN;
-        routerMetrics.current = root["channel1"]["current"] | NAN;
-        routerMetrics.energy = (root["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (root["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
-        routerMetrics.power = std::abs(root["channel1"]["active_power"] | NAN);                                                                                          // if the clamp is installed reversed
-        routerMetrics.powerFactor = root["channel1"]["power_factor"] | NAN;
-        routerMetrics.resistance = root["channel1"]["resistance"] | NAN;
-        routerMetrics.thdi = root["channel1"]["thdi_0"] | NAN;
-        routerMetrics.voltage = root["channel1"]["dimmed_voltage"] | NAN;
-        router.updateMetrics(std::move(routerMetrics));
-      }
-      if (root["channel2"].is<JsonObject>()) {
-        metrics.apparentPower = root["channel2"]["apparent_power"] | NAN;
-        metrics.current = root["channel2"]["current"] | NAN;
-        metrics.energy = root["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0);
-        metrics.energyReturned = root["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0);
-        metrics.frequency = root["channel2"]["frequency"] | NAN;
-        metrics.power = root["channel2"]["active_power"] | NAN;
-        metrics.powerFactor = root["channel2"]["power_factor"] | NAN;
-        metrics.voltage = root["channel2"]["voltage"] | NAN;
+        if (grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH1_REMOTE) || grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH1_REMOTE)) {
+          metrics.apparentPower = root["channel1"]["apparent_power"] | NAN;
+          metrics.current = root["channel1"]["current"] | NAN;
+          metrics.energy = root["channel1"]["active_energy_imported"] | static_cast<uint32_t>(0);
+          metrics.energyReturned = root["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0);
+          metrics.frequency = root["channel1"]["frequency"] | NAN;
+          metrics.power = root["channel1"]["active_power"] | NAN;
+          metrics.powerFactor = root["channel1"]["power_factor"] | NAN;
+          metrics.voltage = root["channel1"]["voltage"] | NAN;
+        } else {
+          Mycila::Router::Metrics routerMetrics;
+          routerMetrics.source = Mycila::Router::Source::JSY_REMOTE;
+          routerMetrics.apparentPower = root["channel1"]["apparent_power"] | NAN;
+          routerMetrics.current = root["channel1"]["current"] | NAN;
+          routerMetrics.energy = (root["channel1"]["active_energy"] | static_cast<uint32_t>(0)) + (root["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
+          routerMetrics.power = std::abs(root["channel1"]["active_power"] | NAN);                                                                                          // if the clamp is installed reversed
+          routerMetrics.powerFactor = root["channel1"]["power_factor"] | NAN;
+          routerMetrics.resistance = root["channel1"]["resistance"] | NAN;
+          routerMetrics.thdi = root["channel1"]["thdi_0"] | NAN;
+          routerMetrics.voltage = root["channel1"]["dimmed_voltage"] | NAN;
+          router.updateMetrics(std::move(routerMetrics));
+        }
+      } else if (root["channel2"].is<JsonObject>()) {
+        if (grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH2_REMOTE) || grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH2_REMOTE)) {
+          metrics.apparentPower = root["channel2"]["apparent_power"] | NAN;
+          metrics.current = root["channel2"]["current"] | NAN;
+          metrics.energy = root["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0);
+          metrics.energyReturned = root["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0);
+          metrics.frequency = root["channel2"]["frequency"] | NAN;
+          metrics.power = root["channel2"]["active_power"] | NAN;
+          metrics.powerFactor = root["channel2"]["power_factor"] | NAN;
+          metrics.voltage = root["channel2"]["voltage"] | NAN;
+        } else {
+          Mycila::Router::Metrics routerMetrics;
+          routerMetrics.source = Mycila::Router::Source::JSY_REMOTE;
+          routerMetrics.apparentPower = root["channel2"]["apparent_power"] | NAN;
+          routerMetrics.current = root["channel2"]["current"] | NAN;
+          routerMetrics.energy = (root["channel2"]["active_energy"] | static_cast<uint32_t>(0)) + (root["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
+          routerMetrics.power = std::abs(root["channel2"]["active_power"] | NAN);                                                                                          // if the clamp is installed reversed
+          routerMetrics.powerFactor = root["channel2"]["power_factor"] | NAN;
+          routerMetrics.resistance = root["channel2"]["resistance"] | NAN;
+          routerMetrics.thdi = root["channel2"]["thdi_0"] | NAN;
+          routerMetrics.voltage = root["channel2"]["dimmed_voltage"] | NAN;
+          router.updateMetrics(std::move(routerMetrics));
+        }
       }
       break;
     }
@@ -128,13 +164,9 @@ static void processJSON(JsonDocument& doc) {
       return;
   }
 
-  grid.updateMetrics(std::move(metrics));
-
-  if (grid.isUsing(Mycila::Grid::Source::JSY_REMOTE)) {
-    pidTask.requestEarlyRun();
-  }
-
   udpMessageRateBuffer->add(millis() / 1000.0f);
+  grid.updateMetrics(std::move(metrics));
+  pidTask.requestEarlyRun();
 }
 
 static void onData(AsyncUDPPacket& packet) {
@@ -277,7 +309,7 @@ static void onData(AsyncUDPPacket& packet) {
 }
 
 void yasolr_configure_jsy_remote() {
-  if (config.get<bool>(KEY_ENABLE_JSY_REMOTE)) {
+  if (grid.isUsing(Mycila::Grid::SourceKind::JSY_REMOTE)) {
     if (jsyRemoteTask == nullptr) {
       ESP_LOGI(TAG, "Enable Remote JSY");
 
@@ -311,7 +343,6 @@ void yasolr_configure_jsy_remote() {
       udp = nullptr;
       udpMessageRateBuffer = nullptr;
 
-      grid.deleteMetrics(Mycila::Grid::Source::JSY_REMOTE);
       router.deleteMetrics(Mycila::Router::Source::JSY_REMOTE);
     }
   }

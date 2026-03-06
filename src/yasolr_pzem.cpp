@@ -113,12 +113,6 @@ void yasolr_configure_output1_pzem() {
       if (pzemO1) {
         pzemO1->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            Mycila::Grid::Metrics metrics;
-            metrics.source = Mycila::Grid::Source::PZEM;
-            metrics.frequency = data.frequency;
-            metrics.voltage = data.voltage;
-            grid.updateMetrics(std::move(metrics));
-
             Mycila::Router::Metrics routerMetrics;
             routerMetrics.source = Mycila::Router::Source::PZEM;
             routerMetrics.apparentPower = data.apparentPower;
@@ -169,12 +163,6 @@ void yasolr_configure_output2_pzem() {
       if (pzemO2) {
         pzemO2->setCallback([](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            Mycila::Grid::Metrics metrics;
-            metrics.source = Mycila::Grid::Source::PZEM;
-            metrics.frequency = data.frequency;
-            metrics.voltage = data.voltage;
-            grid.updateMetrics(std::move(metrics));
-
             Mycila::Router::Metrics routerMetrics;
             routerMetrics.source = Mycila::Router::Source::PZEM;
             routerMetrics.apparentPower = data.apparentPower;

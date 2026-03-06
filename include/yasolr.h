@@ -75,6 +75,7 @@ extern void yasolr_init_network();
 
 // grid electricity
 extern Mycila::Grid grid;
+extern void yasolr_init_grid();
 extern float yasolr_frequency();
 
 // logging
@@ -113,6 +114,7 @@ extern Mycila::Task* mqttPublishConfigTask;
 extern Mycila::Task* mqttPublishTask;
 extern Mycila::Task* haDiscoveryTask;
 extern void yasolr_configure_mqtt();
+extern void yasolr_configure_mqtt_grid_source();
 
 // PZEM
 extern Mycila::PZEM* pzemO1;

@@ -16,8 +16,19 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
   if (*jsyData != data) {
     *jsyData = data;
 
+    switch (data.model) {
+        // clang-format off
+      case MYCILA_JSY_MK_163: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_163_REMOTE)) return; else break;
+      case MYCILA_JSY_MK_227: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_227_REMOTE)) return; else break;
+      case MYCILA_JSY_MK_229: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_229_REMOTE)) return; else break;
+      case MYCILA_JSY_MK_193: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH1_REMOTE) && !grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH2_REMOTE)) return; else break;
+      case MYCILA_JSY_MK_194: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH1_REMOTE) && !grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH2_REMOTE)) return; else break;
+      case MYCILA_JSY_MK_333: if (!grid.isUsing(Mycila::Grid::Source::JSY_MK_333_REMOTE)) return; else break;
+      default: return; // unknown model => do not divert
+        // clang-format on
+    }
+
     Mycila::Grid::Metrics metrics;
-    metrics.source = Mycila::Grid::Source::JSY;
 
     switch (data.model) {
       case MYCILA_JSY_MK_163:
@@ -35,26 +46,56 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
       }
       case MYCILA_JSY_MK_193:
       case MYCILA_JSY_MK_194: {
-        Mycila::Router::Metrics routerMetrics;
-        routerMetrics.source = Mycila::Router::Source::JSY;
-        routerMetrics.apparentPower = data.channel1().apparentPower;
-        routerMetrics.current = data.channel1().current;
-        routerMetrics.energy = data.channel1().activeEnergy + data.channel1().activeEnergyReturned; // if the clamp is installed reversed
-        routerMetrics.power = std::abs(data.channel1().activePower);                                // if the clamp is installed reversed
-        routerMetrics.powerFactor = data.channel1().powerFactor;
-        routerMetrics.resistance = data.channel1().resistance();
-        routerMetrics.thdi = data.channel1().thdi();
-        routerMetrics.voltage = data.channel1().dimmedVoltage();
-        router.updateMetrics(std::move(routerMetrics));
+        if (grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH1_SERIAL1) ||
+            grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH1_SERIAL2) ||
+            grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH1_SERIAL1) ||
+            grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH1_SERIAL2)) {
+          metrics.apparentPower = data.channel1().apparentPower;
+          metrics.current = data.channel1().current;
+          metrics.energy = data.channel1().activeEnergyImported;
+          metrics.energyReturned = data.channel1().activeEnergyReturned;
+          metrics.frequency = data.channel1().frequency;
+          metrics.power = data.channel1().activePower;
+          metrics.powerFactor = data.channel1().powerFactor;
+          metrics.voltage = data.channel1().voltage;
 
-        metrics.apparentPower = data.channel2().apparentPower;
-        metrics.current = data.channel2().current;
-        metrics.energy = data.channel2().activeEnergyImported;
-        metrics.energyReturned = data.channel2().activeEnergyReturned;
-        metrics.frequency = data.aggregate.frequency;
-        metrics.power = data.channel2().activePower;
-        metrics.powerFactor = data.channel2().powerFactor;
-        metrics.voltage = data.channel2().voltage;
+          Mycila::Router::Metrics routerMetrics;
+          routerMetrics.source = Mycila::Router::Source::JSY;
+          routerMetrics.apparentPower = data.channel2().apparentPower;
+          routerMetrics.current = data.channel2().current;
+          routerMetrics.energy = data.channel2().activeEnergy + data.channel2().activeEnergyReturned; // if the clamp is installed reversed
+          routerMetrics.power = std::abs(data.channel2().activePower);                                // if the clamp is installed reversed
+          routerMetrics.powerFactor = data.channel2().powerFactor;
+          routerMetrics.resistance = data.channel2().resistance();
+          routerMetrics.thdi = data.channel2().thdi();
+          routerMetrics.voltage = data.channel2().dimmedVoltage();
+          router.updateMetrics(std::move(routerMetrics));
+
+        } else if (grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH2_SERIAL1) ||
+                   grid.isUsing(Mycila::Grid::Source::JSY_MK_193_CH2_SERIAL2) ||
+                   grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH2_SERIAL1) ||
+                   grid.isUsing(Mycila::Grid::Source::JSY_MK_194_CH2_SERIAL2)) {
+          metrics.apparentPower = data.channel2().apparentPower;
+          metrics.current = data.channel2().current;
+          metrics.energy = data.channel2().activeEnergyImported;
+          metrics.energyReturned = data.channel2().activeEnergyReturned;
+          metrics.frequency = data.channel2().frequency;
+          metrics.power = data.channel2().activePower;
+          metrics.powerFactor = data.channel2().powerFactor;
+          metrics.voltage = data.channel2().voltage;
+
+          Mycila::Router::Metrics routerMetrics;
+          routerMetrics.source = Mycila::Router::Source::JSY;
+          routerMetrics.apparentPower = data.channel1().apparentPower;
+          routerMetrics.current = data.channel1().current;
+          routerMetrics.energy = data.channel1().activeEnergy + data.channel1().activeEnergyReturned; // if the clamp is installed reversed
+          routerMetrics.power = std::abs(data.channel1().activePower);                                // if the clamp is installed reversed
+          routerMetrics.powerFactor = data.channel1().powerFactor;
+          routerMetrics.resistance = data.channel1().resistance();
+          routerMetrics.thdi = data.channel1().thdi();
+          routerMetrics.voltage = data.channel1().dimmedVoltage();
+          router.updateMetrics(std::move(routerMetrics));
+        }
         break;
       }
       case MYCILA_JSY_MK_333: {
@@ -73,15 +114,12 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
     }
 
     grid.updateMetrics(std::move(metrics));
-
-    if (grid.isUsing(Mycila::Grid::Source::JSY)) {
-      pidTask.requestEarlyRun();
-    }
+    pidTask.requestEarlyRun();
   }
 }
 
 void yasolr_configure_jsy() {
-  if (config.get<bool>(KEY_ENABLE_JSY)) {
+  if (grid.isUsing(Mycila::Grid::SourceKind::JSY)) {
     // setup JSY if not done yet
     if (jsy == nullptr) {
       const bool serial1AssignedToJSY = config.isEqual(KEY_PIN_SERIAL1_DEV, YASOLR_UART_DEVICE_JSY);
@@ -160,7 +198,6 @@ void yasolr_configure_jsy() {
       delete jsyData;
       jsyData = nullptr;
 
-      grid.deleteMetrics(Mycila::Grid::Source::JSY);
       router.deleteMetrics(Mycila::Router::Source::JSY);
     }
   }

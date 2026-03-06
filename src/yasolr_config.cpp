@@ -25,11 +25,11 @@ static int8_t migrate_old_keys_uart(const char* old_key, const char* device) {
     const std::optional<Mycila::config::Str> uart = storage.loadString(old_key);
     if (uart.has_value()) {
       if (strcmp(uart.value().c_str(), "Serial1") == 0) {
-        ESP_LOGW(TAG, "%s=Serial1 => " KEY_PIN_SERIAL1_DEV "=%s", old_key, device);
+        ESP_LOGI(TAG, "%s=Serial1 => " KEY_PIN_SERIAL1_DEV "=%s", old_key, device);
         storage.storeString(KEY_PIN_SERIAL1_DEV, device);
         return 1;
       } else if (strcmp(uart.value().c_str(), "Serial2") == 0) {
-        ESP_LOGW(TAG, "%s=Serial2 => " KEY_PIN_SERIAL2_DEV "=%s", old_key, device);
+        ESP_LOGI(TAG, "%s=Serial2 => " KEY_PIN_SERIAL2_DEV "=%s", old_key, device);
         storage.storeString(KEY_PIN_SERIAL2_DEV, device);
         return 2;
       }
@@ -45,11 +45,11 @@ static void migrate_old_keys_uart_pin(const char* old_key, int8_t serial) {
     if (pin.has_value()) {
       switch (serial) {
         case 1:
-          ESP_LOGW(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL1_RX "=%" PRIi8, old_key, pin.value(), pin.value());
+          ESP_LOGI(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL1_RX "=%" PRIi8, old_key, pin.value(), pin.value());
           storage.storeI8(KEY_PIN_SERIAL1_RX, pin.value());
           break;
         case 2:
-          ESP_LOGW(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL2_RX "=%" PRIi8, old_key, pin.value(), pin.value());
+          ESP_LOGI(TAG, "%s=%" PRIi8 " => " KEY_PIN_SERIAL2_RX "=%" PRIi8, old_key, pin.value(), pin.value());
           storage.storeI8(KEY_PIN_SERIAL2_RX, pin.value());
           break;
         default:
@@ -61,24 +61,6 @@ static void migrate_old_keys_uart_pin(const char* old_key, int8_t serial) {
 }
 
 static void migrate_old_keys() {
-  // migrate old keys and values
-  {
-    storage.begin("YASOLR");
-    // jsy_uart (default: Serial2) => pin_serial1_dev or pin_serial2_dev
-    int8_t jsySerial = migrate_old_keys_uart("jsy_uart", YASOLR_UART_DEVICE_JSY);
-    // pin_jsy_rx => pin_serial2_rx or pin_serial1_rx
-    migrate_old_keys_uart_pin("pin_jsy_rx", jsySerial);
-    // pin_jsy_tx => pin_serial2_tx or pin_serial1_tx
-    migrate_old_keys_uart_pin("pin_jsy_tx", jsySerial);
-    // pzem_uart (default: Serial1) => pin_serial1_dev or pin_serial2_dev
-    int8_t pzemSerial = migrate_old_keys_uart("pzem_uart", YASOLR_UART_DEVICE_PZEM);
-    // pin_pzem_rx => pin_serial2_rx or pin_serial1_rx
-    migrate_old_keys_uart_pin("pin_pzem_rx", pzemSerial);
-    // pin_pzem_tx => pin_serial2_tx or pin_serial1_tx
-    migrate_old_keys_uart_pin("pin_pzem_tx", pzemSerial);
-    storage.end();
-  }
-
   // migration from old config versions
   {
     migration.begin("YASOLR");
@@ -94,6 +76,53 @@ static void migrate_old_keys() {
     migration.migrateFromString();
     migration.end();
   }
+
+  // migrate old keys and values
+  {
+    storage.begin("YASOLR");
+
+    // jsy_uart (default: Serial2) => pin_serial1_dev or pin_serial2_dev
+    int8_t jsySerial = migrate_old_keys_uart("jsy_uart", YASOLR_UART_DEVICE_JSY);
+
+    // pin_jsy_rx => pin_serial2_rx or pin_serial1_rx
+    migrate_old_keys_uart_pin("pin_jsy_rx", jsySerial);
+
+    // pin_jsy_tx => pin_serial2_tx or pin_serial1_tx
+    migrate_old_keys_uart_pin("pin_jsy_tx", jsySerial);
+
+    // pzem_uart (default: Serial1) => pin_serial1_dev or pin_serial2_dev
+    int8_t pzemSerial = migrate_old_keys_uart("pzem_uart", YASOLR_UART_DEVICE_PZEM);
+
+    // pin_pzem_rx => pin_serial2_rx or pin_serial1_rx
+    migrate_old_keys_uart_pin("pin_pzem_rx", pzemSerial);
+
+    // pin_pzem_tx => pin_serial2_tx or pin_serial1_tx
+    migrate_old_keys_uart_pin("pin_pzem_tx", pzemSerial);
+
+    // vic_mb_enable
+    if (storage.hasKey("vic_mb_enable")) {
+      ESP_LOGI(TAG, "vic_mb_enable => " KEY_GRID_SOURCE "=Victron");
+      if (storage.loadBool("vic_mb_enable"))
+        storage.storeString(KEY_GRID_SOURCE, "Victron");
+      storage.remove("vic_mb_enable");
+    }
+
+    // jsyr_enable
+    if (storage.hasKey("jsyr_enable")) {
+      ESP_LOGE(TAG, "Key 'jsyr_enable' must be migrated manually: Grid Source must be set to the correct JSY used remotely");
+      if(storage.hasKey("grid_source")) // migrated ?
+        storage.remove("jsyr_enable");
+    }
+
+    // jsy_enable
+    if (storage.hasKey("jsy_enable")) {
+      ESP_LOGE(TAG, "Key 'jsy_enable' must be migrated manually: Grid Source must be set to the correct JSY Serial and channel");
+      if(storage.hasKey("grid_source")) // migrated ?
+        storage.remove("jsy_enable");
+    }
+
+    storage.end();
+  }
 }
 
 static void init_config() {
@@ -107,8 +136,6 @@ static void init_config() {
   config.configure(KEY_ENABLE_DEBUG, true);
   config.configure(KEY_ENABLE_DISPLAY, false);
   config.configure(KEY_ENABLE_HA_DISCOVERY, false);
-  config.configure(KEY_ENABLE_JSY_REMOTE, false);
-  config.configure(KEY_ENABLE_JSY, false);
   config.configure(KEY_ENABLE_LIGHTS, false);
   config.configure(KEY_ENABLE_MQTT, false);
   config.configure(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, false);
@@ -126,9 +153,9 @@ static void init_config() {
   config.configure(KEY_ENABLE_RELAY1, false);
   config.configure(KEY_ENABLE_RELAY2, false);
   config.configure(KEY_ENABLE_SYSTEM_DS18, false);
-  config.configure(KEY_ENABLE_VICTRON_MODBUS, false);
   config.configure(KEY_GRID_FREQUENCY, static_cast<uint8_t>(0));
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
+  config.configure(KEY_GRID_SOURCE);
   config.configure(KEY_GRID_VOLTAGE_MQTT_TOPIC);
   config.configure(KEY_HA_DISCOVERY_TOPIC, YASOLR_HA_DISCOVERY_TOPIC);
   config.configure(KEY_HOSTNAME, Mycila::AppInfo.defaultHostname);
@@ -398,14 +425,6 @@ void yasolr_init_config() {
         haDiscoveryTask->resume();
       }
 
-    } else if (key == KEY_ENABLE_JSY_REMOTE) {
-      reconfigureQueue.push([]() {
-        yasolr_configure_jsy_remote();
-        if (!config.get<bool>(KEY_ENABLE_AP_MODE) && jsyRemoteTask) {
-          jsyRemoteTask->resume();
-        }
-      });
-
     } else if (key == KEY_ENABLE_DISPLAY) {
       reconfigureQueue.push(yasolr_configure_display);
 
@@ -427,16 +446,21 @@ void yasolr_init_config() {
     } else if (key == KEY_ENABLE_RELAY2) {
       reconfigureQueue.push(yasolr_configure_relay2);
 
-    } else if (key == KEY_ENABLE_VICTRON_MODBUS) {
+    } else if (key == KEY_GRID_SOURCE) {
       reconfigureQueue.push([]() {
+        grid.setSource(config.getString(KEY_GRID_SOURCE));
+        yasolr_configure_jsy();
+        yasolr_configure_jsy_remote();
+        yasolr_configure_mqtt_grid_source();
         yasolr_configure_victron();
-        if (!config.get<bool>(KEY_ENABLE_AP_MODE) && victronConnectTask) {
-          victronConnectTask->resume();
+        if (!config.get<bool>(KEY_ENABLE_AP_MODE)) {
+          if (victronConnectTask)
+            victronConnectTask->resume();
+          if (jsyRemoteTask)
+            jsyRemoteTask->resume();
         }
+        grid.clearMetrics();
       });
-
-    } else if (key == KEY_ENABLE_JSY) {
-      reconfigureQueue.push(yasolr_configure_jsy);
 
     } else if (key == KEY_ENABLE_OUTPUT1_PZEM) {
       reconfigureQueue.push(yasolr_configure_output1_pzem);

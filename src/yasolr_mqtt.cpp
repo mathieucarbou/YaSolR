@@ -20,6 +20,99 @@ Mycila::Task* haDiscoveryTask = nullptr;
 static Mycila::ExpiringValue<float>* voltage = nullptr;
 static Mycila::ExpiringValue<float>* power = nullptr;
 
+static void on_mqtt_grid_power(const std::string& topic, const std::string_view& payload);
+static void on_mqtt_grid_voltage(const std::string& topic, const std::string_view& payload);
+
+void yasolr_configure_mqtt_grid_source() {
+  if (mqtt) {
+    const char* gridPowerMQTTTopic = config.getString(KEY_GRID_POWER_MQTT_TOPIC);
+    const char* gridVoltageMQTTTopic = config.getString(KEY_GRID_VOLTAGE_MQTT_TOPIC);
+
+    if (gridPowerMQTTTopic[0] != '\0') {
+      mqtt->unsubscribe(gridPowerMQTTTopic);
+      if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
+        ESP_LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
+        mqtt->subscribe(gridPowerMQTTTopic, on_mqtt_grid_power);
+      }
+    }
+
+    if (gridVoltageMQTTTopic[0] != '\0') {
+      mqtt->unsubscribe(gridVoltageMQTTTopic);
+      if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
+        ESP_LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
+        mqtt->subscribe(gridVoltageMQTTTopic, on_mqtt_grid_voltage);
+      }
+    }
+  }
+}
+
+static void on_mqtt_grid_power(const std::string& topic, const std::string_view& payload) {
+  if (payload.length()) {
+    float p = NAN;
+
+    // check if first character is '{' for json data
+    if (payload[0] == '{') {
+      JsonDocument doc;
+      if (deserializeJson(doc, payload) == DeserializationError::Ok) {
+        // Shelly EM example: shellyproem50/status/em1:0
+        // {"id":1,"current":2.681,"voltage":236.7,"act_power":-607.3,"aprt_power":636.0,"pf":0.95,"freq":50.0,"calibration":"factory"}
+        // Shelly 3EM example: shellypowermeter/status/em:0
+        // {"id":0,"a_current":0.132,"a_voltage":236.0,"a_act_power":3.9,"a_aprt_power":31.0,"a_pf":-0.53,"b_current":0.594,"b_voltage":236.4,"b_act_power":45.4,"b_aprt_power":140.3,"b_pf":-0.61,"c_current":0.368,"c_voltage":237.8,"c_act_power":54.3,"c_aprt_power":87.5,"c_pf":-0.72,"n_current":null,"total_current":1.094,"total_act_power":103.610,"total_aprt_power":258.799, "user_calibrated_phase":[]}
+        p = doc["act_power"] | (doc["total_act_power"] | NAN);
+      }
+
+    } else {
+      // direct value ?
+      if (std::from_chars(payload.begin(), payload.end(), p).ec != std::errc{})
+        p = NAN;
+    }
+
+    if (!std::isnan(p)) {
+      ESP_LOGI(TAG, "Grid Power from MQTT: %f", p);
+      power->update(p);
+
+      Mycila::Grid::Metrics metrics;
+      metrics.power = power->get();
+      metrics.voltage = voltage->orElse(NAN);
+      grid.updateMetrics(std::move(metrics));
+      pidTask.requestEarlyRun();
+    }
+  }
+}
+
+static void on_mqtt_grid_voltage(const std::string& topic, const std::string_view& payload) {
+  if (payload.length()) {
+    float v = NAN;
+
+    // check if first character is '{' for json data
+    if (payload[0] == '{') {
+      JsonDocument doc;
+      if (deserializeJson(doc, payload) == DeserializationError::Ok) {
+        // Shelly EM example: shellyproem50/status/em1:0
+        // {"id":1,"current":2.681,"voltage":236.7,"act_power":-607.3,"aprt_power":636.0,"pf":0.95,"freq":50.0,"calibration":"factory"}
+        // Shelly 3EM example: shellypowermeter/status/em:0
+        // {"id":0,"a_current":0.132,"a_voltage":236.0,"a_act_power":3.9,"a_aprt_power":31.0,"a_pf":-0.53,"b_current":0.594,"b_voltage":236.4,"b_act_power":45.4,"b_aprt_power":140.3,"b_pf":-0.61,"c_current":0.368,"c_voltage":237.8,"c_act_power":54.3,"c_aprt_power":87.5,"c_pf":-0.72,"n_current":null,"total_current":1.094,"total_act_power":103.610,"total_aprt_power":258.799, "user_calibrated_phase":[]}
+        v = doc["voltage"] | (doc["a_voltage"] | (doc["b_voltage"] | (doc["c_voltage"] | NAN)));
+      }
+
+    } else {
+      // direct value
+      if (std::from_chars(payload.begin(), payload.end(), v).ec != std::errc{})
+        v = NAN;
+    }
+
+    if (!std::isnan(v)) {
+      ESP_LOGI(TAG, "Grid Voltage from MQTT: %f", v);
+      voltage->update(v);
+
+      Mycila::Grid::Metrics metrics;
+      metrics.power = power->get();
+      metrics.voltage = voltage->orElse(NAN);
+      grid.updateMetrics(std::move(metrics));
+    }
+  }
+}
+
 static void connect() {
   mqtt->end();
 
@@ -140,90 +233,6 @@ static void subscribe() {
     restartTask.resume();
   });
 
-  // grid power
-  const char* gridPowerMQTTTopic = config.getString(KEY_GRID_POWER_MQTT_TOPIC);
-  if (gridPowerMQTTTopic[0] != '\0') {
-    ESP_LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
-    mqtt->subscribe(gridPowerMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
-      if (payload.length()) {
-        float p = NAN;
-
-        // check if first character is '{' for json data
-        if (payload[0] == '{') {
-          JsonDocument doc;
-          if (deserializeJson(doc, payload) == DeserializationError::Ok) {
-            // Shelly EM example: shellyproem50/status/em1:0
-            // {"id":1,"current":2.681,"voltage":236.7,"act_power":-607.3,"aprt_power":636.0,"pf":0.95,"freq":50.0,"calibration":"factory"}
-            // Shelly 3EM example: shellypowermeter/status/em:0
-            // {"id":0,"a_current":0.132,"a_voltage":236.0,"a_act_power":3.9,"a_aprt_power":31.0,"a_pf":-0.53,"b_current":0.594,"b_voltage":236.4,"b_act_power":45.4,"b_aprt_power":140.3,"b_pf":-0.61,"c_current":0.368,"c_voltage":237.8,"c_act_power":54.3,"c_aprt_power":87.5,"c_pf":-0.72,"n_current":null,"total_current":1.094,"total_act_power":103.610,"total_aprt_power":258.799, "user_calibrated_phase":[]}
-            p = doc["act_power"] | (doc["total_act_power"] | NAN);
-          }
-
-        } else {
-          // direct value ?
-          if (std::from_chars(payload.begin(), payload.end(), p).ec != std::errc{})
-            p = NAN;
-        }
-
-        if (!std::isnan(p)) {
-          ESP_LOGI(TAG, "Grid Power from MQTT: %f", p);
-          power->update(p);
-
-          Mycila::Grid::Metrics metrics;
-          metrics.source = Mycila::Grid::Source::MQTT;
-          metrics.power = power->get();
-          metrics.voltage = voltage->orElse(NAN);
-
-          grid.updateMetrics(std::move(metrics));
-
-          if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
-            pidTask.requestEarlyRun();
-          }
-        }
-      }
-    });
-  }
-
-  // grid voltage
-  const char* gridVoltageMQTTTopic = config.getString(KEY_GRID_VOLTAGE_MQTT_TOPIC);
-  if (gridVoltageMQTTTopic[0] != '\0') {
-    ESP_LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
-    mqtt->subscribe(gridVoltageMQTTTopic, [](const std::string& topic, const std::string_view& payload) {
-      if (payload.length()) {
-        float v = NAN;
-
-        // check if first character is '{' for json data
-        if (payload[0] == '{') {
-          JsonDocument doc;
-          if (deserializeJson(doc, payload) == DeserializationError::Ok) {
-            // Shelly EM example: shellyproem50/status/em1:0
-            // {"id":1,"current":2.681,"voltage":236.7,"act_power":-607.3,"aprt_power":636.0,"pf":0.95,"freq":50.0,"calibration":"factory"}
-            // Shelly 3EM example: shellypowermeter/status/em:0
-            // {"id":0,"a_current":0.132,"a_voltage":236.0,"a_act_power":3.9,"a_aprt_power":31.0,"a_pf":-0.53,"b_current":0.594,"b_voltage":236.4,"b_act_power":45.4,"b_aprt_power":140.3,"b_pf":-0.61,"c_current":0.368,"c_voltage":237.8,"c_act_power":54.3,"c_aprt_power":87.5,"c_pf":-0.72,"n_current":null,"total_current":1.094,"total_act_power":103.610,"total_aprt_power":258.799, "user_calibrated_phase":[]}
-            v = doc["voltage"] | (doc["a_voltage"] | (doc["b_voltage"] | (doc["c_voltage"] | NAN)));
-          }
-
-        } else {
-          // direct value
-          if (std::from_chars(payload.begin(), payload.end(), v).ec != std::errc{})
-            v = NAN;
-        }
-
-        if (!std::isnan(v)) {
-          ESP_LOGI(TAG, "Grid Voltage from MQTT: %f", v);
-          voltage->update(v);
-
-          Mycila::Grid::Metrics metrics;
-          metrics.source = Mycila::Grid::Source::MQTT;
-          metrics.power = power->orElse(NAN);
-          metrics.voltage = voltage->get();
-
-          grid.updateMetrics(std::move(metrics));
-        }
-      }
-    });
-  }
-
   // output 1 temperature
   const char* output1TemperatureMQTTTopic = config.getString(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   if (output1TemperatureMQTTTopic[0] != '\0') {
@@ -255,6 +264,8 @@ static void subscribe() {
       }
     });
   }
+
+  yasolr_configure_mqtt_grid_source();
 }
 
 static void publishConfig() {
@@ -622,8 +633,6 @@ void yasolr_configure_mqtt() {
       mqtt = nullptr;
       voltage = nullptr;
       power = nullptr;
-
-      grid.deleteMetrics(Mycila::Grid::Source::MQTT);
     }
   }
 }
