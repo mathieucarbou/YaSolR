@@ -29,18 +29,20 @@ void yasolr_configure_mqtt_grid_source() {
     const char* gridVoltageMQTTTopic = config.getString(KEY_GRID_VOLTAGE_MQTT_TOPIC);
 
     if (gridPowerMQTTTopic[0] != '\0') {
-      mqtt->unsubscribe(gridPowerMQTTTopic);
       if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
         ESP_LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
         mqtt->subscribe(gridPowerMQTTTopic, on_mqtt_grid_power);
+      } else {
+        mqtt->unsubscribe(gridPowerMQTTTopic);
       }
     }
 
     if (gridVoltageMQTTTopic[0] != '\0') {
-      mqtt->unsubscribe(gridVoltageMQTTTopic);
       if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
         ESP_LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
         mqtt->subscribe(gridVoltageMQTTTopic, on_mqtt_grid_voltage);
+      } else {
+        mqtt->unsubscribe(gridVoltageMQTTTopic);
       }
     }
   }
