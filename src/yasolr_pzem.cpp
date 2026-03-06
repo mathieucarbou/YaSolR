@@ -46,24 +46,18 @@ static Mycila::PZEM* init_pzem(const char* label, const uint8_t address, Mycila:
     return nullptr;
   }
 
-  // true if Serial1 or Serial2 is allocated to PZEM but not both at the same time (mutually exclusive)
-  const bool onlyOneUartForPZEM = serial1AssignedToPZEM ^ serial2AssignedToPZEM;
-
-  // true if all PZEM are enabled on only 1 UART (either Serial1 or Serial2), in which case we need to assign addresses
-  const bool onlyOneUartForAllPZEM = onlyOneUartForPZEM && config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM) && config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM);
-
   Mycila::PZEM* pzem = nullptr;
 
   if (serial1AssignedToPZEM) {
     ESP_LOGI(TAG, "Enable %s PZEM on UART Serial1", label);
     pzem = existing == nullptr ? new Mycila::PZEM() : existing;
-    pzem->setSharedSerial(onlyOneUartForPZEM);
-    pzem->begin(Serial1, config.get<int8_t>(KEY_PIN_SERIAL1_RX), config.get<int8_t>(KEY_PIN_SERIAL1_TX), onlyOneUartForAllPZEM ? address : MYCILA_PZEM_ADDRESS_GENERAL);
+    pzem->setSharedSerial(true);
+    pzem->begin(Serial1, config.get<int8_t>(KEY_PIN_SERIAL1_RX), config.get<int8_t>(KEY_PIN_SERIAL1_TX), address);
   } else { // serial2AssignedToPZEM == true
     ESP_LOGI(TAG, "Enable %s PZEM on UART Serial2", label);
     pzem = existing == nullptr ? new Mycila::PZEM() : existing;
-    pzem->setSharedSerial(onlyOneUartForPZEM);
-    pzem->begin(Serial2, config.get<int8_t>(KEY_PIN_SERIAL2_RX), config.get<int8_t>(KEY_PIN_SERIAL2_TX), onlyOneUartForAllPZEM ? address : MYCILA_PZEM_ADDRESS_GENERAL);
+    pzem->setSharedSerial(true);
+    pzem->begin(Serial2, config.get<int8_t>(KEY_PIN_SERIAL2_RX), config.get<int8_t>(KEY_PIN_SERIAL2_TX), address);
   }
 
   if (!pzem->isEnabled()) {

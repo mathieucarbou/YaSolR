@@ -1140,11 +1140,6 @@ void YaSolR::Website::initCards() {
   const bool autoBypass2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
   const bool pzem2Enabled = config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM);
 
-  // true if PZEM is configured either one Serial1 or Serial2, but not both (mutually exclusive)
-  const bool onlyOneUartForPZEM = config.isEqual(KEY_PIN_SERIAL1_DEV, YASOLR_UART_DEVICE_PZEM) ^ config.isEqual(KEY_PIN_SERIAL2_DEV, YASOLR_UART_DEVICE_PZEM);
-  // true if all PZEM are enabled on only 1 UART (either Serial1 or Serial2), in which case we need to assign addresses
-  const bool onlyOneUartForAllPZEM = onlyOneUartForPZEM && pzem1Enabled && pzem2Enabled;
-
   // statistics
 
   _udpMessageRateBuffer.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::JSY_REMOTE));
@@ -1378,7 +1373,7 @@ void YaSolR::Website::initCards() {
 
   // output 1 pzem
   _output1PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM));
-  _output1PZEMSync.setDisplay(dimmer1Enabled && pzem1Enabled && onlyOneUartForAllPZEM);
+  _output1PZEMSync.setDisplay(dimmer1Enabled && pzem1Enabled);
 
   // output 1 ds18
   _output1DS18.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_DS18));
@@ -1392,7 +1387,7 @@ void YaSolR::Website::initCards() {
 
   // output 2 pzem
   _output2PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM));
-  _output2PZEMSync.setDisplay(dimmer2Enabled && pzem2Enabled && onlyOneUartForAllPZEM && onlyOneUartForAllPZEM);
+  _output2PZEMSync.setDisplay(dimmer2Enabled && pzem2Enabled);
 
   // output 2 ds18
   _output2DS18.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_DS18));
