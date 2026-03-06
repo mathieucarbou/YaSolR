@@ -78,9 +78,8 @@
 #define YASOLR_SAFEBOOT_PARTITION_SIZE       655360     // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SERIAL_BAUDRATE               115200
 #define YASOLR_UART_DEVICE_JSY               "JSY"
-#define YASOLR_UART_DEVICE_NONE              "N/A"
 #define YASOLR_UART_DEVICE_PZEM              "PZEM"
-#define YASOLR_UART_DEVICES                  "N/A,JSY,PZEM"
+#define YASOLR_UART_DEVICES                  ",JSY,PZEM"
 #define YASOLR_WEEK_DAYS                     "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_WEEK_DAYS_EMPTY               "none"
 #define YASOLR_ZC_EVENT_SHIFT_US             -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
