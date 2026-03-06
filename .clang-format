@@ -5,8 +5,10 @@ AccessModifierOffset: -2
 AlignConsecutiveMacros: true
 AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowShortIfStatementsOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
 AllowShortLambdasOnASingleLine: Inline
+AllowShortLoopsOnASingleLine: true
 BinPackArguments: false
 ColumnLimit: 0
 ContinuationIndentWidth: 2
@@ -20,3 +22,9 @@ PointerAlignment: Left
 ReferenceAlignment: Left
 TabWidth: 2
 UseTab: Never
+
+AlignConsecutiveShortCaseStatements:
+  Enabled: true
+  AcrossEmptyLines: false
+  AcrossComments: false
+  AlignCaseColons: false
