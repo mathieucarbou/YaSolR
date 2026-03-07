@@ -239,9 +239,7 @@ namespace Mycila {
               float excessPowerRatio = 0.0f;
           } Config;
 
-          explicit Output(const char* name) : _name(name) {
-            _metrics.setExpiration(10000);
-          }
+          Output(const char* label, const char* mqttName) : _name(label), _mqttName(mqttName) {}
 
           // dimmer is mandatory
           void setDimmer(Dimmer* dimmer) { _dimmer = dimmer; }
@@ -263,6 +261,7 @@ namespace Mycila {
           }
           const char* getStateName() const;
           const char* getName() const { return _name; }
+          const char* getMqttName() const { return _mqttName; }
           bool isOn() const { return isDimmerOn() || isBypassRelayOn(); }
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -484,6 +483,7 @@ namespace Mycila {
 
         private:
           const char* _name;
+          const char* _mqttName;
           Dimmer* _dimmer;
           Mycila::Relay* _relay = nullptr; // optional
           bool _autoBypassEnabled = false;

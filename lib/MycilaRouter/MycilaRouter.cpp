@@ -85,28 +85,28 @@ const char* Mycila::Router::Output::getStateName() const { return StateNames[sta
 
 bool Mycila::Router::Output::setDimmerDutyCycle(float dutyCycle) {
   if (_autoBypassEnabled) {
-    ESP_LOGW(TAG, "Auto Bypass '%s' is activated: unable to change dimmer level", _name);
+    ESP_LOGW(TAG, "%s Auto Bypass is activated: unable to change dimmer level", _name);
     return false;
   }
 
   if (config.autoDimmer) {
-    ESP_LOGW(TAG, "Auto Dimmer '%s' is activated: unable to change dimmer level", _name);
+    ESP_LOGW(TAG, "%s Auto Dimmer is activated: unable to change dimmer level", _name);
     return false;
   }
 
   if (dutyCycle > 0 && isDimmerTemperatureLimitReached()) {
-    ESP_LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, static_cast<float>(config.dimmerTempLimit));
+    ESP_LOGW(TAG, "%s Dimmer reached its temperature limit of %.02f °C", _name, static_cast<float>(config.dimmerTempLimit));
     return false;
   }
 
   if (_manualBypassEnabled) {
-    ESP_LOGW(TAG, "Bypass '%s' disabled by dimmer activation", _name);
+    ESP_LOGW(TAG, "%s Bypass disabled by dimmer activation", _name);
     setBypass(false);
   }
 
   _dimmer->setDutyCycle(dutyCycle);
 
-  ESP_LOGI(TAG, "Set Dimmer '%s' duty to %f", _name, _dimmer->getDutyCycle());
+  ESP_LOGI(TAG, "Set %s Dimmer duty to %f", _name, _dimmer->getDutyCycle());
 
   return true;
 }
@@ -122,7 +122,7 @@ void Mycila::Router::Output::applyTemperatureLimit() {
     return;
 
   if (isDimmerTemperatureLimitReached()) {
-    ESP_LOGW(TAG, "Dimmer '%s' reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
+    ESP_LOGW(TAG, "%s Dimmer reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
     _dimmer->off();
     return;
   }
@@ -132,7 +132,7 @@ void Mycila::Router::Output::applyTemperatureLimit() {
 
 void Mycila::Router::Output::setBypass(bool state) {
   if (_autoBypassEnabled) {
-    ESP_LOGW(TAG, "Auto Bypass '%s' is activated: bypass relay state won't be updated", _name);
+    ESP_LOGW(TAG, "%s Auto Bypass is activated: bypass relay state won't be updated", _name);
   } else {
     _switchBypass(state);
   }
@@ -146,7 +146,7 @@ void Mycila::Router::Output::setBypass(bool state) {
 void Mycila::Router::Output::applyAutoBypass() {
   if (!isAutoBypassEnabled()) {
     if (_autoBypassEnabled) {
-      ESP_LOGW(TAG, "Auto Bypass disabled: stopping Auto Bypass '%s'", _name);
+      ESP_LOGW(TAG, "%s Auto Bypass disabled: stopping Auto Bypass", _name);
       _autoBypassEnabled = false;
       _switchBypass(_manualBypassEnabled);
     }
@@ -158,7 +158,7 @@ void Mycila::Router::Output::applyAutoBypass() {
   struct tm timeInfo;
   if (!getLocalTime(&timeInfo, 5)) {
     if (_autoBypassEnabled) {
-      ESP_LOGW(TAG, "Unable to get time: stopping Auto Bypass '%s'", _name);
+      ESP_LOGW(TAG, "Unable to get time: stopping %s Auto Bypass", _name);
       _autoBypassEnabled = false;
       _switchBypass(_manualBypassEnabled);
     }
@@ -170,7 +170,7 @@ void Mycila::Router::Output::applyAutoBypass() {
   if (!_temperature.neverUpdated()) {
     if (!_temperature.isPresent()) {
       if (_autoBypassEnabled) {
-        ESP_LOGW(TAG, "Invalid temperature sensor value: stopping Auto Bypass '%s'", _name);
+        ESP_LOGW(TAG, "Invalid temperature sensor value: stopping %s Auto Bypass", _name);
         _autoBypassEnabled = false;
         _switchBypass(_manualBypassEnabled);
       }
@@ -181,7 +181,7 @@ void Mycila::Router::Output::applyAutoBypass() {
 
     if (temp >= config.autoStopTemperature) {
       if (_autoBypassEnabled) {
-        ESP_LOGI(TAG, "Temperature reached %.02f °C: stopping Auto Bypass '%s'", temp, _name);
+        ESP_LOGI(TAG, "Temperature reached %.02f °C: stopping %s Auto Bypass", temp, _name);
         _autoBypassEnabled = false;
         _switchBypass(_manualBypassEnabled);
       }
@@ -197,7 +197,7 @@ void Mycila::Router::Output::applyAutoBypass() {
   const int inRange = Mycila::Time::timeInRange(timeInfo, config.autoStartTime.c_str(), config.autoStopTime.c_str());
   if (inRange == -1) {
     if (_autoBypassEnabled) {
-      ESP_LOGW(TAG, "Time range %s to %s is invalid: stopping Auto Bypass '%s'", config.autoStartTime.c_str(), config.autoStopTime.c_str(), _name);
+      ESP_LOGW(TAG, "Time range %s to %s is invalid: stopping %s Auto Bypass", config.autoStartTime.c_str(), config.autoStopTime.c_str(), _name);
       _autoBypassEnabled = false;
       _switchBypass(_manualBypassEnabled);
     }
@@ -206,7 +206,7 @@ void Mycila::Router::Output::applyAutoBypass() {
 
   if (!inRange) {
     if (_autoBypassEnabled) {
-      ESP_LOGI(TAG, "Time reached %s: stopping Auto Bypass '%s'", config.autoStopTime.c_str(), _name);
+      ESP_LOGI(TAG, "Time reached %s: stopping %s Auto Bypass", config.autoStopTime.c_str(), _name);
       _autoBypassEnabled = false;
       _switchBypass(_manualBypassEnabled);
     }
@@ -218,7 +218,7 @@ void Mycila::Router::Output::applyAutoBypass() {
     // auto bypass is not enabled, let's start it
     const char* wday = DaysOfWeek[timeInfo.tm_wday];
     if (config.weekDays.find(wday) != std::string::npos) {
-      ESP_LOGI(TAG, "Time within %s-%s on %s: starting Auto Bypass '%s' at %.02f °C", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
+      ESP_LOGI(TAG, "Time within %s-%s on %s: starting %s Auto Bypass at %.02f °C", config.autoStartTime.c_str(), config.autoStopTime.c_str(), wday, _name, _temperature.orElse(0));
       _switchBypass(true);
       _autoBypassEnabled = true;
     }
@@ -236,7 +236,7 @@ void Mycila::Router::Output::applyAutoBypass() {
     return;
 
   // start bypass
-  ESP_LOGI(TAG, "Auto Bypass '%s' must be restarted", _name);
+  ESP_LOGI(TAG, "%s Auto Bypass must be restarted", _name);
   _switchBypass(true);
 }
 
@@ -247,7 +247,7 @@ void Mycila::Router::Output::applyBypassTimeout() {
     return;
 
   if (elapsed >= config.bypassTimeoutSec) {
-    ESP_LOGI(TAG, "Manual Bypass '%s' timeout!", _name);
+    ESP_LOGI(TAG, "%s Manual Bypass timeout!", _name);
     if (_autoBypassEnabled || !_manualBypassEnabled) {
       // auto-bypass is enabled, or we are routing => do not touch the relay states
       _manualBypassTime = 0;
@@ -265,14 +265,14 @@ void Mycila::Router::Output::_switchBypass(bool state, bool log) {
     if (isBypassRelayEnabled()) {
       // we have a relay in-place: use it
       if (log && !isBypassRelayOn()) {
-        ESP_LOGI(TAG, "Turning Bypass Relay '%s' ON", _name);
+        ESP_LOGI(TAG, "Turning %s Bypass Relay ON", _name);
       }
       _dimmer->off();
       _relay->setState(true);
     } else {
       // we don't have a relay: use the dimmer
       if (log) {
-        ESP_LOGI(TAG, "Turning Dimmer '%s' ON", _name);
+        ESP_LOGI(TAG, "Turning %s Dimmer ON", _name);
       }
       _dimmer->on();
     }
@@ -280,12 +280,12 @@ void Mycila::Router::Output::_switchBypass(bool state, bool log) {
     // we want to deactivate bypass
     if (isBypassRelayEnabled()) {
       if (log && isBypassRelayOn()) {
-        ESP_LOGI(TAG, "Turning Bypass Relay '%s' OFF", _name);
+        ESP_LOGI(TAG, "Turning %s Bypass Relay OFF", _name);
       }
       _relay->setState(false);
     } else {
       if (log) {
-        ESP_LOGI(TAG, "Turning Dimmer '%s' OFF", _name);
+        ESP_LOGI(TAG, "Turning %s Dimmer OFF", _name);
       }
       _dimmer->off();
     }
@@ -314,7 +314,7 @@ void Mycila::Router::beginCalibration(size_t outputIndex, CalibrationCallback cb
 
   // find if at least one output is online
   if (!_outputs[outputIndex]->isDimmerOnline()) {
-    ESP_LOGW(TAG, "Unable to calibrate: output %s is not online", _outputs[outputIndex]->getName());
+    ESP_LOGW(TAG, "Unable to calibrate: %s is not online", _outputs[outputIndex]->getName());
     return;
   }
 
@@ -358,9 +358,6 @@ void Mycila::Router::continueCalibration() {
         ESP_LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
 
         std::optional<float> resistance = _outputs[_calibrationOutputIndex]->readResistance();
-        if (!resistance.has_value()) {
-          resistance = readResistance();
-        }
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = resistance.value_or(0);
 

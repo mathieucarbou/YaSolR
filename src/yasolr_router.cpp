@@ -8,8 +8,8 @@
 #include <string>
 
 Mycila::Router router;
-Mycila::Router::Output output1("output1");
-Mycila::Router::Output output2("output2");
+Mycila::Router::Output output1("Output 1", "output1");
+Mycila::Router::Output output2("Output 2", "output2");
 
 // ZCD
 Mycila::PulseAnalyzer* pulseAnalyzer = nullptr;

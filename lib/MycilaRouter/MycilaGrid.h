@@ -18,7 +18,8 @@ namespace Mycila {
     public:
       enum class SourceKind {
         UNKNOWN,
-        JSY,
+        JSY_SERIAL1,
+        JSY_SERIAL2,
         JSY_REMOTE,
         MQTT,
         VICTRON,
@@ -178,29 +179,29 @@ namespace Mycila {
         switch (source) {
           case Source::MQTT:                   return SourceKind::MQTT;
           case Source::VICTRON:                return SourceKind::VICTRON;
-          case Source::JSY_MK_163_SERIAL1:     return SourceKind::JSY;
-          case Source::JSY_MK_163_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_163_SERIAL1:     return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_163_SERIAL2:     return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_163_REMOTE:      return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_227_SERIAL1:     return SourceKind::JSY;
-          case Source::JSY_MK_227_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_227_SERIAL1:     return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_227_SERIAL2:     return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_227_REMOTE:      return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_229_SERIAL1:     return SourceKind::JSY;
-          case Source::JSY_MK_229_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_229_SERIAL1:     return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_229_SERIAL2:     return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_229_REMOTE:      return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_193_CH1_SERIAL1: return SourceKind::JSY;
-          case Source::JSY_MK_193_CH1_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_193_CH1_SERIAL1: return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_193_CH1_SERIAL2: return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_193_CH1_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_193_CH2_SERIAL1: return SourceKind::JSY;
-          case Source::JSY_MK_193_CH2_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_193_CH2_SERIAL1: return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_193_CH2_SERIAL2: return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_193_CH2_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_194_CH1_SERIAL1: return SourceKind::JSY;
-          case Source::JSY_MK_194_CH1_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_194_CH1_SERIAL1: return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_194_CH1_SERIAL2: return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_194_CH1_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_194_CH2_SERIAL1: return SourceKind::JSY;
-          case Source::JSY_MK_194_CH2_SERIAL2: return SourceKind::JSY;
+          case Source::JSY_MK_194_CH2_SERIAL1: return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_194_CH2_SERIAL2: return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_194_CH2_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_333_SERIAL1:     return SourceKind::JSY;
-          case Source::JSY_MK_333_SERIAL2:     return SourceKind::JSY;
+          case Source::JSY_MK_333_SERIAL1:     return SourceKind::JSY_SERIAL1;
+          case Source::JSY_MK_333_SERIAL2:     return SourceKind::JSY_SERIAL2;
           case Source::JSY_MK_333_REMOTE:      return SourceKind::JSY_REMOTE;
           default:                             return SourceKind::UNKNOWN;
         }
@@ -273,33 +274,10 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
         root["online"] = isConnected();
-
-        std::optional<float> power = getPower();
-        if (power.has_value()) {
-          root["power"] = power.value();
-        }
-
-        std::optional<float> voltage = getVoltage();
-        if (voltage.has_value()) {
-          root["voltage"] = voltage.value();
-        }
-
-        std::optional<float> frequency = getFrequency();
-        if (frequency.has_value()) {
-          root["frequency"] = frequency.value();
-        }
-
-        {
-          Metrics* measurements = new Metrics();
-          readMeasurements(*measurements);
-          toJson(root["measurements"].to<JsonObject>(), *measurements);
-          delete measurements;
-        }
-
+        root["metrics"] = getSourceString();
+        root["metrics"]["time"] = _metrics.getLastUpdateTime();
         if (_metrics.isPresent()) {
-          root["source"]["type"] = getSourceString();
-          root["source"]["time"] = _metrics.getLastUpdateTime();
-          toJson(root["source"], _metrics.get());
+          toJson(root["metrics"], _metrics.get());
         }
       }
 

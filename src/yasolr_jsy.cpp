@@ -119,7 +119,7 @@ static void jsy_callback(const Mycila::JSY::EventType eventType, const Mycila::J
 }
 
 void yasolr_configure_jsy() {
-  if (grid.isUsing(Mycila::Grid::SourceKind::JSY)) {
+  if (grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL1) || grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL2)) {
     // setup JSY if not done yet
     if (jsy == nullptr) {
       const bool serial1AssignedToJSY = config.isEqual(KEY_PIN_SERIAL1_DEV, YASOLR_UART_DEVICE_JSY);

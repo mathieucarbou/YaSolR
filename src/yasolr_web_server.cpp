@@ -522,7 +522,7 @@ void rest_api() {
     delete routerMeasurements;
 
     for (const auto& output : router.getOutputs()) {
-      JsonObject json = root[output->getName()].to<JsonObject>();
+      JsonObject json = root[output->getMqttName()].to<JsonObject>();
       json["state"] = output->getStateName();
       json["bypass"] = YASOLR_STATE(output->isBypassOn());
       json["dimmer"] = YASOLR_STATE(output->isDimmerOn());

@@ -405,7 +405,7 @@ static void publishData() {
     mqtt->publish((baseTopic + "/router/temperature").c_str(), ds18Sys && ds18Sys->getTemperature().value_or(0.0f) > 0 ? std::to_string(ds18Sys->getTemperature().value_or(0.0f)) : "0");
 
     for (const auto& output : router.getOutputs()) {
-      const std::string outputTopic = baseTopic + "/router/" + output->getName();
+      const std::string outputTopic = baseTopic + "/router/" + output->getMqttName();
 
       Mycila::Router::Metrics* outputMeasurements = new Mycila::Router::Metrics();
       if (!output->readMeasurements(*outputMeasurements)) {

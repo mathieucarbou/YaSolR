@@ -1249,7 +1249,7 @@ void YaSolR::Website::initCards() {
   _configBackup.setValue("/api/config/backup");
   _configRestore.setValue("/api/config/restore");
   _safebootUpload.setValue("/api/safeboot/upload");
-  _energyReset.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::JSY) || pzem1Enabled || pzem2Enabled);
+  _energyReset.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL1) || grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL2) || pzem1Enabled || pzem2Enabled);
   _safebootUpload.setDisplay(true);
   _safebootUploadStatus.setDisplay(false);
 
@@ -1676,7 +1676,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // jsy
-  if (grid.isUsing(Mycila::Grid::SourceKind::JSY)) {
+  if (grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL1) || grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL2)) {
     if (!jsy || !jsy->isEnabled()) {
       errors[count++] = ERR_ACT_JSY;
     } else if (!jsy->isConnected()) {
