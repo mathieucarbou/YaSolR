@@ -51,6 +51,15 @@ static int log_redirect_vprintf(const char* format, va_list args) {
   return written;
 }
 
+static void set_debug_levels() {
+  esp_log_level_set("*", ESP_LOG_DEBUG);
+  esp_log_level_set("esp_core_dump_elf", ESP_LOG_INFO);
+  esp_log_level_set("esp_core_dump_port", ESP_LOG_INFO);
+  esp_log_level_set("esp_netif_lwip", ESP_LOG_INFO);
+  esp_log_level_set("nvs", ESP_LOG_INFO);
+  esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
+}
+
 void yasolr_init_logging() {
   Serial.begin(YASOLR_SERIAL_BAUDRATE);
 #if ARDUINO_USB_CDC_ON_BOOT
@@ -62,12 +71,7 @@ void yasolr_init_logging() {
 #endif
 
   ESP_LOGI(TAG, "Initialize logging");
-  esp_log_level_set("*", ESP_LOG_DEBUG);
-  esp_log_level_set("esp_core_dump_elf", ESP_LOG_INFO);
-  esp_log_level_set("esp_core_dump_port", ESP_LOG_INFO);
-  esp_log_level_set("esp_netif_lwip", ESP_LOG_INFO);
-  esp_log_level_set("nvs", ESP_LOG_INFO);
-  esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
+  set_debug_levels();
   esp_log_set_vprintf(log_redirect_vprintf);
 }
 
@@ -84,13 +88,9 @@ void yasolr_init_persistent_logging() {
 
 void yasolr_configure_logging() {
   if (config.get<bool>(KEY_ENABLE_DEBUG)) {
-    esp_log_level_set("*", ESP_LOG_DEBUG);
-    esp_log_level_set("esp_core_dump_elf", ESP_LOG_INFO);
-    esp_log_level_set("esp_core_dump_port", ESP_LOG_INFO);
-    esp_log_level_set("esp_netif_lwip", ESP_LOG_INFO);
-    esp_log_level_set("nvs", ESP_LOG_INFO);
-    esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
     ESP_LOGI(TAG, "Enable Debug Mode");
+
+    set_debug_levels();
 
     if (loggingTask == nullptr) {
       loggingTask = new Mycila::Task("Debug", []() {
@@ -109,8 +109,13 @@ void yasolr_configure_logging() {
     }
 
   } else {
-    esp_log_level_set("*", ESP_LOG_INFO);
     ESP_LOGI(TAG, "Disable Debug Mode");
+
+    esp_log_level_set("*", ESP_LOG_INFO);
+
+    // prevents loop with WebSerial in case we reach some error logs in esp_async_ws like WS message queue overflow
+    esp_log_level_set("async_tcp", ESP_LOG_NONE);
+    esp_log_level_set("async_ws", ESP_LOG_NONE);
 
     if (loggingTask != nullptr) {
       unsafeTaskManager.removeTask(*loggingTask);
