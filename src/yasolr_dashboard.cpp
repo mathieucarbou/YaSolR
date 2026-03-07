@@ -342,19 +342,19 @@ static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046);
 static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_050, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
-static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
-static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
 static dash::DropdownCard<const char*> _output1Source(dashboard, YASOLR_LBL_114, YASOLR_SOURCES_OUTPUT);
+static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
+static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
+static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
 static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 2
 static dash::SeparatorCard<const char*> _output2Sep1(dashboard, YASOLR_LBL_070);
 static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_050, "," YASOLR_DIMMER_LSA_GP8211S "," YASOLR_DIMMER_LSA_GP8403 "," YASOLR_DIMMER_LSA_GP8413 "," YASOLR_DIMMER_LSA_PWM "," YASOLR_DIMMER_LSA_PWM_ZCD "," YASOLR_DIMMER_RANDOM_SSR "," YASOLR_DIMMER_RANDOM_SSR_CYCLE_STEAL "," YASOLR_DIMMER_ROBODYN "," YASOLR_DIMMER_ROBODYN_CYCLE_STEAL "," YASOLR_DIMMER_TRIAC "," YASOLR_DIMMER_TRIAC_CYCLE_STEAL "," YASOLR_DIMMER_SYNC_SSR);
-static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
-static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
-static dash::ToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_132);
 static dash::DropdownCard<const char*> _output2Source(dashboard, YASOLR_LBL_114, YASOLR_SOURCES_OUTPUT);
+static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
+static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
+static dash::ToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_132);
 static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_147);
 
 // relay1
