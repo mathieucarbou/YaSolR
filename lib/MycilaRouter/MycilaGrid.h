@@ -21,6 +21,12 @@ namespace Mycila {
         JSY_SERIAL1,
         JSY_SERIAL2,
         JSY_REMOTE,
+        JSY_MK_163,
+        JSY_MK_227,
+        JSY_MK_229,
+        JSY_MK_193,
+        JSY_MK_194,
+        JSY_MK_333,
         MQTT,
         VICTRON,
       };
@@ -123,18 +129,31 @@ namespace Mycila {
 
       // sources
 
-      void setSource(Source source) { this->_source = source; }
-      Source getSource() const { return _source; }
+      void setSource(Source source) {
+        this->_source = source;
+      }
+      Source getSource() const {
+        return _source;
+      }
 
-      void setSource(const char* src) { setSource(sourceFromString(src)); }
-      const char* getSourceString() const { return sourceToString(_source); }
+      void setSource(const char* src) {
+        setSource(sourceFromString(src));
+      }
+      const char* getSourceString() const {
+        return sourceToString(_source);
+      }
 
-      SourceKind getSourceKind() { return sourceToKind(_source); }
-      bool isUsing(SourceKind kind) const { return sourceToKind(_source) == kind; }
+      bool isUsing(SourceKind kind) const {
+        return isUsing(_source, kind);
+      }
 
-      bool isUsing(Source source) const { return _source == source; }
+      bool isUsing(Source source) const {
+        return _source == source;
+      }
 
-      void clearMetrics() { _metrics.reset(); }
+      void clearMetrics() {
+        _metrics.reset();
+      }
 
       void updateMetrics(Metrics metrics) {
         if (_metrics.neverUpdated()) {
@@ -143,7 +162,9 @@ namespace Mycila {
         _metrics.update(std::move(metrics));
       }
 
-      bool isConnected() const { return _metrics.isPresent() && _metrics.get().voltage > 0; }
+      bool isConnected() const {
+        return _metrics.isPresent() && _metrics.get().voltage > 0;
+      }
 
       std::optional<float> getPower() const {
         if (_metrics.isPresent() && !std::isnan(_metrics.get().power)) {
@@ -175,36 +196,37 @@ namespace Mycila {
         return false;
       }
 
-      static SourceKind sourceToKind(Source source) {
+      static bool isUsing(Source source, SourceKind kind) {
         switch (source) {
-          case Source::MQTT:                   return SourceKind::MQTT;
-          case Source::VICTRON:                return SourceKind::VICTRON;
-          case Source::JSY_MK_163_SERIAL1:     return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_163_SERIAL2:     return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_163_REMOTE:      return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_227_SERIAL1:     return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_227_SERIAL2:     return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_227_REMOTE:      return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_229_SERIAL1:     return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_229_SERIAL2:     return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_229_REMOTE:      return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_193_CH1_SERIAL1: return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_193_CH1_SERIAL2: return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_193_CH1_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_193_CH2_SERIAL1: return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_193_CH2_SERIAL2: return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_193_CH2_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_194_CH1_SERIAL1: return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_194_CH1_SERIAL2: return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_194_CH1_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_194_CH2_SERIAL1: return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_194_CH2_SERIAL2: return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_194_CH2_REMOTE:  return SourceKind::JSY_REMOTE;
-          case Source::JSY_MK_333_SERIAL1:     return SourceKind::JSY_SERIAL1;
-          case Source::JSY_MK_333_SERIAL2:     return SourceKind::JSY_SERIAL2;
-          case Source::JSY_MK_333_REMOTE:      return SourceKind::JSY_REMOTE;
-          default:                             return SourceKind::UNKNOWN;
+          case Source::MQTT:                   return kind == SourceKind::MQTT;
+          case Source::VICTRON:                return kind == SourceKind::VICTRON;
+          case Source::JSY_MK_163_SERIAL1:     return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_163;
+          case Source::JSY_MK_163_SERIAL2:     return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_163;
+          case Source::JSY_MK_163_REMOTE:      return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_163;
+          case Source::JSY_MK_227_SERIAL1:     return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_227;
+          case Source::JSY_MK_227_SERIAL2:     return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_227;
+          case Source::JSY_MK_227_REMOTE:      return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_227;
+          case Source::JSY_MK_229_SERIAL1:     return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_229;
+          case Source::JSY_MK_229_SERIAL2:     return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_229;
+          case Source::JSY_MK_229_REMOTE:      return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_229;
+          case Source::JSY_MK_193_CH1_SERIAL1: return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_193;
+          case Source::JSY_MK_193_CH1_SERIAL2: return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_193;
+          case Source::JSY_MK_193_CH1_REMOTE:  return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_193;
+          case Source::JSY_MK_193_CH2_SERIAL1: return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_193;
+          case Source::JSY_MK_193_CH2_SERIAL2: return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_193;
+          case Source::JSY_MK_193_CH2_REMOTE:  return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_193;
+          case Source::JSY_MK_194_CH1_SERIAL1: return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_194;
+          case Source::JSY_MK_194_CH1_SERIAL2: return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_194;
+          case Source::JSY_MK_194_CH1_REMOTE:  return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_194;
+          case Source::JSY_MK_194_CH2_SERIAL1: return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_194;
+          case Source::JSY_MK_194_CH2_SERIAL2: return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_194;
+          case Source::JSY_MK_194_CH2_REMOTE:  return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_194;
+          case Source::JSY_MK_333_SERIAL1:     return kind == SourceKind::JSY_SERIAL1 || kind == SourceKind::JSY_MK_333;
+          case Source::JSY_MK_333_SERIAL2:     return kind == SourceKind::JSY_SERIAL2 || kind == SourceKind::JSY_MK_333;
+          case Source::JSY_MK_333_REMOTE:      return kind == SourceKind::JSY_REMOTE || kind == SourceKind::JSY_MK_333;
+          default:                             return kind == SourceKind::UNKNOWN;
         }
+        return false;
       }
 
       static const char* sourceToString(Source source) {
@@ -269,7 +291,9 @@ namespace Mycila {
         return Source::UNKNOWN;
       }
 
-      static const char* getSources() { return ",MQTT,Victron,JSY-MK-163 (Serial1),JSY-MK-163 (Serial2),JSY-MK-163 (Remote),JSY-MK-227 (Serial1),JSY-MK-227 (Serial2),JSY-MK-227 (Remote),JSY-MK-229 (Serial1),JSY-MK-229 (Serial2),JSY-MK-229 (Remote),JSY-MK-193 Channel 1 (Serial1),JSY-MK-193 Channel 1 (Serial2),JSY-MK-193 Channel 1 (Remote),JSY-MK-193 Channel 2 (Serial1),JSY-MK-193 Channel 2 (Serial2),JSY-MK-193 Channel 2 (Remote),JSY-MK-194 Channel 1 (Serial1),JSY-MK-194 Channel 1 (Serial2),JSY-MK-194 Channel 1 (Remote),JSY-MK-194 Channel 2 (Serial1),JSY-MK-194 Channel 2 (Serial2),JSY-MK-194 Channel 2 (Remote),JSY-MK-333 (Serial1),JSY-MK-333 (Serial2),JSY-MK-333 (Remote)"; }
+      static const char* getSources() {
+        return ",MQTT,Victron,JSY-MK-163 (Serial1),JSY-MK-163 (Serial2),JSY-MK-163 (Remote),JSY-MK-227 (Serial1),JSY-MK-227 (Serial2),JSY-MK-227 (Remote),JSY-MK-229 (Serial1),JSY-MK-229 (Serial2),JSY-MK-229 (Remote),JSY-MK-193 Channel 1 (Serial1),JSY-MK-193 Channel 1 (Serial2),JSY-MK-193 Channel 1 (Remote),JSY-MK-193 Channel 2 (Serial1),JSY-MK-193 Channel 2 (Serial2),JSY-MK-193 Channel 2 (Remote),JSY-MK-194 Channel 1 (Serial1),JSY-MK-194 Channel 1 (Serial2),JSY-MK-194 Channel 1 (Remote),JSY-MK-194 Channel 2 (Serial1),JSY-MK-194 Channel 2 (Serial2),JSY-MK-194 Channel 2 (Remote),JSY-MK-333 (Serial1),JSY-MK-333 (Serial2),JSY-MK-333 (Remote)";
+      }
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root) const {
