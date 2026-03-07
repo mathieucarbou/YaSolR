@@ -147,8 +147,8 @@ static dash::FeedbackToggleButtonCard _relay1Switch(dashboard, YASOLR_LBL_074);
 static dash::FeedbackToggleButtonCard _relay2Switch(dashboard, YASOLR_LBL_077);
 
 static dash::SeparatorCard<const char*> _overviewSep2(dashboard, YASOLR_LBL_012);
-static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
-static dash::EnergyCard<float, 0> _gridVoltage(dashboard, YASOLR_LBL_106, "V");
+static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_036, "W");
+static dash::EnergyCard<float, 0> _gridVoltage(dashboard, YASOLR_LBL_056, "V");
 
 static dash::SeparatorCard<const char*> _overviewSep3(dashboard, YASOLR_LBL_040);
 static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
@@ -236,14 +236,17 @@ static dash::BarChart<const char*, float> _output2HarmonicCurrents(dashboard, YA
 
 // tab: network
 
-static dash::InputCard _hostnameWidget(dashboard, YASOLR_LBL_073);
-static dash::InputCard<const char*> _wifiSSID(dashboard, YASOLR_LBL_092);
-static dash::InputCard<const char*> _wifiBSSID(dashboard, YASOLR_LBL_047);
-static dash::PasswordCard _wifiPwd(dashboard, YASOLR_LBL_093, YASOLR_HIDDEN_PWD);
+static dash::SeparatorCard<const char*> _netSep1(dashboard, YASOLR_LBL_055);
+static dash::InputCard<const char*> _wifiSSID(dashboard, "SSID");
+static dash::PasswordCard _wifiPwd(dashboard, YASOLR_LBL_099, YASOLR_HIDDEN_PWD);
+static dash::InputCard<const char*> _wifiBSSID(dashboard, "BSSID");
+static dash::SeparatorCard<const char*> _netSep2(dashboard, YASOLR_LBL_047);
 static dash::InputCard<const char*> _staticIP(dashboard, YASOLR_LBL_188);
 static dash::InputCard<const char*> _subnetMask(dashboard, YASOLR_LBL_189);
 static dash::InputCard<const char*> _gateway(dashboard, YASOLR_LBL_190);
 static dash::InputCard<const char*> _dnsServer(dashboard, YASOLR_LBL_191);
+static dash::SeparatorCard<const char*> _netSep3(dashboard, YASOLR_LBL_075);
+static dash::InputCard _hostnameWidget(dashboard, YASOLR_LBL_073);
 static dash::PasswordCard _adminPwd(dashboard, YASOLR_LBL_088, YASOLR_HIDDEN_PWD);
 static dash::ToggleButtonCard _apMode(dashboard, YASOLR_LBL_094);
 
@@ -366,8 +369,8 @@ static dash::PercentageSliderCard _relay1Tolerance(dashboard, YASOLR_LBL_198);
 // relay2
 static dash::SeparatorCard<const char*> _relay2Sep(dashboard, YASOLR_LBL_077);
 static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_077, YASOLR_RELAY_SELECTION);
-static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_075);
-static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_199);
+static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_072);
+static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_198);
 
 // display
 static dash::SeparatorCard<const char*> _displaySep(dashboard, YASOLR_LBL_127);
@@ -377,8 +380,8 @@ static dash::SliderCard<uint8_t> _displaySpeed(dashboard, YASOLR_LBL_142, 1, 10,
 
 // System
 static dash::SeparatorCard<const char*> _routerSep(dashboard, YASOLR_LBL_078);
-static dash::ToggleButtonCard _routerDS18(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_132);
-static dash::ToggleButtonCard _led(dashboard, YASOLR_LBL_078 ": " YASOLR_LBL_129);
+static dash::ToggleButtonCard _routerDS18(dashboard, YASOLR_LBL_132);
+static dash::ToggleButtonCard _led(dashboard, YASOLR_LBL_129);
 
 // tab: output 1 config
 
@@ -684,6 +687,9 @@ void YaSolR::Website::begin() {
 
   // tab: network
 
+  _netSep1.setTab(_networkTab);
+  _netSep2.setTab(_networkTab);
+  _netSep3.setTab(_networkTab);
   _adminPwd.setTab(_networkTab);
   _wifiSSID.setTab(_networkTab);
   _wifiBSSID.setTab(_networkTab);
