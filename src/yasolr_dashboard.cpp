@@ -24,7 +24,8 @@ static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .
 static const char* errors[10] = {};
 
 // activation errors
-static constexpr const char* ERR_ACT_JSY = "Unable to activate JSY: configuration error!";
+static constexpr const char* ERR_ACT_JSY1 = "Unable to activate JSY (Serial1): configuration error!";
+static constexpr const char* ERR_ACT_JSY2 = "Unable to activate JSY (Serial2): configuration error!";
 static constexpr const char* ERR_ACT_MQTT = "MQTT not yet started (MQTT should start 10 seconds after boot)";
 static constexpr const char* ERR_ACT_O1_DIMMER = "Unable to activate Output 1 Dimmer: configuration error!";
 static constexpr const char* ERR_ACT_O1_DS18 = "Unable to activate Output 1 DS18: configuration error!";
@@ -51,7 +52,8 @@ static constexpr const char* ERR_DS18_COM_SYS = "System DS18 communication error
 // no grid electricity errors
 static constexpr const char* ERR_GRID_DIMMER_O1 = "Output 1 Dimmer disconnected from grid!";
 static constexpr const char* ERR_GRID_DIMMER_O2 = "Output 2 Dimmer disconnected from grid!";
-static constexpr const char* ERR_GRID_JSY = "JSY disconnected from grid!";
+static constexpr const char* ERR_GRID_JSY1 = "JSY (Serial1) disconnected from grid!";
+static constexpr const char* ERR_GRID_JSY2 = "JSY (Serial2) disconnected from grid!";
 static constexpr const char* ERR_GRID_PZEM_O1 = "Output 1 PZEM disconnected from grid!";
 static constexpr const char* ERR_GRID_PZEM_O2 = "Output 2 PZEM disconnected from grid!";
 static constexpr const char* ERR_GRID_MQTT = "MQTT topics for power/voltage not correctly set";
@@ -306,11 +308,9 @@ static dash::FeedbackInputCard<int8_t> _pinI2CSDA(dashboard, "SDA");
 static dash::SeparatorCard<const char*> _gpioSep7(dashboard, "Serial1 (JSY, PZEM)");
 static dash::FeedbackInputCard<int8_t> _pinSerial1RX(dashboard, "RX");
 static dash::FeedbackInputCard<int8_t> _pinSerial1TX(dashboard, "TX");
-static dash::DropdownCard<const char*> _pinSerial1Device(dashboard, YASOLR_LBL_150, YASOLR_UART_DEVICES);
 static dash::SeparatorCard<const char*> _gpioSep8(dashboard, "Serial2 (JSY, PZEM)");
 static dash::FeedbackInputCard<int8_t> _pinSerial2RX(dashboard, "RX");
 static dash::FeedbackInputCard<int8_t> _pinSerial2TX(dashboard, "TX");
-static dash::DropdownCard<const char*> _pinSerial2Device(dashboard, YASOLR_LBL_150, YASOLR_UART_DEVICES);
 static dash::SeparatorCard<const char*> _gpioSep4(dashboard, YASOLR_LBL_076);
 static dash::FeedbackInputCard<int8_t> _pinZCD(dashboard, YASOLR_LBL_125);
 static dash::SeparatorCard<const char*> _gpioSep1(dashboard, YASOLR_LBL_046);
@@ -335,7 +335,7 @@ static dash::FeedbackInputCard<int8_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
 // grid
 static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012 ": " YASOLR_LBL_133);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
-static dash::DropdownCard<const char*> _gridSource(dashboard, YASOLR_LBL_114, Mycila::Grid::getSources());
+static dash::DropdownCard<const char*> _gridSource(dashboard, YASOLR_LBL_114, YASOLR_SOURCES_GRID);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 
@@ -345,7 +345,7 @@ static dash::DropdownCard<const char*> _output1DimmerType(dashboard, YASOLR_LBL_
 static dash::RangeSliderCard<uint8_t> _output1DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::DropdownCard<const char*> _output1RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
 static dash::ToggleButtonCard _output1DS18(dashboard, YASOLR_LBL_132);
-static dash::ToggleButtonCard _output1PZEM(dashboard, "PZEM");
+static dash::DropdownCard<const char*> _output1Source(dashboard, YASOLR_LBL_114, YASOLR_SOURCES_OUTPUT);
 static dash::IndicatorButtonCard _output1PZEMSync(dashboard, YASOLR_LBL_147);
 
 // output 2
@@ -354,7 +354,7 @@ static dash::DropdownCard<const char*> _output2DimmerType(dashboard, YASOLR_LBL_
 static dash::RangeSliderCard<uint8_t> _output2DimmerMapper(dashboard, YASOLR_LBL_183, 0, 100, 1, "%");
 static dash::DropdownCard<const char*> _output2RelayType(dashboard, YASOLR_LBL_134, YASOLR_RELAY_SELECTION);
 static dash::ToggleButtonCard _output2DS18(dashboard, YASOLR_LBL_132);
-static dash::ToggleButtonCard _output2PZEM(dashboard, "PZEM");
+static dash::DropdownCard<const char*> _output2Source(dashboard, YASOLR_LBL_114, YASOLR_SOURCES_OUTPUT);
 static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_147);
 
 // relay1
@@ -646,8 +646,10 @@ void YaSolR::Website::begin() {
   _safeBoot.onPush([]() { safeBootTask.resume(); });
   _reset.onPush([]() { resetTask.resume(); });
   _energyReset.onPush([]() {
-    if (jsy)
-      jsy->resetEnergy();
+    if (jsy[0])
+      jsy[0]->resetEnergy();
+    if (jsy[1])
+      jsy[1]->resetEnergy();
     if (pzem[0])
       pzem[0]->resetEnergy();
     if (pzem[1])
@@ -845,11 +847,9 @@ void YaSolR::Website::begin() {
   _gpioSep7.setTab(_gpioTab);
   _pinSerial1RX.setTab(_gpioTab);
   _pinSerial1TX.setTab(_gpioTab);
-  _pinSerial1Device.setTab(_gpioTab);
   _gpioSep8.setTab(_gpioTab);
   _pinSerial2RX.setTab(_gpioTab);
   _pinSerial2TX.setTab(_gpioTab);
-  _pinSerial2Device.setTab(_gpioTab);
 
   _gpioTitle.setSubtitle(YASOLR_LBL_131);
 
@@ -872,9 +872,6 @@ void YaSolR::Website::begin() {
   _numConfig(_pinSerial2RX, KEY_PIN_SERIAL2_RX);
   _numConfig(_pinSerial2TX, KEY_PIN_SERIAL2_TX);
   _numConfig(_pinZCD, KEY_PIN_ZCD);
-
-  _textConfig(_pinSerial1Device, KEY_PIN_SERIAL1_DEV);
-  _textConfig(_pinSerial2Device, KEY_PIN_SERIAL2_DEV);
 
   // tab: hardware
 
@@ -910,10 +907,10 @@ void YaSolR::Website::begin() {
   _textConfig(_output1DimmerType, KEY_OUTPUT1_DIMMER);
   _rangeConfig(_output1DimmerMapper, KEY_OUTPUT1_DIMMER_MIN, KEY_OUTPUT1_DIMMER_MAX);
 
-  // output 1 pzem
-  _output1PZEM.setTab(_hardwareConfigTab);
+  // output 1 source
+  _output1Source.setTab(_hardwareConfigTab);
   _output1PZEMSync.setTab(_hardwareConfigTab);
-  _boolConfig(_output1PZEM, KEY_ENABLE_OUTPUT1_PZEM);
+  _textConfig(_output1Source, KEY_OUTPUT1_SOURCE);
 
   // output 1 bypass relay
   _output1RelayType.setTab(_hardwareConfigTab);
@@ -930,10 +927,10 @@ void YaSolR::Website::begin() {
   _textConfig(_output2DimmerType, KEY_OUTPUT2_DIMMER);
   _rangeConfig(_output2DimmerMapper, KEY_OUTPUT2_DIMMER_MIN, KEY_OUTPUT2_DIMMER_MAX);
 
-  // output 2 pzem
-  _output2PZEM.setTab(_hardwareConfigTab);
+  // output 2 source
+  _output2Source.setTab(_hardwareConfigTab);
   _output2PZEMSync.setTab(_hardwareConfigTab);
-  _boolConfig(_output2PZEM, KEY_ENABLE_OUTPUT2_PZEM);
+  _textConfig(_output2Source, KEY_OUTPUT2_SOURCE);
 
   // output 2 bypass relay
   _output2RelayType.setTab(_hardwareConfigTab);
@@ -1130,7 +1127,7 @@ void YaSolR::Website::initCards() {
   const bool bypass1Possible = dimmer1Enabled || output1RelayEnabled;
   const bool autoDimmer1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   const bool autoBypass1Activated = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
-  const bool pzem1Enabled = config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM);
+  const bool pzem1Enabled = output1.isUsing(Mycila::metric::Kind::PZEM);
 
   const bool dimmer2Enabled = !config.isEmpty(KEY_OUTPUT2_DIMMER);
   const bool dimmer2CycleStealing = yasolr_isCycleStealingDimmer(config.getString(KEY_OUTPUT2_DIMMER));
@@ -1138,11 +1135,11 @@ void YaSolR::Website::initCards() {
   const bool bypass2Possible = dimmer2Enabled || output2RelayEnabled;
   const bool autoDimmer2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   const bool autoBypass2Activated = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
-  const bool pzem2Enabled = config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM);
+  const bool pzem2Enabled = output2.isUsing(Mycila::metric::Kind::PZEM);
 
   // statistics
 
-  _udpMessageRateBuffer.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::JSY_REMOTE));
+  _udpMessageRateBuffer.setDisplay(grid.isUsing(Mycila::metric::Kind::JSY_REMOTE));
   _networkAPIP.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   _networkAPMAC.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   #ifdef ESPCONNECT_ETH_SUPPORT
@@ -1249,7 +1246,7 @@ void YaSolR::Website::initCards() {
   _configBackup.setValue("/api/config/backup");
   _configRestore.setValue("/api/config/restore");
   _safebootUpload.setValue("/api/safeboot/upload");
-  _energyReset.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL1) || grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL2) || pzem1Enabled || pzem2Enabled);
+  _energyReset.setDisplay(grid.isUsing(Mycila::metric::Kind::JSY_SERIAL1) || grid.isUsing(Mycila::metric::Kind::JSY_SERIAL2) || pzem1Enabled || pzem2Enabled);
   _safebootUpload.setDisplay(true);
   _safebootUploadStatus.setDisplay(false);
 
@@ -1344,9 +1341,6 @@ void YaSolR::Website::initCards() {
   _pinout(_pinSerial2TX, KEY_PIN_SERIAL2_TX, pinout);
   _pinout(_pinZCD, KEY_PIN_ZCD, pinout);
 
-  _pinSerial1Device.setValue(config.getString(KEY_PIN_SERIAL1_DEV));
-  _pinSerial2Device.setValue(config.getString(KEY_PIN_SERIAL2_DEV));
-
   // tab: hardware
 
   // grid
@@ -1364,15 +1358,15 @@ void YaSolR::Website::initCards() {
   _gridSource.setValue(config.getString(KEY_GRID_SOURCE));
   _victronServer.setValue(config.getString(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.get<uint16_t>(KEY_VICTRON_MODBUS_PORT));
-  _victronServer.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::VICTRON));
-  _victronPort.setDisplay(grid.isUsing(Mycila::Grid::SourceKind::VICTRON));
+  _victronServer.setDisplay(grid.isUsing(Mycila::metric::Kind::VICTRON));
+  _victronPort.setDisplay(grid.isUsing(Mycila::metric::Kind::VICTRON));
 
   // output 1 dimmer
   _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER));
   _output1DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT1_DIMMER_MAX)});
 
-  // output 1 pzem
-  _output1PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM));
+  // output 1 source
+  _output1Source.setValue(config.getString(KEY_OUTPUT1_SOURCE));
   _output1PZEMSync.setDisplay(dimmer1Enabled && pzem1Enabled);
 
   // output 1 ds18
@@ -1385,8 +1379,8 @@ void YaSolR::Website::initCards() {
   _output2DimmerType.setValue(config.getString(KEY_OUTPUT2_DIMMER));
   _output2DimmerMapper.setValue({config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MIN), config.get<uint8_t>(KEY_OUTPUT2_DIMMER_MAX)});
 
-  // output 2 pzem
-  _output2PZEM.setValue(config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM));
+  // output 2 source
+  _output2Source.setValue(config.getString(KEY_OUTPUT2_SOURCE));
   _output2PZEMSync.setDisplay(dimmer2Enabled && pzem2Enabled);
 
   // output 2 ds18
@@ -1479,8 +1473,8 @@ void YaSolR::Website::updateCards() {
   _gridVoltage.setValue(gridVoltage);
   _gridPower.setValue(grid.getPower().value_or(0.0f));
 
-  Mycila::Router::Metrics routerMetrics;
-  if (!router.readMeasurements(routerMetrics)) {
+  Mycila::metric::Metrics routerMetrics;
+  if (!router.readMetrics(routerMetrics)) {
     router.computeMetrics(routerMetrics, gridVoltage);
   }
 
@@ -1585,8 +1579,8 @@ void YaSolR::Website::updateCards() {
 #ifdef APP_MODEL_PRO
   // tab: output 1
 
-  Mycila::Router::Metrics output1Measurements;
-  if (!output1.readMeasurements(output1Measurements))
+  Mycila::metric::Metrics output1Measurements;
+  if (!output1.readMetrics(output1Measurements))
     output1.computeMetrics(output1Measurements, gridVoltage);
 
   _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleOnline() * 100.0f);
@@ -1606,8 +1600,8 @@ void YaSolR::Website::updateCards() {
 
   // tab: output 2
 
-  Mycila::Router::Metrics output2Measurements;
-  if (!output2.readMeasurements(output2Measurements))
+  Mycila::metric::Metrics output2Measurements;
+  if (!output2.readMetrics(output2Measurements))
     output2.computeMetrics(output2Measurements, gridVoltage);
 
   _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleOnline() * 100.0f);
@@ -1666,25 +1660,38 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // no grid source
-  if (grid.isUsing(Mycila::Grid::SourceKind::UNKNOWN)) {
+  if (grid.isUsing(Mycila::metric::Kind::UNKNOWN)) {
     errors[count++] = ERR_GRID_NONE;
   }
   // mqtt grid source
-  if (grid.isUsing(Mycila::Grid::SourceKind::MQTT)) {
+  if (grid.isUsing(Mycila::metric::Kind::MQTT)) {
     if (config.isEmpty(KEY_GRID_POWER_MQTT_TOPIC) || config.isEmpty(KEY_GRID_VOLTAGE_MQTT_TOPIC)) {
       errors[count++] = ERR_GRID_MQTT;
     }
   }
-  // jsy
-  if (grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL1) || grid.isUsing(Mycila::Grid::SourceKind::JSY_SERIAL2)) {
-    if (!jsy || !jsy->isEnabled()) {
-      errors[count++] = ERR_ACT_JSY;
-    } else if (!jsy->isConnected()) {
-      errors[count++] = ERR_GRID_JSY;
+
+  // jsy1
+  if (grid.isUsing(Mycila::metric::Kind::JSY_SERIAL1) ||
+      output1.isUsing(Mycila::metric::Kind::JSY_SERIAL1) ||
+      output2.isUsing(Mycila::metric::Kind::JSY_SERIAL1)) {
+    if (!jsy[0] || !jsy[0]->isEnabled()) {
+      errors[count++] = ERR_ACT_JSY1;
+    } else if (!jsy[0]->isConnected()) {
+      errors[count++] = ERR_GRID_JSY1;
+    }
+  }
+  // jsy2
+  if (grid.isUsing(Mycila::metric::Kind::JSY_SERIAL2) ||
+      output1.isUsing(Mycila::metric::Kind::JSY_SERIAL2) ||
+      output2.isUsing(Mycila::metric::Kind::JSY_SERIAL2)) {
+    if (!jsy[1] || !jsy[1]->isEnabled()) {
+      errors[count++] = ERR_ACT_JSY2;
+    } else if (!jsy[1]->isConnected()) {
+      errors[count++] = ERR_GRID_JSY2;
     }
   }
   // victron
-  if (grid.isUsing(Mycila::Grid::SourceKind::VICTRON)) {
+  if (grid.isUsing(Mycila::metric::Kind::VICTRON)) {
     if (!victron) {
       errors[count++] = ERR_ACT_VICTRON;
     } else if (victron->hasError()) {
@@ -1692,7 +1699,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // pzem output 1
-  if (config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
+  if (output1.isUsing(Mycila::metric::Kind::PZEM)) {
     if (!pzem[0] || !pzem[0]->isEnabled()) {
       errors[count++] = ERR_ACT_O1_PZEM;
     } else if (pzem[0]->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
@@ -1702,7 +1709,7 @@ void YaSolR::Website::updateWarnings() {
     }
   }
   // pzem output 2
-  if (config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
+  if (output2.isUsing(Mycila::metric::Kind::PZEM)) {
     if (!pzem[1] || !pzem[1]->isEnabled()) {
       errors[count++] = ERR_ACT_O2_PZEM;
     } else if (pzem[1]->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {

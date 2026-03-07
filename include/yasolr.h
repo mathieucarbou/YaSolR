@@ -28,6 +28,7 @@
 #include <MycilaGrid.h>
 #include <MycilaHADiscovery.h>
 #include <MycilaJSY.h>
+#include <MycilaMetrics.h>
 #include <MycilaMQTT.h>
 #include <MycilaNTP.h>
 #include <MycilaPID.h>
@@ -84,7 +85,7 @@ extern void yasolr_configure_logging();
 extern void yasolr_init_persistent_logging();
 
 // JSY
-extern Mycila::JSY* jsy;
+extern Mycila::JSY* jsy[2];
 extern Mycila::TaskManager* jsyTaskManager;
 extern void yasolr_configure_jsy();
 

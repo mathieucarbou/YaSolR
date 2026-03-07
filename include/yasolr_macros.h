@@ -78,9 +78,8 @@
 #define YASOLR_SAFEBOOT_PARTITION_NAME       "safeboot" // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SAFEBOOT_PARTITION_SIZE       655360     // See: https://github.com/mathieucarbou/MycilaSafeBoot
 #define YASOLR_SERIAL_BAUDRATE               115200
-#define YASOLR_UART_DEVICE_JSY               "JSY"
-#define YASOLR_UART_DEVICE_PZEM              "PZEM"
-#define YASOLR_UART_DEVICES                  ",JSY,PZEM"
+#define YASOLR_SOURCES_GRID                  ",MQTT,Victron,JSY-MK-163 (Serial1),JSY-MK-163 (Serial2),JSY-MK-163 (Remote),JSY-MK-227 (Serial1),JSY-MK-227 (Serial2),JSY-MK-227 (Remote),JSY-MK-229 (Serial1),JSY-MK-229 (Serial2),JSY-MK-229 (Remote),JSY-MK-193 Channel 1 (Serial1),JSY-MK-193 Channel 1 (Serial2),JSY-MK-193 Channel 1 (Remote),JSY-MK-193 Channel 2 (Serial1),JSY-MK-193 Channel 2 (Serial2),JSY-MK-193 Channel 2 (Remote),JSY-MK-194 Channel 1 (Serial1),JSY-MK-194 Channel 1 (Serial2),JSY-MK-194 Channel 1 (Remote),JSY-MK-194 Channel 2 (Serial1),JSY-MK-194 Channel 2 (Serial2),JSY-MK-194 Channel 2 (Remote),JSY-MK-333 (Serial1),JSY-MK-333 (Serial2),JSY-MK-333 (Remote)"
+#define YASOLR_SOURCES_OUTPUT                "Computed,Shared,JSY-MK-163 (Serial1),JSY-MK-163 (Serial2),JSY-MK-163 (Remote),JSY-MK-227 (Serial1),JSY-MK-227 (Serial2),JSY-MK-227 (Remote),JSY-MK-229 (Serial1),JSY-MK-229 (Serial2),JSY-MK-229 (Remote),JSY-MK-193 Channel 1 (Serial1),JSY-MK-193 Channel 1 (Serial2),JSY-MK-193 Channel 1 (Remote),JSY-MK-193 Channel 2 (Serial1),JSY-MK-193 Channel 2 (Serial2),JSY-MK-193 Channel 2 (Remote),JSY-MK-194 Channel 1 (Serial1),JSY-MK-194 Channel 1 (Serial2),JSY-MK-194 Channel 1 (Remote),JSY-MK-194 Channel 2 (Serial1),JSY-MK-194 Channel 2 (Serial2),JSY-MK-194 Channel 2 (Remote),PZEM (Serial1),PZEM (Serial2)"
 #define YASOLR_WEEK_DAYS                     "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_WEEK_DAYS_EMPTY               "none"
 #define YASOLR_ZC_EVENT_SHIFT_US             -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
@@ -113,11 +112,9 @@
 #define KEY_ENABLE_OUTPUT1_AUTO_BYPASS "o1_ab_enable"
 #define KEY_ENABLE_OUTPUT1_AUTO_DIMMER "o1_ad_enable"
 #define KEY_ENABLE_OUTPUT1_DS18        "o1_ds18_enable"
-#define KEY_ENABLE_OUTPUT1_PZEM        "o1_pzem_enable"
 #define KEY_ENABLE_OUTPUT2_AUTO_BYPASS "o2_ab_enable"
 #define KEY_ENABLE_OUTPUT2_AUTO_DIMMER "o2_ad_enable"
 #define KEY_ENABLE_OUTPUT2_DS18        "o2_ds18_enable"
-#define KEY_ENABLE_OUTPUT2_PZEM        "o2_pzem_enable"
 
 // configuration keys
 
@@ -154,6 +151,7 @@
 #define KEY_OUTPUT1_EXCESS_RATIO           "o1_excess_ratio"
 #define KEY_OUTPUT1_RELAY                  "o1_relay_type"
 #define KEY_OUTPUT1_RESISTANCE             "o1_resistance"
+#define KEY_OUTPUT1_SOURCE                 "o1_source"
 #define KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC "o1_temp_mqtt"
 #define KEY_OUTPUT1_TEMPERATURE_START      "o1_temp_start"
 #define KEY_OUTPUT1_TEMPERATURE_STOP       "o1_temp_stop"
@@ -169,6 +167,7 @@
 #define KEY_OUTPUT2_EXCESS_LIMITER         "o2_excess_limit"
 #define KEY_OUTPUT2_EXCESS_RATIO           "o2_excess_ratio"
 #define KEY_OUTPUT2_RELAY                  "o2_relay_type"
+#define KEY_OUTPUT2_SOURCE                 "o2_source"
 #define KEY_OUTPUT2_RESISTANCE             "o2_resistance"
 #define KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC "o2_temp_mqtt"
 #define KEY_OUTPUT2_TEMPERATURE_START      "o2_temp_start"
@@ -215,10 +214,8 @@
 #define KEY_PIN_RELAY1         "pin_relay1"
 #define KEY_PIN_RELAY2         "pin_relay2"
 #define KEY_PIN_ROUTER_DS18    "pin_ds18"
-#define KEY_PIN_SERIAL1_DEV    "pin_serial1_dev"
 #define KEY_PIN_SERIAL1_RX     "pin_serial1_rx"
 #define KEY_PIN_SERIAL1_TX     "pin_serial1_tx"
-#define KEY_PIN_SERIAL2_DEV    "pin_serial2_dev"
 #define KEY_PIN_SERIAL2_RX     "pin_serial2_rx"
 #define KEY_PIN_SERIAL2_TX     "pin_serial2_tx"
 #define KEY_PIN_ZCD            "pin_zcd"

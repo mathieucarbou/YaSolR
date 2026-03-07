@@ -29,7 +29,7 @@ void yasolr_configure_mqtt_grid_source() {
     const char* gridVoltageMQTTTopic = config.getString(KEY_GRID_VOLTAGE_MQTT_TOPIC);
 
     if (gridPowerMQTTTopic[0] != '\0') {
-      if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
+      if (grid.isUsing(Mycila::metric::Source::MQTT)) {
         ESP_LOGI(TAG, "Reading Grid Power from MQTT topic: %s", gridPowerMQTTTopic);
         mqtt->subscribe(gridPowerMQTTTopic, on_mqtt_grid_power);
       } else {
@@ -38,7 +38,7 @@ void yasolr_configure_mqtt_grid_source() {
     }
 
     if (gridVoltageMQTTTopic[0] != '\0') {
-      if (grid.isUsing(Mycila::Grid::Source::MQTT)) {
+      if (grid.isUsing(Mycila::metric::Source::MQTT)) {
         ESP_LOGI(TAG, "Reading Grid Voltage from MQTT topic: %s", gridVoltageMQTTTopic);
         mqtt->subscribe(gridVoltageMQTTTopic, on_mqtt_grid_voltage);
       } else {
@@ -73,7 +73,7 @@ static void on_mqtt_grid_power(const std::string& topic, const std::string_view&
       ESP_LOGI(TAG, "Grid Power from MQTT: %f", p);
       power->update(p);
 
-      Mycila::Grid::Metrics metrics;
+      Mycila::metric::Metrics metrics;
       metrics.power = power->get();
       metrics.voltage = voltage->orElse(NAN);
       grid.updateMetrics(std::move(metrics));
@@ -107,7 +107,7 @@ static void on_mqtt_grid_voltage(const std::string& topic, const std::string_vie
       ESP_LOGI(TAG, "Grid Voltage from MQTT: %f", v);
       voltage->update(v);
 
-      Mycila::Grid::Metrics metrics;
+      Mycila::metric::Metrics metrics;
       metrics.power = power->get();
       metrics.voltage = voltage->orElse(NAN);
       grid.updateMetrics(std::move(metrics));
@@ -320,11 +320,11 @@ static void publishStaticData() {
 static void publishData() {
   const std::string baseTopic = config.getString(KEY_MQTT_TOPIC);
 
-  Mycila::Grid::Metrics* gridMetrics = new Mycila::Grid::Metrics();
-  grid.readMeasurements(*gridMetrics);
+  Mycila::metric::Metrics* gridMetrics = new Mycila::metric::Metrics();
+  grid.readMetrics(*gridMetrics);
 
-  Mycila::Router::Metrics* routerMeasurements = new Mycila::Router::Metrics();
-  if (!router.readMeasurements(*routerMeasurements)) {
+  Mycila::metric::Metrics* routerMeasurements = new Mycila::metric::Metrics();
+  if (!router.readMetrics(*routerMeasurements)) {
     router.computeMetrics(*routerMeasurements, gridMetrics->voltage);
   }
 
@@ -407,8 +407,8 @@ static void publishData() {
     for (const auto& output : router.getOutputs()) {
       const std::string outputTopic = baseTopic + "/router/" + output->getMqttName();
 
-      Mycila::Router::Metrics* outputMeasurements = new Mycila::Router::Metrics();
-      if (!output->readMeasurements(*outputMeasurements)) {
+      Mycila::metric::Metrics* outputMeasurements = new Mycila::metric::Metrics();
+      if (!output->readMetrics(*outputMeasurements)) {
         router.computeMetrics(*outputMeasurements, gridMetrics->voltage);
       }
 

@@ -51,7 +51,9 @@ void rewrites() {
   webServer.rewrite("/ota/logo/light", "/logo");
   webServer.rewrite("/wsl/logo/dark", "/logo");
   webServer.rewrite("/wsl/logo/light", "/logo");
-  webServer.rewrite("/", "/dashboard").setFilter([](AsyncWebServerRequest* request) { return espConnect.getState() != Mycila::ESPConnect::State::PORTAL_STARTED; });
+  webServer.rewrite("/", "/dashboard").setFilter([](AsyncWebServerRequest* request) {
+    return espConnect.getState() != Mycila::ESPConnect::State::PORTAL_STARTED;
+  });
 }
 
 void routes() {
@@ -100,10 +102,16 @@ void rest_api() {
     float voltage = grid.getVoltage().value_or(0);
 
     Mycila::AppInfo.toJson(root["app"].to<JsonObject>());
+
     config.toJson(root["config"].to<JsonObject>());
+
     grid.toJson(root["grid"].to<JsonObject>());
-    if (jsy)
-      jsy->toJson(root["jsy"].to<JsonObject>());
+
+    if (jsy[0])
+      jsy[0]->toJson(root["jsy"]["serial1"].to<JsonObject>());
+    if (jsy[1])
+      jsy[1]->toJson(root["jsy"]["serial2"].to<JsonObject>());
+
     espConnect.toJson(root["network"].to<JsonObject>());
 
     pidController.toJson(root["pid"].to<JsonObject>());
@@ -412,9 +420,9 @@ void rest_api() {
   webServer.on("/api/grid", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
-    Mycila::Grid::Metrics* metrics = new Mycila::Grid::Metrics();
-    grid.readMeasurements(*metrics);
-    Mycila::Grid::toJson(root, *metrics);
+    Mycila::metric::Metrics* metrics = new Mycila::metric::Metrics();
+    grid.readMetrics(*metrics);
+    Mycila::metric::Metrics::toJson(root, *metrics);
     delete metrics;
     response->setLength();
     request->send(response);
@@ -510,16 +518,16 @@ void rest_api() {
     std::optional<float> gridVoltage = grid.getVoltage();
     std::optional<float> gridPower = grid.getPower();
 
-    Mycila::Router::Metrics* routerMeasurements = new Mycila::Router::Metrics();
-    if (!router.readMeasurements(*routerMeasurements) && gridVoltage.has_value()) {
-      router.computeMetrics(*routerMeasurements, gridVoltage.value());
+    Mycila::metric::Metrics* routerMetrics = new Mycila::metric::Metrics();
+    if (!router.readMetrics(*routerMetrics) && gridVoltage.has_value()) {
+      router.computeMetrics(*routerMetrics, gridVoltage.value());
     }
 
     if (gridPower.has_value())
-      root["virtual_grid_power"] = gridPower.value() - routerMeasurements->power;
+      root["virtual_grid_power"] = gridPower.value() - routerMetrics->power;
 
-    Mycila::Router::toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
-    delete routerMeasurements;
+    Mycila::metric::Metrics::toJson(root["metrics"].to<JsonObject>(), *routerMetrics);
+    delete routerMetrics;
 
     for (const auto& output : router.getOutputs()) {
       JsonObject json = root[output->getMqttName()].to<JsonObject>();
@@ -531,11 +539,11 @@ void rest_api() {
         json["temperature"] = output->temperature().get();
       }
 
-      Mycila::Router::Metrics* outputMeasurements = new Mycila::Router::Metrics();
-      if (!output->readMeasurements(*outputMeasurements) && gridVoltage.has_value())
-        output->computeMetrics(*outputMeasurements, gridVoltage.value());
-      Mycila::Router::toJson(json["measurements"].to<JsonObject>(), *outputMeasurements);
-      delete outputMeasurements;
+      Mycila::metric::Metrics* outputMetrics = new Mycila::metric::Metrics();
+      if (!output->readMetrics(*outputMetrics) && gridVoltage.has_value())
+        output->computeMetrics(*outputMetrics, gridVoltage.value());
+      Mycila::metric::Metrics::toJson(json["metrics"].to<JsonObject>(), *outputMetrics);
+      delete outputMetrics;
     }
 
     response->setLength();
@@ -618,9 +626,13 @@ void yasolr_init_web_server() {
 
   // Tasks
 
-  dashboardInitTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardInitTask.setEnabledWhen([]() {
+    return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress();
+  });
 
-  dashboardUpdateTask.setEnabledWhen([]() { return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress(); });
+  dashboardUpdateTask.setEnabledWhen([]() {
+    return espConnect.isConnected() && !dashboard.isAsyncAccessInProgress();
+  });
   dashboardUpdateTask.setInterval(1000);
 
   coreTaskManager.addTask(dashboardInitTask);

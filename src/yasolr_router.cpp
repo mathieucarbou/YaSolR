@@ -325,6 +325,7 @@ void yasolr_init_router() {
   router.addOutput(output2);
 
   // configure output 1
+  output1.setSource(config.getString(KEY_OUTPUT1_SOURCE));
   output1.config.autoBypass = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_BYPASS);
   output1.config.autoDimmer = config.get<bool>(KEY_ENABLE_OUTPUT1_AUTO_DIMMER);
   output1.config.autoStartTemperature = config.get<uint8_t>(KEY_OUTPUT1_TEMPERATURE_START);
@@ -340,6 +341,7 @@ void yasolr_init_router() {
   output1.temperature().setExpiration(YASOLR_MQTT_MEASUREMENT_EXPIRATION); // local or through mqtt
 
   // configure output 2
+  output2.setSource(config.getString(KEY_OUTPUT2_SOURCE));
   output2.config.autoBypass = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_BYPASS);
   output2.config.autoDimmer = config.get<bool>(KEY_ENABLE_OUTPUT2_AUTO_DIMMER);
   output2.config.autoStartTemperature = config.get<uint8_t>(KEY_OUTPUT2_TEMPERATURE_START);

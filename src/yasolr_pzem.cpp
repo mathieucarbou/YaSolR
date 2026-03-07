@@ -36,23 +36,15 @@ static void init_read_task() {
 }
 
 static Mycila::PZEM* init_pzem(Mycila::Router::Output& output, const uint8_t address, Mycila::PZEM* existing = nullptr) {
-  const bool serial1AssignedToPZEM = config.isEqual(KEY_PIN_SERIAL1_DEV, YASOLR_UART_DEVICE_PZEM);
-  const bool serial2AssignedToPZEM = config.isEqual(KEY_PIN_SERIAL2_DEV, YASOLR_UART_DEVICE_PZEM);
-
-  if (!serial1AssignedToPZEM && !serial2AssignedToPZEM) {
-    ESP_LOGE(TAG, "Unable to activate %s PZEM: PZEM was not assigned to any UART (Serial1 or Serial2)", output.getName());
-    return nullptr;
-  }
-
   Mycila::PZEM* pzem = nullptr;
 
-  if (serial1AssignedToPZEM) {
+  if (output.isUsing(Mycila::metric::Source::PZEM_SERIAL1)) {
     ESP_LOGI(TAG, "Enable %s PZEM on UART Serial1", output.getName());
     pzem = existing == nullptr ? new Mycila::PZEM() : existing;
     pzem->setSharedSerial(true);
     pzem->begin(Serial1, config.get<int8_t>(KEY_PIN_SERIAL1_RX), config.get<int8_t>(KEY_PIN_SERIAL1_TX), address);
 
-  } else if (serial2AssignedToPZEM) {
+  } else if (output.isUsing(Mycila::metric::Source::PZEM_SERIAL2)) {
     ESP_LOGI(TAG, "Enable %s PZEM on UART Serial2", output.getName());
     pzem = existing == nullptr ? new Mycila::PZEM() : existing;
     pzem->setSharedSerial(true);
@@ -96,8 +88,8 @@ static bool pair(Mycila::Router::Output& output, const uint8_t toAddress, Mycila
   return true;
 }
 
-static void configure_pzem(uint8_t index, Mycila::Router::Output& output, const char* key, const uint8_t address) {
-  if (config.get<bool>(key)) {
+static void configure_pzem(uint8_t index, Mycila::Router::Output& output, const uint8_t address) {
+  if (output.isUsing(Mycila::metric::Kind::PZEM)) {
     init_read_task();
 
     if (pzem[index] == nullptr) {
@@ -106,7 +98,7 @@ static void configure_pzem(uint8_t index, Mycila::Router::Output& output, const 
       if (pzem[index]) {
         pzem[index]->setCallback([&output](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            Mycila::Router::Metrics routerMetrics;
+            Mycila::metric::Metrics routerMetrics;
             routerMetrics.apparentPower = data.apparentPower;
             routerMetrics.current = data.current;
             routerMetrics.energy = data.activeEnergy;
@@ -146,6 +138,6 @@ static void configure_pzem(uint8_t index, Mycila::Router::Output& output, const 
 }
 
 void yasolr_configure_pzem() {
-  configure_pzem(0, output1, KEY_ENABLE_OUTPUT1_PZEM, YASOLR_PZEM_ADDRESS_OUTPUT1);
-  configure_pzem(1, output2, KEY_ENABLE_OUTPUT2_PZEM, YASOLR_PZEM_ADDRESS_OUTPUT2);
+  configure_pzem(0, output1, YASOLR_PZEM_ADDRESS_OUTPUT1);
+  configure_pzem(1, output2, YASOLR_PZEM_ADDRESS_OUTPUT2);
 }

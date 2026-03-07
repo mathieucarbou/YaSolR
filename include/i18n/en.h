@@ -153,7 +153,7 @@
 #define YASOLR_LBL_147 "PZEM Pairing"
 #define YASOLR_LBL_148 "Noise Reduction Filter"
 #define YASOLR_LBL_149 "Device: Heap Memory Free Min Lifetime (bytes)"
-#define YASOLR_LBL_150 "Device"
+// #define YASOLR_LBL_150 "Device"
 // #define YASOLR_LBL_151 "Type"
 // #define YASOLR_LBL_152 "PZEM Serial"
 #define YASOLR_LBL_153 "Duplicate"

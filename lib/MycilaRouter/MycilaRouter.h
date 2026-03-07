@@ -6,6 +6,7 @@
 
 #include <MycilaDimmer.h>
 #include <MycilaExpiringValue.h>
+#include <MycilaMetrics.h>
 #include <MycilaRelay.h>
 
 #include <math.h>
@@ -30,137 +31,18 @@
 namespace Mycila {
   class Router {
     public:
-      /////////////
-      // Metrics //
-      /////////////
-
-      enum class Source {
-        PZEM,
-        JSY,
-        JSY_REMOTE,
-        COMPUTED,
-        UNKNOWN
-      };
-
-      class Metrics {
-        public:
-          Source source = Source::UNKNOWN;
-          float apparentPower = 0.0f;
-          float current = 0.0f;
-          uint32_t energy = 0;
-          float power = 0.0f;
-          float powerFactor = 0.0f;
-          float resistance = 0.0f;
-          float thdi = 0.0f;
-          float voltage = 0.0f;
-
-          Metrics() = default;
-          Metrics(Metrics&& other) noexcept {
-            source = other.source;
-            apparentPower = other.apparentPower;
-            current = other.current;
-            energy = other.energy;
-            power = other.power;
-            powerFactor = other.powerFactor;
-            resistance = other.resistance;
-            thdi = other.thdi;
-            voltage = other.voltage;
-
-            other.source = Source::UNKNOWN;
-            other.apparentPower = 0.0f;
-            other.current = 0.0f;
-            other.energy = 0;
-            other.power = 0.0f;
-            other.powerFactor = 0.0f;
-            other.resistance = 0.0f;
-            other.thdi = 0.0f;
-            other.voltage = 0.0f;
-          }
-          Metrics& operator=(Metrics&& other) noexcept {
-            if (this != &other) {
-              source = other.source;
-              apparentPower = other.apparentPower;
-              current = other.current;
-              energy = other.energy;
-              power = other.power;
-              powerFactor = other.powerFactor;
-              resistance = other.resistance;
-              thdi = other.thdi;
-              voltage = other.voltage;
-
-              other.source = Source::UNKNOWN;
-              other.apparentPower = 0.0f;
-              other.current = 0.0f;
-              other.energy = 0;
-              other.power = 0.0f;
-              other.powerFactor = 0.0f;
-              other.resistance = 0.0f;
-              other.thdi = 0.0f;
-              other.voltage = 0.0f;
-            }
-            return *this;
-          }
-          Metrics(const Metrics& other) = delete;
-          Metrics& operator=(const Metrics& other) = delete;
-
-          void zeroNaN() {
-            // zero NaN values
-            if (std::isnan(apparentPower))
-              apparentPower = 0.0f;
-            if (std::isnan(current))
-              current = 0.0f;
-            if (std::isnan(power))
-              power = 0.0f;
-            if (std::isnan(powerFactor))
-              powerFactor = 0.0f;
-            if (std::isnan(resistance))
-              resistance = 0.0f;
-            if (std::isnan(thdi))
-              thdi = 0.0f;
-            if (std::isnan(voltage))
-              voltage = 0.0f;
-          }
-      };
-
-#ifdef MYCILA_JSON_SUPPORT
-      static void toJson(const JsonObject& dest, const Metrics& metrics) {
-        switch (metrics.source) {
-          case Source::JSY:
-            dest["source"] = "jsy";
-            break;
-          case Source::JSY_REMOTE:
-            dest["source"] = "jsy_remote";
-            break;
-          case Source::COMPUTED:
-            dest["source"] = "computed";
-            break;
-          case Source::PZEM:
-            dest["source"] = "pzem";
-            break;
-          default:
-            dest["source"] = "unknown";
-            break;
-        }
-
-        dest["energy"] = metrics.energy;
-        dest["voltage"] = metrics.voltage;
-        dest["current"] = metrics.current;
-        dest["power"] = metrics.power;
-        dest["apparent_power"] = metrics.apparentPower;
-        dest["power_factor"] = metrics.powerFactor;
-        dest["resistance"] = metrics.resistance;
-        dest["thdi"] = metrics.thdi;
-      }
-#endif
-
       //////////////////
       // Router Relay //
       //////////////////
 
       class Relay {
         public:
-          void setNominalLoad(uint16_t load) { _nominalLoad = load; }
-          uint16_t getNominalLoad() const { return _nominalLoad; }
+          void setNominalLoad(uint16_t load) {
+            _nominalLoad = load;
+          }
+          uint16_t getNominalLoad() const {
+            return _nominalLoad;
+          }
 
           /**
            * @brief Compute the load based on the grid voltage and the nominal load.
@@ -178,26 +60,44 @@ namespace Mycila {
             }
           }
 
-          void setTolerance(float tolerance) { _tolerance = tolerance; }
-          float getTolerance() const { return _tolerance; }
+          void setTolerance(float tolerance) {
+            _tolerance = tolerance;
+          }
+          float getTolerance() const {
+            return _tolerance;
+          }
 
-          bool isEnabled() const { return _relay.isEnabled(); }
-          bool isAutoRelayEnabled() const { return _relay.isEnabled() && _nominalLoad > 0; }
+          bool isEnabled() const {
+            return _relay.isEnabled();
+          }
+          bool isAutoRelayEnabled() const {
+            return _relay.isEnabled() && _nominalLoad > 0;
+          }
 
           bool trySwitchRelay(bool state, uint32_t duration = 0);
 
           bool autoSwitch(float gridVoltage, float gridPower, float routedPower, float setpoint);
 
-          bool isOn() const { return _relay.isOn(); }
-          bool isOff() const { return _relay.isOff(); }
+          bool isOn() const {
+            return _relay.isOn();
+          }
+          bool isOff() const {
+            return _relay.isOff();
+          }
 
-          uint64_t getSwitchCount() const { return _relay.getSwitchCount(); }
+          uint64_t getSwitchCount() const {
+            return _relay.getSwitchCount();
+          }
 
 #ifdef MYCILA_JSON_SUPPORT
-          void toJson(const JsonObject& root) const { _relay.toJson(root); }
+          void toJson(const JsonObject& root) const {
+            _relay.toJson(root);
+          }
 #endif
 
-          Mycila::Relay& relay() { return _relay; }
+          Mycila::Relay& relay() {
+            return _relay;
+          }
 
         private:
           Mycila::Relay _relay;
@@ -209,7 +109,7 @@ namespace Mycila {
       // Output //
       ////////////
 
-      class Output {
+      class Output : public metric::MetricSupport {
         public:
           enum class State {
             // output disabled
@@ -242,9 +142,13 @@ namespace Mycila {
           Output(const char* label, const char* mqttName) : _name(label), _mqttName(mqttName) {}
 
           // dimmer is mandatory
-          void setDimmer(Dimmer* dimmer) { _dimmer = dimmer; }
+          void setDimmer(Dimmer* dimmer) {
+            _dimmer = dimmer;
+          }
           // Bypass relay is optional
-          void setBypassRelay(Mycila::Relay* relay) { _relay = relay; }
+          void setBypassRelay(Mycila::Relay* relay) {
+            _relay = relay;
+          }
 
           // output
 
@@ -260,43 +164,47 @@ namespace Mycila {
             return State::IDLE;
           }
           const char* getStateName() const;
-          const char* getName() const { return _name; }
-          const char* getMqttName() const { return _mqttName; }
-          bool isOn() const { return isDimmerOn() || isBypassRelayOn(); }
+          const char* getName() const {
+            return _name;
+          }
+          const char* getMqttName() const {
+            return _mqttName;
+          }
+          bool isOn() const {
+            return isDimmerOn() || isBypassRelayOn();
+          }
 
 #ifdef MYCILA_JSON_SUPPORT
           void toJson(const JsonObject& root, float gridVoltage) const {
-            root["bypass"] = isBypassOn() ? "on" : "off";
             root["enabled"] = isDimmerOnline();
             root["state"] = getStateName();
+            root["bypass"] = isBypassOn() ? "on" : "off";
             root["elapsed"] = getBypassUptime();
-            if (_temperature.isPresent()) {
+            if (_temperature.isPresent())
               root["temperature"] = _temperature.get();
-            }
-
+            JsonArray metrics = root["metrics"].to<JsonArray>();
             {
-              Metrics* metrics = new Metrics();
-              if (readMeasurements(*metrics)) {
-                Router::toJson(root["measurements"].to<JsonObject>(), *metrics);
+              metric::Metrics* computed = new metric::Metrics();
+              if (computeMetrics(*computed, gridVoltage)) {
+                JsonObject source = metrics.add<JsonObject>();
+                source["source"] = metric::sourceToString(metric::Source::COMPUTED);
+                metric::Metrics::toJson(source, *computed);
               }
-              delete metrics;
+              delete computed;
             }
-
-            JsonArray sources = root["sources"].to<JsonArray>();
-
-            {
-              Metrics* metrics = new Metrics();
-              if (computeMetrics(*metrics, gridVoltage)) {
-                Router::toJson(sources.add<JsonObject>(), *metrics);
-              }
-              delete metrics;
-            }
-
             if (_metrics.isPresent()) {
-              JsonObject source = sources.add<JsonObject>();
-              Router::toJson(source, _metrics.get());
+              JsonObject source = metrics.add<JsonObject>();
+              source["source"] = getSourceString();
               source["time"] = _metrics.getLastUpdateTime();
+              metric::Metrics::toJson(source, _metrics.get());
             }
+
+            // root["online"] = isConnected();
+            // root["metrics"]["source"] = getSourceString();
+            // root["metrics"]["time"] = _metrics.getLastUpdateTime();
+            // if (_metrics.isPresent()) {
+            //   metric::Metrics::toJson(root["metrics"].as<JsonObject>(), _metrics.get());
+            // }
 
             _dimmer->toJson(root["dimmer"].to<JsonObject>());
             if (_relay)
@@ -306,22 +214,46 @@ namespace Mycila {
 
           // dimmer
 
-          bool isDimmerOnline() const { return _dimmer->isOnline(); }
-          bool isDimmerEnabled() const { return _dimmer->isEnabled(); }
-          bool isAutoDimmerEnabled() const { return config.autoDimmer && config.calibratedResistance > 0 && !isBypassOn(); }
-          bool isDimmerTemperatureLimitReached() const { return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit; }
-          bool isDimmerOn() const { return _dimmer->isOn(); }
-          float getDimmerDutyCycle() const { return _dimmer->getDutyCycle(); }
-          float getDimmerDutyCycleOnline() const { return _dimmer->isOnline() ? _dimmer->getDutyCycle() : 0; }
-          float getDimmerDutyCycleLimit() const { return _dimmer->getDutyCycleLimit(); }
+          bool isDimmerOnline() const {
+            return _dimmer->isOnline();
+          }
+          bool isDimmerEnabled() const {
+            return _dimmer->isEnabled();
+          }
+          bool isAutoDimmerEnabled() const {
+            return config.autoDimmer && config.calibratedResistance > 0 && !isBypassOn();
+          }
+          bool isDimmerTemperatureLimitReached() const {
+            return config.dimmerTempLimit > 0 && _temperature.orElse(0) >= config.dimmerTempLimit;
+          }
+          bool isDimmerOn() const {
+            return _dimmer->isOn();
+          }
+          float getDimmerDutyCycle() const {
+            return _dimmer->getDutyCycle();
+          }
+          float getDimmerDutyCycleOnline() const {
+            return _dimmer->isOnline() ? _dimmer->getDutyCycle() : 0;
+          }
+          float getDimmerDutyCycleLimit() const {
+            return _dimmer->getDutyCycleLimit();
+          }
           // Power Duty Cycle [0, 1]
           // At 0% power, duty == 0
           // At 100% power, duty == 1
           bool setDimmerDutyCycle(float dutyCycle);
-          bool setDimmerOff() { return setDimmerDutyCycle(0); }
-          void setDimmerDutyCycleMin(float min) { _dimmer->setDutyCycleMin(min); }
-          void setDimmerDutyCycleMax(float max) { _dimmer->setDutyCycleMax(max); }
-          void setDimmerDutyCycleLimit(float limit) { _dimmer->setDutyCycleLimit(limit); }
+          bool setDimmerOff() {
+            return setDimmerDutyCycle(0);
+          }
+          void setDimmerDutyCycleMin(float min) {
+            _dimmer->setDutyCycleMin(min);
+          }
+          void setDimmerDutyCycleMax(float max) {
+            _dimmer->setDutyCycleMax(max);
+          }
+          void setDimmerDutyCycleLimit(float limit) {
+            _dimmer->setDutyCycleLimit(limit);
+          }
           void applyTemperatureLimit();
 
           float autoDivert(float gridVoltage, float availablePowerToDivert) {
@@ -358,59 +290,35 @@ namespace Mycila {
 
           // bypass
 
-          bool isBypassRelayEnabled() const { return _relay && _relay->isEnabled(); }
-          bool isBypassRelayOn() const { return _relay && _relay->isOn(); }
-          bool isAutoBypassEnabled() const { return config.autoBypass; }
-          bool isBypassOn() const { return _autoBypassEnabled || _manualBypassEnabled; }
+          bool isBypassRelayEnabled() const {
+            return _relay && _relay->isEnabled();
+          }
+          bool isBypassRelayOn() const {
+            return _relay && _relay->isOn();
+          }
+          bool isAutoBypassEnabled() const {
+            return config.autoBypass;
+          }
+          bool isBypassOn() const {
+            return _autoBypassEnabled || _manualBypassEnabled;
+          }
           void setBypass(bool state);
-          void setBypassOn() { setBypass(true); }
-          void setBypassOff() { setBypass(false); }
-          uint32_t getBypassUptime() const { return config.bypassTimeoutSec && _manualBypassTime ? (millis() - _manualBypassTime) / 1000UL : 0; }
+          void setBypassOn() {
+            setBypass(true);
+          }
+          void setBypassOff() {
+            setBypass(false);
+          }
+          uint32_t getBypassUptime() const {
+            return config.bypassTimeoutSec && _manualBypassTime ? (millis() - _manualBypassTime) / 1000UL : 0;
+          }
           void applyAutoBypass();
           void applyBypassTimeout();
-          uint64_t getBypassRelaySwitchCount() const { return _relay ? _relay->getSwitchCount() : 0; }
+          uint64_t getBypassRelaySwitchCount() const {
+            return _relay ? _relay->getSwitchCount() : 0;
+          }
 
           // metrics
-
-          void updateMetrics(Metrics metrics) {
-            metrics.zeroNaN();
-            _metrics.update(std::move(metrics));
-          }
-
-          bool readMeasurements(Metrics& metrics) const {
-            if (_metrics.isPresent()) {
-              if (getState() == State::ROUTING) {
-                memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
-              } else {
-                metrics.source = _metrics.get().source;
-                metrics.energy = _metrics.get().energy;
-              }
-              metrics.zeroNaN();
-              return true;
-            }
-            return false;
-          }
-
-          bool computeMetrics(Router::Metrics& metrics, float gridVoltage) const {
-            if (gridVoltage > 0 && config.calibratedResistance > 0) {
-              metrics.source = Source::COMPUTED;
-              metrics.resistance = config.calibratedResistance;
-              if (getState() == State::ROUTING) {
-                Mycila::Dimmer::Metrics dimmerMetrics;
-                if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
-                  metrics.voltage = dimmerMetrics.voltage;
-                  metrics.current = dimmerMetrics.current;
-                  metrics.apparentPower = dimmerMetrics.apparentPower;
-                  metrics.power = dimmerMetrics.power;
-                  metrics.powerFactor = dimmerMetrics.powerFactor;
-                  metrics.thdi = dimmerMetrics.thdi;
-                  metrics.zeroNaN();
-                  return true;
-                }
-              }
-            }
-            return false;
-          }
 
           std::optional<float> readRoutedPower() const {
             if (getState() != State::ROUTING)
@@ -458,6 +366,39 @@ namespace Mycila {
             return std::nullopt;
           }
 
+          bool readMetrics(metric::Metrics& metrics) const override {
+            if (_metrics.isPresent()) {
+              if (getState() == State::ROUTING) {
+                memcpy(&metrics, &_metrics.get(), sizeof(metric::Metrics));
+              } else {
+                metrics.energy = _metrics.get().energy;
+              }
+              metrics.zeroNaN();
+              return true;
+            }
+            return false;
+          }
+
+          bool computeMetrics(metric::Metrics& metrics, float gridVoltage) const {
+            if (gridVoltage > 0 && config.calibratedResistance > 0) {
+              metrics.resistance = config.calibratedResistance;
+              if (getState() == State::ROUTING) {
+                Mycila::Dimmer::Metrics dimmerMetrics;
+                if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
+                  metrics.voltage = dimmerMetrics.voltage;
+                  metrics.current = dimmerMetrics.current;
+                  metrics.apparentPower = dimmerMetrics.apparentPower;
+                  metrics.power = dimmerMetrics.power;
+                  metrics.powerFactor = dimmerMetrics.powerFactor;
+                  metrics.thdi = dimmerMetrics.thdi;
+                }
+              }
+              metrics.zeroNaN();
+              return true;
+            }
+            return false;
+          }
+
           bool computeHarmonics(float* array, size_t n) const {
             if (array == nullptr || n == 0)
               return false;
@@ -475,8 +416,12 @@ namespace Mycila {
 
           // temperature
 
-          ExpiringValue<float>& temperature() { return _temperature; }
-          const ExpiringValue<float>& temperature() const { return _temperature; }
+          ExpiringValue<float>& temperature() {
+            return _temperature;
+          }
+          const ExpiringValue<float>& temperature() const {
+            return _temperature;
+          }
 
         public:
           Config config;
@@ -490,7 +435,6 @@ namespace Mycila {
           bool _manualBypassEnabled = false;
           uint32_t _manualBypassTime = 0;
           ExpiringValue<float> _temperature;
-          ExpiringValue<Metrics> _metrics;
 
         private:
           void _switchBypass(bool state, bool log = true);
@@ -500,8 +444,12 @@ namespace Mycila {
       // Router //
       ////////////
 
-      void addOutput(Output& output) { _outputs.push_back(&output); }
-      const std::vector<Output*>& getOutputs() const { return _outputs; }
+      void addOutput(Output& output) {
+        _outputs.push_back(&output);
+      }
+      const std::vector<Output*>& getOutputs() const {
+        return _outputs;
+      }
 
       bool isAutoDimmerEnabled() const {
         for (const auto& output : _outputs) {
@@ -534,8 +482,12 @@ namespace Mycila {
       typedef std::function<void()> CalibrationCallback;
       void beginCalibration(size_t outputIndex, CalibrationCallback cb = nullptr);
       void continueCalibration();
-      bool isCalibrationRunning() const { return _calibrationRunning; }
-      bool isCalibrationRunning(size_t outputIndex) const { return isCalibrationRunning() && _calibrationOutputIndex == outputIndex; }
+      bool isCalibrationRunning() const {
+        return _calibrationRunning;
+      }
+      bool isCalibrationRunning(size_t outputIndex) const {
+        return isCalibrationRunning() && _calibrationOutputIndex == outputIndex;
+      }
       uint8_t getCalibrationCompletion(size_t outputIndex) const {
         if (!isCalibrationRunning(outputIndex))
           return 0;
@@ -547,121 +499,59 @@ namespace Mycila {
 
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float gridVoltage) const {
+        JsonArray json = root["metrics"].to<JsonArray>();
         {
-          Metrics* routerMeasurements = new Metrics();
-          if (readMeasurements(*routerMeasurements)) {
-            Router::toJson(root["measurements"].to<JsonObject>(), *routerMeasurements);
+          metric::Metrics* computed = new metric::Metrics();
+          if (computeMetrics(*computed, gridVoltage)) {
+            JsonObject source = json.add<JsonObject>();
+            source["source"] = "Computed Aggregated";
+            metric::Metrics::toJson(source, *computed);
           }
-          delete routerMeasurements;
+          delete computed;
         }
-
-        JsonArray sources = root["sources"].to<JsonArray>();
-
         {
-          Metrics* metrics = new Metrics();
-          if (computeMetrics(*metrics, gridVoltage)) {
-            Router::toJson(sources.add<JsonObject>(), *metrics);
+          metric::Metrics* metrics = new metric::Metrics();
+          if (readMetrics(*metrics)) {
+            JsonObject source = json.add<JsonObject>();
+            source["source"] = "Measurements Aggregated";
+            metric::Metrics::toJson(source, *metrics);
           }
           delete metrics;
-        }
-
-        if (_jsyMetrics != nullptr && _jsyMetrics->isPresent()) {
-          JsonObject jsy = sources.add<JsonObject>();
-          toJson(jsy, _jsyMetrics->get());
-          jsy["time"] = _jsyMetrics->getLastUpdateTime();
-        }
-
-        if (_jsyRemoteMetrics != nullptr && _jsyRemoteMetrics->isPresent()) {
-          JsonObject jsyRemote = sources.add<JsonObject>();
-          toJson(jsyRemote, _jsyRemoteMetrics->get());
-          jsyRemote["time"] = _jsyRemoteMetrics->getLastUpdateTime();
         }
       }
 #endif
 
-      void deleteMetrics(Source source) {
-        switch (source) {
-          case Source::JSY:
-            delete _jsyMetrics;
-            _jsyMetrics = nullptr;
-            break;
-          case Source::JSY_REMOTE:
-            delete _jsyRemoteMetrics;
-            _jsyRemoteMetrics = nullptr;
-            break;
-          default:
-            throw std::runtime_error("Unknown Router Source");
-        }
-      }
-
-      void updateMetrics(Metrics metrics) {
-        metrics.zeroNaN();
-        switch (metrics.source) {
-          case Source::JSY: {
-            if (_jsyMetrics == nullptr) {
-              _jsyMetrics = new ExpiringValue<Metrics>();
-              _jsyMetrics->setExpiration(10000);
-            }
-            _jsyMetrics->update(std::move(metrics));
-            break;
-          }
-          case Source::JSY_REMOTE: {
-            if (_jsyRemoteMetrics == nullptr) {
-              _jsyRemoteMetrics = new ExpiringValue<Metrics>();
-              _jsyRemoteMetrics->setExpiration(10000);
-            }
-            _jsyRemoteMetrics->update(std::move(metrics));
-            break;
-          }
-          default:
-            break;
-        }
-      }
-
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
-      bool readMeasurements(Metrics& metrics) const {
-        metrics.source = Source::UNKNOWN;
-
+      bool readMetrics(metric::Metrics& metrics) const {
+        metrics.zeroNaN();
         for (size_t i = 0; i < _outputs.size(); i++) {
-          Router::Metrics outputMetrics;
-          if (_outputs[i]->readMeasurements(outputMetrics)) {
-            metrics.source = outputMetrics.source;
+          // if this output measurement source is shared (same clamp, 2 wires) then ignore
+          if (_outputs[i]->isUsing(metric::Source::SHARED))
+            continue;
+          metric::Metrics outputMetrics;
+          if (_outputs[i]->readMetrics(outputMetrics)) {
             // Note: energy is not accurate in the case of a virtual bypass through dimmer
             metrics.energy += outputMetrics.energy;
             metrics.apparentPower += outputMetrics.apparentPower;
             metrics.current += outputMetrics.current;
             metrics.power += outputMetrics.power;
+            metrics.frequency = outputMetrics.frequency; // should be the same for all outputs
+          } else {
+            // otherwise we do not have any valid total measurements
+            return false;
           }
         }
-
-        // we found some pzem ? we are done
-        if (metrics.source == Source::PZEM) {
-          metrics.powerFactor = metrics.apparentPower > 0 ? metrics.power / metrics.apparentPower : 0;
-          metrics.resistance = metrics.current > 0 ? metrics.power / (metrics.current * metrics.current) : 0;
-          metrics.thdi = metrics.powerFactor > 0 ? 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f) : 0;
-          return true;
-        }
-
-        // no pzem found, let's check if we have a local JSY or remote JSY
-        if (_jsyMetrics && _jsyMetrics->isPresent()) {
-          // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
-          memcpy(&metrics, &_jsyMetrics->get(), sizeof(Metrics));
-          return true;
-        }
-        if (_jsyRemoteMetrics && _jsyRemoteMetrics->isPresent()) {
-          // Note: if one output is routing and the other one is doing a virtual bypass through dimmer, sadly we cannot have accurate measurements
-          memcpy(&metrics, &_jsyRemoteMetrics->get(), sizeof(Metrics));
-          return true;
-        }
-
+        metrics.powerFactor = metrics.apparentPower > 0 ? metrics.power / metrics.apparentPower : 0;
+        metrics.resistance = metrics.current > 0 ? metrics.power / (metrics.current * metrics.current) : 0;
+        metrics.thdi = metrics.powerFactor > 0 ? 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f) : 0;
         return false;
       }
 
-      bool computeMetrics(Metrics& metrics, float gridVoltage) const {
+      bool computeMetrics(metric::Metrics& metrics, float gridVoltage) const {
+        metrics.zeroNaN();
         if (gridVoltage > 0) {
-          metrics.source = Source::COMPUTED;
           for (size_t i = 0; i < _outputs.size(); i++) {
-            Router::Metrics outputMetrics;
+            metric::Metrics outputMetrics;
             if (_outputs[i]->computeMetrics(outputMetrics, gridVoltage)) {
               metrics.energy += outputMetrics.energy;
               metrics.apparentPower += outputMetrics.apparentPower;
@@ -680,17 +570,13 @@ namespace Mycila {
       std::optional<float> readTotalRoutedPower() const {
         float power = 0;
         for (size_t i = 0; i < _outputs.size(); i++) {
+          // if this output measurement source is shared (same clamp, 2 wires) then ignore
+          if (_outputs[i]->isUsing(metric::Source::SHARED))
+            continue;
           std::optional<float> outputPower = _outputs[i]->readRoutedPower();
           if (outputPower.has_value()) {
             power += outputPower.value();
           } else {
-            // at least one output has no routed power info
-            // we cannot return a valid total power
-            // so we try to get it from JSY or remote JSY
-            if (_jsyMetrics && _jsyMetrics->isPresent())
-              return _jsyMetrics->get().power;
-            if (_jsyRemoteMetrics && _jsyRemoteMetrics->isPresent())
-              return _jsyRemoteMetrics->get().power;
             // otherwise we do not have any valid total power
             return std::nullopt;
           }
@@ -713,18 +599,8 @@ namespace Mycila {
         return power;
       }
 
-      std::optional<float> readResistance() const {
-        if (_jsyMetrics && _jsyMetrics->isPresent())
-          return _jsyMetrics->get().resistance;
-        if (_jsyRemoteMetrics && _jsyRemoteMetrics->isPresent())
-          return _jsyRemoteMetrics->get().resistance;
-        return std::nullopt;
-      }
-
     private:
       std::vector<Output*> _outputs;
-      ExpiringValue<Metrics>* _jsyMetrics;
-      ExpiringValue<Metrics>* _jsyRemoteMetrics;
 
       // calibration
       // 0: idle

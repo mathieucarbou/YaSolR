@@ -12,7 +12,7 @@ Mycila::Task* victronConnectTask = nullptr;
 static Mycila::Task* victronReadTask = nullptr;
 
 void yasolr_configure_victron() {
-  if (grid.isUsing(Mycila::Grid::SourceKind::VICTRON)) {
+  if (grid.isUsing(Mycila::metric::Kind::VICTRON)) {
     if (victron == nullptr) {
       if (strlen(config.getString(KEY_VICTRON_MODBUS_SERVER)) == 0) {
         ESP_LOGE(TAG, "Victron Modbus TCP server is not set");
@@ -27,7 +27,7 @@ void yasolr_configure_victron() {
       // when receiving data from Victron, update grid metrics
       victron->setCallback([](Mycila::Victron::EventType eventType) {
         if (eventType == Mycila::Victron::EventType::EVT_READ) {
-          Mycila::Grid::Metrics metrics;
+          Mycila::metric::Metrics metrics;
           metrics.current = victron->getCurrent();
           metrics.frequency = victron->getFrequency();
           metrics.power = victron->getPower();

@@ -78,15 +78,19 @@ static void migrate_old_keys() {
 
     // these keys cannot be migrated
     storage.remove("jsy_enable");
-    storage.remove("jsyr_enable");
     storage.remove("jsy_uart");
+    storage.remove("jsyr_enable");
+    storage.remove("o1_dim_enable");
+    storage.remove("o1_pzem_enable");
+    storage.remove("o2_dim_enable");
+    storage.remove("o2_pzem_enable");
     storage.remove("pin_jsy_rx");
     storage.remove("pin_jsy_tx");
-    storage.remove("pzem_uart");
     storage.remove("pin_pzem_rx");
     storage.remove("pin_pzem_tx");
-    storage.remove("o1_dim_enable");
-    storage.remove("o2_dim_enable");
+    storage.remove("pin_serial1_dev");
+    storage.remove("pin_serial2_dev");
+    storage.remove("pzem_uart");
 
     storage.end();
   }
@@ -107,11 +111,9 @@ static void init_config() {
   config.configure(KEY_ENABLE_OUTPUT1_AUTO_BYPASS, false);
   config.configure(KEY_ENABLE_OUTPUT1_AUTO_DIMMER, false);
   config.configure(KEY_ENABLE_OUTPUT1_DS18, false);
-  config.configure(KEY_ENABLE_OUTPUT1_PZEM, false);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_BYPASS, false);
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, false);
   config.configure(KEY_ENABLE_OUTPUT2_DS18, false);
-  config.configure(KEY_ENABLE_OUTPUT2_PZEM, false);
   config.configure(KEY_ENABLE_SYSTEM_DS18, false);
   config.configure(KEY_GRID_FREQUENCY, static_cast<uint8_t>(0));
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
@@ -143,6 +145,7 @@ static void init_config() {
   config.configure(KEY_OUTPUT1_EXCESS_RATIO, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT1_RELAY);
   config.configure(KEY_OUTPUT1_RESISTANCE, 0.0f);
+  config.configure(KEY_OUTPUT1_SOURCE, "Computed");
   config.configure(KEY_OUTPUT1_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT1_TEMPERATURE_START, static_cast<uint8_t>(50));
   config.configure(KEY_OUTPUT1_TEMPERATURE_STOP, static_cast<uint8_t>(60));
@@ -159,6 +162,7 @@ static void init_config() {
   config.configure(KEY_OUTPUT2_EXCESS_RATIO, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT2_RELAY);
   config.configure(KEY_OUTPUT2_RESISTANCE, 0.0f);
+  config.configure(KEY_OUTPUT2_SOURCE, "Computed");
   config.configure(KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC);
   config.configure(KEY_OUTPUT2_TEMPERATURE_START, static_cast<uint8_t>(50));
   config.configure(KEY_OUTPUT2_TEMPERATURE_STOP, static_cast<uint8_t>(60));
@@ -188,10 +192,8 @@ static void init_config() {
   config.configure(KEY_PIN_RELAY1, static_cast<int8_t>(YASOLR_RELAY1_PIN));
   config.configure(KEY_PIN_RELAY2, static_cast<int8_t>(YASOLR_RELAY2_PIN));
   config.configure(KEY_PIN_ROUTER_DS18, static_cast<int8_t>(YASOLR_SYSTEM_TEMP_PIN));
-  config.configure(KEY_PIN_SERIAL1_DEV);
   config.configure(KEY_PIN_SERIAL1_RX, static_cast<int8_t>(YASOLR_SERIAL1_RX_PIN));
   config.configure(KEY_PIN_SERIAL1_TX, static_cast<int8_t>(YASOLR_SERIAL1_TX_PIN));
-  config.configure(KEY_PIN_SERIAL2_DEV);
   config.configure(KEY_PIN_SERIAL2_RX, static_cast<int8_t>(YASOLR_SERIAL2_RX_PIN));
   config.configure(KEY_PIN_SERIAL2_TX, static_cast<int8_t>(YASOLR_SERIAL2_TX_PIN));
   config.configure(KEY_PIN_ZCD, static_cast<int8_t>(YASOLR_ZCD_PIN));
@@ -407,8 +409,8 @@ void yasolr_init_config() {
       reconfigureQueue.push(yasolr_configure_relay2);
 
     } else if (key == KEY_GRID_SOURCE) {
+      grid.setSource(config.getString(KEY_GRID_SOURCE));
       reconfigureQueue.push([]() {
-        grid.setSource(config.getString(KEY_GRID_SOURCE));
         yasolr_configure_jsy();
         yasolr_configure_jsy_remote();
         yasolr_configure_mqtt_grid_source();
@@ -422,7 +424,8 @@ void yasolr_init_config() {
         grid.clearMetrics();
       });
 
-    } else if (key == KEY_ENABLE_OUTPUT1_PZEM || key == KEY_ENABLE_OUTPUT2_PZEM) {
+    } else if (key == KEY_OUTPUT1_SOURCE) {
+      output1.setSource(config.getString(KEY_OUTPUT1_SOURCE));
       reconfigureQueue.push([]() {
         yasolr_configure_jsy_remote();
         yasolr_configure_jsy();
@@ -431,6 +434,20 @@ void yasolr_init_config() {
           if (jsyRemoteTask)
             jsyRemoteTask->resume();
         }
+        output1.clearMetrics();
+      });
+
+    } else if (key == KEY_OUTPUT2_SOURCE) {
+      output2.setSource(config.getString(KEY_OUTPUT2_SOURCE));
+      reconfigureQueue.push([]() {
+        yasolr_configure_jsy_remote();
+        yasolr_configure_jsy();
+        yasolr_configure_pzem();
+        if (!config.get<bool>(KEY_ENABLE_AP_MODE)) {
+          if (jsyRemoteTask)
+            jsyRemoteTask->resume();
+        }
+        output2.clearMetrics();
       });
 
     } else if (key == KEY_OUTPUT1_DIMMER) {
