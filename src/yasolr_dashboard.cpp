@@ -146,11 +146,11 @@ static dash::FeedbackCard _output2State(dashboard, YASOLR_LBL_070);
 static dash::FeedbackToggleButtonCard _relay1Switch(dashboard, YASOLR_LBL_074);
 static dash::FeedbackToggleButtonCard _relay2Switch(dashboard, YASOLR_LBL_077);
 
-static dash::SeparatorCard<const char*> _overviewSep2(dashboard, YASOLR_LBL_012 ": " YASOLR_LBL_133);
+static dash::SeparatorCard<const char*> _overviewSep2(dashboard, YASOLR_LBL_012);
 static dash::EnergyCard<float, 0> _gridPower(dashboard, YASOLR_LBL_044, "W");
 static dash::EnergyCard<float, 0> _gridVoltage(dashboard, YASOLR_LBL_106, "V");
 
-static dash::SeparatorCard<const char*> _overviewSep3(dashboard, YASOLR_LBL_040 ": " YASOLR_LBL_133);
+static dash::SeparatorCard<const char*> _overviewSep3(dashboard, YASOLR_LBL_040);
 static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_054);
@@ -333,7 +333,7 @@ static dash::FeedbackInputCard<int8_t> _pinLEDRed(dashboard, YASOLR_LBL_119);
 // tab: hardware
 
 // grid
-static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012 ": " YASOLR_LBL_133);
+static dash::SeparatorCard<const char*> _gridSep(dashboard, YASOLR_LBL_012);
 static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Auto-detect,50 Hz,60 Hz");
 static dash::DropdownCard<const char*> _gridSource(dashboard, YASOLR_LBL_114, YASOLR_SOURCES_GRID);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
