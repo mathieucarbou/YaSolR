@@ -22,10 +22,13 @@ float yasolr_frequency() {
     return frequency;
 
   // 3. check if frequency is set in pulse analyzer
+  // PulseAnalyzer can sometimes detect a semi-period longer or smaller...
   if (pulseAnalyzer) {
     frequency = pulseAnalyzer->getNominalGridFrequency();
-    if ((frequency >= 48.0f && frequency <= 52.0f) || (frequency >= 58.0f && frequency <= 62.0f))
-      return frequency;
+    if (frequency >= 48.0f && frequency <= 52.0f)
+      return 50.0f;
+    if (frequency >= 58.0f && frequency <= 62.0f)
+      return 60.0f;
   }
 
   return 0.0f;
