@@ -37,8 +37,7 @@ void setup() {
   yasolr_configure_output2_dimmer();
 
   // PZEM and JSY are long to initialize and do not cause a lot of logs so they will not impact dimmer ISR
-  yasolr_configure_output1_pzem();
-  yasolr_configure_output2_pzem();
+  yasolr_configure_pzem();
   yasolr_configure_jsy();
 
   yasolr_configure_output1_bypass_relay();

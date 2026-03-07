@@ -508,23 +508,23 @@ void YaSolR::Website::begin() {
   _output2ResistanceCalibration.onPush([]() { _calibrate(1); });
 
   _output1PZEMSync.onPush([]() {
-    if (pzemO1PairingTask) {
-      if (pzemO1PairingTask->running())
+    if (pzemPairingTasks[0]) {
+      if (pzemPairingTasks[0]->running())
         return;
-      if (!pzemO1PairingTask->scheduled())
-        pzemO1PairingTask->resume();
+      if (!pzemPairingTasks[0]->scheduled())
+        pzemPairingTasks[0]->resume();
     }
-    _output1PZEMSync.setIndicator(pzemO1PairingTask && (pzemO1PairingTask->scheduled() || pzemO1PairingTask->running()), dash::Status::WARNING);
+    _output1PZEMSync.setIndicator(pzemPairingTasks[0] && (pzemPairingTasks[0]->scheduled() || pzemPairingTasks[0]->running()), dash::Status::WARNING);
     dashboard.refresh(_output1PZEMSync);
   });
 
   _output2PZEMSync.onPush([]() {
-    if (pzemO2PairingTask)
-      if (pzemO2PairingTask->running())
+    if (pzemPairingTasks[1])
+      if (pzemPairingTasks[1]->running())
         return;
-    if (!pzemO2PairingTask->scheduled())
-      pzemO2PairingTask->resume();
-    _output2PZEMSync.setIndicator(pzemO2PairingTask && (pzemO2PairingTask->scheduled() || pzemO2PairingTask->running()), dash::Status::WARNING);
+    if (!pzemPairingTasks[1]->scheduled())
+      pzemPairingTasks[1]->resume();
+    _output2PZEMSync.setIndicator(pzemPairingTasks[1] && (pzemPairingTasks[1]->scheduled() || pzemPairingTasks[1]->running()), dash::Status::WARNING);
     dashboard.refresh(_output2PZEMSync);
   });
 #else
@@ -532,24 +532,24 @@ void YaSolR::Website::begin() {
   _output2ResistanceCalibration.onChange([](bool value) { if (value) _calibrate(1); });
 
   _output1PZEMSync.onChange([](bool value) {
-    if (pzemO1PairingTask) {
-      if (pzemO1PairingTask->running())
+    if (pzemPairingTasks[0]) {
+      if (pzemPairingTasks[0]->running())
         return;
-      if (!pzemO1PairingTask->scheduled())
-        pzemO1PairingTask->resume();
+      if (!pzemPairingTasks[0]->scheduled())
+        pzemPairingTasks[0]->resume();
     }
-    _output1PZEMSync.setValue(pzemO1PairingTask && (pzemO1PairingTask->scheduled() || pzemO1PairingTask->running()));
+    _output1PZEMSync.setValue(pzemPairingTasks[0] && (pzemPairingTasks[0]->scheduled() || pzemPairingTasks[0]->running()));
     dashboard.refresh(_output1PZEMSync);
   });
 
   _output2PZEMSync.onChange([](bool value) {
-    if (pzemO2PairingTask) {
-      if (pzemO2PairingTask->running())
+    if (pzemPairingTasks[1]) {
+      if (pzemPairingTasks[1]->running())
         return;
-      if (!pzemO2PairingTask->scheduled())
-        pzemO2PairingTask->resume();
+      if (!pzemPairingTasks[1]->scheduled())
+        pzemPairingTasks[1]->resume();
     }
-    _output2PZEMSync.setValue(pzemO2PairingTask && (pzemO2PairingTask->scheduled() || pzemO2PairingTask->running()));
+    _output2PZEMSync.setValue(pzemPairingTasks[1] && (pzemPairingTasks[1]->scheduled() || pzemPairingTasks[1]->running()));
     dashboard.refresh(_output2PZEMSync);
   });
 #endif
@@ -648,10 +648,10 @@ void YaSolR::Website::begin() {
   _energyReset.onPush([]() {
     if (jsy)
       jsy->resetEnergy();
-    if (pzemO1)
-      pzemO1->resetEnergy();
-    if (pzemO2)
-      pzemO2->resetEnergy();
+    if (pzem[0])
+      pzem[0]->resetEnergy();
+    if (pzem[1])
+      pzem[1]->resetEnergy();
   });
 
   // tab: debug
@@ -1576,8 +1576,8 @@ void YaSolR::Website::updateCards() {
   }
 
 #ifndef APP_MODEL_PRO
-  _output1PZEMSync.setValue(pzemO1PairingTask && pzemO1PairingTask->scheduled());
-  _output2PZEMSync.setValue(pzemO2PairingTask && pzemO2PairingTask->scheduled());
+  _output1PZEMSync.setValue(pzemPairingTasks[0] && pzemPairingTasks[0]->scheduled());
+  _output2PZEMSync.setValue(pzemPairingTasks[1] && pzemPairingTasks[1]->scheduled());
   _output1ResistanceCalibration.setValue(router.isCalibrationRunning());
   _output2ResistanceCalibration.setValue(router.isCalibrationRunning());
 #endif
@@ -1630,9 +1630,9 @@ void YaSolR::Website::updateCards() {
   _output1ResistanceCalibration.setDisplay(!router.isCalibrationRunning(0) && _output1ResistanceInput.displayed());
   _output1ResistanceCalibrationStatus.setValue(router.getCalibrationCompletion(0));
   _output1ResistanceCalibrationStatus.setDisplay(router.isCalibrationRunning(0));
-  if (pzemO1PairingTask && pzemO1PairingTask->scheduled()) {
+  if (pzemPairingTasks[0] && pzemPairingTasks[0]->scheduled()) {
     _output1PZEMSync.setIndicator(true, dash::Status::WARNING);
-  } else if (pzemO1 && pzemO1->isConnected()) {
+  } else if (pzem[0] && pzem[0]->isConnected()) {
     _output1PZEMSync.setIndicator(true, dash::Status::SUCCESS);
   } else {
     _output1PZEMSync.setIndicator(true, dash::Status::DANGER);
@@ -1643,9 +1643,9 @@ void YaSolR::Website::updateCards() {
   _output2ResistanceCalibration.setDisplay(!router.isCalibrationRunning(1) && _output2ResistanceInput.displayed());
   _output2ResistanceCalibrationStatus.setValue(router.getCalibrationCompletion(1));
   _output2ResistanceCalibrationStatus.setDisplay(router.isCalibrationRunning(1));
-  if (pzemO2PairingTask && pzemO2PairingTask->scheduled()) {
+  if (pzemPairingTasks[1] && pzemPairingTasks[1]->scheduled()) {
     _output2PZEMSync.setIndicator(true, dash::Status::WARNING);
-  } else if (pzemO2 && pzemO2->isConnected()) {
+  } else if (pzem[1] && pzem[1]->isConnected()) {
     _output2PZEMSync.setIndicator(true, dash::Status::SUCCESS);
   } else {
     _output2PZEMSync.setIndicator(true, dash::Status::DANGER);
@@ -1693,21 +1693,21 @@ void YaSolR::Website::updateWarnings() {
   }
   // pzem output 1
   if (config.get<bool>(KEY_ENABLE_OUTPUT1_PZEM)) {
-    if (!pzemO1 || !pzemO1->isEnabled()) {
+    if (!pzem[0] || !pzem[0]->isEnabled()) {
       errors[count++] = ERR_ACT_O1_PZEM;
-    } else if (pzemO1->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
+    } else if (pzem[0]->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT1) {
       errors[count++] = ERR_PZEM_ADDR_O1;
-    } else if (!pzemO1->isConnected()) {
+    } else if (!pzem[0]->isConnected()) {
       errors[count++] = ERR_GRID_PZEM_O1;
     }
   }
   // pzem output 2
   if (config.get<bool>(KEY_ENABLE_OUTPUT2_PZEM)) {
-    if (!pzemO2 || !pzemO2->isEnabled()) {
+    if (!pzem[1] || !pzem[1]->isEnabled()) {
       errors[count++] = ERR_ACT_O2_PZEM;
-    } else if (pzemO2->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {
+    } else if (pzem[1]->getDeviceAddress() != YASOLR_PZEM_ADDRESS_OUTPUT2) {
       errors[count++] = ERR_PZEM_ADDR_O2;
-    } else if (!pzemO2->isConnected()) {
+    } else if (!pzem[1]->isConnected()) {
       errors[count++] = ERR_GRID_PZEM_O2;
     }
   }

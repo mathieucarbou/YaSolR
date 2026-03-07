@@ -422,11 +422,16 @@ void yasolr_init_config() {
         grid.clearMetrics();
       });
 
-    } else if (key == KEY_ENABLE_OUTPUT1_PZEM) {
-      reconfigureQueue.push(yasolr_configure_output1_pzem);
-
-    } else if (key == KEY_ENABLE_OUTPUT2_PZEM) {
-      reconfigureQueue.push(yasolr_configure_output2_pzem);
+    } else if (key == KEY_ENABLE_OUTPUT1_PZEM || key == KEY_ENABLE_OUTPUT2_PZEM) {
+      reconfigureQueue.push([]() {
+        yasolr_configure_jsy_remote();
+        yasolr_configure_jsy();
+        yasolr_configure_pzem();
+        if (!config.get<bool>(KEY_ENABLE_AP_MODE)) {
+          if (jsyRemoteTask)
+            jsyRemoteTask->resume();
+        }
+      });
 
     } else if (key == KEY_OUTPUT1_DIMMER) {
       reconfigureQueue.push(yasolr_configure_output1_dimmer);

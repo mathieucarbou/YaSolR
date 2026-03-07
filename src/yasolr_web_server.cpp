@@ -124,15 +124,15 @@ void rest_api() {
     output1.toJson(root["router"]["output1"].to<JsonObject>(), voltage);
     if (ds18O1)
       ds18O1->toJson(root["router"]["output1"]["ds18"].to<JsonObject>());
-    if (pzemO1)
-      pzemO1->toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
+    if (pzem[0])
+      pzem[0]->toJson(root["router"]["output1"]["pzem"].to<JsonObject>());
 
     // output 2
     output2.toJson(root["router"]["output2"].to<JsonObject>(), voltage);
     if (ds18O2)
       ds18O2->toJson(root["router"]["output2"]["ds18"].to<JsonObject>());
-    if (pzemO2)
-      pzemO2->toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
+    if (pzem[1])
+      pzem[1]->toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
 
     // system
     JsonObject system = root["system"].to<JsonObject>();

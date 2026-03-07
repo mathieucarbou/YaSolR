@@ -117,12 +117,9 @@ extern void yasolr_configure_mqtt();
 extern void yasolr_configure_mqtt_grid_source();
 
 // PZEM
-extern Mycila::PZEM* pzemO1;
-extern Mycila::PZEM* pzemO2;
-extern Mycila::Task* pzemO1PairingTask;
-extern Mycila::Task* pzemO2PairingTask;
-extern void yasolr_configure_output1_pzem();
-extern void yasolr_configure_output2_pzem();
+extern Mycila::PZEM* pzem[2];
+extern Mycila::Task* pzemPairingTasks[2];
+extern void yasolr_configure_pzem();
 
 // Lights
 extern Mycila::TrafficLight lights;
