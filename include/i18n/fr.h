@@ -58,7 +58,7 @@
 #define YASOLR_LBL_052 "Puissance routée"
 #define YASOLR_LBL_053 "Puissance Apparente"
 #define YASOLR_LBL_054 "Facteur de Puissance"
-#define YASOLR_LBL_055 "THDi"
+// #define YASOLR_LBL_055 "THD"
 #define YASOLR_LBL_056 "Tension"
 #define YASOLR_LBL_057 "Intensité"
 #define YASOLR_LBL_058 "Résistance"

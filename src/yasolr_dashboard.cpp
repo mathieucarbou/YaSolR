@@ -154,7 +154,7 @@ static dash::SeparatorCard<const char*> _overviewSep3(dashboard, YASOLR_LBL_040 
 static dash::EnergyCard<float, 0> _routerPower(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _routerApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _routerPowerFactor(dashboard, YASOLR_LBL_054);
-static dash::EnergyCard<float, 2> _routerTHDi(dashboard, YASOLR_LBL_055, "%");
+static dash::EnergyCard<float, 2> _routerTHDi(dashboard, "THD", "%");
 static dash::EnergyCard<float, 2> _routerCurrent(dashboard, YASOLR_LBL_057, "A");
 static dash::EnergyCard<float, 2> _routerResistance(dashboard, YASOLR_LBL_058, "Ω");
 static dash::EnergyCard<uint32_t> _routerEnergy(dashboard, YASOLR_LBL_059, "Wh");
@@ -195,7 +195,7 @@ static dash::SeparatorCard<const char*> _output1Measures(dashboard, YASOLR_LBL_1
 static dash::EnergyCard<float, 0> _output1Power(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _output1ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output1PowerFactor(dashboard, YASOLR_LBL_054);
-static dash::EnergyCard<float, 2> _output1THDi(dashboard, YASOLR_LBL_055, "%");
+static dash::EnergyCard<float, 2> _output1THDi(dashboard, "THD", "%");
 static dash::EnergyCard<float, 2> _output1Current(dashboard, YASOLR_LBL_057, "A");
 static dash::EnergyCard<float, 2> _output1Resistance(dashboard, YASOLR_LBL_058, "Ω");
 static dash::EnergyCard<float, 0> _output1Voltage(dashboard, YASOLR_LBL_056, "V");
@@ -221,7 +221,7 @@ static dash::SeparatorCard<const char*> _output2Measures(dashboard, YASOLR_LBL_1
 static dash::EnergyCard<float, 0> _output2Power(dashboard, YASOLR_LBL_036, "W");
 static dash::EnergyCard<float, 0> _output2ApparentPower(dashboard, YASOLR_LBL_053, "VA");
 static dash::EnergyCard<float, 2> _output2PowerFactor(dashboard, YASOLR_LBL_054);
-static dash::EnergyCard<float, 2> _output2THDi(dashboard, YASOLR_LBL_055, "%");
+static dash::EnergyCard<float, 2> _output2THDi(dashboard, "THD", "%");
 static dash::EnergyCard<float, 2> _output2Current(dashboard, YASOLR_LBL_057, "A");
 static dash::EnergyCard<float, 2> _output2Resistance(dashboard, YASOLR_LBL_058, "Ω");
 static dash::EnergyCard<float, 0> _output2Voltage(dashboard, YASOLR_LBL_056, "V");
@@ -504,8 +504,12 @@ void YaSolR::Website::begin() {
   _routedPowerHistory.setX(_historyX, YASOLR_GRAPH_POINTS);
 
 #if APP_MODEL_PRO
-  _output1ResistanceCalibration.onPush([]() { _calibrate(0); });
-  _output2ResistanceCalibration.onPush([]() { _calibrate(1); });
+  _output1ResistanceCalibration.onPush([]() {
+    _calibrate(0);
+  });
+  _output2ResistanceCalibration.onPush([]() {
+    _calibrate(1);
+  });
 
   _output1PZEMSync.onPush([]() {
     if (pzemPairingTasks[0]) {
@@ -528,8 +532,12 @@ void YaSolR::Website::begin() {
     dashboard.refresh(_output2PZEMSync);
   });
 #else
-  _output1ResistanceCalibration.onChange([](bool value) { if (value) _calibrate(0); });
-  _output2ResistanceCalibration.onChange([](bool value) { if (value) _calibrate(1); });
+  _output1ResistanceCalibration.onChange([](bool value) {
+    if (value) _calibrate(0);
+  });
+  _output2ResistanceCalibration.onChange([](bool value) {
+    if (value) _calibrate(1);
+  });
 
   _output1PZEMSync.onChange([](bool value) {
     if (pzemPairingTasks[0]) {
@@ -642,9 +650,15 @@ void YaSolR::Website::begin() {
   _safebootUpload.setTab(_systemTab);
   _safebootUploadStatus.setTab(_systemTab);
 
-  _restart.onPush([]() { restartTask.resume(); });
-  _safeBoot.onPush([]() { safeBootTask.resume(); });
-  _reset.onPush([]() { resetTask.resume(); });
+  _restart.onPush([]() {
+    restartTask.resume();
+  });
+  _safeBoot.onPush([]() {
+    safeBootTask.resume();
+  });
+  _reset.onPush([]() {
+    resetTask.resume();
+  });
   _energyReset.onPush([]() {
     if (jsy[0])
       jsy[0]->resetEnergy();

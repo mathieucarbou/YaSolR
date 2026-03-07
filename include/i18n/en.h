@@ -58,7 +58,7 @@
 #define YASOLR_LBL_052 "Routed Power"
 #define YASOLR_LBL_053 "Apparent Power"
 #define YASOLR_LBL_054 "Power Factor"
-#define YASOLR_LBL_055 "THDi"
+// #define YASOLR_LBL_055 "THD"
 #define YASOLR_LBL_056 "Voltage"
 #define YASOLR_LBL_057 "Current"
 #define YASOLR_LBL_058 "Resistance"
