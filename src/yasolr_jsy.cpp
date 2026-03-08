@@ -4,6 +4,7 @@
  */
 #include <yasolr.h>
 
+#include <memory>
 #include <utility>
 
 Mycila::JSY* jsy[2] = {nullptr, nullptr}; // array of 2 pointers: jsy[0] for Serial1, jsy[1] for Serial2
@@ -53,31 +54,31 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
       case MYCILA_JSY_MK_227:
       case MYCILA_JSY_MK_229: {
         if (grid.isUsing(serialKind) && (grid.isUsing(Mycila::metric::Kind::JSY_MK_163) || grid.isUsing(Mycila::metric::Kind::JSY_MK_227) || grid.isUsing(Mycila::metric::Kind::JSY_MK_229))) {
-          Mycila::metric::Metrics metrics;
-          metrics.apparentPower = data.single().apparentPower;
-          metrics.current = data.single().current;
-          metrics.energy = data.single().activeEnergyImported;
-          metrics.energyReturned = data.single().activeEnergyReturned;
-          metrics.frequency = data.single().frequency;
-          metrics.power = data.single().activePower;
-          metrics.powerFactor = data.single().powerFactor;
-          metrics.voltage = data.single().voltage;
+          std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+          metrics->apparentPower = data.single().apparentPower;
+          metrics->current = data.single().current;
+          metrics->energy = data.single().activeEnergyImported;
+          metrics->energyReturned = data.single().activeEnergyReturned;
+          metrics->frequency = data.single().frequency;
+          metrics->power = data.single().activePower;
+          metrics->powerFactor = data.single().powerFactor;
+          metrics->voltage = data.single().voltage;
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
         } else {
           for (Mycila::Router::Output* output : {&output1, &output2}) {
             if (output->isUsing(serialKind) && (output->isUsing(Mycila::metric::Kind::JSY_MK_163) || output->isUsing(Mycila::metric::Kind::JSY_MK_227) || output->isUsing(Mycila::metric::Kind::JSY_MK_229))) {
-              Mycila::metric::Metrics metrics;
-              metrics.apparentPower = data.single().apparentPower;
-              metrics.current = data.single().current;
-              metrics.energy = (data.single().activeEnergyImported + data.single().activeEnergyReturned); // if the clamp is installed reversed
-              metrics.frequency = data.single().frequency;
-              metrics.power = std::abs(data.single().activePower); // if the clamp is installed reversed
-              metrics.powerFactor = data.single().powerFactor;
-              metrics.resistance = data.single().resistance();
-              metrics.thdi = data.single().thdi();
-              metrics.voltage = data.single().voltage;
-              metrics.zeroNaN();
+              std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+              metrics->apparentPower = data.single().apparentPower;
+              metrics->current = data.single().current;
+              metrics->energy = (data.single().activeEnergyImported + data.single().activeEnergyReturned); // if the clamp is installed reversed
+              metrics->frequency = data.single().frequency;
+              metrics->power = std::abs(data.single().activePower); // if the clamp is installed reversed
+              metrics->powerFactor = data.single().powerFactor;
+              metrics->resistance = data.single().resistance();
+              metrics->thdi = data.single().thdi();
+              metrics->voltage = data.single().voltage;
+              metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
               break;
             }
@@ -89,31 +90,31 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
       case MYCILA_JSY_MK_194: {
         // Channel 1
         if (grid.isUsing(serialKind) && (grid.isUsing(Mycila::metric::Kind::JSY_MK_193_CH1) || grid.isUsing(Mycila::metric::Kind::JSY_MK_194_CH1))) {
-          Mycila::metric::Metrics metrics;
-          metrics.apparentPower = data.channel1().apparentPower;
-          metrics.current = data.channel1().current;
-          metrics.energy = data.channel1().activeEnergyImported;
-          metrics.energyReturned = data.channel1().activeEnergyReturned;
-          metrics.frequency = data.channel1().frequency;
-          metrics.power = data.channel1().activePower;
-          metrics.powerFactor = data.channel1().powerFactor;
-          metrics.voltage = data.channel1().voltage;
+          std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+          metrics->apparentPower = data.channel1().apparentPower;
+          metrics->current = data.channel1().current;
+          metrics->energy = data.channel1().activeEnergyImported;
+          metrics->energyReturned = data.channel1().activeEnergyReturned;
+          metrics->frequency = data.channel1().frequency;
+          metrics->power = data.channel1().activePower;
+          metrics->powerFactor = data.channel1().powerFactor;
+          metrics->voltage = data.channel1().voltage;
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
         } else {
           for (Mycila::Router::Output* output : {&output1, &output2}) {
             if (output->isUsing(serialKind) && (output->isUsing(Mycila::metric::Kind::JSY_MK_193_CH1) || output->isUsing(Mycila::metric::Kind::JSY_MK_194_CH1))) {
-              Mycila::metric::Metrics metrics;
-              metrics.apparentPower = data.channel1().apparentPower;
-              metrics.current = data.channel1().current;
-              metrics.energy = (data.channel1().activeEnergyImported + data.channel1().activeEnergyReturned); // if the clamp is installed reversed
-              metrics.frequency = data.channel1().frequency;
-              metrics.power = std::abs(data.channel1().activePower); // if the clamp is installed reversed
-              metrics.powerFactor = data.channel1().powerFactor;
-              metrics.resistance = data.channel1().resistance();
-              metrics.thdi = data.channel1().thdi();
-              metrics.voltage = data.channel1().voltage;
-              metrics.zeroNaN();
+              std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+              metrics->apparentPower = data.channel1().apparentPower;
+              metrics->current = data.channel1().current;
+              metrics->energy = (data.channel1().activeEnergyImported + data.channel1().activeEnergyReturned); // if the clamp is installed reversed
+              metrics->frequency = data.channel1().frequency;
+              metrics->power = std::abs(data.channel1().activePower); // if the clamp is installed reversed
+              metrics->powerFactor = data.channel1().powerFactor;
+              metrics->resistance = data.channel1().resistance();
+              metrics->thdi = data.channel1().thdi();
+              metrics->voltage = data.channel1().voltage;
+              metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
               break;
             }
@@ -121,32 +122,32 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
         }
         // Channel 2
         if (grid.isUsing(serialKind) && (grid.isUsing(Mycila::metric::Kind::JSY_MK_193_CH2) || grid.isUsing(Mycila::metric::Kind::JSY_MK_194_CH2))) {
-          Mycila::metric::Metrics metrics;
-          metrics.apparentPower = data.channel2().apparentPower;
-          metrics.current = data.channel2().current;
-          metrics.energy = data.channel2().activeEnergyImported;
-          metrics.energyReturned = data.channel2().activeEnergyReturned;
-          metrics.frequency = data.channel2().frequency;
-          metrics.power = data.channel2().activePower;
-          metrics.powerFactor = data.channel2().powerFactor;
-          metrics.voltage = data.channel2().voltage;
-          metrics.zeroNaN();
+          std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+          metrics->apparentPower = data.channel2().apparentPower;
+          metrics->current = data.channel2().current;
+          metrics->energy = data.channel2().activeEnergyImported;
+          metrics->energyReturned = data.channel2().activeEnergyReturned;
+          metrics->frequency = data.channel2().frequency;
+          metrics->power = data.channel2().activePower;
+          metrics->powerFactor = data.channel2().powerFactor;
+          metrics->voltage = data.channel2().voltage;
+          metrics->zeroNaN();
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
         } else {
           for (Mycila::Router::Output* output : {&output1, &output2}) {
             if (output->isUsing(serialKind) && (output->isUsing(Mycila::metric::Kind::JSY_MK_193_CH2) || output->isUsing(Mycila::metric::Kind::JSY_MK_194_CH2))) {
-              Mycila::metric::Metrics metrics;
-              metrics.apparentPower = data.channel2().apparentPower;
-              metrics.current = data.channel2().current;
-              metrics.energy = (data.channel2().activeEnergyImported + data.channel2().activeEnergyReturned); // if the clamp is installed reversed
-              metrics.frequency = data.channel2().frequency;
-              metrics.power = std::abs(data.channel2().activePower); // if the clamp is installed reversed
-              metrics.powerFactor = data.channel2().powerFactor;
-              metrics.resistance = data.channel2().resistance();
-              metrics.thdi = data.channel2().thdi();
-              metrics.voltage = data.channel2().voltage;
-              metrics.zeroNaN();
+              std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+              metrics->apparentPower = data.channel2().apparentPower;
+              metrics->current = data.channel2().current;
+              metrics->energy = (data.channel2().activeEnergyImported + data.channel2().activeEnergyReturned); // if the clamp is installed reversed
+              metrics->frequency = data.channel2().frequency;
+              metrics->power = std::abs(data.channel2().activePower); // if the clamp is installed reversed
+              metrics->powerFactor = data.channel2().powerFactor;
+              metrics->resistance = data.channel2().resistance();
+              metrics->thdi = data.channel2().thdi();
+              metrics->voltage = data.channel2().voltage;
+              metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
               break;
             }
@@ -156,15 +157,15 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
       }
       case MYCILA_JSY_MK_333: {
         if (grid.isUsing(serialKind) && grid.isUsing(Mycila::metric::Kind::JSY_MK_333)) {
-          Mycila::metric::Metrics metrics;
-          metrics.apparentPower = data.aggregate.apparentPower;
-          metrics.current = data.aggregate.current;
-          metrics.energy = data.aggregate.activeEnergyImported;
-          metrics.energyReturned = data.aggregate.activeEnergyReturned;
-          metrics.frequency = data.aggregate.frequency;
-          metrics.power = data.aggregate.activePower;
-          metrics.powerFactor = data.aggregate.powerFactor;
-          metrics.voltage = data.aggregate.voltage;
+          std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+          metrics->apparentPower = data.aggregate.apparentPower;
+          metrics->current = data.aggregate.current;
+          metrics->energy = data.aggregate.activeEnergyImported;
+          metrics->energyReturned = data.aggregate.activeEnergyReturned;
+          metrics->frequency = data.aggregate.frequency;
+          metrics->power = data.aggregate.activePower;
+          metrics->powerFactor = data.aggregate.powerFactor;
+          metrics->voltage = data.aggregate.voltage;
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
           break;

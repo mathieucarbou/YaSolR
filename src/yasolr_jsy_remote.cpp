@@ -5,6 +5,7 @@
 #include <yasolr.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #define YASOLR_DEBUG_UDP 0
@@ -76,31 +77,31 @@ static void processJSON(JsonDocument& doc) {
     case MYCILA_JSY_MK_227:
     case MYCILA_JSY_MK_229: {
       if (grid.isUsing(Mycila::metric::Source::JSY_MK_163_REMOTE) || grid.isUsing(Mycila::metric::Source::JSY_MK_227_REMOTE) || grid.isUsing(Mycila::metric::Source::JSY_MK_229_REMOTE)) {
-        Mycila::metric::Metrics metrics;
-        metrics.apparentPower = root["apparent_power"] | NAN;
-        metrics.current = root["current"] | NAN;
-        metrics.energy = root["active_energy_imported"] | static_cast<uint32_t>(0);
-        metrics.energyReturned = root["active_energy_returned"] | static_cast<uint32_t>(0);
-        metrics.frequency = root["frequency"] | NAN;
-        metrics.power = root["active_power"] | NAN;
-        metrics.powerFactor = root["power_factor"] | NAN;
-        metrics.voltage = root["voltage"] | NAN;
+        std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+        metrics->apparentPower = root["apparent_power"] | NAN;
+        metrics->current = root["current"] | NAN;
+        metrics->energy = root["active_energy_imported"] | static_cast<uint32_t>(0);
+        metrics->energyReturned = root["active_energy_returned"] | static_cast<uint32_t>(0);
+        metrics->frequency = root["frequency"] | NAN;
+        metrics->power = root["active_power"] | NAN;
+        metrics->powerFactor = root["power_factor"] | NAN;
+        metrics->voltage = root["voltage"] | NAN;
         grid.updateMetrics(std::move(metrics));
         pidTask.requestEarlyRun();
       } else {
         for (Mycila::Router::Output* output : {&output1, &output2}) {
           if (output->isUsing(Mycila::metric::Source::JSY_MK_163_REMOTE) || output->isUsing(Mycila::metric::Source::JSY_MK_227_REMOTE) || output->isUsing(Mycila::metric::Source::JSY_MK_229_REMOTE)) {
-            Mycila::metric::Metrics metrics;
-            metrics.apparentPower = root["apparent_power"] | NAN;
-            metrics.current = root["current"] | NAN;
-            metrics.energy = (root["active_energy_imported"] | static_cast<uint32_t>(0)) + (root["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
-            metrics.frequency = root["frequency"] | NAN;
-            metrics.power = std::abs(root["active_power"] | NAN); // if the clamp is installed reversed
-            metrics.powerFactor = root["power_factor"] | NAN;
-            metrics.voltage = root["voltage"] | NAN;
-            metrics.resistance = root["resistance"] | NAN;
-            metrics.thdi = root["thdi_0"] | NAN;
-            metrics.zeroNaN();
+            std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+            metrics->apparentPower = root["apparent_power"] | NAN;
+            metrics->current = root["current"] | NAN;
+            metrics->energy = (root["active_energy_imported"] | static_cast<uint32_t>(0)) + (root["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
+            metrics->frequency = root["frequency"] | NAN;
+            metrics->power = std::abs(root["active_power"] | NAN); // if the clamp is installed reversed
+            metrics->powerFactor = root["power_factor"] | NAN;
+            metrics->voltage = root["voltage"] | NAN;
+            metrics->resistance = root["resistance"] | NAN;
+            metrics->thdi = root["thdi_0"] | NAN;
+            metrics->zeroNaN();
             output->updateMetrics(std::move(metrics));
             break;
           }
@@ -113,31 +114,31 @@ static void processJSON(JsonDocument& doc) {
       // Channel 1
       if (root["channel1"].is<JsonObject>()) {
         if (grid.isUsing(Mycila::metric::Source::JSY_MK_193_CH1_REMOTE) || grid.isUsing(Mycila::metric::Source::JSY_MK_194_CH1_REMOTE)) {
-          Mycila::metric::Metrics metrics;
-          metrics.apparentPower = root["channel1"]["apparent_power"] | NAN;
-          metrics.current = root["channel1"]["current"] | NAN;
-          metrics.energy = root["channel1"]["active_energy_imported"] | static_cast<uint32_t>(0);
-          metrics.energyReturned = root["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0);
-          metrics.frequency = root["channel1"]["frequency"] | NAN;
-          metrics.power = root["channel1"]["active_power"] | NAN;
-          metrics.powerFactor = root["channel1"]["power_factor"] | NAN;
-          metrics.voltage = root["channel1"]["voltage"] | NAN;
+          std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+          metrics->apparentPower = root["channel1"]["apparent_power"] | NAN;
+          metrics->current = root["channel1"]["current"] | NAN;
+          metrics->energy = root["channel1"]["active_energy_imported"] | static_cast<uint32_t>(0);
+          metrics->energyReturned = root["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0);
+          metrics->frequency = root["channel1"]["frequency"] | NAN;
+          metrics->power = root["channel1"]["active_power"] | NAN;
+          metrics->powerFactor = root["channel1"]["power_factor"] | NAN;
+          metrics->voltage = root["channel1"]["voltage"] | NAN;
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
         } else {
           for (Mycila::Router::Output* output : {&output1, &output2}) {
             if (output->isUsing(Mycila::metric::Source::JSY_MK_193_CH1_REMOTE) || output->isUsing(Mycila::metric::Source::JSY_MK_194_CH1_REMOTE)) {
-              Mycila::metric::Metrics metrics;
-              metrics.apparentPower = root["channel1"]["apparent_power"] | NAN;
-              metrics.current = root["channel1"]["current"] | NAN;
-              metrics.energy = (root["channel1"]["active_energy_imported"] | static_cast<uint32_t>(0)) + (root["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
-              metrics.frequency = root["channel1"]["frequency"] | NAN;
-              metrics.power = std::abs(root["channel1"]["active_power"] | NAN); // if the clamp is installed reversed
-              metrics.powerFactor = root["channel1"]["power_factor"] | NAN;
-              metrics.voltage = root["channel1"]["voltage"] | NAN;
-              metrics.resistance = root["channel1"]["resistance"] | NAN;
-              metrics.thdi = root["channel1"]["thdi_0"] | NAN;
-              metrics.zeroNaN();
+              std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+              metrics->apparentPower = root["channel1"]["apparent_power"] | NAN;
+              metrics->current = root["channel1"]["current"] | NAN;
+              metrics->energy = (root["channel1"]["active_energy_imported"] | static_cast<uint32_t>(0)) + (root["channel1"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
+              metrics->frequency = root["channel1"]["frequency"] | NAN;
+              metrics->power = std::abs(root["channel1"]["active_power"] | NAN); // if the clamp is installed reversed
+              metrics->powerFactor = root["channel1"]["power_factor"] | NAN;
+              metrics->voltage = root["channel1"]["voltage"] | NAN;
+              metrics->resistance = root["channel1"]["resistance"] | NAN;
+              metrics->thdi = root["channel1"]["thdi_0"] | NAN;
+              metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
               break;
             }
@@ -146,31 +147,31 @@ static void processJSON(JsonDocument& doc) {
         // Channel 2
         if (root["channel2"].is<JsonObject>()) {
           if (grid.isUsing(Mycila::metric::Source::JSY_MK_193_CH2_REMOTE) || grid.isUsing(Mycila::metric::Source::JSY_MK_194_CH2_REMOTE)) {
-            Mycila::metric::Metrics metrics;
-            metrics.apparentPower = root["channel2"]["apparent_power"] | NAN;
-            metrics.current = root["channel2"]["current"] | NAN;
-            metrics.energy = root["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0);
-            metrics.energyReturned = root["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0);
-            metrics.frequency = root["channel2"]["frequency"] | NAN;
-            metrics.power = root["channel2"]["active_power"] | NAN;
-            metrics.powerFactor = root["channel2"]["power_factor"] | NAN;
-            metrics.voltage = root["channel2"]["voltage"] | NAN;
+            std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+            metrics->apparentPower = root["channel2"]["apparent_power"] | NAN;
+            metrics->current = root["channel2"]["current"] | NAN;
+            metrics->energy = root["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0);
+            metrics->energyReturned = root["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0);
+            metrics->frequency = root["channel2"]["frequency"] | NAN;
+            metrics->power = root["channel2"]["active_power"] | NAN;
+            metrics->powerFactor = root["channel2"]["power_factor"] | NAN;
+            metrics->voltage = root["channel2"]["voltage"] | NAN;
             grid.updateMetrics(std::move(metrics));
             pidTask.requestEarlyRun();
           } else {
             for (Mycila::Router::Output* output : {&output1, &output2}) {
               if (output->isUsing(Mycila::metric::Source::JSY_MK_193_CH2_REMOTE) || output->isUsing(Mycila::metric::Source::JSY_MK_194_CH2_REMOTE)) {
-                Mycila::metric::Metrics metrics;
-                metrics.apparentPower = root["channel2"]["apparent_power"] | NAN;
-                metrics.current = root["channel2"]["current"] | NAN;
-                metrics.energy = (root["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0)) + (root["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
-                metrics.frequency = root["channel2"]["frequency"] | NAN;
-                metrics.power = std::abs(root["channel2"]["active_power"] | NAN); // if the clamp is installed reversed
-                metrics.powerFactor = root["channel2"]["power_factor"] | NAN;
-                metrics.voltage = root["channel2"]["voltage"] | NAN;
-                metrics.resistance = root["channel2"]["resistance"] | NAN;
-                metrics.thdi = root["channel2"]["thdi_0"] | NAN;
-                metrics.zeroNaN();
+                std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+                metrics->apparentPower = root["channel2"]["apparent_power"] | NAN;
+                metrics->current = root["channel2"]["current"] | NAN;
+                metrics->energy = (root["channel2"]["active_energy_imported"] | static_cast<uint32_t>(0)) + (root["channel2"]["active_energy_returned"] | static_cast<uint32_t>(0)); // if the clamp is installed reversed
+                metrics->frequency = root["channel2"]["frequency"] | NAN;
+                metrics->power = std::abs(root["channel2"]["active_power"] | NAN); // if the clamp is installed reversed
+                metrics->powerFactor = root["channel2"]["power_factor"] | NAN;
+                metrics->voltage = root["channel2"]["voltage"] | NAN;
+                metrics->resistance = root["channel2"]["resistance"] | NAN;
+                metrics->thdi = root["channel2"]["thdi_0"] | NAN;
+                metrics->zeroNaN();
                 output->updateMetrics(std::move(metrics));
                 break;
               }
@@ -181,15 +182,15 @@ static void processJSON(JsonDocument& doc) {
       }
       case MYCILA_JSY_MK_333: {
         if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_REMOTE)) {
-          Mycila::metric::Metrics metrics;
-          metrics.apparentPower = root["aggregate"]["apparent_power"] | NAN;
-          metrics.current = root["aggregate"]["current"] | NAN;
-          metrics.energy = root["aggregate"]["active_energy_imported"] | static_cast<uint32_t>(0);
-          metrics.energyReturned = root["aggregate"]["active_energy_returned"] | static_cast<uint32_t>(0);
-          metrics.frequency = root["aggregate"]["frequency"] | NAN;
-          metrics.power = root["aggregate"]["active_power"] | NAN;
-          metrics.powerFactor = root["aggregate"]["power_factor"] | NAN;
-          metrics.voltage = root["aggregate"]["voltage"] | NAN;
+          std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+          metrics->apparentPower = root["aggregate"]["apparent_power"] | NAN;
+          metrics->current = root["aggregate"]["current"] | NAN;
+          metrics->energy = root["aggregate"]["active_energy_imported"] | static_cast<uint32_t>(0);
+          metrics->energyReturned = root["aggregate"]["active_energy_returned"] | static_cast<uint32_t>(0);
+          metrics->frequency = root["aggregate"]["frequency"] | NAN;
+          metrics->power = root["aggregate"]["active_power"] | NAN;
+          metrics->powerFactor = root["aggregate"]["power_factor"] | NAN;
+          metrics->voltage = root["aggregate"]["voltage"] | NAN;
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
           break;

@@ -4,6 +4,7 @@
  */
 #include <yasolr.h>
 
+#include <memory>
 #include <utility>
 
 Mycila::PZEM* pzem[2] = {nullptr, nullptr};             // pzem[0] is for output1, pzem[1] is for output2
@@ -24,7 +25,9 @@ static void init_read_task() {
       }
     });
 
-    pzemTask->setEnabledWhen([]() { return (!pzemPairingTasks[0] || pzemPairingTasks[0]->paused()) && (!pzemPairingTasks[1] || pzemPairingTasks[1]->paused()); });
+    pzemTask->setEnabledWhen([]() {
+      return (!pzemPairingTasks[0] || pzemPairingTasks[0]->paused()) && (!pzemPairingTasks[1] || pzemPairingTasks[1]->paused());
+    });
     pzemTask->setInterval(200);
 
     unsafeTaskManager.addTask(*pzemTask);
@@ -98,16 +101,16 @@ static void configure_pzem(uint8_t index, Mycila::Router::Output& output, const 
       if (pzem[index]) {
         pzem[index]->setCallback([&output](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            Mycila::metric::Metrics metrics;
-            metrics.apparentPower = data.apparentPower;
-            metrics.current = data.current;
-            metrics.energy = data.activeEnergy;
-            metrics.frequency = data.frequency;
-            metrics.power = data.activePower;
-            metrics.powerFactor = data.powerFactor;
-            metrics.resistance = data.resistance();
-            metrics.thdi = data.thdi();
-            metrics.voltage = data.dimmedVoltage();
+            std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+            metrics->apparentPower = data.apparentPower;
+            metrics->current = data.current;
+            metrics->energy = data.activeEnergy;
+            metrics->frequency = data.frequency;
+            metrics->power = data.activePower;
+            metrics->powerFactor = data.powerFactor;
+            metrics->resistance = data.resistance();
+            metrics->thdi = data.thdi();
+            metrics->voltage = data.dimmedVoltage();
             output.updateMetrics(std::move(metrics));
           }
         });

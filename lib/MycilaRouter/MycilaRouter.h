@@ -13,6 +13,7 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -184,19 +185,18 @@ namespace Mycila {
               root["temperature"] = _temperature.get();
             JsonArray metrics = root["metrics"].to<JsonArray>();
             {
-              metric::Metrics* computed = new metric::Metrics();
+              std::unique_ptr<metric::Metrics> computed = std::make_unique<metric::Metrics>();
               if (computeMetrics(*computed, gridVoltage)) {
                 JsonObject source = metrics.add<JsonObject>();
                 source["source"] = metric::sourceToString(metric::Source::COMPUTED);
                 metric::Metrics::toJson(source, *computed);
               }
-              delete computed;
             }
             if (_metrics.isPresent()) {
               JsonObject source = metrics.add<JsonObject>();
               source["source"] = getSourceString();
               source["time"] = _metrics.getLastUpdateTime();
-              metric::Metrics::toJson(source, _metrics.get());
+              metric::Metrics::toJson(source, *_metrics.get());
             }
             _dimmer->toJson(root["dimmer"].to<JsonObject>());
             if (_relay)
@@ -316,7 +316,7 @@ namespace Mycila {
             if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
-              return _metrics.get().power;
+              return _metrics.get()->power;
             return std::nullopt;
           }
 
@@ -336,7 +336,7 @@ namespace Mycila {
             if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
-              return _metrics.get().current;
+              return _metrics.get()->current;
             return std::nullopt;
           }
 
@@ -354,7 +354,7 @@ namespace Mycila {
 
           std::optional<float> readResistance() const {
             if (_metrics.isPresent())
-              return _metrics.get().resistance;
+              return _metrics.get()->resistance;
             return std::nullopt;
           }
 
@@ -364,7 +364,7 @@ namespace Mycila {
               if (getState() == State::ROUTING) {
                 memcpy(&metrics, &_metrics.get(), sizeof(metric::Metrics));
               } else {
-                metrics.energy = _metrics.get().energy;
+                metrics.energy = _metrics.get()->energy;
               }
               return true;
             }
@@ -493,22 +493,20 @@ namespace Mycila {
       void toJson(const JsonObject& root, float gridVoltage) const {
         JsonArray json = root["metrics"].to<JsonArray>();
         {
-          metric::Metrics* computed = new metric::Metrics();
+          std::unique_ptr<metric::Metrics> computed = std::make_unique<metric::Metrics>();
           if (computeMetrics(*computed, gridVoltage)) {
             JsonObject source = json.add<JsonObject>();
             source["source"] = "Computed Aggregated";
             metric::Metrics::toJson(source, *computed);
           }
-          delete computed;
         }
         {
-          metric::Metrics* metrics = new metric::Metrics();
+          std::unique_ptr<metric::Metrics> metrics = std::make_unique<metric::Metrics>();
           if (readMetrics(*metrics)) {
             JsonObject source = json.add<JsonObject>();
             source["source"] = "Measurements Aggregated";
             metric::Metrics::toJson(source, *metrics);
           }
-          delete metrics;
         }
       }
 #endif

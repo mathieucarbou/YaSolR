@@ -4,6 +4,7 @@
  */
 #include <yasolr.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -73,9 +74,9 @@ static void on_mqtt_grid_power(const std::string& topic, const std::string_view&
       ESP_LOGI(TAG, "Grid Power from MQTT: %f", p);
       power->update(p);
 
-      Mycila::metric::Metrics metrics;
-      metrics.power = power->get();
-      metrics.voltage = voltage->orElse(NAN);
+      std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+      metrics->power = power->get();
+      metrics->voltage = voltage->orElse(NAN);
       grid.updateMetrics(std::move(metrics));
       pidTask.requestEarlyRun();
     }
@@ -107,9 +108,9 @@ static void on_mqtt_grid_voltage(const std::string& topic, const std::string_vie
       ESP_LOGI(TAG, "Grid Voltage from MQTT: %f", v);
       voltage->update(v);
 
-      Mycila::metric::Metrics metrics;
-      metrics.power = power->get();
-      metrics.voltage = voltage->orElse(NAN);
+      std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
+      metrics->power = power->get();
+      metrics->voltage = voltage->orElse(NAN);
       grid.updateMetrics(std::move(metrics));
     }
   }
@@ -320,10 +321,10 @@ static void publishStaticData() {
 static void publishData() {
   const std::string baseTopic = config.getString(KEY_MQTT_TOPIC);
 
-  Mycila::metric::Metrics* gridMetrics = new Mycila::metric::Metrics();
+  std::unique_ptr<Mycila::metric::Metrics> gridMetrics = std::make_unique<Mycila::metric::Metrics>();
   grid.readMetrics(*gridMetrics);
 
-  Mycila::metric::Metrics* routerMeasurements = new Mycila::metric::Metrics();
+  std::unique_ptr<Mycila::metric::Metrics> routerMeasurements = std::make_unique<Mycila::metric::Metrics>();
   if (!router.readMetrics(*routerMeasurements)) {
     router.computeMetrics(*routerMeasurements, gridMetrics->voltage);
   }
@@ -407,7 +408,7 @@ static void publishData() {
     for (const auto& output : router.getOutputs()) {
       const std::string outputTopic = baseTopic + "/router/" + output->getMqttName();
 
-      Mycila::metric::Metrics* outputMeasurements = new Mycila::metric::Metrics();
+      std::unique_ptr<Mycila::metric::Metrics> outputMeasurements = std::make_unique<Mycila::metric::Metrics>();
       if (!output->readMetrics(*outputMeasurements)) {
         router.computeMetrics(*outputMeasurements, gridMetrics->voltage);
       }
@@ -424,14 +425,9 @@ static void publishData() {
       mqtt->publish((outputTopic + "/power_factor").c_str(), std::to_string(outputMeasurements->powerFactor));
       mqtt->publish((outputTopic + "/power").c_str(), std::to_string(outputMeasurements->power));
       mqtt->publish((outputTopic + "/thdi").c_str(), std::to_string(outputMeasurements->thdi));
-
-      delete outputMeasurements;
     }
 
     yield();
-
-    delete gridMetrics;
-    delete routerMeasurements;
   }
 }
 
@@ -452,7 +448,9 @@ static void haDiscovery() {
                      },
                      config.getString(KEY_MQTT_TOPIC),
                      512,
-                     [](const char* topic, const std::string& payload) { mqtt->publish(topic, payload, true); });
+                     [](const char* topic, const std::string& payload) {
+                       mqtt->publish(topic, payload, true);
+                     });
 
   // CLEAR REMOVED ENTRIES
 
@@ -567,11 +565,21 @@ void yasolr_configure_mqtt() {
       power = new Mycila::ExpiringValue<float>(YASOLR_MQTT_MEASUREMENT_EXPIRATION);
 
       mqtt = new Mycila::MQTT();
-      mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, []() { connect(); });
-      mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, []() { publishConfig(); });
-      mqttPublishStaticTask = new Mycila::Task("MQTT Publish Static Data", Mycila::Task::Type::ONCE, []() { publishStaticData(); });
-      mqttPublishTask = new Mycila::Task("MQTT Publish", []() { publishData(); });
-      haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::Task::Type::ONCE, []() { haDiscovery(); });
+      mqttConnectTask = new Mycila::Task("MQTT Connect", Mycila::Task::Type::ONCE, []() {
+        connect();
+      });
+      mqttPublishConfigTask = new Mycila::Task("MQTT Publish Config", Mycila::Task::Type::ONCE, []() {
+        publishConfig();
+      });
+      mqttPublishStaticTask = new Mycila::Task("MQTT Publish Static Data", Mycila::Task::Type::ONCE, []() {
+        publishStaticData();
+      });
+      mqttPublishTask = new Mycila::Task("MQTT Publish", []() {
+        publishData();
+      });
+      haDiscoveryTask = new Mycila::Task("HA Discovery", Mycila::Task::Type::ONCE, []() {
+        haDiscovery();
+      });
 
       mqtt->onConnect([](void) {
         ESP_LOGI(TAG, "MQTT connected!");
@@ -582,10 +590,18 @@ void yasolr_configure_mqtt() {
 
       subscribe();
 
-      haDiscoveryTask->setEnabledWhen([]() { return mqtt->isConnected() && config.get<bool>(KEY_ENABLE_HA_DISCOVERY) && !config.isEmpty(KEY_HA_DISCOVERY_TOPIC); });
-      mqttPublishConfigTask->setEnabledWhen([]() { return mqtt->isConnected(); });
-      mqttPublishStaticTask->setEnabledWhen([]() { return mqtt->isConnected(); });
-      mqttPublishTask->setEnabledWhen([]() { return mqtt->isConnected(); });
+      haDiscoveryTask->setEnabledWhen([]() {
+        return mqtt->isConnected() && config.get<bool>(KEY_ENABLE_HA_DISCOVERY) && !config.isEmpty(KEY_HA_DISCOVERY_TOPIC);
+      });
+      mqttPublishConfigTask->setEnabledWhen([]() {
+        return mqtt->isConnected();
+      });
+      mqttPublishStaticTask->setEnabledWhen([]() {
+        return mqtt->isConnected();
+      });
+      mqttPublishTask->setEnabledWhen([]() {
+        return mqtt->isConnected();
+      });
       mqttPublishTask->setInterval(config.get<uint8_t>(KEY_MQTT_PUBLISH_INTERVAL) * 1000);
 
       unsafeTaskManager.addTask(*mqttConnectTask);

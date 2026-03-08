@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <memory>
 #include <utility>
 
 #ifdef MYCILA_JSON_SUPPORT
@@ -325,7 +326,7 @@ namespace Mycila {
         virtual bool readMetrics(Metrics& metrics) const {
           metrics.reset();
           if (_metrics.isPresent()) {
-            memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
+            memcpy(&metrics, _metrics.get().get(), sizeof(Metrics));
             return true;
           }
           return false;
@@ -359,7 +360,7 @@ namespace Mycila {
           _metrics.reset();
         }
 
-        void updateMetrics(Metrics metrics) {
+        void updateMetrics(std::unique_ptr<Mycila::metric::Metrics> metrics) {
           if (_metrics.neverUpdated()) {
             _metrics.setExpiration(_source == Source::MQTT ? 120000 : 10000);
           }
@@ -368,7 +369,7 @@ namespace Mycila {
 
       protected:
         Source _source = Source::UNKNOWN;
-        ExpiringValue<Metrics> _metrics;
+        ExpiringValue<std::unique_ptr<Mycila::metric::Metrics>> _metrics;
     };
   } // namespace metric
 } // namespace Mycila
