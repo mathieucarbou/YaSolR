@@ -179,7 +179,7 @@ namespace Mycila {
             root["enabled"] = isDimmerOnline();
             root["state"] = getStateName();
             root["bypass"] = isBypassOn() ? "on" : "off";
-            root["elapsed"] = getBypassUptime();
+            root["bypass_elapsed"] = getBypassUptime();
             if (_temperature.isPresent())
               root["temperature"] = _temperature.get();
             JsonArray metrics = root["metrics"].to<JsonArray>();
@@ -198,14 +198,6 @@ namespace Mycila {
               source["time"] = _metrics.getLastUpdateTime();
               metric::Metrics::toJson(source, _metrics.get());
             }
-
-            // root["online"] = isConnected();
-            // root["metrics"]["source"] = getSourceString();
-            // root["metrics"]["time"] = _metrics.getLastUpdateTime();
-            // if (_metrics.isPresent()) {
-            //   metric::Metrics::toJson(root["metrics"].as<JsonObject>(), _metrics.get());
-            // }
-
             _dimmer->toJson(root["dimmer"].to<JsonObject>());
             if (_relay)
               _relay->toJson(root["relay"].to<JsonObject>());
@@ -367,19 +359,20 @@ namespace Mycila {
           }
 
           bool readMetrics(metric::Metrics& metrics) const override {
+            metrics.reset(0.0f);
             if (_metrics.isPresent()) {
               if (getState() == State::ROUTING) {
                 memcpy(&metrics, &_metrics.get(), sizeof(metric::Metrics));
               } else {
                 metrics.energy = _metrics.get().energy;
               }
-              metrics.zeroNaN();
               return true;
             }
             return false;
           }
 
           bool computeMetrics(metric::Metrics& metrics, float gridVoltage) const {
+            metrics.reset(0.0f);
             if (gridVoltage > 0 && config.calibratedResistance > 0) {
               metrics.resistance = config.calibratedResistance;
               if (getState() == State::ROUTING) {
@@ -393,7 +386,6 @@ namespace Mycila {
                   metrics.thdi = dimmerMetrics.thdi;
                 }
               }
-              metrics.zeroNaN();
               return true;
             }
             return false;
@@ -523,7 +515,7 @@ namespace Mycila {
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
       bool readMetrics(metric::Metrics& metrics) const {
-        metrics.zeroNaN();
+        metrics.reset(0.0f);
         for (size_t i = 0; i < _outputs.size(); i++) {
           // if this output measurement source is shared (same clamp, 2 wires) then ignore
           if (_outputs[i]->isUsing(metric::Source::SHARED))
@@ -537,18 +529,19 @@ namespace Mycila {
             metrics.power += outputMetrics.power;
             metrics.frequency = outputMetrics.frequency; // should be the same for all outputs
           } else {
-            // otherwise we do not have any valid total measurements
-            return false;
+            // The other output does not have a measurement device setup.
+            // We won't have a valid aggregated output since it will be ignored.
+            // Note :we do not mix measurements with calculated metrics
           }
         }
         metrics.powerFactor = metrics.apparentPower > 0 ? metrics.power / metrics.apparentPower : 0;
         metrics.resistance = metrics.current > 0 ? metrics.power / (metrics.current * metrics.current) : 0;
         metrics.thdi = metrics.powerFactor > 0 ? 100.0f * std::sqrt(1.0f / (metrics.powerFactor * metrics.powerFactor) - 1.0f) : 0;
-        return false;
+        return true;
       }
 
       bool computeMetrics(metric::Metrics& metrics, float gridVoltage) const {
-        metrics.zeroNaN();
+        metrics.reset(0.0f);
         if (gridVoltage > 0) {
           for (size_t i = 0; i < _outputs.size(); i++) {
             metric::Metrics outputMetrics;
