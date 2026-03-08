@@ -40,7 +40,7 @@ static void init_read_task() {
     // setup JSY task manager
     jsyTaskManager = new Mycila::TaskManager("jsyTask");
     jsyTaskManager->addTask(*jsyTask);
-    assert(jsyTaskManager->asyncStart(3072, 1, 0, 0, true));
+    assert(jsyTaskManager->asyncStart(YASOLR_TASK_JSY_STACK_SIZE, 1, 0, 0, true));
     Mycila::TaskMonitor.addTask(jsyTaskManager->name());
   }
 }

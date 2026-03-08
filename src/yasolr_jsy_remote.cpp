@@ -359,7 +359,7 @@ void yasolr_configure_jsy_remote() {
         udp->listen(udpPort);
       });
 
-      coreTaskManager.addTask(*jsyRemoteTask);
+      unsafeTaskManager.addTask(*jsyRemoteTask);
     }
   } else {
     if (jsyRemoteTask != nullptr) {

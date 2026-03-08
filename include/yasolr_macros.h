@@ -40,6 +40,14 @@
   #include "i18n/en.h"
 #endif
 
+#ifndef YASOLR_TASK_UNSAFE_STACK_SIZE
+  #define YASOLR_TASK_UNSAFE_STACK_SIZE 5120
+#endif
+
+#ifndef YASOLR_TASK_JSY_STACK_SIZE
+  #define YASOLR_TASK_JSY_STACK_SIZE 3072
+#endif
+
 // default settings
 
 #define YASOLR_ADMIN_USERNAME                "admin"

@@ -53,7 +53,7 @@ void setup() {
   yasolr_configure_victron();
 
   // STARTUP READY!
-  assert(unsafeTaskManager.asyncStart(4608, 1, 1, 100, true));
+  assert(unsafeTaskManager.asyncStart(YASOLR_TASK_UNSAFE_STACK_SIZE, 1, 1, 100, true));
   ESP_LOGI(TAG, "Started %s", Mycila::AppInfo.nameModelVersion.c_str());
 
   // startup finished: do not save logs at next boot
