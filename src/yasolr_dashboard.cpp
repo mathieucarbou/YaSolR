@@ -93,7 +93,6 @@ static dash::StatisticValue<const char*> _appLastVersion(dashboard, YASOLR_LBL_0
 static dash::StatisticValue<const char*> _appManufacturer(dashboard, YASOLR_LBL_004);
 static dash::StatisticValue<uint32_t> _deviceBootCount(dashboard, YASOLR_LBL_005);
 static dash::StatisticValue<const char*> _deviceBootReason(dashboard, YASOLR_LBL_192);
-static dash::StatisticValue<uint8_t> _deviceCores(dashboard, YASOLR_LBL_006);
 static dash::StatisticValue<size_t> _deviceHeapTotal(dashboard, YASOLR_LBL_007);
 static dash::StatisticValue<size_t> _deviceHeapUsed(dashboard, YASOLR_LBL_009);
 static dash::StatisticValue<float, 2> _deviceHeapUsage(dashboard, YASOLR_LBL_008);
@@ -1084,7 +1083,6 @@ void YaSolR::Website::initCards() {
   _appManufacturer.setValue(Mycila::AppInfo.manufacturer.c_str());
   _deviceBootCount.setValue(Mycila::System::getBootCount());
   _deviceBootReason.setValue(Mycila::System::getLastRebootReason());
-  _deviceCores.setValue(ESP.getChipCores());
   _deviceID.setValue(Mycila::AppInfo.id.c_str());
   _deviceModel.setValue(ESP.getChipModel());
   _firmwareBuildHash.setValue(Mycila::AppInfo.buildHash.c_str());
