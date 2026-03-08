@@ -6,6 +6,8 @@
 
 #define LOG_STREAM_FILE_SIZE 24 * 1024
 
+#include <memory>
+
 class LogStream : public Print {
   public:
     LogStream() {
@@ -101,7 +103,9 @@ void yasolr_configure_logging() {
 
     if (loggingTask == nullptr) {
       loggingTask = new Mycila::Task("Debug", []() {
-        ESP_LOGI(TAG, "Free Heap: %" PRIu32, ESP.getFreeHeap());
+        std::unique_ptr<Mycila::System::Memory> memory = std::make_unique<Mycila::System::Memory>();
+        Mycila::System::getMemory(*memory);
+        ESP_LOGI(TAG, "HEAP: Total: %" PRIu32 ", Used: %" PRIu32 ", Free: %" PRIu32 ", MinFree: %" PRIu32, memory->total, memory->used, memory->free, memory->minimumFree);
         Mycila::TaskMonitor.log();
         coreTaskManager.log();
         unsafeTaskManager.log();
