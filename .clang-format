@@ -29,8 +29,8 @@ AlignConsecutiveShortCaseStatements:
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: true
 AllowShortCompoundRequirementOnASingleLine: true
-AllowShortEnumsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: Empty
+AllowShortEnumsOnASingleLine: true
+AllowShortFunctionsOnASingleLine: true
 AllowShortIfStatementsOnASingleLine: AllIfsAndElse
 AllowShortLambdasOnASingleLine: Empty
 AllowShortLoopsOnASingleLine: true
