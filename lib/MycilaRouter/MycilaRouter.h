@@ -492,21 +492,16 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float gridVoltage) const {
         JsonArray json = root["metrics"].to<JsonArray>();
-        {
-          std::unique_ptr<metric::Metrics> computed = std::make_unique<metric::Metrics>();
-          if (computeMetrics(*computed, gridVoltage)) {
-            JsonObject source = json.add<JsonObject>();
-            source["source"] = "Computed Aggregated";
-            metric::Metrics::toJson(source, *computed);
-          }
+        std::unique_ptr<metric::Metrics> metrics = std::make_unique<metric::Metrics>();
+        if (computeMetrics(*metrics, gridVoltage)) {
+          JsonObject source = json.add<JsonObject>();
+          source["source"] = "Computed";
+          metric::Metrics::toJson(source, *metrics);
         }
-        {
-          std::unique_ptr<metric::Metrics> metrics = std::make_unique<metric::Metrics>();
-          if (readMetrics(*metrics)) {
-            JsonObject source = json.add<JsonObject>();
-            source["source"] = "Measurements Aggregated";
-            metric::Metrics::toJson(source, *metrics);
-          }
+        if (readMetrics(*metrics)) {
+          JsonObject source = json.add<JsonObject>();
+          source["source"] = "Measured";
+          metric::Metrics::toJson(source, *metrics);
         }
       }
 #endif
