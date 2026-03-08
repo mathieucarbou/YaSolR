@@ -144,17 +144,16 @@ void rest_api() {
       pzem[1]->toJson(root["router"]["output2"]["pzem"].to<JsonObject>());
 
     // system
-    JsonObject system = root["system"].to<JsonObject>();
-    Mycila::System::toJson(system);
+    Mycila::System::toJson(root["system"].to<JsonObject>());
     if (ds18Sys)
-      ds18Sys->toJson(system["ds18"].to<JsonObject>());
-    lights.toJson(system["leds"].to<JsonObject>());
+      ds18Sys->toJson(root["system"]["ds18"].to<JsonObject>());
+    lights.toJson(root["system"]["leds"].to<JsonObject>());
 
     // stack
-    Mycila::TaskMonitor.toJson(system["stack"].to<JsonObject>());
+    Mycila::TaskMonitor.toJson(root["system"]["stack"].to<JsonObject>());
 
     // tasks
-    JsonObject tasks = system["task"].to<JsonObject>();
+    JsonObject tasks = root["system"]["task"].to<JsonObject>();
     coreTaskManager.toJson(tasks[coreTaskManager.name()].to<JsonObject>());
     if (jsyTaskManager)
       jsyTaskManager->toJson(tasks[jsyTaskManager->name()].to<JsonObject>());
@@ -164,7 +163,7 @@ void rest_api() {
       victron->toJson(root["victron"].to<JsonObject>());
 
     // libs versions
-    JsonObject library = system["lib"].to<JsonObject>();
+    JsonObject library = root["system"]["lib"].to<JsonObject>();
     library["ArduinoJson"] = ARDUINOJSON_VERSION;
     library["AsyncTCP"] = ASYNCTCP_VERSION;
     library["CRC"] = CRC_LIB_VERSION;
