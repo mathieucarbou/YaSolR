@@ -1070,7 +1070,8 @@ void YaSolR::Website::begin() {
 }
 
 void YaSolR::Website::initCards() {
-  ESP_LOGI(TAG, "Initialize dashboard cards");
+  // This log line causes a re-entry in log_redirect_vprintf
+  // ESP_LOGD(TAG, "Initialize dashboard cards");
 
   const Mycila::ESPConnect::Mode mode = espConnect.getMode();
 

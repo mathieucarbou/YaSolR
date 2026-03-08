@@ -41,14 +41,21 @@ class LogStream : public Print {
 
 static Mycila::Task* loggingTask = nullptr;
 static LogStream* logStream = nullptr;
+static bool alreadyLogging = false;
 
 static int log_redirect_vprintf(const char* format, va_list args) {
-  size_t written = Serial.vprintf(format, args);
-  if (logStream != nullptr)
-    logStream->vprintf(format, args);
-  if (WebSerial.getConnectionCount())
-    WebSerial.vprintf(format, args);
-  return written;
+  if (alreadyLogging) {
+    // prevent re-entry in WebSerial when we have some logs in esp_async_ws like WS message queue overflow
+    Serial.println("WARNING: Re-entry prevented in log_redirect_vprintf");
+    return Serial.vprintf(format, args);
+  } else {
+    alreadyLogging = true;
+    size_t written = Serial.vprintf(format, args);
+    if (logStream != nullptr) logStream->vprintf(format, args);
+    if (WebSerial.getConnectionCount()) WebSerial.vprintf(format, args);
+    alreadyLogging = false;
+    return written;
+  }
 }
 
 static void set_debug_levels() {
