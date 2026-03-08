@@ -2,11 +2,15 @@
 /*
  * Copyright (C) 2023-2026 Mathieu Carbou
  */
+#include <stdarg.h>
 #include <yasolr.h>
+
+#include <cstdio>
+#include <memory>
 
 #define LOG_STREAM_FILE_SIZE 24 * 1024
 
-#include <memory>
+// #define YASOLR_DEBUG_ASYNC_WS 1
 
 class LogStream : public Print {
   public:
@@ -21,7 +25,7 @@ class LogStream : public Print {
     }
 
     size_t write(const uint8_t* buffer, size_t size) override {
-      if (_fileSize > LOG_STREAM_FILE_SIZE)
+      if (isFull())
         return 0;
       File file = LittleFS.open(YASOLR_LOG_FILE, "a");
       if (!file || !size)
@@ -37,6 +41,10 @@ class LogStream : public Print {
       return written;
     }
 
+    bool isFull() const {
+      return _fileSize > LOG_STREAM_FILE_SIZE;
+    }
+
   private:
     size_t _fileSize = 0;
 };
@@ -46,18 +54,53 @@ static LogStream* logStream = nullptr;
 static bool alreadyLogging = false;
 
 static int log_redirect_vprintf(const char* format, va_list args) {
-  if (alreadyLogging) {
-    // prevent re-entry in WebSerial when we have some logs in esp_async_ws like WS message queue overflow
-    Serial.println("WARNING: Re-entry prevented in log_redirect_vprintf");
-    return Serial.vprintf(format, args);
-  } else {
-    alreadyLogging = true;
-    size_t written = Serial.vprintf(format, args);
-    if (logStream != nullptr) logStream->vprintf(format, args);
-    if (WebSerial.getConnectionCount()) WebSerial.vprintf(format, args);
-    alreadyLogging = false;
-    return written;
+  // Print#vprintf implementation with some modifications
+  char loc_buf[128];
+  char* temp = loc_buf;
+  va_list copy;
+  va_copy(copy, args);
+  int len = vsnprintf(temp, sizeof(loc_buf), format, copy);
+  va_end(copy);
+  if (len < 0) {
+    va_end(args);
+    return 0;
   }
+  if (len >= static_cast<int>(sizeof(loc_buf))) { // comparison of same sign type for the compiler
+    temp = reinterpret_cast<char*>(malloc(len + 1));
+    if (temp == NULL) {
+      va_end(args);
+      return 0;
+    }
+    len = vsnprintf(temp, len + 1, format, args);
+  }
+  va_end(args);
+
+  // Serial logging
+  Serial.write(reinterpret_cast<uint8_t*>(temp), len);
+
+  // prevent re-entry in WebSerial when we have some logs in esp_async_ws like WS message queue overflow
+  // Serial.println("WARNING: Re-entry prevented in log_redirect_vprintf");
+  if (!alreadyLogging) {
+    alreadyLogging = true;
+
+    // file logging max 24K at startup if requested
+    if (logStream != nullptr && !logStream->isFull()) {
+      logStream->write(reinterpret_cast<uint8_t*>(temp), len);
+    }
+
+    // WebSerial logging, but only if we are not in the async_tcp task to prevent recursive calls
+    if (WebSerial.getConnectionCount() && strcmp(pcTaskGetName(xTaskGetCurrentTaskHandle()), "async_tcp") != 0) {
+      WebSerial.write(reinterpret_cast<uint8_t*>(temp), len);
+    }
+
+    alreadyLogging = false;
+  }
+
+  if (temp != loc_buf) {
+    free(temp);
+  }
+
+  return len;
 }
 
 static void set_debug_levels() {
@@ -67,6 +110,10 @@ static void set_debug_levels() {
   esp_log_level_set("esp_netif_lwip", ESP_LOG_INFO);
   esp_log_level_set("nvs", ESP_LOG_INFO);
   esp_log_level_set("ARDUINO", ESP_LOG_DEBUG);
+#if YASOLR_DEBUG_ASYNC_WS == 1
+  esp_log_level_set("async_tcp", ESP_LOG_VERBOSE);
+  esp_log_level_set("async_ws", ESP_LOG_VERBOSE);
+#endif
 }
 
 void yasolr_init_logging() {
@@ -105,7 +152,7 @@ void yasolr_configure_logging() {
       loggingTask = new Mycila::Task("Debug", []() {
         std::unique_ptr<Mycila::System::Memory> memory = std::make_unique<Mycila::System::Memory>();
         Mycila::System::getMemory(*memory);
-        ESP_LOGI(TAG, "HEAP: Total: %" PRIu32 ", Used: %" PRIu32 ", Free: %" PRIu32 ", MinFree: %" PRIu32, memory->total, memory->used, memory->free, memory->minimumFree);
+        ESP_LOGI(TAG, "HEAP: Total: %" PRIu32 " B, Used: %" PRIu32 " B (%.02f %%), Free: %" PRIu32 " B, MinFree: %" PRIu32 " B", memory->total, memory->used, memory->usage, memory->free, memory->minimumFree);
         Mycila::TaskMonitor.log();
         coreTaskManager.log();
         unsafeTaskManager.log();

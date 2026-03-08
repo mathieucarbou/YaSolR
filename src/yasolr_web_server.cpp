@@ -614,7 +614,6 @@ void yasolr_init_web_server() {
   WebSerial.setTitle((Mycila::AppInfo.nameModel + " Web Console").c_str());
   WebSerial.setInput(false);
 #endif
-  WebSerial.setBuffer(256); // max log line size
   WebSerial.begin(&webServer, "/console");
 
   // YaSolR
