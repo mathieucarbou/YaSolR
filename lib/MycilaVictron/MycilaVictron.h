@@ -10,6 +10,7 @@
   #include <ArduinoJson.h>
 #endif
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -56,7 +57,7 @@ namespace Mycila {
 #endif
 
     private:
-      ModbusClientTCPasync* _client = nullptr;
+      std::unique_ptr<ModbusClientTCPasync> _client;
       Callback _callback = nullptr;
       float _frequency = NAN;
       float _current = NAN;

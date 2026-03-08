@@ -7,14 +7,15 @@
 #include <HTTPClient.h>
 #include <NetworkClientSecure.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
 static Mycila::Task versionCheckTask("Version Check", []() {
   ESP_LOGI(TAG, "Checking latest YaSolR version...");
 
-  NetworkClientSecure* client = new NetworkClientSecure();
-  HTTPClient* https = new HTTPClient();
+  std::unique_ptr<NetworkClientSecure> client = std::make_unique<NetworkClientSecure>();
+  std::unique_ptr<HTTPClient> https = std::make_unique<HTTPClient>();
 
   // Skip SSL certificate validation
   client->setInsecure();
@@ -61,14 +62,14 @@ static Mycila::Task versionCheckTask("Version Check", []() {
   }
 
   https->end();
-  delete https;
-  delete client;
 });
 
 void yasolr_init_version_check() {
   ESP_LOGI(TAG, "Initialize version check");
 
-  versionCheckTask.setEnabledWhen([]() { return espConnect.getState() == Mycila::ESPConnect::State::NETWORK_CONNECTED; });
+  versionCheckTask.setEnabledWhen([]() {
+    return espConnect.getState() == Mycila::ESPConnect::State::NETWORK_CONNECTED;
+  });
   versionCheckTask.setInterval(3600000); // check every hour
 
   if (config.get<bool>(KEY_ENABLE_DEBUG))

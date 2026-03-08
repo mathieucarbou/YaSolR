@@ -4,6 +4,7 @@
  */
 #include <MycilaVictron.h>
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -43,7 +44,7 @@ void Mycila::Victron::begin(const char* host, uint16_t port) {
   }
 
   ESP_LOGI(TAG, "Connecting to Victron Modbus TCP Server %s:%" PRIu16 "", host, port);
-  _client = new ModbusClientTCPasync(IPAddress(host), port);
+  _client = std::make_unique<ModbusClientTCPasync>(IPAddress(host), port);
   _client->setTimeout(DEFAULTTIMEOUT);
   _client->setIdleTimeout(DEFAULTIDLETIME);
 
@@ -91,8 +92,7 @@ void Mycila::Victron::end() {
   if (_client) {
     ESP_LOGI(TAG, "Disconnecting from Victron Modbus TCP Server");
     _client->disconnect();
-    delete _client;
-    _client = nullptr;
+    _client.reset();
     _lastError = "";
     _frequency = NAN;
     _current = NAN;

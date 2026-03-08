@@ -8,6 +8,7 @@
 #include <esp_partition.h>
 
 #include <map>
+#include <memory>
 #include <string>
 
 extern const uint8_t logo_png_gz_start[] asm("_binary__pio_embed_logo_png_gz_start");
@@ -420,10 +421,9 @@ void rest_api() {
   webServer.on("/api/grid", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
-    Mycila::metric::Metrics* metrics = new Mycila::metric::Metrics();
+    std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
     grid.readMetrics(*metrics);
     Mycila::metric::Metrics::toJson(root, *metrics);
-    delete metrics;
     response->setLength();
     request->send(response);
   });
@@ -518,7 +518,7 @@ void rest_api() {
     std::optional<float> gridVoltage = grid.getVoltage();
     std::optional<float> gridPower = grid.getPower();
 
-    Mycila::metric::Metrics* routerMetrics = new Mycila::metric::Metrics();
+    std::unique_ptr<Mycila::metric::Metrics> routerMetrics = std::make_unique<Mycila::metric::Metrics>();
     if (!router.readMetrics(*routerMetrics) && gridVoltage.has_value()) {
       router.computeMetrics(*routerMetrics, gridVoltage.value());
     }
@@ -527,7 +527,6 @@ void rest_api() {
       root["virtual_grid_power"] = gridPower.value() - routerMetrics->power;
 
     Mycila::metric::Metrics::toJson(root["metrics"].to<JsonObject>(), *routerMetrics);
-    delete routerMetrics;
 
     for (const auto& output : router.getOutputs()) {
       JsonObject json = root[output->getMqttName()].to<JsonObject>();
@@ -539,11 +538,10 @@ void rest_api() {
         json["temperature"] = output->temperature().get();
       }
 
-      Mycila::metric::Metrics* outputMetrics = new Mycila::metric::Metrics();
+      std::unique_ptr<Mycila::metric::Metrics> outputMetrics = std::make_unique<Mycila::metric::Metrics>();
       if (!output->readMetrics(*outputMetrics) && gridVoltage.has_value())
         output->computeMetrics(*outputMetrics, gridVoltage.value());
       Mycila::metric::Metrics::toJson(json["metrics"].to<JsonObject>(), *outputMetrics);
-      delete outputMetrics;
     }
 
     response->setLength();
