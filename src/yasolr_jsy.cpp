@@ -207,22 +207,18 @@ static void yasolr_configure_jsy(const uint8_t index, Mycila::metric::Kind seria
     if (jsy[index] != nullptr) {
       ESP_LOGI(TAG, "Disable JSY on UART Serial1");
 
-      jsyTask->setEnabled(false);
-      jsy[index]->end();
+      jsy[index]->setCallback(nullptr); // detach callback to avoid any potential call after end() and before delete
 
-      delete jsy[index];
+      Mycila::JSY* ptr = jsy[index];
+      Mycila::JSY::Data* dataPtr = jsyData[index];
+
       jsy[index] = nullptr;
-
-      delete jsyData[index];
       jsyData[index] = nullptr;
 
-      if (jsy[0] == nullptr && jsy[1] == nullptr) {
-        Mycila::TaskMonitor.removeTask(jsyTaskManager->name());
-        jsyTaskManager->asyncStop();
-        jsyTaskManager->waitForAllTasksToComplete();
-        delete jsyTaskManager;
-        jsyTaskManager = nullptr;
-      }
+      ptr->end();
+
+      delete ptr;
+      delete dataPtr;
     }
   }
 }
