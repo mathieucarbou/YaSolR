@@ -10,7 +10,7 @@ Import("env")
 def do_main():
     # hash
     ret = subprocess.run(["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE, text=True, check=False)  # Uses any tags
-    full_hash = ret.stdout.strip()
+    full_hash = ret.stdout.strip() if ret.returncode == 0 else "unknown"
     short_hash = full_hash[:7]
 
     # branch
@@ -30,7 +30,7 @@ def do_main():
         branch = branch.replace("_", "")
 
     if branch == "":
-        raise Exception("No branch name found")
+        branch = "local"
 
     # is_tag ?
     tagPattern = re.compile("^v[0-9]+.[0-9]+.[0-9]+([_-][a-zA-Z0-9]+)?$")
