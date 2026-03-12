@@ -7,7 +7,7 @@ description: Overview
 # Overview
 
 - [What is a Solar Router ?](#what-is-a-solar-router-)
-- [How a Solar Router work ?](#how-a-solar-router-work-)
+- [How Does a Solar Router Work?](#how-does-a-solar-router-work)
   - [Zero-Cross Detection (ZCD)](#zero-cross-detection-zcd)
   - [The Importance of a good ZCD circuit](#the-importance-of-a-good-zcd-circuit)
   - [RobotDyn and Solid State Relay (SSR)](#robotdyn-and-solid-state-relay-ssr)
@@ -22,7 +22,7 @@ description: Overview
 ## What is a Solar Router ?
 
 A _Solar Router_ allows to redirect the solar production excess to some appliances instead of returning it to the grid.
-The particularity of a solar router is that it will dim the voltage and power sent to the appliance in order to match the excess production, in contrary to a simple relay that would just switch on/off the appliance without controlling its power.
+The particularity of a solar router is that it will dim the voltage and power sent to the appliance in order to match the excess production, in contrast to a simple relay that would just switch on/off the appliance without controlling its power.
 
 A _Solar Router_ is usually connected to the resistance of a water tank and will heat the water when there is production excess.
 
@@ -30,7 +30,7 @@ A solar router can also do more things, like controlling (on/off) the activation
 
 A router can also schedule some forced heating of the water tank to ensure the water reaches a safe temperature, and consequently bypass the dimmed voltage. This is called a bypass relay.
 
-## How a Solar Router work ?
+## How Does a Solar Router Work?
 
 A router is composed of 2 main pieces:
 
@@ -50,10 +50,23 @@ The dimmer systems are usually based on TRIAC / Thyristors and are controlling t
 
 Other algorithms exist, more or less complex but generally based on these 2 methods.
 
+YaSolR also supports additional dimmer types for use with external voltage regulators (LSA, LCTC):
+
+- **PWMDimmer** — outputs a PWM signal for PWM-to-analog converters driving voltage regulators
+- **DFRobotDimmer** — outputs a 0–10V analog signal via I2C DAC (DFRobot GP8211S, GP8413, GP8403) for voltage regulators, providing flicker-free progressive dimming
+
 ### Zero-Cross Detection (ZCD)
 
 To know when to switch or cut the voltage wave, routers are using a **Zero-Cross Detection (ZCD) circuit** that will detect when the voltage curve crosses the Zero point (which is twice per period) and will send a pulse to the controller board.
 Here are below some examples of how a ZCD circuit works by looking at 2 different implementations: RobotDyn and a more specific one from [Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html).
+
+YaSolR supports the following ZCD sources:
+
+- [Zero-Cross Detector from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) — dedicated ZCD module with a clean digital pulse
+- **JSY-MK-194G** — bidirectional power meter with integrated ZCD output
+- **RobotDyn ZCD** — built-in ZCD on the RobotDyn AC Dimmer board (lower quality signal)
+- **BM1Z102FJ** — dedicated ZCD IC providing a precise digital pulse at each zero-crossing
+- Any other ZCD circuit providing a clean digital pulse at each zero-crossing
 
 |                                  **Dedicated ZCD circuit**                                   |                                           **RobotDyn ZCD circuit**                                            |
 | :------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
@@ -76,11 +89,11 @@ These phenomena are not visible with a good ZCD module coupled with a Random SSR
 The RobotDyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the RobotDyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
 
 Here is below a YaSolR screenshot of the Grid Power graph showing the effect of a bad ZCD module on the power consumption and import.
-On the lef side, the RobotDyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
+On the left side, the RobotDyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
 
 [![](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)
 
-Here is another example below of th YaSolR PID Tuning view showing the input value of the PID controller.
+Here is another example below of the YaSolR PID Tuning view showing the input value of the PID controller.
 The dedicated ZCD module was used, then I've switched (live) to a RobotDyn ZCD module.
 The update rate is high: 3 times per second.
 All the JSY measurements are captured and displayed.
@@ -89,7 +102,7 @@ You can clearly see the flickering caused by the bad quality of the RobotDyn ZCD
 [![](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)
 
 Lastly, here is a graph showing in Home Assistant the effect of the RobotDyn ZCD on the dimmer output.
-The RobotDyn ZCD was used form 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
+The RobotDyn ZCD was used from 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
 
 [![](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)
 
@@ -142,7 +155,7 @@ Here are 3 different views from an Owon VDS6104 oscilloscope of:
 Dimmer at 50% matches the 90 degrees angle of the voltage curve, so the current is chopped at 50% of the period. This is when the harmonic level is the highest.
 We can clearly see the effect of the TRIAC on the voltage curve, and the resulting current curve, which is chopped at the wanted level.
 
-RobotDyn as a poor ZCD signal.
+RobotDyn has a poor ZCD signal.
 If you can, take a better ZCD module.
 This will also help ZCD edge detection because the ESP32 is subject to [spurious interrupt issue](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue) when detecting ZCD edges.
 Hopefully this can be overcome by filtering out the noise in the code.
@@ -201,13 +214,22 @@ So there is no load at that time of switching, thus, no harmonics.
 
 ![](https://mathieu.carbou.me/MycilaDimmer/assets/img/measurements/cycle_stealing_10ms.jpeg)
 
+YaSolR's Cycle Stealing implementation uses a **First-Order Delta-Sigma Modulator (Bresenham's algorithm)** to optimally distribute ON/OFF half-cycles across the measurement window.
+Crucially, it enforces **DC balance**: for every positive half-cycle consumed, a matching negative half-cycle is also consumed, preventing DC offset on the grid which could saturate transformers or trip breakers.
+See [MycilaDimmer cycle stealing technical details](https://mathieu.carbou.me/MycilaDimmer/cycle_stealing/) for more information.
+
+Cycle Stealing is only suitable for **purely resistive loads with high thermal inertia** (water heaters, oil radiators, floor heating).
+It is not suitable for lighting loads or loads without sufficient thermal inertia.
+
 **This method is not as accurate as Phase Control, but still provides good results, depending on the load.**
 
 ### Flickering
 
 The main problem with Cycle Stealing Control is that some kind of arrangements can cause flickering when the nominal load is big (big power tanks), visible on light bulbs that are close-by.
 This is caused by a sudden voltage drop in the house, caused by a sudden current flow at the request of the big water tank resistance.
-This effects highly depends on the quality implementation of the Cycle Stealing algorithm. For exemple, burst fire (which is not used in YaSolR) is more prone to flickering because the dimmer is turned of and on for complete periods.
+This effect highly depends on the quality implementation of the Cycle Stealing algorithm. For example, burst fire (which is not used in YaSolR) is more prone to flickering because the dimmer is turned of and on for complete periods.
+
+Additionally, Cycle Stealing generates **sub-harmonics and inter-harmonics** (at frequencies below the fundamental 50/60 Hz), which is a distinct type of distortion from phase control harmonics. This is another reason why it is not suitable for lighting loads.
 
 ## Recommendations to reduce harmonics and flickering
 
@@ -226,7 +248,7 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
    For example, a 3000W resistance with 18 ohms will have a current load of 7.4A when dimmed at 134V for 1000W of excess and will generate more harmonics or will cause more flickering.
    While a 1000W resistance with 53 ohms will have a current load of only 4.3A and will be used at full power.
 
-6. Switch your water tank resistance with a a three-phase resistance in order to be able to control 3 resistances in steps independently: they will be activated step by step. Example:
+6. Switch your water tank resistance with a three-phase resistance in order to be able to control 3 resistances in steps independently: they will be activated step by step. Example:
 
    - Resistance 1: 800 W connected to the dimmer: the dimmer will route the solar excess from 0 to 800 W to this resistance
    - Resistance 2: 800 W connected to relay 1: when the excess is above 800 W, the relay will activate (all or nothing relay) and the second resistance will receive 800 W of excess.
