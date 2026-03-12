@@ -38,22 +38,9 @@ A router is composed of 2 main pieces:
 
 2. A **dimmer system** that will control the voltage and power sent to the resistance of the water tank to match the measured excess: RobotDyn AC Dimmer, Random Solid State Relay, etc
 
-The dimmer systems are usually based on TRIAC / Thyristors and are controlling the power through different methods:
-
-|                                                        **Phase Control**                                                        |                                                                                                              **Burst Fire Control**                                                                                                              |
-| :-----------------------------------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                                       ![](assets/img/measurements/Oscillo_Dimmer_50.jpeg)                                       |                                                                                                    ![](assets/img/measurements/Burst_50.png)                                                                                                     |
-| In this mode, the TRIAC lets the current pass at a specific moment within the 2 semi-periods of 10 ms by "cutting" the sin wave |                                                    In this mode, the TRIAC is used like a rapid switch, to let pass a sequence of complete full periods or semi-periods without cutting them                                                     |
-|                                            **Used devices:**<br>RobotDyn, Random SSR                                             |                                                                                             **Used devices:**<br>RobotDyn, Random SSR, Zero-Cross SSR                                                                                             |
-|                  **Pros:**<br>More precise routing, can control exactly the right amount of power to let pass                   |                                                                                     **Pros:**<br>Easier to grasp and implement and does not create harmonics                                                                                     |
-|          **Cons:**<br>Can cause harmonics that can be difficult to filter out (but effect can be limited or mitigated)          | **Cons:**<br>Less precise routing because each complete period (or semi-period) lets the full power (or half power) pass, and can cause flickering (light bulbs that are close-by can blink because of the fast and successive current switches) |
+The dimmer systems are usually based on TRIAC / Thyristors and are controlling the power through 2 main methods: **Phase Control** and **Cycle Stealing Control**.
 
 Other algorithms exist, more or less complex but generally based on these 2 methods.
-
-YaSolR also supports additional dimmer types for use with external voltage regulators (LSA, LCTC):
-
-- **PWMDimmer** — outputs a PWM signal for PWM-to-analog converters driving voltage regulators
-- **DFRobotDimmer** — outputs a 0–10V analog signal via I2C DAC (DFRobot GP8211S, GP8413, GP8403) for voltage regulators, providing flicker-free progressive dimming
 
 ### Zero-Cross Detection (ZCD)
 
@@ -150,7 +137,7 @@ Here are 3 different views from an Owon VDS6104 oscilloscope of:
 |                       |                                      **Dimmer Duty 0.24%**                                      |                                         **Dimmer Duty 50%**                                         |                                     **Dimmer Duty 4090 / 4095**                                     |
 | :-------------------: | :---------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
 |      **RobotDyn**      | [![](assets/img/measurements/RobotDyn_duty_10.png)](assets/img/measurements/RobotDyn_duty_10.png) | [![](assets/img/measurements/RobotDyn_duty_2047.png)](assets/img/measurements/RobotDyn_duty_2047.png) | [![](assets/img/measurements/RobotDyn_duty_4090.png)](assets/img/measurements/RobotDyn_duty_4090.png) |
-| **Better ZCD Module** |     [![](assets/img/measurements/ZCD_duty_10.png)](assets/img/measurements/ZCD_duty_10.png)     |     [![](assets/img/measurements/ZCD_duty_2047.png)](assets/img/measurements/ZCD_duty_2047.png)     |     [![](assets/img/measurements/ZCD_duty_4090.png)](assets/img/measurements/ZCD_duty_4090.png)     |
+| **Better ZCD Module** |     [![](assets/img/measurements/ZCD_duty_10.png)](assets/img/measurements/ZCD_duty_10.png)     |     [![](assets/img/measurements/ZCD_duty_2047.png)](assets/img/measurements/ZCD_duty_2047.png)     |     [![](assets/img/measurements/ZCD_duty_4090.png)](assets.img/measurements/ZCD_duty_4090.png)     |
 
 Dimmer at 50% matches the 90 degrees angle of the voltage curve, so the current is chopped at 50% of the period. This is when the harmonic level is the highest.
 We can clearly see the effect of the TRIAC on the voltage curve, and the resulting current curve, which is chopped at the wanted level.
@@ -229,8 +216,6 @@ The main problem with Cycle Stealing Control is that some kind of arrangements c
 This is caused by a sudden voltage drop in the house, caused by a sudden current flow at the request of the big water tank resistance.
 This effect highly depends on the quality implementation of the Cycle Stealing algorithm. For example, burst fire (which is not used in YaSolR) is more prone to flickering because the dimmer is turned of and on for complete periods.
 
-Additionally, Cycle Stealing generates **sub-harmonics and inter-harmonics** (at frequencies below the fundamental 50/60 Hz), which is a distinct type of distortion from phase control harmonics. This is another reason why it is not suitable for lighting loads.
-
 ## Recommendations to reduce harmonics and flickering
 
 Harmonics and flickering cannot be completely avoided but they can be mitigated or limited by following some recommendations:
@@ -269,7 +254,7 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 **YouTube videos** explaining the theory behind a Solar Router, harmonics and solutions, with some simulations and practical examples.
 
 - [Installations photovoltaïques](https://www.youtube.com/playlist?list=PLWpzro3Ndk_2PUlQkULUjP6VSzwmFXkPc) (Pierre Chfd)
-- [Routeur solaire ongrid](https://www.youtube.com/playlist?list=PL-IXE4AO5wkuxvQLEB-AuwoxZF1ZRzClf) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_)
+- [Routeur solaire ongrid](https://www.youtube.com/playlist?list=PL-IXE4AO5wkuxvQLEB-AuwoxZF1ZRzClf) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_) 
 
 **Harmonics**
 
@@ -279,7 +264,7 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 - [Router via TRIAC et "Pollution" du réseau](https://forum-photovoltaique.fr/viewtopic.php?t=60521) (Forum photovoltaïque)
 - [HARMONICS: CAUSES, EFFECTS AND MINIMIZATION](https://www.salicru.com/files/pagina/72/278/jn004a01_whitepaper-armonics_%281%29.pdf) (Ramon Pinyol, R&D Product Leader SALICRU)
 - [HARMONIQUES ET DEPOLLUTION DU RESEAU ELECTRIQUE](http://archives.univ-biskra.dz/bitstream/123456789/21913/1/BELHADJ%20KHEIRA%20ET%20BOUZIR%20NESSRINE.pdf) (BELHADJ KHEIRA ET BOUZIR NESSRINE)
-- [Impact de la pollution harmonique sur les matériels de réseau](https://theses.hal.science/tel-00441877/document) (Wilfried Frelin)
+- [Impact de la pollution harmonique sur les matériels de réseau](https://theses.hal.science/tel-00441877/document) (Wilfried Frelin)
 
 **TRIAC and Thyristors**
 
@@ -298,13 +283,13 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 
 This project was inspired by the following awesome Solar Router projects:
 
-- [Routeur Solaire Apper](https://ota.apper-solaire.org) (Cyril P., _[xlyric](https://github.com/xlyric)_)
-- [Routeur Solaire PVbrain](https://github.com/SeByDocKy/pvbrain2) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_)
+- [Routeur Solaire Apper](https://ota.apper-solaire.org) (Cyril P., _[xlyric](https://github.com/xlyric)_) 
+- [Routeur Solaire PVbrain](https://github.com/SeByDocKy/pvbrain2) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_) 
 - [Routeur Solaire MK2 PV Router](https://www.mk2pvrouter.co.uk) (Robin Emley)
 - [Routeur Solaire Mk2 PV Router](https://github.com/FredM67/Mk2PVRouter) (Frédéric M.)
 - [Routeur Solaire Tignous](https://forum-photovoltaique.fr/viewtopic.php?f=110&t=40512) (Tignous)
 - [Routeur Solaire MaxPV](https://github.com/Jetblack31/MaxPV) (Jetblack31)
 - [Routeur solaire "Le Profes'Solaire"](https://sites.google.com/view/le-professolaire/routeur-professolaire) (Anthony G., _Le Profes'Solaire_)
-- [Routeur solaire "Le Profes'Solaire"](https://github.com/benoit-cty/solar-router) (Adapation from Benoit C.)
-- [Routeur solaire Multi-Sources Multi-Modes et Modulaire](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/) (André B., _[F1ATB](https://github.com/F1ATB)_)
+- [Routeur solaire "Le Profes'Solaire"](https://github.com/benoit-cty/solar-router) (Adaptation from Benoit C.)
+- [Routeur solaire Multi-Sources Multi-Modes et Modulaire](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/) (André B., _[F1ATB](https://github.com/F1ATB)_) 
 - [Routeur solaire ESP Home](https://domo.rem81.com/index.php/2023/07/18/pv-routeur-solaire/) (Remy)
