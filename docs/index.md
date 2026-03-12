@@ -4,7 +4,7 @@ title: Home
 description: Home
 ---
 
-YaSolR is an ESP32 firmware for **Solar Router** compatible with nearly **any existing hardware components**.
+YaSolR is an ESP32 firmware for **Solar Router** compatible with nearly **any existing hardware**.
 It supports most hardware used in routers like:
 
 - [F1ATB](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/)
@@ -12,11 +12,11 @@ It supports most hardware used in routers like:
 - [Routeur solaire APPER](https://ota.apper-solaire.org)
 - etc
 
-If you already have a Solar Router at home based on ESP32, built by yourself or someone else, there is a good chance that YaSolR will be compatible.
+If you already have a Solar Router at home based on ESP32, built by yourself or by someone else, there is a good chance that YaSolR will be compatible.
 
 YaSolR is the **software** and this website will help you [build](build) your router.
 
-To know more about how Solar Router work, please go to the [overview](overview) page.
+To know more about how Solar Routers work, please go to the [overview](overview) page.
 
 | [![](./assets/img/screenshots/app-overview-light.jpeg)](./assets/img/screenshots/app-overview-light.jpeg) | [![](./assets/img/screenshots/app-overview-dark.jpeg)](./assets/img/screenshots/app-overview-dark.jpeg) |
 
@@ -27,10 +27,10 @@ There is simply no match in terms of features, performance, reactivity and preci
 It is also a big **Open-Source** project following **best development practices**.
 
 - ⚡ **Best reactivity** with more than 3 adjustments per second
-  - Other routers: usually around 1 adjustment per second or 1 every 2 second (👎)
+  - Other routers: usually around 1 adjustment per second or 1 every 2 seconds (👎)
 
 - 📊 **Fast measurements**: YaSolR can read about 20 measurements per second
-  - Other routers: usually around 5 measurement per second or less (👎)
+  - Other routers: usually around 5 measurements per second or less (👎)
 
 - 🎯 **PID algorithm with filtering**: YaSolR uses an advanced PID to control the routing, which leads to:
   - More precision
@@ -39,7 +39,7 @@ It is also a big **Open-Source** project following **best development practices*
   - Less over-consumptions
   - Less over-excess
 
-- 🎛️ **PID Tuning**: YaSolR offers a PID tuning screen to adjust the PID parameters in real time, without recompiling the code and see the effect
+- 🎛️ **PID Tuning**: YaSolR offers a PID tuning screen to adjust the PID parameters in real time, without recompiling the code, and to see the effect
   - Other routers: no PID and no PID tuning screen (👎)
 
 - 🌍 **50 / 60 Hz Frequency Support**:
@@ -53,15 +53,15 @@ It is also a big **Open-Source** project following **best development practices*
 - 📡 **Zero-Cross Pulse Analysis**: YaSolR is the only router using an advanced library to analyze ZC pulses to remove any spurious effects and find the correct 0V crossing point.
   - Other routers: they simply trigger at the pulse, which can happen way before the actual 0V crossing point, leading to an inefficient routing (👎)
 
-- 🤝 **Wide compatibility**: YaSolR includes mechanism to play nice with other routers or EV charging stations
+- 🤝 **Wide compatibility**: YaSolR includes mechanisms to play nice with other routers or EV charging stations
 
-- 🔌 **3-Phase support** (with JSY-333, Shelly or MQTT)
+- 🔌 **3-Phase support** (with JSY-MK-333, Shelly or MQTT)
 
 - 🌐 **MQTT, Home Assistant, REST API** support
 
 - 📉 **Harmonics**: YaSolR includes mechanisms to help you visualize and lower harmonics to comply with regulations
 
-- 🔄 **Excess Sharing**: YaSolR allows the first output to share the excess with the second output if you need to 2 outputs to work at the same time
+- 🔄 **Excess Sharing**: YaSolR allows the first output to share the excess with the second output if you need both outputs to work at the same time
 
 - 🛠️ **Years of development experience**: YaSolR is built on years of development experiences and uses the most advanced and efficient libraries available on ESP32 and Arduino:
   - [MycilaDimmer](https://github.com/mathieucarbou/MycilaDimmer): the most advanced and efficient dimmer library for ESP32, with support for many dimmer types, phase control, cycle stealing control, etc
@@ -72,7 +72,7 @@ It is also a big **Open-Source** project following **best development practices*
 
 - 🔧 **Huge Hardware support**:
   - DS18 Temperature Sensors
-  - SSD1307, SH1106, SH1107 I2C OLED Displays
+  - SSD1306, SH1106, SH1107 I2C OLED Displays
   - Dimmers:
     - Synchronous (normal) Solid State Relays (Cycle Stealing)
     - Random Solid State Relays (Phase Control and Cycle Stealing)
@@ -103,7 +103,6 @@ It is also a big **Open-Source** project following **best development practices*
 - [Relays](#relays)
 - [Monitoring and Management](#monitoring-and-management)
 - [MQTT, REST API and Home Automation Systems](#mqtt-rest-api-and-home-automation-systems)
-- [Online / Offline modes](#online--offline-modes)
 - [PID Control and Tuning](#pid-control-and-tuning)
 - [Virtual Excess and EV Charger Compatibility](#virtual-excess-and-ev-charger-compatibility)
 
@@ -151,8 +150,8 @@ Supported dimmers:
 
 #### Bypass Relay (optional)
 
-A bypass relay allows to force a heating at full power and bypass the dimmer at a given schedule or manually.
-Keeping a dimmer `on` generates heat so a bypass relay can be installed to avoid using the dimmer.
+A bypass relay allows you to force heating at full power and bypass the dimmer at a given schedule or manually.
+Keeping a dimmer `on` continuously generates heat so a bypass relay can be installed to avoid using the dimmer.
 
 **If no bypass relay is installed, the dimmer will be used instead and will be set to 0-100% to simulate the relay.**
 
@@ -171,7 +170,7 @@ Here are the supported bypass relays:
 
 #### Temperature Sensor (optional)
 
-Measuring the temperature of the water tanker is important to be able to trigger automatic heating based on temperature thresholds, or stop the routing if the temperature i reached.
+Measuring the temperature of the water tanker is important to be able to trigger automatic heating based on temperature thresholds, or stop the routing if the temperature is reached.
 YaSolR supports the following temperature measurement methods:
 
 - MQTT topic that will be used to receive the temperature
@@ -188,7 +187,7 @@ Here is a list of all supported devices:
 
 #### Output Features
 
-- `Automatic Resistance Calibration`: if a JSY or PZEM is installed, automatically discover and save the resistance value of the connected load.
+- `Automatic Resistance Calibration`: if a JSY or PZEM is installed, automatically measure and save the resistance value of the connected load.
 
 - Power sharing between outputs:
   - `Excess Ratio`: Set the ratio of the excess to route to the load (e.g. 80% of the excess)
@@ -223,7 +222,7 @@ YaSolR supports up to 2 `NO / NC` relays to control external resistive loads or 
 - Debug Mode (ESP startup logs, Web Console, System information, etc)
 - Energy Reset
 - OTA Updates
-- Live GPI0 assignment view
+- Live GPIO assignment view
 - Harmonics information and visualization
 - Graphs (grid power, routed power, PID tuning, etc)
 - Static IP, AP mode, Captive Portal, NTP, etc
@@ -231,7 +230,7 @@ YaSolR supports up to 2 `NO / NC` relays to control external resistive loads or 
 
 ### MQTT, REST API and Home Automation Systems
 
-The router exposes a lot of statistics and information through MQTT and REST API and provides a very good integration with Home Assistant or other home automation systems.
+The router exposes a lot of statistics and information through MQTT and REST API and provides excellent integration with Home Assistant or other home automation systems.
 
 - [REST](rest) API
 - [MQTT](mqtt) API with support for Home Assistant Auto Discovery, retained messages, TLS, etc
@@ -245,9 +244,8 @@ Demo on Youtube:
 
 ### Virtual Excess and EV Charger Compatibility
 
-Thanks to power measurement, the router also provides these features:
-
+When a measurement device is installed, the router also provides these features:
 - `Virtual Excess`: Expose the virtual excess (MQTT, REST API, web) which is composed of the current excess plus the routing power
-- `EV Charger Compatibility` (i.e OpenEVSE): Don't prevent an EV charge to start (router can have lower priority than an EV box to consume available production excess)
+- `EV Charger Compatibility` (e.g. OpenEVSE): Don't prevent an EV charge to start (router can have lower priority than an EV box to consume available production excess)
 
-**A measurement device is required to use these features.**
+**A measurement device is required to use these features.
