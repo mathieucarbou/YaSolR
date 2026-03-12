@@ -4,8 +4,6 @@ title: Home
 description: Home
 ---
 
-# YaSolR
-
 YaSolR is an ESP32 firmware for **Solar Router** compatible with nearly **any existing hardware components**.
 It supports most hardware used in routers like:
 
@@ -225,7 +223,7 @@ YaSolR supports up to 2 `NO / NC` relays to control external resistive loads or 
 - Debug Mode (ESP startup logs, Web Console, System information, etc)
 - Energy Reset
 - OTA Updates
-- Live GPI assignment view
+- Live GPI0 assignment view
 - Harmonics information and visualization
 - Graphs (grid power, routed power, PID tuning, etc)
 - Static IP, AP mode, Captive Portal, NTP, etc
