@@ -55,10 +55,10 @@ Here are 3 different views from an Owon VDS6104 oscilloscope of:
 3. The control voltage of the random SSR (or RobotDyn) that is sent from the ESP32 board. The TRIAC will let the current pass when the control voltage is >= 3.3V (blue)
 4. The dimmed AC current at dimmer output (pink)
 
-|                       |                                      **Dimmer Duty 0.24%**                                      |                                         **Dimmer Duty 50%**                                         |                                     **Dimmer Duty 4090 / 4095**                                     |
-| :-------------------: | :---------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------: |
-|      **RobotDyn**      | [![](assets/img/measurements/RobotDyn_duty_10.png)](assets/img/measurements/RobotDyn_duty_10.png) | [![](assets/img/measurements/RobotDyn_duty_2047.png)](assets/img/measurements/RobotDyn_duty_2047.png) | [![](assets/img/measurements/RobotDyn_duty_4090.png)](assets/img/measurements/RobotDyn_duty_4090.png) |
-| **Better ZCD Module** |     [![](assets/img/measurements/ZCD_duty_10.png)](assets/img/measurements/ZCD_duty_10.png)     |     [![](assets/img/measurements/ZCD_duty_2047.png)](assets/img/measurements/ZCD_duty_2047.png)     |     [![](assets/img/measurements/ZCD_duty_4090.png)](assets.img/measurements/ZCD_duty_4090.png)     |
+|                       |                                       **Dimmer Duty 0.24%**                                       |                                          **Dimmer Duty 50%**                                          |                                      **Dimmer Duty 4090 / 4095**                                      |
+| :-------------------: | :-----------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------: |
+|     **RobotDyn**      | [![](assets/img/measurements/RobotDyn_duty_10.png)](assets/img/measurements/RobotDyn_duty_10.png) | [![](assets/img/measurements/RobotDyn_duty_2047.png)](assets/img/measurements/RobotDyn_duty_2047.png) | [![](assets/img/measurements/RobotDyn_duty_4090.png)](assets/img/measurements/RobotDyn_duty_4090.png) |
+| **Better ZCD Module** |      [![](assets/img/measurements/ZCD_duty_10.png)](assets/img/measurements/ZCD_duty_10.png)      |      [![](assets/img/measurements/ZCD_duty_2047.png)](assets/img/measurements/ZCD_duty_2047.png)      |      [![](assets/img/measurements/ZCD_duty_4090.png)](assets.img/measurements/ZCD_duty_4090.png)      |
 
 Dimmer at 50% matches the 90 degrees angle of the voltage curve, so the current is chopped at 50% of the period. This is when the harmonic level is the highest.
 We can clearly see the effect of the TRIAC on the voltage curve, and the resulting current curve, which is chopped at the wanted level.
@@ -91,8 +91,8 @@ YaSolR supports the following ZCD sources:
 - **BM1Z102FJ** — dedicated ZCD IC providing a precise digital pulse at each zero-crossing
 - Any other ZCD circuit providing a clean digital pulse at each zero-crossing
 
-|                                  **Dedicated ZCD circuit**                                   |                                           **RobotDyn ZCD circuit**                                            |
-| :------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
+|                                  **Dedicated ZCD circuit**                                   |                                            **RobotDyn ZCD circuit**                                            |
+| :------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------: |
 | [![ZCD](assets/img/measurements/Oscillo_ZCD.jpeg)](assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
 
 When the AC voltage curve crosses the Zero point, the ZCD circuit sends a pulse (with a custom duration) to the controller board, which now knows that the voltage is at zero.
@@ -234,7 +234,6 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
    While a 1000W resistance with 53 ohms will have a current load of only 4.3A and will be used at full power.
 
 6. Switch your water tank resistance with a three-phase resistance in order to be able to control 3 resistances in steps independently: they will be activated step by step. Example:
-
    - Resistance 1: 800 W connected to the dimmer: the dimmer will route the solar excess from 0 to 800 W to this resistance
    - Resistance 2: 800 W connected to relay 1: when the excess is above 800 W, the relay will activate (all or nothing relay) and the second resistance will receive 800 W of excess.
      The first resistance connected to the Phase Control system (dimmer or Random SSR) will receive what is remaining from the excess.
@@ -254,7 +253,7 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 **YouTube videos** explaining the theory behind a Solar Router, harmonics and solutions, with some simulations and practical examples.
 
 - [Installations photovoltaïques](https://www.youtube.com/playlist?list=PLWpzro3Ndk_2PUlQkULUjP6VSzwmFXkPc) (Pierre Chfd)
-- [Routeur solaire ongrid](https://www.youtube.com/playlist?list=PL-IXE4AO5wkuxvQLEB-AuwoxZF1ZRzClf) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_) 
+- [Routeur solaire ongrid](https://www.youtube.com/playlist?list=PL-IXE4AO5wkuxvQLEB-AuwoxZF1ZRzClf) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_)
 
 **Harmonics**
 
@@ -283,13 +282,13 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 
 This project was inspired by the following awesome Solar Router projects:
 
-- [Routeur Solaire Apper](https://ota.apper-solaire.org) (Cyril P., _[xlyric](https://github.com/xlyric)_) 
-- [Routeur Solaire PVbrain](https://github.com/SeByDocKy/pvbrain2) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_) 
+- [Routeur Solaire Apper](https://ota.apper-solaire.org) (Cyril P., _[xlyric](https://github.com/xlyric)_)
+- [Routeur Solaire PVbrain](https://github.com/SeByDocKy/pvbrain2) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_)
 - [Routeur Solaire MK2 PV Router](https://www.mk2pvrouter.co.uk) (Robin Emley)
 - [Routeur Solaire Mk2 PV Router](https://github.com/FredM67/Mk2PVRouter) (Frédéric M.)
 - [Routeur Solaire Tignous](https://forum-photovoltaique.fr/viewtopic.php?f=110&t=40512) (Tignous)
 - [Routeur Solaire MaxPV](https://github.com/Jetblack31/MaxPV) (Jetblack31)
 - [Routeur solaire "Le Profes'Solaire"](https://sites.google.com/view/le-professolaire/routeur-professolaire) (Anthony G., _Le Profes'Solaire_)
 - [Routeur solaire "Le Profes'Solaire"](https://github.com/benoit-cty/solar-router) (Adaptation from Benoit C.)
-- [Routeur solaire Multi-Sources Multi-Modes et Modulaire](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/) (André B., _[F1ATB](https://github.com/F1ATB)_) 
+- [Routeur solaire Multi-Sources Multi-Modes et Modulaire](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/) (André B., _[F1ATB](https://github.com/F1ATB)_)
 - [Routeur solaire ESP Home](https://domo.rem81.com/index.php/2023/07/18/pv-routeur-solaire/) (Remy)
