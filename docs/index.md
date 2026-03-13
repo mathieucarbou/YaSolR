@@ -28,62 +28,62 @@ It is also a big **Open-Source** project following **best development practices*
 
 - ⚡ **Best reactivity** with more than 3 adjustments per second
   - Other routers: usually around 1 adjustment per second or 1 every 2 seconds (👎)
-
+    <br/>
 - 📊 **Fast measurements**: YaSolR can read about 20 measurements per second
   - Other routers: usually around 5 measurements per second or less (👎)
-
+    <br/>
 - 🎯 **PID algorithm with filtering**: YaSolR uses an advanced PID to control the routing, which leads to:
   - More precision
   - Less overshoots
   - Less oscillations
   - Less over-consumptions
   - Less over-excess
-
+    <br/>
 - 🎛️ **PID Tuning**: YaSolR offers a PID tuning screen to adjust the PID parameters in real time, without recompiling the code, and to see the effect
   - Other routers: no PID and no PID tuning screen (👎)
-
+    <br/>
 - 🌍 **50 / 60 Hz Frequency Support**:
   - Supports 50 Hz and 60 Hz
   - Supports auto-detection of the frequency
   - Other routers: usually only support 50 Hz (👎)
-
+    <br/>
 - 🔬 **12-bits resolution**: YaSolR is the only router able to precisely control at a Watt level a load of more than 4000W
   - Other routers: usually have a precision of 100 steps only, meaning 30W for a load of 3000W, 40W for a load of 4000W (👎)
-
+    <br/>
 - 📡 **Zero-Cross Pulse Analysis**: YaSolR is the only router using an advanced library to analyze ZC pulses to remove any spurious effects and find the correct 0V crossing point.
-  - Other routers: they simply trigger at the pulse, which can happen way before the actual 0V crossing point, leading to an inefficient routing (👎)
-
+  - Other routers: they simply trigger at the rising edge of the pulse, which can happen way before the actual 0V crossing point, leading to an inefficient routing (👎)
+    <br/>
 - 🤝 **Wide compatibility**: YaSolR includes mechanisms to play nice with other routers or EV charging stations
-
+  <br/>
 - 🔌 **3-Phase support** (with JSY-MK-333, Shelly or MQTT)
-
+  <br/>
 - 🌐 **MQTT, Home Assistant, REST API** support
-
+  <br/>
 - 📉 **Harmonics**: YaSolR includes mechanisms to help you visualize and lower harmonics to comply with regulations
-
+  <br/>
 - 🔄 **Excess Sharing**: YaSolR allows the first output to share the excess with the second output if you need both outputs to work at the same time
-
+  <br/>
 - 🛠️ **Years of development experience**: YaSolR is built on years of development experiences and uses the most advanced and efficient libraries available on ESP32 and Arduino:
   - [MycilaDimmer](https://github.com/mathieucarbou/MycilaDimmer): the most advanced and efficient dimmer library for ESP32, with support for many dimmer types, phase control, cycle stealing control, etc
   - [MycilaPulseAnalyzer](https://github.com/mathieucarbou/MycilaPulseAnalyzer): an advanced library to analyze ZC pulses to remove any spurious effects and find the correct 0V crossing point
-  - [MycilaJSY](https://github.com/mathieucarbou/MycilaJSY): a library to interface with JSY devices for measurement and control
-  - [MycilaPZEM](https://github.com/mathieucarbou/MycilaPZEM): a library to interface with PZEM devices for measurement and control
+  - [MycilaJSY](https://github.com/mathieucarbou/MycilaJSY): the fastest library to interface with JSY devices for measurement and control
+  - [MycilaPZEM](https://github.com/mathieucarbou/MycilaPZEM): the fastest library to interface with PZEM devices for measurement and control
   - [MycilaUtilities](https://github.com/mathieucarbou/MycilaUtilities): an advanced PID library with filtering
-
+    <br/>
 - 🔧 **Huge Hardware support**:
   - DS18 Temperature Sensors
   - SSD1306, SH1106, SH1107 I2C OLED Displays
   - Dimmers:
-    - Synchronous (normal) Solid State Relays (Cycle Stealing)
-    - Random Solid State Relays (Phase Control and Cycle Stealing)
+    - Synchronous (normal) Solid State Relays (Cycle Stealing) (**recommended**)
+    - Random Solid State Relays (Phase Control and Cycle Stealing) (**recommended**)
     - RobotDyn 24A and 40A (Phase Control and Cycle Stealing)
-    - Voltage Regulators (Loncont LSA or LCTC) with DfRobot GP8211S, GP8403 or GP8413 DAC (Phase Control)
+    - Voltage Regulators (Loncont LSA or LCTC) with DfRobot GP8211S, GP8403 or GP8413 DAC (Phase Control) (**recommended**)
   - Measurement devices for grid and output
     - MQTT (grid only)
     - Victron Modbus TCP (grid only)
-    - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333 (grid only)
-    - PZEM-004T v3 and v4 (outputs only)
-    - Remote JSY through [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp)
+    - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333 (grid only) (**recommended**)
+    - PZEM-004T v3 and v4 (outputs only) (**recommended**)
+    - Remote JSY through [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp) (**recommended**)
   - ESP32 boards:
     - [Denky D4](https://github.com/hallard/Denky-D4)
     - [ESP-32S](https://www.es.co.th/Schemetic/PDF/ESP32.PDF)
@@ -134,8 +134,8 @@ Supported dimmers:
 
 |                          | **RobotDyn 24A**<br> ![](./assets/img/hardware/RobotDyn_24A.jpeg) | **RobotDyn 40A**<br> ![](./assets/img/hardware/RobotDyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator with DAC**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
 | :----------------------- | :---------------------------------------------------------------: | :---------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :----------------------------------------------------------------------------: |
-| `Phase Control`          |                              ✅<br/>                              |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ❌                                 |                                       ✅                                       |
-| `Cycle Stealing Control` |                              ✅<br/>                              |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ✅                                 |                                       ❌                                       |
+| `Phase Control`          |                     ✅<br/>(not recommended)                      |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ❌                                 |                          ✅<br/>(DAC module required)                          |
+| `Cycle Stealing Control` |                     ✅<br/>(not recommended)                      |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ✅                                 |                                       ❌                                       |
 
 > ##### TIP
 >
@@ -165,7 +165,6 @@ Here are the supported bypass relays:
 >
 > The electromagnetic relay above is interesting because it has both a NO and NC contacts.
 > The NC contact (closed when relay is in default open position) can be connected to the dimmer and used to prevent any power to go through the dimmer when the bypass relay is on.
->
 {: .block-tip }
 
 #### Temperature Sensor (optional)
@@ -245,7 +244,8 @@ Demo on Youtube:
 ### Virtual Excess and EV Charger Compatibility
 
 When a measurement device is installed, the router also provides these features:
+
 - `Virtual Excess`: Expose the virtual excess (MQTT, REST API, web) which is composed of the current excess plus the routing power
 - `EV Charger Compatibility` (e.g. OpenEVSE): Don't prevent an EV charge to start (router can have lower priority than an EV box to consume available production excess)
 
-**A measurement device is required to use these features.
+A measurement device is required to use these features.
