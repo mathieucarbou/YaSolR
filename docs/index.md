@@ -29,9 +29,11 @@ It is also a big **Open-Source** project following **best development practices*
 - ⚡ **Best reactivity** with more than 3 adjustments per second
   - Other routers: usually around 1 adjustment per second or 1 every 2 seconds (👎)
     <br/>
+
 - 📊 **Fast measurements**: YaSolR can read about 20 measurements per second
   - Other routers: usually around 5 measurements per second or less (👎)
     <br/>
+
 - 🎯 **PID algorithm with filtering**: YaSolR uses an advanced PID to control the routing, which leads to:
   - More precision
   - Less overshoots
@@ -39,30 +41,40 @@ It is also a big **Open-Source** project following **best development practices*
   - Less over-consumptions
   - Less over-excess
     <br/>
+
 - 🎛️ **PID Tuning**: YaSolR offers a PID tuning screen to adjust the PID parameters in real time, without recompiling the code, and to see the effect
   - Other routers: no PID and no PID tuning screen (👎)
     <br/>
+
 - 🌍 **50 / 60 Hz Frequency Support**:
   - Supports 50 Hz and 60 Hz
   - Supports auto-detection of the frequency
   - Other routers: usually only support 50 Hz (👎)
     <br/>
+
 - 🔬 **12-bits resolution**: YaSolR is the only router able to precisely control at a Watt level a load of more than 4000W
   - Other routers: usually have a precision of 100 steps only, meaning 30W for a load of 3000W, 40W for a load of 4000W (👎)
     <br/>
+
 - 📡 **Zero-Cross Pulse Analysis**: YaSolR is the only router using an advanced library to analyze ZC pulses to remove any spurious effects and find the correct 0V crossing point.
   - Other routers: they simply trigger at the rising edge of the pulse, which can happen way before the actual 0V crossing point, leading to an inefficient routing (👎)
     <br/>
+
 - 🤝 **Wide compatibility**: YaSolR includes mechanisms to play nice with other routers or EV charging stations
   <br/>
+
 - 🔌 **3-Phase support** (with JSY-MK-333, Shelly or MQTT)
   <br/>
+
 - 🌐 **MQTT, Home Assistant, REST API** support
   <br/>
+
 - 📉 **Harmonics**: YaSolR includes mechanisms to help you visualize and lower harmonics to comply with regulations
   <br/>
+
 - 🔄 **Excess Sharing**: YaSolR allows the first output to share the excess with the second output if you need both outputs to work at the same time
   <br/>
+
 - 🛠️ **Years of development experience**: YaSolR is built on years of development experiences and uses the most advanced and efficient libraries available on ESP32 and Arduino:
   - [MycilaDimmer](https://github.com/mathieucarbou/MycilaDimmer): the most advanced and efficient dimmer library for ESP32, with support for many dimmer types, phase control, cycle stealing control, etc
   - [MycilaPulseAnalyzer](https://github.com/mathieucarbou/MycilaPulseAnalyzer): an advanced library to analyze ZC pulses to remove any spurious effects and find the correct 0V crossing point
@@ -70,6 +82,7 @@ It is also a big **Open-Source** project following **best development practices*
   - [MycilaPZEM](https://github.com/mathieucarbou/MycilaPZEM): the fastest library to interface with PZEM devices for measurement and control
   - [MycilaUtilities](https://github.com/mathieucarbou/MycilaUtilities): an advanced PID library with filtering
     <br/>
+
 - 🔧 **Huge Hardware support**:
   - DS18 Temperature Sensors
   - SSD1306, SH1106, SH1107 I2C OLED Displays
