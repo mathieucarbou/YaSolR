@@ -243,6 +243,10 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
    It won't solve the harmonic issue but can help mitigate equipments sensible to energy spikes.
    Suggestions often seen are to use a 100 ohms 0.1uF (100nF) RC Snubber (like the ones sold for Shelly devices).
 
+8. Use a good Zero-Cross Detection (ZCD) circuit (do not use RobotDyn onces) to avoid spurious pulses and mis-detection of the zero point, which can cause flickering.
+
+9. Use a router with a quality dimming algorithm like YaSolR's advanced algorithm for Cycle Stealing Control. Do not use routers using burst fire or simple arrangements of ON/OFF half-cycles or complete cycles, which are more prone to flickering.
+
 ## References
 
 **Solar Routers**
