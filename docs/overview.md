@@ -8,13 +8,13 @@ description: Overview
 
 - [What is a Solar Router ?](#what-is-a-solar-router-)
 - [How Does a Solar Router Work?](#how-does-a-solar-router-work)
-  - [Zero-Cross Detection (ZCD)](#zero-cross-detection-zcd)
-  - [The Importance of a good ZCD circuit](#the-importance-of-a-good-zcd-circuit)
-  - [RobotDyn and Solid State Relay (SSR)](#robotdyn-and-solid-state-relay-ssr)
-- [Phase Control](#phase-control)
-  - [Harmonics](#harmonics)
-- [Cycle Stealing Control](#cycle-stealing-control)
-  - [Flickering](#flickering)
+  - [Phase Control](#phase-control)
+    - [Zero-Cross Detection (ZCD)](#zero-cross-detection-zcd)
+    - [The Importance of a good ZCD circuit](#the-importance-of-a-good-zcd-circuit)
+    - [RobotDyn and Solid State Relay (SSR)](#robotdyn-and-solid-state-relay-ssr)
+    - [Harmonics](#harmonics)
+  - [Cycle Stealing Control](#cycle-stealing-control)
+    - [Flickering](#flickering)
 - [Recommendations to reduce harmonics and flickering](#recommendations-to-reduce-harmonics-and-flickering)
 - [References](#references)
 - [Alternatives and Inspirations](#alternatives-and-inspirations)
@@ -42,86 +42,7 @@ The dimmer systems are usually based on TRIAC / Thyristors and are controlling t
 
 Other algorithms exist, more or less complex but generally based on these 2 methods.
 
-### Zero-Cross Detection (ZCD)
-
-To know when to switch or cut the voltage wave, routers are using a **Zero-Cross Detection (ZCD) circuit** that will detect when the voltage curve crosses the Zero point (which is twice per period) and will send a pulse to the controller board.
-Here are below some examples of how a ZCD circuit works by looking at 2 different implementations: RobotDyn and a more specific one from [Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html).
-
-YaSolR supports the following ZCD sources:
-
-- [Zero-Cross Detector from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) — dedicated ZCD module with a clean digital pulse
-- **JSY-MK-194G** — bidirectional power meter with integrated ZCD output
-- **RobotDyn ZCD** — built-in ZCD on the RobotDyn AC Dimmer board (lower quality signal)
-- **BM1Z102FJ** — dedicated ZCD IC providing a precise digital pulse at each zero-crossing
-- Any other ZCD circuit providing a clean digital pulse at each zero-crossing
-
-|                                  **Dedicated ZCD circuit**                                   |                                           **RobotDyn ZCD circuit**                                            |
-| :------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
-| [![ZCD](assets/img/measurements/Oscillo_ZCD.jpeg)](assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
-
-When the AC voltage curve crosses the Zero point, the ZCD circuit sends a pulse (with a custom duration) to the controller board, which now knows that the voltage is at zero.
-The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or RobotDyn) to activate it, based on the excess power, or if using Cycle Stealing control, to know when to let the current pass and for how many semi-periods.
-
-### The Importance of a good ZCD circuit
-
-Using a good ZCD circuit producing a reliable pulse is very important.
-
-If the pulses are not reliable, some short flickering could be caused by a mis-detection of the zero point or by the existence of spurious pulses (false-positives), and consequently cause the TRIAC to fire at the wrong time, or the calculations for the Cycle Stealing sequence to be wrong.
-These are visible if you plug an incandescent light bulb to the dimmer output: the bulb will flicker from time to time.
-The effect on a water tank resistance is even bigger: it will create some spurious spikes of power consumption, that the router will try to compensate just after by considerably reducing the dimming level.
-This creates some waves instead of keeping the import and export at a near-0 level.
-
-These phenomena are not visible with a good ZCD module coupled with a Random SSR.
-
-The RobotDyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the RobotDyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
-
-Here is below a YaSolR screenshot of the Grid Power graph showing the effect of a bad ZCD module on the power consumption and import.
-On the left side, the RobotDyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
-
-[![](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)
-
-Here is another example below of the YaSolR PID Tuning view showing the input value of the PID controller.
-The dedicated ZCD module was used, then I've switched (live) to a RobotDyn ZCD module.
-The update rate is high: 3 times per second.
-All the JSY measurements are captured and displayed.
-You can clearly see the flickering caused by the bad quality of the RobotDyn ZCD pulses, which gets compensated just after by the PID controller.
-
-[![](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)
-
-Lastly, here is a graph showing in Home Assistant the effect of the RobotDyn ZCD on the dimmer output.
-The RobotDyn ZCD was used from 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
-
-[![](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)
-
-You can read more about these issues here also:
-
-- [About dimmer boards](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards)
-- [Notes about specific architectures](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#esp32)
-
-### RobotDyn and Solid State Relay (SSR)
-
-A Solid State Relay is a relay that does not have any moving parts and is based on a semiconductor.
-It can be turned on and off very fast.
-
-A **Zero-Cross SSR** is a relay that will only close or open when the voltage curve is at 0.
-It won't generate any harmonics and is not able to do Phase Control, but it can be used for Cycle Stealing Control.
-
-A **Random** SSR is a relay that can be turned on and off at any point in time, at any voltage level.
-It can be used for Phase Control and Cycle Stealing Control.
-If activated when the voltage curve is not at 0, it will generate harmonics.
-
-Due to the nature of SSR, the more they are used (switched on/off), the more they will heat up.
-So it is recommended to install them on a vertical heat sink.
-
-SSR also have some specifications to take into account for the use of a Solar Router:
-
-- **Type of control**: DA: (DC Control AC)
-- **Control voltage**: 3.3V should be in the range (example: 3-32V DC)
-
-**RobotDyn** is a device that includes both a ZCD circuit and a TRIAC, which makes it ideal for a Solar Router using Phase Control System.
-Using a Random SSR instead of the RobotDyn is possible but will require the use of an additional ZCD circuit.
-
-## Phase Control
+### Phase Control
 
 **Effect on current**
 
@@ -157,7 +78,86 @@ Measurements are done with the Owon HDS2202S: voltage in yellow and current in b
 |                  [![](assets/img/measurements/Oscillo_Dim_20_In.jpeg)](assets/img/measurements/Oscillo_Dim_20_In.jpeg)                   |        [![](assets/img/measurements/Oscillo_Dim_20_Out.jpeg)](assets/img/measurements/Oscillo_Dim_20_Out.jpeg)        |
 | At Router input, before the dimmer, the voltage curve is normal. But the requested current shape is as defined by the TRIAC activations. | At Router output, after the dimmer, both the voltage and current curves are chopped according to the TRIAC activation |
 
-### Harmonics
+#### Zero-Cross Detection (ZCD)
+
+To know when to switch or cut the voltage wave, routers are using a **Zero-Cross Detection (ZCD) circuit** that will detect when the voltage curve crosses the Zero point (which is twice per period) and will send a pulse to the controller board.
+Here are below some examples of how a ZCD circuit works by looking at 2 different implementations: RobotDyn and a more specific one from [Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html).
+
+YaSolR supports the following ZCD sources:
+
+- [Zero-Cross Detector from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) — dedicated ZCD module with a clean digital pulse
+- **JSY-MK-194G** — bidirectional power meter with integrated ZCD output
+- **RobotDyn ZCD** — built-in ZCD on the RobotDyn AC Dimmer board (lower quality signal)
+- **BM1Z102FJ** — dedicated ZCD IC providing a precise digital pulse at each zero-crossing
+- Any other ZCD circuit providing a clean digital pulse at each zero-crossing
+
+|                                  **Dedicated ZCD circuit**                                   |                                           **RobotDyn ZCD circuit**                                            |
+| :------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------: |
+| [![ZCD](assets/img/measurements/Oscillo_ZCD.jpeg)](assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
+
+When the AC voltage curve crosses the Zero point, the ZCD circuit sends a pulse (with a custom duration) to the controller board, which now knows that the voltage is at zero.
+The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or RobotDyn) to activate it, based on the excess power, or if using Cycle Stealing control, to know when to let the current pass and for how many semi-periods.
+
+#### The Importance of a good ZCD circuit
+
+Using a good ZCD circuit producing a reliable pulse is very important.
+
+If the pulses are not reliable, some short flickering could be caused by a mis-detection of the zero point or by the existence of spurious pulses (false-positives), and consequently cause the TRIAC to fire at the wrong time, or the calculations for the Cycle Stealing sequence to be wrong.
+These are visible if you plug an incandescent light bulb to the dimmer output: the bulb will flicker from time to time.
+The effect on a water tank resistance is even bigger: it will create some spurious spikes of power consumption, that the router will try to compensate just after by considerably reducing the dimming level.
+This creates some waves instead of keeping the import and export at a near-0 level.
+
+These phenomena are not visible with a good ZCD module coupled with a Random SSR.
+
+The RobotDyn is such a device that has an unreliable ZC pulse: all experts working on Solar Routers who have measured that correctly, tend to agree with the fact that **the RobotDyn is one of the worst device to use because of its unreliable ZC and poor quality circuit and heat sink**.
+
+Here is below a YaSolR screenshot of the Grid Power graph showing the effect of a bad ZCD module on the power consumption and import.
+On the left side, the RobotDyn ZCD is used, then I've switched (live) to a dedicated ZCD module.
+
+[![](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-grid-power.jpeg)
+
+Here is another example below of the YaSolR PID Tuning view showing the input value of the PID controller.
+The dedicated ZCD module was used, then I've switched (live) to a RobotDyn ZCD module.
+The update rate is high: 3 times per second.
+All the JSY measurements are captured and displayed.
+You can clearly see the flickering caused by the bad quality of the RobotDyn ZCD pulses, which gets compensated just after by the PID controller.
+
+[![](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-pid-tuning.jpeg)
+
+Lastly, here is a graph showing in Home Assistant the effect of the RobotDyn ZCD on the dimmer output.
+The RobotDyn ZCD was used from 11:58 to 12:02, then I've switched (live) to a dedicated ZCD module.
+
+[![](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)](assets/img/screenshots/robotdyn-vs-zc-module-ha.jpeg)
+
+You can read more about these issues here also:
+
+- [About dimmer boards](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards)
+- [Notes about specific architectures](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#esp32)
+
+#### RobotDyn and Solid State Relay (SSR)
+
+A Solid State Relay is a relay that does not have any moving parts and is based on a semiconductor.
+It can be turned on and off very fast.
+
+A **Zero-Cross SSR** is a relay that will only close or open when the voltage curve is at 0.
+It won't generate any harmonics and is not able to do Phase Control, but it can be used for Cycle Stealing Control.
+
+A **Random** SSR is a relay that can be turned on and off at any point in time, at any voltage level.
+It can be used for Phase Control and Cycle Stealing Control.
+If activated when the voltage curve is not at 0, it will generate harmonics.
+
+Due to the nature of SSR, the more they are used (switched on/off), the more they will heat up.
+So it is recommended to install them on a vertical heat sink.
+
+SSR also have some specifications to take into account for the use of a Solar Router:
+
+- **Type of control**: DA: (DC Control AC)
+- **Control voltage**: 3.3V should be in the range (example: 3-32V DC)
+
+**RobotDyn** is a device that includes both a ZCD circuit and a TRIAC, which makes it ideal for a Solar Router using Phase Control System.
+Using a Random SSR instead of the RobotDyn is possible but will require the use of an additional ZCD circuit.
+
+#### Harmonics
 
 The biggest issue with Phase Control is that consecutively chopping the voltage curve creates some spontaneous current request especially at the point when the voltage at its minimum or maximum.
 This could be compared to suddenly opening a water valve instead of gradually opening it. The pressure is higher and the water flow will be more turbulent.
@@ -188,7 +188,7 @@ Some studies were done to determine the level of harmonics a Solar Router would 
 
 To put things in perspective, it is important to remember that a Solar Router will adapt the TRIAC angle based on the excess power, so **the router will not always be dimming at 90 degrees**, at the worst case scenario.
 
-## Cycle Stealing Control
+### Cycle Stealing Control
 
 Cycle Stealing Control will let a complete or half complete voltage curve pass or not, and this control is done from the zero point up to the next.
 So the sin wave is not chopped like in Phase Control, but we decide to let pass or not a complete period or half period.
@@ -210,7 +210,7 @@ It is not suitable for lighting loads or loads without sufficient thermal inerti
 
 **This method is not as accurate as Phase Control, but still provides good results, depending on the load.**
 
-### Flickering
+#### Flickering
 
 The main problem with Cycle Stealing Control is that some kind of arrangements can cause flickering when the nominal load is big (big power tanks), visible on light bulbs that are close-by.
 This is caused by a sudden voltage drop in the house, caused by a sudden current flow at the request of the big water tank resistance.
