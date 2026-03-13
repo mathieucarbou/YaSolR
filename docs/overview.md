@@ -17,7 +17,6 @@ description: Overview
     - [Flickering](#flickering)
 - [Recommendations to reduce harmonics and flickering](#recommendations-to-reduce-harmonics-and-flickering)
 - [References](#references)
-- [Alternatives and Inspirations](#alternatives-and-inspirations)
 
 ## What is a Solar Router ?
 
@@ -281,18 +280,4 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 - [Learn: PV Diversion](https://docs.openenergymonitor.org/pv-diversion/)
 - [Optimized Random Integral Wave AC Control Algorithm for AC heaters](https://tsltd.github.io)
 - [Cycle Stealing Control](https://www.renesas.com/en/document/apn/1164-cycle-stealing-control) (Vladimir Veljkovic)
-
-## Alternatives and Inspirations
-
-This project was inspired by the following awesome Solar Router projects:
-
-- [Routeur Solaire Apper](https://ota.apper-solaire.org) (Cyril P., _[xlyric](https://github.com/xlyric)_)
-- [Routeur Solaire PVbrain](https://github.com/SeByDocKy/pvbrain2) (Sébastien P., _[SeByDocKy](https://github.com/SeByDocKy)_)
-- [Routeur Solaire MK2 PV Router](https://www.mk2pvrouter.co.uk) (Robin Emley)
-- [Routeur Solaire Mk2 PV Router](https://github.com/FredM67/Mk2PVRouter) (Frédéric M.)
-- [Routeur Solaire Tignous](https://forum-photovoltaique.fr/viewtopic.php?f=110&t=40512) (Tignous)
-- [Routeur Solaire MaxPV](https://github.com/Jetblack31/MaxPV) (Jetblack31)
-- [Routeur solaire "Le Profes'Solaire"](https://sites.google.com/view/le-professolaire/routeur-professolaire) (Anthony G., _Le Profes'Solaire_)
-- [Routeur solaire "Le Profes'Solaire"](https://github.com/benoit-cty/solar-router) (Adaptation from Benoit C.)
-- [Routeur solaire Multi-Sources Multi-Modes et Modulaire](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/) (André B., _[F1ATB](https://github.com/F1ATB)_)
-- [Routeur solaire ESP Home](https://domo.rem81.com/index.php/2023/07/18/pv-routeur-solaire/) (Remy)
+- [MycilaDimmer](https://mathieu.carbou.me/MycilaDimmer/) (advanced dimming library used by YaSolR)

@@ -48,9 +48,6 @@ description: Build
 
 ## Build Examples
 
-If you already have a solar router like [F1ATB](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/) or ["Profes'Solaire"](https://sites.google.com/view/le-professolaire/routeur-professolaire), just flash the YaSolR firmware instead of the one you are using.
-Most hardware used in these routers are compatible with YaSolR.
-
 YaSolR supports many builds and routing algorithms.
 Before building your router, you need to decide which type of hardware you want to use.
 Here are below some examples:
