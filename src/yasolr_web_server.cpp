@@ -335,17 +335,17 @@ void rest_api() {
 
   // system
 
-  webServer.on("/api/system/restart", HTTP_ANY, [](AsyncWebServerRequest* request) {
+  webServer.on("/api/system/restart", HTTP_GET | HTTP_POST, [](AsyncWebServerRequest* request) {
     restartTask.resume();
     request->send(200);
   });
 
-  webServer.on("/api/system/safeboot", HTTP_ANY, [](AsyncWebServerRequest* request) {
+  webServer.on("/api/system/safeboot", HTTP_GET | HTTP_POST, [](AsyncWebServerRequest* request) {
     safeBootTask.resume();
     request->send(200);
   });
 
-  webServer.on("/api/system/reset", HTTP_ANY, [](AsyncWebServerRequest* request) {
+  webServer.on("/api/system/reset", HTTP_GET | HTTP_POST, [](AsyncWebServerRequest* request) {
     resetTask.resume();
     request->send(200);
   });
