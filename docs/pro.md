@@ -7,7 +7,7 @@ description: Pro
 # YaSolR Pro
 
 OSS and Pro firmware are the same, except that the Pro version relies on commercial (paid) libraries which cannot be put in OSS project, but offer a far better UI experience.
-They also help provide some additional features linked to the UI such as PID tuning, better graphs, etc.
+These libraries also help provide some additional features linked to the UI such as PID tuning, better graphs, etc.
 
 | Feature                    |                          OSS (Free)                          |      PRO (In Exchange of Sponsoring)       |
 | -------------------------- | :----------------------------------------------------------: | :----------------------------------------: |
@@ -21,14 +21,14 @@ They also help provide some additional features linked to the UI such as PID tun
 | Web Console                | [WebSerial Lite](https://github.com/ayushsharma82/WebSerial) | [WebSerial Pro](https://www.webserial.pro) |
 | Dashboard                  |    [ESP-DASH](https://github.com/ayushsharma82/ESP-DASH)     |    [ESP-DASH Pro](https://espdash.pro)     |
 
-The money helps funding the hardware necessary to test and develop the firmware.
+The money helps fund the hardware necessary to test and develop the firmware.
 
 ## How to get the Pro version
 
 1. Get a **[Github](https://github.com/)** account so that I can add your GitHub username to the project repository from where you can download all the firmware files.
 
-2. Make a donation of **25 euros (30$ USD) or more** through [Github](https://github.com/sponsors/mathieucarbou) or [Paypal](https://www.paypal.com/donate/?hosted_button_id=QJYRAPXGEDCNS).
-   In exchange to any donation of 25 euros (30$ USD) or more to help support my work in Open-Source, I will give you access to the **Pro version and all the upcoming updates for an unlimited time**!
+2. Make a donation of **25 euros ($30 USD) or more** through [Github](https://github.com/sponsors/mathieucarbou) or [Paypal](https://www.paypal.com/donate/?hosted_button_id=QJYRAPXGEDCNS).
+   In exchange for any donation of 25 euros ($30 USD) or more to help support my work in Open-Source, I will give you access to the **Pro version and all the upcoming updates for an unlimited time**!
 
 3. The advantage of sponsoring through Github is that it will be displayed in both our profiles.
 
