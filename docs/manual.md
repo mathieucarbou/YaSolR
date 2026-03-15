@@ -13,7 +13,7 @@ description: Manual
   - [Access Point Mode](#access-point-mode)
 - [YaSolR Application](#yasolr-application)
   - [Overview](#overview)
-  - [Output 1 and 2](#output-1-and-2)
+  - [Output 1 and Output 2](#output-1-and-output-2)
   - [PID](#pid)
     - [Proportional Mode](#proportional-mode)
     - [Clamping (Output Min/Max)](#clamping-output-minmax)
@@ -24,29 +24,31 @@ description: Manual
     - [Tuning](#tuning)
     - [References](#references)
   - [Network](#network)
+    - [WiFi settings](#wifi-settings)
+    - [Static IP Address](#static-ip-address)
+    - [Misc. Network Settings](#misc-network-settings)
   - [NTP](#ntp)
   - [MQTT](#mqtt)
     - [MQTT Configuration](#mqtt-configuration)
+    - [Home Assistant](#home-assistant)
     - [MQTT Topic Subscriptions](#mqtt-topic-subscriptions)
-    - [Home Assistant Discovery](#home-assistant-discovery)
     - [MQTT API](#mqtt-api)
   - [GPIO](#gpio)
   - [Hardware](#hardware)
-    - [Nominal Grid Frequency](#nominal-grid-frequency)
-    - [JSY](#jsy)
-    - [JSY Remote](#jsy-remote)
-    - [Zero-Cross Detection](#zero-cross-detection)
-    - [Victron Modbus TCP](#victron-modbus-tcp)
-    - [Dimmer Type](#dimmer-type)
-    - [Dimmer Range Remapping](#dimmer-range-remapping)
-    - [PZEM Pairing](#pzem-pairing)
-    - [Bypass Relay](#bypass-relay)
-    - [Temperature Sensors](#temperature-sensors)
-    - [Relay Types](#relay-types)
-    - [Relay Automatic Control](#relay-automatic-control)
-    - [LEDs](#leds)
+    - [Grid](#grid)
+    - [Outputs](#outputs)
+      - [Dimmer Type](#dimmer-type)
+      - [Dimmer Remapping](#dimmer-remapping)
+      - [Measurement Device](#measurement-device)
+      - [PZEM Pairing](#pzem-pairing)
+      - [Bypass Relay](#bypass-relay)
+      - [Temperature Sensors](#temperature-sensors)
+    - [Relay 1 and Relay 2](#relay-1-and-relay-2)
     - [Display](#display)
-  - [Output 1 and 2 Config](#output-1-and-2-config)
+    - [System](#system)
+      - [Temperature Sensor](#temperature-sensor)
+      - [LEDs](#leds)
+  - [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration)
     - [Resistance Calibration](#resistance-calibration)
     - [Excess Configuration](#excess-configuration)
     - [Dimmer Configuration](#dimmer-configuration)
@@ -56,9 +58,8 @@ description: Manual
     - [Saving logs](#saving-logs)
     - [Web Console](#web-console)
   - [Statistics](#statistics)
-- [Additional Hardware Information](#additional-hardware-information)
+- [Additional Features](#additional-features)
   - [EV charging box compatibility with Virtual Grid Power](#ev-charging-box-compatibility-with-virtual-grid-power)
-  - [Voltage Regulators (LSA, LCTC, etc)](#voltage-regulators-lsa-lctc-etc)
 - [Help and support](#help-and-support)
 
 ## Quick Start
@@ -71,7 +72,7 @@ When everything is wired and installed properly:
 4.  Connect to the Captive Portal to setup your WiFi (see: [Captive Portal (Access Point) and WiFi](#captive-portal-access-point-and-wifi))
 5.  Go to [GPIO](#gpio) to verify or change your GPIO settings
 6.  Go to [Hardware](#hardware) to activate and configure the hardware you have
-7.  Go to [Output Config](#output-1-and-2-config) to configure the router outputs and calibrate the resistance (see: [Resistance Calibration](#resistance-calibration))
+7.  Go to [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration) to configure the router outputs and calibrate the resistance (see: [Resistance Calibration](#resistance-calibration))
 8.  Go to [Network](#network), [NTP](#ntp) and [MQTT](#mqtt) to configure them according to your needed
 
 Do not forget to restart when changing the hardware settings.
@@ -182,53 +183,36 @@ The main dashboard is accessible at `http://yasolr.local/` and contains several 
 
 ### Overview
 
-The overview section shows some global information about the router:
-
-- The temperature is coming from the sensor installed in the router box
-- The electricity measurements are coming from a JSY or PZEM
-
 [![](assets/img/screenshots/app-overview-light.jpeg)](assets/img/screenshots/app-overview-light.jpeg)
 
-- `Output 1` / `Output 2`:
-  - `Disabled`: Output is disabled (dimmer disabled or other reason)
-  - `Idle`: Output is not routing and not in bypass mode
-  - `Routing`: Routing in progress
-  - `Bypass`: Bypass has been activated manually
-  - `Bypass Auto`: Bypass has been activated based on automatic rules
-- `Temperature`: This is the temperature reported by the sensor in water tank, if installed
+The overview section shows some global information about the router:
 
-- `Relay X Manual Control`: ON/OFF switch to control the relay manually.
-  Only available when the relay is not in automatic mode.
-  Otherwise the relay state is displayed.
+- The grid power and voltage
+- The temperature of the router box (if the sensor is installed)
+- The total routed metrics aggregated for both outputs together
+- The output status
+- The relay status (or a switch to manually control them if not in automatic mode)
+
+Possible Output Status:
+
+- `Disabled`: Output is disabled (dimmer disabled or other reason)
+- `Idle`: Output is not routing and not in bypass mode
+- `Routing`: Routing in progress
+- `Bypass`: Bypass has been activated manually
+- `Bypass Auto`: Bypass has been activated based on automatic rules
 
 > ##### IMPORTANT
 >
-> The resistance value that you see in the overview page is an estimation of the global resistance value corresponding to output 1 and output 2 combined together,
-> and this value is measured by a JSY or PZEM when routing.
+> The resistance value that you see in the overview page is a calculation or measurement of the global resistance value corresponding to output 1 and output 2 combined together.
 >
-> This is **not** the resistance value calibrated for each output in the `Hardware Config` section.
+> This is **not** the resistance value calibrated for each output in the [Output 1 and Output 2 Config](#output-1-and-output-2-config) section.
 {: .block-important }
 
-### Output 1 and 2
-
-The output sections show the state of the outputs and the possibility to control them.
+### Output 1 and Output 2
 
 [![](assets/img/screenshots/app-output.jpeg)](assets/img/screenshots/app-output.jpeg)
 
-**Energy:**
-
-- `Power`: Routed power.
-- `Apparent Power`: Apparent power in VA circulating on the wires.
-- `Power Factor`: Power factor (if lower than 1, mainly composed of harmonic component). Ideal is close to 1.
-- `Voltage`: The dimmed RMS voltage sent to the resistive load.
-- `Current`: The current in Amp sent to the resistive load.
-- `Resistance`: The resistance of the load.
-- `Energy`: The total accumulated energy routed by this output, stored in hardware (JSY and/or PZEM).
-
-> ##### IMPORTANT
->
-> A PZEM is required to see the measurements of each outputs.
-{: .block-important }
+The output sections show the state of the outputs and the possibility to control them.
 
 **Dimmer Controls:**
 
@@ -245,14 +229,24 @@ The output sections show the state of the outputs and the possibility to control
   This is a manual override. So if, when automatic bypass deactivates (in the morning for example), you hav manual bypass that is activated,
   then bypass will stay activated until you deactivate the manual override.
 
-> ##### TIP
+**Metrics:**
+
+- `Power`: Routed power.
+- `Apparent Power`: Apparent power in VA circulating on the wires.
+- `Power Factor`: Power factor (if lower than 1, mainly composed of harmonic component). Ideal is close to 1.
+- `Voltage`: The dimmed RMS voltage sent to the resistive load.
+- `Current`: The current in Amp sent to the resistive load.
+- `Resistance`: The resistance of the load.
+- `Energy`: The total accumulated energy routed by this output, stored in hardware (JSY and/or PZEM).
+
+> ##### IMPORTANT
 >
-> All these settings are applied immediately and do not require a restart
-{: .block-tip }
+> A PZEM or JSY is required to store the energy for each output.
+{: .block-important }
 
 **Graphs:**
 
-You will also find the harmonics levels and harmonic currents generated by each output.
+You will also find the harmonics levels and harmonic currents generated by each output in case of a dimmer working with phase control algorithm.
 
 [![](assets/img/screenshots/harmonics.jpeg)](assets/img/screenshots/harmonics.jpeg)
 
@@ -265,16 +259,9 @@ You can read more about harmonics in the [overview](#overview) section.
 
 ### PID
 
-> ##### WARNING
->
-> For advanced users only.
-{: .block-warning }
-
 [![](assets/img/screenshots/Default_NR_OFF.jpeg)](assets/img/screenshots/Default_NR_OFF.jpeg)
 
 This page allows to configure the PID algorithm used to control the automatic routing.
-Use only if you know what you are doing and know how to tweak a PID controller.
-
 You can change the PID settings at runtime and the effect will appear immediately.
 
 **Default Settings**
@@ -288,9 +275,10 @@ You can change the PID settings at runtime and the effect will appear immediatel
 - `Ki`: `0.3`
 - `Kd`: `0.0`
 - `Trigger`: `New Measure`
-- `Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)
 
-I also did an **[Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/)** to help you understand how the PID is working and to test different settings.
+`Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)
+
+I also created an **[Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/)** to help you understand how the PID is working and to test different settings.
 
 [![](assets/img/screenshots/pid_simulator.jpeg)](assets/img/screenshots/pid_simulator.jpeg)
 
@@ -493,40 +481,20 @@ Here are other interesting links about PID controllers:
 
 [![](assets/img/screenshots/app-network.jpeg)](assets/img/screenshots/app-network.jpeg)
 
-- `Admin Password`: the password used to access (there is no password by default):
+The device must be restarted to apply any network change.
 
-  - Any Web page, including the [REST API](rest)
-  - The Access Point when activated
-  - The Captive Portal when the router restarts and no WiFi is available
-
-- `Hostname`: the hostname of the device, if you need to change it.
-- `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
-  You will need to connect to its WiFi to access the dashboard again.
-- `Admin Password`: the password used to access the router, even in AP mode, or the captive portal. If you loose it, you will need to do a factory reset of the device.
-
-> ##### IMPORTANT
->
-> The username is always `admin`.
-> The password MUST be more than 8 characters long otherwise the device will fail to start AP mode or the Captive Portal for recovery if it needs to.
->
-{: .block-warning }
-
-**WiFi settings:**
+#### WiFi settings
 
 - `WiFi SSID`: the Home WiFi SSID to connect to
-- `WiFi BSSID`: this value wil be set to the BSSID to the WiFi selected in the CaptivePortal. You can clear this value or change it. It helps YaSolR always reconnect to the same AP when it was setup. This increase security and connection stability.
 - `WiFi Password`: the Home WiFi password to connect to
+- `WiFi BSSID`: this value wil be set to the BSSID to the WiFi selected in the CaptivePortal. You can clear this value or change it. It helps YaSolR always reconnect to the same AP when it was setup. This increase security and connection stability.
 
-**Static IP address:**
+#### Static IP Address
 
 - `Static IP`: the static IP address to use for the router
 - `Gateway`: the gateway to use for the router (usually the router IP address)
 - `Subnet Mask`: the subnet mask to use for the network (usually `255.255.255.0`)
 - `DNS Server`: the DNS server to use for the router (usually the router IP address or `8.8.8.8`)
-
-When setting a static IP, the router will try to connect with the static IP and won't use DHCP anymore.
-
-**The device must be restarted to apply the changes.**
 
 > ##### IMPORTANT
 >
@@ -537,18 +505,34 @@ When setting a static IP, the router will try to connect with the static IP and 
 > The reason is that the SafeBoot image uses another platform to make it tiny (not Arduino Core),
 > so the MAC address (and consequently IP address) might be different than YaSolR.
 > So when restarting in SafeBoot mode, you will need to find the new IP address if you do not fix it.
->
 {: .block-important }
+
+#### Misc. Network Settings
+
+- `Hostname`: the hostname of the device, if you need to change it.
+- `Admin Password`: the password used to access (there is no password by default):
+  - Any Web page, including the [REST API](rest)
+  - The Access Point when activated
+  - The Captive Portal when the router restarts and no WiFi is available
+- `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
+  You will need to connect to its WiFi to access the dashboard again.
+
+> ##### IMPORTANT
+>
+> The username is always `admin`.
+> The password MUST be more than 8 characters long otherwise the device will fail to start AP mode or the Captive Portal for recovery if it needs to.
+>
+{: .block-warning }
 
 ### NTP
 
 [![](assets/img/screenshots/app-ntp.jpeg)](assets/img/screenshots/app-ntp.jpeg)
 
+The device must be restarted to apply any change.
+
 - `NTP Server`: the NTP server to use to sync the time
 - `Timezone`: the timezone to use for the router
 - `Sync time with browser`: if the router does not have access to Internet or is not able to sync time (e.g. in AP mode), you can use this button to sync the time with your browser.
-
-**The device must be restarted to apply the changes.**
 
 ### MQTT
 
@@ -572,15 +556,26 @@ When setting a static IP, the router will try to connect with the static IP and 
   The default value is `5` seconds.
   No need to restart, it is applied immediately.
 
-**The device must be restarted to apply the changes.**
-
 > ##### IMPORTANT
 >
 > - Server certificate must be in PEM format.
->
 > - If you are changing to another server, make sure to delete or update the certificate if one is set.
 >
 {: .block-important }
+
+#### Home Assistant
+
+YaSolR supports Home Assistant Discovery: if configured, it will **automatically create a device** for the Solar Router in Home Assistant under the MQTT integration.
+
+| [![](assets/img/screenshots/ha_disco_1.jpeg)](assets/img/screenshots/ha_disco_1.jpeg) | [![](assets/img/screenshots/ha_disco_2.jpeg)](assets/img/screenshots/ha_disco_2.jpeg) |
+
+- `Home Assistant Integration`: whether to activate or not MQTT Discovery
+- `Discovery Topic`: the MQTT topic prefix to use for all the topics published by the router for Home Assistant Discovery.
+  It is set by default to `homeassistant` (which is HA's default value).
+
+You can read more about Home Assistant Discovery and how to configure it [here](https://www.home-assistant.io/docs/mqtt/discovery/).
+To configure the discovery topic, you need to go to [http://homeassistant.local:8123/config/integrations/integration/mqtt](http://homeassistant.local:8123/config/integrations/integration/mqtt), then click on `configure`, then `reconfigure` then `next`, then you can enter the discovery prefix `homeassistant`.
+Once done on Home Assistant side and YaSolR side, you should see the Solar Router device appear in Home Assistant in the list of MQTT devices.
 
 #### MQTT Topic Subscriptions
 
@@ -646,28 +641,10 @@ The Shelly sends this kind of data:
 }
 ```
 
-**The device must be restarted to apply the changes.**
-
 MQTT topics are less accurate because depend on the refresh rate of these topic, and an expiration delay of a few seconds is set in order to stop any routing if no update is received in time.
 Also, there is **1 minute expiration delay** after which the values will be considered as invalid.
 
 As a general rule, **do not use MQTT as a grid power source if you have a JSY or Remote JSY**.
-
-#### Home Assistant Discovery
-
-YaSolR supports Home Assistant Discovery: if configured, it will **automatically create a device** for the Solar Router in Home Assistant under the MQTT integration.
-
-| [![](assets/img/screenshots/ha_disco_1.jpeg)](assets/img/screenshots/ha_disco_1.jpeg) | [![](assets/img/screenshots/ha_disco_2.jpeg)](assets/img/screenshots/ha_disco_2.jpeg) |
-
-- `Home Assistant Integration`: whether to activate or not MQTT Discovery
-- `Home Assistant Discovery Topic`: the MQTT topic prefix to use for all the topics published by the router for Home Assistant Discovery.
-  It is set by default to `homeassistant` (which is HA's default value).
-
-**The device must be restarted to apply the changes.**
-
-You can read more about Home Assistant Discovery and how to configure it [here](https://www.home-assistant.io/docs/mqtt/discovery/).
-To configure the discovery topic, you need to go to [http://homeassistant.local:8123/config/integrations/integration/mqtt](http://homeassistant.local:8123/config/integrations/integration/mqtt), then click on `configure`, then `reconfigure` then `next`, then you can enter the discovery prefix `homeassistant`.
-Once done on Home Assistant side and YaSolR side, you should see the Solar Router device appear in Home Assistant in the list of MQTT devices.
 
 #### MQTT API
 
@@ -678,125 +655,34 @@ The published data can be explored with [MQTT Explorer](https://mqtt-explorer.co
 
 ### GPIO
 
-This section allows to configure the pinout for the connected hardware and get some validation feedback.
-
 [![](assets/img/screenshots/app-gpio.jpeg)](assets/img/screenshots/app-gpio.jpeg)
+
+This section allows to configure the pinout for the connected hardware and get some validation feedback.
 
 - Set the value to **-1** to disable the pin.
 - Set the input to **blank** and save to reset the pin to its default value.
 
 If you see a warning with `(Input Only)`, it means that this configured pin can only be used to read
-data.
-It perfectly OK for a ZCD, but you cannot use a pin that can only be read for a relay, DS18 sensor, etc.
-
-**The device must be restarted to apply the changes.**
-
-### Hardware
-
-This section allows to enable / disable the hardware components of the router, and get some feedback in case some activated features cannot be activated.
-
-[![](assets/img/screenshots/app-hardware.jpeg)](assets/img/screenshots/app-hardware.jpeg)
-
-Make sure to correctly configure all the hardware components you have connected to the router.
-
-**The device must be restarted to apply the changes.**
-
-> ##### NOTE
->
-> - `Output 1 Bypass Relay` and `Output 2 Bypass Relay`: these are the SSR or Electromechanical relays connected to the device and used whn you activate bypass mode.
->   Only activate if you have connected some relays to be used for the output bypass. If you did not connect any relay, you can leave them disabled and the bypass mode will not work with the dimmer set at 100%.
->
-> - `Relay 1` / `Relay 2`: these are the SSR or Electromechanical relays connected to the device and used to control external loads.
->   Only activate if you have connected some relays to be used for external loads.
->
-{: .block-note }
-
-#### Nominal Grid Frequency
-
-`Auto-detect` will automatically detect the grid frequency based on the connected measurement devices, or remote ones, or thanks to the pulse analyzer.
-It is recommended to leave the setting to `Auto-detect` unless you have a good reason to force it (no measurement device connected, etc).
-
-If you set it, frequency won't be detected from a measurement device, but will be forced to the value you set.
-
-> ##### NOTE
->
-> It can happen that your grid frequency will be switched temporarily to a non standard value (like 51Hz) if a generator is used because of some repair, etc.
-> With automatic mode, YaSolR will detect this change and adapt the routing to the new frequency.
->
-{: .block-note }
-
-#### JSY
-
-The JSY is used to measure:
-
-1. the total routed power of the outputs combined (optional) with the channel 1 (tore or clamp depending on the model)
-2. the grid power and voltage with the clamp of channel 2
-
-The JSY can be replaced by MQTT, reading the power and voltage from MQTT topics.
-See [MQTT Topic Subscriptions](#mqtt-topic-subscriptions).
-
-**Wiring:**
-
-- Channel 1 (CT1): all the router outputs should go through it
-- Channel 2 (CT2): the grid should go through it
-
-Reason is that on some JSY, channel 1 is a tore on the board while channel 2 is always a clamp.
-This is easier to put a clamp around the grid wire.
-
-> ##### NOTE
->
-> The JSY-194G labels can be wrong for RX and TX, so for this JSY, connect the JSY RX to the board RX and the JSY TX to the board TX.
->
-{: .block-note }
-
-#### JSY Remote
-
-JSY can also be replaced with a remote JSY **without any impact on routing speed**.
-You can install the [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp) on a device and connect it to the JSY.
-This is a standalone application that looks looks like this and will show all your JSY data, help you manage it, and also send the data through UDP.
-The reading rate is about **20-25 messages per second** and sending rate is 3 messages per second (because the JSY exposes 3 new measurements every second).
-
-![](https://github.com/mathieucarbou/MycilaJSY/assets/61346/3066bf12-31d5-45de-9303-d810f14731d0)
-
-You can look in the [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp) project to find more information about how to setup remote JSY and the supported protocols.
-
-JSY Remote can be activated in the Hardware section by switching the button called **"JSY Remote"**.
-
-**Wiring:**
-
-- Channel 1 (CT1): all the router outputs should go through it
-- Channel 2 (CT2): the grid should go through it
-
-Reason is that on some JSY, channel 1 is a tore on the board while channel 2 is always a clamp.
-This is easier to put a clamp around the grid wire.
+data. It perfectly OK for a ZCD, but you cannot use a pin that can only be read for a relay, DS18 sensor, etc.
 
 > ##### TIP
 >
-> JSY Remote app is automatically detected on the same network: you don't need to configure anything.
-> As soon as the Sender app will start sending data, YaSolR will receive it and display it.
+> This section allows you to set, unset or even redefine the default GPIO for Serial 1 and Serial 2 the way you want as long as they are valid UART input and output GPIO.
+> The pinout schema of your board will tell you which GPIO have restrictions.
 {: .block-tip }
 
-#### Zero-Cross Detection
+**Zero-Cross Detection (ZCD)**
 
-The Zero-Cross Detection (ZCD) module is used to detect the zero-crossing of the grid voltage.
-It is required with these types of dimmers:
+Zero-Cross Detection (ZCD) is the only feature that requires an input pin, so if you want to use it, you need to set a valid input pin for it.
+A ZCD is a module that detects the zero-crossing of the grid voltage and sends a pulse to the ESP32 each time a zero-crossing is detected.
+A ZCD is required with these types of dimmers:
 
 - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
 - Random Solid State Relay + ZCD
 - RobotDyn 24/40A
 - Triac + ZCD
 
-When auto-activating `Zero-Cross Detection`, YaSolR will first start a pulse analyzer to grab some statistics about the pulse characteristics: period and length.
-This characteristics are used to fine-tune the TRIAC firing and they can be viewed in the dashboard, in the system information (debug section) the ZCD information are exposed:
-
-- `ZCD: Pulse Width` (will depends on your ZCD module)
-- `ZCD: Pulse Period` (should be around 10ms for 50Hz and 8ms for 60Hz)
-
-Once the pulse analysis if finished (it should last around 1 second), the ZCD module will be activated and the router will start routing.
-
-Note that if the electricity is not available when YaSolR starts, the pulse analyser will wait until the electricity is back to start the pulse analysis and then activate the ZCD module.
-
-> ##### IMPORTANT
+> ##### TIP
 >
 > - RobotDyn includes a ZCD (its ZC pin).
 > - RobotDyn has a very bad ZCD circuit. I strongly suggest you use a dedicated ZCD module instead.
@@ -804,39 +690,89 @@ Note that if the electricity is not available when YaSolR starts, the pulse anal
 >   - [2024-07-24 - The Importance of a good ZCD circuit](./blog/2024-07-24_the_importance_of_a_good_zcd_circuit)
 >   - [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
 >
-{: .block-important }
+{: .block-tip }
 
-#### Victron Modbus TCP
+### Hardware
+
+[![](assets/img/screenshots/app-hardware.jpeg)](assets/img/screenshots/app-hardware.jpeg)
+
+This section allows to enable / disable the hardware components of the router.
+Make sure to correctly configure all the hardware components you have connected to the router.
+
+#### Grid
+
+You must select the grid frequency of your router (50Hz or 60Hz).
+`Auto-detect` will automatically detect your grid frequency based on the connected measurement devices, or remote ones, or thanks to the pulse analyzer.
+
+You must select the device used to measure your grid power and voltage amongst the supported ones:
+
+- MQTT
+- Victron
+- JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333
+
+**MQTT Topics**
+
+You need to configure the MQTT topics to read the grid power and voltage.
+See the [MQTT](#mqtt) section.
+
+**Victron Server**
 
 YaSolR supports connecting to Victron Modbus TCP Server to get the grid power, voltage and frequency.
+If Victron is selected, you need to configure the following parameters:
 
-- Victron: whether to activate or not the Victron Modbus TCP feature
-- Victron Modbus TCP Server: the Victron Modbus TCP server IP address
-- Victron Modbus TCP Port: the Victron Modbus TCP server port (usually `502`)
+- Server: the Victron Modbus TCP server IP address
+- Port: the Victron Modbus TCP server port (usually `502`)
 
-#### Dimmer Type
+**JSY Devices**
 
+For JSY-MK-193 and JSY-MK-194, since they have 2 channels, you must also select which channel is used to measure the grid power and voltage.
+
+For all JSY devices, you must precise if the device is connected to Serial 1, 2 or the data is coming remotely from [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/).
+Mycila JSY App is a specialized app capable of sending JSY data remotely to several YaSolR routers at a rate that is as fast as a JSY connected directly to the ESP32.
+So there is no difference in terms of performance between using a local JSY and a remote JSY.
+[Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/) is a good idea if you plan to use several routers.
+
+[![](assets/img/screenshots/app-jsy.jpeg)](assets/img/screenshots/app-jsy.jpeg)
+
+> ##### NOTE
+>
+> JSY boards sometimes have the RX and TX labels switched.
+>
+> JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
+>
+{: .block-note }
+
+#### Outputs
+
+##### Dimmer Type
+
+You must select the dimmer type or leave it to blank if you do not have a dimmer connected for this output.
 YaSolR supports all these dimmer types:
 
-All the supported dimmer types:
+1. DAC based (requires a DFRobot DAC module)
+   - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (**Phase Control**)
+   - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (**Phase Control**)
+   - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073) (**Phase Control**)
 
-- Zero-Cross Detection based:
-  - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
-  - Random Solid State Relay + ZCD
-  - RobotDyn 24/40A
-  - Triac + ZCD
-- PWM based:
-  - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V
-- DAC based:
-  - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071)
-  - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971)
-  - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)
+2. Zero-Cross Detection based (requires a ZCD):
+   - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD (**Phase Control**)
+   - Random Solid State Relay + ZCD (**Phase Control**)
+   - Random Solid State Relay + ZCD (**Cycle Stealing**)
+   - RobotDyn 24/40A (**Phase Control**)
+   - RobotDyn 24/40A (**Cycle Stealing**)
+   - Triac + ZCD (**Phase Control**)
+   - Triac + ZCD (**Cycle Stealing**)
 
-You need to select the correct dimmer type for your hardware and then restart YaSolR.
+3. PWM based:
+   - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V (**PWM Control**)
 
-Zero-Cross Detection types require to have a ZCD module connected to the router and activated.
+4. Synchronous Solid State Relay (**Cycle Stealing**)
 
-**DFRobot DAC modules:**
+All these configuration work by default if not specified using a **Phase Control** algorithm, which is the most precise dimming algorithm for resistive loads, but at the expense of creating harmonics.
+If you prefer to use a different dimming algorithm that is creating far less harmonics, you can select one of the 4 options supporting **Cycle Stealing**.
+You can read more about the different dimming algorithms and their impact on harmonics in the [overview](#overview) section.
+
+**About DFRobot DAC**
 
 You can see the full specifications of list of DFRobot DAC modules [here](https://www.dfrobot.com/blog-13458.html).
 
@@ -848,7 +784,7 @@ You can see the full specifications of list of DFRobot DAC modules [here](https:
 
 [![https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp](https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp)](https://www.dfrobot.com/product-2613.html)
 
-#### Dimmer Range Remapping
+##### Dimmer Remapping
 
 `Min/Max Remapping` allows to remap where the 0% power is set (`Min`) and where the 100% power is set (`Max`).
 When remapped, the new duty range (0-100%) will match values from `Min` to `Max` instead of `0` to `100%`.
@@ -859,42 +795,72 @@ For example, if you set the range to `10-80%, then the new 0 will match a duty c
 
 Read more about how to calibrate a voltage regulator in the [Voltage Regulators](#voltage-regulators-lsa-lctc-etc) section.
 
-#### PZEM Pairing
+##### Measurement Device
 
-- `Output 1 PZEM Pairing`: starts the pairing procedure for Output 1 PZEM-004T v3 at address 0x01.
-- `Output 2 PZEM Pairing`: starts the pairing procedure for Output 2 PZEM-004T v3 at address 0x02.
+You can optionally select a measurement device for each output in order to get some more precise metrics.
+Supported measurement devices are:
+
+- JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194
+- PZEM-004T v3 and v4
+
+If `Computed` is selected, the metrics are computed based on the configured resistance, voltage and duty cycle of the dimmer.
+
+If `Shared` is selected (usually only for Output 2), it means that you have the Output 2 wire going through the same clamp as the wire of output 1, so the measurement device will measure both outputs at the same time.
+**This is not recommended, not fully supported, and will produce wrong results**
+
+For JSY-MK-193 and JSY-MK-194, since they have 2 channels, you must also select which channel is used to measure the grid power and voltage.
+
+For JSY and PZEM you need to select if the device is connected to Serial 1, Serial 2, or remote.
+
+JSY devices can also be used remotely with [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/).
+Mycila JSY App is a specialized app capable of sending JSY data remotely to several YaSolR routers at a rate that is as fast as a JSY connected directly to the ESP32.
+So there is no difference in terms of performance between using a local JSY and a remote JSY.
+
+[![](assets/img/screenshots/app-jsy.jpeg)](assets/img/screenshots/app-jsy.jpeg)
+
+> ##### NOTE
+>
+> JSY boards sometimes have the RX and TX labels switched.
+>
+> JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
+>
+{: .block-note }
+
+##### PZEM Pairing
+
+`PZEM Pairing` starts the pairing procedure for PZEM-004T v3 at address 0x01 for output 1 and address 0x02 for output 2.
 
 Each output supports the addition of a PZEM-004T v3 sensor to monitor the power sent to the resistive load specifically for this output.
 Thanks to the PZEM per output, it is also possible to get some more precise information like the dimmed RMS voltage, resistance value, etc.
 
-The PZEM-004T v3 devices has a special installation mode: you can install 2x PZEM-004T v3 devices on the same Serial TX/RX.
+The PZEM-004T v3 devices has a special installation mode: you can install 2x PZEM-004T v3 devices on the same Serial.
 To communicate with the right one, each output will use a different slave address.
 The initial setup requires to pair each PZEM-004T v3 with the corresponding output.
 
 1. Connect the 2x PZEM-004T v3 devices to the grid (L/N) and install the clamp around the wire at the exit of the dimmer of first output
 2. Only connect the terminal wire (+5V, GND, RX, TX) of the first PZEM-004T v3 to pair to Output 1
 3. Boot the device and open the console (`http://yasolr.local/console`)
-4. Got to the `Hardware` section to activate `Output 1 PZEM`.
+4. Got to the `Hardware` section to activate `PZEM` on the right Serial (Serial 1 or Serial 2) for Output 1.
    It should be yellow if it has no electricity or if it is not paired.
-5. Press the `Output 1 PZEM Pairing` button.
+5. Press the `PZEM Pairing` button for Output 1.
 6. Verify that the pairing is successful in the console.
-   `Output 1 PZEM` should also be green in the `Hardware` section.
+   `PZEM Pairing` should also be green in the `Hardware` section.
 7. **Disconnect this first PZEM-004T v3 from the device**
 8. Connect the second PZEM (which has its clamp at the exit of the dimmer of the second output) to the device
-9. Press the `Output 2 PZEM Pairing` button.
+9. Press the `PZEM Pairing` button for Output 2.
 10. Verify that the pairing is successful in the console.
-    `Output 2 PZEM` should also be green in the `Hardware` section.
+    `PZEM Pairing` should also be green in the `Hardware` section.
 11. Now that the 2 devices have an address, you can connect them all to the device
 
 You can verify that the pairing is successful by trying to activate the dimmer in the overview page, and see if you get the output power.
 
-This complex pairing procedure is not specific to this router project but is common to any PZEM-004T device when using several PZEM-004T v3 devices on the same Serial TX/RX.
+This complex pairing procedure is not specific to this router project but is common to any PZEM-004T device when using several PZEM-004T v3 devices on the same Serial.
 You can read more at:
 
 - [mathieucarbou/MycilaPZEM](https://github.com/mathieucarbou/MycilaPZEM)
 - [mandulaj/PZEM-004T-v30](https://github.com/mandulaj/PZEM-004T-v30)
 
-#### Bypass Relay
+##### Bypass Relay
 
 Installing a relay for bypass is optional: if installed, the relay will be used to power the heater, and the dimmer will be set to 0.
 
@@ -904,10 +870,17 @@ The advantage is a simple setup, the drawbacks are:
 - the dimmer will heat up.
 - the power output of he dimmer counts as routed power so the routed power and energy will also contain the bypass power.
 
-In the `Hardware` section, `Output 1 Bypass Relay` and `Output 2 Bypass Relay` both specify if a relay is installed for the output, on top of the dimmer of course, and if it should be used when bypass is activated.
-If no relay is installed, the dimmer will be used and will be set to 100%. For each you can also select the relay: `Normally Open` or `Normally Closed`.
+In the `Hardware` section, `Bypass Relay` both specify if a relay is installed for the output, on top of the dimmer of course, and if it should be used when bypass is activated.
+If no relay is installed, the dimmer will be used and will be set to 100%.
+When activating a bypass relay you must select the relay type: `Normally Open` or `Normally Closed`.
 
-#### Temperature Sensors
+> ##### NOTE
+>
+> `Bypass Relay` are the SSR or Electromechanical relays connected to the device and used whn you activate bypass mode.
+> Only activate if you have connected some relays to be used for the output bypass. If you did not connect any relay, you can leave them disabled and the bypass mode will not work with the dimmer set at 100%.
+{: .block-note }
+
+##### Temperature Sensors
 
 The temperature sensors are used to monitor the water tank in order:
 
@@ -918,22 +891,22 @@ To activate them, buttons are available in the `Hardware` section and called `Ou
 
 Supported temperature sensor: `DS18B20`
 
-A temperature sensor can also be used to monitor the router box itself (`Overview` section): it is the button calld `Router: DS18`
+#### Relay 1 and Relay 2
 
-#### Relay Types
+> ##### NOTE
+>
+> `Relay 1` and `Relay 2` are the SSR or Electromechanical relays connected to the device and used to control external loads.
+> Only activate if you have connected some relays to be used for external loads.
+>
+{: .block-note }
 
-- `Output 1 Bypass Relay Type`: the relay type for Output 1 Bypass: Normally Open (NO) or Normally Closed (NC).
-- `Output 2 Bypass Relay Type`: the relay type for Output 2 Bypass: Normally Open (NO) or Normally Closed (NC).
-- `Relay 1 Type`: the relay type for Relay 1: Normally Open (NO) or Normally Closed (NC).
-- `Relay 2 Type`: the relay type for Relay 2: Normally Open (NO) or Normally Closed (NC).
+**Relay Automatic Control**
 
-#### Relay Automatic Control
-
-- `Relay X Automatic Control: Connected Nominal Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
+- `Automatic Control: Connected Nominal Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
   If you do so, the relay will be activated automatically based on the grid power.
   **Warning:** pay attention to set the **nominal load**, which is the official load given by teh manufacturer with a nominal voltage (230V for France).
   It can also be computed like this: `Nominal Load (Watts) = Nominal Voltage (V) * Nominal Voltage (V) / Resistance (ohms)`.
-- `Relay X Automatic Control: Tolerance (%)`: this is the percentage amount (5% by default) that is tolerated below or above before deciding to switch the relay on or off.
+- `Automatic Control: Tolerance (%)`: this is the percentage amount (5% by default) that is tolerated below or above before deciding to switch the relay on or off.
   This value is used to avoid switching the relay on and off too frequently.
 
 YaSolR supports 2 additional relays (Electromechanical or SSR, controlled with 3.3V DC) to control external loads, or to be connected to the A1 and A2 terminals of a power contactor.
@@ -954,14 +927,6 @@ You must use a SSR for that, because the relay will be switched on and off frequ
 > Remember that these relays are not power contactors and should not be used to directly control high power loads like an Electric Vehicle charge, a pump, etc.
 {: .block-warning }
 
-> ##### TIP
->
-> - **For an EV charge control**: see [Virtual Grid Power / Compatibility with EV box](#virtual-grid-power--compatibility-with-ev-box)
->
-> - **For a pump**: a contactor is recommended which can be coupled with a Shelly EM to activate / deactivate the contactor remotely, and it can be automated by Home Assistant or Jeedom based on the `Virtual Power` metric of this router, but also the hours of day, days of week, depending on the weather, and of course with some hysteresis and safety mechanisms to force the pump ON or OFF depending on some rules.
->
-{: .block-tip }
-
 **Rules of Automatic Switching**
 
 `Grid Virtual Power` is calculated by the router as `Grid Power - Routed Power`.
@@ -980,7 +945,36 @@ This is the power that would be sent to the grid if the router was not routing a
 For a 3000W three-phase resistance, 5% means 30W per relay because there is 3x 1000W resistances.
 For a 2100W three-phase resistance, 5% means 21W per relay because there is 3x 700W resistances.
 
-#### LEDs
+#### Display
+
+[![](assets/img/screenshots/app-display.gif)](assets/img/screenshots/app-display.gif)
+
+The display has to be connected to the I2C pins (SDA and SCL).
+
+- `Display Speed`: the speed at which the display will switch to the next page.
+  This setting is applied immediately and does not require a restart.
+- `Display Type`: the type of display used.
+- `Display Rotation`: the rotation of the display.
+
+Supported displays are any I2C OLED Display of type `SSD1307`, `SH1106`, `SH1107`.
+
+`SH1106` is recommended and has been extensively tested.
+
+The display will look like a carousel with a maximum of 5 pages:
+
+- Global information
+- Network information
+- Router information with relays
+- Output 1 information
+- Output 2 information
+
+#### System
+
+##### Temperature Sensor
+
+A temperature sensor can also be used to monitor the router box itself (`Overview` section).
+
+##### LEDs
 
 The LEDs are used to notify the user of some events like reset, restarts, router ready, routing, etc.
 
@@ -1003,30 +997,7 @@ The LEDs are used to notify the user of some events like reset, restarts, router
 - `STARTED`: application started and WiFi or AP mode connected
 - `STARTING`: application is booting
 
-#### Display
-
-The display has to be connected to the I2C pins (SDA and SCL).
-
-- `Display Speed`: the speed at which the display will switch to the next page.
-  This setting is applied immediately and does not require a restart.
-- `Display Type`: the type of display used.
-- `Display Rotation`: the rotation of the display.
-
-Supported displays are any I2C OLED Display of type `SSD1307`, `SH1106`, `SH1107`.
-
-`SH1106` is recommended and has been extensively tested.
-
-The display will look like a carousel with a maximum of 5 pages:
-
-- Global information
-- Network information
-- Router information with relays
-- Output 1 information
-- Output 2 information
-
-[![](assets/img/screenshots/app-display.gif)](assets/img/screenshots/app-display.gif)
-
-### Output 1 and 2 Config
+### Output 1 and Output 2 Configuration
 
 These sections allow to further configure some hardware settings and calibrate the resistance values of the loads.
 
@@ -1192,7 +1163,7 @@ This page shows a lot of statistics and information on the router.
 
 [![](assets/img/screenshots/app-statistics.jpeg)](assets/img/screenshots/app-statistics.jpeg)
 
-## Additional Hardware Information
+## Additional Features
 
 ### EV charging box compatibility with Virtual Grid Power
 
@@ -1207,53 +1178,6 @@ So the router will take whatever is not used by the EV box.
 >
 > `Virtual Grid Power` requires a PZEM or JSY in place to measure the routed power.
 {: .block-important }
-
-### Voltage Regulators (LSA, LCTC, etc)
-
-Using voltage regulators such as LSA or LCTC is possible with the help of a conversion board like the one listed in the [hardware page](./build#voltage-regulators).
-
-- The conversion board needs to be powered with a 12V DC input (you can use a Meanwell HDR-15-12 DIN rail for that, installed under a 2A breaker)
-- The GND and dimmer output of YaSolr must be connected to the PWM- and PWM+ of the conversion board instead of going to a SSR or RobotDyn
-- The output GND (-) and A0 (+) of the conversion board must be connected to the LSA or LCTC voltage regulator, at the 0-10V analog input
-
-**How it works:**
-
-1. The conversion board will transform the 100Hz 3.3V dimmer PWM signal to an analog output, which is a voltage in the range 0-10V
-2. The LSA reads this voltage and based on its level it knows how much power he has to let go to the load
-
-**Calibration:**
-
-> ##### TIP
->
-> If you use the conversion board listed, you won't need to calibrate: it works out of the box.
->
-{: .block-tip }
-
-1. Use the [`Dimmer Range Remapping` feature](#dimmer-range-remapping) to remap the dimmer range if needed to increase the base voltage or decrease the duty cycle
-2. Eventually calibrate the conversion board (potentiometer) as described in the manual of the conversion board
-3. Adjust the input voltage of the conversion board (HDR-15-12 potentiometer)
-
-**Oscilloscope views:**
-
-Here is what happens when you change the dimmer slider at 10%, 50% and 50%:
-
-|                                     **10%**                                     |                                     **50%**                                     |                                     **90%**                                     |
-| :-----------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: |
-| [![](assets/img/measurements/LSA_10p.png)](assets/img/measurements/LSA_10p.png) | [![](assets/img/measurements/LSA_50p.png)](assets/img/measurements/LSA_50p.png) | [![](assets/img/measurements/LSA_90p.png)](assets/img/measurements/LSA_90p.png) |
-
-- The red line is the input AC voltage
-- The yellow line is the Zero-Cross pulse form the ZCD (here I am using the ZCD from Daniel S.)
-- The blue line is the PWM signal sent to the conversion board: it is in other term the triac firing delay that would be applied to a triac or random SSR
-- The pink line is the current going out from the LSA to the load
-
-We can see that updating the slider in YasolR will change the current going out from the LSA to the load, and the lines are close enough so that the PID algorithm of the router will be able to still work properly.
-
-This could even be tweaked further: ideally, the pink line should match the blue line.
-
-Here, the pink line triggers AFTER the blue line at 10%, which means that the voltage going to the LSA input is not high enough when the duty cycle is low.
-The pink line triggers BEFORE the blue line at 90%, which means that the voltage going to the LSA input is too high when the duty cycle in YaSolR is at 90%.
-
-Note: using the `Dimmer Range Remapping` feature won't fix that: this is a calibration that has to be done on conversion board and or by adjusting the HDR-15-12 voltage.
 
 ## Help and support
 
