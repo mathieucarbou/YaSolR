@@ -73,7 +73,7 @@ When everything is wired and installed properly:
 5.  Go to [GPIO](#gpio) to verify or change your GPIO settings
 6.  Go to [Hardware](#hardware) to activate and configure the hardware you have
 7.  Go to [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration) to configure the router outputs and calibrate the resistance (see: [Resistance Calibration](#resistance-calibration))
-8.  Go to [Network](#network), [NTP](#ntp) and [MQTT](#mqtt) to configure them according to your needed
+8.  Go to [Network](#network), [NTP](#ntp) and [MQTT](#mqtt) to configure them according to your needs
 
 Do not forget to restart when changing the hardware settings.
 
@@ -91,7 +91,7 @@ First erase the memory (including the user data):
 esptool.py erase_flash
 ```
 
-The flash the complete `FACTORY` firmware file:
+Then flash the complete `FACTORY` firmware file:
 
 ```bash
 esptool.py write_flash 0x0 YaSolR-VERSION-MODEL-BOARD.FACTORY.bin
@@ -146,7 +146,7 @@ Here is a demo of the OTA update with SafeBoot:
 > Captive Portal and Access Point address: [http://4.3.2.1/](http://4.3.2.1/)
 {: .block-tip }
 
-A captive portal (Access Point) is started for the first time to configure the WiFi network, or when the application starts and cannot join an already configured WiFi network fro 15 seconds.
+A captive portal (Access Point) is started for the first time to configure the WiFi network, or when the application starts and cannot join an already configured WiFi network for 15 seconds.
 
 ![](assets/img/screenshots/Captive_Portal.jpeg)
 
@@ -162,7 +162,7 @@ If it is restarted and the WiFi is still not available, the Captive Portal will 
 
 ### Access Point Mode
 
-You can also chose to not connect to your Home WiFi and keep the AP mode active.
+You can also choose to not connect to your Home WiFi and keep the AP mode active.
 In this case, you will need to connect to the router WiFi each time you want to access it.
 
 In AP mode, all the features depending on Internet access and time are not available (MQTT, NTP).
@@ -205,7 +205,7 @@ Possible Output Status:
 >
 > The resistance value that you see in the overview page is a calculation or measurement of the global resistance value corresponding to output 1 and output 2 combined together.
 >
-> This is **not** the resistance value calibrated for each output in the [Output 1 and Output 2 Config](#output-1-and-output-2-config) section.
+> This is **not** the resistance value calibrated for each output in the [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration) section.
 {: .block-important }
 
 ### Output 1 and Output 2
@@ -226,7 +226,7 @@ The output sections show the state of the outputs and the possibility to control
 
 - `Bypass Automatic Control`: Activate or deactivate automatic dimmer bypass (force heating) based on hours and/or temperature.
 - `Bypass`: Activate or deactivate dimmer bypass (force heating)
-  This is a manual override. So if, when automatic bypass deactivates (in the morning for example), you hav manual bypass that is activated,
+  This is a manual override. So if, when automatic bypass deactivates (in the morning for example), you have manual bypass that is activated,
   then bypass will stay activated until you deactivate the manual override.
 
 **Metrics:**
@@ -306,7 +306,7 @@ These are the minimum and maximum output values of the PID controller in order t
   It should be set to a value lower than your setpoint, but not too close to let room for the PID to work.
   The idea is to allow the PID Controller to continue to work in the range of [`Output Min`, `Setpoint`] to smooth any sudden change but this min value should still be close to the setpoint in order for the PID to react quickly.
 
-- `Output Max`: same thing but in relationship your maximum routed power. If you have a 3kW load, you can set it to 4000W for example.
+- `Output Max`: same thing but in relation to your maximum routed power. If you have a 3kW load, you can set it to 4000W for example.
   It should be set to a value higher than your maximum load power.
   But if your solar production is lower than your load, then use your solar production.
   For example, if you have a 3kW load but only 2kW of solar production, set it to 2000W because this is not likely that you will even be able to route 2000W to the load.
@@ -316,7 +316,7 @@ These are the minimum and maximum output values of the PID controller in order t
 YaSolR provides a noise reduction filter (EMA) to smooth the input signal of the PID controller.
 This can be beneficial in some cases where the grid power measurement is noisy and creates oscillations in the PID output.
 
-**The valus is set to 0% by default (no filtering).**
+**The value is set to 0% by default (no filtering).**
 
 - 0%: no filtering
 - 30%: Light filtering - fast response, some noise reduction
@@ -487,7 +487,7 @@ The device must be restarted to apply any network change.
 
 - `WiFi SSID`: the Home WiFi SSID to connect to
 - `WiFi Password`: the Home WiFi password to connect to
-- `WiFi BSSID`: this value wil be set to the BSSID to the WiFi selected in the CaptivePortal. You can clear this value or change it. It helps YaSolR always reconnect to the same AP when it was setup. This increase security and connection stability.
+- `WiFi BSSID`: this value will be set to the BSSID to the WiFi selected in the CaptivePortal. You can clear this value or change it. It helps YaSolR always reconnect to the same AP when it was setup. This increases security and connection stability.
 
 #### Static IP Address
 
@@ -641,7 +641,7 @@ The Shelly sends this kind of data:
 }
 ```
 
-MQTT topics are less accurate because depend on the refresh rate of these topic, and an expiration delay of a few seconds is set in order to stop any routing if no update is received in time.
+MQTT topics are less accurate because they depend on the refresh rate of these topics, and an expiration delay of a few seconds is set in order to stop any routing if no update is received in time.
 Also, there is **1 minute expiration delay** after which the values will be considered as invalid.
 
 As a general rule, **do not use MQTT as a grid power source if you have a JSY or Remote JSY**.
@@ -868,7 +868,7 @@ If not installed, when activating bypass mode, the dimmer will be used and set t
 The advantage is a simple setup, the drawbacks are:
 
 - the dimmer will heat up.
-- the power output of he dimmer counts as routed power so the routed power and energy will also contain the bypass power.
+- the power output of the dimmer counts as routed power so the routed power and energy will also contain the bypass power.
 
 In the `Hardware` section, `Bypass Relay` both specify if a relay is installed for the output, on top of the dimmer of course, and if it should be used when bypass is activated.
 If no relay is installed, the dimmer will be used and will be set to 100%.
@@ -904,7 +904,7 @@ Supported temperature sensor: `DS18B20`
 
 - `Automatic Control: Connected Nominal Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
   If you do so, the relay will be activated automatically based on the grid power.
-  **Warning:** pay attention to set the **nominal load**, which is the official load given by teh manufacturer with a nominal voltage (230V for France).
+  **Warning:** pay attention to set the **nominal load**, which is the official load given by the manufacturer with a nominal voltage (230V for France).
   It can also be computed like this: `Nominal Load (Watts) = Nominal Voltage (V) * Nominal Voltage (V) / Resistance (ohms)`.
 - `Automatic Control: Tolerance (%)`: this is the percentage amount (5% by default) that is tolerated below or above before deciding to switch the relay on or off.
   This value is used to avoid switching the relay on and off too frequently.
@@ -1096,7 +1096,7 @@ For example, if the grid excess is `2000 W`, output 1 is set to `70%` and has an
 > Then, in Home Assistant, when activating manual bypass, you can create an automation that will periodically (each 5 minutes) set again the manual bypass to `true`.
 > This will have the effect to reset the timeout each time.
 > This is called a keep-alive automation.
-> A keep-alive automation is more secure because it makes sure that the manual bypass will be turned off of the process controlling the manual bypass dies.
+> A keep-alive automation is more secure because it makes sure that the manual bypass will be turned off if the process controlling the manual bypass dies.
 {: .block-tip }
 
 ### System

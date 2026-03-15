@@ -130,7 +130,7 @@ YaSolR supports many ways to measure the grid power and voltage:
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
 - Victron Modbus TCP
 - `JSY-MK-163`, `JSY-MK-227`, `JSY-MK-229`, `JSY-MK-193`, `JSY-MK-194`, `JSY-MK-333` (3-Phase), all on TTL or RS485
-- Remote JSY through [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp)
+- Remote JSY through [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/)
 
 ### Outputs
 
@@ -197,7 +197,7 @@ Each output supports an optional measurement device to measure the power routed 
 Here is a list of all supported devices:
 
 - `JSY-MK-163`, `JSY-MK-227`, `JSY-MK-229`, `JSY-MK-193`, `JSY-MK-194`, all on TTL or RS485
-- Remote JSY through [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp)
+- Remote JSY through [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/)
 - `PZEM-004T v3`, `PZEM-004T v4`
 
 #### Output Features
