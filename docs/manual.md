@@ -45,7 +45,7 @@ description: Manual
       - [Temperature Sensors](#temperature-sensors)
     - [Relay 1 and Relay 2](#relay-1-and-relay-2)
     - [Display](#display)
-    - [System](#system)
+    - [System Hardware](#system-hardware)
       - [Temperature Sensor](#temperature-sensor)
       - [LEDs](#leds)
   - [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration)
@@ -961,7 +961,7 @@ The display will look like a carousel with a maximum of 5 pages:
 - Output 1 information
 - Output 2 information
 
-#### System
+#### System Hardware
 
 ##### Temperature Sensor
 
