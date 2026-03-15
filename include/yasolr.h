@@ -162,7 +162,6 @@ extern void yasolr_configure_output2_dimmer();
 extern void yasolr_configure_output1_bypass_relay();
 extern void yasolr_configure_output2_bypass_relay();
 extern bool yasolr_isThyristorDimmer(const char* type);
-extern bool yasolr_isPWMDimmer(const char* type);
 extern bool yasolr_isDacDimmer(const char* type);
 extern bool yasolr_isCycleStealingDimmer(const char* type);
 extern bool yasolr_isZeroCrossDetectionRequired(const char* type);

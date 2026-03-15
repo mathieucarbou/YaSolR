@@ -96,15 +96,9 @@ bool yasolr_isCycleStealingDimmer(const char* type) {
 
 // these dimmers work with the Mycila::ThyristorDimmer implementation
 bool yasolr_isThyristorDimmer(const char* type) {
-  return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
-         strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
+  return strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
          strcmp(type, YASOLR_DIMMER_TRIAC) == 0;
-}
-
-// these dimmers work with the Mycila::PWMDimmer implementation
-bool yasolr_isPWMDimmer(const char* type) {
-  return strcmp(type, YASOLR_DIMMER_LSA_PWM) == 0;
 }
 
 // these dimmers work with the Mycila::DACDimmer implementation
@@ -115,8 +109,7 @@ bool yasolr_isDacDimmer(const char* type) {
 }
 
 bool yasolr_isZeroCrossDetectionRequired(const char* type) {
-  return strcmp(type, YASOLR_DIMMER_LSA_PWM_ZCD) == 0 ||
-         strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
+  return strcmp(type, YASOLR_DIMMER_ROBODYN) == 0 ||
          strcmp(type, YASOLR_DIMMER_RANDOM_SSR) == 0 ||
          strcmp(type, YASOLR_DIMMER_TRIAC) == 0 ||
          strcmp(type, YASOLR_DIMMER_ROBODYN_CYCLE_STEAL) == 0 ||
@@ -133,13 +126,6 @@ static Mycila::Dimmer* createDimmer(uint8_t outputID, const char* keyType, const
     thyristorDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
     thyristorDimmer->enablePowerLUT(true);
     return thyristorDimmer;
-  }
-
-  if (yasolr_isPWMDimmer(type)) {
-    Mycila::PWMDimmer* pwmDimmer = new Mycila::PWMDimmer();
-    pwmDimmer->setPin((gpio_num_t)config.get<int8_t>(keyPin));
-    pwmDimmer->enablePowerLUT(true);
-    return pwmDimmer;
   }
 
   if (yasolr_isDacDimmer(type)) {
