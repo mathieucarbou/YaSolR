@@ -211,7 +211,7 @@ You can change the PID settings at runtime and the effect will appear immediatel
 **Default Settings**
 
 - `Proportional Mode`: `On Input`
-- `Output Min`: `-300`
+- `Output Min`: `-800`
 - `Output Max`: `4000`
 - `Noise Reduction`: `0`
 - `Setpoint`: `0`
