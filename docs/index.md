@@ -4,6 +4,8 @@ title: Home
 description: Home
 ---
 
+# Home
+
 YaSolR is an ESP32 firmware for **Solar Router** compatible with nearly **any existing hardware**.
 It supports most hardware used in routers like:
 
