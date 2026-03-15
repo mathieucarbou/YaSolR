@@ -58,4 +58,7 @@ Here are the availabilities below:
 | <img src="./assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)            |   10 €    |        5         |
 | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure) |   15 €    |        3         |
 
-You can read more about how important a good ZCD module is in the [Blog](blogs).
+You can read more about how important a good ZCD module is in the [Blog](blogs):
+
+- [2024-07-24 - The Importance of a good ZCD circuit](./blog/2024-07-24_the_importance_of_a_good_zcd_circuit)
+- [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
