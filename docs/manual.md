@@ -1,9 +1,3 @@
----
-layout: default
-title: Manual
-description: Manual
----
-
 # YaSolR Manual
 
 - [Quick Start](#quick-start)
@@ -99,10 +93,9 @@ esptool.py write_flash 0x0 YaSolR-VERSION-MODEL-BOARD.FACTORY.bin
 
 **With [Espressif Flash Tool](https://www.espressif.com/en/support/download/other-tools) (Windows):**
 
-> ##### IMPORTANT
->
-> Be careful to not forget the `0`
-{: .block-important }
+!!! warning
+
+    Be careful to not forget the `0`
 
 ![Espressif Flash Tool](assets/img/screenshots/Espressif_Flash_Tool.png)
 
@@ -113,7 +106,7 @@ So YaSolR is using a SafeBoot image to allow updating the firmware through the W
 
 To update the firmware through OTA, please follow these steps:
 
-1. First [download the new firmware](download). The firmware file which must be used is the one ending with `.OTA.bin` (`YaSolR-<VERSION>-<MODEL>-<BOARD>.OTA.bin`)
+1. First [download the new firmware](download.md). The firmware file which must be used is the one ending with `.OTA.bin` (`YaSolR-<VERSION>-<MODEL>-<BOARD>.OTA.bin`)
 
 2. Go to the management page to restart the device in SafeBoot mode:
 
@@ -133,18 +126,15 @@ Here is a demo of the OTA update with SafeBoot:
 
 [![YaSolR OTA Update using SafeBoot mode](https://img.youtube.com/vi/9igXR-53qQ0/0.jpg)](https://www.youtube.com/watch?v=9igXR-53qQ0 "YaSolR OTA Update using SafeBoot mode")
 
-> ##### TIP
->
-> If you do not see the SafeBoot page after a refresh, you can try flashing again the SafeBoot image from the [System](#system) section.
->
-{: .block-tip }
+!!! tip
+
+    If you do not see the SafeBoot page after a refresh, you can try flashing again the SafeBoot image from the [System](#system) section.
 
 ### Captive Portal (Access Point) and WiFi
 
-> ##### TIP
->
-> Captive Portal and Access Point address: [http://4.3.2.1/](http://4.3.2.1/)
-{: .block-tip }
+!!! tip
+
+    Captive Portal and Access Point address: [http://4.3.2.1/](http://4.3.2.1/)
 
 A captive portal (Access Point) is started for the first time to configure the WiFi network, or when the application starts and cannot join an already configured WiFi network for 15 seconds.
 
@@ -173,7 +163,7 @@ You will have to manually sync the time from your browser to activate the auto b
 Here are the main links to know about in the application:
 
 - `http://yasolr.local/`: Dashboard
-- `http://yasolr.local/api`: [REST API](rest)
+- `http://yasolr.local/api`: [REST API](rest.md)
 - `http://yasolr.local/config`: Debug Configuration Page (allows to see and edit the raw configuration of the router)
 - `http://yasolr.local/console`: Web Console (only in debug mode)
 
@@ -201,12 +191,10 @@ Possible Output Status:
 - `Bypass`: Bypass has been activated manually
 - `Bypass Auto`: Bypass has been activated based on automatic rules
 
-> ##### IMPORTANT
->
-> The resistance value that you see in the overview page is a calculation or measurement of the global resistance value corresponding to output 1 and output 2 combined together.
->
-> This is **not** the resistance value calibrated for each output in the [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration) section.
-{: .block-important }
+!!! warning
+
+    The resistance value that you see in the overview page is a calculation or measurement of the global resistance value corresponding to output 1 and output 2 combined together.
+    This is **not** the resistance value calibrated for each output in the [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration) section.
 
 ### Output 1 and Output 2
 
@@ -239,10 +227,9 @@ The output sections show the state of the outputs and the possibility to control
 - `Resistance`: The resistance of the load.
 - `Energy`: The total accumulated energy routed by this output, stored in hardware (JSY and/or PZEM).
 
-> ##### IMPORTANT
->
-> A PZEM or JSY is required to store the energy for each output.
-{: .block-important }
+!!! warning
+
+    A PZEM or JSY is required to store the energy for each output.
 
 **Graphs:**
 
@@ -339,11 +326,9 @@ No filtering, during a "calm" period on the grid we can see spikes with an ampli
 
 [![](assets/img/screenshots/Default_NR_ON.jpeg)](assets/img/screenshots/Default_NR_ON.jpeg)
 
-> ##### WARNING
->
-> Noise Reduction is a double-edged sword: while it smooths the input signal, it also slows down the PID reaction time.
->
-{: .block-warning }
+!!! warning
+
+    Noise Reduction is a double-edged sword: while it smooths the input signal, it also slows down the PID reaction time.
 
 #### Setpoint
 
@@ -432,11 +417,9 @@ If you mess up the PID settings, you can always go back to the default settings,
 
 To facilitate the tuning, do not forget that you can set a setpoint of any value, so you can still simulate a situation in the late evening where you want the PID to stabilize your grid consumption at 2000W for testing.
 
-> ##### IMPORTANT
->
-> Do not leave the real-time option always activated because the data flow is so high that it impacts the device performance.
->
-{: .block-important }
+!!! warning
+
+    Do not leave the real-time option always activated because the data flow is so high that it impacts the device performance.
 
 **Demo**
 
@@ -486,33 +469,29 @@ The device must be restarted to apply any network change.
 - `Subnet Mask`: the subnet mask to use for the network (usually `255.255.255.0`)
 - `DNS Server`: the DNS server to use for the router (usually the router IP address or `8.8.8.8`)
 
-> ##### IMPORTANT
->
-> When using a board with Ethernet adapter, the static IP setting only applies to the Ethernet adapter, not the WiFi.
-> So if a WiFi SSID is configured to connect to, YaSolR will connect to the WiFi and will use DHCP to get an IP address.
->
-> **ETH board users**: You are strongly advised to **set a fixed IP address in YaSolR Network config**.
-> The reason is that the SafeBoot image uses another platform to make it tiny (not Arduino Core),
-> so the MAC address (and consequently IP address) might be different than YaSolR.
-> So when restarting in SafeBoot mode, you will need to find the new IP address if you do not fix it.
-{: .block-important }
+!!! warning
+
+    When using a board with Ethernet adapter, the static IP setting only applies to the Ethernet adapter, not the WiFi.
+    So if a WiFi SSID is configured to connect to, YaSolR will connect to the WiFi and will use DHCP to get an IP address.
+    **ETH board users**: You are strongly advised to **set a fixed IP address in YaSolR Network config**.
+    The reason is that the SafeBoot image uses another platform to make it tiny (not Arduino Core),
+    so the MAC address (and consequently IP address) might be different than YaSolR.
+    So when restarting in SafeBoot mode, you will need to find the new IP address if you do not fix it.
 
 #### Misc. Network Settings
 
 - `Hostname`: the hostname of the device, if you need to change it.
 - `Admin Password`: the password used to access (there is no password by default):
-  - Any Web page, including the [REST API](rest)
+  - Any Web page, including the [REST API](rest.md)
   - The Access Point when activated
   - The Captive Portal when the router restarts and no WiFi is available
 - `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
   You will need to connect to its WiFi to access the dashboard again.
 
-> ##### IMPORTANT
->
-> The username is always `admin`.
-> The password MUST be more than 8 characters long otherwise the device will fail to start AP mode or the Captive Portal for recovery if it needs to.
->
-{: .block-warning }
+!!! warning
+
+    The username is always `admin`.
+    The password MUST be more than 8 characters long otherwise the device will fail to start AP mode or the Captive Portal for recovery if it needs to.
 
 ### NTP
 
@@ -546,12 +525,10 @@ The device must be restarted to apply any change.
   The default value is `5` seconds.
   No need to restart, it is applied immediately.
 
-> ##### IMPORTANT
->
-> - Server certificate must be in PEM format.
-> - If you are changing to another server, make sure to delete or update the certificate if one is set.
->
-{: .block-important }
+!!! warning
+
+    - Server certificate must be in PEM format.
+    - If you are changing to another server, make sure to delete or update the certificate if one is set.
 
 #### Home Assistant
 
@@ -638,7 +615,7 @@ As a general rule, **do not use MQTT as a grid power source if you have a JSY or
 
 #### MQTT API
 
-The complete reference of the published data in MQTT is available [here](mqtt).
+The complete reference of the published data in MQTT is available [here](mqtt.md).
 The published data can be explored with [MQTT Explorer](https://mqtt-explorer.com/).
 
 [![](assets/img/screenshots/mqtt_explorer.jpeg)](assets/img/screenshots/mqtt_explorer.jpeg)
@@ -655,11 +632,10 @@ This section allows to configure the pinout for the connected hardware and get s
 If you see a warning with `(Input Only)`, it means that this configured pin can only be used to read
 data. It perfectly OK for a ZCD, but you cannot use a pin that can only be read for a relay, DS18 sensor, etc.
 
-> ##### TIP
->
-> This section allows you to set, unset or even redefine the default GPIO for Serial 1 and Serial 2 the way you want as long as they are valid UART input and output GPIO.
-> The pinout schema of your board will tell you which GPIO have restrictions.
-{: .block-tip }
+!!! tip
+
+    This section allows you to set, unset or even redefine the default GPIO for Serial 1 and Serial 2 the way you want as long as they are valid UART input and output GPIO.
+    The pinout schema of your board will tell you which GPIO have restrictions.
 
 **Zero-Cross Detection (ZCD)**
 
@@ -671,15 +647,13 @@ A ZCD is required with these types of dimmers:
 - RobotDyn 24/40A
 - Triac + ZCD
 
-> ##### TIP
->
-> - RobotDyn includes a ZCD (its ZC pin).
-> - RobotDyn has a very bad ZCD circuit. I strongly suggest you use a dedicated ZCD module instead.
->   Please have a look at these blog articles on YaSolR website for more information:
->   - [2024-07-24 - The Importance of a good ZCD circuit](./blog/2024-07-24_the_importance_of_a_good_zcd_circuit)
->   - [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
->
-{: .block-tip }
+!!! tip
+
+    - RobotDyn includes a ZCD (its ZC pin).
+    - RobotDyn has a very bad ZCD circuit. I strongly suggest you use a dedicated ZCD module instead.
+    Please have a look at these blog articles on YaSolR website for more information:
+    - [2024-07-24 - The Importance of a good ZCD circuit](blog/2024-07-24_the_importance_of_a_good_zcd_circuit.md)
+    - [2024-07-31 - Zero-Cross Pulse Detection](blog/2024-07-31_zero-cross_pulse_detection.md)
 
 ### Hardware
 
@@ -723,13 +697,10 @@ So there is no difference in terms of performance between using a local JSY and 
 
 [![](assets/img/screenshots/app-jsy.jpeg)](assets/img/screenshots/app-jsy.jpeg)
 
-> ##### NOTE
->
-> JSY boards sometimes have the RX and TX labels switched.
->
-> JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
->
-{: .block-note }
+!!! note
+
+    JSY boards sometimes have the RX and TX labels switched.
+    JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
 
 #### Outputs
 
@@ -801,13 +772,10 @@ So there is no difference in terms of performance between using a local JSY and 
 
 [![](assets/img/screenshots/app-jsy.jpeg)](assets/img/screenshots/app-jsy.jpeg)
 
-> ##### NOTE
->
-> JSY boards sometimes have the RX and TX labels switched.
->
-> JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
->
-{: .block-note }
+!!! note
+
+    JSY boards sometimes have the RX and TX labels switched.
+    JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
 
 ##### PZEM Pairing
 
@@ -857,11 +825,10 @@ In the `Hardware` section, `Bypass Relay` both specify if a relay is installed f
 If no relay is installed, the dimmer will be used and will be set to 100%.
 When activating a bypass relay you must select the relay type: `Normally Open` or `Normally Closed`.
 
-> ##### NOTE
->
-> `Bypass Relay` are the SSR or Electromechanical relays connected to the device and used whn you activate bypass mode.
-> Only activate if you have connected some relays to be used for the output bypass. If you did not connect any relay, you can leave them disabled and the bypass mode will not work with the dimmer set at 100%.
-{: .block-note }
+!!! note
+
+    `Bypass Relay` are the SSR or Electromechanical relays connected to the device and used whn you activate bypass mode.
+    Only activate if you have connected some relays to be used for the output bypass. If you did not connect any relay, you can leave them disabled and the bypass mode will not work with the dimmer set at 100%.
 
 ##### Temperature Sensors
 
@@ -876,12 +843,10 @@ Supported temperature sensor: `DS18B20`
 
 #### Relay 1 and Relay 2
 
-> ##### NOTE
->
-> `Relay 1` and `Relay 2` are the SSR or Electromechanical relays connected to the device and used to control external loads.
-> Only activate if you have connected some relays to be used for external loads.
->
-{: .block-note }
+!!! note
+
+    `Relay 1` and `Relay 2` are the SSR or Electromechanical relays connected to the device and used to control external loads.
+    Only activate if you have connected some relays to be used for external loads.
 
 **Relay Automatic Control**
 
@@ -893,22 +858,20 @@ Supported temperature sensor: `DS18B20`
   This value is used to avoid switching the relay on and off too frequently.
 
 YaSolR supports 2 additional relays (Electromechanical or SSR, controlled with 3.3V DC) to control external loads, or to be connected to the A1 and A2 terminals of a power contactor.
-Relays can also be connected to the other resistance of the water tank (three-phase resistance) as described in the [recommendations to reduce harmonics and flickering](./overview#recommendations-to-reduce-harmonics-and-flickering), in order to improve the routing and reduce harmonics.
+Relays can also be connected to the other resistance of the water tank (three-phase resistance) as described in the [recommendations to reduce harmonics and flickering](overview.md#recommendations-to-reduce-harmonics-and-flickering), in order to improve the routing and reduce harmonics.
 You must use a SSR for that, because the relay will be switched on and off frequently.
 
-> ##### NOTE
->
-> Remember that the voltage is not dimmed: these are 2 normal relays
-{: .block-note }
+!!! note
 
-> ##### WARNING
->
-> Pay attention that there is little to no hysteresis on the relays.
-> So do not use the automatic feature to switch non-resistive loads such as pumps, electric vehicle chargers, etc.
-> If you need to switch other types of load in a more complex way with some hysteresis or other complex conditions, you can use the MQTT, REST API, Home Assistant or Jeedom to query the `Virtual Power` metric and execute an automation based on this value.
-> The automation can then control the router relays remotely. The relays need to be set in `Manual Control`.
-> Remember that these relays are not power contactors and should not be used to directly control high power loads like an Electric Vehicle charge, a pump, etc.
-{: .block-warning }
+    Remember that the voltage is not dimmed: these are 2 normal relays
+
+!!! warning
+
+    Pay attention that there is little to no hysteresis on the relays.
+    So do not use the automatic feature to switch non-resistive loads such as pumps, electric vehicle chargers, etc.
+    If you need to switch other types of load in a more complex way with some hysteresis or other complex conditions, you can use the MQTT, REST API, Home Assistant or Jeedom to query the `Virtual Power` metric and execute an automation based on this value.
+    The automation can then control the router relays remotely. The relays need to be set in `Manual Control`.
+    Remember that these relays are not power contactors and should not be used to directly control high power loads like an Electric Vehicle charge, a pump, etc.
 
 **Rules of Automatic Switching**
 
@@ -1072,15 +1035,14 @@ For example, if the grid excess is `2000 W`, output 1 is set to `70%` and has an
 - `Manual Bypass Timeout`: The duration in hours after which the manual bypass, if activated, will be automatically deactivated.
   If zero, no auto-deactivation happens and you need to manually turn it off.
 
-> ##### TIP
->
-> "Manual Bypass Timeout" is a cool feature to be integrated with Home Assistant using a keep-alive automation.
-> You can for example configure YaSolR with a Manual Bypass Timeout of 0.5 h (30 minutes).
-> Then, in Home Assistant, when activating manual bypass, you can create an automation that will periodically (each 5 minutes) set again the manual bypass to `true`.
-> This will have the effect to reset the timeout each time.
-> This is called a keep-alive automation.
-> A keep-alive automation is more secure because it makes sure that the manual bypass will be turned off if the process controlling the manual bypass dies.
-{: .block-tip }
+!!! tip
+
+    "Manual Bypass Timeout" is a cool feature to be integrated with Home Assistant using a keep-alive automation.
+    You can for example configure YaSolR with a Manual Bypass Timeout of 0.5 h (30 minutes).
+    Then, in Home Assistant, when activating manual bypass, you can create an automation that will periodically (each 5 minutes) set again the manual bypass to `true`.
+    This will have the effect to reset the timeout each time.
+    This is called a keep-alive automation.
+    A keep-alive automation is more secure because it makes sure that the manual bypass will be turned off if the process controlling the manual bypass dies.
 
 ### System
 
@@ -1094,16 +1056,14 @@ For example, if the grid excess is `2000 W`, output 1 is set to `70%` and has an
 - `Energy Reset`: Reset the energy stored in all devices (JSY and PZEM) of the router.
 - `Update SafeBoot partition`: Update the SafeBoot recovery partition
 
-> ##### IMPORTANT
->
-> YaSolR is composed of 2 partitions: the main partition (called `app`) and a SafeBoot recovery partition (called `safeboot`), which is used to update YaSolR application.
-> When updating through web (OTA) it is not possible to update the partition from which the application is currently running.
-> That is why YaSolR needs to restart in SafeBoot mode to update the main application partition.
-> And consequently, from YaSolR, it is possible to update this SafeBoot recovery partition.
->
-> Pay really attention when updating the recovery partition:
-> if anything goes wrong, you will have to re-flash the complete FACTORY firmware and reconfigure everything (or restore a backup).
-{: .block-important }
+!!! warning
+
+    YaSolR is composed of 2 partitions: the main partition (called `app`) and a SafeBoot recovery partition (called `safeboot`), which is used to update YaSolR application.
+    When updating through web (OTA) it is not possible to update the partition from which the application is currently running.
+    That is why YaSolR needs to restart in SafeBoot mode to update the main application partition.
+    And consequently, from YaSolR, it is possible to update this SafeBoot recovery partition.
+    Pay really attention when updating the recovery partition:
+    if anything goes wrong, you will have to re-flash the complete FACTORY firmware and reconfigure everything (or restore a backup).
 
 SafeBoot recovery partitions can be downloaded from the [MycilaSafeBoot](https://github.com/mathieucarbou/MycilaSafeBoot) project: [https://github.com/mathieucarbou/MycilaSafeBoot/releases](https://github.com/mathieucarbou/MycilaSafeBoot/releases)
 
@@ -1118,11 +1078,10 @@ SafeBoot recovery partitions can be downloaded from the [MycilaSafeBoot](https:/
 - `Console`: Go to the Web Console page to see the logs
   **Only available when `Debug` is activated in Hardware section.**
 
-> ##### WARNING
->
-> Activating debug mode will slow down the startup and overall performance of the router because of the additional logs and flash access required.
-> Do not forget to only activate this option temporarily when troubleshooting an issue and deactivate it once finished.
-{: .block-warning }
+!!! warning
+
+    Activating debug mode will slow down the startup and overall performance of the router because of the additional logs and flash access required.
+    Do not forget to only activate this option temporarily when troubleshooting an issue and deactivate it once finished.
 
 #### Saving logs
 
@@ -1157,10 +1116,9 @@ You can use this value to inject in the EV box in order to prioritize EV chargin
 This is usually acceptable to give the EV box a priority over the water tank, because the water tank only need a small amount of routed energy to start heating, while the EV usually requires a threshold to start charging.
 So the router will take whatever is not used by the EV box.
 
-> ##### IMPORTANT
->
-> `Virtual Grid Power` requires a PZEM or JSY in place to measure the routed power.
-{: .block-important }
+!!! warning
+
+    `Virtual Grid Power` requires a PZEM or JSY in place to measure the routed power.
 
 ## Help and support
 

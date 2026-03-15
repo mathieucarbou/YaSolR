@@ -1,9 +1,3 @@
----
-layout: default
-title: Blog
-description: Remote JSY through UDP
----
-
 _Date: 2024-06-25_
 
 # Remote JSY

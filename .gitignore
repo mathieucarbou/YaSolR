@@ -6,3 +6,7 @@
 /logs
 /platformio-device-monitor*.log
 /data/*.gz
+
+# MkDocs
+/site
+/docs/_site

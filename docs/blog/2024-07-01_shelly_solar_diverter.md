@@ -1,23 +1,17 @@
----
-layout: default
-title: Blog
-description: "Shelly Solar Diverter / Router: redirects the excess solar production to a water tank or heater"
----
-
 _Date: 2024-07-01_
 
 _I've put the YaSolR project in pause for a few days to work on this very cool and awesome Shelly integration..._
 
 # Shelly Solar Diverter / Router
 
-| [![](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg)](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg) | [![](../assets/img/screenshots/shelly_solar_diverter.jpeg)](../assets/img/screenshots/shelly_solar_diverter.jpeg) |
+| [![](../../assets/img/hardware/shelly_solar_diverter_poc2.jpeg)](../../assets/img/hardware/shelly_solar_diverter_poc2.jpeg) | [![](../../assets/img/screenshots/shelly_solar_diverter.jpeg)](../../assets/img/screenshots/shelly_solar_diverter.jpeg) |
 
-- [What is a Solar Router / Diverter ?](#what-is-a-solar-router--diverter-)
+- [What is a Solar Router / Diverter ?](#what-is-a-solar-router-diverter)
 - [Shelly Solar Diverter](#shelly-solar-diverter-features)
 - [Download](#download)
 - [Hardware](#hardware)
 - [Wiring](#wiring)
-  - [Shelly Add-On + DS18B20](#shelly-add-on--ds18b20)
+  - [Shelly Add-On + DS18B20](#shelly-add-on-ds18b20)
   - [Electric Circuit](#electric-circuit)
   - [RC Snubber](#rc-snubber)
   - [Add other dimmers](#add-other-dimmers)
@@ -28,7 +22,7 @@ _I've put the YaSolR project in pause for a few days to work on this very cool a
   - [Configuration](#configuration)
   - [Several dimmers](#several-dimmers)
   - [Excess sharing amongst dimmers](#excess-sharing-amongst-dimmers)
-  - [Start / Stop Automatic Divert](#start--stop-automatic-divert)
+  - [Start / Stop Automatic Divert](#start-stop-automatic-divert)
   - [Creating a Auto Divert Virtual Switch to control the script remotely](#creating-a-auto-divert-virtual-switch-to-control-the-script-remotely)
   - [Solar Diverter Status](#solar-diverter-status)
   - [PID Control and Tuning](#pid-control-and-tuning)
@@ -193,11 +187,11 @@ The Shelly script, when activated, automatically adjusts the dimmers to the grid
 
 ## Hardware
 
-All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
+All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build.md#voltage-regulators)
 
 | [Shelly Pro EM - 50](https://www.shelly.com/fr/products/shop/proem-1x50a) (optional) | [Shelly Pro Dimmer 0/1-10V PM](https://www.shelly.com/fr/products/shelly-pro-dimmer-0-1-10v-pm) ou [Shelly Dimmer 0/1-10V PM Gen3](https://www.shelly.com/products/shelly-0-1-10v-dimmer-pm-gen3) | [Shelly Plus Add-On](https://www.shelly.com/fr/products/shop/shelly-plus-add-on) (optional) | [Temperature Sensor DS18B20](https://www.shelly.com/fr/products/shop/temperature-sensor-ds18B20) (optional) | Voltage Regulator<br>- [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html)<br>- [LCTC DTY-220V40P1](https://fr.aliexpress.com/item/1005005008018888.html) |
 | :----------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------: | :---------------------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                  ![](../assets/img/hardware/Shelly_Pro_EM_50.jpeg)                   |                                             ![](../assets/img/hardware/Shelly_Pro_Dimmer-10V.jpeg) ![](../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                                             |                        ![](../assets/img/hardware/Shelly_Addon.jpeg)                        |                                ![](../assets/img/hardware/Shelly_DS18.jpeg)                                 |                             ![](../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
+|                  ![](../../assets/img/hardware/Shelly_Pro_EM_50.jpeg)                   |                                             ![](../../assets/img/hardware/Shelly_Pro_Dimmer-10V.jpeg) ![](../../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                                             |                        ![](../../assets/img/hardware/Shelly_Addon.jpeg)                        |                                ![](../../assets/img/hardware/Shelly_DS18.jpeg)                                 |                             ![](../../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
 
 Some additional hardware are required depending on the installation.
 **Please select the amperage according to your needs.**
@@ -220,7 +214,7 @@ Shelly also sells the [Shelly Pro Dimmer 0/1-10V PM](https://www.shelly.com/prod
 
 First the easy part: the temperature sensor and the Shelly Add-On, which has to be put behind the Shelly Dimmer.
 
-| [![](../assets/img/hardware/Shelly_Addon_DS18.jpeg)](../assets/img/hardware/Shelly_Addon_DS18.jpeg) | [![](../assets/img/hardware/shelly_dimmer_with_addon.jpeg)](../assets/img/hardware/shelly_dimmer_with_addon.jpeg) |
+| [![](../../assets/img/hardware/Shelly_Addon_DS18.jpeg)](../../assets/img/hardware/Shelly_Addon_DS18.jpeg) | [![](../../assets/img/hardware/shelly_dimmer_with_addon.jpeg)](../../assets/img/hardware/shelly_dimmer_with_addon.jpeg) |
 
 ### Electric Circuit
 
@@ -236,7 +230,7 @@ First the easy part: the temperature sensor and the Shelly Add-On, which has to 
 - The neutral wire going to the voltage regulator can be a small one; it is only used for the voltage and Zero-Crossing detection.
 - Communication is done through WiFI: **make sure you have a good WiFi to reduce the connection time and improve the router speed.**
 
-[![](../assets/img/schemas/Solar_Router_Diverter.jpg)](../assets/img/schemas/Solar_Router_Diverter.jpg)
+[![](../../assets/img/schemas/Solar_Router_Diverter.jpg)](../../assets/img/schemas/Solar_Router_Diverter.jpg)
 
 ### RC Snubber
 
@@ -481,7 +475,7 @@ http://192.168.125.92/rpc/Script.Stop?id=1
 - `192.168.125.92` begin the Shelly EM 50 static IP address.
 - `1` being the script ID as seen in the Shelly interface
 
-[![](../assets/img/screenshots/shelly_script_id.jpeg) ](../assets/img/screenshots/shelly_script_id.jpeg)
+[![](../../assets/img/screenshots/shelly_script_id.jpeg) ](../../assets/img/screenshots/shelly_script_id.jpeg)
 
 ### Creating a Auto Divert Virtual Switch to control the script remotely
 
@@ -490,24 +484,24 @@ It is possible to create a virtual switch called `Auto Divert` in the Shelly App
 - Activate the addons
 - Create a new virtual switch addon
 
-[![](../assets/img/screenshots/Shelly_Pro_EM_Addon.png) ](../assets/img/screenshots/Shelly_Pro_EM_Addon.png)
+[![](../../assets/img/screenshots/Shelly_Pro_EM_Addon.png) ](../../assets/img/screenshots/Shelly_Pro_EM_Addon.png)
 
 - Then add actions to this addon
 
-[![](../assets/img/screenshots/Shelly_Pro_EM_Addon_AutoDivert.png) ](../assets/img/screenshots/Shelly_Pro_EM_Addon_AutoDivert.png)
-[![](../assets/img/screenshots/Shelly_Pro_EM_Addon_Action_Details.png) ](../assets/img/screenshots/Shelly_Pro_EM_Addon_Action_Details.png)
+[![](../../assets/img/screenshots/Shelly_Pro_EM_Addon_AutoDivert.png) ](../../assets/img/screenshots/Shelly_Pro_EM_Addon_AutoDivert.png)
+[![](../../assets/img/screenshots/Shelly_Pro_EM_Addon_Action_Details.png) ](../../assets/img/screenshots/Shelly_Pro_EM_Addon_Action_Details.png)
 
 - The actions can also be set in the actions section if needed
 
-[![](../assets/img/screenshots/Shelly_Pro_EM_Actions.png) ](../assets/img/screenshots/Shelly_Pro_EM_Actions.png)
+[![](../../assets/img/screenshots/Shelly_Pro_EM_Actions.png) ](../../assets/img/screenshots/Shelly_Pro_EM_Actions.png)
 
 Once done, the virtual switch appears in green in the Shelly App and you can also see its definition in the Shelly App (the steps above can also be done from the Shelly App).
 
-| [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) | [![](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) ](../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png)
+| [![](../../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) ](../../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Bouton.png) | [![](../../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png) ](../../assets/img/screenshots/Shelly_App_EM_Switch_Virtuel_Definition.png)
 
 If you have Home Assistant, it will automatically discover the new virtual switch and add it to the Shelly EM Device:
 
-[![](../assets/img/screenshots/Shelly_Pro_EM_Home_Assistant.png) ](../assets/img/screenshots/Shelly_Pro_EM_Home_Assistant.png)
+[![](../../assets/img/screenshots/Shelly_Pro_EM_Home_Assistant.png) ](../../assets/img/screenshots/Shelly_Pro_EM_Home_Assistant.png)
 
 Here, Auto Divert can start and stop the divert script and Bypass Relay controls the dry contact relay of the EM to force a heating.
 
@@ -611,14 +605,14 @@ You may need to use Home Assistant or Jeedom depending on what you need to do be
 
 The script uses a complex PID controller that can be tuned to really obtain a very good routing precision.
 The algorithm used and default parameters are the same as in the YaSolr project.
-You will find a lot of information in the [YaSolR manual](/manual#pid).
+You will find a lot of information in the [YaSolR manual](../manual.md#pid).
 
 The Shelly routeur having a slower feeback loop for measurements (each second for EM and could be more feom MQTT), it includes 2 PID configurations: one used when the grid excess is by default higher than 200W and another one when the excess is below. the advantage is to limit the over shoots of the PID and make it slowdown its corrections when around the setpoint.
 
 You can also use the [Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/).
 This simulator was built for YaSolR router but the PID algorithm is the same.
 
-[![](assets/img/screenshots/pid_simulator.jpeg)](assets/img/screenshots/pid_simulator.jpeg)
+[![](../../assets/img/screenshots/pid_simulator.jpeg)](../../assets/img/screenshots/pid_simulator.jpeg)
 
 ### MQTT Grid source
 
@@ -649,7 +643,7 @@ In this PoC on the left, I have used the LCTC voltage regulator which comes alre
 On the right, with the LSA.
 The Shelly Dimmer Gen 3 with the Shelly Addon are in the black enclosure, the voltage regulator on the right and the Shelly EM Pro at the top right.
 
-| [![](../assets/img/hardware/shelly_solar_diverter_poc.jpeg)](../assets/img/hardware/shelly_solar_diverter_poc.jpeg) | [![](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg)](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg) |
+| [![](../../assets/img/hardware/shelly_solar_diverter_poc.jpeg)](../../assets/img/hardware/shelly_solar_diverter_poc.jpeg) | [![](../../assets/img/hardware/shelly_solar_diverter_poc2.jpeg)](../../assets/img/hardware/shelly_solar_diverter_poc2.jpeg) |
 
 ## Help and Support
 

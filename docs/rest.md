@@ -1,9 +1,3 @@
----
-layout: default
-title: HTTP API
-description: HTTP API
----
-
 # Web Endpoints
 
 - [`/api`](#api)

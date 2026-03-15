@@ -1,12 +1,6 @@
----
-layout: default
-title: Overview
-description: Overview
----
-
 # Overview
 
-- [What is a Solar Router ?](#what-is-a-solar-router-)
+- [What is a Solar Router ?](#what-is-a-solar-router)
 - [How Does a Solar Router Work?](#how-does-a-solar-router-work)
   - [Phase Control](#phase-control)
     - [Zero-Cross Detection (ZCD)](#zero-cross-detection-zcd)

@@ -1,8 +1,7 @@
----
-layout: default
-title: Home
-description: Home
----
+<div class="yasolr-hero">
+  <img src="./assets/img/logo.png" alt="YaSolR Logo" class="yasolr-hero-logo">
+  <p class="yasolr-hero-tagline">Heat water with your Solar Production Excess!</p>
+</div>
 
 YaSolR is an ESP32 firmware for **Solar Router** compatible with nearly **any existing hardware**.
 It supports most hardware used in routers like:
@@ -14,9 +13,9 @@ It supports most hardware used in routers like:
 
 If you already have a Solar Router at home based on ESP32, built by yourself or by someone else, there is a good chance that YaSolR will be compatible.
 
-YaSolR is the **software** and this website will help you [build](build) your router.
+YaSolR is the **software** and this website will help you [build](build.md) your router.
 
-To know more about how Solar Routers work, please go to the [overview](overview) page.
+To know more about how Solar Routers work, please go to the [overview](overview.md) page.
 
 | [![](./assets/img/screenshots/app-overview-light.jpeg)](./assets/img/screenshots/app-overview-light.jpeg) | [![](./assets/img/screenshots/app-overview-dark.jpeg)](./assets/img/screenshots/app-overview-dark.jpeg) |
 
@@ -153,16 +152,14 @@ Supported dimmers:
 | `Phase Control`          |                     ✅<br/>(not recommended)                      |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ❌                                 |                          ✅<br/>(DAC module required)                          |
 | `Cycle Stealing Control` |                     ✅<br/>(not recommended)                      |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ✅                                 |                                       ❌                                       |
 
-> ##### TIP
->
-> _ZCD module required_ means that the dimmer requires a Zero-Cross Detection module so that the ESP32 knows when the AC voltage crosses the zero point (0V).
-> The [build](build) page helps you pick a ZCD module.
-{: .block-tip }
+!!! tip
 
-> ##### WARNING
->
-> The LSA / LCTC Voltage Regulators need to be controlled through a DAC (GP8211S, GP8403 or GP8413).
-{: .block-warning }
+    _ZCD module required_ means that the dimmer requires a Zero-Cross Detection module so that the ESP32 knows when the AC voltage crosses the zero point (0V).
+    The [build](build.md) page helps you pick a ZCD module.
+
+!!! warning
+
+    The LSA / LCTC Voltage Regulators need to be controlled through a DAC (GP8211S, GP8403 or GP8413).
 
 #### Bypass Relay (optional)
 
@@ -177,11 +174,10 @@ Here are the supported bypass relays:
 | :--------------------------------------------------------------: | :------------------------------------------------------: | :--------------------------------------------------: |
 | ![Electromagnetic Relay](./assets/img/hardware/DIN_2_Relay.jpeg) | ![Zero-Cross SSR](./assets/img/hardware/SSR_40A_DA.jpeg) | ![Random SSR](./assets/img/hardware/Random_SSR.jpeg) |
 
-> ##### TIP
->
-> The electromagnetic relay above is interesting because it has both a NO and NC contacts.
-> The NC contact (closed when relay is in default open position) can be connected to the dimmer and used to prevent any power to go through the dimmer when the bypass relay is on.
-{: .block-tip }
+!!! tip
+
+    The electromagnetic relay above is interesting because it has both a NO and NC contacts.
+    The NC contact (closed when relay is in default open position) can be connected to the dimmer and used to prevent any power to go through the dimmer when the bypass relay is on.
 
 #### Temperature Sensor (optional)
 
@@ -247,8 +243,8 @@ YaSolR supports up to 2 `NO / NC` relays to control external resistive loads or 
 
 The router exposes a lot of statistics and information through MQTT and REST API and provides excellent integration with Home Assistant or other home automation systems.
 
-- [REST](rest) API
-- [MQTT](mqtt) API with support for Home Assistant Auto Discovery, retained messages, TLS, etc
+- [REST](rest.md) API
+- [MQTT](mqtt.md) API with support for Home Assistant Auto Discovery, retained messages, TLS, etc
 
 ### PID Control and Tuning
 

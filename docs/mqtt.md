@@ -1,9 +1,3 @@
----
-layout: default
-title: MQTT API
-description: MQTT API
----
-
 # MQTT Topics
 
 - [`/status`](#status)

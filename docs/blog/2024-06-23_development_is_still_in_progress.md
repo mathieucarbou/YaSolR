@@ -1,9 +1,3 @@
----
-layout: default
-title: Blog
-description: Development is still in progress at a good pace
----
-
 _Date: 2024-06-23_
 
 # Development is still in progress

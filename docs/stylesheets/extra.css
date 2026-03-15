@@ -1,0 +1,166 @@
+/* Custom styling for YaSolR documentation */
+
+/* Hide the auto-generated "Home" title on the home page */
+.md-content__inner:has(.yasolr-hero) > h1 {
+  display: none;
+}
+
+/* Hero logo on home page */
+.yasolr-hero {
+  text-align: center;
+  padding: 2rem 0 1.5rem;
+}
+
+.yasolr-hero-logo {
+  width: 180px;
+  height: auto;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.yasolr-hero-tagline {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--md-primary-fg-color);
+  margin-top: 0.75rem;
+}
+
+/* Enhance the solar theme with warm colors */
+:root {
+  --md-primary-fg-color: #ffa726;
+  --md-accent-fg-color: #ff6f00;
+}
+
+/* Style admonitions to match the theme */
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: #ffa726;
+}
+
+.md-typeset .admonition.tip > .admonition-title,
+.md-typeset details.tip > summary {
+  background-color: rgba(255, 167, 38, 0.1);
+  border-color: #ffa726;
+}
+
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: #ff6f00;
+}
+
+.md-typeset .admonition.warning > .admonition-title,
+.md-typeset details.warning > summary {
+  background-color: rgba(255, 111, 0, 0.1);
+  border-color: #ff6f00;
+}
+
+/* Style for blog section */
+.md-nav__item--section:has(a[href*="blog"]) {
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+}
+
+/* Improve image display */
+.md-typeset img {
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling improvements */
+.md-typeset table:not([class]) {
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 4px;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: rgba(255, 167, 38, 0.1);
+}
+
+/* Badge styling for download page */
+.md-typeset .badge {
+  display: inline-block;
+  padding: 0.25em 0.4em;
+  font-size: 75%;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: 0.25rem;
+}
+
+/* Footer customization */
+.md-footer {
+  font-size: 0.8rem;
+}
+
+.md-footer__inner {
+  padding: 0.3rem 0.6rem;
+}
+
+.md-footer-meta {
+  background-color: rgba(0, 0, 0, 0.25);
+}
+
+.md-footer-meta__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.3rem 0;
+  font-size: 0.7rem;
+  text-align: center;
+}
+
+.md-footer-nav__link {
+  padding: 0.4rem 0;
+}
+
+.md-footer-nav__title {
+  font-size: 0.8rem;
+}
+
+/* Override Material admonition styling for the disclaimer details in footer */
+.md-footer-meta details,
+.md-footer-meta details[open] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+.md-footer-meta details > summary {
+  background: transparent !important;
+  border: none !important;
+  padding: 0.2rem 0 !important;
+  font-weight: bold !important;
+  color: rgba(255,255,255,0.85) !important;
+}
+
+.md-footer-meta details > summary::before {
+  display: none !important;
+}
+
+/* Responsive images in tables */
+.md-typeset table img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Better code block styling */
+.md-typeset code {
+  border-radius: 3px;
+}
+
+/* Enhance navigation for solar theme */
+.md-header {
+  background: linear-gradient(135deg, #ffa726 0%, #ff6f00 100%);
+}
+
+/* Logo styling */
+.md-header__title img {
+  filter: brightness(1.1);
+}

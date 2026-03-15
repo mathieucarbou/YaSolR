@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+  {{ super() }}
+
+  <!-- Giscus Comments Section -->
+  <div class="md-content__inner" style="margin-top: 2rem;">
+    <hr>
+    <script src="https://giscus.app/client.js"
+      data-repo="mathieucarbou/YaSolR"
+      data-repo-id="R_kgDOKubA2w"
+      data-category="Website comments"
+      data-category-id="DIC_kwDOKubA284Cbr4P"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="0"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="{% if config.theme.palette %}{% for palette in config.theme.palette %}{% if loop.first %}{{ 'light' }}{% endif %}{% endfor %}{% else %}light{% endif %}"
+      data-lang="en"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </div>
+{% endblock %}

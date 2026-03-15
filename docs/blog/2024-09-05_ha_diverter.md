@@ -1,18 +1,12 @@
----
-layout: default
-title: Blog
-description: "Home Assistant Solar Diverter / Router: redirects the excess solar production to a water tank or heater"
----
-
 _Date: 2024-09-05_
 
 _I've put the YaSolR project in pause for a few days to work on this very cool and awesome Home Assistant / Shelly integration..._
 
 # Home Assistant Diverter / Router
 
-| [![](../assets/img/screenshots/HA_Router_Mode_AUTO.jpeg)](../assets/img/screenshots/HA_Router_Mode_AUTO.jpeg) | [![](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg)](../assets/img/hardware/shelly_solar_diverter_poc2.jpeg) |
+| [![](../../assets/img/screenshots/HA_Router_Mode_AUTO.jpeg)](../../assets/img/screenshots/HA_Router_Mode_AUTO.jpeg) | [![](../../assets/img/hardware/shelly_solar_diverter_poc2.jpeg)](../../assets/img/hardware/shelly_solar_diverter_poc2.jpeg) |
 
-- [What is a Solar Router / Diverter ?](#what-is-a-solar-router--diverter-)
+- [What is a Solar Router / Diverter ?](#what-is-a-solar-router-diverter)
 - [Home Assistant Solar Diverter Features](#home-assistant-solar-diverter-features)
 - [Download](#download)
 - [Hardware](#hardware)
@@ -47,11 +41,11 @@ Download, doc and screenshots are at:
 
 ## Hardware
 
-All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build#voltage-regulators)
+All the components can be bought at [https://www.shelly.com/](https://www.shelly.com/), except the voltage regulator, where you can find some links [on my website](../build.md#voltage-regulators)
 
 | [Shelly Dimmer 0/1-10V PM Gen3](https://www.shelly.com/products/shelly-0-1-10v-dimmer-pm-gen3) | [Shelly Plus Add-On](https://www.shelly.com/fr/products/shop/shelly-plus-add-on) | [Temperature Sensor DS18B20](https://www.shelly.com/fr/products/shop/temperature-sensor-ds18B20) | Voltage Regulator<br>- [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html)<br>- [LCTC DTY-220V40P1](https://fr.aliexpress.com/item/1005005008018888.html) |
 | :-----------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------: | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
-|                  ![](../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                   |                  ![](../assets/img/hardware/Shelly_Addon.jpeg)                   |                           ![](../assets/img/hardware/Shelly_DS18.jpeg)                           |                             ![](../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
+|                  ![](../../assets/img/hardware/Shelly_Dimmer-10V.jpeg)                   |                  ![](../../assets/img/hardware/Shelly_Addon.jpeg)                   |                           ![](../../assets/img/hardware/Shelly_DS18.jpeg)                           |                             ![](../../assets/img/hardware/LSA-H3P50YB.jpeg)<br>![](../../assets/img/hardware/LCTC_Voltage_Regulator_DTY-220V40P1.jpeg)                             |
 
 Some additional hardware are required depending on the installation.
 **Please select the amperage according to your needs.**
@@ -73,19 +67,19 @@ It is the same as for the [Shelly Solar Diverter](2024-07-01_shelly_solar_divert
 
 **Mode OFF**
 
-![](../assets/img/screenshots/HA_Router_Mode_OFF.jpeg)
+![](../../assets/img/screenshots/HA_Router_Mode_OFF.jpeg)
 
 **Mode AUTOMATIC**
 
-![](../assets/img/screenshots/HA_Router_Mode_AUTO.jpeg)
+![](../../assets/img/screenshots/HA_Router_Mode_AUTO.jpeg)
 
 **Mode MANUAL**
 
-![](../assets/img/screenshots/HA_Router_Mode_MANUEL.jpeg)
+![](../../assets/img/screenshots/HA_Router_Mode_MANUEL.jpeg)
 
 **Example when running with a setpoint of 1000 W**
 
-![](../assets/img/screenshots/HA_Router_Graps.jpeg)
+![](../../assets/img/screenshots/HA_Router_Graps.jpeg)
 
 ## Help and Support
 
