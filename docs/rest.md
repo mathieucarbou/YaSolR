@@ -1,20 +1,10 @@
 ---
 layout: default
-title: HTTP API
-description: HTTP API
+title: REST API
+description: REST API
 ---
 
-# Web Endpoints
-
-- [`/api`](#api)
-- [`/api/config`](#apiconfig)
-- [`/api/config/backup`](#apiconfigbackup)
-- [`/api/grid`](#apigrid)
-- [`/api/router`](#apirouter)
-- [`/api/system`](#apisystem)
-- [`/api/system/reset`](#apisystemreset)
-- [`/api/system/restart`](#apisystemrestart)
-- [`/api/system/safeboot`](#apisystemsafeboot)
+# REST API
 
 ## `/api`
 

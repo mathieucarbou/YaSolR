@@ -6,43 +6,6 @@ description: Build
 
 # How to build your router
 
-- [Build Examples](#build-examples)
-  - [The Recycler](#the-recycler)
-  - [The Minimalist](#the-minimalist)
-  - [The Elegant](#the-elegant)
-  - [The Adventurer](#the-adventurer)
-  - [The Elite](#the-elite)
-  - [The Professional](#the-professional)
-  - [Possible Upgrades](#possible-upgrades)
-  - [Remote JSY](#remote-jsy)
-  - [Migration from APPER to YaSolR](#migration-from-apper-to-yasolr)
-  - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter)
-  - [Alternative: Home Assistant Solar Diverter](#alternative-home-assistant-solar-diverter)
-- [Selecting your Hardware](#selecting-your-hardware)
-  - [ESP32 Boards](#esp32-boards)
-  - [Dimmers: RobotDyn, Solid State Relay or Voltage Regulator ?](#dimmers-robotdyn-solid-state-relay-or-voltage-regulator-)
-  - [Relays: Solid State Relay or Electromagnetic Relay ?](#relays-solid-state-relay-or-electromagnetic-relay-)
-  - [How to choose a Solid State Relay ?](#how-to-choose-a-solid-state-relay-)
-- [Where to buy ?](#where-to-buy-)
-  - [ESP32 Boards](#esp32-boards-1)
-  - [RobotDyn](#robotdyn)
-  - [Random and Zero-Cross SSR](#random-and-zero-cross-ssr)
-  - [Zero-Cross Detection Modules](#zero-cross-detection-modules)
-  - [Voltage Regulators](#voltage-regulators)
-  - [Electromagnetic Relay](#electromagnetic-relay)
-  - [Measurement Devices](#measurement-devices)
-  - [Temperature Sensors, LEDs, Buttons, Displays](#temperature-sensors-leds-buttons-displays)
-  - [Mounting Accessories](#mounting-accessories)
-- [Default GPIO pinout per board](#default-gpio-pinout-per-board)
-- [Wiring](#wiring)
-  - [How to wire RobotDyn dimmer](#how-to-wire-robotdyn-dimmer)
-  - [How to wire Random Solid State Relay dimmer](#how-to-wire-random-solid-state-relay-dimmer)
-  - [How to wire DAC controlled Voltage Regulator dimmer](#how-to-wire-dac-controlled-voltage-regulator-dimmer)
-  - [How to wire Bypass Relay](#how-to-wire-bypass-relay)
-  - [How to wire JSY and PZEM](#how-to-wire-jsy-and-pzem)
-  - [How to wire accessories](#how-to-wire-accessories)
-  - [How to wire Random SSR with JSY-MK-194G ZCD](#how-to-wire-random-ssr-with-jsy-mk-194g-zcd)
-
 ## Build Examples
 
 YaSolR supports many builds and routing algorithms.

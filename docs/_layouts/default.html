@@ -42,9 +42,14 @@
   </header>
 
   <main id="content" class="main-content" role="main">
-    {{ content }}
+    <div class="page-layout">
+      <aside class="page-toc">
+        <nav id="toc"></nav>
+      </aside>
+      <div class="page-body">
+        {{ content }}
 
-    <footer class="site-footer">
+        <footer class="site-footer">
       <span class="site-footer-comments">
         <script src="https://giscus.app/client.js" data-repo="mathieucarbou/YaSolR" data-repo-id="R_kgDOKubA2w"
           data-category="Website comments" data-category-id="DIC_kwDOKubA284Cbr4P" data-mapping="pathname"
@@ -138,7 +143,68 @@
       </span>
 
     </footer>
+      </div>
+    </div>
   </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var nav = document.getElementById("toc");
+      var scope = document.querySelector(".page-body");
+
+      // Collect h2/h3/h4, skipping headings inside blockquotes (tip/warning/etc.)
+      var headings = Array.from(scope.querySelectorAll("h2, h3, h4")).filter(function (h) {
+        return h.id && !h.closest("blockquote");
+      });
+
+      if (!headings.length) {
+        document.querySelector(".page-toc").style.display = "none";
+        return;
+      }
+
+      // Build a proper 3-level nested <ul> tree
+      var lists = [];  // <ul> at each depth: 0=h2, 1=h3, 2=h4
+      var items = [];  // <li> at each depth
+      var root = document.createElement("ul");
+      root.className = "nav";
+      lists[0] = root;
+
+      headings.forEach(function (h) {
+        var depth = parseInt(h.tagName.charAt(1), 10) - 2; // h2→0, h3→1, h4→2
+
+        var a = document.createElement("a");
+        a.className = "nav-link";
+        a.href = "#" + h.id;
+        a.textContent = h.textContent;
+
+        var li = document.createElement("li");
+        li.appendChild(a);
+
+        // Create a child <ul> lazily if this depth has no list yet
+        if (!lists[depth]) {
+          var ul = document.createElement("ul");
+          ul.className = "nav";
+          if (items[depth - 1]) items[depth - 1].appendChild(ul);
+          lists[depth] = ul;
+        }
+
+        lists[depth].appendChild(li);
+        items[depth] = li;
+
+        // Reset deeper levels so they are re-created under the new parent
+        for (var d = depth + 1; d <= 2; d++) {
+          lists[d] = null;
+          items[d] = null;
+        }
+      });
+
+      nav.appendChild(root);
+
+      // Bootstrap 5 ScrollSpy
+      new bootstrap.ScrollSpy(document.body, { target: "#toc", smoothScroll: false });
+    });
+  </script>
 
   <script type="text/javascript">
     function googleTranslateElementInit() {

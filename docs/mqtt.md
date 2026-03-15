@@ -4,22 +4,7 @@ title: MQTT API
 description: MQTT API
 ---
 
-# MQTT Topics
-
-- [`/status`](#status)
-- [`/config`](#config)
-- [`/grid`](#grid)
-- [`/router`](#router)
-- [`/router/outputX`](#routeroutputx)
-- [`/system/app`](#systemapp)
-- [`/system/device`](#systemdevice)
-- [`/system/device/restart`](#systemdevicerestart)
-- [`/system/device/heap`](#systemdeviceheap)
-- [`/system/firmware`](#systemfirmware)
-- [`/system/firmware/build`](#systemfirmwarebuild)
-- [`/system/network`](#systemnetwork)
-- [`/system/network/eth`](#systemnetworketh)
-- [`/system/network/wifi`](#systemnetworkwifi)
+# MQTT API
 
 Not everything MQTT topic will update frequently (5 sec by default).
 Some topics, like configuration related, will only update when the configuration is changed.

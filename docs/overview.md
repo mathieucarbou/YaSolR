@@ -6,18 +6,6 @@ description: Overview
 
 # Overview
 
-- [What is a Solar Router ?](#what-is-a-solar-router-)
-- [How Does a Solar Router Work?](#how-does-a-solar-router-work)
-  - [Phase Control](#phase-control)
-    - [Zero-Cross Detection (ZCD)](#zero-cross-detection-zcd)
-    - [The Importance of a good ZCD circuit](#the-importance-of-a-good-zcd-circuit)
-    - [RobotDyn and Solid State Relay (SSR)](#robotdyn-and-solid-state-relay-ssr)
-    - [Harmonics](#harmonics)
-  - [Cycle Stealing Control](#cycle-stealing-control)
-    - [Flickering](#flickering)
-- [Recommendations to reduce harmonics and flickering](#recommendations-to-reduce-harmonics-and-flickering)
-- [References](#references)
-
 ## What is a Solar Router ?
 
 A _Solar Router_ allows to redirect the solar production excess to some appliances instead of returning it to the grid.

@@ -131,6 +131,153 @@ input.task-list-item-checkbox {
 
 .main-content {
   font-size: medium;
+  max-width: 90rem;
+  padding: 2rem 3rem;
+}
+
+// Override Cayman theme media-query padding on large screens
+@media screen and (min-width: 64em) {
+  .main-content {
+    max-width: 90rem;
+    padding: 2rem 3rem;
+  }
+}
+
+@media screen and (min-width: 42em) and (max-width: 64em) {
+  .main-content {
+    padding: 2rem 3rem;
+  }
+}
+
+// Two-column layout: sticky ToC sidebar + page body
+.page-layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.page-toc {
+  width: 360px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 1rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  font-size: 15px;
+
+  // Level 1 (h2)
+  nav#toc > .nav > li > a {
+    display: block;
+    padding: 3px 8px;
+    font-weight: 500;
+    color: $body-text-color;
+    text-decoration: none;
+  }
+
+  nav#toc > .nav > li > a:hover,
+  nav#toc > .nav > li > a:focus {
+    color: $section-headings-color;
+    border-left: 1px solid $section-headings-color;
+    padding-left: 7px;
+    text-decoration: none;
+  }
+
+  nav#toc > .nav > .active > a,
+  nav#toc > .nav > .active > a:hover,
+  nav#toc > .nav > .active > a:focus {
+    font-weight: bold;
+    color: $section-headings-color;
+    border-left: 2px solid $section-headings-color;
+    padding-left: 6px;
+  }
+
+  // Level 2 (h3) — always visible
+  nav#toc .nav .nav {
+    display: block;
+    padding-bottom: 4px;
+  }
+
+  nav#toc .nav .nav > li > a {
+    display: block;
+    padding: 2px 8px 2px 16px;
+    font-size: 14px;
+    font-weight: normal;
+    color: darken($body-text-color, 10%);
+    text-decoration: none;
+  }
+
+  nav#toc .nav .nav > li > a:hover,
+  nav#toc .nav .nav > li > a:focus {
+    color: $section-headings-color;
+    border-left: 1px solid $section-headings-color;
+    padding-left: 15px;
+    text-decoration: none;
+  }
+
+  nav#toc .nav .nav > .active > a,
+  nav#toc .nav .nav > .active > a:hover,
+  nav#toc .nav .nav > .active > a:focus {
+    font-weight: bold;
+    color: $section-headings-color;
+    border-left: 2px solid $section-headings-color;
+    padding-left: 14px;
+  }
+
+  // Level 3 (h4) — always visible
+  nav#toc .nav .nav .nav {
+    display: block;
+    padding-bottom: 2px;
+  }
+
+  nav#toc .nav .nav .nav > li > a {
+    display: block;
+    padding: 1px 8px 1px 26px;
+    font-size: 13px;
+    font-weight: normal;
+    color: lighten($body-text-color, 15%);
+    text-decoration: none;
+  }
+
+  nav#toc .nav .nav .nav > li > a:hover,
+  nav#toc .nav .nav .nav > li > a:focus {
+    color: $section-headings-color;
+    border-left: 1px solid $section-headings-color;
+    padding-left: 25px;
+    text-decoration: none;
+  }
+
+  nav#toc .nav .nav .nav > .active > a,
+  nav#toc .nav .nav .nav > .active > a:hover,
+  nav#toc .nav .nav .nav > .active > a:focus {
+    font-weight: bold;
+    color: $section-headings-color;
+    border-left: 2px solid $section-headings-color;
+    padding-left: 24px;
+  }
+
+  // Remove default list styling
+  .nav {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+}
+
+.page-body {
+  flex: 1;
+  min-width: 0;
+}
+
+@media screen and (max-width: 768px) {
+  .page-layout {
+    flex-direction: column;
+  }
+
+  .page-toc {
+    position: static;
+    width: 100%;
+    max-height: none;
+  }
 }
 
 :root {
