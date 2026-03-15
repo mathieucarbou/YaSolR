@@ -108,6 +108,9 @@ It is also a big **Open-Source** project following **best development practices*
     - [Waveshare ESP32-S3 ETH Board](https://www.waveshare.com/wiki/ESP32-S3-ETH) (**recommended - ETH support**)
     - [WIPI 3](https://docs.pycom.io/datasheets/development/wipy3/)
     - [WT32-ETH01](https://en.wireless-tag.com/product-item-2.html) (ETH support)
+    - APPER Routeur Solaire board
+    - Wemos D1 R32
+    - Wemos D1 Mini 32
 
 ## Detailed Features
 

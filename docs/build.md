@@ -18,6 +18,7 @@ description: Build
     * [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
   - [Possible Upgrades](#possible-upgrades)
   - [Remote JSY](#remote-jsy)
+  - [Migration from APPER to YaSolR](#migration-from-apper-to-yasolr)
   - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter)
   - [Alternative: Home Assistant Solar Diverter](#alternative-home-assistant-solar-diverter)
 - [Selecting your Hardware](#selecting-your-hardware)
@@ -289,6 +290,24 @@ Here are below what you can add to upgrade your router:
 |    <img src="./assets/img/hardware/LEDs.jpeg" style="width:150px">     | LEDs to display the system status                                                                                         |
 |   <img src="./assets/img/hardware/SH1106.jpeg" style="width:150px">    | A display to show the router information                                                                                  |
 |  <img src="./assets/img/hardware/PZEM-004T.jpeg" style="width:150px">  | A PZEM to precisely measure the routed power for each output. Only useful if you have more than one output.               |
+
+### Migration from APPER to YaSolR
+
+With the Wemos D1 R32 (`wemos_d1_uno32`):
+
+- Output 1 Dimmer: 18
+- Output 1 Bypass Relay: 17
+- Output 2 Dimmer: 22
+- Relay 1: 21
+- Relay 2: 5
+- System DS18 Sensor: 23
+- Zero-Cross Detection (ZCD): 19
+
+With the Wemos D1 Mini 32 (`wemos_d1_mini32`):
+
+- Output 1 Dimmer: 18
+- Output 1 DS18 Sensor: 23
+- Zero-Cross Detection (ZCD): 27
 
 ### Remote JSY
 
