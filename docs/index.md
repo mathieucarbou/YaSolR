@@ -161,7 +161,7 @@ Supported dimmers:
 
 > ##### WARNING
 >
-> The LSA / LCTC Voltage Regulators need to be controlled through a DAC (GP8211S, GP8403 or GP8413) or a PWM to Analog (0-10V) converter.
+> The LSA / LCTC Voltage Regulators need to be controlled through a DAC (GP8211S, GP8403 or GP8413).
 {: .block-warning }
 
 #### Bypass Relay (optional)

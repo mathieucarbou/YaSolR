@@ -13,9 +13,6 @@ description: Build
   - [The Adventurer](#the-adventurer)
   - [The Elite](#the-elite)
   - [The Professional](#the-professional)
-    - [Voltage Regulator + PWM to Analog Converter + ZCD](#voltage-regulator--pwm-to-analog-converter--zcd)
-    - [Voltage Regulator + PWM to Analog Converter only](#voltage-regulator--pwm-to-analog-converter-only)
-    - [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
   - [Possible Upgrades](#possible-upgrades)
   - [Remote JSY](#remote-jsy)
   - [Migration from APPER to YaSolR](#migration-from-apper-to-yasolr)
@@ -40,7 +37,6 @@ description: Build
 - [Wiring](#wiring)
   - [How to wire RobotDyn dimmer](#how-to-wire-robotdyn-dimmer)
   - [How to wire Random Solid State Relay dimmer](#how-to-wire-random-solid-state-relay-dimmer)
-  - [How to wire PWM controlled Voltage Regulator dimmer](#how-to-wire-pwm-controlled-voltage-regulator-dimmer)
   - [How to wire DAC controlled Voltage Regulator dimmer](#how-to-wire-dac-controlled-voltage-regulator-dimmer)
   - [How to wire Bypass Relay](#how-to-wire-bypass-relay)
   - [How to wire JSY and PZEM](#how-to-wire-jsy-and-pzem)
@@ -59,9 +55,6 @@ Here are below some examples:
 - [The Adventurer](#the-adventurer): for people who want to mitigate the flaws of the RobotDyn and do some improvements over the existing RobotDyn
 - [The Elite](#the-elite): for people who want to use a Random SSR instead of a RobotDyn to safely dim more power and have a better Zero-Cross Detection circuit
 - [The Professional](#the-professional): probably the best and safe solution out there but requires an additional power source
-  - [Voltage Regulator + PWM to Analog Converter + ZCD](#voltage-regulator--pwm-to-analog-converter--zcd)
-  - [Voltage Regulator + PWM to Analog Converter only](#voltage-regulator--pwm-to-analog-converter-only)
-  - [Voltage Regulator + DAC only](#voltage-regulator--dac-only)
 - [Possible Upgrades](#possible-upgrades): some additional components you can add to your router
 - [Remote JSY](#remote-jsy): a standalone application to place in your electrical panel to send the JSY metrics through Mycila JSY App for remote installations
 - [Alternative: The Shelly Solar Diverter](#alternative-the-shelly-solar-diverter): a limited Solar Diverter / Router with Shelly devices and a voltage regulator
@@ -205,64 +198,7 @@ The _Professional_ build uses a Voltage Regulator to control the power routing.
 This is probably the best reliable and efficient solution, but it is more complex to setup and wire.
 Voltage regulators like the LSA or LCTC have an integrated ZCD circuit to trigger at the right time based on the input voltage control.
 
-There are multiple ways to control a voltage regulator with YaSolR.
-
-> ##### TIP
->
-> - Dedicated hardware supporting high loads
-> - Supports **Phase Control** and **Cycle Stealing**
-> - Heat sink are bigger and better quality: bigger models are also available
-{: .block-tip }
-
-> ##### WARNING
->
-> - Bypass mode will use the dimmer set at 100% power
-{: .block-warning }
-
-#### Voltage Regulator + PWM to Analog Converter + ZCD
-
-This option is a good upgrade to a RobotDyn or SSR since it reuses the same components and just replaces the dimmer part with the LSA.
-It even reuses the existing ZCD circuit, and a dimmer implementation based on a ZCD, as usual, like for the RobotDyn or Random SSR.
-As such, the LSA behavior is controlled exactly like a RobotDyn or SSR would be controlled.
-
-- A voltage regulator (LSA or LCTC) is used for the dimming (phase control)
-- A dedicated **ZCD circuit** is used for the Zero-Cross Detection (it can be the JSY-MK-194G)
-- Grid power measurement can be done with a JSY (local or remote) or MQTT
-- A PWM to Analog Converter is used to control the voltage regulator (**requires a 12V input**)
-
-|                                  ESP32                                   |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333          |
-| :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
-
-> ##### WARNING
->
-> - Requires an additional 12V power supply (e.g. Mean Well HDR-15-15 12V DC)
-{: .block-warning }
-
-#### Voltage Regulator + PWM to Analog Converter only
-
-This solution skips the need to have a dedicated ZCD and uses a specific implementation in YaSolR which is specific to this PWM to Analog Converter.
-
-- A voltage regulator (LSA or LCTC) is used for the dimming (phase control)
-- Grid power measurement can be done with a JSY (local or remote) or MQTT
-- A PWM to Analog Converter is used to control the voltage regulator (**requires a 12V input**)
-
-|                                  ESP32                                   |                           Voltage Regulator                            |                                Heat Sink                                 |                        PWM to Analog Converter                         | JSY-MK-163T, JSY-MK-193, JSY-MK-194T, JSY-MK-194G or JSY-MK-333          |
-| :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | ------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px"> | <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
-
-> ##### WARNING
->
-> - Requires an additional 12V power supply (e.g. Mean Well HDR-15-15 12V DC)
-{: .block-warning }
-
-#### Voltage Regulator + DAC only
-
-**Definitely the BEST solution out there**
-
-This solution does not need a dedicated ZCD and uses a specific implementation in YaSolR which is specific to a DFRobot DAC.
-
-The big advantage of a DAC module is that is allows to control a LSA directly without the need of an external 12V supply like for the PWM to Analog Converter, and it also does not need a ZCD module.
+The big advantage of a DFRobot DAC module is that is allows to control a LSA directly through the ESP32 and without the need of a ZCD module.
 
 - A voltage regulator (LSA or LCTC) is used for the dimming (phase control)
 - Grid power measurement can be done with a JSY (local or remote) or MQTT
@@ -275,8 +211,12 @@ The big advantage of a DAC module is that is allows to control a LSA directly wi
 > ##### TIP
 >
 > - No ZCD circuit required
-> - No additional 12V power supply required
 {: .block-tip }
+
+> ##### WARNING
+>
+> - Bypass mode will use the dimmer set at 100% power
+{: .block-warning }
 
 ### Possible Upgrades
 
@@ -529,7 +469,6 @@ This ZCD circuit won't be as good as a specialized one, but it can be enough for
 | :----------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px">                     | [Loncont LSA-H3P50YB](https://fr.aliexpress.com/item/32606780994.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Cycle Stealing**                                                                                                                                                                                                                                                                                           |
 | <img src="./assets/img/hardware/LCTC_Voltage_Regulator_220V_40A.jpeg" style="width:150px"> | [LCTC Voltage Regulator 220V / 40A](https://fr.aliexpress.com/item/1005005008018888.html) or [more models without heat sink but 60A, 80A, etc](https://fr.aliexpress.com/item/20000003997748.html) (also available in 70A and more). Includes ZCD, supports **Phase Control** and **Cycle Stealing**                                                                                                                                                               |
-| <img src="./assets/img/hardware/PWM_33_0-10.jpeg" style="width:150px">                     | [3.3V PWM Signal to 0-10V Convertor ](https://fr.aliexpress.com/item/1005004859012736.html) or [this link](https://fr.aliexpress.com/item/1005006859312414.html) or [this link](https://fr.aliexpress.com/item/1005007211285500.html) or [this link](https://fr.aliexpress.com/item/1005006822631244.html). Required to use the voltage regulators to convert the ESP32 pulse signal on 3.3V to an analogic output from 0-10V (external 12V power supply required) |
 | <img src="./assets/img/hardware/DFR0971.jpg" style="width:150px">                          | [DAC: DFR0971 (based on GP8403), DFR1073 (based on GP8413), DFR1071 (based on GP8211S)](https://www.dfrobot.com/blog-13458.html)                                                                                                                                                                                                                                                                                                                                   |
 | <img src="./assets/img/hardware/lsa_heat_sink.jpeg" style="width:150px">                   | [Heat Sink 10-60A for Voltage Regulators](https://fr.aliexpress.com/item/1005001541419957.html) or [this link](https://fr.aliexpress.com/item/32823649189.html) or [this link](https://fr.aliexpress.com/item/1005003670939186.html) or [this link](https://fr.aliexpress.com/item/1005001541419957.html)                                                                                                                                                          |
 
@@ -634,7 +573,6 @@ The website display the pinout configured, the pinout layout that is live at run
 
 - [How to wire RobotDyn dimmer](#how-to-wire-robotdyn-dimmer)
 - [How to wire Random Solid State Relay dimmer](#how-to-wire-random-solid-state-relay-dimmer)
-- [How to wire PWM controlled Voltage Regulator dimmer](#how-to-wire-pwm-controlled-voltage-regulator-dimmer)
 - [How to wire DAC controlled Voltage Regulator dimmer](#how-to-wire-dac-controlled-voltage-regulator-dimmer)
 - [How to wire Bypass Relay](#how-to-wire-bypass-relay)
 - [How to wire JSY and PZEM](#how-to-wire-jsy-and-pzem)
@@ -656,14 +594,6 @@ The diagram below shows how to wire dimmers based on Random Solid State Relay.
 You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_random_ssr.jpeg).
 
 [![](./assets/img/schemas/yasolr_random_ssr.jpeg)](https://app.cirkitdesigner.com/project/af394fa8-dc6e-4785-b0c6-e0a7136aa614?view=interactive_preview)
-
-### How to wire PWM controlled Voltage Regulator dimmer
-
-The diagram below shows how to wire the PWM->Analog 0-10V module to control a LSA or LCTC voltage regulator.
-
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_pwm_lsa.jpeg).
-
-[![](./assets/img/schemas/yasolr_pwm_lsa.jpeg)](https://app.cirkitdesigner.com/project/2ea2eb65-dc90-4cab-9349-3e484f2bdbce?view=interactive_preview)
 
 ### How to wire DAC controlled Voltage Regulator dimmer
 

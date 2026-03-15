@@ -677,7 +677,6 @@ Zero-Cross Detection (ZCD) is the only feature that requires an input pin, so if
 A ZCD is a module that detects the zero-crossing of the grid voltage and sends a pulse to the ESP32 each time a zero-crossing is detected.
 A ZCD is required with these types of dimmers:
 
-- LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD
 - Random Solid State Relay + ZCD
 - RobotDyn 24/40A
 - Triac + ZCD
@@ -755,7 +754,6 @@ YaSolR supports all these dimmer types:
    - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073) (**Phase Control**)
 
 2. Zero-Cross Detection based (requires a ZCD):
-   - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V + ZCD (**Phase Control**)
    - Random Solid State Relay + ZCD (**Phase Control**)
    - Random Solid State Relay + ZCD (**Cycle Stealing**)
    - RobotDyn 24/40A (**Phase Control**)
@@ -763,10 +761,7 @@ YaSolR supports all these dimmer types:
    - Triac + ZCD (**Phase Control**)
    - Triac + ZCD (**Cycle Stealing**)
 
-3. PWM based:
-   - LSA / LCTC Voltage Regulators + PWM->Analog 0-10V (**PWM Control**)
-
-4. Synchronous Solid State Relay (**Cycle Stealing**)
+3. Synchronous Solid State Relay (**Cycle Stealing**)
 
 All these configuration work by default if not specified using a **Phase Control** algorithm, which is the most precise dimming algorithm for resistive loads, but at the expense of creating harmonics.
 If you prefer to use a different dimming algorithm that is creating far less harmonics, you can select one of the 4 options supporting **Cycle Stealing**.
@@ -789,11 +784,9 @@ You can see the full specifications of list of DFRobot DAC modules [here](https:
 `Min/Max Remapping` allows to remap where the 0% power is set (`Min`) and where the 100% power is set (`Max`).
 When remapped, the new duty range (0-100%) will match values from `Min` to `Max` instead of `0` to `100%`.
 
-This can be used for example to limit the power output of a dimmer, or to remap the pwm signal sent to a voltage regulator.
+This can be used for example to limit the power output of a dimmer, or to remap the signal sent to a voltage regulator.
 
 For example, if you set the range to `10-80%, then the new 0 will match a duty cycle of 10% and the new full power (100%) will match a duty cycle of 80%.
-
-Read more about how to calibrate a voltage regulator in the [Voltage Regulators](#voltage-regulators-lsa-lctc-etc) section.
 
 ##### Measurement Device
 
