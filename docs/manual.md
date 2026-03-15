@@ -446,16 +446,6 @@ Here is a demo of the real-time PID tuning in action:
 
 Note: the WebSocket PID output was removed
 
-**Online Web PID Simulator**
-
-YaSolR uses the [Mycila::PID](https://mathieu.carbou.me/MycilaUtilities/pid) library for its PID controller implementation.
-
-This library provides several simulators based on ESP32 and one online to test different PID settings and see how it reacts to changes in setpoint and load:
-
-=> **[https://mathieu.carbou.me/MycilaUtilities/simulator/](https://mathieu.carbou.me/MycilaUtilities/simulator/)**
-
-[![](assets/img/screenshots/pid_simulator.jpeg)](assets/img/screenshots/pid_simulator.jpeg)
-
 #### References
 
 The PID Controller that YaSolR is using is based on [Mycila::PID](https://mathieu.carbou.me/MycilaUtilities).
