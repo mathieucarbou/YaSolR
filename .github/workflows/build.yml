@@ -9,9 +9,9 @@ on:
   push:
     tags: ["v*"]
     branches: ["*"]
-    paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**"]
+    paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**", "mkdocs.yml", ".github/workflows/website.yml", ".clang-format", ".markdownlint.json"]
   pull_request:
-    paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**"]
+    paths-ignore: ["docs/**", "**/*.md", "**/portal/**", "tools/**", "test/**", "mkdocs.yml", ".github/workflows/website.yml", ".clang-format", ".markdownlint.json"]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
