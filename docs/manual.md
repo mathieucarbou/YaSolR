@@ -1,0 +1,1117 @@
+---
+layout: default
+title: Manual
+description: Manual
+---
+
+# Manual
+
+## Quick Start
+
+When everything is wired and installed properly:
+
+1.  Flash the downloaded firmware (see [Firmware First Time Installation](#firmware-first-time-installation))
+2.  Power on the system to start the application
+3.  Connect to the WiFI: `YaSolR-xxxxxx`
+4.  Connect to the Captive Portal to setup your WiFi (see: [Captive Portal (Access Point) and WiFi](#captive-portal-access-point-and-wifi))
+5.  Go to [GPIO](#gpio) to verify or change your GPIO settings
+6.  Go to [Hardware](#hardware) to activate and configure the hardware you have
+7.  Go to [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration) to configure the router outputs and calibrate the resistance (see: [Resistance Calibration](#resistance-calibration))
+8.  Go to [Network](#network), [NTP](#ntp) and [MQTT](#mqtt) to configure them according to your needs
+
+Do not forget to restart when changing the hardware settings.
+
+### Firmware First Time Installation
+
+**The firmware file which must be used for a first installation is the one ending with `.FACTORY.bin`.**
+
+Firmware can be downloaded here : [![Download](https://img.shields.io/badge/Download-firmware-green.svg)](https://yasolr.carbou.me/download)
+
+**With `esptool.py` (Linux / MacOS):**
+
+First erase the memory (including the user data):
+
+```bash
+esptool.py erase_flash
+```
+
+Then flash the complete `FACTORY` firmware file:
+
+```bash
+esptool.py write_flash 0x0 YaSolR-VERSION-MODEL-BOARD.FACTORY.bin
+```
+
+**With [Espressif Flash Tool](https://www.espressif.com/en/support/download/other-tools) (Windows):**
+
+> ##### IMPORTANT
+>
+> Be careful to not forget the `0`
+{: .block-important }
+
+![Espressif Flash Tool](assets/img/screenshots/Espressif_Flash_Tool.png)
+
+### Firmware Update
+
+Considering that YaSolR supports many features, this is a big application that is taking a lot of space on the device.
+So YaSolR is using a SafeBoot image to allow updating the firmware through the Web OTA.
+
+To update the firmware through OTA, please follow these steps:
+
+1. First [download the new firmware](download). The firmware file which must be used is the one ending with `.OTA.bin` (`YaSolR-<VERSION>-<MODEL>-<BOARD>.OTA.bin`)
+
+2. Go to the management page to restart the device in SafeBoot mode:
+
+[![](assets/img/screenshots/app-system.jpeg)](assets/img/screenshots/app-system.jpeg)
+
+3. The device will use your same YaSolR network settings (SSID, static IP address) to start in SafeBoot mode. **Just refresh the web page.**. Otherwise, look for an Access Point named YaSolR-xxx or SafeBoot-xxx
+
+4. Once connected, you should see this UI allowing you to update the YaSolR firmware
+
+[![](https://mathieu.carbou.me/MycilaSafeBoot/screenshot.png)](https://mathieu.carbou.me/MycilaSafeBoot/screenshot.png)
+
+5. After the update is successful, the device will reboot in the updated YaSolR.
+
+**Demo:**
+
+Here is a demo of the OTA update with SafeBoot:
+
+[![YaSolR OTA Update using SafeBoot mode](https://img.youtube.com/vi/9igXR-53qQ0/0.jpg)](https://www.youtube.com/watch?v=9igXR-53qQ0 "YaSolR OTA Update using SafeBoot mode")
+
+> ##### TIP
+>
+> If you do not see the SafeBoot page after a refresh, you can try flashing again the SafeBoot image from the [System](#system) section.
+>
+{: .block-tip }
+
+### Captive Portal (Access Point) and WiFi
+
+> ##### TIP
+>
+> Captive Portal and Access Point address: [http://4.3.2.1/](http://4.3.2.1/)
+{: .block-tip }
+
+A captive portal (Access Point) is started for the first time to configure the WiFi network, or when the application starts and cannot join an already configured WiFi network for 15 seconds.
+
+![](assets/img/screenshots/Captive_Portal.jpeg)
+
+The captive portal is only started for 3 minutes, to allow configuring a (new) WiFi network.
+After this delay, the portal will close, and the application will try to connect again to the WiFi.
+And again, if the WiFi cannot be reached, connected to, or is not configured, the portal will be started again.
+
+This behavior allows to still have access to the application in case of a WiFi network change, or after a power failure, when the application restarts.
+If the application restarts before the WiFi is available, it will launch the portal for 3 minutes, then restart and try to join the network again.
+
+In case of WiFi disruption (WiFi temporary down), the application will keep trying to reconnect.
+If it is restarted and the WiFi is still not available, the Captive Portal will be launched for 3 minutes, and the device will reboot after this delay.
+
+### Access Point Mode
+
+You can also choose to not connect to your Home WiFi and keep the AP mode active.
+In this case, you will need to connect to the router WiFi each time you want to access it.
+
+In AP mode, all the features depending on Internet access and time are not available (MQTT, NTP).
+You will have to manually sync the time from your browser to activate the auto bypass feature.
+
+## YaSolR Application
+
+Here are the main links to know about in the application:
+
+- `http://yasolr.local/`: Dashboard
+- `http://yasolr.local/api`: [REST API](rest)
+- `http://yasolr.local/config`: Debug Configuration Page (allows to see and edit the raw configuration of the router)
+- `http://yasolr.local/console`: Web Console (only in debug mode)
+
+_(replace `yasolr.local` with the IP address of the router)_
+
+The main dashboard is accessible at `http://yasolr.local/` and contains several sections described below.
+
+### Overview
+
+[![](assets/img/screenshots/app-overview-light.jpeg)](assets/img/screenshots/app-overview-light.jpeg)
+
+The overview section shows some global information about the router:
+
+- The grid power and voltage
+- The temperature of the router box (if the sensor is installed)
+- The total routed metrics aggregated for both outputs together
+- The output status
+- The relay status (or a switch to manually control them if not in automatic mode)
+
+Possible Output Status:
+
+- `Disabled`: Output is disabled (dimmer disabled or other reason)
+- `Idle`: Output is not routing and not in bypass mode
+- `Routing`: Routing in progress
+- `Bypass`: Bypass has been activated manually
+- `Bypass Auto`: Bypass has been activated based on automatic rules
+
+> ##### IMPORTANT
+>
+> The resistance value that you see in the overview page is a calculation or measurement of the global resistance value corresponding to output 1 and output 2 combined together.
+>
+> This is **not** the resistance value calibrated for each output in the [Output 1 and Output 2 Configuration](#output-1-and-output-2-configuration) section.
+{: .block-important }
+
+### Output 1 and Output 2
+
+[![](assets/img/screenshots/app-output.jpeg)](assets/img/screenshots/app-output.jpeg)
+
+The output sections show the state of the outputs and the possibility to control them.
+
+**Dimmer Controls:**
+
+- `Dimmer Automatic Control`: ON/OFF switch to select automatic routing mode or manual control of the dimmer.
+  Automatic mode requires a [Resistance Calibration](#resistance-calibration).
+- `Dimmer - %`: Slider to control the dimmer level manually.
+  Only available when the dimmer is not in automatic mode.
+  Otherwise the dimmer level is displayed.
+
+**Bypass Controls:**
+
+- `Bypass Automatic Control`: Activate or deactivate automatic dimmer bypass (force heating) based on hours and/or temperature.
+- `Bypass`: Activate or deactivate dimmer bypass (force heating)
+  This is a manual override. So if, when automatic bypass deactivates (in the morning for example), you have manual bypass that is activated,
+  then bypass will stay activated until you deactivate the manual override.
+
+**Metrics:**
+
+- `Power`: Routed power.
+- `Apparent Power`: Apparent power in VA circulating on the wires.
+- `Power Factor`: Power factor (if lower than 1, mainly composed of harmonic component). Ideal is close to 1.
+- `Voltage`: The dimmed RMS voltage sent to the resistive load.
+- `Current`: The current in Amp sent to the resistive load.
+- `Resistance`: The resistance of the load.
+- `Energy`: The total accumulated energy routed by this output, stored in hardware (JSY and/or PZEM).
+
+> ##### IMPORTANT
+>
+> A PZEM or JSY is required to store the energy for each output.
+{: .block-important }
+
+**Graphs:**
+
+You will also find the harmonics levels and harmonic currents generated by each output in case of a dimmer working with phase control algorithm.
+
+[![](assets/img/screenshots/harmonics.jpeg)](assets/img/screenshots/harmonics.jpeg)
+
+You can put the harmonics levels and harmonic currents in relation to the EU regulations seen in the table below.
+Please note that these calculations are approximate and are mostly used to give an idea of the harmonics generated by the router.
+
+[![](assets/img/measurements/CEI%2061000-3-2.png)](assets/img/measurements/CEI%2061000-3-2.png)
+
+You can read more about harmonics in the [overview](#overview) section.
+
+### PID
+
+[![](assets/img/screenshots/Default_NR_OFF.jpeg)](assets/img/screenshots/Default_NR_OFF.jpeg)
+
+This page allows to configure the PID algorithm used to control the automatic routing.
+You can change the PID settings at runtime and the effect will appear immediately.
+
+**Default Settings**
+
+- `Proportional Mode`: `On Input`
+- `Output Min`: `-800`
+- `Output Max`: `4000`
+- `Noise Reduction`: `0`
+- `Setpoint`: `0`
+- `Kp`: `0.1`
+- `Ki`: `0.3`
+- `Kd`: `0.0`
+- `Trigger`: `New Measure`
+
+`Real-time Data`: can be activated to see the PID action in real time in the graphs (but takes more resources)
+
+I also created an **[Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/)** to help you understand how the PID is working and to test different settings.
+
+[![](assets/img/screenshots/pid_simulator.jpeg)](assets/img/screenshots/pid_simulator.jpeg)
+
+#### Proportional Mode
+
+Determines how the PID proportional term (Kp) is calculated.
+
+1. `On Error`: the proportional term is based on the error (difference between setpoint and measured value): `P = Kp * error`
+
+2. `On Input`: the proportional term is based on the measured value differences (grid power): `P += Kp * (last_measured - measured)`
+
+`On Error` is the classic way to compute the proportional term, but it can create overshoots (going beyond the setpoint) and oscillations more than `On Input`.
+`On Input` is usually preferred for a router since it helps avoid overshoots and is more stable around setpoint.
+
+You definitely need to test.
+
+When `Trigger` is set to `New Measure`, I found best results with `On Input`.
+When `Trigger` is set to `Interval`, I found best results with `On Error`.
+
+#### Clamping (Output Min/Max)
+
+These are the minimum and maximum output values of the PID controller in order to clamp it.
+
+- `Output Min`: the minimum output value of the PID controller (negative values are allowed).
+  It should be set to a value lower than your setpoint, but not too close to let room for the PID to work.
+  The idea is to allow the PID Controller to continue to work in the range of [`Output Min`, `Setpoint`] to smooth any sudden change but this min value should still be close to the setpoint in order for the PID to react quickly.
+
+- `Output Max`: same thing but in relation to your maximum routed power. If you have a 3kW load, you can set it to 4000W for example.
+  It should be set to a value higher than your maximum load power.
+  But if your solar production is lower than your load, then use your solar production.
+  For example, if you have a 3kW load but only 2kW of solar production, set it to 2000W because this is not likely that you will even be able to route 2000W to the load.
+
+#### Noise Reduction
+
+YaSolR provides a noise reduction filter (EMA) to smooth the input signal of the PID controller.
+This can be beneficial in some cases where the grid power measurement is noisy and creates oscillations in the PID output.
+
+**The value is set to 0% by default (no filtering).**
+
+- 0%: no filtering
+- 30%: Light filtering - fast response, some noise reduction
+- 40%: Moderate filtering - balanced (recommended when used)
+- 80%: Heavy filtering - slow response, maximum noise smoothing
+
+**When to use it ?**
+
+When your grid consumption is generally stable: only considering appliances, not the solar production.
+So you do not have a lot of appliances turning on and off often.
+In this case, activating this filter will help to smooth the input signal and avoid oscillations even more.
+
+**Examples:**
+
+No filtering, during a "calm" period on the grid we can see spikes with an amplitude of 40 Watts.
+
+[![](assets/img/screenshots/Default_NR_OFF.jpeg)](assets/img/screenshots/Default_NR_OFF.jpeg)
+
+40% filtering, during a "calm" period on the grid we can see that spike amplitude is attenuated.
+
+[![](assets/img/screenshots/Default_NR_ON.jpeg)](assets/img/screenshots/Default_NR_ON.jpeg)
+
+> ##### WARNING
+>
+> Noise Reduction is a double-edged sword: while it smooths the input signal, it also slows down the PID reaction time.
+>
+{: .block-warning }
+
+#### Setpoint
+
+The setpoint is the target grid power that you want to achieve.
+
+It is usually 0, but could well be a negative value if you want to export a bit of power to the grid instead of trying to reach 0W.
+
+It could also be a positive value if you want to keep a minimum grid consumption for some reason, or test in the evening the router.
+
+#### Gains (Kp, Ki, Kd)
+
+- `Kp`: the proportional gain, is used to weight the error (`On Error` mode) or the input differences (`On Input` mode)
+
+- `Ki`: the integral gain, is used to weight the accumulated errors over time
+
+- `Kd`: the derivative gain, is used to control the weight of the error differences (last error - current error)
+
+Usually, the PID output is mostly tracked by the integral term (Ki) because it accumulates the error over time and will continue to adjust the output until the error is zero (setpoint reached).
+
+The proportional term (Kp) is used to react quickly to sudden changes, but too much Kp will create oscillations around the setpoint.
+In `On Input` mode, Kp is used to smooth the PID output and avoid overshoots. It acts a little bit like a damper / break.
+
+The derivative term (Kd) is used to react to changes in the error.
+This is usually not used in a router because it acts the opposite way of the integral term and can create instability.
+**You can leave this value to zero.**
+
+I found best results with:
+
+- `Ki` set to 1/3 or 2/3 (0.3, 0.6), depending on `Trigger` and `Proportional Mode`
+- `Kp` set to a lower value or equal to `Ki`
+- `Kd` kept to `0`
+
+[![](assets/img/screenshots/Reaction_aux_mesures.jpeg)](assets/img/screenshots/Reaction_aux_mesures.jpeg)
+
+#### Trigger
+
+The trigger determines when the PID controller is called to compute a new output value.
+
+- `New Measure`: the PID controller is called each time a new grid power measurement is received.
+  With a JSY or JSY Remote, this is happening several times per second.
+  With MQTT, this is random and sometimes no value can come for more than a second, which is very bad.
+  `Proportional Mode` can be set to `On Input` in this case: it leads to better stability and avoids overshoots.
+
+- `Interval`: the PID controller is called at a regular interval (from 100ms to 2s).
+  This is useful when measurements are not frequent enough (like with MQTT) to keep the PID working and adjusting the output in order to keep forcing a change in the load and consequently trigger new measurements.
+  In this case, `Proportional Mode` can be set to `On Error`: it leads to a faster reaction to reach the setpoint.
+
+**Examples with MQTT with a different trigger mode.**
+
+| [![](assets/img/screenshots/MQTT_aux_mesures.jpeg)](assets/img/screenshots/MQTT_aux_mesures.jpeg) | [![](assets/img/screenshots/MQTT_aux_500ms.jpeg)](assets/img/screenshots/MQTT_aux_500ms.jpeg) |
+
+Note: I forgot to switch the proportional mode to `On Error` in the second screenshot. But usually, with a slow measurement source like MQTT, it is better to use `On Input`.
+
+**Example with JSY**
+
+| [![](assets/img/screenshots/Reaction_aux_mesures.jpeg)](assets/img/screenshots/Reaction_aux_mesures.jpeg) | [![](assets/img/screenshots/Reaction_aux_100ms_avec_reduct_bruit.jpeg)](assets/img/screenshots/Reaction_aux_100ms_avec_reduct_bruit.jpeg) |
+
+#### Tuning
+
+The first thing to really understand about a router / diverter is that **its efficiency is directly linked to the frequency of measurements and the speed of reaction of the router**.
+The faster the router will react to a change in grid power, the better it will truly optimize the self-consumption.
+
+For example, a JSY (connected or remote) can provide several measurements per second and the router will react directly to these changes.
+So a change of grid power is immediately detected and corrected to adjust the routed power.
+
+At the opposite, if your measurements are coming from MQTT at an infrequent rate (typical for Home Assistant),
+the router will only react to past measurements and will apply corrections based on some old data.
+So it will create consumption and export peaks because the computed correction a few seconds ago is not valid anymore.
+
+Whether measurements are frequent or not, the PID controller will try to adapt to the situation in order to smooth grid power and avoid as much as possible oscillations.
+If no measurement is received for a long time (2 seconds), the PID controller will be called again with the last measurement which will have the effect to slowly continuing to apply the same correction until a new measurement is received.
+
+**Graphs**
+
+`Real-time Data` option can be activated to see the PID action in real time in the graphs (but takes more resources).
+
+Displayed graphs:
+
+- The PID Input, which is the measured grid power, smoothed by the Noise Reduction filter if activated
+- The PID output, which is the available routed power computed by the PID controller
+- The proportional, integral and derivative terms of the PID controller
+
+Try to play with the PID settings to see how it reacts to changes in grid power with the Real-time Data option activated.
+
+If you mess up the PID settings, you can always go back to the default settings, stop and restart the automatic routing.
+
+To facilitate the tuning, do not forget that you can set a setpoint of any value, so you can still simulate a situation in the late evening where you want the PID to stabilize your grid consumption at 2000W for testing.
+
+> ##### IMPORTANT
+>
+> Do not leave the real-time option always activated because the data flow is so high that it impacts the device performance.
+>
+{: .block-important }
+
+**Demo**
+
+Here is a demo of the real-time PID tuning in action:
+
+[![PID Tuning in YaSolR (Yet Another Solar Router)](https://img.youtube.com/vi/ygSpUxKYlUE/0.jpg)](https://www.youtube.com/watch?v=ygSpUxKYlUE "PID Tuning in YaSolR (Yet Another Solar Router)")
+
+Note: the WebSocket PID output was removed
+
+#### References
+
+The PID Controller that YaSolR is using is based on [Mycila::PID](https://mathieu.carbou.me/MycilaUtilities).
+This is a complete PID controller implementation with a lot of features, base on the famous PID-related work from [Brett Beauregard](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/).
+
+This library also contains a complete [PID simulator](https://youtu.be/aSKE0_tJjhw) with grid power, solar production and a load.
+You can use it to test several parameters and see how the PID reacts to changes in setpoint and load.
+
+The PID controller documentation is available at https://mathieu.carbou.me/MycilaUtilities/pid
+
+Here are other interesting links about PID controllers:
+
+- [Improving the Beginner’s PID – Introduction](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-introduction/)
+- [Improving the Beginner’s PID – Derivative Kick](http://brettbeauregard.com/blog/2011/04/improving-the-beginners-pid-derivative-kick/)
+- [Introducing Proportional On Measurement](http://brettbeauregard.com/blog/2017/06/introducing-proportional-on-measurement/)
+- [Proportional on Measurement – The Code](http://brettbeauregard.com/blog/2017/06/proportional-on-measurement-the-code/)
+- [QuickPID](https://github.com/Dlloydev/QuickPID) - Arduino / ESP32
+- [Arduino-PID-Library](https://github.com/br3ttb/Arduino-PID-Library) - Arduino / ESP32
+- [simple-pid](https://github.com/m-lundberg/simple-pid) in Python (and its [documentation](https://simple-pid.readthedocs.io/en/latest/user_guide.html))
+- [Simple PID Controller](https://github.com/bvweerd/simple_pid_controller/) (for Home Assistant)
+
+### Network
+
+[![](assets/img/screenshots/app-network.jpeg)](assets/img/screenshots/app-network.jpeg)
+
+The device must be restarted to apply any network change.
+
+#### WiFi settings
+
+- `WiFi SSID`: the Home WiFi SSID to connect to
+- `WiFi Password`: the Home WiFi password to connect to
+- `WiFi BSSID`: this value will be set to the BSSID to the WiFi selected in the CaptivePortal. You can clear this value or change it. It helps YaSolR always reconnect to the same AP when it was setup. This increases security and connection stability.
+
+#### Static IP Address
+
+- `Static IP`: the static IP address to use for the router
+- `Gateway`: the gateway to use for the router (usually the router IP address)
+- `Subnet Mask`: the subnet mask to use for the network (usually `255.255.255.0`)
+- `DNS Server`: the DNS server to use for the router (usually the router IP address or `8.8.8.8`)
+
+> ##### IMPORTANT
+>
+> When using a board with Ethernet adapter, the static IP setting only applies to the Ethernet adapter, not the WiFi.
+> So if a WiFi SSID is configured to connect to, YaSolR will connect to the WiFi and will use DHCP to get an IP address.
+>
+> **ETH board users**: You are strongly advised to **set a fixed IP address in YaSolR Network config**.
+> The reason is that the SafeBoot image uses another platform to make it tiny (not Arduino Core),
+> so the MAC address (and consequently IP address) might be different than YaSolR.
+> So when restarting in SafeBoot mode, you will need to find the new IP address if you do not fix it.
+{: .block-important }
+
+#### Misc. Network Settings
+
+- `Hostname`: the hostname of the device, if you need to change it.
+- `Admin Password`: the password used to access (there is no password by default):
+  - Any Web page, including the [REST API](rest)
+  - The Access Point when activated
+  - The Captive Portal when the router restarts and no WiFi is available
+- `Stay in AP Mode`: whether to activate or not the Access Point mode: switching the button will ask the router to stay in AP mode after reboot.
+  You will need to connect to its WiFi to access the dashboard again.
+
+> ##### IMPORTANT
+>
+> The username is always `admin`.
+> The password MUST be more than 8 characters long otherwise the device will fail to start AP mode or the Captive Portal for recovery if it needs to.
+>
+{: .block-warning }
+
+### NTP
+
+[![](assets/img/screenshots/app-ntp.jpeg)](assets/img/screenshots/app-ntp.jpeg)
+
+The device must be restarted to apply any change.
+
+- `NTP Server`: the NTP server to use to sync the time
+- `Timezone`: the timezone to use for the router
+- `Sync time with browser`: if the router does not have access to Internet or is not able to sync time (e.g. in AP mode), you can use this button to sync the time with your browser.
+
+### MQTT
+
+[![](assets/img/screenshots/app-mqtt.jpeg)](assets/img/screenshots/app-mqtt.jpeg)
+
+#### MQTT Configuration
+
+- `MQTT`: whether to activate or not the MQTT feature
+- `Server`: the MQTT broker address
+- `Port`: the MQTT broker port (usually `1883` or `8883` for TLS)
+- `Username`: the MQTT username
+- `Password`: the MQTT password
+- `Encryption`: whether to use TLS or not (false by default).
+- `Server Certificate`: you can upload the server certificate when using SSL, if the server certificate is self-signed or its authority not in the trusted list of the ESP32.
+- `Remove Server Certificate`: removes the installed server certificate.
+- `Base Topic`: the MQTT topic prefix to use for all the topics published by the router.
+  It is set by default to `yasolr_<ID>`.
+  **I strongly recommend to keep this default value.**
+  The ID won't change except if you change the device board.
+- `Publish Interval`: the interval in seconds between each MQTT publication of the router data.
+  The default value is `5` seconds.
+  No need to restart, it is applied immediately.
+
+> ##### IMPORTANT
+>
+> - Server certificate must be in PEM format.
+> - If you are changing to another server, make sure to delete or update the certificate if one is set.
+>
+{: .block-important }
+
+#### Home Assistant
+
+YaSolR supports Home Assistant Discovery: if configured, it will **automatically create a device** for the Solar Router in Home Assistant under the MQTT integration.
+
+| [![](assets/img/screenshots/ha_disco_1.jpeg)](assets/img/screenshots/ha_disco_1.jpeg) | [![](assets/img/screenshots/ha_disco_2.jpeg)](assets/img/screenshots/ha_disco_2.jpeg) |
+
+- `Home Assistant Integration`: whether to activate or not MQTT Discovery
+- `Discovery Topic`: the MQTT topic prefix to use for all the topics published by the router for Home Assistant Discovery.
+  It is set by default to `homeassistant` (which is HA's default value).
+
+You can read more about Home Assistant Discovery and how to configure it [here](https://www.home-assistant.io/docs/mqtt/discovery/).
+To configure the discovery topic, you need to go to [http://homeassistant.local:8123/config/integrations/integration/mqtt](http://homeassistant.local:8123/config/integrations/integration/mqtt), then click on `configure`, then `reconfigure` then `next`, then you can enter the discovery prefix `homeassistant`.
+Once done on Home Assistant side and YaSolR side, you should see the Solar Router device appear in Home Assistant in the list of MQTT devices.
+
+#### MQTT Topic Subscriptions
+
+If is possible to listen to some MQTT topics to read the grid voltage, grid power and router output temperatures.
+
+- `Grid Voltage`: if set to a MQTT Topic, the router will listen to it to read the Grid voltage.
+  YaSolR supports raw values and JSON values like Shelly EM and 3EM.
+- `Grid Power`: if set to a MQTT Topic, the router will listen to it to read the Grid power.
+  YaSolR supports raw values and JSON values like Shelly EM and 3EM.
+- `Output 1 Temperature`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 1
+- `Output 2 Temperature`: if set to a MQTT Topic, the router will listen to it to read the temperature linked to output 2
+
+**Example of configuration with Shelly EM:**
+
+- Grid Voltage topic: `shellyproem50/status/em1:0`
+- Grid Power topic: `shellyproem50/status/em1:0`
+
+The Shelly sends this kind of data:
+
+```json
+{
+  "id": 1,
+  "current": 2.681,
+  "voltage": 236.7,
+  "act_power": -607.3,
+  "aprt_power": 636.0,
+  "pf": 0.95,
+  "freq": 50.0,
+  "calibration": "factory"
+}
+```
+
+**Example of configuration with Shelly 3EM:**
+
+- Grid Voltage topic: `shelly3em/status/em:0`
+- Grid Power topic: `shelly3em/status/em:0`
+
+The Shelly sends this kind of data:
+
+```json
+{
+  "id": 0,
+  "a_current": 0.132,
+  "a_voltage": 236.0,
+  "a_act_power": 3.9,
+  "a_aprt_power": 31.0,
+  "a_pf": -0.53,
+  "b_current": 0.594,
+  "b_voltage": 236.4,
+  "b_act_power": 45.4,
+  "b_aprt_power": 140.3,
+  "b_pf": -0.61,
+  "c_current": 0.368,
+  "c_voltage": 237.8,
+  "c_act_power": 54.3,
+  "c_aprt_power": 87.5,
+  "c_pf": -0.72,
+  "n_current": null,
+  "total_current": 1.094,
+  "total_act_power": 103.61,
+  "total_aprt_power": 258.799,
+  "user_calibrated_phase": []
+}
+```
+
+MQTT topics are less accurate because they depend on the refresh rate of these topics, and an expiration delay of a few seconds is set in order to stop any routing if no update is received in time.
+Also, there is **1 minute expiration delay** after which the values will be considered as invalid.
+
+As a general rule, **do not use MQTT as a grid power source if you have a JSY or Remote JSY**.
+
+#### MQTT API
+
+The complete reference of the published data in MQTT is available [here](mqtt).
+The published data can be explored with [MQTT Explorer](https://mqtt-explorer.com/).
+
+[![](assets/img/screenshots/mqtt_explorer.jpeg)](assets/img/screenshots/mqtt_explorer.jpeg)
+
+### GPIO
+
+[![](assets/img/screenshots/app-gpio.jpeg)](assets/img/screenshots/app-gpio.jpeg)
+
+This section allows to configure the pinout for the connected hardware and get some validation feedback.
+
+- Set the value to **-1** to disable the pin.
+- Set the input to **blank** and save to reset the pin to its default value.
+
+If you see a warning with `(Input Only)`, it means that this configured pin can only be used to read
+data. It perfectly OK for a ZCD, but you cannot use a pin that can only be read for a relay, DS18 sensor, etc.
+
+> ##### TIP
+>
+> This section allows you to set, unset or even redefine the default GPIO for Serial 1 and Serial 2 the way you want as long as they are valid UART input and output GPIO.
+> The pinout schema of your board will tell you which GPIO have restrictions.
+{: .block-tip }
+
+**Zero-Cross Detection (ZCD)**
+
+Zero-Cross Detection (ZCD) is the only feature that requires an input pin, so if you want to use it, you need to set a valid input pin for it.
+A ZCD is a module that detects the zero-crossing of the grid voltage and sends a pulse to the ESP32 each time a zero-crossing is detected.
+A ZCD is required with these types of dimmers:
+
+- Random Solid State Relay + ZCD
+- RobotDyn 24/40A
+- Triac + ZCD
+
+> ##### TIP
+>
+> - RobotDyn includes a ZCD (its ZC pin).
+> - RobotDyn has a very bad ZCD circuit. I strongly suggest you use a dedicated ZCD module instead.
+>   Please have a look at these blog articles on YaSolR website for more information:
+>   - [2024-07-24 - The Importance of a good ZCD circuit](./blog/2024-07-24_the_importance_of_a_good_zcd_circuit)
+>   - [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
+>
+{: .block-tip }
+
+### Hardware
+
+[![](assets/img/screenshots/app-hardware.jpeg)](assets/img/screenshots/app-hardware.jpeg)
+
+This section allows to enable / disable the hardware components of the router.
+Make sure to correctly configure all the hardware components you have connected to the router.
+
+#### Grid
+
+You must select the grid frequency of your router (50Hz or 60Hz).
+`Auto-detect` will automatically detect your grid frequency based on the connected measurement devices, or remote ones, or thanks to the pulse analyzer.
+
+You must select the device used to measure your grid power and voltage amongst the supported ones:
+
+- MQTT
+- Victron
+- JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333
+
+**MQTT Topics**
+
+You need to configure the MQTT topics to read the grid power and voltage.
+See the [MQTT](#mqtt) section.
+
+**Victron Server**
+
+YaSolR supports connecting to Victron Modbus TCP Server to get the grid power, voltage and frequency.
+If Victron is selected, you need to configure the following parameters:
+
+- Server: the Victron Modbus TCP server IP address
+- Port: the Victron Modbus TCP server port (usually `502`)
+
+**JSY Devices**
+
+For JSY-MK-193 and JSY-MK-194, since they have 2 channels, you must also select which channel is used to measure the grid power and voltage.
+
+For all JSY devices, you must precise if the device is connected to Serial 1, 2 or the data is coming remotely from [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/).
+Mycila JSY App is a specialized app capable of sending JSY data remotely to several YaSolR routers at a rate that is as fast as a JSY connected directly to the ESP32.
+So there is no difference in terms of performance between using a local JSY and a remote JSY.
+[Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/) is a good idea if you plan to use several routers.
+
+[![](assets/img/screenshots/app-jsy.jpeg)](assets/img/screenshots/app-jsy.jpeg)
+
+> ##### NOTE
+>
+> JSY boards sometimes have the RX and TX labels switched.
+>
+> JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
+>
+{: .block-note }
+
+#### Outputs
+
+##### Dimmer Type
+
+You must select the dimmer type or leave it to blank if you do not have a dimmer connected for this output.
+YaSolR supports all these dimmer types:
+
+1. DAC based (requires a DFRobot DAC module)
+   - LSA / LCTC Voltage Regulators + DAC GP8211S (DFR1071) (**Phase Control**)
+   - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971) (**Phase Control**)
+   - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073) (**Phase Control**)
+
+2. Zero-Cross Detection based (requires a ZCD):
+   - Random Solid State Relay + ZCD (**Phase Control**)
+   - Random Solid State Relay + ZCD (**Cycle Stealing**)
+   - RobotDyn 24/40A (**Phase Control**)
+   - RobotDyn 24/40A (**Cycle Stealing**)
+   - Triac + ZCD (**Phase Control**)
+   - Triac + ZCD (**Cycle Stealing**)
+
+3. Synchronous Solid State Relay (**Cycle Stealing**)
+
+All these configuration work by default if not specified using a **Phase Control** algorithm, which is the most precise dimming algorithm for resistive loads, but at the expense of creating harmonics.
+If you prefer to use a different dimming algorithm that is creating far less harmonics, you can select one of the 4 options supporting **Cycle Stealing**.
+You can read more about the different dimming algorithms and their impact on harmonics in the [overview](#overview) section.
+
+**About DFRobot DAC**
+
+You can see the full specifications of list of DFRobot DAC modules [here](https://www.dfrobot.com/blog-13458.html).
+
+- Pick one module between the DFR1071, DFR0971 or DFR1073, ideally the DFR1073 because it has 2 channels and 15 bits resolution and higher accuracy.
+- Connect the module to the router by using the I2C pins (SDA and SCL, same for the display)
+- For DFR0971 and DFR1073 (2-channel): Channel 1 is used for output 1 and channel 2 is used for output 2.
+- Leave the selectors on the module to the default position A2-A1-A0 at 0-0-0 (which means address: 0x58, their default address).
+  **Pay attention to that: some modules come with another address configured!**
+
+[![https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp](https://dfimg.dfrobot.com/enshop/image/cache3/data/DFR0971/1_0x0.jpg.webp)](https://www.dfrobot.com/product-2613.html)
+
+##### Dimmer Remapping
+
+`Min/Max Remapping` allows to remap where the 0% power is set (`Min`) and where the 100% power is set (`Max`).
+When remapped, the new duty range (0-100%) will match values from `Min` to `Max` instead of `0` to `100%`.
+
+This can be used for example to limit the power output of a dimmer, or to remap the signal sent to a voltage regulator.
+
+For example, if you set the range to `10-80%, then the new 0 will match a duty cycle of 10% and the new full power (100%) will match a duty cycle of 80%.
+
+##### Measurement Device
+
+You can optionally select a measurement device for each output in order to get some more precise metrics.
+Supported measurement devices are:
+
+- JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194
+- PZEM-004T v3 and v4
+
+If `Computed` is selected, the metrics are computed based on the configured resistance, voltage and duty cycle of the dimmer.
+
+If `Shared` is selected (usually only for Output 2), it means that you have the Output 2 wire going through the same clamp as the wire of output 1, so the measurement device will measure both outputs at the same time.
+**This is not recommended, not fully supported, and will produce wrong results**
+
+For JSY-MK-193 and JSY-MK-194, since they have 2 channels, you must also select which channel is used to measure the grid power and voltage.
+
+For JSY and PZEM you need to select if the device is connected to Serial 1, Serial 2, or remote.
+
+JSY devices can also be used remotely with [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/).
+Mycila JSY App is a specialized app capable of sending JSY data remotely to several YaSolR routers at a rate that is as fast as a JSY connected directly to the ESP32.
+So there is no difference in terms of performance between using a local JSY and a remote JSY.
+
+[![](assets/img/screenshots/app-jsy.jpeg)](assets/img/screenshots/app-jsy.jpeg)
+
+> ##### NOTE
+>
+> JSY boards sometimes have the RX and TX labels switched.
+>
+> JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
+>
+{: .block-note }
+
+##### PZEM Pairing
+
+`PZEM Pairing` starts the pairing procedure for PZEM-004T v3 at address 0x01 for output 1 and address 0x02 for output 2.
+
+Each output supports the addition of a PZEM-004T v3 sensor to monitor the power sent to the resistive load specifically for this output.
+Thanks to the PZEM per output, it is also possible to get some more precise information like the dimmed RMS voltage, resistance value, etc.
+
+The PZEM-004T v3 devices has a special installation mode: you can install 2x PZEM-004T v3 devices on the same Serial.
+To communicate with the right one, each output will use a different slave address.
+The initial setup requires to pair each PZEM-004T v3 with the corresponding output.
+
+1. Connect the 2x PZEM-004T v3 devices to the grid (L/N) and install the clamp around the wire at the exit of the dimmer of first output
+2. Only connect the terminal wire (+5V, GND, RX, TX) of the first PZEM-004T v3 to pair to Output 1
+3. Boot the device and open the console (`http://yasolr.local/console`)
+4. Got to the `Hardware` section to activate `PZEM` on the right Serial (Serial 1 or Serial 2) for Output 1.
+   It should be yellow if it has no electricity or if it is not paired.
+5. Press the `PZEM Pairing` button for Output 1.
+6. Verify that the pairing is successful in the console.
+   `PZEM Pairing` should also be green in the `Hardware` section.
+7. **Disconnect this first PZEM-004T v3 from the device**
+8. Connect the second PZEM (which has its clamp at the exit of the dimmer of the second output) to the device
+9. Press the `PZEM Pairing` button for Output 2.
+10. Verify that the pairing is successful in the console.
+    `PZEM Pairing` should also be green in the `Hardware` section.
+11. Now that the 2 devices have an address, you can connect them all to the device
+
+You can verify that the pairing is successful by trying to activate the dimmer in the overview page, and see if you get the output power.
+
+This complex pairing procedure is not specific to this router project but is common to any PZEM-004T device when using several PZEM-004T v3 devices on the same Serial.
+You can read more at:
+
+- [mathieucarbou/MycilaPZEM](https://github.com/mathieucarbou/MycilaPZEM)
+- [mandulaj/PZEM-004T-v30](https://github.com/mandulaj/PZEM-004T-v30)
+
+##### Bypass Relay
+
+Installing a relay for bypass is optional: if installed, the relay will be used to power the heater, and the dimmer will be set to 0.
+
+If not installed, when activating bypass mode, the dimmer will be used and set to 100%.
+The advantage is a simple setup, the drawbacks are:
+
+- the dimmer will heat up.
+- the power output of the dimmer counts as routed power so the routed power and energy will also contain the bypass power.
+
+In the `Hardware` section, `Bypass Relay` both specify if a relay is installed for the output, on top of the dimmer of course, and if it should be used when bypass is activated.
+If no relay is installed, the dimmer will be used and will be set to 100%.
+When activating a bypass relay you must select the relay type: `Normally Open` or `Normally Closed`.
+
+> ##### NOTE
+>
+> `Bypass Relay` are the SSR or Electromechanical relays connected to the device and used whn you activate bypass mode.
+> Only activate if you have connected some relays to be used for the output bypass. If you did not connect any relay, you can leave them disabled and the bypass mode will not work with the dimmer set at 100%.
+{: .block-note }
+
+##### Temperature Sensors
+
+The temperature sensors are used to monitor the water tank in order:
+
+- to trigger an automatic heating based on temperature levels (called **auto bypass**).
+- to stop the routing if the temperature is too high (called **temperature limiter**).
+
+To activate them, buttons are available in the `Hardware` section and called `Output 1: DS18` and `Output 2: DS18`.
+
+Supported temperature sensor: `DS18B20`
+
+#### Relay 1 and Relay 2
+
+> ##### NOTE
+>
+> `Relay 1` and `Relay 2` are the SSR or Electromechanical relays connected to the device and used to control external loads.
+> Only activate if you have connected some relays to be used for external loads.
+>
+{: .block-note }
+
+**Relay Automatic Control**
+
+- `Automatic Control: Connected Nominal Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
+  If you do so, the relay will be activated automatically based on the grid power.
+  **Warning:** pay attention to set the **nominal load**, which is the official load given by the manufacturer with a nominal voltage (230V for France).
+  It can also be computed like this: `Nominal Load (Watts) = Nominal Voltage (V) * Nominal Voltage (V) / Resistance (ohms)`.
+- `Automatic Control: Tolerance (%)`: this is the percentage amount (5% by default) that is tolerated below or above before deciding to switch the relay on or off.
+  This value is used to avoid switching the relay on and off too frequently.
+
+YaSolR supports 2 additional relays (Electromechanical or SSR, controlled with 3.3V DC) to control external loads, or to be connected to the A1 and A2 terminals of a power contactor.
+Relays can also be connected to the other resistance of the water tank (three-phase resistance) as described in the [recommendations to reduce harmonics and flickering](./overview#recommendations-to-reduce-harmonics-and-flickering), in order to improve the routing and reduce harmonics.
+You must use a SSR for that, because the relay will be switched on and off frequently.
+
+> ##### NOTE
+>
+> Remember that the voltage is not dimmed: these are 2 normal relays
+{: .block-note }
+
+> ##### WARNING
+>
+> Pay attention that there is little to no hysteresis on the relays.
+> So do not use the automatic feature to switch non-resistive loads such as pumps, electric vehicle chargers, etc.
+> If you need to switch other types of load in a more complex way with some hysteresis or other complex conditions, you can use the MQTT, REST API, Home Assistant or Jeedom to query the `Virtual Power` metric and execute an automation based on this value.
+> The automation can then control the router relays remotely. The relays need to be set in `Manual Control`.
+> Remember that these relays are not power contactors and should not be used to directly control high power loads like an Electric Vehicle charge, a pump, etc.
+{: .block-warning }
+
+**Rules of Automatic Switching**
+
+`Grid Virtual Power` is calculated by the router as `Grid Power - Routed Power`.
+This is the power that would be sent to the grid if the router was not routing any power to the resistive loads.
+
+`Grid Virtual Power` is negative on export and positive on import.
+
+- The relay will automatically start when `Grid Virtual Power + Relay Load <= 5% of Relay Load`.
+  In other words, the relay will automatically start when there is enough excess to absorb both the load connected to the relay plus 5% more of it.
+  When the relay will start, the remaining excess not absorbed by the load will be absorbed by the dimmer.
+
+- The relay will automatically stop when `Grid Virtual Power >= 5% of Relay Threshold`.
+  In other words, the relay will automatically stop when there is no excess anymore but a grid import equal to or more than 5% of the relay threshold.
+  When the relay will stop, there will be some excess again, which will be absorbed by the dimmer.
+
+For a 3000W three-phase resistance, 5% means 30W per relay because there is 3x 1000W resistances.
+For a 2100W three-phase resistance, 5% means 21W per relay because there is 3x 700W resistances.
+
+#### Display
+
+[![](assets/img/screenshots/app-display.gif)](assets/img/screenshots/app-display.gif)
+
+The display has to be connected to the I2C pins (SDA and SCL).
+
+- `Display Speed`: the speed at which the display will switch to the next page.
+  This setting is applied immediately and does not require a restart.
+- `Display Type`: the type of display used.
+- `Display Rotation`: the rotation of the display.
+
+Supported displays are any I2C OLED Display of type `SSD1307`, `SH1106`, `SH1107`.
+
+`SH1106` is recommended and has been extensively tested.
+
+The display will look like a carousel with a maximum of 5 pages:
+
+- Global information
+- Network information
+- Router information with relays
+- Output 1 information
+- Output 2 information
+
+#### System Hardware
+
+##### Temperature Sensor
+
+A temperature sensor can also be used to monitor the router box itself (`Overview` section).
+
+##### LEDs
+
+The LEDs are used to notify the user of some events like reset, restarts, router ready, routing, etc.
+
+| **LIGHTS** | **SOUNDS**       | **STATES**                      |
+| :--------: | ---------------- | ------------------------------- |
+| `🟢 🟡 🔴` | `BEEP BEEP`      | `STARTED` + `POWER` + `OFFLINE` |
+| `🟢 🟡 ⚫` |                  | `STARTED` + `POWER`             |
+| `🟢 ⚫ 🔴` | `BEEP BEEP`      | `STARTED` + `OFFLINE`           |
+| `🟢 ⚫ ⚫` | `BEEP`           | `STARTED`                       |
+| `⚫ 🟡 🔴` | `BEEP BEEP BEEP` | `RESET`                         |
+| `⚫ 🟡 ⚫` |                  | `STARTING`                      |
+| `⚫ ⚫ 🔴` | `BEEP BEEP`      | `RESTART`                       |
+| `⚫ ⚫ ⚫` |                  | `OFF`                           |
+
+- `OFF`: application not working (power off)
+- `OFFLINE`: application disconnected from WiFi or disconnected from grid electricity
+- `POWER`: power allowed to be sent (either through relays or dimmer)
+- `RESET`: application is restarting following a manual reset
+- `RESTART`: application is restarting following a manual restart
+- `STARTED`: application started and WiFi or AP mode connected
+- `STARTING`: application is booting
+
+### Output 1 and Output 2 Configuration
+
+These sections allow to further configure some hardware settings and calibrate the resistance values of the loads.
+
+[![](assets/img/screenshots/app-output-config.jpeg)](assets/img/screenshots/app-output-config.jpeg)
+
+#### Resistance Calibration
+
+**The router needs to know the resistance value of the load to correctly calculate the dimmer values**.
+
+- `Output 1 Resistance`: the resistance value in Ohms of the load connected to Output 1
+- `Output 2 Resistance`: the resistance value in Ohms of the load connected to Output 2
+
+Be careful to put a value that you have correctly measured with a multimeter, or calculated (see formula below).
+An approximation will cause the router to not properly work because it won't be able to adjust the exact amount of power to send.
+
+Remember the equation:
+
+```
+R = U * U / P
+```
+
+where:
+
+- `P` is the _nominal_ power in Watts given by the manufacturer of the resistance
+- `U` is the _nominal_ voltage in Volts, usually 230V in Europe and 120V in the US/Canada
+- `R` is the resistance in Ohms
+
+**Reading the resistance value from a PZEM or JSY**
+
+If you have a PZEM or JSY device attached, they can help you.
+You can set the dimmer in manual mode and set it to 50% and 100% and read the resistance value.
+Then you just have to report it in the `Hardware Config` page.
+
+- **PZEM-004T v3:** If you have wired a PZEM-004T v3 connected to each output, it will measure the resistance value when routing.
+- **JSY:** If you have a JSY, you can activate the dimmers one by one to 100% and wait for the values to stabilize.
+  The router will then display the resistance value in the `Overview` page, thanks to the JSY.
+
+**Using the automatic detection feature**
+
+- `Resistance Calibration`: start the automatic detection of the resistance value of the loads connected to Output 1 and 2
+
+This is the easiest way to calibrate the resistance values: when a PZEM or JSY is installed, the router will be able to automatically calculate the resistance.
+For that, click on the corresponding buttons and wait about 10-15 seconds.
+You can at the same time check the statistics on the `Output` or `Overview` sections, and the logs in the Web console for a more detailed output.
+Once done, the resistance value will be put in the corresponding field.
+Any previously set value will be erased.
+
+To use this feature, make sure that the resistance will really draw some current.
+It won't work if the water heater has already reached its threshold temperature.
+
+[![](assets/img/screenshots/calibration.gif)](assets/img/screenshots/calibration.gif)
+
+#### Excess Configuration
+
+Excess Configuration allows to configure how the excess power is routed to the outputs.
+
+- `Excess Ratio`: allows to split the excess power between output 1 and output 2.
+  For example, if set to `70%`, then output 1 will take 70% of the excess power and output 2 will take the remaining 30%.
+  This setting is only applied in automatic mode when routing.
+  This setting is also available in output 2 if you want to reduce its share.
+  For example, if you want to assign 50% of the excess to output 1 and 25% to output 2, you can set output 1 to `50%` and output 2 to `50%` (which means 50% of the remaining 50%, so 25% of the total).
+
+- `Excess Power Limiter (W)`: Allows to set a hard limit on the grid excess assigned to an output.
+  Only available in automatic mode.
+  For example, if output 1 is set to `500 W`, then output 1 will take at most `500 W` of the grid excess.
+  Output 2 will be dimmed with the remaining excess.
+  A value of `0` means that the excess power limiter is disabled.
+
+These 2 settings are cumulative: first the excess ratio is applied, then the excess power limiter is applied.
+
+For example, if the grid excess is `2000 W`, output 1 is set to `70%` and has an excess power limiter of `1000 W`, then:
+
+- output 1 will take `70%` of `2000 W`, which is `1400 W`, but because of the excess power limiter, it will be limited to `1000 W`
+- output 2 will take the remaining excess, which is `2000 W - 1000 W = 1000 W`
+
+#### Dimmer Configuration
+
+- `Dimmer Limiter`: Slider to limit the level of the dimmer in order to limit the routed power.
+- `Dimmer Temperature Limiter`: Temperature threshold when the dimmer will stop routing.
+  This temperature can be different than the temperature used in auto bypass mode.
+  A value of `0` means that the temperature limiter is disabled.
+
+#### Bypass Configuration
+
+- `Bypass Start Temperature`: The temperature threshold when the auto bypass will start: the temperature of the water tank needs to be lower than this threshold.
+- `Bypass Stop Temperature`: The temperature threshold when the auto bypass will stop: the temperature of the water tank needs to be higher than this threshold.
+- `Bypass Start Time` / `Bypass Stop Time`: The time range when the auto bypass is allowed to start.
+- `Bypass Week Days`: Days of the week when the bypass can be activated.
+- `Manual Bypass Timeout`: The duration in hours after which the manual bypass, if activated, will be automatically deactivated.
+  If zero, no auto-deactivation happens and you need to manually turn it off.
+
+> ##### TIP
+>
+> "Manual Bypass Timeout" is a cool feature to be integrated with Home Assistant using a keep-alive automation.
+> You can for example configure YaSolR with a Manual Bypass Timeout of 0.5 h (30 minutes).
+> Then, in Home Assistant, when activating manual bypass, you can create an automation that will periodically (each 5 minutes) set again the manual bypass to `true`.
+> This will have the effect to reset the timeout each time.
+> This is called a keep-alive automation.
+> A keep-alive automation is more secure because it makes sure that the manual bypass will be turned off if the process controlling the manual bypass dies.
+{: .block-tip }
+
+### System
+
+[![](assets/img/screenshots/app-system.jpeg)](assets/img/screenshots/app-system.jpeg)
+
+- `Configuration Backup`: Backup the current configuration of the router.
+- `Configuration Restore`: Restore a previously saved configuration.
+- `Restart`: Restart the router.
+- `Restart in SafeBoot mode`: Restart YaSolR in SafeBoot mode to update through Web OTA the firmware
+- `Factory Reset`: Reset the router to factory settings and restart it.
+- `Energy Reset`: Reset the energy stored in all devices (JSY and PZEM) of the router.
+- `Update SafeBoot partition`: Update the SafeBoot recovery partition
+
+> ##### IMPORTANT
+>
+> YaSolR is composed of 2 partitions: the main partition (called `app`) and a SafeBoot recovery partition (called `safeboot`), which is used to update YaSolR application.
+> When updating through web (OTA) it is not possible to update the partition from which the application is currently running.
+> That is why YaSolR needs to restart in SafeBoot mode to update the main application partition.
+> And consequently, from YaSolR, it is possible to update this SafeBoot recovery partition.
+>
+> Pay really attention when updating the recovery partition:
+> if anything goes wrong, you will have to re-flash the complete FACTORY firmware and reconfigure everything (or restore a backup).
+{: .block-important }
+
+SafeBoot recovery partitions can be downloaded from the [MycilaSafeBoot](https://github.com/mathieucarbou/MycilaSafeBoot) project: [https://github.com/mathieucarbou/MycilaSafeBoot/releases](https://github.com/mathieucarbou/MycilaSafeBoot/releases)
+
+### Debug
+
+[![](assets/img/screenshots/app-debug.jpeg)](assets/img/screenshots/app-debug.jpeg)
+
+- `Debug`: Activate or deactivate the debug options (restart required).
+- `Debug Information`: Outputs useful debug information to give to support.
+  **Only available when `Debug` is activated in Hardware section.**
+- `Startup Logs`: View startup logs when ESP32 starts. These logs are limited to 32 Kib.
+- `Console`: Go to the Web Console page to see the logs
+  **Only available when `Debug` is activated in Hardware section.**
+
+> ##### WARNING
+>
+> Activating debug mode will slow down the startup and overall performance of the router because of the additional logs and flash access required.
+> Do not forget to only activate this option temporarily when troubleshooting an issue and deactivate it once finished.
+{: .block-warning }
+
+#### Saving logs
+
+If you need to record the logs during a long period of time to troubleshoot an issue, you can activate `Debug` and then stream the logs into a file using `websocat` from another computer.
+Make sure the computer won't go to sleep!
+
+```bash
+> websocat ws://192.168.125.123/wserial > logs.txt
+```
+
+#### Web Console
+
+A Web Console is accessible at: `http://<esp-ip>/console`.
+You can see more logs if you activate Debug logging (but it will make the router react a bit more slowly).
+
+[![](assets/img/screenshots/app-console.jpeg)](assets/img/screenshots/app-console.jpeg)
+
+### Statistics
+
+This page shows a lot of statistics and information on the router.
+
+[![](assets/img/screenshots/app-statistics.jpeg)](assets/img/screenshots/app-statistics.jpeg)
+
+## Additional Features
+
+### EV charging box compatibility with Virtual Grid Power
+
+The router exposes through API and MQTT the **Virtual Grid Power**, which is the value of Grid Power you would have if the router was not routing.
+
+You can use this value to inject in the EV box in order to prioritize EV charging over routing to the water tank.
+
+This is usually acceptable to give the EV box a priority over the water tank, because the water tank only need a small amount of routed energy to start heating, while the EV usually requires a threshold to start charging.
+So the router will take whatever is not used by the EV box.
+
+> ##### IMPORTANT
+>
+> `Virtual Grid Power` requires a PZEM or JSY in place to measure the routed power.
+{: .block-important }
+
+## Help and support
+
+- **Facebook Group**: [https://www.facebook.com/groups/yasolr](https://www.facebook.com/groups/yasolr)
+
+- **GitHub Discussions**: [https://github.com/mathieucarbou/YaSolR/discussions](https://github.com/mathieucarbou/YaSolR/discussions)
+
+- **GitHub Issues**: [https://github.com/mathieucarbou/YaSolR/issues](https://github.com/mathieucarbou/YaSolR/issues)
+
+- **ESP32 Exception Decoder**: [https://maximeborges.github.io/esp-stacktrace-decoder/](https://maximeborges.github.io/esp-stacktrace-decoder/)

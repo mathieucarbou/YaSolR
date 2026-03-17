@@ -1,15 +1,16 @@
 .DS_Store
 .lh
+/.dummy
 /.pio
 /.vscode
+/CMakelists.txt
+/data/*.gz
+/dependencies.lock
+/docs/_site
+/logs
+/managed_components
+/platformio-device-monitor*.log
+/sdkconfig.*
+/site
 
 !/.vscode/extensions.json
-/logs
-/platformio-device-monitor*.log
-/data/*.gz
-
-/CMakelists.txt
-/dependencies.lock
-/sdkconfig.*
-/managed_components
-/.dummy
