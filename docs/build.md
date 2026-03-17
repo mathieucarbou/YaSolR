@@ -519,6 +519,12 @@ Links:
 - [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (**recommended**)
   - [UPM-01 DIN Rail Mount for PCB 72mm x 20mm](https://aliexpress.com/item/4000272944733.html) (DIN Rail enclosure for the ZCD module above)
 
+> ##### TIP
+>
+> I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
+> So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
+{: .block-tip }
+
 #### RobotDyn (not recommended)
 
 RobotDyn dimmers include a Zero-Cross Detection circuit, but they are not very good for the ZCD and heat dissipation.
