@@ -1,0 +1,71 @@
+<footer class="md-footer">
+  {% if "navigation.footer" in features %}
+    {% if page.previous_page or page.next_page %}
+      {% if page.meta and page.meta.hide %}
+        {% set hidden = "hidden" if "footer" in page.meta.hide %}
+      {% endif %}
+      <nav class="md-footer__inner md-grid" aria-label="{{ lang.t('footer') }}" {{ hidden }}>
+        {% if page.previous_page %}
+          {% set direction = lang.t("footer.previous") %}
+          <a href="{{ page.previous_page.url | url }}" class="md-footer__link md-footer__link--prev" aria-label="{{ direction }}: {{ page.previous_page.title | e }}">
+            <div class="md-footer__button md-icon">
+              {% set icon = config.theme.icon.previous or "material/arrow-left" %}
+              {% include ".icons/" ~ icon ~ ".svg" %}
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">{{ direction }}</span>
+              <div class="md-ellipsis">{{ page.previous_page.title }}</div>
+            </div>
+          </a>
+        {% endif %}
+        {% if page.next_page %}
+          {% set direction = lang.t("footer.next") %}
+          <a href="{{ page.next_page.url | url }}" class="md-footer__link md-footer__link--next" aria-label="{{ direction }}: {{ page.next_page.title | e }}">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">{{ direction }}</span>
+              <div class="md-ellipsis">{{ page.next_page.title }}</div>
+            </div>
+            <div class="md-footer__button md-icon">
+              {% set icon = config.theme.icon.next or "material/arrow-right" %}
+              {% include ".icons/" ~ icon ~ ".svg" %}
+            </div>
+          </a>
+        {% endif %}
+      </nav>
+    {% endif %}
+  {% endif %}
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      {% include "partials/copyright.html" %}
+      {% if config.extra.social %}
+        {% include "partials/social.html" %}
+      {% endif %}
+
+      <!-- Help & Support links -->
+      <div class="md-footer-copyright" style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid rgba(255,255,255,0.1); text-align: center;">
+        <strong>Help &amp; Support:</strong>
+        <a href="https://github.com/mathieucarbou/YaSolR" target="_blank">GitHub</a> |
+        <a href="https://discord.gg/jBTgweft7P" target="_blank">Discord</a> |
+        <a href="https://www.facebook.com/groups/yasolr" target="_blank">Facebook</a> |
+        <a href="https://forum-photovoltaique.fr/viewtopic.php?p=815418" target="_blank">Forum photovoltaïque</a> |
+        <a href="../pro/#sponsoring">Sponsor 🙏</a>
+        &nbsp;&mdash;&nbsp;
+        SIRET: 97854640600015 &mdash; <em>TVA non applicable, article 293 B du CGI</em>
+      </div>
+
+      <!-- Collapsible Disclaimer -->
+      <details style="text-align: center;">
+        <summary style="cursor: pointer; color: rgba(255,255,255,0.85); font-size: 0.85rem; font-weight: bold;">⚠️ Disclaimer</summary>
+        <div style="font-size: 0.68rem; color: var(--md-footer-fg-color--lighter); padding: 0.4rem 0; line-height: 1.6;">
+          <p>This website is provided for informational purposes only. By accessing this site and using the information contained herein, you accept the terms set forth in this disclaimer.</p>
+          <p><strong>Accuracy of Information</strong>: We strive to provide accurate and up-to-date information on this site, but we cannot guarantee the completeness or accuracy of this information. The information provided is subject to change without notice.</p>
+          <p><strong>Use of Information</strong>: Use of the information provided on this site is at your own risk. We decline all responsibility for the consequences arising from the use of this information. It is recommended that you consult a competent professional for advice specific to your situation.</p>
+          <p><strong>External Links</strong>: This site may contain links to external websites which are provided for your reference and convenience. We have no control over the content of these external sites and we accept no responsibility for their content and their use.</p>
+          <p><strong>Limitation of Liability</strong>: To the fullest extent permitted by applicable law, we disclaim all liability for any direct, indirect, incidental, consequential or special damages arising out of the use of, or inability to use, this website.</p>
+          <p>By using this site, you agree to hold harmless the owners, administrators and authors of this site from any claims arising from your use of this website. <strong>If you do not agree to these terms, please do not use this site.</strong></p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</footer>

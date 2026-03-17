@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block announce %}
+<div id="google_translate_element"></div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement(
+        { pageLanguage: 'en' },
+        'google_translate_element'
+      );
+    }
+  </script>
+  <script type="text/javascript"
+    src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit">
+  </script>
+  <script type="text/javascript">
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll('a[href^="http"]').forEach(function (a) {
+        if (a.hostname !== location.hostname) {
+          a.setAttribute("target", "_blank");
+          a.setAttribute("rel", "noopener noreferrer");
+        }
+      });
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  {{ super() }}
+
+  <!-- Giscus Comments Section -->
+  <div class="md-content__inner" style="margin-top: 2rem;">
+    <hr>
+    <script src="https://giscus.app/client.js"
+      data-repo="mathieucarbou/YaSolR"
+      data-repo-id="R_kgDOKubA2w"
+      data-category="Website comments"
+      data-category-id="DIC_kwDOKubA284Cbr4P"
+      data-mapping="pathname"
+      data-strict="1"
+      data-reactions-enabled="0"
+      data-emit-metadata="0"
+      data-input-position="top"
+      data-theme="{% if config.theme.palette %}{% for palette in config.theme.palette %}{% if loop.first %}{{ 'light' }}{% endif %}{% endfor %}{% else %}light{% endif %}"
+      data-lang="en"
+      crossorigin="anonymous"
+      async>
+    </script>
+  </div>
+{% endblock %}

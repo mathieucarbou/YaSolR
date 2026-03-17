@@ -1,9 +1,3 @@
----
-layout: default
-title: REST API
-description: REST API
----
-
 # REST API
 
 ## `/api`

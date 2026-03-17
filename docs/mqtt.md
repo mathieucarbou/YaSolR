@@ -1,9 +1,3 @@
----
-layout: default
-title: MQTT API
-description: MQTT API
----
-
 # MQTT API
 
 Not everything MQTT topic will update frequently (5 sec by default).

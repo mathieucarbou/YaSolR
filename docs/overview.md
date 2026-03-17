@@ -1,12 +1,4 @@
----
-layout: default
-title: Overview
-description: Overview
----
-
-# Overview
-
-## What is a Solar Router
+# What is a Solar Router
 
 A _Solar Router_ allows to redirect the solar production excess to some appliances instead of returning it to the grid.
 The particularity of a solar router is that it will dim the voltage and power sent to the appliance in order to match the excess production, in contrast to a simple relay that would just switch on/off the appliance without controlling its power.
@@ -85,11 +77,10 @@ YaSolR supports the following ZCD sources:
 When the AC voltage curve crosses the Zero point, the ZCD circuit sends a pulse (with a custom duration) to the controller board, which now knows that the voltage is at zero.
 The board then does some calculation to determine when to send the signal to the TRIAC (or Random SSR or RobotDyn) to activate it, based on the excess power, or if using Cycle Stealing control, to know when to let the current pass and for how many semi-periods.
 
-> ##### TIP
->
-> I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
-> So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
-{: .block-tip }
+!!! tip
+
+I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
+So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
 
 #### The Importance of a good ZCD circuit
 

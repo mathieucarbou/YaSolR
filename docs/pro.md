@@ -1,9 +1,3 @@
----
-layout: default
-title: Pro
-description: Pro
----
-
 # YaSolR Pro
 
 OSS and Pro firmware are the same, except that the Pro version relies on commercial (paid) libraries which cannot be put in OSS project, but offer a far better UI experience.
@@ -36,11 +30,9 @@ The money helps fund the hardware necessary to test and develop the firmware.
 | :--------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------: |
 |         [![](assets/img/Github_Donate.png)](assets/img/Github_Donate.png)          |         [![](assets/img/Paypal_Donate.png)](assets/img/Paypal_Donate.png)         |
 
-> ##### IMPORTANT
->
-> - If you use Paypal, do not forget to add your GitHub username in the form (there will be a comment / note field for that).
->
-{: .block-important }
+!!! warning
+
+    - If you use Paypal, do not forget to add your GitHub username in the form (there will be a comment / note field for that).
 
 Thanks a lot!
 
@@ -55,10 +47,10 @@ Here are the availabilities below:
 
 | **Module Picture (from author)**                                            | **Module Link**                                                                                                                      | **Price** | **Availability** |
 | :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :-------: | :--------------: |
-| <img src="./assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)            |   10 €    |        5         |
-| <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure) |   15 €    |        3         |
+| <img src="../assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)            |   10 €    |        5         |
+| <img src="../assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure) |   15 €    |        3         |
 
-You can read more about how important a good ZCD module is in the [Blog](blogs):
+You can read more about how important a good ZCD module is in the [Blog](blog/index.md):
 
-- [2024-07-24 - The Importance of a good ZCD circuit](./blog/2024-07-24_the_importance_of_a_good_zcd_circuit)
-- [2024-07-31 - Zero-Cross Pulse Detection](./blog/2024-07-31_zero-cross_pulse_detection)
+- [2024-07-24 - The Importance of a good ZCD circuit](blog/2024-07-24_the_importance_of_a_good_zcd_circuit.md)
+- [2024-07-31 - Zero-Cross Pulse Detection](blog/2024-07-31_zero-cross_pulse_detection.md)

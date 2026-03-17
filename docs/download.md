@@ -1,9 +1,3 @@
----
-layout: default
-title: Download
-description: Download
----
-
 # YaSolR Downloads
 
 **Please make sure to download the firmware matching your board.**
@@ -32,7 +26,7 @@ Download location: [https://github.com/mathieucarbou/YaSolR-Pro/releases](https:
 
 _Firmware for the Pro version is only available to Pro users. You must be logged into your GitHub account to access them._
 
-Please go to the **[Pro](pro)** page if you are interested in receiving the **Pro** version! 💪
+Please go to the **[Pro](pro.md)** page if you are interested in receiving the **Pro** version! 💪
 
 ### Trial versions
 
@@ -45,11 +39,8 @@ _These trial versions are very old!_
 _You can use them to get a preview of what you can have with the Pro version._
 _Except that the pro version is more recent and contains far more features and fewer bugs!_
 
-> ##### IMPORTANT
->
-> Trial version is an OLD version! It does not contain the latest features and fixes of the Pro and OSS versions.
-> Its goal is to showcase what you could get with the Pro version regarding the UI.
->
->  DO NOT OPEN BUGS OR ISSUES ON THE TRIAL VERSION!
->
-{: .block-important }
+!!! warning
+
+    Trial version is an OLD version! It does not contain the latest features and fixes of the Pro and OSS versions.
+    Its goal is to showcase what you could get with the Pro version regarding the UI.
+    DO NOT OPEN BUGS OR ISSUES ON THE TRIAL VERSION!

@@ -1,20 +1,14 @@
----
-layout: default
-title: Blog
-description: "Zero-Cross Pulse Detection"
----
-
 _Date: 2024-07-31_
 
 # Zero-Cross Pulse Detection
 
-This article is a follow-up of the previous one: [The Importance of a good ZCD circuit](2024-07-24_the_importance_of_a_good_zcd_circuit).
+This article is a follow-up of the previous one: [The Importance of a good ZCD circuit](2024-07-24_the_importance_of_a_good_zcd_circuit.md).
 
-As a reminder of the [overview page](../overview#zero-cross-detection-zcd), here is an oscilloscope view of the pulses from a dedicated ZCD module and the RobotDyn:
+As a reminder of the [overview page](../overview.md#zero-cross-detection-zcd), here is an oscilloscope view of the pulses from a dedicated ZCD module and the RobotDyn:
 
 |                                     **Dedicated ZCD circuit**                                      |                                              **RobotDyn ZCD circuit**                                               |
 | :------------------------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------------------------------------: |
-| [![ZCD](../assets/img/measurements/Oscillo_ZCD.jpeg)](../assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](../assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](../assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
+| [![ZCD](../../assets/img/measurements/Oscillo_ZCD.jpeg)](../../assets/img/measurements/Oscillo_ZCD.jpeg) | [![ZCD](../../assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg)](../../assets/img/measurements/Oscillo_ZCD_RobotDyn.jpeg) |
 
 RobotDyn has a very low quality pulse with a large rise time, and as such, it can create noise and false positives when detected by a MCU.
 
@@ -30,7 +24,7 @@ void IRAM_ATTR simulateISR() {
 
 Here is the oscilloscope view of the output pulse from a dedicated ZC module:
 
-[![](../assets/img/measurements/Oscillo_zc_isr_output_delay.jpeg)](../assets/img/measurements/Oscillo_zc_isr_output_delay.jpeg)
+[![](../../assets/img/measurements/Oscillo_zc_isr_output_delay.jpeg)](../../assets/img/measurements/Oscillo_zc_isr_output_delay.jpeg)
 
 - In yellow: the ZCD pulse
 - In blue: the output pulse, triggered once the ZC pulse is detected
@@ -39,7 +33,7 @@ We can see that there is a 3us delay for the ESP32 to detect the rise, trigger t
 
 Now, look at what is happening with a low quality ZC pulse:
 
-[![](../assets/img/measurements/Oscillo_zc_robotdyn_isr_output_delay.jpeg)](../assets/img/measurements/Oscillo_zc_robotdyn_isr_output_delay.jpeg)
+[![](../../assets/img/measurements/Oscillo_zc_robotdyn_isr_output_delay.jpeg)](../../assets/img/measurements/Oscillo_zc_robotdyn_isr_output_delay.jpeg)
 
 The slow rise causes the ESP to detect a sequence of several ZC pulses until the ZC pulse voltage is high enough.
 

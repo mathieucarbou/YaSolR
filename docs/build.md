@@ -1,9 +1,3 @@
----
-layout: default
-title: Build
-description: Build
----
-
 # How to Build Your Router
 
 Here is below some build examples to give you an idea of the different options and components you can use to build your router.
@@ -37,15 +31,13 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router with:
 
 |                                  ESP32                                   |                       Standard Synchronous SSR                        |                          Shelly EM or 3EM                           |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :-----------------------------------------------------------------: |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Shelly_EM.png" style="width:150px"> |
+| <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px"> | <img src="../assets/img/hardware/Shelly_EM.png" style="width:150px"> |
 
-> ##### WARNING
->
-> - Supports **Cycle Stealing** only (not Phase Control)
-> - Not as precise as a JSY (MQTT delays)
-> - Not as precise as using Phase Control
->
-{: .block-warning }
+!!! warning
+
+    - Supports **Cycle Stealing** only (not Phase Control)
+    - Not as precise as a JSY (MQTT delays)
+    - Not as precise as using Phase Control
 
 ### The Minimalist
 
@@ -56,14 +48,12 @@ The _Minimalist_ build uses inexpensive and easy to use components to start a ro
 
 |                                  ESP32                                   |                       Standard Synchronous SSR                        |                                   JSY                                    |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :----------------------------------------------------------------------: |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+| <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
-> ##### WARNING
->
-> - Supports **Cycle Stealing** only (not Phase Control)
-> - Not as precise as using Phase Control
->
-{: .block-warning }
+!!! warning
+
+    - Supports **Cycle Stealing** only (not Phase Control)
+    - Not as precise as using Phase Control
 
 ### The Elegant
 
@@ -74,19 +64,16 @@ This is an improved version of the _Minimalist_ build using the new JSY-MK-194G 
 
 |                                  ESP32                                   |                              Random SSR                               |                               JSY-MK-194G                                |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :----------------------------------------------------------------------: |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+| <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
-> ##### TIP
->
-> - The **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR directly without the need of an external ZCD module.
-> - Supports **Phase Control** and **Cycle Stealing**
->
-{: .block-tip }
+!!! tip
 
-> ##### WARNING
->
-> The JSY-MK-194G Zero-Cross Detection circuit is software-based and not as good as a dedicated hardware ZCD, so it can be less precise and will produce more power flickering (like RobotDyn dimmers).
-{: .block-warning }
+    - The **JSY-MK-194G has an integrated ZCD** and can be used with a Random SSR directly without the need of an external ZCD module.
+    - Supports **Phase Control** and **Cycle Stealing**
+
+!!! warning
+
+    The JSY-MK-194G Zero-Cross Detection circuit is software-based and not as good as a dedicated hardware ZCD, so it can be less precise and will produce more power flickering (like RobotDyn dimmers).
 
 ### The Elite
 
@@ -98,14 +85,12 @@ The _Elite_ build is for people who want the flexibility to use phase control an
 
 |                                  ESP32                                   |                              Random SSR                               |                           ZCD Module                           | JSY                                                                      |
 | :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :------------------------------------------------------------: | ------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="./assets/img/hardware/ZCD.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+| <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="../assets/img/hardware/ZCD.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
-> ##### TIP
->
-> - Supports **Phase Control** and **Cycle Stealing**
-> - The dedicated hardware ZCD will be more precise and produce less power flickering than the software-based ZCD of the JSY-MK-194G or RobotDyn dimmers.
->
-{: .block-tip }
+!!! tip
+
+    - Supports **Phase Control** and **Cycle Stealing**
+    - The dedicated hardware ZCD will be more precise and produce less power flickering than the software-based ZCD of the JSY-MK-194G or RobotDyn dimmers.
 
 ### The Professional
 
@@ -121,22 +106,18 @@ The big advantage of a DFRobot DAC module is that it allows to control a LSA dir
 
 |                                  ESP32                                   |                           Voltage Regulator                            |                            DFRobot DAC                            | JSY                                                                      |
 | :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :---------------------------------------------------------------: | ------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="./assets/img/hardware/DFR0971.jpg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+| <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="../assets/img/hardware/DFR0971.jpg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
-> ##### TIP
->
-> - No ZCD circuit required
-> - Precise phase control dimming
->
-{: .block-tip }
+!!! tip
 
-> ##### WARNING
->
-> - More complex to setup
-> - A remapping / calibration might be required to find the right values to control the voltage regulator with the DFRobot DAC
-> - Cannot use cycle stealing algorithm, only phase control
->
-{: .block-warning }
+    - No ZCD circuit required
+    - Precise phase control dimming
+
+!!! warning
+
+    - More complex to setup
+    - A remapping / calibration might be required to find the right values to control the voltage regulator with the DFRobot DAC
+    - Cannot use cycle stealing algorithm, only phase control
 
 ## Hardware Selection
 
@@ -172,40 +153,40 @@ They are cheap, dangerously wired and not very good for the ZCD and heat dissipa
 **RobotDyn (TRIAC):**
 
 - Pros:
-  - cheap and easy to wire
-  - 40A model comes with a heat sink and fan
-  - All in one device: phase control, ZCD, heat sink, fan
+    - cheap and easy to wire
+    - 40A model comes with a heat sink and fan
+    - All in one device: phase control, ZCD, heat sink, fan
 - Cons:
-  - limited in load to 1/3 - 1/2 of the announced load
-  - 16A / 24A models comes with heat sink which is too small for its supported maximum load
-  - no solution ready to attach them on a DIN rail.
-  - The heat sink often has to be upgraded, except for the one on the 40A model which is already good for small loads below 2000W.
-  - The ZCD circuit [is less accurate](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards) and pulses can be harder to detect [on some boards](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue)
-  - You need to go over some modifications to ([improve wiring / soldering and heat sink](https://sites.google.com/view/le-professolaire/routeur-professolaire))
-  - You might need to replace the Triac or move it
+    - limited in load to 1/3 - 1/2 of the announced load
+    - 16A / 24A models comes with heat sink which is too small for its supported maximum load
+    - no solution ready to attach them on a DIN rail.
+    - The heat sink often has to be upgraded, except for the one on the 40A model which is already good for small loads below 2000W.
+    - The ZCD circuit [is less accurate](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards) and pulses can be harder to detect [on some boards](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue)
+    - You need to go over some modifications to ([improve wiring / soldering and heat sink](https://sites.google.com/view/le-professolaire/routeur-professolaire))
+    - You might need to replace the Triac or move it
 
 **Random Solid State Relays:**
 
 - Pros:
-  - cheap and easy to wire
-  - support higher loads
-  - can be attached to a DIN rail with standard SSR clips
-  - lot of heat sink models available
+    - cheap and easy to wire
+    - support higher loads
+    - can be attached to a DIN rail with standard SSR clips
+    - lot of heat sink models available
 - Cons:
-  - limited in load to 1/3 - 1/2 of the announced load
-  - **require an external ZCD module**, heat sink
+    - limited in load to 1/3 - 1/2 of the announced load
+    - **require an external ZCD module**, heat sink
 
 **Synchronous Solid State Relays:**
 
 - Pros:
-  - cheap and easy to wire
-  - support higher loads
-  - can be attached to a DIN rail with standard SSR clips
-  - lot of heat sink models available
+    - cheap and easy to wire
+    - support higher loads
+    - can be attached to a DIN rail with standard SSR clips
+    - lot of heat sink models available
 - Cons:
-  - limited in load to 1/3 - 1/2 of the announced load
-  - require heat sink
-  - **can only be used with the Cycle Stealing modulation algorithm, not with Phase Control**
+    - limited in load to 1/3 - 1/2 of the announced load
+    - require heat sink
+    - **can only be used with the Cycle Stealing modulation algorithm, not with Phase Control**
 
 **Voltage Regulators:**
 
@@ -231,7 +212,7 @@ Also, some electromagnetic relay boards have both a NO and NC output to better i
 
 **For external Relays**
 
-- If you want to use the relays to automatically switch one of the resistance of the water tank, as described in the [recommendations to reduce harmonics and flickering](./overview#recommendations-to-reduce-harmonics-and-flickering), you must use a SSR because the relay will be switched on and off frequently.
+- If you want to use the relays to automatically switch one of the resistance of the water tank, as described in the [recommendations to reduce harmonics and flickering](overview.md#recommendations-to-reduce-harmonics-and-flickering), you must use a SSR because the relay will be switched on and off frequently.
 - If you are not using the automatic relay switching, and you either control them manually or through a Home Automation system, you can use electromagnetic relays, providing the relays won't be switched on and off frequently.
 - Use a Zero-Cross SSR for resistive loads
 - Use a Random SSR for inductive loads (pump, motors)
@@ -261,12 +242,12 @@ Here are below what you can add to upgrade your router:
 
 |                                Hardware                                | Description                                                                                                               |
 | :--------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/DIN_2_Relay.jpeg" style="width:150px"> | A bypass relay to avoid using the dimmer when auto bypass is enabled, and an additional relay to control an external load |
-|   <img src="./assets/img/hardware/DS18B20.jpeg" style="width:150px">   | A temperature sensor to measure the water tank temperature to automatically stop or start the water heating               |
-| <img src="./assets/img/hardware/PushButton.jpeg" style="width:150px">  | A push button to restart the router easily                                                                                |
-|    <img src="./assets/img/hardware/LEDs.jpeg" style="width:150px">     | LEDs to display the system status                                                                                         |
-|   <img src="./assets/img/hardware/SH1106.jpeg" style="width:150px">    | A display to show the router information                                                                                  |
-|  <img src="./assets/img/hardware/PZEM-004T.jpeg" style="width:150px">  | A PZEM to precisely measure the routed power for each output. Only useful if you have more than one output, or no JSY     |
+| <img src="../assets/img/hardware/DIN_2_Relay.jpeg" style="width:150px"> | A bypass relay to avoid using the dimmer when auto bypass is enabled, and an additional relay to control an external load |
+|   <img src="../assets/img/hardware/DS18B20.jpeg" style="width:150px">   | A temperature sensor to measure the water tank temperature to automatically stop or start the water heating               |
+| <img src="../assets/img/hardware/PushButton.jpeg" style="width:150px">  | A push button to restart the router easily                                                                                |
+|    <img src="../assets/img/hardware/LEDs.jpeg" style="width:150px">     | LEDs to display the system status                                                                                         |
+|   <img src="../assets/img/hardware/SH1106.jpeg" style="width:150px">    | A display to show the router information                                                                                  |
+|  <img src="../assets/img/hardware/PZEM-004T.jpeg" style="width:150px">  | A PZEM to precisely measure the routed power for each output. Only useful if you have more than one output, or no JSY     |
 
 ### Remote JSY with Mycila JSY App
 
@@ -283,23 +264,21 @@ Here is below some examples of hardware you can use to setup a Remote JSY with M
 
 |                        Mean Well HDR-15-5 5V DC                        |                                  ESP32                                   | JSY                                                                      |
 | :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | ------------------------------------------------------------------------ |
-| <img src="./assets/img/hardware/DIN_HDR-15-5.jpeg" style="width:80px"> | <img src="./assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="./assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
+| <img src="../assets/img/hardware/DIN_HDR-15-5.jpeg" style="width:80px"> | <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 ## Wiring
 
 ### Powering
 
-> ##### IMPORTANT
->
-> Make sure to power the components from the ESP32 3.3V and not directly from the 5V supply.
-> This is especially true for the JSY, PZEM, DS18, Display, DAC, ZCD, etc.
->
-> Power them through +5V ONLY if your ESP is not able to correctly output 3.3V, or you have some JSY or PZEM read timeout.
-> Some PZEM devices also have to be powered by +5V DC.
->
-> If powering by +5V DC, you need to use the same +5V DC that is also used to power the ESP32 (same GND).
->
-{: .block-important }
+!!! warning
+
+    Make sure to power the components from the ESP32 3.3V and not directly from the 5V supply.
+    This is especially true for the JSY, PZEM, DS18, Display, DAC, ZCD, etc.
+
+    Power them through +5V ONLY if your ESP is not able to correctly output 3.3V, or you have some JSY or PZEM read timeout.
+    Some PZEM devices also have to be powered by +5V DC.
+
+    If powering by +5V DC, you need to use the same +5V DC that is also used to power the ESP32 (same GND).
 
 In my setup, where I have a lot of components for testing, I have to power these components through +5V DC:
 
@@ -315,7 +294,7 @@ The hardware and GPIO pinout are heavily inspired by [Routeur solaire PV monopha
 
 Most of the features can be enabled or disabled through the app and the GPIO pinout can be changed also through the app in the GPIO page.
 
-[![](./assets/img/screenshots/app-gpio.jpeg)](./assets/img/screenshots/app-gpio.jpeg)
+[![](../assets/img/screenshots/app-gpio.jpeg)](../assets/img/screenshots/app-gpio.jpeg)
 
 Here are below the default GPIO pinout for each board.
 `-1` means not mapped, either because this is not possible (for example some boards to not have enough UART to support at the same time JSY and PZEM), or because the mapping is just not defined by default and you need to go in YaSolR GPIO section to define to the pin you want.
@@ -370,17 +349,17 @@ Here are some pinout examples reported by users having migrated from APPER to Ya
 
 The diagram below shows how to wire dimmers based on RobotDyn modules.
 
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_robotdyn.jpeg).
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_robotdyn.jpeg).
 
-[![](./assets/img/schemas/yasolr_robotdyn.jpeg)](https://app.cirkitdesigner.com/project/5a348c44-3e70-4ced-9420-75cbab118a30?view=interactive_preview)
+[![](../assets/img/schemas/yasolr_robotdyn.jpeg)](https://app.cirkitdesigner.com/project/5a348c44-3e70-4ced-9420-75cbab118a30?view=interactive_preview)
 
 ### How to Wire Random Solid State Relay Dimmer
 
 The diagram below shows how to wire dimmers based on Random Solid State Relay.
 
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_random_ssr.jpeg).
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_random_ssr.jpeg).
 
-[![](./assets/img/schemas/yasolr_random_ssr.jpeg)](https://app.cirkitdesigner.com/project/af394fa8-dc6e-4785-b0c6-e0a7136aa614?view=interactive_preview)
+[![](../assets/img/schemas/yasolr_random_ssr.jpeg)](https://app.cirkitdesigner.com/project/af394fa8-dc6e-4785-b0c6-e0a7136aa614?view=interactive_preview)
 
 ### How to Wire Voltage Regulator Dimmer and DAC
 
@@ -390,17 +369,17 @@ The diagram below shows how to wire the DFRobot DAC to control a LSA or LCTC vol
 - LSA / LCTC Voltage Regulators + DAC GP8403 (DFR0971)
 - LSA / LCTC Voltage Regulators + DAC GP8413 (DFR1073)
 
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_dac_lsa.jpeg).
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_dac_lsa.jpeg).
 
-[![](./assets/img/schemas/yasolr_dac_lsa.jpeg)](https://app.cirkitdesigner.com/project/0fa9e465-3e88-4420-91d8-cf95e1011474?view=interactive_preview)
+[![](../assets/img/schemas/yasolr_dac_lsa.jpeg)](https://app.cirkitdesigner.com/project/0fa9e465-3e88-4420-91d8-cf95e1011474?view=interactive_preview)
 
 ### How to Wire Bypass Relay
 
 The diagram below shows how to wire the bypass relays to force heating through the relay without using the dimmer for this output feature.
 
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_bypass_relay.jpeg).
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_bypass_relay.jpeg).
 
-[![](./assets/img/schemas/yasolr_bypass_relay.jpeg)](https://app.cirkitdesigner.com/project/b62655da-245f-42e6-a682-452b8bcbe7d5?view=interactive_preview)
+[![](../assets/img/schemas/yasolr_bypass_relay.jpeg)](https://app.cirkitdesigner.com/project/b62655da-245f-42e6-a682-452b8bcbe7d5?view=interactive_preview)
 
 ### How to Wire JSY and PZEM
 
@@ -409,9 +388,9 @@ The diagram below shows how to wire the following optional YaSolR measurement de
 - PZEM-004T v3
 - JSY
 
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_measurements.jpeg).
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_measurements.jpeg).
 
-[![](./assets/img/schemas/yasolr_measurements.jpeg)](https://app.cirkitdesigner.com/project/cb69313f-3fe0-441f-9db1-0ca880810543?view=interactive_preview)
+[![](../assets/img/schemas/yasolr_measurements.jpeg)](https://app.cirkitdesigner.com/project/cb69313f-3fe0-441f-9db1-0ca880810543?view=interactive_preview)
 
 ### How to Wire Accessories
 
@@ -423,17 +402,17 @@ The diagram below shows how to wire the following optional YaSolR accessories:
 - external relays 1 and 2
 - screen
 
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_accessories.jpeg).
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_accessories.jpeg).
 
-[![](./assets/img/schemas/yasolr_accessories.jpeg)](https://app.cirkitdesigner.com/project/d937d685-6328-4653-80a8-f2ac8015baee?view=interactive_preview)
+[![](../assets/img/schemas/yasolr_accessories.jpeg)](https://app.cirkitdesigner.com/project/d937d685-6328-4653-80a8-f2ac8015baee?view=interactive_preview)
 
 ### How to Wire Random SSR with JSY-MK-194G ZCD
 
 The diagram below shows how to wire the Elegant, which is composed of a Random SSR and a JSY-MK-194G which does both the measurement and the Zero-Cross Detection.
 
-You can click on the diagram to open the interactive mode or [download the image](./assets/img/schemas/yasolr_elegant.jpeg).
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_elegant.jpeg).
 
-[![](./assets/img/schemas/yasolr_elegant.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
+[![](../assets/img/schemas/yasolr_elegant.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
 
 ## Where to Buy
 
@@ -517,13 +496,12 @@ Links:
 - Any RobotDyn: they include a ZCD circuit, but it is not very good
 - [JSY-MK-194G](https://aliexpress.com/item/1005007371816324.html) (this JSY has a built-in ZCD circuit, so you can use it with a Random SSR without the need of an external ZCD module)
 - [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (**recommended**)
-  - [UPM-01 DIN Rail Mount for PCB 72mm x 20mm](https://aliexpress.com/item/4000272944733.html) (DIN Rail enclosure for the ZCD module above)
+    - [UPM-01 DIN Rail Mount for PCB 72mm x 20mm](https://aliexpress.com/item/4000272944733.html) (DIN Rail enclosure for the ZCD module above)
 
-> ##### TIP
->
-> I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
-> So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
-{: .block-tip }
+!!! tip
+
+I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
+So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
 
 #### RobotDyn (not recommended)
 
@@ -536,14 +514,12 @@ Links:
 - [RobotDyn AC Dimmer 40A/800V](https://www.rbdimmer.com/fr/)
 - [Heat Sink for Random SSR and Triac](https://aliexpress.com/item/1005004879389236.html)
 
-> ##### IMPORTANT
->
-> 1. It is possible to switch the TRIAC of an original RobotDyn AC Dimmer with a higher one, for example a [BTA40-800B BOITIER RD-91](https://fr.farnell.com/stmicroelectronics/bta40-800b/triac-40a-800v-boitier-rd-91/dp/9801731)<br/>
->    Ref: [Triacs gradateurs pour routeur photovoltaïque](https://f1atb.fr/fr/triac-gradateur-pour-routeur-photovoltaique/).
-> 2. The heat sink must be chosen according to the SSR / Triac. Here is a good video about the theory: [Calcul du dissipateur pour le triac d'un routeur](https://www.youtube.com/watch?v=_zAx1Q2IvJ8) (from Pierre)
-> 3. Make sure to [improve the RobotDyn wiring/soldering](https://sites.google.com/view/le-professolaire/routeur-professolaire)
->
-{: .block-important }
+!!! warning
+
+1. It is possible to switch the TRIAC of an original RobotDyn AC Dimmer with a higher one, for example a [BTA40-800B BOITIER RD-91](https://fr.farnell.com/stmicroelectronics/bta40-800b/triac-40a-800v-boitier-rd-91/dp/9801731)<br/>
+   Ref: [Triacs gradateurs pour routeur photovoltaïque](https://f1atb.fr/fr/triac-gradateur-pour-routeur-photovoltaique/).
+2. The heat sink must be chosen according to the SSR / Triac. Here is a good video about the theory: [Calcul du dissipateur pour le triac d'un routeur](https://www.youtube.com/watch?v=_zAx1Q2IvJ8) (from Pierre)
+3. Make sure to [improve the RobotDyn wiring/soldering](https://sites.google.com/view/le-professolaire/routeur-professolaire)
 
 ### Measurement Devices
 
@@ -565,7 +541,7 @@ For routing measurement only:
 ### Relays
 
 Electromagnetic Relays can be used for the 2 relays and the 2 bypass relays because they will be switched on and off less frequently.
-I have tried the electromagnetic relays below and they sometimes get stuck... 
+I have tried the electromagnetic relays below and they sometimes get stuck...
 I don't know if this is caused by the poor quality or I got some lemons.
 So for a more reliable usage, maybe use a [Synchronous Solid State Relay](#synchronous-solid-state-relays), that you could also use as a replacement for the dimmer if the dimmer fails one day.
 Otherwise, if you can find a reliable one, I really like the ability to have both a NO and NC output to better isolate the dimming circuit and bypass circuit.

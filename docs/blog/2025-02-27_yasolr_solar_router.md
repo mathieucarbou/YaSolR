@@ -1,9 +1,3 @@
----
-layout: default
-title: Blog
-description: YaSolR Solar Router
----
-
 _Date: 2025-02-27_
 
 # YaS☀️lR Solar Router

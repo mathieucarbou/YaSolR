@@ -1,9 +1,3 @@
----
-layout: default
-title: Blog
-description: Everything on the JSY
----
-
 _Date: 2024-06-26_
 
 # Everything on the JSY
