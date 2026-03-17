@@ -362,6 +362,7 @@ Here are some pinout examples reported by users having migrated from APPER to Ya
 **With the Wemos D1 Mini 32 (`wemos_d1_mini32`):**
 
 - Output 1 Dimmer: 18
+- Output 1 Bypass Relay: 26
 - Output 1 DS18 Sensor: 23
 - Zero-Cross Detection (ZCD): 27
 
