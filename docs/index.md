@@ -6,9 +6,9 @@
 YaSolR is an ESP32 firmware for **Solar Router** compatible with nearly **any existing hardware**.
 It supports most hardware used in routers like:
 
-- [F1ATB](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/)
-- [Routeur solaire "Le Profes'Solaire"](https://sites.google.com/view/le-professolaire/routeur-professolaire)
-- [Routeur solaire APPER](https://ota.apper-solaire.org)
+- F1ATB
+- Routeur solaire "Le Profes'Solaire"
+- Routeur solaire APPER
 - etc
 
 If you already have a Solar Router at home based on ESP32, built by yourself or by someone else, there is a good chance that YaSolR will be compatible.

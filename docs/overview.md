@@ -233,11 +233,6 @@ Harmonics and flickering cannot be completely avoided but they can be mitigated 
 
 ## References
 
-**Solar Routers**
-
-- [Avantage d'un routeur solaire](https://sites.google.com/view/le-professolaire/routeur-professolaire) (Anthony G., _Le Profes'Solaire_)
-- [Principe du routeur photovoltaïque](https://f1atb.fr/fr/realisation-dun-routeur-photovoltaique-multi-sources-multi-modes-et-modulaire/) (André B., _[F1ATB](https://github.com/F1ATB)_)
-
 **YouTube videos** explaining the theory behind a Solar Router, harmonics and solutions, with some simulations and practical examples.
 
 - [Installations photovoltaïques](https://www.youtube.com/playlist?list=PLWpzro3Ndk_2PUlQkULUjP6VSzwmFXkPc) (Pierre Chfd)
