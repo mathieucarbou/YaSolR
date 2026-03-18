@@ -141,10 +141,11 @@ Each output is composed of the following components:
 A dimmer controls the power sent to the load.
 Supported dimmers:
 
-|                          | **RobotDyn 24A**<br> ![](./assets/img/hardware/RobotDyn_24A.jpeg) | **RobotDyn 40A**<br> ![](./assets/img/hardware/RobotDyn_40A.jpeg) | **Random SSR**<br> ![](./assets/img/hardware/Random_SSR.jpeg) | **Zero-Cross SSR**<br> ![](./assets/img/hardware/SSR_40A_DA.jpeg) | **Voltage Regulator with DAC**<br> ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
-| :----------------------- | :---------------------------------------------------------------: | :---------------------------------------------------------------: | :-----------------------------------------------------------: | :---------------------------------------------------------------: | :----------------------------------------------------------------------------: |
-| `Phase Control`          |                     ✅<br/>(not recommended)                      |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ❌                                 |                          ✅<br/>(DAC module required)                          |
-| `Cycle Stealing Control` |                     ✅<br/>(not recommended)                      |                              ✅<br/>                              |                 ✅<br/>(ZCD module required)                  |                                ✅                                 |                                       ❌                                       |
+|                          | **RobotDyn 24A / 40A**.                      | **Random SSR**                             | **Zero-Cross SSR**.                        | **Voltage Regulator with DAC                |
+|-------------------------:|:--------------------------------------------:|:------------------------------------------:|:-----------------------------------------: | :-----------------------------------------: |
+|                          | ![](./assets/img/hardware/RobotDyn_40A.jpeg) | ![](./assets/img/hardware/Random_SSR.jpeg) | ![](./assets/img/hardware/SSR_40A_DA.jpeg) | ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
+| `Phase Control`          |                     ✅<br/>(not recommended) |           ✅<br/>(ZCD module required)     |                                ❌          |             ✅<br/>(DAC module required)   |
+| `Cycle Stealing Control` |                     ✅<br/>(not recommended) |            ✅<br/>(ZCD module required)    |                                ✅          |                                       ❌   |
 
 !!! tip
 
