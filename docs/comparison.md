@@ -101,6 +101,7 @@ These libraries are the result of years of development and testing with an oscil
 
 [![](./assets/img/measurements/VDS6104_50.png)](./assets/img/measurements/VDS6104_50.png)
 
+## Speed and reactivity
 
 For a Solar Router to be efficient, the adjustment to the grid power must take place as fast as possible after the measurement arrives on the system.
 This implies
