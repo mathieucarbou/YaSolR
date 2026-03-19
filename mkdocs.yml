@@ -103,6 +103,7 @@ nav:
   - ❤️ Sponsors: sponsors.md
   - 📖 Documentation:
       - → What is a Solar Router: overview.md
+      - → YaSolR vs other Solar Routers: comparison.md
       - → How to Build Your Router: build.md
       - → YaSolR Manual: manual.md
   - 🌐 API:
