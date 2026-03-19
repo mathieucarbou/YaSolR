@@ -3,6 +3,10 @@
   <p class="yasolr-hero-tagline">Heat water with your Solar Production Excess!</p>
 </div>
 
+| | |
+|---|---|
+| [![](./assets/img/screenshots/app-overview-light.jpeg)](./assets/img/screenshots/app-overview-light.jpeg) | [![](./assets/img/screenshots/app-overview-dark.jpeg)](./assets/img/screenshots/app-overview-dark.jpeg) |
+
 YaSolR is an ESP32 firmware for **Solar Router** compatible with nearly **any existing hardware**.
 It supports most hardware used in routers like:
 
@@ -18,10 +22,6 @@ YaSolR is the **software** and this website will help you [build](build.md) your
 To know more about how Solar Routers work, please go to the [overview](overview.md) page.
 
 You can have a look at the [comparison](comparison.md) page to see how YaSolR compares to other Solar Routers.
-
-| | |
-|---|---|
-| [![](./assets/img/screenshots/app-overview-light.jpeg)](./assets/img/screenshots/app-overview-light.jpeg) | [![](./assets/img/screenshots/app-overview-dark.jpeg)](./assets/img/screenshots/app-overview-dark.jpeg) |
 
 ## YaSolR Benefits
 
