@@ -414,6 +414,13 @@ You can click on the diagram to open the interactive mode or [download the image
 
 [![](../assets/img/schemas/yasolr_elegant.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
 
+### How to Wire Electronic Water Heater (like ACI)
+
+If your water heater has an electronic board (like ACI ones), you need to either bypass it or integrate it in the circuit.
+
+There are a lot of schemas and tutorials online to do that.
+See for example: [https://forum-photovoltaique.fr/viewtopic.php?t=67337](https://forum-photovoltaique.fr/viewtopic.php?t=67337)
+
 ## Where to Buy
 
 Here is the non exhaustive list where to find some hardware to build your router.
