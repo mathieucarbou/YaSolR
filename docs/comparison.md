@@ -30,7 +30,7 @@ Amongst them:
 - [MycilaWebSerial](https://mathieu.carbou.me/MycilaWebSerial): WebSerial is a Serial Monitor for ESP32 that can be accessed remotely via a web browser
 - [Shelly Pro Solar Router](https://yasolr.carbou.me/blog/2024-07-01_shelly_solar_diverter)
 - [YaS☀️lR (Yet another Solar Router)](https://yasolr.carbou.me)
-- and many more...
+- and many more you will find on my ([GitHub Profile](https://github.com/mathieucarbou))...
 
 I am also actively maintaining the well known Async WebServer libraries called ESPAsyncWebServer as part of [ESP32Async](https://github.com/ESP32Async) organization with the help of the Arduino Core and WLED leads:
 
