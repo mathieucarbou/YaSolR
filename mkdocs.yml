@@ -98,8 +98,8 @@ markdown_extensions:
 nav:
   - 🏠 Home: index.md
   - 💪 Pro: pro.md
-  - ⤵️ Download: download.md
   - ❤️ Sponsors: sponsors.md
+  - ⤵️ Download: download.md
   - 📖 Blog: blog/index.md
   - 📖 Documentation:
       - → What is a Solar Router: overview.md
