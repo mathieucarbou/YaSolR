@@ -17,6 +17,8 @@ YaSolR is the **software** and this website will help you [build](build.md) your
 
 To know more about how Solar Routers work, please go to the [overview](overview.md) page.
 
+You can have a look at the [comparison](comparison.md) page to see how YaSolR compares to other Solar Routers.
+
 | | |
 |---|---|
 | [![](./assets/img/screenshots/app-overview-light.jpeg)](./assets/img/screenshots/app-overview-light.jpeg) | [![](./assets/img/screenshots/app-overview-dark.jpeg)](./assets/img/screenshots/app-overview-dark.jpeg) |
@@ -26,8 +28,6 @@ To know more about how Solar Routers work, please go to the [overview](overview.
 YaSolR is the **most optimized and powerful** Open-Source Solar Router firmware available.
 There is simply no match in terms of features, performance, reactivity and precision.
 It is also a big **Open-Source** project following **best development practices**.
-
-You can have a look at the [comparison](comparison.md) page to see how YaSolR compares to other Solar Router firmwares and projects.
 
 - ⚡ **Best reactivity** with more than 3 adjustments per second
 
@@ -92,6 +92,8 @@ You can have a look at the [comparison](comparison.md) page to see how YaSolR co
         - APPER Routeur Solaire board
         - Wemos D1 R32
         - Wemos D1 Mini 32
+
+You can have a look at the [comparison](comparison.md) page to see how YaSolR compares to other Solar Router firmwares and projects.
 
 ## Detailed Features
 
