@@ -60,6 +60,8 @@ You can have a look at the [comparison](comparison.md) page to see how YaSolR co
 
 - 🔄 **Excess Sharing**: YaSolR allows the first output to share the excess with the second output if you need both outputs to work at the same time
 
+- 🕸️ **Offline**: YaSolR can operate without being connected to any WiFi or Internet connection.
+
 - 🛠️ **Years of development experience**: YaSolR is built on years of development experiences and uses the most advanced and efficient libraries available on ESP32 and Arduino.:
 
 - 🔧 **Huge Hardware support**:

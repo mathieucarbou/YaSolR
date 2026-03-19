@@ -32,19 +32,19 @@ Amongst them:
 - [YaS☀️lR (Yet another Solar Router)](https://yasolr.carbou.me)
 - and many more...
 
-I am also actively maintaining the well known Async WebServer libraries called ESPAsyncWebServer as part of [ESP32Async](https://github.com/ESP32Async) organization:
+I am also actively maintaining the well known Async WebServer libraries called ESPAsyncWebServer as part of [ESP32Async](https://github.com/ESP32Async) organization with the help of the Arduino Core and WLED leads:
 
-- [AsyncTCP](https://github.com/ESP32Async/AsyncTCP): AsyncTCP is a library for ESP32 Arduino that facilitates the use of TCP connections in an asynchronous way |
-- [ESPAsyncWebServer](https://github.com/ESP32Async/ESPAsyncWebServer): WebSocket, SSE, Authentication, Arduino Json 7, File Upload, Static File serving, URL Rewrite, URL Redirect, etc |
+- [AsyncTCP](https://github.com/ESP32Async/AsyncTCP): AsyncTCP is a library for ESP32 Arduino that facilitates the use of TCP connections in an asynchronous way
+- [ESPAsyncWebServer](https://github.com/ESP32Async/ESPAsyncWebServer): WebSocket, SSE, Authentication, Arduino Json 7, File Upload, Static File serving, URL Rewrite, URL Redirect, etc
 
 ## Quality of development
 
-YaSolR is built as a professional Open-Source project on GitHub: <https://github.com/mathieucarbou/YaSolR>.
+YaSolR is built as a professional Open-Source project on GitHub: <https://github.com/mathieucarbou/YaSolR> and makes use of the best development practises in terms of project infrastructure and continuous integration.
 
 YaSolR is not built with Arduino IDE and `*.ino` files: these are typically used by inexperienced programmers who want to quickly create a proof of concept.
 Arduino IDE and `*.ino` files are not suitable for a serious project and cause a lot of issues that inexperienced programmers are unaware of.
 
-If you see a big project developed with Arduino IDE and `*.ino` files, you can be sure that the code quality is poor and that the developer lacks experience, which will lead to a bad experience for you as a user.
+If you see a big project developed with Arduino IDE and `*.ino` files, you can be sure that the code quality is poor and that the developer lacks experience, which will lead to a bad experience for you as a user and also in terms of project maintenance.
 
 ## Correct ISR Management
 
@@ -56,15 +56,41 @@ To do that, some functions need to be placed in what we call IRAM (Instruction R
 Inexperienced developers simply annotate their ISR methods with `ARDUINO_ISR_ATTR` or `IRAM_ATTR` thinking they will be executed from RAM, but that alone is not sufficient.
 A lot more work is required, and the correct approach is usually only known by experienced developers who understand how to properly manage ISRs and validate their behavior with an oscilloscope.
 
-## Correct Zero-Cross Pulse Detection
+### How to test if your router is correctly handling ISR
+
+- Connect an incandescent light bulb to the output of the router (ideally it would be an oscilloscope instead)
+- Activate the routing and manually set the duty cycle to different levels (like 25%, then 50%)
+- At the same time, do a constant refresh with caching disabled (in developer mode or with cmd+r) of the web interface to make the router serve the web files from flash at the same time it is routing
+- The light must not flicker at all, or just barely. If it does, it means that the flash operations are interfering with the ISR execution with which are signs of a bad ISR management, which can lead to an inefficient routing.
+
+## Correct Zero-Cross Detection
 
 **YaSolR is the only Solar Router firmware using an advanced library to analyze ZC pulses to remove any spurious effects and find the correct 0V crossing point**, which is crucial for the efficiency of a Solar Router.
 
 Other routers simply trigger at the rising edge of the pulse, which can happen way before the actual 0V crossing point, leading to an inefficient routing.
 
+YaSolR uses [MycilaPulseAnalyzer](https://mathieu.carbou.me/MycilaPulseAnalyzer) and [MycilaDimmer](https://mathieu.carbou.me/MycilaDimmer), the only 2 existing libraries correctly making use of this technic to find the right moment of the 0V crossing, as you can see here.
+This allows a more precise routing for higher and lower duty cycle values.
+
+[![](./assets/img/measurements/zcd_zc.jpeg)](./assets/img/measurements/zcd_zc.jpeg)
+
+### How to test if your router is correctly reading the ZC pulses
+
+- Connect an incandescent light bulb to the output of the router (ideally it would be an oscilloscope instead)
+- Activate the routing and manually change the dimmer gradually from 0 to 100% and observe the light behavior
+- The light should transition smoothly from 0 to 100% without any flickering or sudden changes in brightness. If you see flickering or sudden changes, it means that the router is not correctly analyzing the ZC pulses and is likely triggering at the wrong moment, which can lead to an inefficient routing.
+
+## No Flickering with Phase Control
+
+**YaSolR is the only Solar Router firmware that can guarantee no flickering on the load when the routing is active**, which is a common issue with other routers that can cause power spikes and inefficient dimming.
+
+Thanks to [MycilaPulseAnalyzer](https://mathieu.carbou.me/MycilaPulseAnalyzer) and [MycilaDimmer](https://mathieu.carbou.me/MycilaDimmer), when used with a good ZCD module, YaSolR will produce a stable power output with no flickering.
+
+[![](https://mathieu.carbou.me/MycilaDimmer/assets/img/anim.gif)]([./assets/img/measurements/zcd_zc.jpeg](https://mathieu.carbou.me/MycilaDimmer/))
+
 ## Oscilloscope Tested
 
-**YasolR is the only Solar Router firmware extensively tested with an oscilloscope to ensure that the triggering of the SSR or TRIAC is done at the right moment and with the right timing**.
+**YasolR is the only Solar Router firmware extensively tested with a 4-channel isolated oscilloscope to ensure that the triggering of the SSR or TRIAC is done at the right moment and with the right timing**.
 
 YaSolR is built on proven libraries for the dimmer control:
 
@@ -73,7 +99,8 @@ YaSolR is built on proven libraries for the dimmer control:
 
 These libraries are the result of years of development and testing with an oscilloscope to ensure that the triggering is done at the right moment and with the right timing, which is crucial for the efficiency of a Solar Router.
 
-## Speed and reactivity
+[![](./assets/img/measurements/VDS6104_50.png)](./assets/img/measurements/VDS6104_50.png)
+
 
 For a Solar Router to be efficient, the adjustment to the grid power must take place as fast as possible after the measurement arrives on the system.
 This implies
@@ -91,15 +118,19 @@ Other routers usually react each second or even every 2 seconds.
 
 Other solar routers usually don't provide a PID system or tuning view with as many options as YaSolR.
 
+[![](./assets/img/screenshots/Default_NR_OFF.jpeg)](./assets/img/screenshots/Default_NR_OFF.jpeg)
+
 ## 50 / 60 Hz Frequency Support
 
 **YaSolR is the only solar router firmware supporting both 50 Hz and 60 Hz frequencies, with frequency auto-detection**.
 
 Other solar routers usually only support 50 Hz, which can be a problem for users in 60 Hz countries.
 
+[![](./assets/img/screenshots/grid_freq.jpeg)](./assets/img/screenshots/grid_freq.jpeg)
+
 ## 12-bits resolution with LUT table
 
-**YaSolR is the only solar router firmware using a 12-bits resolution (0-4096) with a 200 values power LUT table** to precisely control at a Watt level a load of more than 4000W, which is the case for most households.
+**YaSolR is the only solar router firmware using a 12-bits resolution (0-4096) with a 200 values power LUT table** to precisely control at a Watt level a load of more than 4000W.
 It also does interpolation within the LUT values to be even more precise.
 
 Other routers usually rely on the RobotDyn library which only supports a 0–100 range with a very small and imprecise power LUT.
@@ -108,13 +139,19 @@ Other routers usually rely on the RobotDyn library which only supports a 0–100
 
 **YaSolR offers a resistance calibration feature** to calibrate the resistance of the load, which is required to have a precise control at a Watt level.
 
+[![](./assets/img/screenshots/calibration.jpeg)](./assets/img/screenshots/calibration.jpeg)
+
 ## Harmonics Analysis and Control
 
 **YaSolR is the only solar router firmware including mechanisms to help you visualize and lower harmonics to comply with regulations**.
 
+[![](./assets/img/screenshots/app-output.jpeg)](./assets/img/screenshots/app-output.jpeg)
+
 ## Huge Hardware Support
 
 **YaSolR is part of the rare routers to support big voltage regulators with DAC control**, which are more efficient and generate less heat than SSRs, and are becoming more popular in the Solar Router community.
+
+[![](./assets/img/hardware/LSA-H3P50YB.jpeg)](./assets/img/hardware/LSA-H3P50YB.jpeg)
 
 **YaSolR supports a wide range of hardware**, making it compatible with most existing Solar Router builds.
 
@@ -129,6 +166,8 @@ This includes:
 - **ZCD sources**: Dedicated ZCD modules (Daniel S.), RobotDyn built-in ZCD, JSY-MK-194G integrated ZCD, BM1Z102FJ IC
 
 Other routers are usually tied to a specific hardware combination and require significant modifications to support different components.
+
+[![](./assets/img/screenshots/dimmer_types.jpeg)](./assets/img/screenshots/dimmer_types.jpeg)
 
 ## Ethernet Support
 
@@ -147,3 +186,5 @@ Other routers usually offer limited or no support for these integrations, requir
 **YaSolR supports remote JSY meters** through [MycilaJSYApp](https://mathieu.carbou.me/MycilaJSYApp), allowing the measurement device to be placed far from the ESP32 board and connected over the network.
 
 This is particularly useful when the electrical panel is in a different room or when the router needs to be close to the load.
+
+[![](https://mathieu.carbou.me/MycilaJSYApp/screenshot.png)](https://mathieu.carbou.me/MycilaJSYApp/screenshot.png)
