@@ -99,8 +99,8 @@ nav:
   - 🏠 Home: index.md
   - 💪 Pro: pro.md
   - ⤵️ Download: download.md
-  - 📖 Blog: blog/index.md
   - ❤️ Sponsors: sponsors.md
+  - 📖 Blog: blog/index.md
   - 📖 Documentation:
       - → What is a Solar Router: overview.md
       - → YaSolR vs other Solar Routers: comparison.md
