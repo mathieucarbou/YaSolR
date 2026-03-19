@@ -86,7 +86,7 @@ This allows a more precise routing for higher and lower duty cycle values.
 
 Thanks to [MycilaPulseAnalyzer](https://mathieu.carbou.me/MycilaPulseAnalyzer) and [MycilaDimmer](https://mathieu.carbou.me/MycilaDimmer), when used with a good ZCD module, YaSolR will produce a stable power output with no flickering.
 
-[![](https://mathieu.carbou.me/MycilaDimmer/assets/img/anim.gif)](https://mathieu.carbou.me/MycilaDimmer/assets/img/anim.gif))
+[![](https://mathieu.carbou.me/MycilaDimmer/assets/img/anim.gif)](https://mathieu.carbou.me/MycilaDimmer/assets/img/anim.gif)
 
 ## Oscilloscope Tested
 
