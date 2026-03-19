@@ -27,6 +27,8 @@ YaSolR is the **most optimized and powerful** Open-Source Solar Router firmware 
 There is simply no match in terms of features, performance, reactivity and precision.
 It is also a big **Open-Source** project following **best development practices**.
 
+You can have a look at the [comparison](comparison.md) page to see how YaSolR compares to other Solar Router firmwares and projects.
+
 - ⚡ **Best reactivity** with more than 3 adjustments per second
 
 - 📊 **Fast measurements**: YaSolR can read about 20 measurements per second
