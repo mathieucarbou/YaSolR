@@ -62,6 +62,10 @@ It is also a big **Open-Source** project following **best development practices*
 
 - 🕸️ **Offline**: YaSolR can operate without being connected to any WiFi or Internet connection.
 
+- 🚗 **EV Charger Compatibility**: YaSolR is compatible with EV chargers (e.g. OpenEVSE) that are charging on the solar excess and can be configured to set some sort of priority for the EV charger so that it can start charging.
+
+- 🎛️ **Multiple YaSolR in the same Home**: YaSolR includes mechanisms to be able to use multiple YaSolR in the same home without any conflict.
+
 - 🛠️ **Years of development experience**: YaSolR is built on years of development experiences and uses the most advanced and efficient libraries available on ESP32 and Arduino.:
 
 - 🔧 **Huge Hardware support**:
