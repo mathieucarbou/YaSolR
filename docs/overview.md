@@ -185,7 +185,7 @@ So there is no load at that time of switching, thus, no harmonics.
 
 ![](https://mathieu.carbou.me/MycilaDimmer/assets/img/measurements/cycle_stealing_10ms.jpeg)
 
-YaSolR's Cycle Stealing implementation uses a **First-Order Delta-Sigma Modulator (Bresenham's algorithm)** to optimally distribute ON/OFF half-cycles across the measurement window.
+YaSolR's Cycle Stealing implementation uses a **First-Order Delta-Sigma Modulator (Bresenham's algorithm)** to optimally distribute ON/OFF half-cycles.
 Crucially, it enforces **DC balance**: for every positive half-cycle consumed, a matching negative half-cycle is also consumed, preventing DC offset on the grid which could saturate transformers or trip breakers.
 See [MycilaDimmer cycle stealing technical details](https://mathieu.carbou.me/MycilaDimmer/cycle_stealing/) for more information.
 

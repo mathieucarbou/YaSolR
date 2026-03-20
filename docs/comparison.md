@@ -46,6 +46,18 @@ Arduino IDE and `*.ino` files are not suitable for a serious project and cause a
 
 If you see a big project developed with Arduino IDE and `*.ino` files, you can be sure that the code quality is poor and that the developer lacks experience, which will lead to a bad experience for you as a user and also in terms of project maintenance.
 
+## Speed and reactivity
+
+For a Solar Router to be efficient, the adjustment to the grid power must take place as fast as possible after the measurement arrives on the system.
+This implies
+
+- a fast measurement speed (the faster the better)
+- a fast adjustment speed (the faster the better)
+
+**YaSolR is the only router capable of taking about 20 measurements per second, processing them to adjust the power to the grid at least 3 times per second, and doing all of this with a very low latency.**
+
+Other routers usually react each second or even every 2 seconds.
+
 ## Correct ISR Management
 
 **YaSolR is the only Solar Router firmware built with a focus on correct ISR (Interrupt Service Routine) management**, ensuring that all critical operations are handled efficiently and without conflicts.
@@ -63,7 +75,16 @@ A lot more work is required, and the correct approach is usually only known by e
 - At the same time, do a constant refresh with caching disabled (in developer mode or with cmd+r) of the web interface to make the router serve the web files from flash at the same time it is routing
 - The light must not flicker at all, or just barely. If it does, it means that the flash operations are interfering with the ISR execution with which are signs of a bad ISR management, which can lead to an inefficient routing.
 
-## Correct Zero-Cross Detection
+## Phase Control Comparison
+
+### 12-bits resolution with LUT table
+
+**YaSolR is the only solar router firmware using a 12-bits resolution (0-4096) with a 200 values power LUT table** to precisely control at a Watt level a load of more than 4000W.
+It also does interpolation within the LUT values to be even more precise.
+
+Other routers usually rely on the RobotDyn library which only supports a 0–100 range with a very small and imprecise power LUT.
+
+### Correct Zero-Cross Detection
 
 **YaSolR is the only Solar Router firmware using an advanced library to analyze ZC pulses to remove any spurious effects and find the correct 0V crossing point**, which is crucial for the efficiency of a Solar Router.
 
@@ -74,19 +95,51 @@ This allows a more precise routing for higher and lower duty cycle values.
 
 [![](./assets/img/measurements/zcd_zc.jpeg)](./assets/img/measurements/zcd_zc.jpeg)
 
-### How to test if your router is correctly reading the ZC pulses
+#### How to test if your router is correctly reading the ZC pulses
 
 - Connect an incandescent light bulb to the output of the router (ideally it would be an oscilloscope instead)
 - Activate the routing and manually change the dimmer gradually from 0 to 100% and observe the light behavior
 - The light should transition smoothly from 0 to 100% without any flickering or sudden changes in brightness. If you see flickering or sudden changes, it means that the router is not correctly analyzing the ZC pulses and is likely triggering at the wrong moment, which can lead to an inefficient routing.
 
-## No Flickering with Phase Control
+### No Flickering with Phase Control
 
 **YaSolR is the only Solar Router firmware that can guarantee no flickering on the load when the routing is active**, which is a common issue with other routers that can cause power spikes and inefficient dimming.
 
 Thanks to [MycilaPulseAnalyzer](https://mathieu.carbou.me/MycilaPulseAnalyzer) and [MycilaDimmer](https://mathieu.carbou.me/MycilaDimmer), when used with a good ZCD module, YaSolR will produce a stable power output with no flickering.
 
 [![](https://mathieu.carbou.me/MycilaDimmer/assets/img/anim.gif)](https://mathieu.carbou.me/MycilaDimmer/assets/img/anim.gif)
+
+### Harmonics Analysis and Control
+
+**YaSolR is the only solar router firmware including mechanisms to help you visualize and lower harmonics to comply with regulations**.
+
+[![](./assets/img/screenshots/app-output.jpeg)](./assets/img/screenshots/app-output.jpeg)
+
+## Cycle Stealing Comparison
+
+Most routers out there are using a window system, divided in slots, to determine if a cycle has to be on or off.
+This window system causes a slowdown and lack or reactivity of the router, and is not precise because each slot is mapped to a quantity of power.
+So these routers usually oscillate around the setpoint (0 W) and have a very low accuracy.
+
+Some routers working on half cycle are also creating DC imbalance on the grid which is forbidden.
+
+I didn't want such bad implementation on YaSolR (often called burst fire or wave control, "train d'onde" or "multi-sinus").
+They can also cause some voltage flickering.
+
+I wanted something that reacts fast on duty cycle changes (so no window system), that is not creating DC imbalance on the grid and also has no flickering.
+
+**YaSolR is the only Open-Source solar router firmware supporting Cycle Stealing**, implemented with a **First-Order Delta-Sigma Modulator (Bresenham's algorithm)** to optimally distribute ON/OFF half-cycles.
+Crucially, it enforces **DC balance**: for every positive half-cycle consumed, a matching negative half-cycle is also consumed, preventing DC offset on the grid which could saturate transformers or trip breakers.
+And also, it is designed to be highly reactive and not window-based, so that it can react to duty cycle changes very fast.
+
+Here is an example of the effect of Cycle Stealing on the voltage and current for a 50% duty cycle, you can see that the voltage is stable and there is no flickering, and that the current is also stable and at the right level.
+
+[![](./assets/img/measurements/cycle-stealing-0.5.png)](./assets/img/measurements/cycle-stealing-0.5.png)
+
+Here is a screenshot of the YaSolR web interface showing the effect of Cycle Stealing on the grid power, to show you how good the reactivity and precision of the routing is with Cycle Stealing.
+
+[![](./assets/img/screenshots/cycle-stealing.jpeg)](./assets/img/screenshots/cycle-stealing.jpeg)
+
 
 ## Oscilloscope Tested
 
@@ -100,18 +153,6 @@ YaSolR is built on proven libraries for the dimmer control:
 These libraries are the result of years of development and testing with an oscilloscope to ensure that the triggering is done at the right moment and with the right timing, which is crucial for the efficiency of a Solar Router.
 
 [![](./assets/img/measurements/VDS6104_50.png)](./assets/img/measurements/VDS6104_50.png)
-
-## Speed and reactivity
-
-For a Solar Router to be efficient, the adjustment to the grid power must take place as fast as possible after the measurement arrives on the system.
-This implies
-
-- a fast measurement speed (the faster the better)
-- a fast adjustment speed (the faster the better)
-
-**YaSolR is the only router capable of taking about 20 measurements per second, processing them to adjust the power to the grid at least 3 times per second, and doing all of this with a very low latency.**
-
-Other routers usually react each second or even every 2 seconds.
 
 ## PID algorithm with filtering
 
@@ -129,24 +170,11 @@ Other solar routers usually only support 50 Hz, which can be a problem for users
 
 [![](./assets/img/screenshots/grid_freq.jpeg)](./assets/img/screenshots/grid_freq.jpeg)
 
-## 12-bits resolution with LUT table
-
-**YaSolR is the only solar router firmware using a 12-bits resolution (0-4096) with a 200 values power LUT table** to precisely control at a Watt level a load of more than 4000W.
-It also does interpolation within the LUT values to be even more precise.
-
-Other routers usually rely on the RobotDyn library which only supports a 0–100 range with a very small and imprecise power LUT.
-
 ## Resistance Calibration
 
 **YaSolR offers a resistance calibration feature** to calibrate the resistance of the load, which is required to have a precise control at a Watt level.
 
 [![](./assets/img/screenshots/calibration.jpeg)](./assets/img/screenshots/calibration.jpeg)
-
-## Harmonics Analysis and Control
-
-**YaSolR is the only solar router firmware including mechanisms to help you visualize and lower harmonics to comply with regulations**.
-
-[![](./assets/img/screenshots/app-output.jpeg)](./assets/img/screenshots/app-output.jpeg)
 
 ## Huge Hardware Support
 
