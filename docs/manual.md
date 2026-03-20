@@ -978,11 +978,11 @@ For example, if the grid excess is `2000 W`, output 1 is set to `70%` and has an
 
 #### Bypass Configuration
 
-- `Bypass Start Temperature`: The temperature threshold when the auto bypass will start: the temperature of the water tank needs to be lower than this threshold.
-- `Bypass Stop Temperature`: The temperature threshold when the auto bypass will stop: the temperature of the water tank needs to be higher than this threshold.
-- `Bypass Start Time` / `Bypass Stop Time`: The time range when the auto bypass is allowed to start.
-- `Bypass Week Days`: Days of the week when the bypass can be activated.
-- `Manual Bypass Timeout`: The duration in hours after which the manual bypass, if activated, will be automatically deactivated.
+- `Start Temperature`: The temperature threshold when the auto bypass will start: the temperature of the water tank needs to be lower than this threshold.
+- `Stop Temperature`: The temperature threshold when the auto bypass will stop: the temperature of the water tank needs to be higher than this threshold.
+- `Start Time` / `Stop Time`: The time range when the auto bypass is allowed to start.
+- `Week Days`: Days of the week when the bypass can be activated.
+- `Timeout`: The duration in hours after which the manual bypass, if activated, will be automatically deactivated.
   If zero, no auto-deactivation happens and you need to manually turn it off.
 
 !!! tip
