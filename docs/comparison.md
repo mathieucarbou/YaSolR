@@ -140,7 +140,6 @@ Here is a screenshot of the YaSolR web interface showing the effect of Cycle Ste
 
 [![](./assets/img/screenshots/cycle-stealing.jpeg)](./assets/img/screenshots/cycle-stealing.jpeg)
 
-
 ## Oscilloscope Tested
 
 **YasolR is the only Solar Router firmware extensively tested with a 4-channel isolated oscilloscope to ensure that the triggering of the SSR or TRIAC is done at the right moment and with the right timing**.
@@ -217,3 +216,15 @@ Other routers usually offer limited or no support for these integrations, requir
 This is particularly useful when the electrical panel is in a different room or when the router needs to be close to the load.
 
 [![](https://mathieu.carbou.me/MycilaJSYApp/screenshot.png)](https://mathieu.carbou.me/MycilaJSYApp/screenshot.png)
+
+## EV Charging Station Compatibility
+
+**YaSolR is designed to be compatible with EV charging stations**, allowing users having an EV Box capable of charging over the solar excess power to still do it and set some sort of priority over routing.
+
+The power sharing can be done through MQTT or REST API.
+
+## Compatible with multiple Solar Router installations
+
+**YaSolR is designed to be compatible with multiple Solar Router installations in the same home**, allowing users to manage multiple loads and optimize their self-consumption across different circuits.
+
+The power sharing between routers is done through MQTT.
