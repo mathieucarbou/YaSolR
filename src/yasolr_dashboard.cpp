@@ -395,12 +395,15 @@ static dash::SeparatorCard<const char*> _output1ConfigSep1(dashboard, YASOLR_LBL
 static dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 static dash::InputCard<uint8_t> _output1DimmerTempLimiter(dashboard, YASOLR_LBL_063);
 static dash::SeparatorCard<const char*> _output1ConfigSep2(dashboard, YASOLR_LBL_137);
+static dash::SliderCard<float, 1> _output1BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
+static dash::SeparatorCard<const char*> _output1ConfigSep5(dashboard, YASOLR_LBL_151);
 static dash::InputCard<uint8_t> _output1AutoStartTemp(dashboard, YASOLR_LBL_065);
 static dash::InputCard<uint8_t> _output1AutoStoptTemp(dashboard, YASOLR_LBL_066);
+static dash::SeparatorCard<const char*> _output1ConfigSep4(dashboard, YASOLR_LBL_150);
+static dash::WeekCard<const char*> _output1AutoStartWDays(dashboard, YASOLR_LBL_069);
 static dash::InputCard<const char*> _output1AutoStartTime(dashboard, YASOLR_LBL_067);
 static dash::InputCard<const char*> _output1AutoStoptTime(dashboard, YASOLR_LBL_068);
-static dash::WeekCard<const char*> _output1AutoStartWDays(dashboard, YASOLR_LBL_069);
-static dash::SliderCard<float, 1> _output1BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
+
 
 // tab: output 2 config
 
@@ -415,12 +418,14 @@ static dash::SeparatorCard<const char*> _output2ConfigSep1(dashboard, YASOLR_LBL
 static dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
 static dash::InputCard<uint8_t> _output2DimmerTempLimiter(dashboard, YASOLR_LBL_063);
 static dash::SeparatorCard<const char*> _output2ConfigSep2(dashboard, YASOLR_LBL_137);
+static dash::SliderCard<float, 1> _output2BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
+static dash::SeparatorCard<const char*> _output2ConfigSep5(dashboard, YASOLR_LBL_151);
 static dash::InputCard<uint8_t> _output2AutoStartTemp(dashboard, YASOLR_LBL_065);
 static dash::InputCard<uint8_t> _output2AutoStoptTemp(dashboard, YASOLR_LBL_066);
+static dash::SeparatorCard<const char*> _output2ConfigSep4(dashboard, YASOLR_LBL_150);
+static dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_069);
 static dash::InputCard<const char*> _output2AutoStartTime(dashboard, YASOLR_LBL_067);
 static dash::InputCard<const char*> _output2AutoStoptTime(dashboard, YASOLR_LBL_068);
-static dash::WeekCard<const char*> _output2AutoStartWDays(dashboard, YASOLR_LBL_069);
-static dash::SliderCard<float, 1> _output2BypassTimeout(dashboard, YASOLR_LBL_200, 0.0f, 24.0f, 0.5f, "h");
 
 // tab: system
 
@@ -1006,6 +1011,8 @@ void YaSolR::Website::begin() {
   _output1ExcessRatio.setTab(_output1ConfigTab);
   _output1ConfigSep2.setTab(_output1ConfigTab);
   _output1ConfigSep3.setTab(_output1ConfigTab);
+  _output1ConfigSep4.setTab(_output1ConfigTab);
+  _output1ConfigSep5.setTab(_output1ConfigTab);
   _output1AutoStartTemp.setTab(_output1ConfigTab);
   _output1AutoStoptTemp.setTab(_output1ConfigTab);
   _output1AutoStartTime.setTab(_output1ConfigTab);
@@ -1041,6 +1048,8 @@ void YaSolR::Website::begin() {
   _output2ExcessRatio.setTab(_output2ConfigTab);
   _output2ConfigSep2.setTab(_output2ConfigTab);
   _output2ConfigSep3.setTab(_output2ConfigTab);
+  _output2ConfigSep4.setTab(_output2ConfigTab);
+  _output2ConfigSep5.setTab(_output2ConfigTab);
   _output2AutoStartTemp.setTab(_output2ConfigTab);
   _output2AutoStoptTemp.setTab(_output2ConfigTab);
   _output2AutoStartTime.setTab(_output2ConfigTab);
@@ -1443,6 +1452,8 @@ void YaSolR::Website::initCards() {
   _output1ExcessRatio.setValue(config.get<uint8_t>(KEY_OUTPUT1_EXCESS_RATIO));
   _output1ExcessRatio.setDisplay(dimmer1Enabled);
   _output1ConfigSep2.setDisplay(bypass1Possible);
+  _output1ConfigSep4.setDisplay(bypass1Possible);
+  _output1ConfigSep5.setDisplay(bypass1Possible);
   _output1AutoStartTemp.setValue(config.get<uint8_t>(KEY_OUTPUT1_TEMPERATURE_START));
   _output1AutoStartTemp.setDisplay(bypass1Possible);
   _output1AutoStoptTemp.setValue(config.get<uint8_t>(KEY_OUTPUT1_TEMPERATURE_STOP));
@@ -1470,6 +1481,8 @@ void YaSolR::Website::initCards() {
   _output2ExcessRatio.setValue(config.get<uint8_t>(KEY_OUTPUT2_EXCESS_RATIO));
   _output2ExcessRatio.setDisplay(dimmer2Enabled);
   _output2ConfigSep2.setDisplay(bypass2Possible);
+  _output2ConfigSep4.setDisplay(bypass2Possible);
+  _output2ConfigSep5.setDisplay(bypass2Possible);
   _output2AutoStartTemp.setValue(config.get<uint8_t>(KEY_OUTPUT2_TEMPERATURE_START));
   _output2AutoStartTemp.setDisplay(bypass2Possible);
   _output2AutoStoptTemp.setValue(config.get<uint8_t>(KEY_OUTPUT2_TEMPERATURE_STOP));
