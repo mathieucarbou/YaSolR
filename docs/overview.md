@@ -79,8 +79,8 @@ The board then does some calculation to determine when to send the signal to the
 
 !!! tip
 
-  I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
-  So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
+    I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
+    So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
 
 #### The Importance of a good ZCD circuit
 
