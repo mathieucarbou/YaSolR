@@ -507,8 +507,8 @@ Links:
 
 !!! tip
 
-I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
-So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
+    I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
+    So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
 
 #### RobotDyn (not recommended)
 
@@ -523,10 +523,10 @@ Links:
 
 !!! warning
 
-1. It is possible to switch the TRIAC of an original RobotDyn AC Dimmer with a higher one, for example a [BTA40-800B BOITIER RD-91](https://fr.farnell.com/stmicroelectronics/bta40-800b/triac-40a-800v-boitier-rd-91/dp/9801731)<br/>
-   Ref: [Triacs gradateurs pour routeur photovoltaïque](https://f1atb.fr/fr/triac-gradateur-pour-routeur-photovoltaique/).
-2. The heat sink must be chosen according to the SSR / Triac. Here is a good video about the theory: [Calcul du dissipateur pour le triac d'un routeur](https://www.youtube.com/watch?v=_zAx1Q2IvJ8) (from Pierre)
-3. Make sure to [improve the RobotDyn wiring/soldering](https://sites.google.com/view/le-professolaire/routeur-professolaire)
+    1. It is possible to switch the TRIAC of an original RobotDyn AC Dimmer with a higher one, for example a [BTA40-800B BOITIER RD-91](https://fr.farnell.com/stmicroelectronics/bta40-800b/triac-40a-800v-boitier-rd-91/dp/9801731)<br/>
+       Ref: [Triacs gradateurs pour routeur photovoltaïque](https://f1atb.fr/fr/triac-gradateur-pour-routeur-photovoltaique/).
+    2. The heat sink must be chosen according to the SSR / Triac. Here is a good video about the theory: [Calcul du dissipateur pour le triac d'un routeur](https://www.youtube.com/watch?v=_zAx1Q2IvJ8) (from Pierre)
+    3. Make sure to [improve the RobotDyn wiring/soldering](https://sites.google.com/view/le-professolaire/routeur-professolaire)
 
 ### Measurement Devices
 
