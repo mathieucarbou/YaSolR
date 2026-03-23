@@ -346,7 +346,7 @@ namespace Mycila {
             return std::nullopt;
           }
 
-          bool getMetric(metric::Metrics& metrics, float gridVoltage) const {
+          bool getMetrics(metric::Metrics& metrics, float gridVoltage) const {
             return readMetrics(metrics) || computeMetrics(metrics, gridVoltage);
           }
 
@@ -487,7 +487,7 @@ namespace Mycila {
         std::unique_ptr<metric::Metrics> metrics = std::make_unique<metric::Metrics>();
         if (computeMetrics(*metrics, gridVoltage)) {
           JsonObject source = json.add<JsonObject>();
-          source["source"] = "Computed";
+          source["source"] = metric::sourceToString(metric::Source::COMPUTED);
           metric::Metrics::toJson(source, *metrics);
         }
         if (readMetrics(*metrics)) {
@@ -498,7 +498,7 @@ namespace Mycila {
       }
 #endif
 
-      bool getMetric(metric::Metrics& metrics, float gridVoltage) const {
+      bool getMetrics(metric::Metrics& metrics, float gridVoltage) const {
         return readMetrics(metrics) || computeMetrics(metrics, gridVoltage);
       }
 

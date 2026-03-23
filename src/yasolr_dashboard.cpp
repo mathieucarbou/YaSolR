@@ -1505,9 +1505,7 @@ void YaSolR::Website::updateCards() {
   _gridPower.setValue(grid.getPower().value_or(0.0f));
 
   Mycila::metric::Metrics routerMetrics;
-  if (!router.readMetrics(routerMetrics)) {
-    router.computeMetrics(routerMetrics, gridVoltage);
-  }
+  router.getMetrics(routerMetrics, gridVoltage);
 
   _routerPower.setValue(routerMetrics.power);
   _routerApparentPower.setValue(routerMetrics.apparentPower);
@@ -1611,8 +1609,7 @@ void YaSolR::Website::updateCards() {
   // tab: output 1
 
   Mycila::metric::Metrics output1Measurements;
-  if (!output1.readMetrics(output1Measurements))
-    output1.computeMetrics(output1Measurements, gridVoltage);
+  output1.getMetrics(output1Measurements, gridVoltage);
 
   _output1DimmerSliderRO.setValue(output1.getDimmerDutyCycleOnline() * 100.0f);
   _output1Power.setValue(output1Measurements.power);
@@ -1632,8 +1629,7 @@ void YaSolR::Website::updateCards() {
   // tab: output 2
 
   Mycila::metric::Metrics output2Measurements;
-  if (!output2.readMetrics(output2Measurements))
-    output2.computeMetrics(output2Measurements, gridVoltage);
+  output2.getMetrics(output2Measurements, gridVoltage);
 
   _output2DimmerSliderRO.setValue(output2.getDimmerDutyCycleOnline() * 100.0f);
   _output2Power.setValue(output2Measurements.power);
