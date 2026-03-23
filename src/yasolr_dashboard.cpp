@@ -404,7 +404,6 @@ static dash::WeekCard<const char*> _output1AutoStartWDays(dashboard, YASOLR_LBL_
 static dash::InputCard<const char*> _output1AutoStartTime(dashboard, YASOLR_LBL_067);
 static dash::InputCard<const char*> _output1AutoStoptTime(dashboard, YASOLR_LBL_068);
 
-
 // tab: output 2 config
 
 static dash::SeparatorCard<const char*> _output2ConfigSep0(dashboard, YASOLR_LBL_140);
@@ -1837,10 +1836,7 @@ void YaSolR::Website::updateCharts() {
   memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], sizeof(_routedPowerHistoryY) - sizeof(*_routedPowerHistoryY));
 
   // set new value
-  std::optional<float> routedPower = router.readTotalRoutedPower();
-  if (!routedPower.has_value() && gridVoltage.has_value()) {
-    routedPower = router.computeTotalRoutedPower(gridVoltage.value());
-  }
+  std::optional<float> routedPower = router.getTotalRoutedPower(gridVoltage.value_or(NAN));
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routedPower.value_or(0));
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
 
@@ -1852,10 +1848,7 @@ void YaSolR::Website::updateCharts() {
   // output 1 harmonics
   if (_output1HarmonicLevels.displayed()) {
     output1.computeHarmonics(_output1HarmonicLevelY, YASOLR_HARMONICS);
-    std::optional<float> current = output1.readRoutedCurrent();
-    if (!current.has_value() && gridVoltage.has_value()) {
-      current = output1.computeRoutedCurrent(gridVoltage.value());
-    }
+    std::optional<float> current = output1.getRoutedCurrent(gridVoltage.value_or(NAN));
     for (size_t i = 0; i < YASOLR_HARMONICS; i++) {
       _output1HarmonicCurrentY[i] = current.value_or(0) * _output1HarmonicLevelY[i] / 100.0f;
     }
@@ -1866,10 +1859,7 @@ void YaSolR::Website::updateCharts() {
   // output 2 harmonics
   if (_output2HarmonicLevels.displayed()) {
     output2.computeHarmonics(_output2HarmonicLevelsY, YASOLR_HARMONICS);
-    std::optional<float> current = output2.readRoutedCurrent();
-    if (!current.has_value() && gridVoltage.has_value()) {
-      current = output2.computeRoutedCurrent(gridVoltage.value());
-    }
+    std::optional<float> current = output2.getRoutedCurrent(gridVoltage.value_or(NAN));
     for (size_t i = 0; i < YASOLR_HARMONICS; i++) {
       _output2HarmonicCurrentY[i] = current.value_or(0) * _output2HarmonicLevelsY[i] / 100.0f;
     }

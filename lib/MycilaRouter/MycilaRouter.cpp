@@ -357,7 +357,7 @@ void Mycila::Router::continueCalibration() {
       if (millis() - _calibrationStepStartTime > 10000) {
         ESP_LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
 
-        std::optional<float> resistance = _outputs[_calibrationOutputIndex]->readResistance();
+        std::optional<float> resistance = _outputs[_calibrationOutputIndex]->measureResistance();
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = resistance.value_or(0);
 

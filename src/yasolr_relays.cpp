@@ -76,12 +76,8 @@ void yasolr_init_relays() {
   Mycila::Task* relayTask = new Mycila::Task("Relay", []() {
     std::optional<float> gridPower = grid.getPower();
     std::optional<float> gridVoltage = grid.getVoltage();
-    std::optional<float> routedPower = router.readTotalRoutedPower();
+    std::optional<float> routedPower = router.getTotalRoutedPower(gridVoltage.value_or(NAN));
     float setpoint = pidController.getSetpoint();
-
-    if (!routedPower.has_value() && gridVoltage.has_value()) {
-      routedPower = router.computeTotalRoutedPower(gridVoltage.value());
-    }
 
     if (!gridPower.has_value() || !gridVoltage.has_value() || !routedPower.has_value()) {
       ESP_LOGW(TAG, "Cannot auto switch relays: missing grid power, grid voltage or routed power");

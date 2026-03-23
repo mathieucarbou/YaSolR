@@ -312,18 +312,12 @@ namespace Mycila {
 
           // metrics
 
-          std::optional<float> readRoutedPower() const {
+          std::optional<float> getRoutedPower(float gridVoltage) const {
             if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
               return _metrics.get()->power;
-            return std::nullopt;
-          }
-
-          std::optional<float> computeRoutedPower(float gridVoltage) const {
-            if (getState() != State::ROUTING)
-              return 0.0f;
-            if (gridVoltage > 0) {
+            if (gridVoltage > 0 && config.calibratedResistance > 0) {
               Mycila::Dimmer::Metrics dimmerMetrics;
               if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
                 return dimmerMetrics.power;
@@ -332,18 +326,12 @@ namespace Mycila {
             return std::nullopt;
           }
 
-          std::optional<float> readRoutedCurrent() const {
+          std::optional<float> getRoutedCurrent(float gridVoltage) const {
             if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
               return _metrics.get()->current;
-            return std::nullopt;
-          }
-
-          std::optional<float> computeRoutedCurrent(float gridVoltage) const {
-            if (getState() != State::ROUTING)
-              return 0.0f;
-            if (gridVoltage > 0) {
+            if (gridVoltage > 0 && config.calibratedResistance > 0) {
               Mycila::Dimmer::Metrics dimmerMetrics;
               if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
                 return dimmerMetrics.current;
@@ -352,10 +340,14 @@ namespace Mycila {
             return std::nullopt;
           }
 
-          std::optional<float> readResistance() const {
+          std::optional<float> measureResistance() const {
             if (_metrics.isPresent())
               return _metrics.get()->resistance;
             return std::nullopt;
+          }
+
+          bool getMetric(metric::Metrics& metrics, float gridVoltage) const {
+            return readMetrics(metrics) || computeMetrics(metrics, gridVoltage);
           }
 
           bool readMetrics(metric::Metrics& metrics) const override {
@@ -506,6 +498,10 @@ namespace Mycila {
       }
 #endif
 
+      bool getMetric(metric::Metrics& metrics, float gridVoltage) const {
+        return readMetrics(metrics) || computeMetrics(metrics, gridVoltage);
+      }
+
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
       bool readMetrics(metric::Metrics& metrics) const {
         metrics.reset(0.0f);
@@ -553,32 +549,17 @@ namespace Mycila {
         return false;
       }
 
-      std::optional<float> readTotalRoutedPower() const {
+      std::optional<float> getTotalRoutedPower(float gridVoltage) const {
         float power = 0;
         for (size_t i = 0; i < _outputs.size(); i++) {
           // if this output measurement source is shared (same clamp, 2 wires) then ignore
           if (_outputs[i]->isUsing(metric::Source::SHARED))
             continue;
-          std::optional<float> outputPower = _outputs[i]->readRoutedPower();
+          std::optional<float> outputPower = _outputs[i]->getRoutedPower(gridVoltage);
           if (outputPower.has_value()) {
             power += outputPower.value();
           } else {
             // otherwise we do not have any valid total power
-            return std::nullopt;
-          }
-        }
-        return power;
-      }
-
-      std::optional<float> computeTotalRoutedPower(float gridVoltage) const {
-        float power = 0;
-        for (size_t i = 0; i < _outputs.size(); i++) {
-          std::optional<float> outputPower = _outputs[i]->computeRoutedPower(gridVoltage);
-          if (outputPower.has_value()) {
-            power += outputPower.value();
-          } else {
-            // at least one output has no routed power info
-            // we cannot return a valid total power
             return std::nullopt;
           }
         }
