@@ -29,8 +29,8 @@ Reuse your existing Shelly EM or Shelly 3EM to build a router with:
 - Standard Synchronous SSR: used for dimming (**cycle stealing only**)
 - Shelly EM or MQTT is used to measure the grid power and voltage
 
-|                                  ESP32                                   |                       Standard Synchronous SSR                        |                          Shelly EM or 3EM                           |
-| :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :-----------------------------------------------------------------: |
+|                                   ESP32                                   |                        Standard Synchronous SSR                        |                           Shelly EM or 3EM                           |
+| :-----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :------------------------------------------------------------------: |
 | <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px"> | <img src="../assets/img/hardware/Shelly_EM.png" style="width:150px"> |
 
 !!! warning
@@ -46,8 +46,8 @@ The _Minimalist_ build uses inexpensive and easy to use components to start a ro
 - Standard Synchronous SSR: used for dimming (**cycle stealing only**)
 - Grid (and output ?) measurement done with a JSY (local or remote)
 
-|                                  ESP32                                   |                       Standard Synchronous SSR                        |                                   JSY                                    |
-| :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :----------------------------------------------------------------------: |
+|                                   ESP32                                   |                        Standard Synchronous SSR                        |                                    JSY                                    |
+| :-----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :-----------------------------------------------------------------------: |
 | <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/SSR_40A_DA.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 !!! warning
@@ -62,8 +62,8 @@ This is an improved version of the _Minimalist_ build using the new JSY-MK-194G 
 - A Random SSR is used for the dimming (using **phase control** or **cycle stealing**)
 - JSY-MK-194G is used both for the Zero-Cross Detection, and to measure the grid power and voltage and the router output
 
-|                                  ESP32                                   |                              Random SSR                               |                               JSY-MK-194G                                |
-| :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :----------------------------------------------------------------------: |
+|                                   ESP32                                   |                               Random SSR                               |                                JSY-MK-194G                                |
+| :-----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :-----------------------------------------------------------------------: |
 | <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 !!! tip
@@ -83,8 +83,8 @@ The _Elite_ build is for people who want the flexibility to use phase control an
 - A dedicated hardware ZCD circuit is used for the Zero-Cross Detection
 - JSY-MK-194G is used both for the Zero-Cross Detection, and to measure the grid power and voltage and the router output
 
-|                                  ESP32                                   |                              Random SSR                               |                           ZCD Module                           | JSY                                                                      |
-| :----------------------------------------------------------------------: | :-------------------------------------------------------------------: | :------------------------------------------------------------: | ------------------------------------------------------------------------ |
+|                                   ESP32                                   |                               Random SSR                               |                           ZCD Module                            | JSY                                                                       |
+| :-----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :-------------------------------------------------------------: | ------------------------------------------------------------------------- |
 | <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/Random_SSR.jpeg" style="width:150px"> | <img src="../assets/img/hardware/ZCD.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 !!! tip
@@ -104,8 +104,8 @@ The big advantage of a DFRobot DAC module is that it allows to control a LSA dir
 - A [DFRobot DAC](https://www.dfrobot.com/blog-13458.html) is used to control the voltage regulator: DFR0971 (GP8403), DFR1073 (GP8413), DFR1071 (GP8211S)
 - Grid (and output ?) measurement done with a JSY (local or remote)
 
-|                                  ESP32                                   |                           Voltage Regulator                            |                            DFRobot DAC                            | JSY                                                                      |
-| :----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :---------------------------------------------------------------: | ------------------------------------------------------------------------ |
+|                                   ESP32                                   |                            Voltage Regulator                            |                            DFRobot DAC                             | JSY                                                                       |
+| :-----------------------------------------------------------------------: | :---------------------------------------------------------------------: | :----------------------------------------------------------------: | ------------------------------------------------------------------------- |
 | <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/LSA-H3P50YB.jpeg" style="width:150px"> | <img src="../assets/img/hardware/DFR0971.jpg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 !!! tip
@@ -153,40 +153,40 @@ They are cheap, dangerously wired and not very good for the ZCD and heat dissipa
 **RobotDyn (TRIAC):**
 
 - Pros:
-    - cheap and easy to wire
-    - 40A model comes with a heat sink and fan
-    - All in one device: phase control, ZCD, heat sink, fan
+  - cheap and easy to wire
+  - 40A model comes with a heat sink and fan
+  - All in one device: phase control, ZCD, heat sink, fan
 - Cons:
-    - limited in load to 1/3 - 1/2 of the announced load
-    - 16A / 24A models comes with heat sink which is too small for its supported maximum load
-    - no solution ready to attach them on a DIN rail.
-    - The heat sink often has to be upgraded, except for the one on the 40A model which is already good for small loads below 2000W.
-    - The ZCD circuit [is less accurate](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards) and pulses can be harder to detect [on some boards](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue)
-    - You need to go over some modifications to ([improve wiring / soldering and heat sink](https://sites.google.com/view/le-professolaire/routeur-professolaire))
-    - You might need to replace the Triac or move it
+  - limited in load to 1/3 - 1/2 of the announced load
+  - 16A / 24A models comes with heat sink which is too small for its supported maximum load
+  - no solution ready to attach them on a DIN rail.
+  - The heat sink often has to be upgraded, except for the one on the 40A model which is already good for small loads below 2000W.
+  - The ZCD circuit [is less accurate](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards) and pulses can be harder to detect [on some boards](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue)
+  - You need to go over some modifications to ([improve wiring / soldering and heat sink](https://sites.google.com/view/le-professolaire/routeur-professolaire))
+  - You might need to replace the Triac or move it
 
 **Random Solid State Relays:**
 
 - Pros:
-    - cheap and easy to wire
-    - support higher loads
-    - can be attached to a DIN rail with standard SSR clips
-    - lot of heat sink models available
+  - cheap and easy to wire
+  - support higher loads
+  - can be attached to a DIN rail with standard SSR clips
+  - lot of heat sink models available
 - Cons:
-    - limited in load to 1/3 - 1/2 of the announced load
-    - **require an external ZCD module**, heat sink
+  - limited in load to 1/3 - 1/2 of the announced load
+  - **require an external ZCD module**, heat sink
 
 **Synchronous Solid State Relays:**
 
 - Pros:
-    - cheap and easy to wire
-    - support higher loads
-    - can be attached to a DIN rail with standard SSR clips
-    - lot of heat sink models available
+  - cheap and easy to wire
+  - support higher loads
+  - can be attached to a DIN rail with standard SSR clips
+  - lot of heat sink models available
 - Cons:
-    - limited in load to 1/3 - 1/2 of the announced load
-    - require heat sink
-    - **can only be used with the Cycle Stealing modulation algorithm, not with Phase Control**
+  - limited in load to 1/3 - 1/2 of the announced load
+  - require heat sink
+  - **can only be used with the Cycle Stealing modulation algorithm, not with Phase Control**
 
 **Voltage Regulators:**
 
@@ -240,8 +240,8 @@ Also, some electromagnetic relay boards have both a NO and NC output to better i
 
 Here are below what you can add to upgrade your router:
 
-|                                Hardware                                | Description                                                                                                               |
-| :--------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------ |
+|                                Hardware                                 | Description                                                                                                               |
+| :---------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------ |
 | <img src="../assets/img/hardware/DIN_2_Relay.jpeg" style="width:150px"> | A bypass relay to avoid using the dimmer when auto bypass is enabled, and an additional relay to control an external load |
 |   <img src="../assets/img/hardware/DS18B20.jpeg" style="width:150px">   | A temperature sensor to measure the water tank temperature to automatically stop or start the water heating               |
 | <img src="../assets/img/hardware/PushButton.jpeg" style="width:150px">  | A push button to restart the router easily                                                                                |
@@ -262,8 +262,8 @@ Refer to [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/) project to fin
 
 Here is below some examples of hardware you can use to setup a Remote JSY with Mycila JSY App:
 
-|                        Mean Well HDR-15-5 5V DC                        |                                  ESP32                                   | JSY                                                                      |
-| :--------------------------------------------------------------------: | :----------------------------------------------------------------------: | ------------------------------------------------------------------------ |
+|                        Mean Well HDR-15-5 5V DC                         |                                   ESP32                                   | JSY                                                                       |
+| :---------------------------------------------------------------------: | :-----------------------------------------------------------------------: | ------------------------------------------------------------------------- |
 | <img src="../assets/img/hardware/DIN_HDR-15-5.jpeg" style="width:80px"> | <img src="../assets/img/hardware/ESP32_NodeMCU.jpeg" style="width:150px"> | <img src="../assets/img/hardware/JSY-MK-194T_2.jpeg" style="width:150px"> |
 
 ## Wiring
@@ -392,6 +392,26 @@ You can click on the diagram to open the interactive mode or [download the image
 
 [![](../assets/img/schemas/yasolr_measurements.jpeg)](https://app.cirkitdesigner.com/project/cb69313f-3fe0-441f-9db1-0ca880810543?view=interactive_preview)
 
+!!! danger
+
+    Even if possible, it is not recommended to use the same clamp around the 2 wires of the router outputs.
+    The fact that the voltage and curent of the outputs are dimmed (phase control or cycle stealing) at different times (duty cycles) could cause wrong measurements, and energy accumulation will also be shared.
+    It is better to either not use measurement devices for the outputs, or use a separate clamp for each output, so one PZEM per output or a JSY with 2 clamps, one for each output.
+
+### How to Wire Random SSR with JSY-MK-194G ZCD
+
+The diagram below shows how to wire the Elegant, which is composed of a Random SSR and a JSY-MK-194G which does both the measurement and the Zero-Cross Detection.
+
+You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_elegant.jpeg).
+
+[![](../assets/img/schemas/yasolr_elegant.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
+
+!!! danger
+
+    Even if possible, it is not recommended to use the same clamp around the 2 wires of the router outputs.
+    The fact that the voltage and curent of the outputs are dimmed (phase control or cycle stealing) at different times (duty cycles) could cause wrong measurements, and energy accumulation will also be shared.
+    It is better to either not use measurement devices for the outputs, or use a separate clamp for each output, so one PZEM per output or a JSY with 2 clamps, one for each output.
+
 ### How to Wire Accessories
 
 The diagram below shows how to wire the following optional YaSolR accessories:
@@ -405,14 +425,6 @@ The diagram below shows how to wire the following optional YaSolR accessories:
 You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_accessories.jpeg).
 
 [![](../assets/img/schemas/yasolr_accessories.jpeg)](https://app.cirkitdesigner.com/project/d937d685-6328-4653-80a8-f2ac8015baee?view=interactive_preview)
-
-### How to Wire Random SSR with JSY-MK-194G ZCD
-
-The diagram below shows how to wire the Elegant, which is composed of a Random SSR and a JSY-MK-194G which does both the measurement and the Zero-Cross Detection.
-
-You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_elegant.jpeg).
-
-[![](../assets/img/schemas/yasolr_elegant.jpeg)](https://app.cirkitdesigner.com/project/8792d83e-10e1-49ff-875c-e6a09ed7660d?view=interactive_preview)
 
 ### How to Wire Electronic Water Heater (like ACI)
 
@@ -503,7 +515,7 @@ Links:
 - Any RobotDyn: they include a ZCD circuit, but it is not very good
 - [JSY-MK-194G](https://aliexpress.com/item/1005007371816324.html) (this JSY has a built-in ZCD circuit, so you can use it with a Random SSR without the need of an external ZCD module)
 - [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (**recommended**)
-    - [UPM-01 DIN Rail Mount for PCB 72mm x 20mm](https://aliexpress.com/item/4000272944733.html) (DIN Rail enclosure for the ZCD module above)
+  - [UPM-01 DIN Rail Mount for PCB 72mm x 20mm](https://aliexpress.com/item/4000272944733.html) (DIN Rail enclosure for the ZCD module above)
 
 !!! tip
 
