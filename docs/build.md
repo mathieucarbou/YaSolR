@@ -1,6 +1,6 @@
 # How to Build Your Router
 
-Here is below some build examples to give you an idea of the different options and components you can use to build your router.
+Here are some build examples below to give you an idea of the different options and components you can use to build your router.
 Depending on the components you choose, you will be able to use different routing algorithms (phase control, cycle stealing) and have different precision and performance.
 
 All these builds can be [upgraded](#to-upgrade-your-router) further with more components.
@@ -81,7 +81,7 @@ The _Elite_ build is for people who want the flexibility to use phase control an
 
 - A Random SSR is used for the dimming (using **phase control** or **cycle stealing**)
 - A dedicated hardware ZCD circuit is used for the Zero-Cross Detection
-- JSY-MK-194G is used both for the Zero-Cross Detection, and to measure the grid power and voltage and the router output
+- A JSY is used to measure the grid power and voltage and the router output
 
 |                                   ESP32                                   |                               Random SSR                               |                           ZCD Module                            | JSY                                                                       |
 | :-----------------------------------------------------------------------: | :--------------------------------------------------------------------: | :-------------------------------------------------------------: | ------------------------------------------------------------------------- |
@@ -238,7 +238,7 @@ Also, some electromagnetic relay boards have both a NO and NC output to better i
 
 ### To Upgrade Your Router
 
-Here are below what you can add to upgrade your router:
+Below is what you can add to upgrade your router:
 
 |                                Hardware                                 | Description                                                                                                               |
 | :---------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------------------------------ |
@@ -260,7 +260,7 @@ In both cases, the router will be able to react at least 3 times per second.
 
 Refer to [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/) project to find more information about how to wire your JSY.
 
-Here is below some examples of hardware you can use to setup a Remote JSY with Mycila JSY App:
+Here are some examples of hardware you can use to set up a Remote JSY with Mycila JSY App:
 
 |                        Mean Well HDR-15-5 5V DC                         |                                   ESP32                                   | JSY                                                                       |
 | :---------------------------------------------------------------------: | :-----------------------------------------------------------------------: | ------------------------------------------------------------------------- |
@@ -296,7 +296,7 @@ Most of the features can be enabled or disabled through the app and the GPIO pin
 
 [![](../assets/img/screenshots/app-gpio.jpeg)](../assets/img/screenshots/app-gpio.jpeg)
 
-Here are below the default GPIO pinout for each board.
+Below are the default GPIO pinout for each board.
 `-1` means not mapped, either because this is not possible (for example some boards to not have enough UART to support at the same time JSY and PZEM), or because the mapping is just not defined by default and you need to go in YaSolR GPIO section to define to the pin you want.
 
 **Tested boards:**
@@ -395,7 +395,7 @@ You can click on the diagram to open the interactive mode or [download the image
 !!! danger
 
     Even if possible, it is not recommended to use the same clamp around the 2 wires of the router outputs.
-    The fact that the voltage and curent of the outputs are dimmed (phase control or cycle stealing) at different times (duty cycles) could cause wrong measurements, and energy accumulation will also be shared.
+    The fact that the voltage and current of the outputs are dimmed (phase control or cycle stealing) at different times (duty cycles) could cause wrong measurements, and energy accumulation will also be shared.
     It is better to either not use measurement devices for the outputs, or use a separate clamp for each output, so one PZEM per output or a JSY with 2 clamps, one for each output.
 
 ### How to Wire Random SSR with JSY-MK-194G ZCD
@@ -409,7 +409,7 @@ You can click on the diagram to open the interactive mode or [download the image
 !!! danger
 
     Even if possible, it is not recommended to use the same clamp around the 2 wires of the router outputs.
-    The fact that the voltage and curent of the outputs are dimmed (phase control or cycle stealing) at different times (duty cycles) could cause wrong measurements, and energy accumulation will also be shared.
+    The fact that the voltage and current of the outputs are dimmed (phase control or cycle stealing) at different times (duty cycles) could cause wrong measurements, and energy accumulation will also be shared.
     It is better to either not use measurement devices for the outputs, or use a separate clamp for each output, so one PZEM per output or a JSY with 2 clamps, one for each output.
 
 ### How to Wire Accessories
@@ -435,7 +435,7 @@ See for example: [https://forum-photovoltaique.fr/viewtopic.php?t=67337](https:/
 
 ## Where to Buy
 
-Here is the non exhaustive list where to find some hardware to build your router.
+Here is a non-exhaustive list of places where you can find hardware to build your router.
 Links are provided for reference only, you can find them on other websites.
 
 ### ESP32 Boards
@@ -577,7 +577,7 @@ Temperature sensor:
 
 - [DS18B20 Temperature Sensor + Adapter](https://aliexpress.com/item/4000143479592.html)
 
-Trafic light LEDs:
+Traffic light LEDs:
 
 - [LEDs](https://www.az-delivery.de/en/products/led-ampel-modul)
 
