@@ -358,6 +358,16 @@ void Mycila::Router::continueCalibration() {
         ESP_LOGI(TAG, "Measuring %s resistance", _outputs[_calibrationOutputIndex]->getName());
 
         std::optional<float> resistance = _outputs[_calibrationOutputIndex]->measureResistance();
+        if (!resistance.has_value() && _outputs[_calibrationOutputIndex]->getSource() == Mycila::metric::Source::SHARED) {
+          for (const auto& output : _outputs) {
+            if (!output->isUsing(Mycila::metric::Source::SHARED)) {
+              resistance = output->measureResistance();
+              if (resistance.has_value()) {
+                break;
+              }
+            }
+          }
+        }
 
         _outputs[_calibrationOutputIndex]->config.calibratedResistance = resistance.value_or(0);
 

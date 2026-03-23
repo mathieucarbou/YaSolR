@@ -80,7 +80,6 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
               metrics->voltage = data.single().voltage;
               metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
-              break;
             }
           }
         }
@@ -116,7 +115,6 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
               metrics->voltage = data.channel1().voltage;
               metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
-              break;
             }
           }
         }
@@ -149,7 +147,6 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
               metrics->voltage = data.channel2().voltage;
               metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
-              break;
             }
           }
         }
@@ -168,8 +165,8 @@ static void jsy_callback(const uint8_t index, Mycila::metric::Kind serialKind, c
           metrics->voltage = data.aggregate.voltage;
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
-          break;
         }
+        break;
       }
       default:
         break; // unknown model => do not divert

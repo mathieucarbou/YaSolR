@@ -325,7 +325,7 @@ static void publishData() {
   grid.readMetrics(*gridMetrics);
 
   std::unique_ptr<Mycila::metric::Metrics> routerMeasurements = std::make_unique<Mycila::metric::Metrics>();
-  router.getMetrics(*routerMeasurements, gridMetrics->voltage);
+  router.getRoutedMetrics(*routerMeasurements, gridMetrics->voltage);
 
   const float virtual_grid_power = gridMetrics->power - routerMeasurements->power;
 
@@ -407,7 +407,7 @@ static void publishData() {
       const std::string outputTopic = baseTopic + "/router/" + output->getMqttName();
 
       std::unique_ptr<Mycila::metric::Metrics> outputMeasurements = std::make_unique<Mycila::metric::Metrics>();
-      output->getMetrics(*outputMeasurements, gridMetrics->voltage);
+      output->getRoutedMetrics(*outputMeasurements, gridMetrics->voltage);
 
       mqtt->publish((outputTopic + "/state").c_str(), output->getStateName());
       mqtt->publish((outputTopic + "/bypass").c_str(), YASOLR_STATE(output->isBypassOn()));

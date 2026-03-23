@@ -186,7 +186,7 @@ namespace Mycila {
             JsonArray metrics = root["metrics"].to<JsonArray>();
             {
               std::unique_ptr<metric::Metrics> computed = std::make_unique<metric::Metrics>();
-              if (computeMetrics(*computed, gridVoltage)) {
+              if (computeRoutedMetrics(*computed, gridVoltage)) {
                 JsonObject source = metrics.add<JsonObject>();
                 source["source"] = metric::sourceToString(metric::Source::COMPUTED);
                 metric::Metrics::toJson(source, *computed);
@@ -346,11 +346,11 @@ namespace Mycila {
             return std::nullopt;
           }
 
-          bool getMetrics(metric::Metrics& metrics, float gridVoltage) const {
-            return readMetrics(metrics) || computeMetrics(metrics, gridVoltage);
+          bool getRoutedMetrics(metric::Metrics& metrics, float gridVoltage) const {
+            return readRoutedMetrics(metrics) || computeRoutedMetrics(metrics, gridVoltage);
           }
 
-          bool readMetrics(metric::Metrics& metrics) const override {
+          bool readRoutedMetrics(metric::Metrics& metrics) const {
             metrics.reset(0.0f);
             if (_metrics.isPresent()) {
               if (getState() == State::ROUTING) {
@@ -363,7 +363,7 @@ namespace Mycila {
             return false;
           }
 
-          bool computeMetrics(metric::Metrics& metrics, float gridVoltage) const {
+          bool computeRoutedMetrics(metric::Metrics& metrics, float gridVoltage) const {
             metrics.reset(0.0f);
             if (gridVoltage > 0 && config.calibratedResistance > 0) {
               metrics.resistance = config.calibratedResistance;
@@ -485,12 +485,12 @@ namespace Mycila {
       void toJson(const JsonObject& root, float gridVoltage) const {
         JsonArray json = root["metrics"].to<JsonArray>();
         std::unique_ptr<metric::Metrics> metrics = std::make_unique<metric::Metrics>();
-        if (computeMetrics(*metrics, gridVoltage)) {
+        if (computeRoutedMetrics(*metrics, gridVoltage)) {
           JsonObject source = json.add<JsonObject>();
           source["source"] = metric::sourceToString(metric::Source::COMPUTED);
           metric::Metrics::toJson(source, *metrics);
         }
-        if (readMetrics(*metrics)) {
+        if (readRoutedMetrics(*metrics)) {
           JsonObject source = json.add<JsonObject>();
           source["source"] = "Measured";
           metric::Metrics::toJson(source, *metrics);
@@ -498,19 +498,27 @@ namespace Mycila {
       }
 #endif
 
-      bool getMetrics(metric::Metrics& metrics, float gridVoltage) const {
-        return readMetrics(metrics) || computeMetrics(metrics, gridVoltage);
+      bool getRoutedMetrics(metric::Metrics& metrics, float gridVoltage) const {
+        return readRoutedMetrics(metrics) || computeRoutedMetrics(metrics, gridVoltage);
       }
 
       // get router measurements based on the connected JSY (for an aggregated view of all outputs) or PZEM per output
-      bool readMetrics(metric::Metrics& metrics) const {
+      bool readRoutedMetrics(metric::Metrics& metrics) const {
         metrics.reset(0.0f);
+        // check if outputs are sharing the same measurement clamp.
+        const bool shared = std::any_of(_outputs.begin(), _outputs.end(), [](const auto& output) {
+          return output->isUsing(metric::Source::SHARED);
+        });
+        // check if at least one output is routing
+        const bool routing = std::any_of(_outputs.begin(), _outputs.end(), [](const auto& output) {
+          return output->getState() == Output::State::ROUTING;
+        });
         for (size_t i = 0; i < _outputs.size(); i++) {
           // if this output measurement source is shared (same clamp, 2 wires) then ignore
           if (_outputs[i]->isUsing(metric::Source::SHARED))
             continue;
           metric::Metrics outputMetrics;
-          if (_outputs[i]->readMetrics(outputMetrics)) {
+          if (shared && routing ? _outputs[i]->readMetrics(outputMetrics) : _outputs[i]->readRoutedMetrics(outputMetrics)) {
             // Note: energy is not accurate in the case of a virtual bypass through dimmer
             metrics.energy += outputMetrics.energy;
             metrics.apparentPower += outputMetrics.apparentPower;
@@ -529,12 +537,12 @@ namespace Mycila {
         return true;
       }
 
-      bool computeMetrics(metric::Metrics& metrics, float gridVoltage) const {
+      bool computeRoutedMetrics(metric::Metrics& metrics, float gridVoltage) const {
         metrics.reset(0.0f);
         if (gridVoltage > 0) {
           for (size_t i = 0; i < _outputs.size(); i++) {
             metric::Metrics outputMetrics;
-            if (_outputs[i]->computeMetrics(outputMetrics, gridVoltage)) {
+            if (_outputs[i]->computeRoutedMetrics(outputMetrics, gridVoltage)) {
               metrics.energy += outputMetrics.energy;
               metrics.apparentPower += outputMetrics.apparentPower;
               metrics.current += outputMetrics.current;

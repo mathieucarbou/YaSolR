@@ -140,7 +140,6 @@ static void processJSON(JsonDocument& doc) {
               metrics->thdi = root["channel1"]["thdi_0"] | NAN;
               metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
-              break;
             }
           }
         }
@@ -174,7 +173,6 @@ static void processJSON(JsonDocument& doc) {
               metrics->thdi = root["channel2"]["thdi_0"] | NAN;
               metrics->zeroNaN();
               output->updateMetrics(std::move(metrics));
-              break;
             }
           }
         }
@@ -193,8 +191,8 @@ static void processJSON(JsonDocument& doc) {
           metrics->voltage = root["aggregate"]["voltage"] | NAN;
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
-          break;
         }
+        break;
       }
       default:
         // unknown model => do not divert

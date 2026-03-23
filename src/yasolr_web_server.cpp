@@ -518,7 +518,7 @@ void rest_api() {
     std::optional<float> gridPower = grid.getPower();
 
     std::unique_ptr<Mycila::metric::Metrics> routerMetrics = std::make_unique<Mycila::metric::Metrics>();
-    router.getMetrics(*routerMetrics, gridVoltage.value_or(NAN));
+    router.getRoutedMetrics(*routerMetrics, gridVoltage.value_or(NAN));
 
     if (gridPower.has_value())
       root["virtual_grid_power"] = gridPower.value() - routerMetrics->power;
@@ -536,7 +536,7 @@ void rest_api() {
       }
 
       std::unique_ptr<Mycila::metric::Metrics> outputMetrics = std::make_unique<Mycila::metric::Metrics>();
-      output->getMetrics(*outputMetrics, gridVoltage.value_or(NAN));
+      output->getRoutedMetrics(*outputMetrics, gridVoltage.value_or(NAN));
       Mycila::metric::Metrics::toJson(json["metrics"].to<JsonObject>(), *outputMetrics);
     }
 
