@@ -191,6 +191,7 @@
 #define KEY_PID_OUT_MIN                    "pid_out_min"
 #define KEY_PID_SETPOINT                   "pid_setpoint"
 #define KEY_PID_TRIGGER                    "pid_trigger"
+#define KEY_RELAY_CHECK_INTERVAL           "relay_itvl"
 #define KEY_RELAY1_LOAD                    "relay1_load"
 #define KEY_RELAY1_TOLERANCE               "relay1_tol"
 #define KEY_RELAY1                         "relay1_type"

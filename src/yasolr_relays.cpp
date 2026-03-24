@@ -92,7 +92,7 @@ void yasolr_init_relays() {
   });
 
   relayTask->setEnabledWhen([]() { return ((relay1 && relay1->isAutoRelayEnabled()) || (relay2 && relay2->isAutoRelayEnabled())) && !router.isCalibrationRunning() && router.isAutoDimmerEnabled(); });
-  relayTask->setInterval(10000);
+  relayTask->setInterval(config.get<uint16_t>(KEY_RELAY_CHECK_INTERVAL) * 1000);
 
   if (config.get<bool>(KEY_ENABLE_DEBUG))
     relayTask->enableProfiling();

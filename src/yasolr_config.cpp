@@ -197,6 +197,7 @@ static void init_config() {
   config.configure(KEY_PIN_SERIAL2_RX, static_cast<int8_t>(YASOLR_SERIAL2_RX_PIN));
   config.configure(KEY_PIN_SERIAL2_TX, static_cast<int8_t>(YASOLR_SERIAL2_TX_PIN));
   config.configure(KEY_PIN_ZCD, static_cast<int8_t>(YASOLR_ZCD_PIN));
+  config.configure(KEY_RELAY_CHECK_INTERVAL, static_cast<uint16_t>(10));
   config.configure(KEY_RELAY1_LOAD, static_cast<uint16_t>(0));
   config.configure(KEY_RELAY1_TOLERANCE, static_cast<uint8_t>(7));
   config.configure(KEY_RELAY1);
