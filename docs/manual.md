@@ -735,6 +735,11 @@ So there is no difference in terms of performance between using a local JSY and 
 
 ##### PZEM Pairing
 
+!!! warning
+
+  The PZEM pairing procedure is only required is you have at least one PZEM and if you see the following error message:
+  "PZEM has incorrect device address"
+
 `PZEM Pairing` starts the pairing procedure for PZEM-004T at address 0x01 for output 1 and address 0x02 for output 2.
 
 Each output supports the addition of a PZEM-004T sensor to monitor the power sent to the resistive load specifically for this output.
@@ -760,6 +765,13 @@ The initial setup requires to pair each PZEM-004T with the corresponding output.
 11. Now that the 2 devices have an address, you can connect them all to the device
 
 You can verify that the pairing is successful by trying to activate the dimmer in the overview page, and see if you get the output power.
+
+!!! tip
+
+    The pairing button as an indicator icon:
+      - **Green**: the PZEM is connected and communication is working fine
+      - **Yellow**: a pairing procedure is in progress
+      - **Red**: the PZEM is not connected or there is a communication error
 
 This complex pairing procedure is not specific to this router project but is common to any PZEM-004T device when using several PZEM-004T devices on the same Serial.
 You can read more at:
