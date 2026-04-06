@@ -737,8 +737,7 @@ So there is no difference in terms of performance between using a local JSY and 
 
 !!! warning
 
-  The PZEM pairing procedure is only required is you have at least one PZEM and if you see the following error message:
-  "PZEM has incorrect device address"
+    The PZEM pairing procedure is only required if you have **at least one** PZEM and if you see the following error message: "_PZEM has incorrect device address_".
 
 `PZEM Pairing` starts the pairing procedure for PZEM-004T at address 0x01 for output 1 and address 0x02 for output 2.
 
@@ -769,7 +768,8 @@ You can verify that the pairing is successful by trying to activate the dimmer i
 !!! tip
 
     The pairing button as an indicator icon:
-      - **Green**: the PZEM is connected and communication is working fine
+
+      - **Green**: the PZEM is connected and communication is working fine (it does not mean that the PZEM has the right address, but just that YaSolR can communicate with it)
       - **Yellow**: a pairing procedure is in progress
       - **Red**: the PZEM is not connected or there is a communication error
 
