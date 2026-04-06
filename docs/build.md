@@ -321,8 +321,8 @@ Below are the default GPIO pinout for each board.
 | RELAY #2                        |    12     |       12        |     12      |       -1       |       6        |      -1       |        -1         |    -1     |      -1      |      -1      |
 | System Temperature Sensor       |     4     |        4        |      4      |       4        |       4        |      -1       |        -1         |    -1     |      -1      |      -1      |
 | ZCD (RobotDyn, ZCD, JSY-194G)   |    35     |       35        |     35      |       35       |       8        |      -1       |        -1         |    -1     |      -1      |      -1      |
-| PZEM-004T v3 Serial1 RX         |    14     |       14        |     14      |       -1       |       -1       |      36       |        -1         |    26     |      26      |      25      |
-| PZEM-004T v3 Serial1 TX         |    27     |       27        |     11      |       -1       |       -1       |       4       |        -1         |    27     |      27      |      33      |
+| PZEM-004T Serial1 RX            |    14     |       14        |     14      |       -1       |       -1       |      36       |        -1         |    26     |      26      |      25      |
+| PZEM-004T Serial1 TX            |    27     |       27        |     11      |       -1       |       -1       |       4       |        -1         |    27     |      27      |      33      |
 
 ### Migration from APPER to YaSolR
 
@@ -385,7 +385,7 @@ You can click on the diagram to open the interactive mode or [download the image
 
 The diagram below shows how to wire the following optional YaSolR measurement devices and where to put the clamps:
 
-- PZEM-004T v3
+- PZEM-004T v3 or v4
 - JSY
 
 You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_measurements.jpeg).
@@ -554,8 +554,8 @@ For grid measurement only:
 
 For routing measurement only:
 
-- [Peacefair PZEM-004T v3.0 Open CT + USB 100A](https://aliexpress.com/item/33045826345.html)
-- [Peacefair PZEM-004T v4.0 Open CT + USB 100A](https://aliexpress.com/item/1005009611591855.html) **recommended**
+- [Peacefair PZEM-004T v3.0 Open CT + USB 100A](https://aliexpress.com/item/33045826345.html) - [manufacturer page](https://en.peacefair.cn/product/769.html)
+- [Peacefair PZEM-004T v4.0 Open CT + USB 100A](https://aliexpress.com/item/1005009611591855.html)  - [manufacturer page](https://en.peacefair.cn/product/772.html) **recommended**
 
 ### Relays
 

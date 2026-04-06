@@ -727,26 +727,30 @@ So there is no difference in terms of performance between using a local JSY and 
 
     JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
 
+!!! warning
+
+    PZEM Pairing pairing is required even if you are using only one PZEM device.
+
 ##### PZEM Pairing
 
-`PZEM Pairing` starts the pairing procedure for PZEM-004T v3 at address 0x01 for output 1 and address 0x02 for output 2.
+`PZEM Pairing` starts the pairing procedure for PZEM-004T at address 0x01 for output 1 and address 0x02 for output 2.
 
-Each output supports the addition of a PZEM-004T v3 sensor to monitor the power sent to the resistive load specifically for this output.
+Each output supports the addition of a PZEM-004T sensor to monitor the power sent to the resistive load specifically for this output.
 Thanks to the PZEM per output, it is also possible to get some more precise information like the dimmed RMS voltage, resistance value, etc.
 
-The PZEM-004T v3 devices has a special installation mode: you can install 2x PZEM-004T v3 devices on the same Serial.
+The PZEM-004T devices have a special installation mode: you can install 2x PZEM-004T devices on the same Serial.
 To communicate with the right one, each output will use a different slave address.
-The initial setup requires to pair each PZEM-004T v3 with the corresponding output.
+The initial setup requires to pair each PZEM-004T with the corresponding output.
 
-1. Connect the 2x PZEM-004T v3 devices to the grid (L/N) and install the clamp around the wire at the exit of the dimmer of first output
-2. Only connect the terminal wire (+5V, GND, RX, TX) of the first PZEM-004T v3 to pair to Output 1
+1. Connect the 2x PZEM-004T devices to the grid (L/N) and install the clamp around the wire at the exit of the dimmer of first output
+2. Only connect the terminal wire (+5V, GND, RX, TX) of the first PZEM-004T to pair to Output 1
 3. Boot the device and open the console (`http://yasolr.local/console`)
 4. Got to the `Hardware` section to activate `PZEM` on the right Serial (Serial 1 or Serial 2) for Output 1.
    It should be yellow if it has no electricity or if it is not paired.
 5. Press the `PZEM Pairing` button for Output 1.
 6. Verify that the pairing is successful in the console.
    `PZEM Pairing` should also be green in the `Hardware` section.
-7. **Disconnect this first PZEM-004T v3 from the device**
+7. **Disconnect this first PZEM-004T from the device**
 8. Connect the second PZEM (which has its clamp at the exit of the dimmer of the second output) to the device
 9. Press the `PZEM Pairing` button for Output 2.
 10. Verify that the pairing is successful in the console.
@@ -755,7 +759,7 @@ The initial setup requires to pair each PZEM-004T v3 with the corresponding outp
 
 You can verify that the pairing is successful by trying to activate the dimmer in the overview page, and see if you get the output power.
 
-This complex pairing procedure is not specific to this router project but is common to any PZEM-004T device when using several PZEM-004T v3 devices on the same Serial.
+This complex pairing procedure is not specific to this router project but is common to any PZEM-004T device when using several PZEM-004T devices on the same Serial.
 You can read more at:
 
 - [mathieucarbou/MycilaPZEM](https://github.com/mathieucarbou/MycilaPZEM)
@@ -927,7 +931,7 @@ If you have a PZEM or JSY device attached, they can help you.
 You can set the dimmer in manual mode and set it to 50% and 100% and read the resistance value.
 Then you just have to report it in the `Hardware Config` page.
 
-- **PZEM-004T v3:** If you have wired a PZEM-004T v3 connected to each output, it will measure the resistance value when routing.
+- **PZEM-004T:** If you have wired a PZEM-004T connected to each output, it will measure the resistance value when routing.
 - **JSY:** If you have a JSY, you can activate the dimmers one by one to 100% and wait for the values to stabilize.
   The router will then display the resistance value in the `Overview` page, thanks to the JSY.
 
