@@ -705,31 +705,33 @@ Supported measurement devices are:
 
 - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194
 - PZEM-004T v3 and v4
+- Computed
+- Shared
+
+!!! warning
+
+    - JSY-MK-193 and JSY-MK-194 have 2 channels so you must also select which channel is used to measure the grid power and voltage.
+
+    - JSY boards sometimes have the RX and TX labels switched.
+
+    - JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
+
+    - For JSY and PZEM you need to select if the device is connected to Serial 1, Serial 2, or remote.
+
+    - PZEM Pairing pairing is required even if you are using only one PZEM device.
+
+    - PZEM boards also may need to be powered by +5V instead of +3.3V
 
 If `Computed` is selected, the metrics are computed based on the configured resistance, voltage and duty cycle of the dimmer.
 
 If `Shared` is selected (usually only for Output 2), it means that you have the Output 2 wire going through the same clamp as the wire of output 1, so the measurement device will measure both outputs at the same time.
 **This is not recommended, not fully supported, and will produce wrong results**
 
-For JSY-MK-193 and JSY-MK-194, since they have 2 channels, you must also select which channel is used to measure the grid power and voltage.
-
-For JSY and PZEM you need to select if the device is connected to Serial 1, Serial 2, or remote.
-
-JSY devices can also be used remotely with [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/).
+**Remote**: JSY devices can also be used remotely with [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/).
 Mycila JSY App is a specialized app capable of sending JSY data remotely to several YaSolR routers at a rate that is as fast as a JSY connected directly to the ESP32.
 So there is no difference in terms of performance between using a local JSY and a remote JSY.
 
 [![](assets/img/screenshots/app-jsy.jpeg)](assets/img/screenshots/app-jsy.jpeg)
-
-!!! note
-
-    JSY boards sometimes have the RX and TX labels switched.
-
-    JSY boards also sometimes do not work well if powered by the +3.3V of the ESP32 and work better if powered by the +5V.
-
-!!! warning
-
-    PZEM Pairing pairing is required even if you are using only one PZEM device.
 
 ##### PZEM Pairing
 
