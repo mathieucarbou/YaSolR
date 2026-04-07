@@ -360,7 +360,7 @@ namespace Mycila {
           _metrics.reset();
         }
 
-        void updateMetrics(std::unique_ptr<Mycila::metric::Metrics> metrics) {
+        virtual void updateMetrics(std::unique_ptr<Mycila::metric::Metrics> metrics) {
           if (_metrics.neverUpdated()) {
             _metrics.setExpiration(_source == Source::MQTT ? 120000 : 10000);
           }

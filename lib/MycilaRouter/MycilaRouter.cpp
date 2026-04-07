@@ -104,7 +104,11 @@ bool Mycila::Router::Output::setDimmerDutyCycle(float dutyCycle) {
     setBypass(false);
   }
 
-  _dimmer->setDutyCycle(dutyCycle);
+  if (dutyCycle == 0) {
+    _turnOffDimmer();
+  } else {
+    _dimmer->setDutyCycle(dutyCycle);
+  }
 
   ESP_LOGI(TAG, "Set %s Dimmer duty to %f", _name, _dimmer->getDutyCycle());
 
@@ -123,7 +127,7 @@ void Mycila::Router::Output::applyTemperatureLimit() {
 
   if (isDimmerTemperatureLimitReached()) {
     ESP_LOGW(TAG, "%s Dimmer reached its temperature limit of %.02f °C", _name, config.dimmerTempLimit);
-    _dimmer->off();
+    _turnOffDimmer();
     return;
   }
 }
@@ -267,7 +271,7 @@ void Mycila::Router::Output::_switchBypass(bool state, bool log) {
       if (log && !isBypassRelayOn()) {
         ESP_LOGI(TAG, "Turning %s Bypass Relay ON", _name);
       }
-      _dimmer->off();
+      _turnOffDimmer();
       _relay->setState(true);
     } else {
       // we don't have a relay: use the dimmer
@@ -287,7 +291,7 @@ void Mycila::Router::Output::_switchBypass(bool state, bool log) {
       if (log) {
         ESP_LOGI(TAG, "Turning %s Dimmer OFF", _name);
       }
-      _dimmer->off();
+      _turnOffDimmer();
     }
   }
 }

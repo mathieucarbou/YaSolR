@@ -29,6 +29,11 @@
   #define MYCILA_RELAY_DEFAULT_TOLERANCE 0.05f
 #endif
 
+#ifndef MYCILA_OUTPUT_LOW_POWER_THRESHOLD
+  // Set the threshold under which we consider that the load is not consuming anymore and that we should keep a minimum power on the dimmer to avoid switching it off.
+  #define MYCILA_OUTPUT_LOW_POWER_THRESHOLD 2
+#endif
+
 namespace Mycila {
   class Router {
     public:
@@ -140,7 +145,9 @@ namespace Mycila {
               float excessPowerRatio = 0.0f;
           } Config;
 
-          Output(const char* label, const char* mqttName) : _name(label), _mqttName(mqttName) {}
+          Output(const char* label, const char* mqttName) : _name(label), _mqttName(mqttName) {
+            _lastTimeConsumptionWasDetectedWhileRouting.setExpiration(10000); // 10 seconds expiration
+          }
 
           // dimmer is mandatory
           void setDimmer(Dimmer* dimmer) {
@@ -181,6 +188,7 @@ namespace Mycila {
             root["state"] = getStateName();
             root["bypass"] = isBypassOn() ? "on" : "off";
             root["bypass_elapsed"] = getBypassUptime();
+            _lastTimeConsumptionWasDetectedWhileRouting.toJson(root["last_routed_power"].to<JsonObject>());
             if (_temperature.isPresent())
               root["temperature"] = _temperature.get();
             JsonArray metrics = root["metrics"].to<JsonArray>();
@@ -252,32 +260,73 @@ namespace Mycila {
             if (!_dimmer->isEnabled() || !isAutoDimmerEnabled()) {
               return 0;
             }
+
             if (availablePowerToDivert <= 0 || gridVoltage <= 0) {
-              _dimmer->off();
+              _turnOffDimmer();
               return 0;
             }
+
             if (isDimmerTemperatureLimitReached()) {
-              _dimmer->off();
+              _turnOffDimmer();
               return 0;
             }
+
             if (!_dimmer->isOnline()) {
               return 0;
             }
+
             // maximum power of the load based on the calibrated resistance value
             const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
             if (maxPower == 0) {
               return 0;
             }
+
             // 1. apply excess power ratio for sharing
             // 2. cap the power to divert to the load
             float powerToDivert = constrain(availablePowerToDivert * config.excessPowerRatio, 0, maxPower);
+
             // apply the excess power limiter
             if (config.excessPowerLimiter)
               powerToDivert = constrain(powerToDivert, 0, config.excessPowerLimiter);
-            // try to apply duty
-            _dimmer->setDutyCycle(powerToDivert / maxPower);
-            // returns the real used power as per the dimmer state
-            return powerToDivert;
+
+            // check if 0 ?
+            if (powerToDivert <= 0) {
+              _turnOffDimmer();
+              return 0;
+            }
+
+            // We have some power to divert that we would like to send to the load.
+            // The problem is that we don't know if the load will actually consume it.
+            // For example, the water tank might have already reached temperature.
+            // So we check "_lastTimeConsumptionWasDetectedWhileRouting":
+
+            // If never updated: we do not have any measurement system, or the dimmer was off
+            // => we allocate all the power
+            if (_lastTimeConsumptionWasDetectedWhileRouting.neverUpdated()) {
+              // try to apply duty
+              _dimmer->setDutyCycle(powerToDivert / maxPower);
+              // returns the real used power as per the dimmer state
+              return powerToDivert;
+            }
+
+            // If a value is present: the measurement system has detected some consumption while we were routing.
+            // This is a strong signal that the load is actually consuming the power we are sending to it.
+            if (_lastTimeConsumptionWasDetectedWhileRouting.isPresent()) {
+              // try to apply duty
+              _dimmer->setDutyCycle(powerToDivert / maxPower);
+              // returns the real used power as per the dimmer state
+              return powerToDivert;
+
+              // If a value is not present anymore (expired): the measurement system did not see any consumption for 10 seconds
+              // => the load is not consuming anymore
+              // => we will keep a very small portion of powerToDivert (about 10W) in order to keep the dimmer on.
+            } else {
+              powerToDivert = constrain(powerToDivert, 0, MYCILA_OUTPUT_LOW_POWER_THRESHOLD);
+              // try to apply duty
+              _dimmer->setDutyCycle(powerToDivert / maxPower);
+              // returns the real used power as per the dimmer state
+              return powerToDivert;
+            }
           }
 
           // bypass
@@ -311,6 +360,14 @@ namespace Mycila {
           }
 
           // metrics
+
+          void updateMetrics(std::unique_ptr<Mycila::metric::Metrics> metrics) override {
+            Mycila::metric::MetricSupport::updateMetrics(std::move(metrics));
+            // update the last time we detected some consumption on the output (used to detect a load that stopped consuming)
+            if (getState() == State::ROUTING && isAutoDimmerEnabled() && _metrics.get()->power >= MYCILA_OUTPUT_LOW_POWER_THRESHOLD) {
+              _lastTimeConsumptionWasDetectedWhileRouting.update(_metrics.get()->power);
+            }
+          }
 
           std::optional<float> getRoutedPower(float gridVoltage) const {
             if (getState() != State::ROUTING)
@@ -419,9 +476,15 @@ namespace Mycila {
           bool _manualBypassEnabled = false;
           uint32_t _manualBypassTime = 0;
           ExpiringValue<float> _temperature;
+          // used to detect a load that stopped consuming while the dimmer is still on
+          ExpiringValue<float> _lastTimeConsumptionWasDetectedWhileRouting;
 
         private:
           void _switchBypass(bool state, bool log = true);
+          void _turnOffDimmer() {
+            _dimmer->off();
+            _lastTimeConsumptionWasDetectedWhileRouting.reset();
+          }
       };
 
       ////////////
