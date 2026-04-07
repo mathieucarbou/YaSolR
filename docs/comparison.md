@@ -9,6 +9,8 @@ YaSolR is developed by a professional software engineer with more than 20 years 
 As a highly skilled ESP32 / Arduino Core developer, Mathieu ([GitHub Profile](https://github.com/mathieucarbou)) has made countless ESP32 projects and written several blog articles related to ESP32 development.
 He is specialized in solar routing / diversion and libraries around electricity and network management for ESP32 / Arduino.
 
+In 2025, Mathieu was nominated twice as being one of the [top Arduino Library maintainer of the year](https://forum.arduino.cc/t/arduino-open-source-report-2025) ([PDF Report](https://mathieu.carbou.me/ArduinoOpenSourceReport2025.pdf)), both as individual and as part of the ESP32Async organization for the work done on the Async WebServer libraries.
+
 Amongst them:
 
 - [Beelance](https://beelance.carbou.me): Autonomous and remotely connected weight scale for beehives
