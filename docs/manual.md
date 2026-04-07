@@ -816,7 +816,7 @@ Supported temperature sensor: `DS18B20`
     `Relay 1` and `Relay 2` are the SSR or Electromechanical relays connected to the device and used to control external loads.
     Only activate if you have connected some relays to be used for external loads.
 
-**Relay Automatic Control**
+##### Relay Automatic Control
 
 - `Automatic Control: Connected Nominal Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
   If you do so, the relay will be activated automatically based on the grid power.
@@ -841,7 +841,7 @@ You must use a SSR for that, because the relay will be switched on and off frequ
     The automation can then control the router relays remotely. The relays need to be set in `Manual Control`.
     Remember that these relays are not power contactors and should not be used to directly control high power loads like an Electric Vehicle charge, a pump, etc.
 
-**Rules of Automatic Switching**
+##### Rules of Automatic Switching
 
 `Grid Virtual Power` is calculated by the router as `Grid Power - Routed Power`.
 This is the power that would be sent to the grid if the router was not routing any power to the resistive loads.

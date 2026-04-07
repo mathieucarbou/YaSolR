@@ -230,3 +230,14 @@ The power sharing can be done through MQTT or REST API.
 **YaSolR is designed to be compatible with multiple Solar Router installations in the same home**, allowing users to manage multiple loads and optimize their self-consumption across different circuits.
 
 The power sharing between routers is done through MQTT.
+
+## Output Sharing
+
+YaSolR supports many mechanism to share the output power between multiple outputs, including:
+
+- limiting the dimmer level (%) - [ref](manual.md#dimmer-configuration)
+- limiting the output based on a temperature sensor - [ref](manual.md#dimmer-configuration)
+- limiting the output power (W) - [ref](manual.md#excess-configuration)
+- sharing the power between outputs with a configurable ratio - [ref](manual.md#excess-configuration)
+- automatic relay triggering - [ref](manual.md#relay-automatic-control)
+- virtual excess power (used with a second router) - [ref](manual.md#ev-charging-box-compatibility-with-virtual-grid-power)
