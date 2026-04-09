@@ -277,7 +277,15 @@ namespace Mycila {
 
             // maximum power of the load based on the calibrated resistance value
             const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
+
             if (maxPower == 0) {
+              _turnOffDimmer();
+              return 0;
+            }
+
+            // ratio of 0 means we do not allocate anything to this output
+            if (config.excessPowerRatio == 0) {
+              _turnOffDimmer();
               return 0;
             }
 
@@ -303,30 +311,26 @@ namespace Mycila {
             // If never updated: we do not have any measurement system, or the dimmer was off
             // => we allocate all the power
             if (_lastTimeConsumptionWasDetectedWhileRouting.neverUpdated()) {
-              // try to apply duty
-              _dimmer->setDutyCycle(powerToDivert / maxPower);
-              // returns the real used power as per the dimmer state
-              return powerToDivert;
+              // do not adjust
             }
 
             // If a value is present: the measurement system has detected some consumption while we were routing.
             // This is a strong signal that the load is actually consuming the power we are sending to it.
             if (_lastTimeConsumptionWasDetectedWhileRouting.isPresent()) {
-              // try to apply duty
-              _dimmer->setDutyCycle(powerToDivert / maxPower);
-              // returns the real used power as per the dimmer state
-              return powerToDivert;
+              // do not adjust
 
+            } else {
               // If a value is not present anymore (expired): the measurement system did not see any consumption for 10 seconds
               // => the load is not consuming anymore
-              // => we will keep a very small portion of powerToDivert (about 10W) in order to keep the dimmer on.
-            } else {
+              // => we will keep a very small portion of powerToDivert in order to keep the dimmer on.
               powerToDivert = constrain(powerToDivert, 0, MYCILA_OUTPUT_LOW_POWER_THRESHOLD);
-              // try to apply duty
-              _dimmer->setDutyCycle(powerToDivert / maxPower);
-              // returns the real used power as per the dimmer state
-              return powerToDivert;
             }
+
+            // try to apply duty
+            _dimmer->setDutyCycle(powerToDivert / maxPower);
+
+            // returns the real used power as per the dimmer state
+            return powerToDivert;
           }
 
           // bypass
