@@ -35,6 +35,7 @@ static constexpr const char* ERR_ACT_O2_DS18 = "Unable to activate Output 2 DS18
 static constexpr const char* ERR_ACT_O2_PZEM = "Unable to activate Output 2 PZEM: configuration error!";
 static constexpr const char* ERR_ACT_SYS_DS18 = "Unable to activate System DS18: configuration error!";
 static constexpr const char* ERR_ACT_VICTRON = "Unable to activate Victron Modbus: configuration error!";
+static constexpr const char* ERR_ACT_PULSE_ANALYZER = "Pulse Analyzer does not detect any Zero-Cross pulse!";
 // resistance missing
 static constexpr const char* ERR_RESIST_CAL_O1 = "Output 1 Resistance not calibrated!";
 static constexpr const char* ERR_RESIST_CAL_O2 = "Output 2 Resistance not calibrated!";
@@ -1686,10 +1687,17 @@ void YaSolR::Website::updateWarnings() {
       errors[count++] = ERR_MQTT_COM;
     }
   }
+
+  // pulse analyzer (ZCD)
+  if (pulseAnalyzer && pulseAnalyzer->isEnabled() && !pulseAnalyzer->isOnline()) {
+    errors[count++] = ERR_ACT_PULSE_ANALYZER;
+  }
+
   // no grid source
   if (grid.isUsing(Mycila::metric::Kind::UNKNOWN)) {
     errors[count++] = ERR_GRID_NONE;
   }
+
   // mqtt grid source
   if (grid.isUsing(Mycila::metric::Kind::MQTT)) {
     if (config.isEmpty(KEY_GRID_POWER_MQTT_TOPIC) || config.isEmpty(KEY_GRID_VOLTAGE_MQTT_TOPIC)) {
