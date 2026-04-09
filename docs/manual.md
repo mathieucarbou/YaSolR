@@ -700,7 +700,16 @@ For example, if you set the range to `10-80%, then the new 0 will match a duty c
 
 ##### Measurement Device
 
-You can optionally select a measurement device for each output in order to get some more precise metrics.
+You can select a measurement device for each output in order to get some more precise metrics **and also detect when an output stops consuming power**.
+
+A measurement device is optional, but it is **highly recommended** to have one for each output in order to get the best performance and the best metrics.
+This is a key feature to optimize the self-consumption when you have 2 outputs and 2 different loads, so do not neglect to add a measurement device for each output if you have 2 outputs.
+
+When using 2 outputs, YaSolR will keep track when a load stops consuming power: if an output is not consuming power anymore for 10 seconds, YaSolR will
+only allocate a minimal amount of 2 Watts for this output in order to keep it active and detect when it starts consuming power again.
+All the remaining excess will be allocated to the other output which is still consuming power.
+If the load starts consuming power again, the PID controller will automatically re-allocate the right amount of excess power to this output.
+
 Supported measurement devices are:
 
 - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194

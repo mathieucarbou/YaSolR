@@ -185,6 +185,11 @@ Here is a list of all supported devices:
 - Remote JSY through [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/)
 - `PZEM-004T v3`, `PZEM-004T v4`
 
+!!! tip
+
+    A measurement device is not required to use the router, but is strongly advised, especially when using 2 outputs, because YaSolR will be able to automatically
+    detect when an output is no more consuming power in order to allocate the excess fully to the other output.
+
 #### Output Features
 
 - `Automatic Resistance Calibration`: if a JSY or PZEM is installed, automatically measure and save the resistance value of the connected load.
