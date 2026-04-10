@@ -30,7 +30,7 @@
 #endif
 
 #ifndef MYCILA_OUTPUT_LOW_POWER_THRESHOLD
-  // Set the threshold under which we consider that the load is not consuming anymore and that we should keep a minimum power on the dimmer to avoid switching it off.
+  // Set the threshold under which we consider that the load is not consuming
   #define MYCILA_OUTPUT_LOW_POWER_THRESHOLD 2
 #endif
 
@@ -303,26 +303,7 @@ namespace Mycila {
               return 0;
             }
 
-            // We have some power to divert that we would like to send to the load.
-            // The problem is that we don't know if the load will actually consume it.
-            // For example, the water tank might have already reached temperature.
-            // So we check "_lastTimeConsumptionWasDetectedWhileRouting":
-
-            // If never updated: we do not have any measurement system, or the dimmer was off
-            // => we allocate all the power
-            if (_lastTimeConsumptionWasDetectedWhileRouting.neverUpdated()) {
-              // do not adjust
-            }
-
-            // If a value is present: the measurement system has detected some consumption while we were routing.
-            // This is a strong signal that the load is actually consuming the power we are sending to it.
-            if (_lastTimeConsumptionWasDetectedWhileRouting.isPresent()) {
-              // do not adjust
-
-            } else {
-              // If a value is not present anymore (expired): the measurement system did not see any consumption for 10 seconds
-              // => the load is not consuming anymore
-              // => we will keep a very small portion of powerToDivert in order to keep the dimmer on.
+            if (wasConsuming()) {
               powerToDivert = constrain(powerToDivert, 0, MYCILA_OUTPUT_LOW_POWER_THRESHOLD);
             }
 
@@ -331,6 +312,11 @@ namespace Mycila {
 
             // returns the real used power as per the dimmer state
             return powerToDivert;
+          }
+
+          // returns true if the output was consuming but then stopped consuming
+          bool wasConsuming() const {
+            return !_lastTimeConsumptionWasDetectedWhileRouting.neverUpdated() && !_lastTimeConsumptionWasDetectedWhileRouting.isPresent();
           }
 
           // bypass
