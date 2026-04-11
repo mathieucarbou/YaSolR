@@ -465,7 +465,10 @@ namespace Mycila {
 
       void noDivert() { divert(0, 0); }
 
-      // Note: can only be called if !isCalibrationRunning()
+      // preconditions:
+      // - gridVoltage >= 0
+      // - powerToDivert >= 0
+      // - can only be called if !isCalibrationRunning()
       float divert(const float gridVoltage, const float powerToDivert) {
         // if there is no voltage or no power to divert then we turn off all dimmers
         // - ensures gridVoltage > 0
