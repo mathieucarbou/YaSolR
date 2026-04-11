@@ -256,62 +256,27 @@ namespace Mycila {
           }
           void applyTemperatureLimit();
 
-          float autoDivert(float gridVoltage, float availablePowerToDivert) {
-            if (!_dimmer->isEnabled() || !isAutoDimmerEnabled()) {
-              return 0;
-            }
-
-            if (availablePowerToDivert <= 0 || gridVoltage <= 0) {
-              _turnOffDimmer();
-              return 0;
-            }
-
-            if (isDimmerTemperatureLimitReached()) {
-              _turnOffDimmer();
-              return 0;
-            }
-
-            if (!_dimmer->isOnline()) {
-              return 0;
-            }
-
+          // preconditions:
+          // - gridVoltage > 0
+          // - availablePowerToDivert > 0
+          // - config.calibratedResistance > 0
+          float divert(float gridVoltage, float availablePowerToDivert) {
             // maximum power of the load based on the calibrated resistance value
             const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
 
-            if (maxPower == 0) {
-              _turnOffDimmer();
-              return 0;
-            }
-
-            // ratio of 0 means we do not allocate anything to this output
-            if (config.excessPowerRatio == 0) {
-              _turnOffDimmer();
-              return 0;
-            }
-
-            // 1. apply excess power ratio for sharing
-            // 2. cap the power to divert to the load
-            float powerToDivert = constrain(availablePowerToDivert * config.excessPowerRatio, 0, maxPower);
+            // cap with maxPower
+            if (availablePowerToDivert > maxPower)
+              availablePowerToDivert = maxPower;
 
             // apply the excess power limiter
-            if (config.excessPowerLimiter)
-              powerToDivert = constrain(powerToDivert, 0, config.excessPowerLimiter);
-
-            // check if 0 ?
-            if (powerToDivert <= 0) {
-              _turnOffDimmer();
-              return 0;
-            }
-
-            if (wasConsuming()) {
-              powerToDivert = constrain(powerToDivert, 0, MYCILA_OUTPUT_LOW_POWER_THRESHOLD);
-            }
+            if (config.excessPowerLimiter > 0 && availablePowerToDivert > config.excessPowerLimiter)
+              availablePowerToDivert = config.excessPowerLimiter;
 
             // try to apply duty
-            _dimmer->setDutyCycle(powerToDivert / maxPower);
+            _dimmer->setDutyCycle(availablePowerToDivert / maxPower);
 
             // returns the real used power as per the dimmer state
-            return powerToDivert;
+            return availablePowerToDivert;
           }
 
           // returns true if the output was consuming but then stopped consuming
@@ -470,6 +435,7 @@ namespace Mycila {
           ExpiringValue<float> _lastTimeConsumptionWasDetectedWhileRouting;
 
         private:
+          friend class Router;
           void _switchBypass(bool state, bool log = true);
           void _turnOffDimmer() {
             _dimmer->off();
@@ -497,23 +463,93 @@ namespace Mycila {
         return false;
       }
 
-      // returns true if some power were diverted
-      float divert(const float gridVoltage, const float powerToDivert) {
-        if (isCalibrationRunning())
-          return false;
-        float routedPower = 0;
-        for (const auto& output : _outputs) {
-          routedPower += output->autoDivert(gridVoltage, std::max(0.0f, powerToDivert - routedPower));
-        }
-        return routedPower;
-      }
+      void noDivert() { divert(0, 0); }
 
-      void noDivert() {
-        if (isCalibrationRunning())
-          return;
-        for (const auto& output : _outputs) {
-          output->autoDivert(0, 0);
+      // Note: can only be called if !isCalibrationRunning()
+      float divert(const float gridVoltage, const float powerToDivert) {
+        // if there is no voltage or no power to divert then we turn off all dimmers
+        // - ensures gridVoltage > 0
+        // - ensures powerToDivert > 0
+        if (powerToDivert <= 0 || gridVoltage <= 0) {
+          for (const auto& output : _outputs) {
+            output->_turnOffDimmer();
+          }
+          return 0.0f;
         }
+
+        // copy the output vector
+        std::vector<Output*> remainingOutputs = _outputs;
+
+        // filter dimmers
+        for (const auto& output : _outputs) {
+          // filter out dimmers that are not automatically dimmable
+          // - ensures config.calibratedResistance > 0 with isAutoDimmerEnabled()
+          if (!output->isDimmerEnabled() || !output->isDimmerOnline() || !output->isAutoDimmerEnabled()) {
+            remainingOutputs.erase(std::remove(remainingOutputs.begin(), remainingOutputs.end(), output), remainingOutputs.end());
+            continue;
+          }
+          // filter out dimmers that have reached their temperature limit or have a ratio of 0 set and make sure they are turned off
+          if (output->config.excessPowerRatio == 0 || output->isDimmerTemperatureLimitReached()) {
+            output->_turnOffDimmer();
+            remainingOutputs.erase(std::remove(remainingOutputs.begin(), remainingOutputs.end(), output), remainingOutputs.end());
+          }
+        }
+
+        // if there is no remaining output to divert then we return
+        if (remainingOutputs.empty()) {
+          return 0.0f;
+        }
+
+        // Filter out dimmers that were consuming before but stopped consuming while we were routing power to them.
+        // We will set their dimmer to 1% (100W) in order to keep the dimmer opened in case they start consuming again.
+        // But we won't decrease the 100W from the available power to divert because we will use it for the other outputs.
+        // We only do that if we have more than 1 remaining output.
+        if (remainingOutputs.size() > 1) {
+          for (auto it = remainingOutputs.begin(); it != remainingOutputs.end();) {
+            Output* output = *it;
+            if (output->wasConsuming()) {
+              // Notes:
+              // - we have ensured gridVoltage > 0
+              // - we have ensured config.calibratedResistance > 0 with isAutoDimmerEnabled()
+              output->divert(gridVoltage, 100.0f);
+              it = remainingOutputs.erase(it);
+            } else {
+              ++it;
+            }
+          }
+        }
+
+        // If there is no remaining output to divert because they have all stopped consuming then we return.
+        if (remainingOutputs.empty()) {
+          return 0.0f;
+        }
+
+        float routedPower = 0.0f;
+
+        // At this point, the remainingOutputs list contains all outputs that are supposed to consume or
+        // have consumed recently and that we can divert to.
+        for (const auto& output : remainingOutputs) {
+          // compute the remaining power to divert for this output after diverting to the previous ones
+          const float remain = std::max(0.0f, powerToDivert - routedPower);
+
+          // remain could be zero: this can happen with the second output if the first one takes everything
+          if (remain == 0.0f) {
+            output->_turnOffDimmer();
+            continue;
+          }
+
+          // Apply the ratio of excess power sharing configured for this dimmer.
+          // - we have ensured remaining powerToDivert > 0
+          // - we have ensured config.excessPowerRatio > 0
+          // So ratio will be > 0
+          const float ratio = remain * output->config.excessPowerRatio;
+
+          // - we have ensured gridVoltage > 0
+          // - we have ensured config.calibratedResistance > 0 with isAutoDimmerEnabled()
+          routedPower += output->divert(gridVoltage, ratio);
+        }
+
+        return routedPower;
       }
 
       typedef std::function<void()> CalibrationCallback;
@@ -523,7 +559,7 @@ namespace Mycila {
         return _calibrationRunning;
       }
       bool isCalibrationRunning(size_t outputIndex) const {
-        return isCalibrationRunning() && _calibrationOutputIndex == outputIndex;
+        return _calibrationRunning && _calibrationOutputIndex == outputIndex;
       }
       uint8_t getCalibrationCompletion(size_t outputIndex) const {
         if (!isCalibrationRunning(outputIndex))
