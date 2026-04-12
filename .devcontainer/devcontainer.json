@@ -12,6 +12,9 @@
     },
     "customizations": {
         "vscode": {
+            "settings": {
+                "git.enableCommitSigning": false
+            },
             "extensions": [
                 "ms-vscode.cpptools",
                 "davidanson.vscode-markdownlint",
@@ -19,7 +22,6 @@
                 "docker.docker",
                 "eamodio.gitlens",
                 "esbenp.prettier-vscode",
-                "esphome.esphome-vscode",
                 "github.codespaces",
                 "github.copilot-chat",
                 "github.github-vscode-theme",
@@ -50,21 +52,15 @@
                 "ms-vscode.makefile-tools",
                 "ms-vscode.remote-repositories",
                 "ms-vscode.vscode-websearchforcopilot",
-                "mtsmfm.vscode-stl-viewer",
                 "pioarduino.pioarduino-ide",
                 "redhat.vscode-xml",
                 "redhat.vscode-yaml",
-                "ritwickdey.liveserver",
-                "sohibe.java-generate-setters-getters",
                 "streetsidesoftware.code-spell-checker",
                 "streetsidesoftware.code-spell-checker-french",
                 "svelte.svelte-vscode",
-                "thibmaek.vsc-esphome-snippets",
                 "timheuer.awesome-copilot",
-                "vscjava.vscode-java-pack",
-                "vscjava.vscode-maven",
                 "vue.volar",
-                "wokwi.wokwi-vscode",
+                "wokwi.wokwi-vscode"
             ]
         }
     }
