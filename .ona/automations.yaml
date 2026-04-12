@@ -1,0 +1,25 @@
+tasks:
+  setupGpg:
+    name: Import GPG key
+    description: Import GNUPG_KEY secret into the GPG keyring. Skipped if secret is not set.
+    command: |
+      if [[ ! -z $GNUPG_KEY ]]; then
+        gpg --verbose --batch --import <(echo $GNUPG_KEY | base64 -d)
+        grep -qxF 'pinentry-mode loopback' ~/.gnupg/gpg.conf || echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
+        KEY_ID=$(gpg --list-secret-keys --with-colons | awk -F: '/^fpr/{print $10; exit}')
+        KEY_EMAIL=$(gpg --list-secret-keys --with-colons | awk -F: '/^uid/{print $10; exit}' | grep -oP '(?<=<)[^>]+')
+        KEY_NAME=$(gpg --list-secret-keys --with-colons | awk -F: '/^uid/{print $10; exit}' | sed 's/ <.*//')
+        git config --global user.signingkey $KEY_ID
+        git config --global user.email "$KEY_EMAIL"
+        git config --global user.name "$KEY_NAME"
+        git config --global commit.gpgsign true
+      fi
+    triggeredBy:
+      - postDevcontainerStart
+
+  installDeps:
+    name: Install Python dependencies
+    description: Install pip packages from requirements.txt after workspace checkout.
+    command: pip3 install --break-system-packages -r requirements.txt
+    triggeredBy:
+      - postDevcontainerStart

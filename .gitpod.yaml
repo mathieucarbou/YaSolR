@@ -1,5 +1,0 @@
-tasks:
-- before: >
-    [[ ! -z $GNUPG_KEY  ]] &&
-    gpg --verbose --batch --import <(echo $GNUPG_KEY|base64 -d) &&
-    echo 'pinentry-mode loopback' >> ~/.gnupg/gpg.conf
