@@ -8,7 +8,7 @@
 
 [![Build](https://github.com/mathieucarbou/YaSolR/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/mathieucarbou/YaSolR/actions/workflows/build.yml)
 [![GitHub latest commit](https://badgen.net/github/last-commit/mathieucarbou/YaSolR)](https://GitHub.com/mathieucarbou/YaSolR/commit/)
-[![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-Ready--to--Code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/mathieucarbou/YaSolR)
+[![Build with Ona](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/mathieucarbou/YaSolR)
 
 [![Doc](https://img.shields.io/badge/Doc-html-green.svg)](https://yasolr.carbou.me/manual)
 [![Facebook Group](https://img.shields.io/badge/Facebook-group-blue.svg?logo=Facebook&logoColor=white)](https://www.facebook.com/groups/yasolr)
