@@ -583,8 +583,8 @@ Traffic light LEDs:
 
 I2C OLED Display:
 
-- [SH1106 OLED Display 4 pins 128x64 I2C](https://www.aliexpress.com/item/1005001621782442.html) (**recommended**)
-- [SSD1306 OLED Display 4 pins 128x64 I2C](https://www.aliexpress.com/item/32638662748.html) (**not tested**)
+- [SH1106 OLED Display 4 pins 128x64 I2C](https://www.aliexpress.com/item/1005001621782442.html)
+- [SSD1306 OLED Display 4 pins 128x64 I2C](https://www.aliexpress.com/item/32638662748.html)
 
 ### Mounting Accessories
 
