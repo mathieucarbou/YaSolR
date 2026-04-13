@@ -4,7 +4,24 @@
         "context": ".",
         "dockerfile": "Dockerfile"
     },
+    "postStartCommand": {
+        "git and submodules setup": "git config -l | grep -q \"x-access-token:${GITHUB_TOKEN}\" && echo 'Git is already configured ..' || (git config --replace-all --global url.https://x-access-token:${GITHUB_TOKEN}@github.com/.insteadOf ssh://git@github.com/ && git config --add --global url.https://x-access-token:${GITHUB_TOKEN}@github.com/.insteadOf git@github.com/ && git config --add --global url.https://x-access-token:${GITHUB_TOKEN}@github.com/.insteadOf git@github.com: && git submodule update --init --recursive)"
+    },
     "customizations": {
+        "codespaces": {
+            "repositories": {
+                "mathieucarbou/WebSerial-Pro": {
+                    "permissions": {
+                        "contents": "read"
+                    }
+                },
+                "mathieucarbou/ESP-DASH-Pro": {
+                    "permissions": {
+                        "contents": "read"
+                    }
+                }
+            }
+        },
         "vscode": {
             "settings": {
                 "git.enableCommitSigning": false
