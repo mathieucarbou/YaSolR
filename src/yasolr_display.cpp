@@ -15,20 +15,32 @@ static Mycila::Task* displayTask = nullptr;
 static uint8_t startingInformation = 1;
 static uint32_t lastDisplayUpdate = 0;
 
+static std::optional<Mycila::EasyDisplayType> findDisplayType() {
+  const char* displayType = config.getString(KEY_DISPLAY);
+  if (strcmp(displayType, "SSD1306") == 0)
+    return Mycila::EasyDisplayType::SSD1306;
+  if (strcmp(displayType, "SH1107") == 0)
+    return Mycila::EasyDisplayType::SH1107;
+  if (strcmp(displayType, "SH1106") == 0)
+    return Mycila::EasyDisplayType::SH1106;
+  return std::nullopt;
+}
+
 void yasolr_configure_display() {
   if (!config.isEmpty(KEY_DISPLAY)) {
     if (display == nullptr) {
       ESP_LOGI(TAG, "Enable display");
 
-      display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
+      auto displayType = findDisplayType();
 
-      const char* displayType = config.getString(KEY_DISPLAY);
-      if (strcmp(displayType, "SSD1306") == 0)
-        display->begin(Mycila::EasyDisplayType::SSD1306, config.get<int8_t>(KEY_PIN_I2C_SCL), config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<uint16_t>(KEY_DISPLAY_ROTATION));
-      else if (strcmp(displayType, "SH1107") == 0)
-        display->begin(Mycila::EasyDisplayType::SH1107, config.get<int8_t>(KEY_PIN_I2C_SCL), config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<uint16_t>(KEY_DISPLAY_ROTATION));
-      else if (strcmp(displayType, "SH1106") == 0)
-        display->begin(Mycila::EasyDisplayType::SH1106, config.get<int8_t>(KEY_PIN_I2C_SCL), config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<uint16_t>(KEY_DISPLAY_ROTATION));
+      if (!displayType.has_value()) {
+        ESP_LOGE(TAG, "Invalid display type '%s'", config.getString(KEY_DISPLAY));
+        return;
+      }
+
+      display = new Mycila::EasyDisplay(YASOLR_DISPLAY_LINES, YASOLR_DISPLAY_LINE_SIZE, 4, u8g2_font_6x12_tf);
+      display->begin(displayType.value(), config.get<int8_t>(KEY_PIN_I2C_SCL), config.get<int8_t>(KEY_PIN_I2C_SDA), config.get<uint16_t>(KEY_DISPLAY_ROTATION));
+
       if (!display->isEnabled()) {
         ESP_LOGE(TAG, "Display failed to initialize!");
         display->end();
