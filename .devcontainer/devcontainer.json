@@ -27,13 +27,15 @@
                 "git.enableCommitSigning": false
             },
             "extensions": [
-                "davidanson.vscode-markdownlint",
+                "alexnesnes.teleplot",
+                "DavidAnson.vscode-markdownlint",
                 "dbaeumer.vscode-eslint",
                 "docker.docker",
                 "donjayamanne.githistory",
                 "eamodio.gitlens",
                 "esbenp.prettier-vscode",
-                "github.copilot-chat",
+                "GitHub.codespaces",
+                "GitHub.copilot-chat",
                 "github.github-vscode-theme",
                 "github.remotehub",
                 "github.vscode-github-actions",
@@ -41,8 +43,8 @@
                 "gitpod.gitpod-flex-remote",
                 "gitpod.gitpod-theme",
                 "grapecity.gc-excelviewer",
-                "gruntfuggly.todo-tree",
-                "jason2866.esp-decoder",
+                "Gruntfuggly.todo-tree",
+                "Jason2866.esp-decoder",
                 "mechatroner.rainbow-csv",
                 "mhutchie.git-graph",
                 "ms-azuretools.vscode-containers",
@@ -68,6 +70,7 @@
                 "ms-vscode.remote-explorer",
                 "ms-vscode.remote-repositories",
                 "ms-vscode.test-adapter-converter",
+                "ms-vscode.vscode-serial-monitor",
                 "ms-vscode.vscode-websearchforcopilot",
                 "paragdiwan.gitpatch",
                 "pioarduino.pioarduino-ide",
@@ -78,6 +81,8 @@
                 "slevesque.vscode-zipexplorer",
                 "svelte.svelte-vscode",
                 "timheuer.awesome-copilot",
+                "tomoki1207.pdf",
+                "yzane.markdown-pdf",
                 "ziyasal.vscode-open-in-github"
             ]
         }
