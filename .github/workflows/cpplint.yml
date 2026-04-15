@@ -13,6 +13,9 @@ on:
   pull_request:
     paths: ["**/*.h", "**/*.cpp"]
 
+permissions:
+  contents: read
+
 jobs:
   cpplint:
     name: cpplint
