@@ -209,6 +209,7 @@ void yasolr_configure_display() {
         }
 
         display->display();
+        display->u8g2().setPowerSave(false);
         lastDisplayUpdate = millis();
       });
 
