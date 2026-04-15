@@ -68,7 +68,7 @@ void yasolr_configure_display() {
                   display->home.printf("Starting Access Point");
                   break;
                 case Mycila::ESPConnect::State::AP_STARTED:
-                  display->home.printf("AP: %s17.17s", espConnect.getWiFiSSID().c_str());
+                  display->home.printf("AP: %17.17s", espConnect.getWiFiSSID().c_str());
                   break;
                 case Mycila::ESPConnect::State::NETWORK_CONNECTING:
                   display->home.printf("Connecting...");
@@ -209,7 +209,7 @@ void yasolr_configure_display() {
         }
 
         display->display();
-        display->u8g2().setPowerSave(false);
+        display->setActive(true);
         lastDisplayUpdate = millis();
       });
 
