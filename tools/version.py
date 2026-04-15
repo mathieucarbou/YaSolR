@@ -55,6 +55,9 @@ def do_main():
     if has_local_modifications:
         version += "_modified"
 
+    # Expose for other pre: scripts (e.g. progname.py)
+    os.environ["BUILD_REF"] = version
+
     # version = "v2.40.2-rc1"
     constantFile = os.path.join(env.subst("$BUILD_DIR"), "__compiled_constants.c")
     with open(constantFile, "w") as f:
