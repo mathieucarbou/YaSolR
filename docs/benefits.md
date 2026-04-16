@@ -34,7 +34,7 @@ Amongst them:
 - [YaS☀️lR (Yet another Solar Router)](https://yasolr.carbou.me)
 - and many more you will find on my ([GitHub Profile](https://github.com/mathieucarbou))...
 
-I am also actively maintaining the well known Async WebServer libraries called ESPAsyncWebServer as part of [ESP32Async](https://github.com/ESP32Async) organization with the help of the Arduino Core and WLED leads:
+Mathieu is also actively maintaining the well known Async WebServer libraries called ESPAsyncWebServer as part of [ESP32Async](https://github.com/ESP32Async) organization with the help of the Arduino Core and WLED leads:
 
 - [AsyncTCP](https://github.com/ESP32Async/AsyncTCP): AsyncTCP is a library for ESP32 Arduino that facilitates the use of TCP connections in an asynchronous way
 - [ESPAsyncWebServer](https://github.com/ESP32Async/ESPAsyncWebServer): WebSocket, SSE, Authentication, Arduino Json 7, File Upload, Static File serving, URL Rewrite, URL Redirect, etc
