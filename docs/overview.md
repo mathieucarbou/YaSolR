@@ -80,7 +80,7 @@ The board then does some calculation to determine when to send the signal to the
 !!! tip
 
     I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
-    So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
+    So if you need one, look at the [YaSolR Pro page to see if I have some stock left](pro.md#zero-cross-detection-modules)
 
 #### The Importance of a good ZCD circuit
 
@@ -174,11 +174,8 @@ To put things in perspective, it is important to remember that a Solar Router wi
 
 ### Cycle Stealing Control
 
-Cycle Stealing Control will let a complete or half complete voltage curve pass or not, and this control is done from the zero point up to the next.
-So the sin wave is not chopped like in Phase Control, but we decide to let pass or not a complete period or half period.
-
-50Hz current has a voltage curve with a period of 20 ms decoupled in 2 half-periods: one positive, one negative, so the zero voltage is crossed twice per period.
-A measuring device like JSY makes about 300 ms to see a new value, which gives us 15 full periods and 30 half-periods to re-arrange the current flow, before the next measurement.
+Cycle Stealing Control will let a half complete voltage curve pass or not, and this control is done from the zero point up to the next.
+So the sin wave is not chopped like in Phase Control.
 
 This method can use a simple Zero-Cross Solid State Relay: a relay that will only close or open when the voltage curve is at 0.
 So there is no load at that time of switching, thus, no harmonics.
@@ -198,7 +195,10 @@ It is not suitable for lighting loads or loads without sufficient thermal inerti
 
 The main problem with Cycle Stealing Control is that some kind of arrangements can cause flickering when the nominal load is big (big power tanks), visible on light bulbs that are close-by.
 This is caused by a sudden voltage drop in the house, caused by a sudden current flow at the request of the big water tank resistance.
-This effect highly depends on the quality implementation of the Cycle Stealing algorithm. For example, burst fire (which is not used in YaSolR) is more prone to flickering because the dimmer is turned of and on for complete periods.
+This effect highly depends on the quality implementation of the Cycle Stealing algorithm.
+For example, burst fire (which is not used in YaSolR) is more prone to flickering because the dimmer is turned of and on for complete periods.
+
+**YaSolR's Cycle Stealing implementation is not prone to flickering because it is based on a delta-sigma modulation with Bresenham's algorithm, which optimally distributes ON/OFF half-cycles and avoids burst fire.**
 
 ## Recommendations to reduce harmonics and flickering
 

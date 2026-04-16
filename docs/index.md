@@ -21,7 +21,9 @@ YaSolR is the **software** and this website will help you [build](build.md) your
 
 To know more about how Solar Routers work, please go to the [overview](overview.md) page.
 
-You can have a look at the [comparison](comparison.md) page to see how YaSolR compares to other Solar Routers.
+You can have a look at the [comparison](comparison.md) page to read about how YaSolR compares to other Solar Routers.
+
+You can have a look at the [benefits](benefits.md) page to read about all the advantages of YaSolR.
 
 ## YaSolR Benefits
 
@@ -97,7 +99,9 @@ It is also a big **Open-Source** project following **best development practices*
         - Wemos D1 R32
         - Wemos D1 Mini 32
 
-You can have a look at the [comparison](comparison.md) page to see how YaSolR compares to other Solar Router firmwares and projects.
+You can have a look at the [comparison](comparison.md) page to read about how YaSolR compares to other Solar Routers.
+
+You can have a look at the [benefits](benefits.md) page to read about all the advantages of YaSolR.
 
 ## Detailed Features
 

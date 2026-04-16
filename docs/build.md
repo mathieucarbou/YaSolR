@@ -1,4 +1,4 @@
-# How to Build Your Router
+# How to Build your Router
 
 Here are some build examples below to give you an idea of the different options and components you can use to build your router.
 Depending on the components you choose, you will be able to use different routing algorithms (phase control, cycle stealing) and have different precision and performance.
@@ -520,7 +520,7 @@ Links:
 !!! tip
 
     I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
-    So if you need one, look at the [YaSolR Pro page to see if I have some stock left](https://yasolr.carbou.me/pro#zero-cross-detection-modules)
+    So if you need one, look at the [YaSolR Pro page to see if I have some stock left](pro.md#zero-cross-detection-modules)
 
 #### RobotDyn (not recommended)
 
