@@ -103,9 +103,10 @@ nav:
   - 📖 Blog: blog/index.md
   - 📖 Documentation:
       - → What is a Solar Router: overview.md
-      - → YaSolR vs other Solar Routers: comparison.md
-      - → How to Build Your Router: build.md
-      - → YaSolR Manual: manual.md
+      - → Comparison: comparison.md
+      - → Benefits: benefits.md
+      - → How to Build: build.md
+      - → Manual: manual.md
   - 🌐 API:
       - → REST: rest.md
       - → MQTT: mqtt.md
