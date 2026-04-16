@@ -1,7 +1,7 @@
 # YaSolR Benefits
 
-YaSolR is the most efficient Open-Source Solar Router firmware available.
-There is simply no match.
+**YaSolR is the most efficient Open-Source Solar Router firmware available.**
+**There is simply no match.**
 
 ## About the author
 
