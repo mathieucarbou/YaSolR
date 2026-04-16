@@ -42,12 +42,12 @@ I do not provide a pre-assembled router for security reasons, standards, after-s
 ## YaSolR Features:
 
 - **Reactivity and speed of measurements**: YaSolR is able to make a measurement every 42 ms, and **adjusts the routing at least 3 times per second.**
-- **PID**: YaSolR is the only router to use a **PID algorithm proportional to the measurements** to adjust the routing, which allows to control the corrections with more precision and avoids overshoots that cause oscillations, over-consumptions or over-excess.
+- **PID**: YaSolR uses a **PID algorithm proportional to the measurements** to adjust the routing, which allows to control the corrections with more precision and avoids overshoots that cause oscillations, over-consumptions or over-excess.
 - **PID Tuning**: YaSolR offers a PID tuning screen to adjust the PID parameters in real time, without recompiling the code.
 - **Frequency**: YaSolR is able to operate on a frequency of **50 Hz and 60 Hz**, but also on a frequency of 51 Hz (for example on an Enedis generator).
 - **Resolution**: YaSolR has a routing resolution of **12 bits**, so is able to be precise to the nearest watt with a load of more than 4000W. Routers with such precision are rare. Most routers have a precision of 100 steps, or 30W for a load of 3000W.
 - **Zero-Cross Pulse Analysis**: YaSolR analyzes the pulses of the Zero-Cross circuit to detect the positions of the rising and falling edges, which allows to synchronize the triggering of the TRIAC as precisely as possible during the true zero crossing. Most ZC-based routers calculate a false trigger value from the rising edge of the pulse, which happens to be before the zero crossing.
-- **Hardware**: YaSolR is the only router that does not impose hardware and offers **wide compatibility**.
+- **Hardware**: YaSolR does not impose hardware and offers **wide compatibility**.
 - Supports the concept of **virtual grid power** which allows compatibility with a **second router or an EV charging station**
 - Phase control features: **dimmer remapping** (like Shelly Dimmer), **power limit**, etc.
 - **Bypass** (forced operation) according to schedule and / or temperature

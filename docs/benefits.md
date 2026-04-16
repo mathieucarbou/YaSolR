@@ -56,7 +56,7 @@ This implies
 - a fast measurement speed (the faster the better)
 - a fast adjustment speed (the faster the better)
 
-**YaSolR is the only router capable of taking about 20 measurements per second, processing them to adjust the power to the grid at least 3 times per second, and doing all of this with a very low latency.**
+**YaSolR is capable of taking about 20 measurements per second, processing them to adjust the power to the grid at least 3 times per second, and doing all of this with a very low latency.**
 
 Other routers usually react each second or even every 2 seconds.
 
@@ -105,7 +105,7 @@ This allows a more precise routing for higher and lower duty cycle values.
 
 ### No Flickering with Phase Control
 
-**YaSolR is the only Solar Router firmware that can guarantee no flickering on the load when the routing is active**, which is a common issue with other routers that can cause power spikes and inefficient dimming.
+**YaSolR is the only Solar Router firmware that removes flickering on the load when the routing is active**, which is a common issue with other routers that can cause power spikes and inefficient dimming.
 
 Thanks to [MycilaPulseAnalyzer](https://mathieu.carbou.me/MycilaPulseAnalyzer) and [MycilaDimmer](https://mathieu.carbou.me/MycilaDimmer), when used with a good ZCD module, YaSolR will produce a stable power output with no flickering.
 
@@ -157,7 +157,7 @@ These libraries are the result of years of development and testing with an oscil
 
 ## PID algorithm with filtering
 
-**YaSolR is the only solar router firmware using a PID algorithm with filtering** to control the routing, that you can tune with a live view and supports many options to decide how the PID triggers and which PID algorithm to use.
+**YaSolR is the only solar router firmware using an advanced PID algorithm with different control modes and filtering** to control the routing, that you can tune with a live view and supports many options to decide how the PID triggers and which PID algorithm to use.
 
 Other solar routers usually don't provide a PID system or tuning view with as many options as YaSolR.
 
