@@ -9,13 +9,9 @@ import sys
 
 
 def get_lang(e):
-    for define in e.get("CPPDEFINES", []):
-        if (
-            isinstance(define, (list, tuple))
-            and len(define) >= 2
-            and str(define[0]) == "YASOLR_LANG"
-        ):
-            return "fr" if "FR" in str(define[1]).upper() else "en"
+    for flag in e.GetProjectOption("build_flags"):
+        if "YASOLR_LANG" in flag:
+            return "fr" if "FR" in flag else "en"
     return "en"
 
 
