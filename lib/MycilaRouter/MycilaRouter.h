@@ -470,16 +470,6 @@ namespace Mycila {
       // - powerToDivert >= 0
       // - can only be called if !isCalibrationRunning()
       float divert(const float gridVoltage, const float powerToDivert) {
-        // if there is no voltage or no power to divert then we turn off all dimmers
-        // - ensures gridVoltage > 0
-        // - ensures powerToDivert > 0
-        if (powerToDivert <= 0 || gridVoltage <= 0) {
-          for (const auto& output : _outputs) {
-            output->_turnOffDimmer();
-          }
-          return 0.0f;
-        }
-
         // copy the output vector
         std::vector<Output*> remainingOutputs = _outputs;
 
@@ -500,6 +490,17 @@ namespace Mycila {
 
         // if there is no remaining output to divert then we return
         if (remainingOutputs.empty()) {
+          return 0.0f;
+        }
+
+        // Here, we have some diverting to do.
+        // But if there is no voltage or no power to divert then we turn off all dimmers
+        // - ensures gridVoltage > 0
+        // - ensures powerToDivert > 0
+        if (powerToDivert <= 0 || gridVoltage <= 0) {
+          for (const auto& output : _outputs) {
+            output->_turnOffDimmer();
+          }
           return 0.0f;
         }
 
