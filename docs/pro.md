@@ -6,7 +6,7 @@ These libraries also help provide some additional features linked to the UI such
 | Feature                    |                          OSS (Free)                          |      PRO (In Exchange of Sponsoring)       |
 | -------------------------- | :----------------------------------------------------------: | :----------------------------------------: |
 | Dashboard                  |                      Overview **only**                       | Full Dashboard as seen in the screenshots  |
-| Configuration              |                      Debug Config Page                       |             **From Dashboard**             |
+| Configuration              |            Debug Config Page (<http://ip/config>)            |             **From Dashboard**             |
 | Energy Reset               |                              ❌                              |                     ✅                     |
 | GPIO Config and Health     |                              ❌                              |                     ✅                     |
 | Hardware Config and Health |                              ❌                              |                     ✅                     |
@@ -45,10 +45,10 @@ If you are interested, please contact me.
 
 Here are the availabilities below:
 
-| **Module Picture (from author)**                                            | **Module Link**                                                                                                                      | **Price** | **Availability** |
-| :-------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :-------: | :--------------: |
-| <img src="../assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)            |   10 €    |        4        |
-| <img src="../assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure) |   15 €    |        4        |
+| **Module Picture (from author)**                                             | **Module Link**                                                                                                                      | **Price** | **Availability** |
+| :--------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- | :-------: | :--------------: |
+| <img src="../assets/img/hardware/ZCD_no_enclosure.jpeg" style="width:150px"> | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (no enclosure)            |   10 €    |        4         |
+| <img src="../assets/img/hardware/ZCD.jpeg" style="width:150px">              | [ZCD module from Daniel S.](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) (with DIN Rail enclosure) |   15 €    |        4         |
 
 You can read more about how important a good ZCD module is in the [Blog](blog/index.md):
 
