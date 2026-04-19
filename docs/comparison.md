@@ -25,7 +25,7 @@ In 2025, I was nominated twice as being one of the [top Arduino Library maintain
 
 - **Burst Fire** is a control algorithm that consists in turning the load on and off for several full or semi periods to achieve the desired power. It is innacurate compared to the other algorithms and can cause under certain circumstances some flickering. It is alos not very reactive as it relies on tracking the power through a fixed window or tables. Implementations often do not control the grid balancing, which can lead to DC components and a few harmonics (on semi periods). Burst Fire is often what's implemented when Phase Control is not used. I am calling it the "poor man's Cycle Stealing". **YaSolR is not using Burst Fire**.
 
-- **Cycle Stealing** is a control algorithm that consists in stealing cycles from the grid to achieve the desired power, allowing for an immediate reaction to duty cycle changes and a better control of the grid balance to avoid DC components and reduce harmonics. The implementation of Cycle Stealing with delta-sigma modulation and Bresenham's algorithm allows for a very precise and efficient control of the power.
+- **Cycle Stealing** is a control algorithm that consists in stealing cycles from the grid to achieve the desired power, allowing for an immediate reaction to duty cycle changes and a better control of the grid balance to avoid DC components and reduce harmonics. The implementation of Cycle Stealing with delta-sigma modulation and Bresenham's algorithm allows for a very precise and efficient control of the power and does not have the drawbacks of Burst Fire. **YaSolR is using Cycle Stealing with delta-sigma modulation and Bresenham's algorithm**.
 
 ## Legend
 
