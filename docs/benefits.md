@@ -46,7 +46,7 @@ YaSolR is built as a professional Open-Source project on GitHub: <https://github
 YaSolR is not built with Arduino IDE and `*.ino` files: these are typically used by inexperienced programmers who want to quickly create a proof of concept.
 Arduino IDE and `*.ino` files are not suitable for a serious project and cause a lot of issues that inexperienced programmers are unaware of.
 
-If you see a big project developed with Arduino IDE and `*.ino` files, you can be sure that the code quality is poor and that the developer lacks experience, which will lead to a bad experience for you as a user and also in terms of project maintenance.
+If you see a big project developed with Arduino IDE and `*.ino` files, you can be sure that the code quality is poor and that the developer lacks experience, which will lead to a bad experience for you as a user of the code, and also in terms of project maintenance.
 
 ## Speed and reactivity
 
