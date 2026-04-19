@@ -357,7 +357,7 @@ As a reminder, Open-Source Solutions provide these benefits compared to commerci
     - ❌ CEI 61000-3-2 compliance not guaranteed (there is no active circuit to reduce harmonic levels)
     - ❌ No documentation on how to install according to regulations (including CEI 61000-3-2)
 
-### Myenergi eddi
+### eddi de Myenergi
 
 👉 [https://www.myenergi.com/nl/fr/product/eddi/](https://www.myenergi.com/nl/fr/product/eddi/)
 
@@ -449,6 +449,48 @@ As a reminder, Open-Source Solutions provide these benefits compared to commerci
 - Product sold:
     - ✅ Pre-assembled product
     - ❌ Not CE
+    - ❌ Not NF
+    - ❌ CEI 61000-3-2 compliance not guaranteed (there is no active circuit to reduce harmonic levels)
+    - ❌ No documentation on how to install according to regulations (including CEI 61000-3-2)
+
+### SMH-Tech
+
+👉 [https://smhtech.fr/routeur-solaire/52-routeur-denergie-solaire-photovoltaique-monophase-triphase-modbus.html](https://smhtech.fr/routeur-solaire/52-routeur-denergie-solaire-photovoltaique-monophase-triphase-modbus.html)
+
+- ❌ Not Open-Source
+- ❌ No Source code available and no auditing possible
+- ❌ No Forum
+- ❌ No Discord
+- ❌ No Facebook Group
+- ❌ No Bug Report System
+- ❌ No Public Support System (i.e. through forum)
+- Documentation:
+    - ✅ Installation manual only ([link](https://smhtech.fr/routeur-solaire/66-routeur-d-energie-solaire-automatique.html))
+    - ✅ Covers harmonics a little
+    - ❌ Does not cover solutions to mitigate them
+    - ❌ Does not mention the CEI 61000-3-2 harmonic regulation and how to comply with it
+- Setup:
+    - ✅ Assembly: pre-assembled
+    - ✅ Installation: professional or self-installation possible
+    - ✅ Monophase support
+    - ✅ Three-phase support
+- Routing algorithms:
+    - ✅ Phase Control
+        - ❌ No display of Harmonic Current Levels
+        - ❌ No Software option to help reduce them
+    - ⚠️ Burst Fire on full and semi-periods
+        - ⚠️ Prone to flickering and inaccuracy
+        - ⚠️ Limited reactivity due to the tracking through a fixed window / tables
+        - ❌ No Grid Balance Control to avoid DC components
+    - ❌ No Cycle Stealing support
+- Dimmer Hardware:
+    - ⚠️ TRIAC only, with active cooling (fan). Documentation does not explain what is the behaviour when the fan is not working.
+    - ❌ No support for Random SSR
+    - ❌ No support for Synchronous SSR
+    - ❌ No support for DAC-controlled voltage regulators (LCTC, LSA, etc)
+- Product sold:
+    - ✅ Pre-assembled product
+    - ✅ Not CE
     - ❌ Not NF
     - ❌ CEI 61000-3-2 compliance not guaranteed (there is no active circuit to reduce harmonic levels)
     - ❌ No documentation on how to install according to regulations (including CEI 61000-3-2)
