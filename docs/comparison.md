@@ -10,7 +10,7 @@ I should note upfront that YaSolR being Open-Source, I am myself biased towards 
 
     If you think I made a mistake in this comparison, or misrepresented a solution, please let me know or send a pull request, with the corrections and link to the source, and I will update the comparison accordingly.
 
-**Who am I:**
+## Who am I
 
 I am a professional software engineer with more than 20 years of experience in low level systems and concurrency.
 As an experienced ESP32 / Arduino Core developer, I have made countless ESP32 projects and written several blog articles related to ESP32 development.
@@ -19,19 +19,19 @@ I am specialized in solar routing / diversion and libraries around electricity a
 
 In 2025, I was nominated twice as being one of the [top Arduino Library maintainer of the year](https://forum.arduino.cc/t/arduino-open-source-report-2025) ([PDF Report](https://mathieu.carbou.me/ArduinoOpenSourceReport2025.pdf)), both as individual and as part of the [ESP32Async](https://github.com/ESP32Async) organization for the work done on the Async WebServer libraries.
 
-**Legend:**
+## Vocabulary
+
+- **Phase Control** is a control algorithm that consists in controlling the phase angle at which the load is turned on, allowing for a more precise and reactive control of the power. It can also cause elevated harmonic current levels and requires additional measures to help reduce them.
+
+- **Burst Fire** is a control algorithm that consists in turning the load on and off for several full or semi periods to achieve the desired power. It is prone to flickering and inaccuracy, and it is not very reactive as it relies on tracking the power through a fixed window or tables. It also does not allow to control the grid balance, which can lead to DC components and a few harmonics (on semi periods). Burst Fire is often what's implemented when Phase Control is not used. I am calling it the "poor man's Cycle Stealing". **YaSolR is not using Burst Fire**.
+
+- **Cycle Stealing** is a control algorithm that consists in stealing cycles from the grid to achieve the desired power, allowing for an immediate reaction to duty cycle changes and a better control of the grid balance to avoid DC components and reduce harmonics. The implementation of Cycle Stealing with delta-sigma modulation and Bresenham's algorithm allows for a very precise and efficient control of the power.
+
+## Legend
 
 - ✅: Yes, supported
 - ❌: No, not supported
 - ⚠️: Partially supported, or support depends on the user setup, or warnings apply
-
-**Vocabulary:**
-
-- **Phase Control** is a control algorithm that consists in controlling the phase angle at which the load is turned on, allowing for a more precise and reactive control of the power. It can also cause elevated harmonic current levels and requires additional measures to help reduce them.
-
-- **Burst Fire** is a control algorithm that consists in turning the load on and off for several full or semi periods to achieve the desired power. It is prone to flickering and inaccuracy, and it is not very reactive as it relies on tracking the power through a fixed window or tables. It also does not allow to control the grid balance, which can lead to DC components and harmonics.
-
-- **Cycle Stealing** is a control algorithm that consists in stealing cycles from the grid to achieve the desired power, allowing for an immediate reaction to duty cycle changes and a better control of the grid balance to avoid DC components and reduce harmonics. The implementation of Cycle Stealing with delta-sigma modulation and Bresenham's algorithm allows for a very precise and efficient control of the power.
 
 ## YaSolR (reference project)
 
