@@ -10,6 +10,15 @@ I should note upfront that YaSolR being Open-Source, I am myself biased towards 
 
     If you think I made a mistake in this comparison, or misrepresented a solution, please let me know or send a pull request, with the corrections and link to the source, and I will update the comparison accordingly.
 
+**Who am I:**
+
+I am a professional software engineer with more than 20 years of experience in low level systems and concurrency.
+As an experienced ESP32 / Arduino Core developer, I have made countless ESP32 projects and written several blog articles related to ESP32 development.
+Some people also know me for my work on the [ESP32Async](https://github.com/ESP32Async) organization: the famous ESPAsyncWebServer library (Asynchronous Web Server).
+I am specialized in solar routing / diversion and libraries around electricity and network management for ESP32 / Arduino.
+
+In 2025, I was nominated twice as being one of the [top Arduino Library maintainer of the year](https://forum.arduino.cc/t/arduino-open-source-report-2025) ([PDF Report](https://mathieu.carbou.me/ArduinoOpenSourceReport2025.pdf)), both as individual and as part of the [ESP32Async](https://github.com/ESP32Async) organization for the work done on the Async WebServer libraries.
+
 **Legend:**
 
 - ✅: Yes, supported
@@ -62,6 +71,11 @@ I should note upfront that YaSolR being Open-Source, I am myself biased towards 
 - Product sold:
     - ❌ No product sold
     - ⚠️ Up to the user to install according to regulations (including CEI 61000-3-2)
+
+!!! tip
+
+    YaSolR is the only Open-Source router correctly implementing Interrupt Routines.
+    More explanation in the [benefits](benefits.md) page.
 
 ## Other Open-Source Solutions
 
