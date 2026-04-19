@@ -58,7 +58,8 @@ This implies
 
 **YaSolR is capable of taking about 20 measurements per second, processing them to adjust the power to the grid at least 3 times per second, and doing all of this with a very low latency.**
 
-Other routers usually react each second or even every 2 seconds.
+I've seen the code of some routers reacting each second or even every 2 seconds depending on the algorithm used.
+Some are impacted by a low measurement speed (Linky, MQTT) and some have a fast measurement speed but a slow adjustment speed (due to the routing algorithm used or the way the code is structured).
 
 ## Correct ISR Management
 
@@ -119,14 +120,13 @@ Thanks to [MycilaPulseAnalyzer](https://mathieu.carbou.me/MycilaPulseAnalyzer) a
 
 ## Cycle Stealing Comparison
 
-Most routers out there are using a window system, divided in slots, to determine if a cycle has to be on or off.
+Most routers out there are not using Cycle Stealing but Burst Fire, with a window system, divided in slots, to determine if a cycle has to be on or off.
 This window system causes a slowdown and lack or reactivity of the router, and is not precise because each slot is mapped to a quantity of power.
 So these routers usually oscillate around the setpoint (0 W) and have a very low accuracy.
 
 Some routers working on half cycle are also creating DC imbalance on the grid which is forbidden.
 
-I didn't want such bad implementation on YaSolR (often called burst fire or wave control, "train d'onde" or "multi-sinus").
-They can also cause some voltage flickering.
+I didn't want such bad implementation on YaSolR (often called burst fire or wave control, "train d'onde" or "multi-sinus") that can also cause some voltage flickering with big load.
 
 I wanted something that reacts fast on duty cycle changes (so no window system), that is not creating DC imbalance on the grid and also has no flickering.
 
@@ -157,7 +157,7 @@ These libraries are the result of years of development and testing with an oscil
 
 ## PID algorithm with filtering
 
-**YaSolR is the only solar router firmware using an advanced PID algorithm with different control modes and filtering** to control the routing, that you can tune with a live view and supports many options to decide how the PID triggers and which PID algorithm to use.
+**YaSolR is the only solar router firmware using an advanced PID algorithm with different control modes and a filter** to control the routing, that you can tune with a live view and supports many options to decide how the PID triggers and which PID algorithm to use.
 
 Other solar routers usually don't provide a PID system or tuning view with as many options as YaSolR.
 
