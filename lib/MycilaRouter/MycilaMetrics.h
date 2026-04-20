@@ -35,6 +35,10 @@ namespace Mycila {
       JSY_MK_227,
       JSY_MK_229,
       JSY_MK_333,
+      JSY_MK_333_AGGREGATE,
+      JSY_MK_333_PHASE_A,
+      JSY_MK_333_PHASE_B,
+      JSY_MK_333_PHASE_C,
 
       JSY_REMOTE,
       JSY_SERIAL1,
@@ -82,9 +86,20 @@ namespace Mycila {
       JSY_MK_194_CH2_SERIAL2,
       JSY_MK_194_CH2_REMOTE,
 
-      JSY_MK_333_SERIAL1,
-      JSY_MK_333_SERIAL2,
-      JSY_MK_333_REMOTE,
+      JSY_MK_333_AGGREGATE_SERIAL1,
+      JSY_MK_333_PHASE_A_SERIAL1,
+      JSY_MK_333_PHASE_B_SERIAL1,
+      JSY_MK_333_PHASE_C_SERIAL1,
+
+      JSY_MK_333_AGGREGATE_SERIAL2,
+      JSY_MK_333_PHASE_A_SERIAL2,
+      JSY_MK_333_PHASE_B_SERIAL2,
+      JSY_MK_333_PHASE_C_SERIAL2,
+
+      JSY_MK_333_AGGREGATE_REMOTE,
+      JSY_MK_333_PHASE_A_REMOTE,
+      JSY_MK_333_PHASE_B_REMOTE,
+      JSY_MK_333_PHASE_C_REMOTE,
 
       PZEM_SERIAL1,
       PZEM_SERIAL2,
@@ -95,74 +110,92 @@ namespace Mycila {
 
     static bool isUsing(Source source, Kind kind) {
       switch (source) {
-        case Source::COMPUTED:               return kind == Kind::COMPUTED;
-        case Source::SHARED:                 return kind == Kind::SHARED;
-        case Source::MQTT:                   return kind == Kind::MQTT;
-        case Source::VICTRON:                return kind == Kind::VICTRON;
-        case Source::JSY_MK_163_SERIAL1:     return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_163;
-        case Source::JSY_MK_163_SERIAL2:     return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_163;
-        case Source::JSY_MK_163_REMOTE:      return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_163;
-        case Source::JSY_MK_227_SERIAL1:     return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_227;
-        case Source::JSY_MK_227_SERIAL2:     return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_227;
-        case Source::JSY_MK_227_REMOTE:      return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_227;
-        case Source::JSY_MK_229_SERIAL1:     return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_229;
-        case Source::JSY_MK_229_SERIAL2:     return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_229;
-        case Source::JSY_MK_229_REMOTE:      return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_229;
-        case Source::JSY_MK_193_CH1_SERIAL1: return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH1;
-        case Source::JSY_MK_193_CH1_SERIAL2: return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH1;
-        case Source::JSY_MK_193_CH1_REMOTE:  return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH1;
-        case Source::JSY_MK_193_CH2_SERIAL1: return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH2;
-        case Source::JSY_MK_193_CH2_SERIAL2: return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH2;
-        case Source::JSY_MK_193_CH2_REMOTE:  return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH2;
-        case Source::JSY_MK_194_CH1_SERIAL1: return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH1;
-        case Source::JSY_MK_194_CH1_SERIAL2: return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH1;
-        case Source::JSY_MK_194_CH1_REMOTE:  return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH1;
-        case Source::JSY_MK_194_CH2_SERIAL1: return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH2;
-        case Source::JSY_MK_194_CH2_SERIAL2: return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH2;
-        case Source::JSY_MK_194_CH2_REMOTE:  return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH2;
-        case Source::JSY_MK_333_SERIAL1:     return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_333;
-        case Source::JSY_MK_333_SERIAL2:     return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_333;
-        case Source::JSY_MK_333_REMOTE:      return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_333;
-        case Source::PZEM_SERIAL1:           return kind == Kind::PZEM;
-        case Source::PZEM_SERIAL2:           return kind == Kind::PZEM;
-        default:                             return kind == Kind::UNKNOWN;
+        case Source::COMPUTED:                     return kind == Kind::COMPUTED;
+        case Source::SHARED:                       return kind == Kind::SHARED;
+        case Source::MQTT:                         return kind == Kind::MQTT;
+        case Source::VICTRON:                      return kind == Kind::VICTRON;
+        case Source::JSY_MK_163_SERIAL1:           return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_163;
+        case Source::JSY_MK_163_SERIAL2:           return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_163;
+        case Source::JSY_MK_163_REMOTE:            return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_163;
+        case Source::JSY_MK_227_SERIAL1:           return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_227;
+        case Source::JSY_MK_227_SERIAL2:           return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_227;
+        case Source::JSY_MK_227_REMOTE:            return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_227;
+        case Source::JSY_MK_229_SERIAL1:           return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_229;
+        case Source::JSY_MK_229_SERIAL2:           return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_229;
+        case Source::JSY_MK_229_REMOTE:            return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_229;
+        case Source::JSY_MK_193_CH1_SERIAL1:       return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH1;
+        case Source::JSY_MK_193_CH1_SERIAL2:       return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH1;
+        case Source::JSY_MK_193_CH1_REMOTE:        return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH1;
+        case Source::JSY_MK_193_CH2_SERIAL1:       return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH2;
+        case Source::JSY_MK_193_CH2_SERIAL2:       return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH2;
+        case Source::JSY_MK_193_CH2_REMOTE:        return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_193 || kind == Kind::JSY_MK_193_CH2;
+        case Source::JSY_MK_194_CH1_SERIAL1:       return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH1;
+        case Source::JSY_MK_194_CH1_SERIAL2:       return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH1;
+        case Source::JSY_MK_194_CH1_REMOTE:        return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH1;
+        case Source::JSY_MK_194_CH2_SERIAL1:       return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH2;
+        case Source::JSY_MK_194_CH2_SERIAL2:       return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH2;
+        case Source::JSY_MK_194_CH2_REMOTE:        return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_194 || kind == Kind::JSY_MK_194_CH2;
+        case Source::JSY_MK_333_AGGREGATE_SERIAL1: return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_AGGREGATE;
+        case Source::JSY_MK_333_PHASE_A_SERIAL1:   return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_A;
+        case Source::JSY_MK_333_PHASE_B_SERIAL1:   return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_B;
+        case Source::JSY_MK_333_PHASE_C_SERIAL1:   return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_C;
+        case Source::JSY_MK_333_AGGREGATE_SERIAL2: return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_AGGREGATE;
+        case Source::JSY_MK_333_PHASE_A_SERIAL2:   return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_A;
+        case Source::JSY_MK_333_PHASE_B_SERIAL2:   return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_B;
+        case Source::JSY_MK_333_PHASE_C_SERIAL2:   return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_C;
+        case Source::JSY_MK_333_AGGREGATE_REMOTE:  return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_AGGREGATE;
+        case Source::JSY_MK_333_PHASE_A_REMOTE:    return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_A;
+        case Source::JSY_MK_333_PHASE_B_REMOTE:    return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_B;
+        case Source::JSY_MK_333_PHASE_C_REMOTE:    return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_C;
+        case Source::PZEM_SERIAL1:                 return kind == Kind::PZEM;
+        case Source::PZEM_SERIAL2:                 return kind == Kind::PZEM;
+        default:                                   return kind == Kind::UNKNOWN;
       }
       return false;
     }
 
     static const char* sourceToString(Source source) {
       switch (source) {
-        case Source::COMPUTED:               return "Computed";
-        case Source::SHARED:                 return "Shared";
-        case Source::MQTT:                   return "MQTT";
-        case Source::VICTRON:                return "Victron";
-        case Source::JSY_MK_163_SERIAL1:     return "JSY-MK-163 (Serial1)";
-        case Source::JSY_MK_163_SERIAL2:     return "JSY-MK-163 (Serial2)";
-        case Source::JSY_MK_163_REMOTE:      return "JSY-MK-163 (Remote)";
-        case Source::JSY_MK_227_SERIAL1:     return "JSY-MK-227 (Serial1)";
-        case Source::JSY_MK_227_SERIAL2:     return "JSY-MK-227 (Serial2)";
-        case Source::JSY_MK_227_REMOTE:      return "JSY-MK-227 (Remote)";
-        case Source::JSY_MK_229_SERIAL1:     return "JSY-MK-229 (Serial1)";
-        case Source::JSY_MK_229_SERIAL2:     return "JSY-MK-229 (Serial2)";
-        case Source::JSY_MK_229_REMOTE:      return "JSY-MK-229 (Remote)";
-        case Source::JSY_MK_193_CH1_SERIAL1: return "JSY-MK-193 Channel 1 (Serial1)";
-        case Source::JSY_MK_193_CH1_SERIAL2: return "JSY-MK-193 Channel 1 (Serial2)";
-        case Source::JSY_MK_193_CH1_REMOTE:  return "JSY-MK-193 Channel 1 (Remote)";
-        case Source::JSY_MK_193_CH2_SERIAL1: return "JSY-MK-193 Channel 2 (Serial1)";
-        case Source::JSY_MK_193_CH2_SERIAL2: return "JSY-MK-193 Channel 2 (Serial2)";
-        case Source::JSY_MK_193_CH2_REMOTE:  return "JSY-MK-193 Channel 2 (Remote)";
-        case Source::JSY_MK_194_CH1_SERIAL1: return "JSY-MK-194 Channel 1 (Serial1)";
-        case Source::JSY_MK_194_CH1_SERIAL2: return "JSY-MK-194 Channel 1 (Serial2)";
-        case Source::JSY_MK_194_CH1_REMOTE:  return "JSY-MK-194 Channel 1 (Remote)";
-        case Source::JSY_MK_194_CH2_SERIAL1: return "JSY-MK-194 Channel 2 (Serial1)";
-        case Source::JSY_MK_194_CH2_SERIAL2: return "JSY-MK-194 Channel 2 (Serial2)";
-        case Source::JSY_MK_194_CH2_REMOTE:  return "JSY-MK-194 Channel 2 (Remote)";
-        case Source::JSY_MK_333_SERIAL1:     return "JSY-MK-333 (Serial1)";
-        case Source::JSY_MK_333_SERIAL2:     return "JSY-MK-333 (Serial2)";
-        case Source::JSY_MK_333_REMOTE:      return "JSY-MK-333 (Remote)";
-        case Source::PZEM_SERIAL1:           return "PZEM (Serial1)";
-        case Source::PZEM_SERIAL2:           return "PZEM (Serial2)";
-        default:                             return "Unknown";
+        case Source::COMPUTED:                     return "Computed";
+        case Source::SHARED:                       return "Shared";
+        case Source::MQTT:                         return "MQTT";
+        case Source::VICTRON:                      return "Victron";
+        case Source::JSY_MK_163_SERIAL1:           return "JSY-MK-163 (Serial1)";
+        case Source::JSY_MK_163_SERIAL2:           return "JSY-MK-163 (Serial2)";
+        case Source::JSY_MK_163_REMOTE:            return "JSY-MK-163 (Remote)";
+        case Source::JSY_MK_227_SERIAL1:           return "JSY-MK-227 (Serial1)";
+        case Source::JSY_MK_227_SERIAL2:           return "JSY-MK-227 (Serial2)";
+        case Source::JSY_MK_227_REMOTE:            return "JSY-MK-227 (Remote)";
+        case Source::JSY_MK_229_SERIAL1:           return "JSY-MK-229 (Serial1)";
+        case Source::JSY_MK_229_SERIAL2:           return "JSY-MK-229 (Serial2)";
+        case Source::JSY_MK_229_REMOTE:            return "JSY-MK-229 (Remote)";
+        case Source::JSY_MK_193_CH1_SERIAL1:       return "JSY-MK-193 Channel 1 (Serial1)";
+        case Source::JSY_MK_193_CH1_SERIAL2:       return "JSY-MK-193 Channel 1 (Serial2)";
+        case Source::JSY_MK_193_CH1_REMOTE:        return "JSY-MK-193 Channel 1 (Remote)";
+        case Source::JSY_MK_193_CH2_SERIAL1:       return "JSY-MK-193 Channel 2 (Serial1)";
+        case Source::JSY_MK_193_CH2_SERIAL2:       return "JSY-MK-193 Channel 2 (Serial2)";
+        case Source::JSY_MK_193_CH2_REMOTE:        return "JSY-MK-193 Channel 2 (Remote)";
+        case Source::JSY_MK_194_CH1_SERIAL1:       return "JSY-MK-194 Channel 1 (Serial1)";
+        case Source::JSY_MK_194_CH1_SERIAL2:       return "JSY-MK-194 Channel 1 (Serial2)";
+        case Source::JSY_MK_194_CH1_REMOTE:        return "JSY-MK-194 Channel 1 (Remote)";
+        case Source::JSY_MK_194_CH2_SERIAL1:       return "JSY-MK-194 Channel 2 (Serial1)";
+        case Source::JSY_MK_194_CH2_SERIAL2:       return "JSY-MK-194 Channel 2 (Serial2)";
+        case Source::JSY_MK_194_CH2_REMOTE:        return "JSY-MK-194 Channel 2 (Remote)";
+        case Source::JSY_MK_333_AGGREGATE_SERIAL1: return "JSY-MK-333 (Serial1)";
+        case Source::JSY_MK_333_PHASE_A_SERIAL1:   return "JSY-MK-333 Phase A (Serial1)";
+        case Source::JSY_MK_333_PHASE_B_SERIAL1:   return "JSY-MK-333 Phase B (Serial1)";
+        case Source::JSY_MK_333_PHASE_C_SERIAL1:   return "JSY-MK-333 Phase C (Serial1)";
+        case Source::JSY_MK_333_AGGREGATE_SERIAL2: return "JSY-MK-333 (Serial2)";
+        case Source::JSY_MK_333_PHASE_A_SERIAL2:   return "JSY-MK-333 Phase A (Serial2)";
+        case Source::JSY_MK_333_PHASE_B_SERIAL2:   return "JSY-MK-333 Phase B (Serial2)";
+        case Source::JSY_MK_333_PHASE_C_SERIAL2:   return "JSY-MK-333 Phase C (Serial2)";
+        case Source::JSY_MK_333_AGGREGATE_REMOTE:  return "JSY-MK-333 (Remote)";
+        case Source::JSY_MK_333_PHASE_A_REMOTE:    return "JSY-MK-333 Phase A (Remote)";
+        case Source::JSY_MK_333_PHASE_B_REMOTE:    return "JSY-MK-333 Phase B (Remote)";
+        case Source::JSY_MK_333_PHASE_C_REMOTE:    return "JSY-MK-333 Phase C (Remote)";
+        case Source::PZEM_SERIAL1:                 return "PZEM (Serial1)";
+        case Source::PZEM_SERIAL2:                 return "PZEM (Serial2)";
+        default:                                   return "Unknown";
       }
     }
 
@@ -192,9 +225,18 @@ namespace Mycila {
       if (strcmp(str, "JSY-MK-194 Channel 2 (Serial1)") == 0) return Source::JSY_MK_194_CH2_SERIAL1;
       if (strcmp(str, "JSY-MK-194 Channel 2 (Serial2)") == 0) return Source::JSY_MK_194_CH2_SERIAL2;
       if (strcmp(str, "JSY-MK-194 Channel 2 (Remote)") == 0) return Source::JSY_MK_194_CH2_REMOTE;
-      if (strcmp(str, "JSY-MK-333 (Serial1)") == 0) return Source::JSY_MK_333_SERIAL1;
-      if (strcmp(str, "JSY-MK-333 (Serial2)") == 0) return Source::JSY_MK_333_SERIAL2;
-      if (strcmp(str, "JSY-MK-333 (Remote)") == 0) return Source::JSY_MK_333_REMOTE;
+      if (strcmp(str, "JSY-MK-333 (Serial1)") == 0) return Source::JSY_MK_333_AGGREGATE_SERIAL1;
+      if (strcmp(str, "JSY-MK-333 Phase A (Serial1)") == 0) return Source::JSY_MK_333_PHASE_A_SERIAL1;
+      if (strcmp(str, "JSY-MK-333 Phase B (Serial1)") == 0) return Source::JSY_MK_333_PHASE_B_SERIAL1;
+      if (strcmp(str, "JSY-MK-333 Phase C (Serial1)") == 0) return Source::JSY_MK_333_PHASE_C_SERIAL1;
+      if (strcmp(str, "JSY-MK-333 (Serial2)") == 0) return Source::JSY_MK_333_AGGREGATE_SERIAL2;
+      if (strcmp(str, "JSY-MK-333 Phase A (Serial2)") == 0) return Source::JSY_MK_333_PHASE_A_SERIAL2;
+      if (strcmp(str, "JSY-MK-333 Phase B (Serial2)") == 0) return Source::JSY_MK_333_PHASE_B_SERIAL2;
+      if (strcmp(str, "JSY-MK-333 Phase C (Serial2)") == 0) return Source::JSY_MK_333_PHASE_C_SERIAL2;
+      if (strcmp(str, "JSY-MK-333 (Remote)") == 0) return Source::JSY_MK_333_AGGREGATE_REMOTE;
+      if (strcmp(str, "JSY-MK-333 Phase A (Remote)") == 0) return Source::JSY_MK_333_PHASE_A_REMOTE;
+      if (strcmp(str, "JSY-MK-333 Phase B (Remote)") == 0) return Source::JSY_MK_333_PHASE_B_REMOTE;
+      if (strcmp(str, "JSY-MK-333 Phase C (Remote)") == 0) return Source::JSY_MK_333_PHASE_C_REMOTE;
       if (strcmp(str, "PZEM (Serial1)") == 0) return Source::PZEM_SERIAL1;
       if (strcmp(str, "PZEM (Serial2)") == 0) return Source::PZEM_SERIAL2;
       return Source::UNKNOWN;
