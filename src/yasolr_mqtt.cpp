@@ -324,10 +324,10 @@ static void publishData() {
   std::unique_ptr<Mycila::metric::Metrics> gridMetrics = std::make_unique<Mycila::metric::Metrics>();
   grid.readMetrics(*gridMetrics);
 
-  std::unique_ptr<Mycila::metric::Metrics> routerMeasurements = std::make_unique<Mycila::metric::Metrics>();
-  router.getRoutedMetrics(*routerMeasurements, gridMetrics->voltage);
+  std::unique_ptr<Mycila::metric::Metrics> routerMetrics = std::make_unique<Mycila::metric::Metrics>();
+  router.getRoutedMetrics(*routerMetrics, gridMetrics->voltage);
 
-  const float virtual_grid_power = gridMetrics->power - routerMeasurements->power;
+  const float virtual_grid_power = gridMetrics->power - routerMetrics->power;
 
   mqtt->publish((baseTopic + "/system/app/latest_version").c_str(), Mycila::AppInfo.latestVersion);
 
@@ -384,12 +384,12 @@ static void publishData() {
     mqtt->publish((baseTopic + "/grid/power_factor").c_str(), std::isnan(gridMetrics->powerFactor) ? "" : std::to_string(gridMetrics->powerFactor));
     mqtt->publish((baseTopic + "/grid/voltage").c_str(), std::isnan(gridMetrics->voltage) ? "" : std::to_string(gridMetrics->voltage));
 
-    mqtt->publish((baseTopic + "/router/apparent_power").c_str(), std::to_string(routerMeasurements->apparentPower));
-    mqtt->publish((baseTopic + "/router/current").c_str(), std::to_string(routerMeasurements->current));
-    mqtt->publish((baseTopic + "/router/energy").c_str(), routerMeasurements->energy ? std::to_string(routerMeasurements->energy) : "");
-    mqtt->publish((baseTopic + "/router/power_factor").c_str(), std::to_string(routerMeasurements->powerFactor));
-    mqtt->publish((baseTopic + "/router/power").c_str(), std::to_string(routerMeasurements->power));
-    mqtt->publish((baseTopic + "/router/thdi").c_str(), std::to_string(routerMeasurements->thdi));
+    mqtt->publish((baseTopic + "/router/apparent_power").c_str(), std::to_string(routerMetrics->apparentPower));
+    mqtt->publish((baseTopic + "/router/current").c_str(), std::to_string(routerMetrics->current));
+    mqtt->publish((baseTopic + "/router/energy").c_str(), routerMetrics->energy ? std::to_string(routerMetrics->energy) : "");
+    mqtt->publish((baseTopic + "/router/power_factor").c_str(), std::to_string(routerMetrics->powerFactor));
+    mqtt->publish((baseTopic + "/router/power").c_str(), std::to_string(routerMetrics->power));
+    mqtt->publish((baseTopic + "/router/thdi").c_str(), std::to_string(routerMetrics->thdi));
 
     mqtt->publish((baseTopic + "/router/virtual_grid_power").c_str(), std::isnan(virtual_grid_power) ? "" : std::to_string(virtual_grid_power));
 
