@@ -1,6 +1,6 @@
 # YaSolR Pro
 
-OSS and Pro firmware are the same, except that the Pro version relies on commercial (paid) libraries which cannot be put in OSS project, but offer a far better UI experience.
+**OSS and Pro firmware are the same**, except that the Pro version relies on commercial (paid and quite expensive) libraries which cannot be put in OSS project, but offer a far better UI experience.
 These libraries also help provide some additional features linked to the UI such as PID tuning, better graphs, etc.
 
 | Feature                    |                          OSS (Free)                          |      PRO (In Exchange of Sponsoring)       |
@@ -10,12 +10,10 @@ These libraries also help provide some additional features linked to the UI such
 | Energy Reset               |                              ❌                              |                     ✅                     |
 | GPIO Config and Health     |                              ❌                              |                     ✅                     |
 | Hardware Config and Health |                              ❌                              |                     ✅                     |
-| Output Statistics          |                              ❌                              |                     ✅                     |
+| Output Metrics             |                              ❌                              |                     ✅                     |
 | PID Tuning View            |                              ❌                              |                     ✅                     |
 | Web Console                | [WebSerial Lite](https://github.com/ayushsharma82/WebSerial) | [WebSerial Pro](https://www.webserial.pro) |
 | Dashboard                  |    [ESP-DASH](https://github.com/ayushsharma82/ESP-DASH)     |    [ESP-DASH Pro](https://espdash.pro)     |
-
-The money helps fund the hardware necessary to test and develop the firmware.
 
 ## How to get the Pro version
 
@@ -33,6 +31,8 @@ The money helps fund the hardware necessary to test and develop the firmware.
 !!! warning
 
     - If you use Paypal, do not forget to add your GitHub username in the form (there will be a comment / note field for that).
+
+The money helps fund the infrastructure and hardware necessary to test and develop the firmware.
 
 Thanks a lot!
 

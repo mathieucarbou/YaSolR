@@ -1,7 +1,9 @@
 # Sponsors
 
 Supporting the project helps fund the infrastructure and hardware cost required to develop and maintain the project.
-If you want to become a sponsor, please look at the [Pro](pro.md#how-to-get-the-pro-version) page to see the benefits of sponsoring and how to get the Pro version of the firmware.
+If you want to become a sponsor, please look at the [Pro](pro.md#how-to-get-the-pro-version) page to read about the benefits of sponsoring.
+
+For people sponsoring the project, I am maintaining a "pro" version of the firmware using some commercial (and quite expensive) libraries for better UI and features.
 
 I would like to thank everyone who has supported the project, especially the following people who have sponsored the project:
 
