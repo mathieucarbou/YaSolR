@@ -1,5 +1,16 @@
 # YaSolR Manual
 
+This manual contains screenshots and intructions of the [Pro](pro.md) version.
+
+**OSS and Pro firmware are the same**, except that the Pro version relies on commercial (paid and quite expensive) libraries which cannot be put in OSS project, but offer a far better UI experience.
+These libraries also help provide some additional features linked to the UI such as PID tuning, better graphs, etc.
+
+- **For people sponsoring the project**: I am maintaining a "pro" version of the firmware using these commercial (and quite expensive) libraries.
+
+- **For people not sponsoring the project**: the OSS version has all the features but the UI uses the free versions of these commercial libraries, which have limitations.
+
+More details in the [Pro](pro.md) page.
+
 ## Quick Start
 
 When everything is wired and installed properly:
