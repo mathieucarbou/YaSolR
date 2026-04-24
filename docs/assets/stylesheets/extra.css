@@ -160,6 +160,25 @@
   .md-nav--secondary .md-nav__list .md-nav__list .md-nav__list .md-nav__link {
     padding-left: 1.9rem !important;
   }
+
+  /* Subtle separators and stronger active state in mobile sidebars */
+  .md-nav--primary .md-nav__item > .md-nav__link,
+  .md-nav--secondary .md-nav__item > .md-nav__link {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .md-nav--primary .md-nav__item--active > .md-nav__link,
+  .md-nav--secondary .md-nav__item--active > .md-nav__link {
+    background-color: rgba(255, 167, 38, 0.12);
+    color: var(--md-primary-fg-color) !important;
+    font-weight: 600;
+  }
+
+  /* Visual guide for nested ToC levels */
+  .md-nav--secondary .md-nav__list .md-nav__list {
+    margin-left: .55rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.12);
+  }
 }
 
 #google_translate_element {
