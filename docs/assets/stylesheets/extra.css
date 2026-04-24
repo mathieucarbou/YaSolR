@@ -147,6 +147,19 @@
   .md-nav--primary .md-nav__link {
     padding: .34rem .8rem !important;
   }
+
+  /* Restore visible hierarchy in mobile ToC panel */
+  .md-nav--secondary .md-nav__list .md-nav__link {
+    padding-left: .8rem !important;
+  }
+
+  .md-nav--secondary .md-nav__list .md-nav__list .md-nav__link {
+    padding-left: 1.35rem !important;
+  }
+
+  .md-nav--secondary .md-nav__list .md-nav__list .md-nav__list .md-nav__link {
+    padding-left: 1.9rem !important;
+  }
 }
 
 #google_translate_element {
