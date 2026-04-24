@@ -108,6 +108,47 @@
   padding: 0.3rem 0;
 }
 
+/* Show section sub-items inline in mobile sidebar (like desktop) */
+@media screen and (max-width: 76.234375em) {
+  /* Override the full-height absolute panel with inline block */
+  .md-nav--primary .md-nav__item--section > .md-nav__toggle ~ .md-nav {
+    position: static !important;
+    height: auto !important;
+    display: block !important;
+    opacity: 1 !important;
+    transform: none !important;
+    visibility: visible !important;
+    transition: none !important;
+    background-color: transparent !important;
+  }
+
+  /* Let the list grow naturally */
+  .md-nav--primary .md-nav__item--section > .md-nav__toggle ~ .md-nav > .md-nav__list {
+    overflow: visible !important;
+  }
+
+  /* Hide the "back" title bar (only needed in the sliding panel UX) */
+  .md-nav--primary .md-nav__item--section > .md-nav__toggle ~ .md-nav > .md-nav__title {
+    display: none !important;
+  }
+
+  /* Hide the ">" arrow on section labels since sections are always expanded */
+  .md-nav--primary .md-nav__item--section > label.md-nav__link .md-nav__icon {
+    display: none !important;
+  }
+
+  /* Slightly smaller/tighter mobile nav, closer to desktop density */
+  .md-nav--primary .md-nav__item,
+  .md-nav--primary .md-nav__title {
+    font-size: .7rem !important;
+    line-height: 1.4 !important;
+  }
+
+  .md-nav--primary .md-nav__link {
+    padding: .34rem .8rem !important;
+  }
+}
+
 #google_translate_element {
   display: inline-block;
 }

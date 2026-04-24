@@ -101,12 +101,12 @@ nav:
   - ❤️ Sponsors: sponsors.md
   - ⤵️ Download: download.md
   - 📖 Blog: blog/index.md
-  - 🌐 API:
-      - → REST: rest.md
-      - → MQTT: mqtt.md
   - 📖 Documentation:
       - → What is a Solar Router: overview.md
       - → Comparison: comparison.md
       - → Benefits: benefits.md
       - → How to Build: build.md
       - → Manual: manual.md
+  - 🌐 API:
+      - → REST API: rest.md
+      - → MQTT API: mqtt.md
