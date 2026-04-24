@@ -61,7 +61,7 @@ extra:
   generator: false
 
 extra_css:
-  - assets/stylesheets/extra.css
+  - assets/stylesheets/extra.css?v=2
 
 validation:
   links:
