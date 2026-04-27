@@ -41,4 +41,4 @@ Where:
 
 Notes:
 
-- `*.elf` files are used to parse stack traces with [https://maximeborges.github.io/esp-stacktrace-decoder/](https://maximeborges.github.io/esp-stacktrace-decoder/). You do not have to use them.
+- `*.elf` files are used to parse stack traces with [https://esphome.github.io/esp-stacktrace-decoder/](https://esphome.github.io/esp-stacktrace-decoder/). You do not have to use them.
