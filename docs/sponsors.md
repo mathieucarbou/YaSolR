@@ -21,6 +21,7 @@ I would like to thank everyone who has supported the project, especially the fol
 - [Chris](https://github.com/domoChris)
 - [coshub82](https://github.com/coshub82)
 - [Darkyputz](https://github.com/Darkyputz)
+- [Daan](https://github.com/daanvdl)
 - [DEDE49125](https://github.com/DEDE49125)
 - [eck67](https://github.com/eck67)
 - [Estéban Mancier](https://github.com/Mancier34)
