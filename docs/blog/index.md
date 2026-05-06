@@ -4,6 +4,7 @@ Welcome to the YaSolR blog! Here you'll find articles about solar routing, hardw
 
 ## Latest Posts
 
+- [2026-05-06 - PCBWay Zero-Cross Detector module](2026-05-06_pcbway_zcd.md)
 - [2025-02-27 - YaS☀️lR Solar Router](2025-02-27_yasolr_solar_router.md)
 - [2024-11-07 - JSY-MK-194G](2024-11-07_jsy_mk_194g.md)
 - [2024-09-05 - Home Assistant Solar Diverter / Router](2024-09-05_ha_diverter.md)

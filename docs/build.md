@@ -521,6 +521,7 @@ Links:
 
     I often order batches of this good ZCD module on PCBWay to get them cheaper and split the cost with friends.
     So if you need one, look at the [YaSolR Pro page to see if I have some stock left](pro.md#zero-cross-detection-modules)
+    If you want to order a batch of ZCD modules from PCBWay directly, I wrote a blog article to help you with the process: [How to order the ZCD modules from PCBWay](./blog/2026-05-06_pcbway_zcd.md).
 
 #### RobotDyn (not recommended)
 

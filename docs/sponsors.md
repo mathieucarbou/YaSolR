@@ -53,5 +53,7 @@ I would like to thank everyone who has supported the project, especially the fol
 - [zurajm](https://github.com/zurajm)
 
 [PCBWay](https://www.pcbway.com) kindly supported the development of this library by providing some [Zero-Cross Detection Circuits](https://www.pcbway.com/project/shareproject/Zero_Cross_Detector_a707a878.html) from Daniel S., a community project on PCBWay.
+They have a great service and I highly recommend them for your PCB manufacturing needs.
+If you want to order a batch of ZCD modules from them, I wrote a blog article to help you with the process: [How to order the ZCD modules from PCBWay](./blog/2026-05-06_pcbway_zcd.md).
 
 [![](https://s3-eu-west-1.amazonaws.com/tpd/logos/54695d4a00006400057b939d/0x0.png)](https://www.pcbway.com)
