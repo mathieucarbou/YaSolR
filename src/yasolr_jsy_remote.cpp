@@ -367,7 +367,7 @@ void yasolr_configure_jsy_remote() {
 
       Mycila::TaskMonitor.removeTask("async_udp");
 
-      coreTaskManager.removeTask(*jsyRemoteTask);
+      unsafeTaskManager.removeTask(*jsyRemoteTask);
       udp->close();
 
       delete jsyRemoteTask;
