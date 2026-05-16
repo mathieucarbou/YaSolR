@@ -149,6 +149,10 @@ void rest_api() {
       ds18Sys->toJson(root["system"]["ds18"].to<JsonObject>());
     lights.toJson(root["system"]["leds"].to<JsonObject>());
 
+    // remote_jsy
+    if (udpMessageRateBuffer)
+      root["system"]["remote_jsy"]["msg_rate"] = udpMessageRateBuffer->rate();
+
     // stack
     Mycila::TaskMonitor.toJson(root["system"]["stack"].to<JsonObject>());
 
@@ -410,6 +414,9 @@ void rest_api() {
     root["network"]["wifi"]["quality"] = espConnect.getWiFiSignalQuality();
     root["network"]["wifi"]["rssi"] = espConnect.getWiFiRSSI();
     root["network"]["wifi"]["ssid"] = espConnect.getWiFiSSID();
+
+    if (udpMessageRateBuffer)
+      root["remote_jsy"]["msg_rate"] = udpMessageRateBuffer->rate();
 
     response->setLength();
     request->send(response);

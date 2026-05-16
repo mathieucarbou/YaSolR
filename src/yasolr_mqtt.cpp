@@ -370,6 +370,8 @@ static void publishData() {
         break;
     }
 
+    mqtt->publish((baseTopic + "/system/remote_jsy/msg_rate").c_str(), udpMessageRateBuffer ? std::to_string(udpMessageRateBuffer->rate()) : "0");
+
     yield();
   }
 
@@ -391,18 +393,19 @@ static void publishData() {
     mqtt->publish((baseTopic + "/router/power").c_str(), std::to_string(routerMetrics->power));
     mqtt->publish((baseTopic + "/router/thdi").c_str(), std::to_string(routerMetrics->thdi));
 
+    mqtt->publish((baseTopic + "/router/relay1").c_str(), relay1 ? YASOLR_STATE(relay1->isOn()) : YASOLR_OFF);
+    mqtt->publish((baseTopic + "/router/relay2").c_str(), relay2 ? YASOLR_STATE(relay2->isOn()) : YASOLR_OFF);
+
+    mqtt->publish((baseTopic + "/router/status").c_str(), lights.toString());
+
+    mqtt->publish((baseTopic + "/router/temperature").c_str(), ds18Sys && ds18Sys->getTemperature().value_or(0.0f) > 0 ? std::to_string(ds18Sys->getTemperature().value_or(0.0f)) : "0");
+
     mqtt->publish((baseTopic + "/router/virtual_grid_power").c_str(), std::isnan(virtual_grid_power) ? "" : std::to_string(virtual_grid_power));
 
     yield();
   }
 
   {
-    mqtt->publish((baseTopic + "/router/status").c_str(), lights.toString());
-
-    mqtt->publish((baseTopic + "/router/relay1").c_str(), relay1 ? YASOLR_STATE(relay1->isOn()) : YASOLR_OFF);
-    mqtt->publish((baseTopic + "/router/relay2").c_str(), relay2 ? YASOLR_STATE(relay2->isOn()) : YASOLR_OFF);
-    mqtt->publish((baseTopic + "/router/temperature").c_str(), ds18Sys && ds18Sys->getTemperature().value_or(0.0f) > 0 ? std::to_string(ds18Sys->getTemperature().value_or(0.0f)) : "0");
-
     for (const auto& output : router.getOutputs()) {
       const std::string outputTopic = baseTopic + "/router/" + output->getMqttName();
 
@@ -474,6 +477,7 @@ static void haDiscovery() {
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("network_wifi_mac_address", "Net: WiFi MAC Address", "~/system/network/wifi/mac_address", nullptr, "mdi:lan", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("network_wifi_ssid", "Net: WiFi SSID", "~/system/network/wifi/ssid", nullptr, "mdi:wifi", Mycila::HA::Category::DIAGNOSTIC));
   haDiscovery->publish(std::make_unique<Mycila::HA::State>("network_ntp", "Net: NTP", "~/system/network/ntp", YASOLR_ON, YASOLR_OFF, "connectivity", nullptr, Mycila::HA::Category::DIAGNOSTIC));
+  haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("remote_jsy_msg_rate", "Remote JSY Message Rate", "~/system/remote_jsy/msg_rate", nullptr, nullptr, "msg/s", Mycila::HA::Category::DIAGNOSTIC));
   yield();
 
   // CONFIG
