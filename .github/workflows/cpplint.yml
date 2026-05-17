@@ -45,6 +45,7 @@ jobs:
             --filter=-whitespace/line_length,-whitespace/braces,-whitespace/comments,-runtime/indentation_namespace,-whitespace/indent,-readability/braces,-whitespace/newline,-readability/todo,-build/c++11,-runtime/references \
             --exclude=lib/ESPDASHPro \
             --exclude=lib/WebSerialPro \
+            --exclude=include/ringbuf.h \
             lib \
             include \
             src

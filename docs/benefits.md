@@ -28,7 +28,7 @@ Amongst them:
 - [MycilaSafeBoot](https://mathieu.carbou.me/MycilaSafeBoot): MycilaSafeBoot is a Web OTA recovery partition for ESP32 / Arduino allowing for a bigger application partition
 - [MycilaShutterSpeedTester](https://mathieu.carbou.me/MycilaShutterSpeedTester): ESP32 firmware to measure camera shutter speeds
 - [MycilaTaskManager](https://mathieu.carbou.me/MycilaTaskManager): Arduino / ESP32 Task Manager Library
-- [MycilaUtilities](https://mathieu.carbou.me/MycilaUtilities): PID algorithm, utils stuff for Arduino / ESP32 like Time, String functions, CircularBuffer, etc
+- [MycilaUtilities](https://mathieu.carbou.me/MycilaUtilities): PID algorithm, utils stuff for Arduino / ESP32 like Time, String functions, etc
 - [MycilaWebSerial](https://mathieu.carbou.me/MycilaWebSerial): WebSerial is a Serial Monitor for ESP32 that can be accessed remotely via a web browser
 - [Shelly Pro Solar Router](https://yasolr.carbou.me/blog/2024-07-01_shelly_solar_diverter)
 - [YaS☀️lR (Yet another Solar Router)](https://yasolr.carbou.me)

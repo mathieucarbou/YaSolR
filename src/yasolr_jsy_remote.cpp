@@ -4,6 +4,8 @@
  */
 #include <yasolr.h>
 
+#include <ringbuf.h>
+
 #include <algorithm>
 #include <memory>
 #include <utility>
@@ -17,7 +19,7 @@
 #endif
 
 AsyncUDP* udp = nullptr;
-Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer = nullptr;
+baudvine::RingBuf<float, 15>* udpMessageRateBuffer = nullptr;
 Mycila::Task* jsyRemoteTask = nullptr;
 
 class UDPMessage {
@@ -98,8 +100,6 @@ static void processJSON(JsonDocument& doc) {
   DEBUG_UDP(TAG, "[UDP] JSY Data: %s", jsonString.c_str());
   DEBUG_UDP(TAG, "[UDP] JSY Model: %" PRIu16, root["model"].as<uint16_t>());
 #endif
-
-  udpMessageRateBuffer->add(millis() / 1000.0f);
 
   switch (root["model"].as<uint16_t>()) {
     case MYCILA_JSY_MK_163:
@@ -336,6 +336,9 @@ static void onData(AsyncUDPPacket& packet) {
     DEBUG_UDP(TAG, "[UDP] MsgPack parsed successfully");
   }
 
+  // record stats
+  udpMessageRateBuffer->push_back(millis() / 1000.0f);
+
   processJSON(doc);
 
   delete reassembledMessage;
@@ -350,7 +353,8 @@ void yasolr_configure_jsy_remote() {
       udp = new AsyncUDP();
       udp->onPacket(onData);
 
-      udpMessageRateBuffer = new Mycila::CircularBuffer<float, 15>();
+      if (udpMessageRateBuffer == nullptr)
+        udpMessageRateBuffer = new baudvine::RingBuf<float, 15>();
 
       jsyRemoteTask = new Mycila::Task("Remote JSY", Mycila::Task::Type::ONCE, []() {
         udp->close();
@@ -378,5 +382,18 @@ void yasolr_configure_jsy_remote() {
       udp = nullptr;
       udpMessageRateBuffer = nullptr;
     }
+  }
+}
+
+float yasolr_jsy_remote_message_rate() {
+  if (udpMessageRateBuffer) {
+    if (udpMessageRateBuffer->size() > 1) {
+      float diff = udpMessageRateBuffer->back() - udpMessageRateBuffer->front();
+      return diff == 0 ? 0 : udpMessageRateBuffer->size() / diff;
+    } else {
+      return 0;
+    }
+  } else {
+    return 0;
   }
 }

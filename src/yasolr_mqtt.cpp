@@ -370,7 +370,7 @@ static void publishData() {
         break;
     }
 
-    mqtt->publish((baseTopic + "/system/remote_jsy/msg_rate").c_str(), udpMessageRateBuffer ? std::to_string(udpMessageRateBuffer->rate()) : "0");
+    mqtt->publish((baseTopic + "/system/remote_jsy/msg_rate").c_str(), std::to_string(yasolr_jsy_remote_message_rate()));
 
     yield();
   }

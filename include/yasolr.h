@@ -17,7 +17,6 @@
 #include <StreamString.h>
 
 #include <MycilaAppInfo.h>
-#include <MycilaCircularBuffer.h>
 #include <MycilaConfig.h>
 #include <MycilaConfigStorageNVS.h>
 #include <MycilaDS18.h>
@@ -91,9 +90,9 @@ extern void yasolr_configure_jsy();
 
 // Remote JSY
 extern AsyncUDP* udp;
-extern Mycila::CircularBuffer<float, 15>* udpMessageRateBuffer;
 extern Mycila::Task* jsyRemoteTask;
 extern void yasolr_configure_jsy_remote();
+extern float yasolr_jsy_remote_message_rate();
 
 // DS18
 extern Mycila::DS18* ds18O1;

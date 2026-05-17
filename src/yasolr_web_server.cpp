@@ -150,8 +150,8 @@ void rest_api() {
     lights.toJson(root["system"]["leds"].to<JsonObject>());
 
     // remote_jsy
-    if (udpMessageRateBuffer)
-      root["system"]["remote_jsy"]["msg_rate"] = udpMessageRateBuffer->rate();
+    if (jsyRemoteTask)
+      root["system"]["remote_jsy"]["msg_rate"] = yasolr_jsy_remote_message_rate();
 
     // stack
     Mycila::TaskMonitor.toJson(root["system"]["stack"].to<JsonObject>());
@@ -415,8 +415,8 @@ void rest_api() {
     root["network"]["wifi"]["rssi"] = espConnect.getWiFiRSSI();
     root["network"]["wifi"]["ssid"] = espConnect.getWiFiSSID();
 
-    if (udpMessageRateBuffer)
-      root["remote_jsy"]["msg_rate"] = udpMessageRateBuffer->rate();
+    if (jsyRemoteTask)
+      root["remote_jsy"]["msg_rate"] = yasolr_jsy_remote_message_rate();
 
     response->setLength();
     request->send(response);

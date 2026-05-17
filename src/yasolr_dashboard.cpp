@@ -1526,7 +1526,7 @@ void YaSolR::Website::updateCards() {
   // statistics
 
   _gridFrequency.setValue(yasolr_frequency());
-  _udpMessageRateBuffer.setValue(udpMessageRateBuffer ? udpMessageRateBuffer->rate() : 0);
+  _udpMessageRateBuffer.setValue(yasolr_jsy_remote_message_rate());
   _networkWiFiRSSI.setValue(espConnect.getWiFiRSSI());
   _networkWiFiSignal.setValue(espConnect.getWiFiSignalQuality());
   _output1RelaySwitchCount.setValue(output1.getBypassRelaySwitchCount());
