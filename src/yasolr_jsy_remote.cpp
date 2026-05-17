@@ -200,7 +200,6 @@ static void processJSON(JsonDocument& doc) {
     default:
       // unknown model => do not divert
       break;
-    }
   }
 }
 
