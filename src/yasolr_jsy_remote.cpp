@@ -10,7 +10,7 @@
 #include <memory>
 #include <utility>
 
-#define YASOLR_DEBUG_UDP 0
+// #define YASOLR_DEBUG_UDP 1
 
 #if YASOLR_DEBUG_UDP
   #define DEBUG_UDP(...) ESP_LOGD(__VA_ARGS__)
@@ -24,7 +24,7 @@ Mycila::Task* jsyRemoteTask = nullptr;
 
 class UDPMessage {
   public:
-    explicit UDPMessage(size_t dataSize) : data(new uint8_t[dataSize + 13]), remaining(dataSize + 13), index(0), lastPacketTime(millis()) {}
+    explicit UDPMessage(uint32_t messageID, size_t dataSize) : messageID(messageID), data(new uint8_t[dataSize + 13]), remaining(dataSize + 13), index(0), lastPacketTime(millis()) {}
 
     ~UDPMessage() {
       delete[] data;
@@ -32,7 +32,7 @@ class UDPMessage {
 
     void append(const uint8_t* buffer, size_t len) {
       const size_t n = std::min(remaining, len);
-      // ESP_LOGD(TAG, "[UDP] Appending packet of size %" PRIu32 " to message buffer at position %" PRIu32, n, index);
+      DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] Appending packet of size %" PRIu32 " to message buffer at position %" PRIu32, messageID, n, index);
       memcpy(data + index, buffer, n);
       index += n;
       remaining -= n;
@@ -49,6 +49,7 @@ class UDPMessage {
       return deserializeMsgPack(doc, data + 9, index - 13);
     }
 
+    uint32_t messageID = 0;
     uint8_t* data = nullptr;
     size_t remaining = 0;
     size_t index = 0;
@@ -241,6 +242,8 @@ static void onData(AsyncUDPPacket& packet) {
     if (messageID == lastMessageID) {
       ESP_LOGD(TAG, "[UDP] Received duplicate message ID: %" PRIu32 ". Please remove WiFi SSID or disconnect ETH!", messageID);
       return;
+    } else {
+      DEBUG_UDP(TAG, "[UDP] New message ID: %" PRIu32, messageID);
     }
 
     // extract message size
@@ -252,30 +255,32 @@ static void onData(AsyncUDPPacket& packet) {
       ESP_LOGD(TAG, "[UDP] Invalid message size: 0");
       return;
     } else {
-      DEBUG_UDP(TAG, "[UDP] Internal payload size: %" PRIu32, payloadSize);
+      DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] Internal payload size: %" PRIu32, messageID, payloadSize);
     }
 
     // arbitrary limit to avoid memory exhaustion
     if (payloadSize > 4096) {
-      ESP_LOGD(TAG, "[UDP] Message size too large: %" PRIu32, payloadSize);
+      ESP_LOGD(TAG, "[UDP] [%" PRIu32 "] Message size too large: %" PRIu32, messageID, payloadSize);
       return;
     }
 
     // compute total reassembled message size and allocate buffer
-    reassembledMessage = new UDPMessage(payloadSize);
-    DEBUG_UDP(TAG, "[UDP] Allocated new message buffer of size %" PRIu32, reassembledMessage->remaining);
+    reassembledMessage = new UDPMessage(messageID, payloadSize);
+    DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] Allocated new message buffer of size %" PRIu32, messageID, reassembledMessage->remaining);
 
     // save last message ID
     lastMessageID = messageID;
 
     // save sender MAC address
     packet.remoteMac(reassembledMessage->sourceMAC);
+    DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] Message source MAC: %02X:%02X:%02X:%02X:%02X:%02X", messageID, reassembledMessage->sourceMAC[0], reassembledMessage->sourceMAC[1], reassembledMessage->sourceMAC[2], reassembledMessage->sourceMAC[3], reassembledMessage->sourceMAC[4], reassembledMessage->sourceMAC[5]);
 
     // save interface IP address
     reassembledMessage->interface = packet.localIP();
     if (reassembledMessage->interface == IPAddress()) {
       reassembledMessage->interface = packet.localIPv6();
     }
+    DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] Message interface: %s", messageID, reassembledMessage->interface.toString().c_str());
 
   } else {
     DEBUG_UDP(TAG, "[UDP] Validating next packet");
@@ -306,21 +311,21 @@ static void onData(AsyncUDPPacket& packet) {
   reassembledMessage->append(buffer, len);
 
   if (reassembledMessage->remaining) {
-    DEBUG_UDP(TAG, "[UDP] Waiting for more packets to complete message. Remaining size: %" PRIu32, reassembledMessage->remaining);
+    DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] Waiting for more packets to complete message. Remaining size: %" PRIu32, reassembledMessage->messageID, reassembledMessage->remaining);
     return;
   } else {
-    DEBUG_UDP(TAG, "[UDP] Reassembled complete message of size %" PRIu32, reassembledMessage->index);
+    DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] Reassembled complete message of size %" PRIu32, reassembledMessage->messageID, reassembledMessage->index);
   }
 
   // we have finished reassembling packets
   // verify CRC32
   if (!reassembledMessage->crcValid()) {
-    ESP_LOGD(TAG, "[UDP] CRC32 mismatch");
+    ESP_LOGD(TAG, "[UDP] [%" PRIu32 "] CRC32 mismatch", reassembledMessage->messageID);
     delete reassembledMessage;
     reassembledMessage = nullptr;
     return;
   } else {
-    DEBUG_UDP(TAG, "[UDP] CRC32 valid");
+    DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] CRC32 valid", reassembledMessage->messageID);
   }
 
   // extract message
@@ -328,12 +333,12 @@ static void onData(AsyncUDPPacket& packet) {
   DeserializationError err = reassembledMessage->parseMsgPack(doc);
 
   if (err) {
-    ESP_LOGD(TAG, "[UDP] Failed to parse MsgPack: %s", err.c_str());
+    ESP_LOGD(TAG, "[UDP] [%" PRIu32 "] Failed to parse MsgPack: %s", reassembledMessage->messageID, err.c_str());
     delete reassembledMessage;
     reassembledMessage = nullptr;
     return;
   } else {
-    DEBUG_UDP(TAG, "[UDP] MsgPack parsed successfully");
+    DEBUG_UDP(TAG, "[UDP] [%" PRIu32 "] MsgPack parsed successfully", reassembledMessage->messageID);
   }
 
   // record stats
