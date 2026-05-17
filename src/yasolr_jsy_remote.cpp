@@ -149,57 +149,57 @@ static void processJSON(JsonDocument& doc) {
             }
           }
         }
-        break;
       }
-      case MYCILA_JSY_MK_333: {
-        if (root["aggregate"].is<JsonObject>()) {
-          // Aggregate (only supported by grid since it does not make sense for outputs)
-          if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_AGGREGATE_REMOTE)) {
-            updateGrid(root["aggregate"].as<JsonObject>());
-          }
-        }
-        if (root["phaseA"].is<JsonObject>()) {
-          // Phase A
-          if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_A_REMOTE)) {
-            updateGrid(root["phaseA"].as<JsonObject>());
-          } else {
-            for (Mycila::Router::Output* output : {&output1, &output2}) {
-              if (output->isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_A_REMOTE)) {
-                updateOutput(output, root["phaseA"].as<JsonObject>());
-              }
-            }
-          }
-        }
-        if (root["phaseB"].is<JsonObject>()) {
-          // Phase B
-          if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_B_REMOTE)) {
-            updateGrid(root["phaseB"].as<JsonObject>());
-          } else {
-            for (Mycila::Router::Output* output : {&output1, &output2}) {
-              if (output->isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_B_REMOTE)) {
-                updateOutput(output, root["phaseB"].as<JsonObject>());
-              }
-            }
-          }
-        }
-        if (root["phaseC"].is<JsonObject>()) {
-          // Phase C
-          if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_C_REMOTE)) {
-            updateGrid(root["phaseC"].as<JsonObject>());
-          } else {
-            for (Mycila::Router::Output* output : {&output1, &output2}) {
-              if (output->isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_C_REMOTE)) {
-                updateOutput(output, root["phaseC"].as<JsonObject>());
-              }
-            }
-          }
-        }
-        break;
-      }
-      default:
-        // unknown model => do not divert
-        break;
+      break;
     }
+    case MYCILA_JSY_MK_333: {
+      if (root["aggregate"].is<JsonObject>()) {
+        // Aggregate (only supported by grid since it does not make sense for outputs)
+        if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_AGGREGATE_REMOTE)) {
+          updateGrid(root["aggregate"].as<JsonObject>());
+        }
+      }
+      if (root["phaseA"].is<JsonObject>()) {
+        // Phase A
+        if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_A_REMOTE)) {
+          updateGrid(root["phaseA"].as<JsonObject>());
+        } else {
+          for (Mycila::Router::Output* output : {&output1, &output2}) {
+            if (output->isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_A_REMOTE)) {
+              updateOutput(output, root["phaseA"].as<JsonObject>());
+            }
+          }
+        }
+      }
+      if (root["phaseB"].is<JsonObject>()) {
+        // Phase B
+        if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_B_REMOTE)) {
+          updateGrid(root["phaseB"].as<JsonObject>());
+        } else {
+          for (Mycila::Router::Output* output : {&output1, &output2}) {
+            if (output->isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_B_REMOTE)) {
+              updateOutput(output, root["phaseB"].as<JsonObject>());
+            }
+          }
+        }
+      }
+      if (root["phaseC"].is<JsonObject>()) {
+        // Phase C
+        if (grid.isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_C_REMOTE)) {
+          updateGrid(root["phaseC"].as<JsonObject>());
+        } else {
+          for (Mycila::Router::Output* output : {&output1, &output2}) {
+            if (output->isUsing(Mycila::metric::Source::JSY_MK_333_PHASE_C_REMOTE)) {
+              updateOutput(output, root["phaseC"].as<JsonObject>());
+            }
+          }
+        }
+      }
+      break;
+    }
+    default:
+      // unknown model => do not divert
+      break;
   }
 }
 
