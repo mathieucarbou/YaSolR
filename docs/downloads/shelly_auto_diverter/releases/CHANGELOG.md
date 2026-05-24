@@ -96,3 +96,20 @@
 - **[Shelly Solar Diverter Script V26](../downloads/shelly_auto_diverter/releases/auto_diverter_v26.js)**:
     - Fixed PID proportional term calculation (clamping in input mode)
     - Reset PID terms when no power is routed and there is some excess power to avoid integral windup
+
+- **[Shelly Solar Diverter Script V27](../downloads/shelly_auto_diverter/releases/auto_diverter_v27.js)**:
+    - PID implementation aligned with [MycilaPID](https://yasolr.carbou.me/manual/#pid) (the C++ PID controller used in YaSolR):
+        - Fix: `P_MODE "input"` was incorrectly using `kp * dError` instead of `kp * dInput` (inverted behaviour)
+        - Fix: integral anti-windup now uses back-calculation (`iTerm = output − pTerm − dTerm`) matching MycilaPID CLAMP mode, instead of a simple clamp
+        - Fix: `dError = 0` on first compute call to avoid a large initial derivative kick
+        - Fix: PID reset condition now preserves filter state (`input`) and resets `error` to `null`, matching `pidController.reset(0)` in `yasolr_pid.cpp` — see [#158](https://github.com/mathieucarbou/YaSolR/discussions/158)
+        - New: `D_MODE` — `"error"` (default, traditional) or `"input"` (avoids derivative kick when setpoint changes)
+        - New: `FILTER_ALPHA` — first-order lag filter (exponential smoothing) applied to the grid power input (1.0 = no filter, default; 0.3–0.5 recommended with MQTT)
+        - New: `FEED_FORWARD` — constant term added directly to the PID output (default 0)
+        - New: `TIME_SAMPLING` — adjusts integral and derivative gains for elapsed time between calls (default false)
+    - Fix: `BYPASS` config validation moved before the dimmer loop (was skipped if all dimmers had `RESISTANCE = 0`)
+    - Fix: added validation for `P_MODE`, `D_MODE` and `FILTER_ALPHA` in `validateConfig()`
+    - Fix: `if / else if` chain in HTTP query handler
+    - Fix: HIGH/LOW switch now uses the `gridPower` parameter instead of `DIVERT.gridPower`
+    - Fix: consistent use of `CONFIG.DEBUG > 0` throughout
+    - Removed unused `DIVERT.callDimmersState` field

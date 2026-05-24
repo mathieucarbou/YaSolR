@@ -49,7 +49,7 @@ A router can also schedule some forced heating of the water tank to ensure the w
 - ⚙️ **Core capabilities**
 
     - 🔌 Unlimited dimmers (outputs)
-    - 🧭 PID controller (new algorithm — simpler and more efficient)
+    - 🧭 PID controller aligned with YaSolR's [MycilaPID](https://yasolr.carbou.me/manual/#pid) — proportional/derivative modes, input filter, feed-forward, time sampling
     - 🔁 Excess sharing amongst dimmers (proportional sharing with `POWER_RATIO`)
     - 🔥 Bypass (force heating) with automatic dimmer turn-off
 
@@ -233,12 +233,23 @@ const CONFIG = {
   // PID
   // More information for tuning:
   // - https://forum-photovoltaique.fr/viewtopic.php?p=796194#p796194
-  // - https://yasolr.carbou.me/manual#pid
+  // - https://yasolr.carbou.me/manual/#pid
   PID: {
     // Proportional Mode:
     // - "error" (proportional on error),
     // - "input" (proportional on measurement),
     P_MODE: "input",
+    // Derivative Mode:
+    // - "error" (derivative on error, default and traditional)
+    // - "input" (derivative on measurement, avoids derivative kick when setpoint changes)
+    D_MODE: "error",
+    // Feed-forward term (W): added directly to PID output.
+    FEED_FORWARD: 0,
+    // Input filter coefficient (alpha) for first-order lag filter (exponential smoothing).
+    // 1.0 = no filtering (default). Try 0.3 to 0.5 with MQTT sources.
+    FILTER_ALPHA: 1.0,
+    // Time sampling: adjust integral/derivative gains for elapsed time between calls.
+    TIME_SAMPLING: false,
     // Target Grid Power (W)
     SETPOINT: -100,
     // Output Minimum (W): should be below the SETPOINT value, like 300-400W below.
@@ -514,14 +525,22 @@ You may need to use Home Assistant or Jeedom depending on what you need to do be
 
 ### PID Control and Tuning
 
-The script uses a complex PID controller that can be tuned to really obtain a very good routing precision.
-The algorithm used and default parameters are the same as in the YaSolr project.
-You will find a lot of information in the [YaSolR manual](../manual.md#pid).
+The script uses a PID controller whose implementation is identical to the one used in YaSolR ([MycilaPID](https://yasolr.carbou.me/manual/#pid)).
+You will find complete documentation, tuning guides and an online simulator in the **[YaSolR PID manual](https://yasolr.carbou.me/manual/#pid)**.
 
-The Shelly routeur having a slower feeback loop for measurements (each second for EM and could be more feom MQTT), it includes 2 PID configurations: one used when the grid excess is by default higher than 200W and another one when the excess is below. the advantage is to limit the over shoots of the PID and make it slowdown its corrections when around the setpoint.
+The Shelly router has a slower feedback loop than YaSolR (typically 200 ms for Shelly EM, slower for MQTT), so the script uses two PID configurations: `HIGH` (far from setpoint, default when error > `HIGH_LOW_SWITCH`) and `LOW` (near setpoint). This limits overshoots and slows corrections as the grid power approaches the setpoint.
 
-You can also use the [Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/).
-This simulator was built for YaSolR router but the PID algorithm is the same.
+Since v27, the following additional PID options are available:
+
+| Parameter | Default | Description |
+|---|---|---|
+| `P_MODE` | `"input"` | `"error"` (traditional) or `"input"` (proportional on measurement, avoids setpoint-change kick) |
+| `D_MODE` | `"error"` | `"error"` (traditional) or `"input"` (avoids derivative kick on setpoint changes) |
+| `FILTER_ALPHA` | `1.0` | Input smoothing: `1.0` = no filter, `0.3–0.5` recommended for MQTT sources |
+| `FEED_FORWARD` | `0` | Constant term (W) added directly to PID output |
+| `TIME_SAMPLING` | `false` | Adjust integral/derivative gains for elapsed time between calls |
+
+You can also use the **[Online PID Simulator](https://mathieu.carbou.me/MycilaUtilities/simulator/)** — it was built for YaSolR but the PID algorithm is the same.
 
 [![](../../assets/img/screenshots/pid_simulator.jpeg)](../../assets/img/screenshots/pid_simulator.jpeg)
 
