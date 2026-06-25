@@ -7,6 +7,11 @@ from datetime import datetime, timezone
 Import("env")
 
 
+def sanitize_branch(name):
+    """Replace any character that is not alphanumeric with '_'."""
+    return re.sub(r"[^a-zA-Z0-9]", "_", name)
+
+
 def do_main():
     # hash
     ret = subprocess.run(["git", "rev-parse", "HEAD"], stdout=subprocess.PIPE, text=True, check=False)  # Uses any tags
@@ -16,7 +21,7 @@ def do_main():
     # branch
     ref_name = os.environ.get("REF_NAME")
     if ref_name:
-        branch = ref_name
+        branch = sanitize_branch(ref_name)
     else:
         ret = subprocess.run(
             ["git", "symbolic-ref", "--short", "HEAD"],
@@ -24,10 +29,7 @@ def do_main():
             text=True,
             check=False,
         )  # retrieve branch name
-        branch = ret.stdout.strip()
-        branch = branch.replace("/", "")
-        branch = branch.replace("-", "")
-        branch = branch.replace("_", "")
+        branch = sanitize_branch(ret.stdout.strip())
 
     if branch == "":
         branch = "local"
