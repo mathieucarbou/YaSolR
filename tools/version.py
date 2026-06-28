@@ -8,8 +8,8 @@ Import("env")
 
 
 def sanitize_branch(name):
-    """Replace any character that is not alphanumeric with '_'."""
-    return re.sub(r"[^a-zA-Z0-9]", "_", name)
+    """Replace any character that is not alphanumeric or a valid semver character (-, _ and .) with '_'."""
+    return re.sub(r"[^a-zA-Z0-9._-]", "_", name)
 
 
 def do_main():
