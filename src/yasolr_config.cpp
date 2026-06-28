@@ -263,7 +263,9 @@ void yasolr_init_config() {
         output1.config.autoDimmer = true;
       } else {
         output1.config.autoDimmer = false;
-        output1.setDimmerOff();
+        if (!output1.isBypassOn()) {
+          output1.setDimmerOff();
+        }
       }
 
     } else if (key == KEY_OUTPUT1_DIMMER_MIN) {
@@ -313,7 +315,9 @@ void yasolr_init_config() {
         output2.config.autoDimmer = true;
       } else {
         output2.config.autoDimmer = false;
-        output2.setDimmerOff();
+        if (!output2.isBypassOn()) {
+          output2.setDimmerOff();
+        }
       }
 
     } else if (key == KEY_OUTPUT2_DIMMER_MIN) {
@@ -469,6 +473,8 @@ void yasolr_init_config() {
       mqttPublishConfigTask->resume();
   });
 
-  reconfigureTask.setEnabledWhen([]() { return !reconfigureQueue.empty(); });
+  reconfigureTask.setEnabledWhen([]() {
+    return !reconfigureQueue.empty();
+  });
   unsafeTaskManager.addTask(reconfigureTask);
 }
