@@ -391,6 +391,7 @@ static dash::PushButtonCard _output1ResistanceCalibration(dashboard, YASOLR_LBL_
 static dash::ProgressCard<uint8_t> _output1ResistanceCalibrationStatus(dashboard, YASOLR_LBL_186, 0, 100, "%");
 static dash::SeparatorCard<const char*> _output1ConfigSep3(dashboard, YASOLR_LBL_107);
 static dash::PercentageSliderCard _output1ExcessRatio(dashboard, YASOLR_LBL_112);
+static dash::InputCard<uint16_t> _output1ExcessMin(dashboard, YASOLR_LBL_092);
 static dash::InputCard<uint16_t> _output1ExcessLimiter(dashboard, YASOLR_LBL_061);
 static dash::SeparatorCard<const char*> _output1ConfigSep1(dashboard, YASOLR_LBL_136);
 static dash::PercentageSliderCard _output1DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
@@ -413,6 +414,7 @@ static dash::PushButtonCard _output2ResistanceCalibration(dashboard, YASOLR_LBL_
 static dash::ProgressCard<uint8_t> _output2ResistanceCalibrationStatus(dashboard, YASOLR_LBL_186, 0, 100, "%");
 static dash::SeparatorCard<const char*> _output2ConfigSep3(dashboard, YASOLR_LBL_107);
 static dash::PercentageSliderCard _output2ExcessRatio(dashboard, YASOLR_LBL_112);
+static dash::InputCard<uint16_t> _output2ExcessMin(dashboard, YASOLR_LBL_092);
 static dash::InputCard<uint16_t> _output2ExcessLimiter(dashboard, YASOLR_LBL_061);
 static dash::SeparatorCard<const char*> _output2ConfigSep1(dashboard, YASOLR_LBL_136);
 static dash::PercentageSliderCard _output2DimmerDutyLimiter(dashboard, YASOLR_LBL_062);
@@ -1007,6 +1009,7 @@ void YaSolR::Website::begin() {
   _output1ConfigSep1.setTab(_output1ConfigTab);
   _output1DimmerDutyLimiter.setTab(_output1ConfigTab);
   _output1DimmerTempLimiter.setTab(_output1ConfigTab);
+  _output1ExcessMin.setTab(_output1ConfigTab);
   _output1ExcessLimiter.setTab(_output1ConfigTab);
   _output1ExcessRatio.setTab(_output1ConfigTab);
   _output1ConfigSep2.setTab(_output1ConfigTab);
@@ -1022,6 +1025,7 @@ void YaSolR::Website::begin() {
   _numConfig(_output1ResistanceInput, KEY_OUTPUT1_RESISTANCE);
   _sliderConfig(_output1DimmerDutyLimiter, KEY_OUTPUT1_DIMMER_LIMIT);
   _numConfig(_output1DimmerTempLimiter, KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
+  _numConfig(_output1ExcessMin, KEY_OUTPUT1_EXCESS_MIN);
   _numConfig(_output1ExcessLimiter, KEY_OUTPUT1_EXCESS_LIMITER);
   _sliderConfig(_output1ExcessRatio, KEY_OUTPUT1_EXCESS_RATIO);
   _numConfig(_output1AutoStartTemp, KEY_OUTPUT1_TEMPERATURE_START);
@@ -1044,6 +1048,7 @@ void YaSolR::Website::begin() {
   _output2ConfigSep1.setTab(_output2ConfigTab);
   _output2DimmerDutyLimiter.setTab(_output2ConfigTab);
   _output2DimmerTempLimiter.setTab(_output2ConfigTab);
+  _output2ExcessMin.setTab(_output2ConfigTab);
   _output2ExcessLimiter.setTab(_output2ConfigTab);
   _output2ExcessRatio.setTab(_output2ConfigTab);
   _output2ConfigSep2.setTab(_output2ConfigTab);
@@ -1059,6 +1064,7 @@ void YaSolR::Website::begin() {
   _numConfig(_output2ResistanceInput, KEY_OUTPUT2_RESISTANCE);
   _sliderConfig(_output2DimmerDutyLimiter, KEY_OUTPUT2_DIMMER_LIMIT);
   _numConfig(_output2DimmerTempLimiter, KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
+  _numConfig(_output2ExcessMin, KEY_OUTPUT2_EXCESS_MIN);
   _numConfig(_output2ExcessLimiter, KEY_OUTPUT2_EXCESS_LIMITER);
   _sliderConfig(_output2ExcessRatio, KEY_OUTPUT2_EXCESS_RATIO);
   _numConfig(_output2AutoStartTemp, KEY_OUTPUT2_TEMPERATURE_START);
@@ -1447,6 +1453,7 @@ void YaSolR::Website::initCards() {
   _output1DimmerDutyLimiter.setDisplay(dimmer1Enabled);
   _output1DimmerTempLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT1_DIMMER_TEMP_LIMITER));
   _output1DimmerTempLimiter.setDisplay(dimmer1Enabled);
+  _output1ExcessMin.setValue(config.get<uint16_t>(KEY_OUTPUT1_EXCESS_MIN));
   _output1ExcessLimiter.setValue(config.get<uint16_t>(KEY_OUTPUT1_EXCESS_LIMITER));
   _output1ExcessLimiter.setDisplay(dimmer1Enabled);
   _output1ExcessRatio.setValue(config.get<uint8_t>(KEY_OUTPUT1_EXCESS_RATIO));
@@ -1476,6 +1483,7 @@ void YaSolR::Website::initCards() {
   _output2DimmerDutyLimiter.setDisplay(dimmer2Enabled);
   _output2DimmerTempLimiter.setValue(config.get<uint8_t>(KEY_OUTPUT2_DIMMER_TEMP_LIMITER));
   _output2DimmerTempLimiter.setDisplay(dimmer2Enabled);
+  _output2ExcessMin.setValue(config.get<uint16_t>(KEY_OUTPUT2_EXCESS_MIN));
   _output2ExcessLimiter.setValue(config.get<uint16_t>(KEY_OUTPUT2_EXCESS_LIMITER));
   _output2ExcessLimiter.setDisplay(dimmer2Enabled);
   _output2ExcessRatio.setValue(config.get<uint8_t>(KEY_OUTPUT2_EXCESS_RATIO));

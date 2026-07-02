@@ -17,7 +17,7 @@ Mycila::Task pidTask("PID", []() {
   if (voltage.has_value() && power.has_value()) {
     float gridPower = power.value();
     float powerToDivert = pidController.compute(gridPower);
-    float diverted = router.divert(voltage.value(), powerToDivert);
+    float diverted = router.divert(voltage.value(), powerToDivert, pidController.getError());
 
     if (diverted > 0) {
       // check if the measurement system is too slow
@@ -49,7 +49,9 @@ void yasolr_init_pid() {
   pidController.setIntegralCorrectionMode(Mycila::PID::IntegralCorrectionMode::CLAMP);
   pidController.reset(0);
 
-  pidTask.setEnabledWhen([]() { return !router.isCalibrationRunning(); });
+  pidTask.setEnabledWhen([]() {
+    return !router.isCalibrationRunning();
+  });
   if (config.get<bool>(KEY_ENABLE_DEBUG))
     pidTask.enableProfiling();
   coreTaskManager.addTask(pidTask);

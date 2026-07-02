@@ -142,6 +142,7 @@ namespace Mycila {
               std::string autoStopTime;
               std::string weekDays;
               uint16_t excessPowerLimiter = 0;
+              uint16_t excessPowerMin = 0;
               float excessPowerRatio = 0.0f;
           } Config;
 
@@ -260,7 +261,15 @@ namespace Mycila {
           // - gridVoltage > 0
           // - availablePowerToDivert > 0
           // - config.calibratedResistance > 0
-          float divert(float gridVoltage, float availablePowerToDivert) {
+          // - error == setpoint - input (grid power)
+          // returns: the real used power as per the dimmer state
+          float divert(float gridVoltage, float availablePowerToDivert, float error) {
+            // If user has set a threshold for this output, we only activate it if the available power to divert is above or equal to this threshold
+            if (config.excessPowerMin > 0 && error < config.excessPowerMin && availablePowerToDivert < config.excessPowerMin) {
+              _dimmer->setDutyCycle(0);
+              return 0.0f;
+            }
+
             // maximum power of the load based on the calibrated resistance value
             const float maxPower = gridVoltage * gridVoltage / config.calibratedResistance;
 
@@ -463,13 +472,14 @@ namespace Mycila {
         return false;
       }
 
-      void noDivert() { divert(0, 0); }
+      void noDivert() { divert(0, 0, 0); }
 
       // preconditions:
       // - gridVoltage >= 0
       // - powerToDivert >= 0
+      // - error == setpoint - input (grid power)
       // - can only be called if !isCalibrationRunning()
-      float divert(const float gridVoltage, const float powerToDivert) {
+      float divert(const float gridVoltage, const float powerToDivert, const float error) {
         // copy the output vector
         std::vector<Output*> remainingOutputs = _outputs;
 
@@ -515,7 +525,7 @@ namespace Mycila {
               // Notes:
               // - we have ensured gridVoltage > 0
               // - we have ensured config.calibratedResistance > 0 with isAutoDimmerEnabled()
-              output->divert(gridVoltage, 100.0f);
+              output->divert(gridVoltage, 100.0f, error);
               it = remainingOutputs.erase(it);
             } else {
               ++it;
@@ -550,7 +560,7 @@ namespace Mycila {
 
           // - we have ensured gridVoltage > 0
           // - we have ensured config.calibratedResistance > 0 with isAutoDimmerEnabled()
-          routedPower += output->divert(gridVoltage, ratio);
+          routedPower += output->divert(gridVoltage, ratio, error);
         }
 
         return routedPower;

@@ -142,6 +142,7 @@ static void init_config() {
   config.configure(KEY_OUTPUT1_DIMMER_TEMP_LIMITER, static_cast<uint8_t>(0));
   config.configure(KEY_OUTPUT1_DIMMER);
   config.configure(KEY_OUTPUT1_EXCESS_LIMITER, static_cast<uint16_t>(0));
+  config.configure(KEY_OUTPUT1_EXCESS_MIN, static_cast<uint16_t>(0));
   config.configure(KEY_OUTPUT1_EXCESS_RATIO, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT1_RELAY);
   config.configure(KEY_OUTPUT1_RESISTANCE, 0.0f);
@@ -159,6 +160,7 @@ static void init_config() {
   config.configure(KEY_OUTPUT2_DIMMER_TEMP_LIMITER, static_cast<uint8_t>(0));
   config.configure(KEY_OUTPUT2_DIMMER);
   config.configure(KEY_OUTPUT2_EXCESS_LIMITER, static_cast<uint16_t>(0));
+  config.configure(KEY_OUTPUT2_EXCESS_MIN, static_cast<uint16_t>(0));
   config.configure(KEY_OUTPUT2_EXCESS_RATIO, static_cast<uint8_t>(100));
   config.configure(KEY_OUTPUT2_RELAY);
   config.configure(KEY_OUTPUT2_RESISTANCE, 0.0f);
@@ -301,6 +303,9 @@ void yasolr_init_config() {
     } else if (key == KEY_OUTPUT1_EXCESS_LIMITER) {
       output1.config.excessPowerLimiter = config.get<uint16_t>(KEY_OUTPUT1_EXCESS_LIMITER);
 
+    } else if (key == KEY_OUTPUT1_EXCESS_MIN) {
+      output1.config.excessPowerMin = config.get<uint16_t>(KEY_OUTPUT1_EXCESS_MIN);
+
     } else if (key == KEY_OUTPUT1_EXCESS_RATIO) {
       output1.config.excessPowerRatio = config.get<uint8_t>(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
 
@@ -352,6 +357,9 @@ void yasolr_init_config() {
 
     } else if (key == KEY_OUTPUT2_EXCESS_LIMITER) {
       output2.config.excessPowerLimiter = config.get<uint16_t>(KEY_OUTPUT2_EXCESS_LIMITER);
+
+    } else if (key == KEY_OUTPUT2_EXCESS_MIN) {
+      output2.config.excessPowerMin = config.get<uint16_t>(KEY_OUTPUT2_EXCESS_MIN);
 
     } else if (key == KEY_OUTPUT2_EXCESS_RATIO) {
       output2.config.excessPowerRatio = config.get<uint8_t>(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;

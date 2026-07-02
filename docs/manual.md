@@ -996,6 +996,12 @@ Excess Configuration allows to configure how the excess power is routed to the o
   This setting is also available in output 2 if you want to reduce its share.
   For example, if you want to assign 50% of the excess to output 1 and 25% to output 2, you can set output 1 to `50%` and output 2 to `50%` (which means 50% of the remaining 50%, so 25% of the total).
 
+- `Excess Power Threshold (W)`: Allows to set a threshold on the grid excess assigned to an output.
+  Only available in automatic mode.
+  For example, if output 1 is set to `500 W`, then output 1 will only take the grid excess if it is at least `500 W`.
+  Output 2 will be dimmed with the remaining excess.
+  A value of `0` means that the excess power threshold is disabled.
+
 - `Excess Power Limiter (W)`: Allows to set a hard limit on the grid excess assigned to an output.
   Only available in automatic mode.
   For example, if output 1 is set to `500 W`, then output 1 will take at most `500 W` of the grid excess.

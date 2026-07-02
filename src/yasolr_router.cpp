@@ -321,6 +321,7 @@ void yasolr_init_router() {
   output1.config.bypassTimeoutSec = config.get<uint16_t>(KEY_OUTPUT1_BYPASS_TIMEOUT);
   output1.config.calibratedResistance = config.get<float>(KEY_OUTPUT1_RESISTANCE);
   output1.config.dimmerTempLimit = config.get<uint8_t>(KEY_OUTPUT1_DIMMER_TEMP_LIMITER);
+  output1.config.excessPowerMin = config.get<uint16_t>(KEY_OUTPUT1_EXCESS_MIN);
   output1.config.excessPowerLimiter = config.get<uint16_t>(KEY_OUTPUT1_EXCESS_LIMITER);
   output1.config.excessPowerRatio = config.get<uint8_t>(KEY_OUTPUT1_EXCESS_RATIO) / 100.0f;
   output1.config.weekDays = config.getString(KEY_OUTPUT1_DAYS);
@@ -337,6 +338,7 @@ void yasolr_init_router() {
   output2.config.bypassTimeoutSec = config.get<uint16_t>(KEY_OUTPUT2_BYPASS_TIMEOUT);
   output2.config.calibratedResistance = config.get<float>(KEY_OUTPUT2_RESISTANCE);
   output2.config.dimmerTempLimit = config.get<uint8_t>(KEY_OUTPUT2_DIMMER_TEMP_LIMITER);
+  output2.config.excessPowerMin = config.get<uint16_t>(KEY_OUTPUT2_EXCESS_MIN);
   output2.config.excessPowerLimiter = config.get<uint16_t>(KEY_OUTPUT2_EXCESS_LIMITER);
   output2.config.excessPowerRatio = config.get<uint8_t>(KEY_OUTPUT2_EXCESS_RATIO) / 100.0f;
   output2.config.weekDays = config.getString(KEY_OUTPUT2_DAYS);
