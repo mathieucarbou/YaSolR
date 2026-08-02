@@ -76,6 +76,14 @@ static void migrate_old_keys() {
       storage.remove("vic_mb_enable");
     }
 
+    // fro_mb_enable
+    if (storage.hasKey("fro_mb_enable")) {
+      ESP_LOGI(TAG, "fro_mb_enable => " KEY_GRID_SOURCE "=Fronius");
+      if (storage.loadBool("fro_mb_enable").value_or(false)) // enabled ?
+        storage.storeString(KEY_GRID_SOURCE, "Fronius");
+      storage.remove("fro_mb_enable");
+    }
+
     // these keys cannot be migrated
     storage.remove("jsy_enable");
     storage.remove("jsy_uart");
@@ -115,6 +123,8 @@ static void init_config() {
   config.configure(KEY_ENABLE_OUTPUT2_AUTO_DIMMER, false);
   config.configure(KEY_ENABLE_OUTPUT2_DS18, false);
   config.configure(KEY_ENABLE_SYSTEM_DS18, false);
+  config.configure(KEY_FRONIUS_MODBUS_PORT, static_cast<uint16_t>(502));
+  config.configure(KEY_FRONIUS_MODBUS_SERVER);
   config.configure(KEY_GRID_FREQUENCY, static_cast<uint8_t>(0));
   config.configure(KEY_GRID_POWER_MQTT_TOPIC);
   config.configure(KEY_GRID_SOURCE);
@@ -428,9 +438,12 @@ void yasolr_init_config() {
         yasolr_configure_jsy_remote();
         yasolr_configure_mqtt_grid_source();
         yasolr_configure_victron();
+        yasolr_configure_fronius();
         if (!config.get<bool>(KEY_ENABLE_AP_MODE)) {
           if (victronConnectTask)
             victronConnectTask->resume();
+          if (froniusConnectTask)
+            froniusConnectTask->resume();
           if (jsyRemoteTask)
             jsyRemoteTask->resume();
         }

@@ -35,6 +35,7 @@ static constexpr const char* ERR_ACT_O2_DS18 = "Unable to activate Output 2 DS18
 static constexpr const char* ERR_ACT_O2_PZEM = "Unable to activate Output 2 PZEM: configuration error!";
 static constexpr const char* ERR_ACT_SYS_DS18 = "Unable to activate System DS18: configuration error!";
 static constexpr const char* ERR_ACT_VICTRON = "Unable to activate Victron Modbus: configuration error!";
+static constexpr const char* ERR_ACT_FRONIUS = "Unable to activate Fronius Modbus: configuration error!";
 static constexpr const char* ERR_ACT_PULSE_ANALYZER = "Pulse Analyzer does not detect any Zero-Cross pulse!";
 // resistance missing
 static constexpr const char* ERR_RESIST_CAL_O1 = "Output 1 Resistance not calibrated!";
@@ -62,6 +63,7 @@ static constexpr const char* ERR_GRID_NONE = "No grid source configured!";
 // com errors
 static constexpr const char* ERR_MQTT_COM = "MQTT disconnected: more information in the logs!";
 static constexpr const char* ERR_VICTRON_COM = "Victron communication error: more information in the logs!";
+static constexpr const char* ERR_FRONIUS_COM = "Fronius communication error: more information in the logs!";
 
 // tabs icons:
 // https://en.wikipedia.org/wiki/List_of_Unicode_characters#Miscellaneous_Symbols
@@ -341,6 +343,8 @@ static dash::DropdownCard<const char*> _gridFreq(dashboard, YASOLR_LBL_141, "Aut
 static dash::DropdownCard<const char*> _gridSource(dashboard, YASOLR_LBL_114, YASOLR_SOURCES_GRID);
 static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
+static dash::InputCard<const char*> _froniusServer(dashboard, YASOLR_LBL_096);
+static dash::InputCard<uint16_t> _froniusPort(dashboard, YASOLR_LBL_097);
 
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046);
@@ -907,10 +911,14 @@ void YaSolR::Website::begin() {
   _gridSource.setTab(_hardwareConfigTab);
   _victronServer.setTab(_hardwareConfigTab);
   _victronPort.setTab(_hardwareConfigTab);
+  _froniusServer.setTab(_hardwareConfigTab);
+  _froniusPort.setTab(_hardwareConfigTab);
 
   _numConfig(_victronPort, KEY_VICTRON_MODBUS_PORT);
+  _numConfig(_froniusPort, KEY_FRONIUS_MODBUS_PORT);
   _textConfig(_gridSource, KEY_GRID_SOURCE);
   _textConfig(_victronServer, KEY_VICTRON_MODBUS_SERVER);
+  _textConfig(_froniusServer, KEY_FRONIUS_MODBUS_SERVER);
 
   _gridFreq.onChange([](const char* value) {
     if (strcmp(value, "50 Hz") == 0) {
@@ -1392,8 +1400,12 @@ void YaSolR::Website::initCards() {
   _gridSource.setValue(config.getString(KEY_GRID_SOURCE));
   _victronServer.setValue(config.getString(KEY_VICTRON_MODBUS_SERVER));
   _victronPort.setValue(config.get<uint16_t>(KEY_VICTRON_MODBUS_PORT));
+  _froniusServer.setValue(config.getString(KEY_FRONIUS_MODBUS_SERVER));
+  _froniusPort.setValue(config.get<uint16_t>(KEY_FRONIUS_MODBUS_PORT));
   _victronServer.setDisplay(grid.isUsing(Mycila::metric::Kind::VICTRON));
   _victronPort.setDisplay(grid.isUsing(Mycila::metric::Kind::VICTRON));
+  _froniusServer.setDisplay(grid.isUsing(Mycila::metric::Kind::FRONIUS));
+  _froniusPort.setDisplay(grid.isUsing(Mycila::metric::Kind::FRONIUS));
 
   // output 1 dimmer
   _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER));
@@ -1739,6 +1751,14 @@ void YaSolR::Website::updateWarnings() {
       errors[count++] = ERR_ACT_VICTRON;
     } else if (victron->hasError()) {
       errors[count++] = ERR_VICTRON_COM;
+    }
+  }
+  // fronius
+  if (grid.isUsing(Mycila::metric::Kind::FRONIUS)) {
+    if (!fronius) {
+      errors[count++] = ERR_ACT_FRONIUS;
+    } else if (fronius->hasError()) {
+      errors[count++] = ERR_FRONIUS_COM;
     }
   }
   // pzem output 1
