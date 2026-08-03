@@ -146,54 +146,83 @@ Remember: UART 0 is often linked to USB port and logging so this is only the num
 
 ### Which Dimmer to Choose
 
+Choosing a dimmer depends on the load, algorithm.
+To use phase control and keep the 3rd Harmonic within the regulation levels when the dimmer is at 50%, [your load should be lower than 1700W](overview.md#harmonics).
+Otherwise, if you want to avoid exceeding the 3rd Harmonic regulation levels, you should consider using Cycle Stealing algorithm instead of Phase Control, which is less precise but will reduce the 3rd Harmonic.
+
+
+|    **Algorithm**         |  **RobotDyn 24A / 40A**<br/>(not recommended) | **Random SSR**                             | **Zero-Cross SSR**                         | **Voltage Regulator with DAC**              |
+|:------------------------:|:--------------------------------------------:|:------------------------------------------:|:-----------------------------------------: | :-----------------------------------------: |
+|                          | ![](./assets/img/hardware/RobotDyn_40A.jpeg) | ![](./assets/img/hardware/Random_SSR.jpeg) | ![](./assets/img/hardware/SSR_40A_DA.jpeg) | ![](./assets/img/hardware/LSA-H3P50YB.jpeg) |
+| Phase Control            |                     ✅                       |           ✅<br/>(ZCD module required)     |                                ❌          |             ✅<br/>(DAC module required)    |
+| Cycle Stealing           |                     ✅                       |           ✅<br/>(ZCD module required)     |                                ✅          |                                       ❌    |
+
+!!! tip
+
+    _ZCD module required_ means that the dimmer requires a Zero-Cross Detection module so that the ESP32 knows when the AC voltage crosses the zero point (0V).
+    The [build](build.md) page helps you pick a ZCD module.
+
+!!! warning
+
+    The LSA / LCTC Voltage Regulators need to be controlled through a DAC (GP8211S, GP8403 or GP8413).
+
 Here are some pros and cons of each phase control system.
+
 I do not recommend using RobotDyn dimmers.
 They are cheap, dangerously wired and not very good for the ZCD and heat dissipation.
 
 **RobotDyn (TRIAC):**
 
 - Pros:
-  - cheap and easy to wire
-  - 40A model comes with a heat sink and fan
-  - All in one device: phase control, ZCD, heat sink, fan
+    - cheap and easy to wire
+    - 40A model comes with a heat sink and fan
+    - All in one device: phase control, ZCD, heat sink, fan
+
 - Cons:
-  - limited in load to 1/3 - 1/2 of the announced load
-  - 16A / 24A models comes with heat sink which is too small for its supported maximum load
-  - no solution ready to attach them on a DIN rail.
-  - The heat sink often has to be upgraded, except for the one on the 40A model which is already good for small loads below 2000W.
-  - The ZCD circuit [is less accurate](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards) and pulses can be harder to detect [on some boards](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue)
-  - You need to go over some modifications to ([improve wiring / soldering and heat sink](https://sites.google.com/view/le-professolaire/routeur-professolaire))
-  - You might need to replace the Triac or move it
+    - limited in load to 1/3 - 1/2 of the announced load
+    - 16A / 24A models comes with heat sink which is too small for its supported maximum load
+    - no solution ready to attach them on a DIN rail.
+    - The heat sink often has to be upgraded, except for the one on the 40A model which is already good for small loads below 2000W.
+    - The ZCD circuit [is less accurate](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards) and pulses can be harder to detect [on some boards](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue)
+    - You need to go over some modifications to ([improve wiring / soldering and heat sink](https://sites.google.com/view/le-professolaire/routeur-professolaire))
+    - You might need to replace the Triac or move it
 
 **Random Solid State Relays:**
 
 - Pros:
-  - cheap and easy to wire
-  - support higher loads
-  - can be attached to a DIN rail with standard SSR clips
-  - lot of heat sink models available
+    - cheap and easy to wire
+    - support higher loads
+    - can be attached to a DIN rail with standard SSR clips
+    - lot of heat sink models available
+
 - Cons:
-  - limited in load to 1/3 - 1/2 of the announced load
-  - **require an external ZCD module**, heat sink
+    - limited in load to 1/3 - 1/2 of the announced load
+    - **require an external ZCD module**, heat sink
 
 **Synchronous Solid State Relays:**
 
 - Pros:
-  - cheap and easy to wire
-  - support higher loads
-  - can be attached to a DIN rail with standard SSR clips
-  - lot of heat sink models available
+    - cheap and easy to wire
+    - support higher loads
+    - can be attached to a DIN rail with standard SSR clips
+    - lot of heat sink models available
+
 - Cons:
-  - limited in load to 1/3 - 1/2 of the announced load
-  - require heat sink
-  - **can only be used with the Cycle Stealing modulation algorithm, not with Phase Control**
+    - limited in load to 1/3 - 1/2 of the announced load
+    - require heat sink
+    - **can only be used with the Cycle Stealing modulation algorithm, not with Phase Control**
 
 **Voltage Regulators:**
 
-Voltage regulators include a ZCD module and a phase control system which can be controlled in many ways.
-These are the best option: they are big and robust.
-But they require an additional module to control them with an ESP32 (DfRobot DAC).
-This is also the option used in the [Shelly Solar Router](./blog/2024-07-01_shelly_solar_diverter).
+- Pros:
+    - Include a ZCD module and a phase control system which can be controlled in many ways.
+    - These are the best option for phase control: they are big and robust.
+
+- Con:
+    - They require an additional module to control them with an ESP32 (DfRobot DAC).
+    - They cannot use the Cycle Stealing modulation algorithm, only Phase Control.
+
+This is also the option used in the [Shelly Solar Router](./blog/2024-07-01_shelly_solar_diverter).    
 
 **Heat Sink:**
 
