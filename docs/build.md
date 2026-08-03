@@ -386,9 +386,15 @@ You can click on the diagram to open the interactive mode or [download the image
 
 The diagram below shows how to wire dimmers based on Random Solid State Relay.
 
+Random Solid State Relay can use both Phase Control and Cycle Stealing algorithms, but you need to add a ZCD module to detect the zero-crossing of the AC voltage.
+
 You can click on the diagram to open the interactive mode or [download the image](../assets/img/schemas/yasolr_random_ssr.jpeg).
 
 [![](../assets/img/schemas/yasolr_random_ssr.jpeg)](https://app.cirkitdesigner.com/project/af394fa8-dc6e-4785-b0c6-e0a7136aa614?view=interactive_preview)
+
+### How to Wire Synchronous (standard) State Relay Dimmer
+
+Exactly like a [random SSR dimmer](#how-to-wire-random-solid-state-relay-dimmer), but you do not need the ZCD module and you will only be able to use the Cycle Stealing algorithm, not Phase Control.
 
 ### How to Wire Voltage Regulator Dimmer and DAC
 
