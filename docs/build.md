@@ -166,10 +166,7 @@ Otherwise, if you want to avoid exceeding the 3rd Harmonic regulation levels, yo
 
     The LSA / LCTC Voltage Regulators need to be controlled through a DAC (GP8211S, GP8403 or GP8413).
 
-Here are some pros and cons of each phase control system.
-
-I do not recommend using RobotDyn dimmers.
-They are cheap, dangerously wired and not very good for the ZCD and heat dissipation.
+**Here are some pros and cons of each phase control system.**
 
 **RobotDyn (TRIAC):**
 
@@ -186,6 +183,10 @@ They are cheap, dangerously wired and not very good for the ZCD and heat dissipa
     - The ZCD circuit [is less accurate](https://github.com/fabianoriccardi/dimmable-light/wiki/About-dimmer-boards) and pulses can be harder to detect [on some boards](https://github.com/fabianoriccardi/dimmable-light/wiki/Notes-about-specific-architectures#interrupt-issue)
     - You need to go over some modifications to ([improve wiring / soldering and heat sink](https://sites.google.com/view/le-professolaire/routeur-professolaire))
     - You might need to replace the Triac or move it
+
+!!! warning
+    I do not recommend using RobotDyn dimmers.
+    They are cheap, dangerously wired, have a bad heat dissipation and their ZCD module is really bad.
 
 **Random Solid State Relays:**
 
