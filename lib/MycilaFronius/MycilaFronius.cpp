@@ -42,7 +42,7 @@ namespace FroniusMeterRegisters {
 //  static constexpr uint16_t WH_I_ADDR  = 40137; // Energy imported (total), float32
 
   static constexpr uint16_t READ_START = ID_ADDR;
-  // Derived from the last field we actually parse (W_ADDR, a float32 = 2  
+  // Derived from the last field we actually parse (W_ADDR, a float32 = 2
   // registers) rather than hardcoded, so uncommenting/moving fields above
   // can't silently desync this from what's actually being read.
   static constexpr uint16_t READ_COUNT = (W_ADDR + 2) - READ_START;
@@ -62,7 +62,7 @@ namespace FroniusMeterRegisters {
   static constexpr size_t byteOffset(uint16_t registerAddr) {
     return RESPONSE_HEADER_SIZE + (registerAddr - READ_START) * BYTES_PER_REGISTER;
   }
-}
+} // namespace FroniusMeterRegisters
 
 void Mycila::Fronius::begin(const char* host, uint16_t port) {
   if (_client) {
@@ -78,8 +78,26 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
   _meterDeviceIdIndex = 0;
   _meterDeviceIdConfirmed = false;
 
-  _client->onDataHandler([this](ModbusMessage response, uint32_t token) {
-    using namespace FroniusMeterRegisters;
+  // Callbacks capture a weak_ptr to the alive token, not raw `this`. If
+  // end() runs (or this object is destroyed) before a pending response or
+  // error arrives, the weak_ptr fails to lock and the callback is a no-op —
+  // this avoids touching a torn-down/destroyed object.
+  std::weak_ptr<bool> weakAlive = _aliveToken;
+
+  _client->onDataHandler([this, weakAlive](ModbusMessage response, uint32_t token) {
+    auto alive = weakAlive.lock();
+    if (!alive) {
+      return;
+    }
+
+    using FroniusMeterRegisters::A_ADDR;
+    using FroniusMeterRegisters::byteOffset;
+    using FroniusMeterRegisters::HZ_ADDR;
+    using FroniusMeterRegisters::ID_ADDR;
+    using FroniusMeterRegisters::PHV_ADDR;
+    using FroniusMeterRegisters::READ_COUNT;
+    using FroniusMeterRegisters::READ_START;
+    using FroniusMeterRegisters::W_ADDR;
 
     // Guard against short/malformed frames before indexing into the buffer.
     const size_t expectedSize = byteOffset(READ_START + READ_COUNT);
@@ -89,7 +107,10 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
       return;
     }
 
-    uint16_t modelId = (static_cast<uint16_t>(response[3]) << 8) | response[4];
+    // Use byteOffset() rather than hardcoded response[3]/response[4] so
+    // this can't silently desync from READ_START if it ever changes.
+    uint16_t modelId = (static_cast<uint16_t>(response[byteOffset(ID_ADDR)]) << 8) |
+                        response[byteOffset(ID_ADDR) + 1];
     if (modelId != 211 && modelId != 212 && modelId != 213) {
       // Wrong device ID guessed, or device isn't reporting the float model.
       // If we're still probing candidates, this response arriving at all
@@ -119,15 +140,24 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
     }
   });
 
-  _client->onErrorHandler([this](Error error, uint32_t token) {
-    using namespace FroniusMeterRegisters;
+  _client->onErrorHandler([this, weakAlive](Error error, uint32_t token) {
+    auto alive = weakAlive.lock();
+    if (!alive) {
+      return;
+    }
+
+    using FroniusMeterRegisters::CANDIDATE_COUNT;
 
     // While still probing, an error (e.g. Illegal Data Address / Gateway
     // Target Device Failed to Respond) means this candidate ID was wrong.
-    // Move to the next one instead of surfacing an error to the app,
-    // unless we've exhausted every candidate.
+    // Advance to the next candidate; the next scheduled read() call will
+    // use it. (We deliberately do NOT call read() synchronously from here
+    // — retrying from inside this callback would mean a reentrant
+    // addRequest() call, and if a device is unreachable that can turn into
+    // a tight, uncontrolled retry loop. Letting the normal read() polling
+    // cadence pick up the new candidate keeps this predictable.)
     if (!_meterDeviceIdConfirmed && _meterDeviceIdIndex + 1 < CANDIDATE_COUNT) {
-      ESP_LOGW(TAG, "Meter device ID %u failed (%s), trying next candidate",
+      ESP_LOGW(TAG, "Meter device ID %u failed (%s), trying next candidate on next read()",
                _currentMeterDeviceId(), (const char*)ModbusError(error));
       _advanceMeterDeviceIdCandidate();
       return;
@@ -140,6 +170,13 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
 void Mycila::Fronius::end() {
   if (_client) {
     ESP_LOGI(TAG, "Disconnecting from Fronius Modbus TCP Server");
+
+    // Invalidate the alive token first: any response/error that arrives
+    // for an in-flight request after this point will find the weak_ptr
+    // captured in the callbacks can no longer be locked, and will safely
+    // no-op instead of touching members mid-teardown.
+    _aliveToken = std::make_shared<bool>(true);
+
     _client->disconnect();
     _client.reset();
     _lastError.clear();
@@ -170,7 +207,7 @@ uint8_t Mycila::Fronius::_currentMeterDeviceId() const {
 }
 
 void Mycila::Fronius::_advanceMeterDeviceIdCandidate() {
-  using namespace FroniusMeterRegisters;
+  using FroniusMeterRegisters::CANDIDATE_COUNT;
   if (_meterDeviceIdIndex + 1 < CANDIDATE_COUNT) {
     _meterDeviceIdIndex++;
   } else {
@@ -178,9 +215,10 @@ void Mycila::Fronius::_advanceMeterDeviceIdCandidate() {
     // retry/error-reporting cadence keep trying rather than getting stuck.
     _meterDeviceIdIndex = 0;
   }
-  // Immediately retry with the new candidate rather than waiting for the
-  // next scheduled read() call, so discovery converges quickly.
-  read();
+  // Note: intentionally does NOT trigger an immediate re-read. The next
+  // scheduled call to read() (from application code's normal polling loop)
+  // will pick up the new candidate device ID. See onErrorHandler above for
+  // why this is not done synchronously/recursively.
 }
 
 void Mycila::Fronius::_setError(ModbusError&& error, uint32_t token) {
