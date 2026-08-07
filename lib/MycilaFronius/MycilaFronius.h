@@ -90,6 +90,7 @@ namespace Mycila {
       void _advanceMeterDeviceIdCandidate();
 
       void _setError(ModbusError&& error, uint32_t token);
+      void _setError(const std::string& message, uint32_t token);
 
       // Lifetime guard for async callbacks. Callbacks capture a weak_ptr to
       // this token instead of raw `this`; if end() runs (or the object is

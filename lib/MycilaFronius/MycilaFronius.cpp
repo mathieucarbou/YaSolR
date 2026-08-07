@@ -104,6 +104,13 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
     if (response.size() < expectedSize) {
       ESP_LOGW(TAG, "Meter response too short: got %u bytes, expected >= %u",
                static_cast<unsigned>(response.size()), static_cast<unsigned>(expectedSize));
+      // Unlike a clean response with an unexpected model ID (which proves
+      // something answered on this ID, just not a meter), a short frame is
+      // a communication/framing problem and isn't evidence this ID is
+      // wrong.
+      _setError("Meter response too short: got " + std::to_string(response.size()) +
+                     " bytes, expected >= " + std::to_string(expectedSize),
+                 token);
       return;
     }
 
@@ -120,6 +127,9 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
       if (!_meterDeviceIdConfirmed) {
         _advanceMeterDeviceIdCandidate();
       }
+      // Surface this so hasError()/EVT_ERROR reflect reality instead of the
+      // dashboard silently sitting on stale/no data.
+      _setError("Unexpected SunSpec meter model ID: " + std::to_string(modelId), token);
       return;
     }
 
@@ -146,23 +156,18 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
       return;
     }
 
-    using FroniusMeterRegisters::CANDIDATE_COUNT;
-
-    // While still probing, an error (e.g. Illegal Data Address / Gateway
-    // Target Device Failed to Respond) means this candidate ID was wrong.
-    // Advance to the next candidate; the next scheduled read() call will
-    // use it. (We deliberately do NOT call read() synchronously from here
-    // — retrying from inside this callback would mean a reentrant
-    // addRequest() call, and if a device is unreachable that can turn into
-    // a tight, uncontrolled retry loop. Letting the normal read() polling
-    // cadence pick up the new candidate keeps this predictable.)
-    if (!_meterDeviceIdConfirmed && _meterDeviceIdIndex + 1 < CANDIDATE_COUNT) {
+    // While still probing, an error means this candidate ID was wrong.
+    // Always advance (with wraparound) so we can't get stuck on the last
+    // candidate; the next read() call will pick up the new one. Not
+    // retried synchronously here to avoid reentrant addRequest() calls.
+    if (!_meterDeviceIdConfirmed) {
       ESP_LOGW(TAG, "Meter device ID %u failed (%s), trying next candidate on next read()",
                _currentMeterDeviceId(), (const char*)ModbusError(error));
       _advanceMeterDeviceIdCandidate();
-      return;
     }
 
+    // Always surface the error, even mid-probe, so hasError() reflects that
+    // communication isn't currently succeeding.
     this->_setError(ModbusError(error), token);
   });
 }
@@ -228,6 +233,13 @@ void Mycila::Fronius::_setError(ModbusError&& error, uint32_t token) {
   msg += std::to_string((int)error); // NOLINT
   msg += ": ";
   msg += (const char*)error; // NOLINT
+  _setError(msg, token);
+}
+
+void Mycila::Fronius::_setError(const std::string& message, uint32_t token) {
+  std::string msg;
+  msg.reserve(message.size() + 32);
+  msg = message;
   msg += ", token: ";
   msg += std::to_string(token);
 
