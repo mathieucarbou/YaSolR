@@ -51,6 +51,7 @@ void setup() {
   yasolr_configure_relay1();
   yasolr_configure_relay2();
   yasolr_configure_victron();
+  yasolr_configure_fronius();
 
   // STARTUP READY!
   assert(unsafeTaskManager.asyncStart(YASOLR_TASK_UNSAFE_STACK_SIZE, 1, 1, 100, true));

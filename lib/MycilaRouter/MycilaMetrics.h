@@ -48,6 +48,7 @@ namespace Mycila {
 
       MQTT,
       VICTRON,
+      FRONIUS,
     };
 
     enum class Source {
@@ -106,6 +107,7 @@ namespace Mycila {
 
       MQTT,
       VICTRON,
+      FRONIUS,
     };
 
     static bool isUsing(Source source, Kind kind) {
@@ -114,6 +116,7 @@ namespace Mycila {
         case Source::SHARED:                       return kind == Kind::SHARED;
         case Source::MQTT:                         return kind == Kind::MQTT;
         case Source::VICTRON:                      return kind == Kind::VICTRON;
+        case Source::FRONIUS:                      return kind == Kind::FRONIUS;
         case Source::JSY_MK_163_SERIAL1:           return kind == Kind::JSY_SERIAL1 || kind == Kind::JSY_MK_163;
         case Source::JSY_MK_163_SERIAL2:           return kind == Kind::JSY_SERIAL2 || kind == Kind::JSY_MK_163;
         case Source::JSY_MK_163_REMOTE:            return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_163;
@@ -160,6 +163,7 @@ namespace Mycila {
         case Source::SHARED:                       return "Shared";
         case Source::MQTT:                         return "MQTT";
         case Source::VICTRON:                      return "Victron";
+        case Source::FRONIUS:                      return "Fronius";
         case Source::JSY_MK_163_SERIAL1:           return "JSY-MK-163 (Serial1)";
         case Source::JSY_MK_163_SERIAL2:           return "JSY-MK-163 (Serial2)";
         case Source::JSY_MK_163_REMOTE:            return "JSY-MK-163 (Remote)";
@@ -204,6 +208,7 @@ namespace Mycila {
       if (strcmp(str, "Shared") == 0) return Source::SHARED;
       if (strcmp(str, "MQTT") == 0) return Source::MQTT;
       if (strcmp(str, "Victron") == 0) return Source::VICTRON;
+      if (strcmp(str, "Fronius") == 0) return Source::FRONIUS;
       if (strcmp(str, "JSY-MK-163 (Serial1)") == 0) return Source::JSY_MK_163_SERIAL1;
       if (strcmp(str, "JSY-MK-163 (Serial2)") == 0) return Source::JSY_MK_163_SERIAL2;
       if (strcmp(str, "JSY-MK-163 (Remote)") == 0) return Source::JSY_MK_163_REMOTE;
