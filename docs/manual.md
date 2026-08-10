@@ -633,6 +633,10 @@ You must select the device used to measure your grid power and voltage amongst t
 - Fronius
 - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333
 
+!!! warning
+
+    Restart YaSolR after you picked the right grid measurement device and have fully configured it.
+
 **MQTT Topics**
 
 You need to configure the MQTT topics to read the grid power and voltage.
