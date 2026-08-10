@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2026 Mathieu Carbou
+ * Copyright © 2026, Mathieu Carbou and Remi Queyrut
  */
 #include <MycilaFronius.h>
 

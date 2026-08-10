@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 /*
- * Copyright (C) 2023-2024 Mathieu Carbou
+ * Copyright © 2026, Mathieu Carbou and Remi Queyrut
  */
 #include <yasolr.h>
 
