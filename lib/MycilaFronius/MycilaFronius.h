@@ -10,6 +10,8 @@
   #include <ArduinoJson.h>
 #endif
 
+#include <stdint.h>
+
 #include <memory>
 #include <string>
 #include <utility>
@@ -45,8 +47,12 @@ namespace Mycila {
 
       float getFrequency() const { return _frequency; }
       float getPower() const { return _power; }
+      float getApparentPower() const { return _apparentPower; }
+      float getPowerFactor() const { return _powerFactor; }
       float getVoltage() const { return _voltage; }
       float getCurrent() const { return _current; }
+      uint32_t getEnergyImported() const { return _energyImported; }
+      uint32_t getEnergyReturned() const { return _energyReturned; }
       std::string getLastError() const { return _lastError; }
       bool hasError() const { return !_lastError.empty(); }
 
@@ -66,8 +72,14 @@ namespace Mycila {
           root["frequency"] = _frequency;
         if (!isnan(_power))
           root["power"] = _power;
+        if (!isnan(_apparentPower))
+          root["apparent_power"] = _apparentPower;
+        if (!isnan(_powerFactor))
+          root["power_factor"] = _powerFactor;
         if (!isnan(_voltage))
           root["voltage"] = _voltage;
+        root["energy_imported"] = _energyImported;
+        root["energy_returned"] = _energyReturned;
         if (_lastError.length())
           root["error"] = _lastError;
       }
@@ -78,7 +90,11 @@ namespace Mycila {
       Callback _callback = nullptr;
       float _frequency = NAN;
       float _current = NAN;
+      uint32_t _energyImported = 0;
+      uint32_t _energyReturned = 0;
       float _power = NAN;
+      float _apparentPower = NAN;
+      float _powerFactor = NAN;
       float _voltage = NAN;
       std::string _lastError;
 
