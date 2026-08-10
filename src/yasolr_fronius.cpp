@@ -32,6 +32,8 @@ void yasolr_configure_fronius() {
           metrics->current = fronius->getCurrent();
           metrics->frequency = fronius->getFrequency();
           metrics->power = fronius->getPower();
+          metrics->apparentPower = fronius->getApparentPower();
+          metrics->powerFactor = fronius->getPowerFactor();
           metrics->voltage = fronius->getVoltage();
           metrics->energy = fronius->getEnergyImported();
           metrics->energyReturned = fronius->getEnergyReturned();

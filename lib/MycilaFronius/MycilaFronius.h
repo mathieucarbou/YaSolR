@@ -46,6 +46,8 @@ namespace Mycila {
 
       float getFrequency() const { return _frequency; }
       float getPower() const { return _power; }
+      float getApparentPower() const { return _apparentPower; }
+      float getPowerFactor() const { return _powerFactor; }
       float getVoltage() const { return _voltage; }
       float getCurrent() const { return _current; }
       uint32_t getEnergyImported() const { return _energyImported; }
@@ -69,6 +71,10 @@ namespace Mycila {
           root["frequency"] = _frequency;
         if (!isnan(_power))
           root["power"] = _power;
+        if (!isnan(_apparentPower))
+          root["apparent_power"] = _apparentPower;
+        if (!isnan(_powerFactor))
+          root["power_factor"] = _powerFactor;
         if (!isnan(_voltage))
           root["voltage"] = _voltage;
         root["energy_imported"] = _energyImported;
@@ -86,6 +92,8 @@ namespace Mycila {
       uint32_t _energyImported = 0;
       uint32_t _energyReturned = 0;
       float _power = NAN;
+      float _apparentPower = NAN;
+      float _powerFactor = NAN;
       float _voltage = NAN;
       std::string _lastError;
 

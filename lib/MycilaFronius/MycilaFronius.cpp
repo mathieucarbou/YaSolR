@@ -49,8 +49,8 @@ namespace FroniusMeterRegisters {
   static constexpr uint16_t PHV_ADDR   = 40079; // AC Voltage (average), float32
   static constexpr uint16_t HZ_ADDR    = 40095; // AC Frequency, float32
   static constexpr uint16_t W_ADDR     = 40097; // AC Power (total), float32
-//  static constexpr uint16_t VA_ADDR    = 40105; // AC Apparent Power (total), float32
-//  static constexpr uint16_t PF_ADDR    = 40121; // Power Factor (average), float32
+  static constexpr uint16_t VA_ADDR    = 40105; // AC Apparent Power (total), float32
+  static constexpr uint16_t PF_ADDR    = 40121; // Power Factor (average), float32
   static constexpr uint16_t WH_R_ADDR  = 40129; // Energy returned (total), float32
   static constexpr uint16_t WH_I_ADDR  = 40137; // Energy imported (total), float32
 
@@ -108,9 +108,11 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
     using FroniusMeterRegisters::HZ_ADDR;
     using FroniusMeterRegisters::ID_ADDR;
     using FroniusMeterRegisters::PHV_ADDR;
+    using FroniusMeterRegisters::PF_ADDR;
     using FroniusMeterRegisters::READ_COUNT;
     using FroniusMeterRegisters::READ_START;
     using FroniusMeterRegisters::W_ADDR;
+    using FroniusMeterRegisters::VA_ADDR;
     using FroniusMeterRegisters::WH_I_ADDR;
     using FroniusMeterRegisters::WH_R_ADDR;
 
@@ -159,6 +161,8 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
     this->_frequency       = parseFloat32(response, byteOffset(HZ_ADDR));
     this->_current         = parseFloat32(response, byteOffset(A_ADDR));
     this->_power           = parseFloat32(response, byteOffset(W_ADDR));
+    this->_apparentPower   = parseFloat32(response, byteOffset(VA_ADDR));
+    this->_powerFactor     = parseFloat32(response, byteOffset(PF_ADDR));
     this->_energyReturned  = parseEnergyWh(response, byteOffset(WH_R_ADDR));
     this->_energyImported  = parseEnergyWh(response, byteOffset(WH_I_ADDR));
 
@@ -206,6 +210,8 @@ void Mycila::Fronius::end() {
     _current = NAN;
     _energyImported = 0;
     _energyReturned = 0;
+    _apparentPower = NAN;
+    _powerFactor = NAN;
     _power = NAN;
     _voltage = NAN;
     _meterDeviceIdIndex = 0;
