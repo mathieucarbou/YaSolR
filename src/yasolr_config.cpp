@@ -431,26 +431,6 @@ void yasolr_init_config() {
     } else if (key == KEY_RELAY2) {
       reconfigureQueue.push(yasolr_configure_relay2);
 
-    } else if (key == KEY_FRONIUS_MODBUS_SERVER || key == KEY_FRONIUS_MODBUS_PORT) {
-      if (grid.isUsing(Mycila::metric::Kind::FRONIUS)) {
-        reconfigureQueue.push([]() {
-          yasolr_configure_fronius();
-          if (!config.get<bool>(KEY_ENABLE_AP_MODE) && froniusConnectTask) {
-            froniusConnectTask->resume();
-          }
-        });
-      }
-
-    } else if (key == KEY_VICTRON_MODBUS_SERVER || key == KEY_VICTRON_MODBUS_PORT) {
-      if (grid.isUsing(Mycila::metric::Kind::VICTRON)) {
-        reconfigureQueue.push([]() {
-          yasolr_configure_victron();
-          if (!config.get<bool>(KEY_ENABLE_AP_MODE) && victronConnectTask) {
-            victronConnectTask->resume();
-          }
-        });
-      }
-
     } else if (key == KEY_GRID_SOURCE) {
       grid.setSource(config.getString(KEY_GRID_SOURCE));
       reconfigureQueue.push([]() {
