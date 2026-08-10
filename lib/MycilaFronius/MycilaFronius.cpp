@@ -159,10 +159,12 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
 
     this->_voltage         = parseFloat32(response, byteOffset(PHV_ADDR));
     this->_frequency       = parseFloat32(response, byteOffset(HZ_ADDR));
-    this->_current         = parseFloat32(response, byteOffset(A_ADDR));
+    // Power carries the import/export direction. Keep the magnitude-only
+    // electrical values positive, consistent with YaSolR's other meters.
+    this->_current         = std::fabs(parseFloat32(response, byteOffset(A_ADDR)));
     this->_power           = parseFloat32(response, byteOffset(W_ADDR));
     this->_apparentPower   = parseFloat32(response, byteOffset(VA_ADDR));
-    this->_powerFactor     = parseFloat32(response, byteOffset(PF_ADDR));
+    this->_powerFactor     = std::fabs(parseFloat32(response, byteOffset(PF_ADDR)));
     this->_energyReturned  = parseEnergyWh(response, byteOffset(WH_R_ADDR));
     this->_energyImported  = parseEnergyWh(response, byteOffset(WH_I_ADDR));
 
