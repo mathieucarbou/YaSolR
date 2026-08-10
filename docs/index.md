@@ -81,6 +81,7 @@ It is also a big **Open-Source** project following **best development practices*
     - Measurement devices for grid and output
         - MQTT (grid only)
         - Victron Modbus TCP (grid only)
+        - Fronius Modbus TCP / SunSpec (grid only)
         - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333 (grid only) (**recommended**)
         - PZEM-004T v3 and v4 (outputs only) (**recommended**)
         - Remote JSY through [Mycila JSY App](https://github.com/mathieucarbou/MycilaJSYApp) (**recommended**)
@@ -120,6 +121,7 @@ YaSolR supports many ways to measure the grid power and voltage:
 
 - `MQTT` (**Home Assistant**, **Jeedom**, `Shelly EM`, etc)
 - Victron Modbus TCP
+- Fronius Modbus TCP / SunSpec
 - `JSY-MK-163`, `JSY-MK-227`, `JSY-MK-229`, `JSY-MK-193`, `JSY-MK-194`, `JSY-MK-333` (3-Phase), all on TTL or RS485
 - Remote JSY through [Mycila JSY App](http://mathieu.carbou.me/MycilaJSYApp/)
 

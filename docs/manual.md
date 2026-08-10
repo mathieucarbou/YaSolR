@@ -630,6 +630,7 @@ You must select the device used to measure your grid power and voltage amongst t
 
 - MQTT
 - Victron
+- Fronius
 - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333
 
 **MQTT Topics**
@@ -644,6 +645,21 @@ If Victron is selected, you need to configure the following parameters:
 
 - Server: the Victron Modbus TCP server IP address
 - Port: the Victron Modbus TCP server port (usually `502`)
+
+**Fronius Server**
+
+YaSolR supports connecting to Fronius inverters via Modbus TCP (SunSpec model) to get the grid power, voltage and frequency.
+If Fronius is selected, you need to configure the following parameters:
+
+- Server: the Fronius Modbus TCP server IP address
+- Port: the Fronius Modbus TCP server port (usually `502`)
+
+!!! warning
+
+    Modbus TCP must be enabled on the Fronius device in **Float mode** (SunSpec Float model).
+    The Int+SF (scale factor) model is not supported.
+
+    The SmartMeter device/slave ID is auto-detected (probing IDs 240 and 200, covering both classic Primo/Symo and newer GEN24/GEN24+ lines).
 
 **JSY Devices**
 
