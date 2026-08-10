@@ -21,7 +21,7 @@
 #ifdef APP_MODEL_PRO
 static constexpr dash::Widget::Size FULL_SIZE = {.xs = 12, .sm = 12, .md = 12, .lg = 12, .xl = 12, .xxl = 12};
 
-static const char* errors[10] = {};
+static const char* errors[32] = {};
 
 // activation errors
 static constexpr const char* ERR_ACT_JSY1 = "Unable to activate JSY (Serial1): configuration error!";
