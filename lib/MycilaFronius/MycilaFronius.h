@@ -11,6 +11,7 @@
 #endif
 
 #include <memory>
+#include <stdint.h>
 #include <string>
 #include <utility>
 
@@ -47,6 +48,8 @@ namespace Mycila {
       float getPower() const { return _power; }
       float getVoltage() const { return _voltage; }
       float getCurrent() const { return _current; }
+      uint32_t getEnergyImported() const { return _energyImported; }
+      uint32_t getEnergyReturned() const { return _energyReturned; }
       std::string getLastError() const { return _lastError; }
       bool hasError() const { return !_lastError.empty(); }
 
@@ -68,6 +71,8 @@ namespace Mycila {
           root["power"] = _power;
         if (!isnan(_voltage))
           root["voltage"] = _voltage;
+        root["energy_imported"] = _energyImported;
+        root["energy_returned"] = _energyReturned;
         if (_lastError.length())
           root["error"] = _lastError;
       }
@@ -78,6 +83,8 @@ namespace Mycila {
       Callback _callback = nullptr;
       float _frequency = NAN;
       float _current = NAN;
+      uint32_t _energyImported = 0;
+      uint32_t _energyReturned = 0;
       float _power = NAN;
       float _voltage = NAN;
       std::string _lastError;

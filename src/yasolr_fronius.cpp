@@ -33,6 +33,8 @@ void yasolr_configure_fronius() {
           metrics->frequency = fronius->getFrequency();
           metrics->power = fronius->getPower();
           metrics->voltage = fronius->getVoltage();
+          metrics->energy = fronius->getEnergyImported();
+          metrics->energyReturned = fronius->getEnergyReturned();
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
         }

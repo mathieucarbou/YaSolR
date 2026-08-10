@@ -4,7 +4,9 @@
  */
 #include <MycilaFronius.h>
 
+#include <cmath>
 #include <cstring>
+#include <limits>
 #include <memory>
 #include <string>
 #include <utility>
@@ -25,6 +27,17 @@ static float parseFloat32(const ModbusMessage& response, size_t offset) {
   return value;
 }
 
+static uint32_t parseEnergyWh(const ModbusMessage& response, size_t offset) {
+  const float value = parseFloat32(response, offset);
+  if (!std::isfinite(value) || value <= 0.0f) {
+    return 0;
+  }
+  if (value >= static_cast<float>(std::numeric_limits<uint32_t>::max())) {
+    return std::numeric_limits<uint32_t>::max();
+  }
+  return static_cast<uint32_t>(value);
+}
+
 // SunSpec Meter float model (211/212/213) register map.
 // Addresses below are the raw Modbus register numbers as accepted directly
 // by this device (confirmed via live scan) — NOT offset by -40001. The
@@ -38,14 +51,14 @@ namespace FroniusMeterRegisters {
   static constexpr uint16_t W_ADDR     = 40097; // AC Power (total), float32
 //  static constexpr uint16_t VA_ADDR    = 40105; // AC Apparent Power (total), float32
 //  static constexpr uint16_t PF_ADDR    = 40121; // Power Factor (average), float32
-//  static constexpr uint16_t WH_R_ADDR  = 40129; // Energy returned (total), float32
-//  static constexpr uint16_t WH_I_ADDR  = 40137; // Energy imported (total), float32
+  static constexpr uint16_t WH_R_ADDR  = 40129; // Energy returned (total), float32
+  static constexpr uint16_t WH_I_ADDR  = 40137; // Energy imported (total), float32
 
   static constexpr uint16_t READ_START = ID_ADDR;
-  // Derived from the last field we actually parse (W_ADDR, a float32 = 2
+  // Derived from the last field we actually parse (WH_I_ADDR, a float32 = 2
   // registers) rather than hardcoded, so uncommenting/moving fields above
   // can't silently desync this from what's actually being read.
-  static constexpr uint16_t READ_COUNT = (W_ADDR + 2) - READ_START;
+  static constexpr uint16_t READ_COUNT = (WH_I_ADDR + 2) - READ_START;
 
   // Candidate device/slave IDs for the SmartMeter — NOT the inverter's ID
   // (often 1). Observed values: 240 on older Datamanager/Symo setups, 200 on
@@ -98,6 +111,8 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
     using FroniusMeterRegisters::READ_COUNT;
     using FroniusMeterRegisters::READ_START;
     using FroniusMeterRegisters::W_ADDR;
+    using FroniusMeterRegisters::WH_I_ADDR;
+    using FroniusMeterRegisters::WH_R_ADDR;
 
     // Guard against short/malformed frames before indexing into the buffer.
     const size_t expectedSize = byteOffset(READ_START + READ_COUNT);
@@ -144,6 +159,8 @@ void Mycila::Fronius::begin(const char* host, uint16_t port) {
     this->_frequency       = parseFloat32(response, byteOffset(HZ_ADDR));
     this->_current         = parseFloat32(response, byteOffset(A_ADDR));
     this->_power           = parseFloat32(response, byteOffset(W_ADDR));
+    this->_energyReturned  = parseEnergyWh(response, byteOffset(WH_R_ADDR));
+    this->_energyImported  = parseEnergyWh(response, byteOffset(WH_I_ADDR));
 
     if (_callback) {
       _callback(EventType::EVT_READ);
@@ -187,6 +204,8 @@ void Mycila::Fronius::end() {
     _lastError.clear();
     _frequency = NAN;
     _current = NAN;
+    _energyImported = 0;
+    _energyReturned = 0;
     _power = NAN;
     _voltage = NAN;
     _meterDeviceIdIndex = 0;
