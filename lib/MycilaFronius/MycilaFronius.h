@@ -10,8 +10,9 @@
   #include <ArduinoJson.h>
 #endif
 
-#include <memory>
 #include <stdint.h>
+
+#include <memory>
 #include <string>
 #include <utility>
 
