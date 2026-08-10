@@ -31,6 +31,10 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
       victronConnectTask->resume();
     }
 
+    if (froniusConnectTask) {
+      froniusConnectTask->resume();
+    }
+
     if (mqttConnectTask)
       mqttConnectTask->resume(10000); // delay mqtt startup by 10 seconds to let other services start first in order to avoid too much memory consumption at once
   }

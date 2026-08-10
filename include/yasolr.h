@@ -24,6 +24,7 @@
 #include <MycilaESPConnect.h>
 #include <MycilaEasyDisplay.h>
 #include <MycilaExpiringValue.h>
+#include <MycilaFronius.h>
 #include <MycilaGrid.h>
 #include <MycilaHADiscovery.h>
 #include <MycilaJSY.h>
@@ -169,6 +170,11 @@ extern bool yasolr_isZeroCrossDetectionRequired(const char* type);
 extern Mycila::Victron* victron;
 extern Mycila::Task* victronConnectTask;
 extern void yasolr_configure_victron();
+
+// fronius
+extern Mycila::Fronius* fronius;
+extern Mycila::Task* froniusConnectTask;
+extern void yasolr_configure_fronius();
 
 // version check
 extern void yasolr_init_version_check();

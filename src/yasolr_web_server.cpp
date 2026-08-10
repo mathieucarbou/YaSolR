@@ -166,6 +166,9 @@ void rest_api() {
     if (victron)
       victron->toJson(root["victron"].to<JsonObject>());
 
+    if (fronius)
+      fronius->toJson(root["fronius"].to<JsonObject>());
+
     // libs versions
     JsonObject library = root["system"]["lib"].to<JsonObject>();
     library["ArduinoJson"] = ARDUINOJSON_VERSION;

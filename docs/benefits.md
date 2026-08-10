@@ -190,7 +190,7 @@ This includes:
 - **ESP32 boards**: ESP32-DevKitC, ESP32-S3-DevKitC-1, Olimex ESP32-GATEWAY, Olimex ESP32-POE, T-ETH-Lite ESP32 S3, Waveshare ESP32-S3 ETH, WT32-ETH01, and many more
 - **Ethernet**: Multiple boards with native Ethernet support for a more reliable and stable connection
 - **Dimmers**: Random SSR (Phase Control & Cycle Stealing), Synchronous SSR (Cycle Stealing), RobotDyn 24A/40A, Voltage Regulators with DAC
-- **Grid measurement devices**: JSY-MK-163/193/194/227/229/333, PZEM-004T v3/v4, Shelly EM, MQTT, Victron Modbus TCP
+- **Grid measurement devices**: JSY-MK-163/193/194/227/229/333, PZEM-004T v3/v4, Shelly EM, MQTT, Victron Modbus TCP, Fronius Modbus TCP
 - **Temperature sensors**: DS18B20 (Dallas 1-Wire)
 - **Displays**: SSD1306, SH1106, SH1107 I2C OLED
 - **ZCD sources**: Dedicated ZCD modules (Daniel S.), RobotDyn built-in ZCD, JSY-MK-194G integrated ZCD, BM1Z102FJ IC
