@@ -90,7 +90,6 @@ extern Mycila::TaskManager* jsyTaskManager;
 extern void yasolr_configure_jsy();
 
 // Remote JSY
-extern AsyncUDP* udp;
 extern Mycila::Task* jsyRemoteTask;
 extern void yasolr_configure_jsy_remote();
 extern float yasolr_jsy_remote_message_rate();

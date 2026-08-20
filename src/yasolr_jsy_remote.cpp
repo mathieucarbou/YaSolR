@@ -18,8 +18,8 @@
   #define DEBUG_UDP(...)
 #endif
 
-AsyncUDP* udp = nullptr;
-baudvine::RingBuf<float, 15>* udpMessageRateBuffer = nullptr;
+static AsyncUDP* jsyRemoteUdp = nullptr;
+static baudvine::RingBuf<float, 15>* jsyRemoteMessageRateBuffer = nullptr;
 Mycila::Task* jsyRemoteTask = nullptr;
 
 class UDPMessage {
@@ -342,7 +342,7 @@ static void onData(AsyncUDPPacket& packet) {
   }
 
   // record stats
-  udpMessageRateBuffer->push_back(millis() / 1000.0f);
+  jsyRemoteMessageRateBuffer->push_back(millis() / 1000.0f);
 
   processJSON(doc);
 
@@ -355,17 +355,17 @@ void yasolr_configure_jsy_remote() {
     if (jsyRemoteTask == nullptr) {
       ESP_LOGI(TAG, "Enable Remote JSY");
 
-      udp = new AsyncUDP();
-      udp->onPacket(onData);
+      jsyRemoteUdp = new AsyncUDP();
+      jsyRemoteUdp->onPacket(onData);
 
-      if (udpMessageRateBuffer == nullptr)
-        udpMessageRateBuffer = new baudvine::RingBuf<float, 15>();
+      if (jsyRemoteMessageRateBuffer == nullptr)
+        jsyRemoteMessageRateBuffer = new baudvine::RingBuf<float, 15>();
 
       jsyRemoteTask = new Mycila::Task("Remote JSY", Mycila::Task::Type::ONCE, []() {
-        udp->close();
+        jsyRemoteUdp->close();
         const uint16_t udpPort = config.get<uint16_t>(KEY_UDP_PORT);
         ESP_LOGI(TAG, "Enable Remote JSY Listener on port %" PRIu16, udpPort);
-        udp->listen(udpPort);
+        jsyRemoteUdp->listen(udpPort);
       });
 
       unsafeTaskManager.addTask(*jsyRemoteTask);
@@ -377,24 +377,24 @@ void yasolr_configure_jsy_remote() {
       Mycila::TaskMonitor.removeTask("async_udp");
 
       unsafeTaskManager.removeTask(*jsyRemoteTask);
-      udp->close();
+      jsyRemoteUdp->close();
 
       delete jsyRemoteTask;
-      delete udp;
-      delete udpMessageRateBuffer;
+      delete jsyRemoteUdp;
+      delete jsyRemoteMessageRateBuffer;
 
       jsyRemoteTask = nullptr;
-      udp = nullptr;
-      udpMessageRateBuffer = nullptr;
+      jsyRemoteUdp = nullptr;
+      jsyRemoteMessageRateBuffer = nullptr;
     }
   }
 }
 
 float yasolr_jsy_remote_message_rate() {
-  if (udpMessageRateBuffer) {
-    if (udpMessageRateBuffer->size() > 1) {
-      float diff = udpMessageRateBuffer->back() - udpMessageRateBuffer->front();
-      return diff == 0 ? 0 : udpMessageRateBuffer->size() / diff;
+  if (jsyRemoteMessageRateBuffer) {
+    if (jsyRemoteMessageRateBuffer->size() > 1) {
+      float diff = jsyRemoteMessageRateBuffer->back() - jsyRemoteMessageRateBuffer->front();
+      return diff == 0 ? 0 : jsyRemoteMessageRateBuffer->size() / diff;
     } else {
       return 0;
     }

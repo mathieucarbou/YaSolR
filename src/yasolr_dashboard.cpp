@@ -105,7 +105,7 @@ static dash::StatisticValue<const char*> _deviceModel(dashboard, YASOLR_LBL_011)
 static dash::StatisticValue<const char*> _firmwareBuildHash(dashboard, YASOLR_LBL_013);
 static dash::StatisticValue<const char*> _firmwareBuildTimestamp(dashboard, YASOLR_LBL_014);
 static dash::StatisticValue<float, 1> _gridFrequency(dashboard, YASOLR_LBL_018);
-static dash::StatisticValue<float, 2> _udpMessageRateBuffer(dashboard, YASOLR_LBL_157);
+static dash::StatisticValue<float, 2> _jsyRemoteMessageRateBuffer(dashboard, YASOLR_LBL_157);
 static dash::StatisticValue<const char*> _networkHostname(dashboard, YASOLR_LBL_019);
 static dash::StatisticValue<const char*> _networkInterface(dashboard, YASOLR_LBL_020);
 static dash::StatisticValue _networkAPIP(dashboard, YASOLR_LBL_021);
@@ -1181,7 +1181,7 @@ void YaSolR::Website::initCards() {
 
   // statistics
 
-  _udpMessageRateBuffer.setDisplay(grid.isUsing(Mycila::metric::Kind::JSY_REMOTE));
+  _jsyRemoteMessageRateBuffer.setDisplay(grid.isUsing(Mycila::metric::Kind::JSY_REMOTE));
   _networkAPIP.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   _networkAPMAC.setDisplay(mode == Mycila::ESPConnect::Mode::AP);
   #ifdef ESPCONNECT_ETH_SUPPORT
@@ -1546,7 +1546,7 @@ void YaSolR::Website::updateCards() {
   // statistics
 
   _gridFrequency.setValue(yasolr_frequency());
-  _udpMessageRateBuffer.setValue(yasolr_jsy_remote_message_rate());
+  _jsyRemoteMessageRateBuffer.setValue(yasolr_jsy_remote_message_rate());
   _networkWiFiRSSI.setValue(espConnect.getWiFiRSSI());
   _networkWiFiSignal.setValue(espConnect.getWiFiSignalQuality());
   _output1RelaySwitchCount.setValue(output1.getBypassRelaySwitchCount());
