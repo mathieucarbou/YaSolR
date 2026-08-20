@@ -374,8 +374,6 @@ void yasolr_configure_jsy_remote() {
     if (jsyRemoteTask != nullptr) {
       ESP_LOGI(TAG, "Disable Remote JSY");
 
-      Mycila::TaskMonitor.removeTask("async_udp");
-
       unsafeTaskManager.removeTask(*jsyRemoteTask);
       jsyRemoteUdp->close();
 
@@ -391,14 +389,9 @@ void yasolr_configure_jsy_remote() {
 }
 
 float yasolr_jsy_remote_message_rate() {
-  if (jsyRemoteMessageRateBuffer) {
-    if (jsyRemoteMessageRateBuffer->size() > 1) {
-      float diff = jsyRemoteMessageRateBuffer->back() - jsyRemoteMessageRateBuffer->front();
-      return diff == 0 ? 0 : jsyRemoteMessageRateBuffer->size() / diff;
-    } else {
-      return 0;
-    }
-  } else {
-    return 0;
+  if (jsyRemoteMessageRateBuffer && jsyRemoteMessageRateBuffer->size() > 1) {
+    float diff = jsyRemoteMessageRateBuffer->back() - jsyRemoteMessageRateBuffer->front();
+    return diff == 0 ? 0 : jsyRemoteMessageRateBuffer->size() / diff;
   }
+  return 0;
 }
