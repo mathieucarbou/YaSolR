@@ -365,7 +365,11 @@ void yasolr_configure_jsy_remote() {
         jsyRemoteUdp->close();
         const uint16_t udpPort = config.get<uint16_t>(KEY_UDP_PORT);
         ESP_LOGI(TAG, "Enable Remote JSY Listener on port %" PRIu16, udpPort);
-        jsyRemoteUdp->listen(udpPort);
+        if (jsyRemoteUdp->listen(udpPort)) {
+          ESP_LOGI(TAG, "Remote JSY Listener started on port %" PRIu16, udpPort);
+        } else {
+          ESP_LOGE(TAG, "Failed to start Remote JSY Listener on port %" PRIu16, udpPort);
+        }
       });
 
       unsafeTaskManager.addTask(*jsyRemoteTask);
