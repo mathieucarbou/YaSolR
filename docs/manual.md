@@ -668,14 +668,12 @@ If Fronius is selected, you need to configure the following parameters:
 
 ##### Shelly LNM (Local Network Messaging)
 
-YaSolR can receive grid measurements from Shelly devices (Shelly Pro EM 50, Shelly 3EM, etc.) using Shelly's [Local Network Messaging (LNM)](https://shelly-api-docs.shelly.cloud/gen2/General/LocalNetworkMessaging/) over UDP multicast.
+YaSolR can receive grid measurements from Shelly devices (Shelly Pro EM 50, etc.) using Shelly's [Local Network Messaging (LNM)](https://shelly-api-docs.shelly.cloud/gen2/General/LocalNetworkMessaging/) over UDP multicast.
 This is a direct local network connection — no cloud, no internet, and no MQTT broker required.
 
 If `Shelly LNM` is selected, YaSolR will listen for UDP multicast messages on the configured multicast group address and port.
 
 The big advantage of using Shelly LNM is that, unlike MQTT and WebSocket, it provides **real-time grid measurements** (voltage, current, active power, apparent power, power factor, and frequency) because every Shelly measurement is sent at a regular interval: 1 per second.
-
-The default multicast group is `239.255.53.96:53965`.
 
 !!! warning
 

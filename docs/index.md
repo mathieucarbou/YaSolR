@@ -56,6 +56,8 @@ It is also a big **Open-Source** project following **best development practices*
 
 - 🔌 **3-Phase support** (with JSY-MK-333, Shelly or MQTT)
 
+- 🐚 **Direct Shelly support**: with [Shelly LNM (Local Network Messaging)](manual.md#shelly-lnm-local-network-messaging), YaSolR can read grid measurements directly from Shelly devices over UDP multicast — no cloud, no MQTT broker required
+
 - 🌐 **MQTT, Home Assistant, REST API** support
 
 - 📉 **Harmonics**: YaSolR includes mechanisms to help you visualize and lower harmonics to comply with regulations
