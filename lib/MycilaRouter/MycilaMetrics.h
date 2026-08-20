@@ -49,6 +49,8 @@ namespace Mycila {
       MQTT,
       VICTRON,
       FRONIUS,
+
+      SHELLY_LNM,
     };
 
     enum class Source {
@@ -108,6 +110,8 @@ namespace Mycila {
       MQTT,
       VICTRON,
       FRONIUS,
+
+      SHELLY_LNM,
     };
 
     static bool isUsing(Source source, Kind kind) {
@@ -152,6 +156,7 @@ namespace Mycila {
         case Source::JSY_MK_333_PHASE_C_REMOTE:    return kind == Kind::JSY_REMOTE || kind == Kind::JSY_MK_333 || kind == Kind::JSY_MK_333_PHASE_C;
         case Source::PZEM_SERIAL1:                 return kind == Kind::PZEM;
         case Source::PZEM_SERIAL2:                 return kind == Kind::PZEM;
+        case Source::SHELLY_LNM:                   return kind == Kind::SHELLY_LNM;
         default:                                   return kind == Kind::UNKNOWN;
       }
       return false;
@@ -199,6 +204,7 @@ namespace Mycila {
         case Source::JSY_MK_333_PHASE_C_REMOTE:    return "JSY-MK-333 Phase C (Remote)";
         case Source::PZEM_SERIAL1:                 return "PZEM (Serial1)";
         case Source::PZEM_SERIAL2:                 return "PZEM (Serial2)";
+        case Source::SHELLY_LNM:                   return "Shelly LNM";
         default:                                   return "Unknown";
       }
     }
@@ -244,6 +250,7 @@ namespace Mycila {
       if (strcmp(str, "JSY-MK-333 Phase C (Remote)") == 0) return Source::JSY_MK_333_PHASE_C_REMOTE;
       if (strcmp(str, "PZEM (Serial1)") == 0) return Source::PZEM_SERIAL1;
       if (strcmp(str, "PZEM (Serial2)") == 0) return Source::PZEM_SERIAL2;
+      if (strcmp(str, "Shelly LNM") == 0) return Source::SHELLY_LNM;
       return Source::UNKNOWN;
     }
 

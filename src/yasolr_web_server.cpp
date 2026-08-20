@@ -153,6 +153,10 @@ void rest_api() {
     if (jsyRemoteTask)
       root["system"]["remote_jsy"]["msg_rate"] = yasolr_jsy_remote_message_rate();
 
+    // shelly_lnm
+    if (shellyLnmTask)
+      root["system"]["shelly_lnm"]["msg_rate"] = yasolr_shelly_lnm_message_rate();
+
     // stack
     Mycila::TaskMonitor.toJson(root["system"]["stack"].to<JsonObject>());
 
@@ -420,6 +424,9 @@ void rest_api() {
 
     if (jsyRemoteTask)
       root["remote_jsy"]["msg_rate"] = yasolr_jsy_remote_message_rate();
+
+    if (shellyLnmTask)
+      root["shelly_lnm"]["msg_rate"] = yasolr_shelly_lnm_message_rate();
 
     response->setLength();
     request->send(response);

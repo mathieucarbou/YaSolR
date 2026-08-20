@@ -216,6 +216,8 @@ static void init_config() {
   config.configure(KEY_RELAY2_LOAD, static_cast<uint16_t>(0));
   config.configure(KEY_RELAY2_TOLERANCE, static_cast<uint8_t>(7));
   config.configure(KEY_RELAY2);
+  config.configure(KEY_SHELLY_LNM_ADDR, "239.255.53.96");
+  config.configure(KEY_SHELLY_LNM_PORT, static_cast<uint16_t>(53965));
   config.configure(KEY_UDP_PORT, static_cast<uint16_t>(53964));
   config.configure(KEY_VICTRON_MODBUS_PORT, static_cast<uint16_t>(502));
   config.configure(KEY_VICTRON_MODBUS_SERVER);
@@ -439,6 +441,7 @@ void yasolr_init_config() {
         yasolr_configure_mqtt_grid_source();
         yasolr_configure_victron();
         yasolr_configure_fronius();
+        yasolr_configure_shelly_lnm();
         if (!config.get<bool>(KEY_ENABLE_AP_MODE)) {
           if (victronConnectTask)
             victronConnectTask->resume();
@@ -446,6 +449,8 @@ void yasolr_init_config() {
             froniusConnectTask->resume();
           if (jsyRemoteTask)
             jsyRemoteTask->resume();
+          if (shellyLnmTask)
+            shellyLnmTask->resume();
         }
         grid.clearMetrics();
       });
@@ -487,6 +492,15 @@ void yasolr_init_config() {
 
     } else if (key == KEY_OUTPUT2_RELAY) {
       reconfigureQueue.push(yasolr_configure_output2_bypass_relay);
+
+    } else if (key == KEY_SHELLY_LNM_ADDR || key == KEY_SHELLY_LNM_PORT) {
+      reconfigureQueue.push([]() {
+        yasolr_configure_shelly_lnm();
+        if (!config.get<bool>(KEY_ENABLE_AP_MODE)) {
+          if (shellyLnmTask)
+            shellyLnmTask->resume();
+        }
+      });
     }
 
     dashboardInitTask.resume();

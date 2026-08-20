@@ -94,6 +94,11 @@ extern Mycila::Task* jsyRemoteTask;
 extern void yasolr_configure_jsy_remote();
 extern float yasolr_jsy_remote_message_rate();
 
+// Shelly LNM
+extern Mycila::Task* shellyLnmTask;
+extern void yasolr_configure_shelly_lnm();
+extern float yasolr_shelly_lnm_message_rate();
+
 // DS18
 extern Mycila::DS18* ds18O1;
 extern Mycila::DS18* ds18O2;

@@ -631,18 +631,19 @@ You must select the device used to measure your grid power and voltage amongst t
 - MQTT
 - Victron
 - Fronius
+- Shelly LNM (Local Network Messaging)
 - JSY-MK-163, JSY-MK-227, JSY-MK-229, JSY-MK-193, JSY-MK-194, JSY-MK-333
 
 !!! warning
 
     Restart YaSolR after you picked the right grid measurement device and have fully configured it.
 
-**MQTT Topics**
+##### MQTT Topics
 
 You need to configure the MQTT topics to read the grid power and voltage.
 See the [MQTT](#mqtt) section.
 
-**Victron Server**
+##### Victron Server
 
 YaSolR supports connecting to Victron Modbus TCP Server to get the grid power, voltage and frequency.
 If Victron is selected, you need to configure the following parameters:
@@ -650,7 +651,7 @@ If Victron is selected, you need to configure the following parameters:
 - Server: the Victron Modbus TCP server IP address
 - Port: the Victron Modbus TCP server port (usually `502`)
 
-**Fronius Server**
+##### Fronius Server
 
 YaSolR supports connecting to Fronius inverters via Modbus TCP (SunSpec model) to get the grid power, voltage and frequency.
 If Fronius is selected, you need to configure the following parameters:
@@ -665,7 +666,78 @@ If Fronius is selected, you need to configure the following parameters:
 
     The SmartMeter device/slave ID is auto-detected (probing IDs 240 and 200, covering both classic Primo/Symo and newer GEN24/GEN24+ lines).
 
-**JSY Devices**
+##### Shelly LNM (Local Network Messaging)
+
+YaSolR can receive grid measurements from Shelly devices (Shelly Pro EM 50, Shelly 3EM, etc.) using Shelly's [Local Network Messaging (LNM)](https://shelly-api-docs.shelly.cloud/gen2/General/LocalNetworkMessaging/) over UDP multicast.
+This is a direct local network connection — no cloud, no internet, and no MQTT broker required.
+
+If `Shelly LNM` is selected, YaSolR will listen for UDP multicast messages on the configured multicast group address and port.
+
+The big advantage of using Shelly LNM is that, unlike MQTT and WebSocket, it provides **real-time grid measurements** (voltage, current, active power, apparent power, power factor, and frequency) because every Shelly measurement is sent at a regular interval: 1 per second.
+
+The default multicast group is `239.255.53.96:53965`.
+
+!!! warning
+
+    LNM is available on Shelly Gen 2+ devices (firmware `2.0.0-beta3` or later). It is a preview feature and the API may change in future firmware.
+
+**Setting up your Shelly device:**
+
+1. Open your Shelly device's web interface (e.g. `http://<shelly-ip>/`).
+2. Go to **Settings → Local Network Messaging** and click **"+"** to create an instance.
+3. Enter the multicast address and port that match YaSolR's configuration (default: `239.255.53.96:53965`).
+4. Enable **TX (Transmit)** and select the grid component states to broadcast.
+   - ✅ TX must be **enabled**
+   - ❌ RX (Receive) is not needed — YaSolR does not transmit LNM
+   - ❌ RPC is not needed — YaSolR does not call RPC over LNM
+   [![](assets/img/screenshots/shelly_lnm_3.jpeg)](assets/img/screenshots/shelly_lnm_3.jpeg)
+5. Click **Create** to apply the settings.
+6. When TX is active, the instance card shows `TX: N component(s) / M msgs` confirming data is flowing.
+  [![](assets/img/screenshots/shelly_lnm_4.jpeg)](assets/img/screenshots/shelly_lnm_4.jpeg)
+
+!!! warning
+
+    This is important that you only select the state and only one component of your Shelly in order to reduce the UDP message size that will be sent.
+
+Once configured, select `Shelly LNM` as the grid measurement device in the **Hardware** section:
+
+[![](assets/img/screenshots/shelly_lnm_yasolr_setup.jpeg)](assets/img/screenshots/shelly_lnm_yasolr_setup.jpeg)
+
+The LNM message rate (messages per second) is visible in the **Statistics** section:
+
+[![](assets/img/screenshots/shelly_lnm_yasolr_rate.jpeg)](assets/img/screenshots/shelly_lnm_yasolr_rate.jpeg)
+
+**Verifying that the Shelly is sending data:**
+
+You can verify that your Shelly device is transmitting LNM messages by using the [`mcast`](https://github.com/ThomasRooney/mcast) command-line tool:
+
+1. Install `mcast`:
+
+    ```bash
+    go install https://github.com/individuwill/mcast@latest
+    ```
+
+2. Listen to the same multicast group:
+
+    ```bash
+    mcast receive -group 239.255.53.96 -port 53965
+    ```
+
+3. You should see messages like:
+
+    ```nash
+    ~/Downloads 
+    ❯  mcast receive -group 239.255.53.96 -port 53965
+    2026/08/20 23:55:41 Starting...
+    Listening on 239.255.53.96:53965 interface: host-chosen
+
+    *Received 215 bytes on 239.255.53.96 with ttl: 255 from 192.168.123.12:53965*
+    SL?{"device":"shellyproem50-08f9e0e5c2f8","ts":1787262942.84,"status":{"em1:0":{"id":0,"voltage":237.9,"current":8.711,"act_power":1867.5,"aprt_power":2077.0,"pf":0.90,"freq":50.0,"calibration":"factory"}}}
+    ```
+
+If you see the messages, YaSolR will also receive them and use the data (voltage, current, active power, apparent power, power factor, and frequency) as the grid measurement source.
+
+##### JSY Devices
 
 For JSY-MK-193 and JSY-MK-194, since they have 2 channels, you must also select which channel is used to measure the grid power and voltage.
 

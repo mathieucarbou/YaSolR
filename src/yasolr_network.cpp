@@ -27,6 +27,9 @@ static Mycila::Task networkStartTask("Network Start", Mycila::Task::Type::ONCE, 
     if (jsyRemoteTask)
       jsyRemoteTask->resume();
 
+    if (shellyLnmTask)
+      shellyLnmTask->resume();
+
     if (victronConnectTask) {
       victronConnectTask->resume();
     }

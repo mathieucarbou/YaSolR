@@ -372,6 +372,8 @@ static void publishData() {
 
     mqtt->publish((baseTopic + "/system/remote_jsy/msg_rate").c_str(), std::to_string(yasolr_jsy_remote_message_rate()));
 
+    mqtt->publish((baseTopic + "/system/shelly_lnm/msg_rate").c_str(), std::to_string(yasolr_shelly_lnm_message_rate()));
+
     yield();
   }
 

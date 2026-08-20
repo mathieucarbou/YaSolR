@@ -122,6 +122,8 @@ curl -X GET http://<esp-ip>/api/config
   "relay2_enable": "true",
   "relay2_load": "0",
   "relay2_type": "NO",
+  "shelly_lnm_addr": "239.255.53.96",
+  "shelly_lnm_port": "53965",
   "udp_port": "53964",
   "wifi_pwd": "",
   "wifi_ssid": "IoT",
