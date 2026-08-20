@@ -28,11 +28,11 @@ void yasolr_configure_victron() {
       // when receiving data from Victron, update grid metrics
       victron->setCallback([](Mycila::Victron::EventType eventType) {
         if (eventType == Mycila::Victron::EventType::EVT_READ) {
-          std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
-          metrics->current = victron->getCurrent();
-          metrics->frequency = victron->getFrequency();
-          metrics->power = victron->getPower();
-          metrics->voltage = victron->getVoltage();
+          Mycila::metric::Metrics metrics;
+          metrics.current = victron->getCurrent();
+          metrics.frequency = victron->getFrequency();
+          metrics.power = victron->getPower();
+          metrics.voltage = victron->getVoltage();
           grid.updateMetrics(std::move(metrics));
           pidTask.requestEarlyRun();
         }

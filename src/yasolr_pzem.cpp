@@ -101,16 +101,16 @@ static void configure_pzem(uint8_t index, Mycila::Router::Output& output, const 
       if (pzem[index]) {
         pzem[index]->setCallback([&output](const Mycila::PZEM::EventType eventType, const Mycila::PZEM::Data& data) {
           if (eventType == Mycila::PZEM::EventType::EVT_READ) {
-            std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
-            metrics->apparentPower = data.apparentPower;
-            metrics->current = data.current;
-            metrics->energy = data.activeEnergy;
-            metrics->frequency = data.frequency;
-            metrics->power = data.activePower;
-            metrics->powerFactor = data.powerFactor;
-            metrics->resistance = data.resistance();
-            metrics->thdi = data.thdi();
-            metrics->voltage = data.dimmedVoltage();
+            Mycila::metric::Metrics metrics;
+            metrics.apparentPower = data.apparentPower;
+            metrics.current = data.current;
+            metrics.energy = data.activeEnergy;
+            metrics.frequency = data.frequency;
+            metrics.power = data.activePower;
+            metrics.powerFactor = data.powerFactor;
+            metrics.resistance = data.resistance();
+            metrics.thdi = data.thdi();
+            metrics.voltage = data.dimmedVoltage();
             output.updateMetrics(std::move(metrics));
           }
         });

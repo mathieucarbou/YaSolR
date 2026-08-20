@@ -194,18 +194,18 @@ namespace Mycila {
               root["temperature"] = _temperature.get();
             JsonArray metrics = root["metrics"].to<JsonArray>();
             {
-              std::unique_ptr<metric::Metrics> computed = std::make_unique<metric::Metrics>();
-              if (computeRoutedMetrics(*computed, gridVoltage)) {
+              metric::Metrics computed;
+              if (computeRoutedMetrics(computed, gridVoltage)) {
                 JsonObject source = metrics.add<JsonObject>();
                 source["source"] = metric::sourceToString(metric::Source::COMPUTED);
-                metric::Metrics::toJson(source, *computed);
+                metric::Metrics::toJson(source, computed);
               }
             }
             if (_metrics.isPresent()) {
               JsonObject source = metrics.add<JsonObject>();
               source["source"] = getSourceString();
               source["time"] = _metrics.getLastUpdateTime();
-              metric::Metrics::toJson(source, *_metrics.get());
+              metric::Metrics::toJson(source, _metrics.get());
             }
             _dimmer->toJson(root["dimmer"].to<JsonObject>());
             if (_relay)
@@ -325,11 +325,11 @@ namespace Mycila {
 
           // metrics
 
-          void updateMetrics(std::unique_ptr<Mycila::metric::Metrics> metrics) override {
+          void updateMetrics(Mycila::metric::Metrics metrics) override {
             Mycila::metric::MetricSupport::updateMetrics(std::move(metrics));
             // update the last time we detected some consumption on the output (used to detect a load that stopped consuming)
-            if (getState() == State::ROUTING && isAutoDimmerEnabled() && _metrics.get()->power >= MYCILA_OUTPUT_LOW_POWER_THRESHOLD) {
-              _lastTimeConsumptionWasDetectedWhileRouting.update(_metrics.get()->power);
+            if (getState() == State::ROUTING && isAutoDimmerEnabled() && _metrics.get().power >= MYCILA_OUTPUT_LOW_POWER_THRESHOLD) {
+              _lastTimeConsumptionWasDetectedWhileRouting.update(_metrics.get().power);
             }
           }
 
@@ -337,7 +337,7 @@ namespace Mycila {
             if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
-              return _metrics.get()->power;
+              return _metrics.get().power;
             if (gridVoltage > 0 && config.calibratedResistance > 0) {
               Mycila::Dimmer::Metrics dimmerMetrics;
               if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
@@ -351,7 +351,7 @@ namespace Mycila {
             if (getState() != State::ROUTING)
               return 0.0f;
             if (_metrics.isPresent())
-              return _metrics.get()->current;
+              return _metrics.get().current;
             if (gridVoltage > 0 && config.calibratedResistance > 0) {
               Mycila::Dimmer::Metrics dimmerMetrics;
               if (_dimmer->calculateMetrics(dimmerMetrics, gridVoltage, config.calibratedResistance)) {
@@ -363,7 +363,7 @@ namespace Mycila {
 
           std::optional<float> measureResistance() const {
             if (_metrics.isPresent())
-              return _metrics.get()->resistance;
+              return _metrics.get().resistance;
             return std::nullopt;
           }
 
@@ -375,9 +375,9 @@ namespace Mycila {
             metrics.reset(0.0f);
             if (_metrics.isPresent()) {
               if (getState() == State::ROUTING) {
-                memcpy(&metrics, _metrics.get().get(), sizeof(metric::Metrics));
+                memcpy(&metrics, &_metrics.get(), sizeof(metric::Metrics));
               } else {
-                metrics.energy = _metrics.get()->energy;
+                metrics.energy = _metrics.get().energy;
               }
               return true;
             }
@@ -587,16 +587,16 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
       void toJson(const JsonObject& root, float gridVoltage) const {
         JsonArray json = root["metrics"].to<JsonArray>();
-        std::unique_ptr<metric::Metrics> metrics = std::make_unique<metric::Metrics>();
-        if (computeRoutedMetrics(*metrics, gridVoltage)) {
+        metric::Metrics metrics;
+        if (computeRoutedMetrics(metrics, gridVoltage)) {
           JsonObject source = json.add<JsonObject>();
           source["source"] = metric::sourceToString(metric::Source::COMPUTED);
-          metric::Metrics::toJson(source, *metrics);
+          metric::Metrics::toJson(source, metrics);
         }
-        if (readRoutedMetrics(*metrics)) {
+        if (readRoutedMetrics(metrics)) {
           JsonObject source = json.add<JsonObject>();
           source["source"] = "Measured";
-          metric::Metrics::toJson(source, *metrics);
+          metric::Metrics::toJson(source, metrics);
         }
       }
 #endif

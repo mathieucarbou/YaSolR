@@ -373,7 +373,7 @@ namespace Mycila {
         virtual bool readMetrics(Metrics& metrics) const {
           metrics.reset();
           if (_metrics.isPresent()) {
-            memcpy(&metrics, _metrics.get().get(), sizeof(Metrics));
+            memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
             return true;
           }
           return false;
@@ -407,7 +407,7 @@ namespace Mycila {
           _metrics.reset();
         }
 
-        virtual void updateMetrics(std::unique_ptr<Mycila::metric::Metrics> metrics) {
+        virtual void updateMetrics(Mycila::metric::Metrics metrics) {
           if (_metrics.neverUpdated()) {
             _metrics.setExpiration(_source == Source::MQTT ? 120000 : 10000);
           }
@@ -416,7 +416,7 @@ namespace Mycila {
 
       protected:
         Source _source = Source::UNKNOWN;
-        ExpiringValue<std::unique_ptr<Mycila::metric::Metrics>> _metrics;
+        ExpiringValue<Mycila::metric::Metrics> _metrics;
     };
   } // namespace metric
 } // namespace Mycila

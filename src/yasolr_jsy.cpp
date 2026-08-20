@@ -46,31 +46,31 @@ static void init_read_task() {
 }
 
 static void updateGrid(const Mycila::JSY::Metrics& channel) {
-  std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
-  metrics->apparentPower = channel.apparentPower;
-  metrics->current = channel.current;
-  metrics->energy = channel.activeEnergyImported;
-  metrics->energyReturned = channel.activeEnergyReturned;
-  metrics->frequency = channel.frequency;
-  metrics->power = channel.activePower;
-  metrics->powerFactor = channel.powerFactor;
-  metrics->voltage = channel.voltage;
+  Mycila::metric::Metrics metrics;
+  metrics.apparentPower = channel.apparentPower;
+  metrics.current = channel.current;
+  metrics.energy = channel.activeEnergyImported;
+  metrics.energyReturned = channel.activeEnergyReturned;
+  metrics.frequency = channel.frequency;
+  metrics.power = channel.activePower;
+  metrics.powerFactor = channel.powerFactor;
+  metrics.voltage = channel.voltage;
   grid.updateMetrics(std::move(metrics));
   pidTask.requestEarlyRun();
 }
 
 static void updateOutput(Mycila::Router::Output* output, const Mycila::JSY::Metrics& channel) {
-  std::unique_ptr<Mycila::metric::Metrics> metrics = std::make_unique<Mycila::metric::Metrics>();
-  metrics->apparentPower = channel.apparentPower;
-  metrics->current = channel.current;
-  metrics->energy = (channel.activeEnergyImported + channel.activeEnergyReturned); // if the clamp is installed reversed
-  metrics->frequency = channel.frequency;
-  metrics->power = std::abs(channel.activePower); // if the clamp is installed reversed
-  metrics->powerFactor = channel.powerFactor;
-  metrics->resistance = channel.resistance();
-  metrics->thdi = channel.thdi();
-  metrics->voltage = channel.voltage;
-  metrics->zeroNaN();
+  Mycila::metric::Metrics metrics;
+  metrics.apparentPower = channel.apparentPower;
+  metrics.current = channel.current;
+  metrics.energy = (channel.activeEnergyImported + channel.activeEnergyReturned); // if the clamp is installed reversed
+  metrics.frequency = channel.frequency;
+  metrics.power = std::abs(channel.activePower); // if the clamp is installed reversed
+  metrics.powerFactor = channel.powerFactor;
+  metrics.resistance = channel.resistance();
+  metrics.thdi = channel.thdi();
+  metrics.voltage = channel.voltage;
+  metrics.zeroNaN();
   output->updateMetrics(std::move(metrics));
 }
 
