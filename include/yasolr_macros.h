@@ -96,9 +96,7 @@
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR/releases/"
 #endif
 
-// UDP communication
-
-#define YASOLR_UDP_PORT 53964
+// JSY Remote UDP communication
 // #define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x01 // old json
 #define YASOLR_UDP_MSG_TYPE_JSY_DATA 0x03 // new json
 
@@ -111,7 +109,6 @@
 #define KEY_ENABLE_AP_MODE             "ap_mode_enable"
 #define KEY_ENABLE_DEBUG               "debug_enable"
 #define KEY_ENABLE_DEBUG_BOOT          "dbg_boot_enable"
-#define KEY_ENABLE_SYSTEM_DS18         "ds18_sys_enable"
 #define KEY_ENABLE_HA_DISCOVERY        "ha_disco_enable"
 #define KEY_ENABLE_LIGHTS              "lights_enable"
 #define KEY_ENABLE_MQTT                "mqtt_enable"
@@ -121,12 +118,13 @@
 #define KEY_ENABLE_OUTPUT2_AUTO_BYPASS "o2_ab_enable"
 #define KEY_ENABLE_OUTPUT2_AUTO_DIMMER "o2_ad_enable"
 #define KEY_ENABLE_OUTPUT2_DS18        "o2_ds18_enable"
+#define KEY_ENABLE_SYSTEM_DS18         "ds18_sys_enable"
 
 // configuration keys
 
+#define KEY_DISPLAY                        "disp_type"
 #define KEY_DISPLAY_ROTATION               "disp_angle"
 #define KEY_DISPLAY_SPEED                  "disp_speed"
-#define KEY_DISPLAY                        "disp_type"
 #define KEY_FRONIUS_MODBUS_PORT            "fro_mb_port"
 #define KEY_FRONIUS_MODBUS_SERVER          "fro_mb_server"
 #define KEY_GRID_FREQUENCY                 "grid_freq"
@@ -150,11 +148,11 @@
 #define KEY_NTP_TIMEZONE                   "ntp_timezone"
 #define KEY_OUTPUT1_BYPASS_TIMEOUT         "o1_bp_timeout"
 #define KEY_OUTPUT1_DAYS                   "o1_days"
+#define KEY_OUTPUT1_DIMMER                 "o1_dim_type"
 #define KEY_OUTPUT1_DIMMER_LIMIT           "o1_dim_limit"
 #define KEY_OUTPUT1_DIMMER_MAX             "o1_dim_max"
 #define KEY_OUTPUT1_DIMMER_MIN             "o1_dim_min"
 #define KEY_OUTPUT1_DIMMER_TEMP_LIMITER    "o1_dim_max_t"
-#define KEY_OUTPUT1_DIMMER                 "o1_dim_type"
 #define KEY_OUTPUT1_EXCESS_LIMITER         "o1_excess_limit"
 #define KEY_OUTPUT1_EXCESS_MIN             "o1_excess_min"
 #define KEY_OUTPUT1_EXCESS_RATIO           "o1_excess_ratio"
@@ -168,17 +166,17 @@
 #define KEY_OUTPUT1_TIME_STOP              "o1_time_stop"
 #define KEY_OUTPUT2_BYPASS_TIMEOUT         "o2_bp_timeout"
 #define KEY_OUTPUT2_DAYS                   "o2_days"
+#define KEY_OUTPUT2_DIMMER                 "o2_dim_type"
 #define KEY_OUTPUT2_DIMMER_LIMIT           "o2_dim_limit"
 #define KEY_OUTPUT2_DIMMER_MAX             "o2_dim_max"
 #define KEY_OUTPUT2_DIMMER_MIN             "o2_dim_min"
 #define KEY_OUTPUT2_DIMMER_TEMP_LIMITER    "o2_dim_max_t"
-#define KEY_OUTPUT2_DIMMER                 "o2_dim_type"
 #define KEY_OUTPUT2_EXCESS_LIMITER         "o2_excess_limit"
 #define KEY_OUTPUT2_EXCESS_MIN             "o2_excess_min"
 #define KEY_OUTPUT2_EXCESS_RATIO           "o2_excess_ratio"
 #define KEY_OUTPUT2_RELAY                  "o2_relay_type"
-#define KEY_OUTPUT2_SOURCE                 "o2_source"
 #define KEY_OUTPUT2_RESISTANCE             "o2_resistance"
+#define KEY_OUTPUT2_SOURCE                 "o2_source"
 #define KEY_OUTPUT2_TEMPERATURE_MQTT_TOPIC "o2_temp_mqtt"
 #define KEY_OUTPUT2_TEMPERATURE_START      "o2_temp_start"
 #define KEY_OUTPUT2_TEMPERATURE_STOP       "o2_temp_stop"
@@ -196,12 +194,12 @@
 #define KEY_PID_SETPOINT                   "pid_setpoint"
 #define KEY_PID_TRIGGER                    "pid_trigger"
 #define KEY_RELAY_CHECK_INTERVAL           "relay_itvl"
+#define KEY_RELAY1                         "relay1_type"
 #define KEY_RELAY1_LOAD                    "relay1_load"
 #define KEY_RELAY1_TOLERANCE               "relay1_tol"
-#define KEY_RELAY1                         "relay1_type"
+#define KEY_RELAY2                         "relay2_type"
 #define KEY_RELAY2_LOAD                    "relay2_load"
 #define KEY_RELAY2_TOLERANCE               "relay2_tol"
-#define KEY_RELAY2                         "relay2_type"
 #define KEY_UDP_PORT                       "udp_port"
 #define KEY_VICTRON_MODBUS_PORT            "vic_mb_port"
 #define KEY_VICTRON_MODBUS_SERVER          "vic_mb_server"

@@ -216,7 +216,7 @@ static void init_config() {
   config.configure(KEY_RELAY2_LOAD, static_cast<uint16_t>(0));
   config.configure(KEY_RELAY2_TOLERANCE, static_cast<uint8_t>(7));
   config.configure(KEY_RELAY2);
-  config.configure(KEY_UDP_PORT, static_cast<uint16_t>(YASOLR_UDP_PORT));
+  config.configure(KEY_UDP_PORT, static_cast<uint16_t>(53964));
   config.configure(KEY_VICTRON_MODBUS_PORT, static_cast<uint16_t>(502));
   config.configure(KEY_VICTRON_MODBUS_SERVER);
   config.configure(KEY_WIFI_BSSID);
