@@ -208,7 +208,17 @@ void rest_api() {
     body.reserve(4096);
     config.backup(body);
     AsyncWebServerResponse* response = request->beginResponse(200, "text/plain", body);
-    response->addHeader("Content-Disposition", "attachment; filename=\"config.txt\"");
+    const time_t now = Mycila::Time::getUnixTime(); // returns 0 if time not available (NTP not synced)
+    if (now) {
+      struct tm timeInfo;
+      localtime_r(&now, &timeInfo);
+      // 49 chars + '\0' = 50: attachment; filename="config-YYYYMMDDHHMMSS.txt"
+      char header[64];
+      strftime(header, sizeof(header), "attachment; filename=\"config-%Y%m%d%H%M%S.txt\"", &timeInfo);
+      response->addHeader("Content-Disposition", header);
+    } else {
+      response->addHeader("Content-Disposition", "attachment; filename=\"config.txt\"");
+    }
     request->send(response);
   });
 
