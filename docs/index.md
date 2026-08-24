@@ -249,6 +249,10 @@ The router exposes a lot of statistics and information through MQTT and REST API
 - [REST](rest.md) API
 - [MQTT](mqtt.md) API with support for Home Assistant Auto Discovery, retained messages, TLS, etc
 
+| | |
+|---|---|
+| [![](assets/img/screenshots/ha_disco_1.jpeg)](assets/img/screenshots/ha_disco_1.jpeg) | [![](assets/img/screenshots/ha_disco_2.jpeg)](assets/img/screenshots/ha_disco_2.jpeg) |
+
 ### PID Control and Tuning
 
 The router uses a PID controller to control the dimmers and you have full control over the PID parameters to tune it.
