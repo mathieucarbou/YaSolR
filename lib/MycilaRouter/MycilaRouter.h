@@ -343,7 +343,7 @@ namespace Mycila {
           void updateMetrics(Mycila::metric::Metrics metrics) override {
             Mycila::metric::MetricSupport::updateMetrics(std::move(metrics));
             // update the last time we detected some consumption on the output (used to detect a load that stopped consuming)
-            if (getState() == State::ROUTING && isAutoDimmerEnabled() && _metrics.get().power >= MYCILA_OUTPUT_LOW_POWER_THRESHOLD) {
+            if (getState() == State::ROUTING && _metrics.get().power >= MYCILA_OUTPUT_LOW_POWER_THRESHOLD) {
               _lastTimeConsumptionWasDetectedWhileRouting.update(_metrics.get().power);
             }
           }
