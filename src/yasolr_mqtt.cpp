@@ -418,9 +418,9 @@ static void publishData() {
       mqtt->publish((outputTopic + "/bypass").c_str(), YASOLR_STATE(output->isBypassOn()));
       mqtt->publish((outputTopic + "/dimmer").c_str(), YASOLR_STATE(output->isDimmerOn()));
       if (std::optional<bool> consuming = output->isConsuming())
-        mqtt->publish((outputTopic + "/consuming").c_str(), YASOLR_BOOL(consuming.value()));
+        mqtt->publish((outputTopic + "/consuming").c_str(), YASOLR_STATE(consuming.value()));
       else
-        mqtt->publish((outputTopic + "/consuming").c_str(), "");
+        mqtt->publish((outputTopic + "/consuming").c_str(), YASOLR_OFF);
       mqtt->publish((outputTopic + "/duty_cycle").c_str(), std::to_string(output->getDimmerDutyCycle() * 100.0f));
       mqtt->publish((outputTopic + "/temperature").c_str(), output->temperature().orElse(0.0f) > 0 ? std::to_string(output->temperature().orElse(0.0f)) : "0");
 
