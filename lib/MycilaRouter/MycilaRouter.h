@@ -189,6 +189,8 @@ namespace Mycila {
             root["state"] = getStateName();
             root["bypass"] = isBypassOn() ? "on" : "off";
             root["bypass_elapsed"] = getBypassUptime();
+            if (std::optional<bool> consuming = isConsuming())
+              root["consuming"] = consuming.value();
             _lastTimeConsumptionWasDetectedWhileRouting.toJson(root["last_routed_power"].to<JsonObject>());
             if (_temperature.isPresent())
               root["temperature"] = _temperature.get();
@@ -288,9 +290,22 @@ namespace Mycila {
             return availablePowerToDivert;
           }
 
-          // returns true if the output was consuming but then stopped consuming
-          bool wasConsuming() const {
-            return !_lastTimeConsumptionWasDetectedWhileRouting.neverUpdated() && !_lastTimeConsumptionWasDetectedWhileRouting.isPresent();
+          // Tell whether the load is currently consuming the routed power.
+          // - std::nullopt: we can't tell (not routing, or no measurement available)
+          // - true: the load is consuming (power detected recently while routing)
+          // - false: the load is not consuming (no power detected since routing started, or consumption stopped more than the expiration delay ago)
+          //
+          // This relies on _lastTimeConsumptionWasDetectedWhileRouting which is updated each time the measured routed power is above MYCILA_OUTPUT_LOW_POWER_THRESHOLD:
+          // - present (not expired): load is consuming -> true
+          // - expired but was updated before: load stopped consuming -> false
+          // - never updated while routing: load never consumed since routing started -> false
+          // - not routing or no measurement: we can't tell -> std::nullopt
+          std::optional<bool> isConsuming() const {
+            if (getState() != State::ROUTING)
+              return std::nullopt;
+            if (!_metrics.isPresent() && !isUsing(metric::Source::SHARED))
+              return std::nullopt;
+            return _lastTimeConsumptionWasDetectedWhileRouting.isPresent();
           }
 
           // bypass
@@ -514,14 +529,16 @@ namespace Mycila {
           return 0.0f;
         }
 
-        // Filter out dimmers that were consuming before but stopped consuming while we were routing power to them.
+        // Filter out dimmers whose load is not consuming (or stopped consuming) while we are routing power to them.
         // We will set their dimmer to 1% (100W) in order to keep the dimmer opened in case they start consuming again.
         // But we won't decrease the 100W from the available power to divert because we will use it for the other outputs.
+        // Outputs for which we can't tell if their load is consuming (no measurement) are kept in the diverting list.
         // We only do that if we have more than 1 remaining output.
         if (remainingOutputs.size() > 1) {
           for (auto it = remainingOutputs.begin(); it != remainingOutputs.end();) {
             Output* output = *it;
-            if (output->wasConsuming()) {
+            std::optional<bool> consuming = output->isConsuming();
+            if (consuming.has_value() && !consuming.value()) {
               // Notes:
               // - we have ensured gridVoltage > 0
               // - we have ensured config.calibratedResistance > 0 with isAutoDimmerEnabled()
