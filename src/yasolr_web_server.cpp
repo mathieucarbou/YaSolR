@@ -557,8 +557,7 @@ void rest_api() {
       json["state"] = output->getStateName();
       json["bypass"] = YASOLR_STATE(output->isBypassOn());
       json["dimmer"] = YASOLR_STATE(output->isDimmerOn());
-      if (std::optional<bool> consuming = output->isConsuming())
-        json["consuming"] = consuming.value();
+      json["consuming"] = output->getConsumingStateName();
       json["duty_cycle"] = output->getDimmerDutyCycle() * 100.0f;
       if (output->temperature().isPresent()) {
         json["temperature"] = output->temperature().get();

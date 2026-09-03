@@ -117,6 +117,12 @@ namespace Mycila {
 
       class Output : public metric::MetricSupport {
         public:
+          // Tell whether the load is currently consuming the routed power.
+          static constexpr const char* CONSUMING_STATE_ON = "on";               // load is consuming (measured power >= threshold while routing)
+          static constexpr const char* CONSUMING_STATE_OFF = "off";             // routing with surplus (dimmer firing) but load stopped consuming
+          static constexpr const char* CONSUMING_STATE_UNKNOWN = "unknown";     // routing but no surplus (dimmer at 0), can't tell if load would consume
+          static constexpr const char* CONSUMING_STATE_UNAVAILABLE = "unavailable"; // not routing, or routing but no measurement device
+
           enum class State {
             // output disabled
             UNUSED,
@@ -189,8 +195,7 @@ namespace Mycila {
             root["state"] = getStateName();
             root["bypass"] = isBypassOn() ? "on" : "off";
             root["bypass_elapsed"] = getBypassUptime();
-            if (std::optional<bool> consuming = isConsuming())
-              root["consuming"] = consuming.value();
+            root["consuming"] = getConsumingStateName();
             _lastTimeConsumptionWasDetectedWhileRouting.toJson(root["last_routed_power"].to<JsonObject>());
             if (_temperature.isPresent())
               root["temperature"] = _temperature.get();
@@ -290,22 +295,29 @@ namespace Mycila {
             return availablePowerToDivert;
           }
 
-          // Tell whether the load is currently consuming the routed power.
-          // - std::nullopt: we can't tell (not routing, or no measurement available)
-          // - true: the load is consuming (power detected recently while routing)
-          // - false: the load is not consuming (no power detected since routing started, or consumption stopped more than the expiration delay ago)
+          // Returns one of the CONSUMING_STATE_* constants above.
           //
           // This relies on _lastTimeConsumptionWasDetectedWhileRouting which is updated each time the measured routed power is above MYCILA_OUTPUT_LOW_POWER_THRESHOLD:
-          // - present (not expired): load is consuming -> true
-          // - expired but was updated before: load stopped consuming -> false
-          // - never updated while routing: load never consumed since routing started -> false
-          // - not routing or no measurement: we can't tell -> std::nullopt
-          std::optional<bool> isConsuming() const {
+          // - present (not expired) while dimmer firing: consuming -> "on"
+          // - expired but was updated before, while dimmer firing: load stopped consuming -> "off"
+          // - dimmer not firing (no surplus): we can't tell -> "unknown"
+          // - not routing or no measurement: we can't tell -> "unavailable"
+          const char* getConsumingStateName() const {
             if (getState() != State::ROUTING)
-              return std::nullopt;
+              return CONSUMING_STATE_UNAVAILABLE;
             if (!_metrics.isPresent() && !isUsing(metric::Source::SHARED))
-              return std::nullopt;
-            return _lastTimeConsumptionWasDetectedWhileRouting.isPresent();
+              return CONSUMING_STATE_UNAVAILABLE;
+            if (_lastTimeConsumptionWasDetectedWhileRouting.isPresent())
+              return CONSUMING_STATE_ON;
+            if (_dimmer->isOn())
+              return CONSUMING_STATE_OFF;
+            return CONSUMING_STATE_UNKNOWN;
+          }
+
+          // Returns true if the routing is active, surplus is available (dimmer firing) but the load stopped consuming.
+          // Comparison is done by pointer on purpose, since getConsumingStateName() only returns string literals.
+          bool isNotConsuming() const {
+            return getConsumingStateName() == CONSUMING_STATE_OFF;
           }
 
           // bypass
@@ -537,8 +549,7 @@ namespace Mycila {
         if (remainingOutputs.size() > 1) {
           for (auto it = remainingOutputs.begin(); it != remainingOutputs.end();) {
             Output* output = *it;
-            std::optional<bool> consuming = output->isConsuming();
-            if (consuming.has_value() && !consuming.value()) {
+            if (output->isNotConsuming()) {
               // Notes:
               // - we have ensured gridVoltage > 0
               // - we have ensured config.calibratedResistance > 0 with isAutoDimmerEnabled()

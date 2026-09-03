@@ -417,15 +417,9 @@ static void publishData() {
       mqtt->publish((outputTopic + "/state").c_str(), output->getStateName());
       mqtt->publish((outputTopic + "/bypass").c_str(), YASOLR_STATE(output->isBypassOn()));
       mqtt->publish((outputTopic + "/dimmer").c_str(), YASOLR_STATE(output->isDimmerOn()));
-      // 'consuming' is only meaningful when we can measure the routed power.
-      // When we can't tell (not routing, or routing without a measurement device),
-      // we publish OFF to the per-entity availability topic so HA marks it Unavailable.
-      if (std::optional<bool> consuming = output->isConsuming()) {
-        mqtt->publish((outputTopic + "/consuming/available").c_str(), YASOLR_ON, true);
-        mqtt->publish((outputTopic + "/consuming").c_str(), YASOLR_STATE(consuming.value()));
-      } else {
-        mqtt->publish((outputTopic + "/consuming/available").c_str(), YASOLR_OFF, true);
-      }
+      // "consuming" state: "on" (load consumes), "off" (routing with surplus but load stopped),
+      // "unknown" (routing but no surplus so dimmer at 0), "unavailable" (not routing or no measurement)
+      mqtt->publish((outputTopic + "/consuming").c_str(), output->getConsumingStateName());
       mqtt->publish((outputTopic + "/duty_cycle").c_str(), std::to_string(output->getDimmerDutyCycle() * 100.0f));
       mqtt->publish((outputTopic + "/temperature").c_str(), output->temperature().orElse(0.0f) > 0 ? std::to_string(output->temperature().orElse(0.0f)) : "0");
 
@@ -538,13 +532,7 @@ static void haDiscovery() {
 
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("output1_state", "Output 1", "~/router/output1/state"));
   haDiscovery->publish(std::make_unique<Mycila::HA::State>("output1_bypass", "Output 1 Bypass", "~/router/output1/bypass", YASOLR_ON, YASOLR_OFF, "running"));
-  {
-    auto c = std::make_unique<Mycila::HA::State>("output1_consuming", "Output 1 Consuming", "~/router/output1/consuming", YASOLR_ON, YASOLR_OFF, "running");
-    c->availabilityTopic = "~/router/output1/consuming/available";
-    c->payloadAvailable = YASOLR_ON;
-    c->payloadNotAvailable = YASOLR_OFF;
-    haDiscovery->publish(std::move(c));
-  }
+  haDiscovery->publish(std::make_unique<Mycila::HA::Value>("output1_consuming", "Output 1 Consuming", "~/router/output1/consuming"));
   haDiscovery->publish(std::make_unique<Mycila::HA::Number>("output1_dimmer_duty", "Output 1 Dimmer Duty Cycle", "~/router/output1/duty_cycle/set", "~/router/output1/duty_cycle", Mycila::HA::NumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler"));
   haDiscovery->publish(std::make_unique<Mycila::HA::Outlet>("output1_relay", "Output 1 Bypass", "~/router/output1/bypass/set", "~/router/output1/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output1_temperature", "Output 1 Temperature", "~/router/output1/temperature", "temperature", "mdi:thermometer", "°C"));
@@ -555,13 +543,7 @@ static void haDiscovery() {
 
   haDiscovery->publish(std::make_unique<Mycila::HA::Value>("output2_state", "Output 2", "~/router/output2/state"));
   haDiscovery->publish(std::make_unique<Mycila::HA::State>("output2_bypass", "Output 2 Bypass", "~/router/output2/bypass", YASOLR_ON, YASOLR_OFF, "running"));
-  {
-    auto c = std::make_unique<Mycila::HA::State>("output2_consuming", "Output 2 Consuming", "~/router/output2/consuming", YASOLR_ON, YASOLR_OFF, "running");
-    c->availabilityTopic = "~/router/output2/consuming/available";
-    c->payloadAvailable = YASOLR_ON;
-    c->payloadNotAvailable = YASOLR_OFF;
-    haDiscovery->publish(std::move(c));
-  }
+  haDiscovery->publish(std::make_unique<Mycila::HA::Value>("output2_consuming", "Output 2 Consuming", "~/router/output2/consuming"));
   haDiscovery->publish(std::make_unique<Mycila::HA::Number>("output2_dimmer_duty", "Output 2 Dimmer Duty Cycle", "~/router/output2/duty_cycle/set", "~/router/output2/duty_cycle", Mycila::HA::NumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler"));
   haDiscovery->publish(std::make_unique<Mycila::HA::Outlet>("output2_relay", "Output 2 Bypass", "~/router/output2/bypass/set", "~/router/output2/bypass", YASOLR_ON, YASOLR_OFF));
   haDiscovery->publish(std::make_unique<Mycila::HA::Gauge>("output2_temperature", "Output 2 Temperature", "~/router/output2/temperature", "temperature", "mdi:thermometer", "°C"));
