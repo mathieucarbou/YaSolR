@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 /*
- * Copyright (C) 2023-2026 Mathieu Carbou
+ * Copyright (C) Mathieu Carbou
  */
 #include <MycilaRouter.h>
 
