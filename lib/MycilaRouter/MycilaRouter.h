@@ -295,22 +295,30 @@ namespace Mycila {
             return availablePowerToDivert;
           }
 
-          // Returns one of the CONSUMING_STATE_* constants above.
+          // Returns the current consuming state of the load while routing.
           //
-          // This relies on _lastTimeConsumptionWasDetectedWhileRouting which is updated each time the measured routed power is above MYCILA_OUTPUT_LOW_POWER_THRESHOLD:
-          // - present (not expired) while dimmer firing: consuming -> "on"
-          // - expired but was updated before, while dimmer firing: load stopped consuming -> "off"
-          // - dimmer not firing (no surplus): we can't tell -> "unknown"
-          // - not routing or no measurement: we can't tell -> "unavailable"
+          // - "on": load is consuming the routed power
+          // - "off": load stopped consuming while we are routing and dimmer is still firing
+          // - "unknown": routing but can't tell yet if load will consume (e.g. just started, or no surplus anymore)
+          // - "unavailable": not routing, or routing but no measurement device
           const char* getConsumingStateName() const {
-            if (getState() != State::ROUTING)
+            // not routing (auto-dimmer off, or bypass)
+            const State state = getState();
+            if (state != State::ROUTING && !(state == State::IDLE && isAutoDimmerEnabled()))
               return CONSUMING_STATE_UNAVAILABLE;
+            // no measurement device available
             if (!_metrics.isPresent() && !isUsing(metric::Source::SHARED))
               return CONSUMING_STATE_UNAVAILABLE;
+            // consumption was detected recently (not expired): load is consuming
             if (_lastTimeConsumptionWasDetectedWhileRouting.isPresent())
               return CONSUMING_STATE_ON;
+            // never detected since routing started: can't tell yet
+            if (_lastTimeConsumptionWasDetectedWhileRouting.neverUpdated())
+              return CONSUMING_STATE_UNKNOWN;
+            // was detected before but expired: load stopped consuming
             if (_dimmer->isOn())
               return CONSUMING_STATE_OFF;
+            // dimmer not firing (no surplus): can't tell
             return CONSUMING_STATE_UNKNOWN;
           }
 

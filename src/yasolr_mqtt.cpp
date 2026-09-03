@@ -459,8 +459,8 @@ static void haDiscovery() {
   // CLEAR REMOVED ENTRIES
 
   haDiscovery->unpublish<Mycila::HA::Value>("firmware_filename", nullptr, nullptr);
-  haDiscovery->unpublish<Mycila::HA::Value>("output1_consuming", nullptr, nullptr);
-  haDiscovery->unpublish<Mycila::HA::Value>("output2_consuming", nullptr, nullptr);
+  haDiscovery->unpublish<Mycila::HA::State>("output1_consuming", nullptr, nullptr, nullptr, nullptr);
+  haDiscovery->unpublish<Mycila::HA::State>("output2_consuming", nullptr, nullptr, nullptr, nullptr);
 
   // UPDATE
 
