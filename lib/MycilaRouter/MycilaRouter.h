@@ -410,7 +410,7 @@ namespace Mycila {
             metrics.reset(0.0f);
             if (_metrics.isPresent()) {
               if (getState() == State::ROUTING) {
-                memcpy(&metrics, &_metrics.get(), sizeof(metric::Metrics));
+                metrics.copyFrom(_metrics.get());
               } else {
                 metrics.energy = _metrics.get().energy;
               }

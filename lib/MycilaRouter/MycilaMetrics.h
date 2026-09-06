@@ -320,6 +320,19 @@ namespace Mycila {
         Metrics(const Metrics& other) = delete;
         Metrics& operator=(const Metrics& other) = delete;
 
+        void copyFrom(const Metrics& other) {
+          apparentPower = other.apparentPower;
+          current = other.current;
+          energy = other.energy;
+          energyReturned = other.energyReturned;
+          frequency = other.frequency;
+          power = other.power;
+          powerFactor = other.powerFactor;
+          resistance = other.resistance;
+          thdi = other.thdi;
+          voltage = other.voltage;
+        }
+
         void reset(float defaultValue = NAN) {
           apparentPower = defaultValue;
           current = defaultValue;
@@ -380,7 +393,7 @@ namespace Mycila {
         virtual bool readMetrics(Metrics& metrics) const {
           metrics.reset();
           if (_metrics.isPresent()) {
-            memcpy(&metrics, &_metrics.get(), sizeof(Metrics));
+            metrics.copyFrom(_metrics.get());
             return true;
           }
           return false;
