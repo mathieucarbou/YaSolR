@@ -57,14 +57,13 @@ static void onData(AsyncUDPPacket& packet) {
     return;
   }
 
-  const uint8_t version = data[2];
   const uint8_t payloadType = data[3];
   const uint16_t payloadLen = data[4] | (data[5] << 8); // little-endian
   const uint16_t metaLen = data[6] | (data[7] << 8);    // little-endian
 
   // Only status/event payloads (type 1) contain the JSON we can parse
   if (payloadType != 1) {
-    DEBUG_LNM(TAG, "[LNM] Unsupported payload_type: %u (version %u)", payloadType, version);
+    DEBUG_LNM(TAG, "[LNM] Unsupported payload_type: %u (version %u)", payloadType, data[2]);
     return;
   }
 
