@@ -43,6 +43,29 @@ namespace Mycila {
 
       class Relay {
         public:
+          enum class AutoMode : uint8_t {
+            OFF = 0,
+            OUTPUT_1 = 1,
+            OUTPUT_2 = 2,
+            OUTPUT_ANY = 255,
+          };
+
+          void setAutoMode(AutoMode mode) {
+            _autoMode = mode;
+          }
+          AutoMode getAutoMode() const {
+            return _autoMode;
+          }
+          bool supportsMode(AutoMode mode) const {
+            switch (mode) {
+              case AutoMode::OFF: return true;
+              case AutoMode::OUTPUT_1: return _autoMode == AutoMode::OUTPUT_1 || _autoMode == AutoMode::OUTPUT_ANY;
+              case AutoMode::OUTPUT_2: return _autoMode == AutoMode::OUTPUT_2 || _autoMode == AutoMode::OUTPUT_ANY;
+              case AutoMode::OUTPUT_ANY: return _autoMode == AutoMode::OUTPUT_ANY;
+              default: return false;
+            }
+          }
+
           void setNominalLoad(uint16_t load) {
             _nominalLoad = load;
           }
@@ -53,17 +76,16 @@ namespace Mycila {
           /**
            * @brief Compute the load based on the grid voltage and the nominal load.
            */
-          uint16_t computeLoad(float gridVoltage) const {
-            if (gridVoltage > 0) {
-              // detects the grid nominal voltage
-              const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
-              // compute the amperage of the given nominal power of connected load
-              const float resistance = static_cast<float>(nominalVoltage * nominalVoltage) / static_cast<float>(_nominalLoad);
-              // compute with the current voltage what the exact power of the load would be
-              return static_cast<uint16_t>(gridVoltage * gridVoltage / resistance);
-            } else {
-              return 0;
+          std::optional<uint16_t> getNominalLoad(float gridVoltage) const {
+            if (std::isnan(gridVoltage) || gridVoltage <= 0 || _nominalLoad == 0) {
+              return std::nullopt;
             }
+            // detects the grid nominal voltage
+            const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
+            // compute the amperage of the given nominal power of connected load
+            const float resistance = static_cast<float>(nominalVoltage * nominalVoltage) / static_cast<float>(_nominalLoad);
+            // compute with the current voltage what the exact power of the load would be
+            return static_cast<uint16_t>(gridVoltage * gridVoltage / resistance);
           }
 
           void setTolerance(float tolerance) {
@@ -77,12 +99,15 @@ namespace Mycila {
             return _relay.isEnabled();
           }
           bool isAutoRelayEnabled() const {
-            return _relay.isEnabled() && _nominalLoad > 0;
+            return _relay.isEnabled() && _nominalLoad > 0 && _autoMode != AutoMode::OFF;
+          }
+          bool isAutoRelayEnabled(AutoMode mode) const {
+            return isAutoRelayEnabled() && supportsMode(mode);
           }
 
           bool trySwitchRelay(bool state, uint32_t duration = 0);
 
-          bool autoSwitch(float gridVoltage, float gridPower, float routedPower, float setpoint);
+          bool autoSwitch(float gridVoltage, float room);
 
           bool isOn() const {
             return _relay.isOn();
@@ -98,6 +123,9 @@ namespace Mycila {
 #ifdef MYCILA_JSON_SUPPORT
           void toJson(const JsonObject& root) const {
             _relay.toJson(root);
+            root["nominalLoad"] = _nominalLoad;
+            root["tolerance"] = _tolerance;
+            root["autoMode"] = static_cast<uint8_t>(_autoMode);
           }
 #endif
 
@@ -109,6 +137,7 @@ namespace Mycila {
           Mycila::Relay _relay;
           uint16_t _nominalLoad = 0;
           float _tolerance = MYCILA_RELAY_DEFAULT_TOLERANCE;
+          AutoMode _autoMode = AutoMode::OFF;
       };
 
       ////////////
@@ -118,9 +147,9 @@ namespace Mycila {
       class Output : public metric::MetricSupport {
         public:
           // Tell whether the load is currently consuming the routed power.
-          static constexpr const char* CONSUMING_STATE_ON = "on";               // load is consuming (measured power >= threshold while routing)
-          static constexpr const char* CONSUMING_STATE_OFF = "off";             // routing with surplus (dimmer firing) but load stopped consuming
-          static constexpr const char* CONSUMING_STATE_UNKNOWN = "unknown";     // routing but no surplus (dimmer at 0), can't tell if load would consume
+          static constexpr const char* CONSUMING_STATE_ON = "on";                   // load is consuming (measured power >= threshold while routing)
+          static constexpr const char* CONSUMING_STATE_OFF = "off";                 // routing with surplus (dimmer firing) but load stopped consuming
+          static constexpr const char* CONSUMING_STATE_UNKNOWN = "unknown";         // routing but no surplus (dimmer at 0), can't tell if load would consume
           static constexpr const char* CONSUMING_STATE_UNAVAILABLE = "unavailable"; // not routing, or routing but no measurement device
 
           enum class State {

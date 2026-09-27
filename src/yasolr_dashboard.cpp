@@ -368,12 +368,14 @@ static dash::IndicatorButtonCard _output2PZEMSync(dashboard, YASOLR_LBL_147);
 // relay1
 static dash::SeparatorCard<const char*> _relay1Sep(dashboard, YASOLR_LBL_074);
 static dash::DropdownCard<const char*> _relay1Type(dashboard, YASOLR_LBL_074, YASOLR_RELAY_SELECTION);
+static dash::DropdownCard<const char*> _relay1Auto(dashboard, YASOLR_LBL_093, YASOLR_RELAY_AUTO_SELECTION);
 static dash::InputCard<uint16_t> _relay1Load(dashboard, YASOLR_LBL_072);
 static dash::PercentageSliderCard _relay1Tolerance(dashboard, YASOLR_LBL_198);
 
 // relay2
 static dash::SeparatorCard<const char*> _relay2Sep(dashboard, YASOLR_LBL_077);
 static dash::DropdownCard<const char*> _relay2Type(dashboard, YASOLR_LBL_077, YASOLR_RELAY_SELECTION);
+static dash::DropdownCard<const char*> _relay2Auto(dashboard, YASOLR_LBL_093, YASOLR_RELAY_AUTO_SELECTION);
 static dash::InputCard<uint16_t> _relay2Load(dashboard, YASOLR_LBL_072);
 static dash::PercentageSliderCard _relay2Tolerance(dashboard, YASOLR_LBL_198);
 
@@ -978,18 +980,22 @@ void YaSolR::Website::begin() {
   // relay1
   _relay1Sep.setTab(_hardwareConfigTab);
   _relay1Type.setTab(_hardwareConfigTab);
+  _relay1Auto.setTab(_hardwareConfigTab);
   _relay1Load.setTab(_hardwareConfigTab);
   _relay1Tolerance.setTab(_hardwareConfigTab);
   _numConfig(_relay1Load, KEY_RELAY1_LOAD);
   _textConfig(_relay1Type, KEY_RELAY1);
+  _textConfig(_relay1Auto, KEY_RELAY1_AUTO);
   _sliderConfig(_relay1Tolerance, KEY_RELAY1_TOLERANCE);
 
   // relay2
   _relay2Sep.setTab(_hardwareConfigTab);
   _relay2Type.setTab(_hardwareConfigTab);
+  _relay2Auto.setTab(_hardwareConfigTab);
   _relay2Load.setTab(_hardwareConfigTab);
   _relay2Tolerance.setTab(_hardwareConfigTab);
   _textConfig(_relay2Type, KEY_RELAY2);
+  _textConfig(_relay2Auto, KEY_RELAY2_AUTO);
   _numConfig(_relay2Load, KEY_RELAY2_LOAD);
   _sliderConfig(_relay2Tolerance, KEY_RELAY2_TOLERANCE);
 
@@ -1439,11 +1445,13 @@ void YaSolR::Website::initCards() {
 
   // relay1
   _relay1Type.setValue(config.getString(KEY_RELAY1));
+  _relay1Auto.setValue(config.getString(KEY_RELAY1_AUTO));
   _relay1Load.setValue(config.get<uint16_t>(KEY_RELAY1_LOAD));
   _relay1Tolerance.setValue(config.get<uint8_t>(KEY_RELAY1_TOLERANCE));
 
   // relay2
   _relay2Type.setValue(config.getString(KEY_RELAY2));
+  _relay2Auto.setValue(config.getString(KEY_RELAY2_AUTO));
   _relay2Load.setValue(config.get<uint16_t>(KEY_RELAY2_LOAD));
   _relay2Tolerance.setValue(config.get<uint8_t>(KEY_RELAY2_TOLERANCE));
 
@@ -1609,7 +1617,7 @@ void YaSolR::Website::updateCards() {
   if (relay1) {
     _relay1Switch.setValue(relay1->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay1->computeLoad(gridVoltage);
+    uint16_t load = relay1->getNominalLoad(gridVoltage).value_or(0);
     _relay1Switch.setMessage(relay1->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }
@@ -1617,7 +1625,7 @@ void YaSolR::Website::updateCards() {
   if (relay2) {
     _relay2Switch.setValue(relay2->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay2->computeLoad(gridVoltage);
+    uint16_t load = relay2->getNominalLoad(gridVoltage).value_or(0);
     _relay2Switch.setMessage(relay2->isOn() && load ? std::to_string(load) + " W" : "");
 #endif
   }

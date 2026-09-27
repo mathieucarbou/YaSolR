@@ -20,90 +20,6 @@ static Mycila::Task reconfigureTask("Reconfigure", []() {
   dashboardInitTask.resume();
 });
 
-static void migrate_relay_key(const char* enableKey, const char* typeKey) {
-  if (storage.hasKey(enableKey)) {
-    if (storage.loadBool(enableKey).value_or(false)) {
-      const char* type = strcmp(storage.loadString(typeKey).value_or("").c_str(), "NC") == 0 ? YASOLR_RELAY_NC : YASOLR_RELAY_NO;
-      ESP_LOGI(TAG, "%s => %s=%s", enableKey, typeKey, type);
-      storage.storeString(typeKey, type);
-    } else {
-      storage.remove(typeKey);
-    }
-    storage.remove(enableKey);
-  }
-}
-
-static void migrate_old_keys() {
-  // migration from old config versions
-  {
-    migration.begin("YASOLR");
-    migration.migrate<Mycila::config::Str>(KEY_GRID_FREQUENCY, [](const Mycila::config::Str& from) -> std::optional<Mycila::config::Value> {
-      if (from == "50 Hz") return static_cast<uint8_t>(50);
-      if (from == "60 Hz") return static_cast<uint8_t>(60);
-      return static_cast<uint8_t>(0);
-    });
-    migration.migrateFromString();
-    migration.end();
-  }
-
-  // migrate old keys and values
-  {
-    storage.begin("YASOLR");
-
-    // migrate relay
-    migrate_relay_key("o1_relay_enable", KEY_OUTPUT1_RELAY);
-    migrate_relay_key("o2_relay_enable", KEY_OUTPUT2_RELAY);
-    migrate_relay_key("relay1_enable", KEY_RELAY1);
-    migrate_relay_key("relay2_enable", KEY_RELAY2);
-
-    // migrate display
-    if (storage.hasKey("disp_enable")) {
-      if (storage.loadBool("disp_enable").value_or(false)) {
-        const char* type = storage.loadString(KEY_DISPLAY).value_or("SH1106").c_str();
-        ESP_LOGI(TAG, "disp_enable => %s=%s", KEY_DISPLAY, type);
-        storage.storeString(KEY_DISPLAY, type);
-      } else {
-        storage.remove(KEY_DISPLAY);
-      }
-      storage.remove("disp_enable");
-    }
-
-    // vic_mb_enable
-    if (storage.hasKey("vic_mb_enable")) {
-      ESP_LOGI(TAG, "vic_mb_enable => " KEY_GRID_SOURCE "=Victron");
-      if (storage.loadBool("vic_mb_enable").value_or(false)) // enabled ?
-        storage.storeString(KEY_GRID_SOURCE, "Victron");
-      storage.remove("vic_mb_enable");
-    }
-
-    // fro_mb_enable
-    if (storage.hasKey("fro_mb_enable")) {
-      ESP_LOGI(TAG, "fro_mb_enable => " KEY_GRID_SOURCE "=Fronius");
-      if (storage.loadBool("fro_mb_enable").value_or(false)) // enabled ?
-        storage.storeString(KEY_GRID_SOURCE, "Fronius");
-      storage.remove("fro_mb_enable");
-    }
-
-    // these keys cannot be migrated
-    storage.remove("jsy_enable");
-    storage.remove("jsy_uart");
-    storage.remove("jsyr_enable");
-    storage.remove("o1_dim_enable");
-    storage.remove("o1_pzem_enable");
-    storage.remove("o2_dim_enable");
-    storage.remove("o2_pzem_enable");
-    storage.remove("pin_jsy_rx");
-    storage.remove("pin_jsy_tx");
-    storage.remove("pin_pzem_rx");
-    storage.remove("pin_pzem_tx");
-    storage.remove("pin_serial1_dev");
-    storage.remove("pin_serial2_dev");
-    storage.remove("pzem_uart");
-
-    storage.end();
-  }
-}
-
 static void init_config() {
   // setup config system
   config.configure(KEY_ADMIN_PASSWORD);
@@ -210,9 +126,11 @@ static void init_config() {
   config.configure(KEY_PIN_SERIAL2_TX, static_cast<int8_t>(YASOLR_SERIAL2_TX_PIN));
   config.configure(KEY_PIN_ZCD, static_cast<int8_t>(YASOLR_ZCD_PIN));
   config.configure(KEY_RELAY_CHECK_INTERVAL, static_cast<uint16_t>(10));
+  config.configure(KEY_RELAY1_AUTO, "OFF");
   config.configure(KEY_RELAY1_LOAD, static_cast<uint16_t>(0));
   config.configure(KEY_RELAY1_TOLERANCE, static_cast<uint8_t>(7));
   config.configure(KEY_RELAY1);
+  config.configure(KEY_RELAY2_AUTO, "OFF");
   config.configure(KEY_RELAY2_LOAD, static_cast<uint16_t>(0));
   config.configure(KEY_RELAY2_TOLERANCE, static_cast<uint8_t>(7));
   config.configure(KEY_RELAY2);
@@ -224,6 +142,106 @@ static void init_config() {
   config.configure(KEY_WIFI_BSSID);
   config.configure(KEY_WIFI_PASSWORD);
   config.configure(KEY_WIFI_SSID);
+}
+
+static void migrate_relay_key(const char* enableKey, const char* typeKey) {
+  if (storage.hasKey(enableKey)) {
+    if (storage.loadBool(enableKey).value_or(false)) {
+      const char* type = strcmp(storage.loadString(typeKey).value_or("").c_str(), "NC") == 0 ? YASOLR_RELAY_NC : YASOLR_RELAY_NO;
+      ESP_LOGI(TAG, "%s => %s=%s", enableKey, typeKey, type);
+      storage.storeString(typeKey, type);
+    } else {
+      storage.remove(typeKey);
+    }
+    storage.remove(enableKey);
+  }
+}
+
+static void migrate_old_keys() {
+  // migration from old config versions
+  {
+    migration.begin("YASOLR");
+    migration.migrate<Mycila::config::Str>(KEY_GRID_FREQUENCY, [](const Mycila::config::Str& from) -> std::optional<Mycila::config::Value> {
+      if (from == "50 Hz") return static_cast<uint8_t>(50);
+      if (from == "60 Hz") return static_cast<uint8_t>(60);
+      return static_cast<uint8_t>(0);
+    });
+    migration.migrateFromString();
+    migration.end();
+  }
+
+  // migrate old keys and values
+  {
+    storage.begin("YASOLR");
+
+    // migrate relay
+    migrate_relay_key("o1_relay_enable", KEY_OUTPUT1_RELAY);
+    migrate_relay_key("o2_relay_enable", KEY_OUTPUT2_RELAY);
+    migrate_relay_key("relay1_enable", KEY_RELAY1);
+    migrate_relay_key("relay2_enable", KEY_RELAY2);
+
+    // migrate display
+    if (storage.hasKey("disp_enable")) {
+      if (storage.loadBool("disp_enable").value_or(false)) {
+        const char* type = storage.loadString(KEY_DISPLAY).value_or("SH1106").c_str();
+        ESP_LOGI(TAG, "disp_enable => %s=%s", KEY_DISPLAY, type);
+        storage.storeString(KEY_DISPLAY, type);
+      } else {
+        storage.remove(KEY_DISPLAY);
+      }
+      storage.remove("disp_enable");
+    }
+
+    // vic_mb_enable
+    if (storage.hasKey("vic_mb_enable")) {
+      ESP_LOGI(TAG, "vic_mb_enable => " KEY_GRID_SOURCE "=Victron");
+      if (storage.loadBool("vic_mb_enable").value_or(false)) // enabled ?
+        storage.storeString(KEY_GRID_SOURCE, "Victron");
+      storage.remove("vic_mb_enable");
+    }
+
+    // fro_mb_enable
+    if (storage.hasKey("fro_mb_enable")) {
+      ESP_LOGI(TAG, "fro_mb_enable => " KEY_GRID_SOURCE "=Fronius");
+      if (storage.loadBool("fro_mb_enable").value_or(false)) // enabled ?
+        storage.storeString(KEY_GRID_SOURCE, "Fronius");
+      storage.remove("fro_mb_enable");
+    }
+
+    // migrate relay auto mode if relay1 has a nominal load set
+    if (!storage.hasKey(KEY_RELAY1_AUTO) &&
+        storage.hasKey(KEY_RELAY1_LOAD) &&
+        storage.loadU16(KEY_RELAY1_LOAD).value_or(0) > 0) {
+      ESP_LOGI(TAG, KEY_RELAY1_AUTO " => Any Output");
+      storage.storeString(KEY_RELAY1_AUTO, "Any Output");
+    }
+
+    // migrate relay2 auto mode if relay2 has a nominal load set
+    if (!storage.hasKey(KEY_RELAY2_AUTO) &&
+        storage.hasKey(KEY_RELAY2_LOAD) &&
+        storage.loadU16(KEY_RELAY2_LOAD).value_or(0) > 0) {
+      ESP_LOGI(TAG, KEY_RELAY2_AUTO " => Any Output");
+      storage.storeString(KEY_RELAY2_AUTO, "Any Output");
+    }
+
+    // these keys cannot be migrated
+    storage.remove("jsy_enable");
+    storage.remove("jsy_uart");
+    storage.remove("jsyr_enable");
+    storage.remove("o1_dim_enable");
+    storage.remove("o1_pzem_enable");
+    storage.remove("o2_dim_enable");
+    storage.remove("o2_pzem_enable");
+    storage.remove("pin_jsy_rx");
+    storage.remove("pin_jsy_tx");
+    storage.remove("pin_pzem_rx");
+    storage.remove("pin_pzem_tx");
+    storage.remove("pin_serial1_dev");
+    storage.remove("pin_serial2_dev");
+    storage.remove("pzem_uart");
+
+    storage.end();
+  }
 }
 
 void yasolr_init_config() {
@@ -243,18 +261,30 @@ void yasolr_init_config() {
 
     const std::string key = k;
 
-    if (key == KEY_RELAY1_LOAD) {
+    if (key == KEY_RELAY1_LOAD || key == KEY_RELAY1_AUTO) {
       if (relay1) {
         relay1->setNominalLoad(config.get<uint16_t>(KEY_RELAY1_LOAD));
-        if (!relay1->getNominalLoad()) {
+
+        if (config.isEqual(KEY_RELAY1_AUTO, "Output 1")) relay1->setAutoMode(Mycila::Router::Relay::AutoMode::OUTPUT_1);
+        else if (config.isEqual(KEY_RELAY1_AUTO, "Output 2")) relay1->setAutoMode(Mycila::Router::Relay::AutoMode::OUTPUT_2);
+        else if (config.isEqual(KEY_RELAY1_AUTO, "Any Output")) relay1->setAutoMode(Mycila::Router::Relay::AutoMode::OUTPUT_ANY);
+        else relay1->setAutoMode(Mycila::Router::Relay::AutoMode::OFF);
+
+        if (!relay1->isAutoRelayEnabled()) {
           relay1->trySwitchRelay(false);
         }
       }
 
-    } else if (key == KEY_RELAY2_LOAD) {
+    } else if (key == KEY_RELAY2_LOAD || key == KEY_RELAY2_AUTO) {
       if (relay2) {
         relay2->setNominalLoad(config.get<uint16_t>(KEY_RELAY2_LOAD));
-        if (!relay2->getNominalLoad()) {
+
+        if (config.isEqual(KEY_RELAY2_AUTO, "Output 1")) relay2->setAutoMode(Mycila::Router::Relay::AutoMode::OUTPUT_1);
+        else if (config.isEqual(KEY_RELAY2_AUTO, "Output 2")) relay2->setAutoMode(Mycila::Router::Relay::AutoMode::OUTPUT_2);
+        else if (config.isEqual(KEY_RELAY2_AUTO, "Any Output")) relay2->setAutoMode(Mycila::Router::Relay::AutoMode::OUTPUT_ANY);
+        else relay2->setAutoMode(Mycila::Router::Relay::AutoMode::OFF);
+
+        if (!relay2->isAutoRelayEnabled()) {
           relay2->trySwitchRelay(false);
         }
       }
@@ -279,6 +309,13 @@ void yasolr_init_config() {
         output1.config.autoDimmer = false;
         if (!output1.isBypassOn()) {
           output1.setDimmerOff();
+        }
+        // Disable relays that are in auto mode and linked to this output
+        if (relay1->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_1)) {
+          relay1->trySwitchRelay(false);
+        }
+        if (relay2->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_1)) {
+          relay2->trySwitchRelay(false);
         }
       }
 
@@ -334,6 +371,13 @@ void yasolr_init_config() {
         output2.config.autoDimmer = false;
         if (!output2.isBypassOn()) {
           output2.setDimmerOff();
+        }
+        // Disable relays that are in auto mode and linked to this output
+        if (relay1->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_2)) {
+          relay1->trySwitchRelay(false);
+        }
+        if (relay2->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_2)) {
+          relay2->trySwitchRelay(false);
         }
       }
 

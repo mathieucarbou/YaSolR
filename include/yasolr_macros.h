@@ -89,6 +89,7 @@
 #define YASOLR_WEEK_DAYS                     "sun,mon,tue,wed,thu,fri,sat"
 #define YASOLR_WEEK_DAYS_EMPTY               "none"
 #define YASOLR_ZC_EVENT_SHIFT_US             -150 // same as MYCILA_PULSE_ZC_SHIFT_US: ZC event will be fired 150us before real voltage zero-crossing
+#define YASOLR_RELAY_AUTO_SELECTION          "OFF,Output 1,Output 2,Any Output"
 
 #ifdef APP_MODEL_PRO
   #define YASOLR_RELEASE_URL "https://github.com/mathieucarbou/YaSolR-Pro/releases/"
@@ -195,9 +196,11 @@
 #define KEY_PID_TRIGGER                    "pid_trigger"
 #define KEY_RELAY_CHECK_INTERVAL           "relay_itvl"
 #define KEY_RELAY1                         "relay1_type"
+#define KEY_RELAY1_AUTO                    "relay1_auto"
 #define KEY_RELAY1_LOAD                    "relay1_load"
 #define KEY_RELAY1_TOLERANCE               "relay1_tol"
 #define KEY_RELAY2                         "relay2_type"
+#define KEY_RELAY2_AUTO                    "relay2_auto"
 #define KEY_RELAY2_LOAD                    "relay2_load"
 #define KEY_RELAY2_TOLERANCE               "relay2_tol"
 #define KEY_SHELLY_LNM_ADDR                "shelly_lnm_addr"

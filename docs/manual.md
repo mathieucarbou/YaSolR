@@ -930,6 +930,7 @@ Supported temperature sensor: `DS18B20`
 
 ##### Relay Automatic Control
 
+- `Automatic Control`: Can be `OFF`, `Output 1`, `Output 2`, or `Any Output`. Determine when the relay will be switched on: when the routing on any output becomes enough ? Or just one output in particular ?
 - `Automatic Control: Connected Nominal Load (Watts)`: You can specify the resistive load power in watts connected to the relays.
   If you do so, the relay will be activated automatically based on the grid power.
   **Warning:** pay attention to set the **nominal load**, which is the official load given by the manufacturer with a nominal voltage (230V for France).

@@ -96,7 +96,7 @@
 #define YASOLR_LBL_090 "Timezone"
 #define YASOLR_LBL_091 "Sync time with browser"
 #define YASOLR_LBL_092 "Excess Power Threshold (W)"
-// #define YASOLR_LBL_093 "WiFi Password"
+#define YASOLR_LBL_093 "Automatic Control"
 #define YASOLR_LBL_094 "Stay in AP Mode"
 #define YASOLR_LBL_095 "MQTT"
 #define YASOLR_LBL_096 "Server"

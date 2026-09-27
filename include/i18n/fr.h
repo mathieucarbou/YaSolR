@@ -96,7 +96,7 @@
 #define YASOLR_LBL_090 "Fuseau horaire"
 #define YASOLR_LBL_091 "Synchro temps avec navigateur"
 #define YASOLR_LBL_092 "Seuil du surplus (W)"
-// #define YASOLR_LBL_093 "Mot de passe du réseau WiFi"
+#define YASOLR_LBL_093 "Contrôle automatique"
 #define YASOLR_LBL_094 "Rester en mode point d'accès"
 #define YASOLR_LBL_095 "MQTT"
 #define YASOLR_LBL_096 "Serveur"

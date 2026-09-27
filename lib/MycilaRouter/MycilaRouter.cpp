@@ -27,26 +27,24 @@ bool Mycila::Router::Relay::trySwitchRelay(bool state, uint32_t duration) {
   return true;
 }
 
-bool Mycila::Router::Relay::autoSwitch(float gridVoltage, float gridPower, float routedPower, float setpoint) {
+bool Mycila::Router::Relay::autoSwitch(float gridVoltage, float room) {
   if (!isAutoRelayEnabled())
     return false;
 
-  // * setpoint is the grid power to be reached, configured in the PID section. Example 1: 1000W | Example 2: 0W
-  // * routedPower is the power routed to the load through the dimmer. Example1: 800W | Example 2: 800W
-  // * gridPower is the power coming from or going to the grid. Example1: 1000W | Example 2: 0W (800W routing + 200W home consumption)
-  // * virtualGridPower is the power that would come from or go to the grid if the routing was off. Example1: 200W | Example 2: -800W
-  // * relayRoomPower is the power that is available for a relay. Example1: 800W | Example 2: 800W
-
   // detects the grid nominal voltage
   const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
-  // compute the real load with the grid voltage
-  const uint16_t adjustedLoad = computeLoad(gridVoltage);
 
-  ESP_LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %" PRIu16 " W @ %" PRIu16 " V, Grid: %.1f W, Routed: %.1f W, Setpoint: %.1f W, Tolerance: %.2f %%", _relay.getPin(), _nominalLoad, nominalVoltage, adjustedLoad, static_cast<uint16_t>(gridVoltage), gridPower, routedPower, setpoint, _tolerance * 100.0f);
+  // compute the real load with the grid voltage
+  auto load = getNominalLoad(gridVoltage);
+  if (!load.has_value())
+    return false;
+
+  const uint16_t adjustedLoad = load.value();
+
+  ESP_LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %" PRIu16 " W @ %" PRIu16 " V, Room: %.1f W, Tolerance: %.2f %%", _relay.getPin(), _nominalLoad, nominalVoltage, adjustedLoad, static_cast<uint16_t>(gridVoltage), room, _tolerance * 100.0f);
 
   if (_relay.isOff()) {
-    const float relayRoomPower = setpoint + routedPower - gridPower;
-    if (relayRoomPower >= adjustedLoad * (1.0f + _tolerance)) {
+    if (room >= adjustedLoad * (1.0f + _tolerance)) {
       ESP_LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay.getPin(), "ON");
       _relay.setState(true);
       return true;
@@ -55,8 +53,7 @@ bool Mycila::Router::Relay::autoSwitch(float gridVoltage, float gridPower, float
   }
 
   if (_relay.isOn()) {
-    const float relayRoomPower = setpoint + routedPower - gridPower + adjustedLoad;
-    if (relayRoomPower <= adjustedLoad * (1.0f - _tolerance)) {
+    if (room <= -adjustedLoad * _tolerance) {
       ESP_LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay.getPin(), "OFF");
       _relay.setState(false);
       return true;
