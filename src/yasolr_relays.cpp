@@ -78,51 +78,69 @@ void yasolr_configure_relay2() {
   }
 }
 
+static std::optional<float> computeRoomForOutput(const Mycila::Router::Output& output, const Mycila::Router::Relay& relay, float gridVoltage) {
+  if (!output.isAutoDimmerEnabled())
+    return std::nullopt;
+
+  auto routed = output.getRoutedPower(gridVoltage);
+
+  if (!routed.has_value())
+    return std::nullopt;
+
+  // Only subtract the power consumed by this relay: the consumption of the other relays bound to the same output
+  // (if any) is already reflected in the routed power, because the PID diverted it away from the dimmer.
+  auto consumed = relay.getConsumedPower(gridVoltage);
+
+  if (!consumed.has_value())
+    return std::nullopt;
+
+  return routed.value() - consumed.value();
+}
+
+static std::optional<float> computeRoom(float gridVoltage, const Mycila::Router::Relay& relay) {
+  // room is the power that is available for a relay to switch on, and depends on the relay's auto mode:
+  // * Output 1 / Output 2: room is the power currently routed to that specific output, minus the power consumed by this relay
+  // * Any Output: room is the excess power available on the grid, considering the PID setpoint and the total routed power
+  //   (the power consumed by the relays is already reflected in the grid power and in the reduced routed power)
+  switch (relay.getAutoMode()) {
+    case Mycila::Router::Relay::AutoMode::OUTPUT_1: {
+      return computeRoomForOutput(output1, relay, gridVoltage);
+    }
+    case Mycila::Router::Relay::AutoMode::OUTPUT_2: {
+      return computeRoomForOutput(output2, relay, gridVoltage);
+    }
+    case Mycila::Router::Relay::AutoMode::OUTPUT_ANY: {
+      std::optional<float> gridPower = grid.getPower();
+      std::optional<float> totalRoutedPower = router.getTotalRoutedPower(gridVoltage);
+      if (!totalRoutedPower.has_value() || !gridPower.has_value())
+        return std::nullopt;
+      return pidController.getSetpoint() + totalRoutedPower.value() - gridPower.value();
+    }
+    default:
+      return std::nullopt;
+  }
+}
+
 void yasolr_init_relays() {
   ESP_LOGI(TAG, "Initialize relays");
 
   Mycila::Task* relayTask = new Mycila::Task("Relay", []() {
-    std::optional<float> gridPower = grid.getPower();
     std::optional<float> gridVoltage = grid.getVoltage();
 
-    if (!gridPower.has_value() || !gridVoltage.has_value()) {
-      ESP_LOGW(TAG, "Cannot auto switch relays: missing grid power or grid voltage");
+    if (!gridVoltage.has_value()) {
+      ESP_LOGW(TAG, "Cannot auto switch relays: missing grid voltage");
       return;
     }
 
-    std::optional<float> totalRoutedPower = router.getTotalRoutedPower(gridVoltage.value());
-
-    // room is the power that is available for a relay to switch on, and depends on the relay's auto mode:
-    // * Output 1 / Output 2: room is the power currently routed to that specific output, compared against the relay's own nominal load
-    // * Any Output: room is the excess power available on the grid, considering the PID setpoint and the total routed power
-    auto room = [&](Mycila::Router::Relay::AutoMode mode) -> std::optional<float> {
-      switch (mode) {
-        case Mycila::Router::Relay::AutoMode::OUTPUT_1:
-          if (!output1.isAutoDimmerEnabled())
-            return std::nullopt;
-          return output1.getRoutedPower(gridVoltage.value());
-        case Mycila::Router::Relay::AutoMode::OUTPUT_2:
-          if (!output2.isAutoDimmerEnabled())
-            return std::nullopt;
-          return output2.getRoutedPower(gridVoltage.value());
-        case Mycila::Router::Relay::AutoMode::OUTPUT_ANY:
-          if (!totalRoutedPower.has_value())
-            return std::nullopt;
-          return pidController.getSetpoint() + totalRoutedPower.value() - gridPower.value();
-        default:
-          return std::nullopt;
-      }
-    };
-
     // only switch one relay per round, to leave time for measurement devices to pick up the change
     if (relay1) {
-      std::optional<float> relay1Room = room(relay1->getAutoMode());
+      std::optional<float> relay1Room = computeRoom(gridVoltage.value(), *relay1);
       if (relay1Room.has_value() && relay1->autoSwitch(gridVoltage.value(), relay1Room.value()))
         return;
     }
 
     if (relay2) {
-      std::optional<float> relay2Room = room(relay2->getAutoMode());
+      std::optional<float> relay2Room = computeRoom(gridVoltage.value(), *relay2);
       if (relay2Room.has_value() && relay2->autoSwitch(gridVoltage.value(), relay2Room.value()))
         return;
     }

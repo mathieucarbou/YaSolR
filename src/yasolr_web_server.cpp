@@ -100,7 +100,7 @@ void rest_api() {
   webServer.on("/api/debug", HTTP_GET, [](AsyncWebServerRequest* request) {
     AsyncJsonResponse* response = new AsyncJsonResponse();
     JsonObject root = response->getRoot();
-    float voltage = grid.getVoltage().value_or(0);
+    const float voltage = grid.getVoltage().value_or(NAN);
 
     Mycila::AppInfo.toJson(root["app"].to<JsonObject>());
 

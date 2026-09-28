@@ -935,7 +935,7 @@ Supported temperature sensor: `DS18B20`
   If you do so, the relay will be activated automatically based on the grid power.
   **Warning:** pay attention to set the **nominal load**, which is the official load given by the manufacturer with a nominal voltage (230V for France).
   It can also be computed like this: `Nominal Load (Watts) = Nominal Voltage (V) * Nominal Voltage (V) / Resistance (ohms)`.
-- `Automatic Control: Tolerance (%)`: this is the percentage amount (5% by default) that is tolerated below or above before deciding to switch the relay on or off.
+- `Automatic Control: Tolerance (%)`: this is the percentage amount (7% by default) that is tolerated below or above before deciding to switch the relay on or off.
   This value is used to avoid switching the relay on and off too frequently.
 
 YaSolR supports 2 additional relays (Electromechanical or SSR, controlled with 3.3V DC) to control external loads, or to be connected to the A1 and A2 terminals of a power contactor.
@@ -961,16 +961,30 @@ This is the power that would be sent to the grid if the router was not routing a
 
 `Grid Virtual Power` is negative on export and positive on import.
 
-- The relay will automatically start when `Grid Virtual Power + Relay Load <= 5% of Relay Load`.
-  In other words, the relay will automatically start when there is enough excess to absorb both the load connected to the relay plus 5% more of it.
+- The relay will automatically start when `Grid Virtual Power + Relay Load <= Tolerance x Relay Load` (7% by default).
+  In other words, the relay will automatically start when there is enough excess to absorb both the load connected to the relay plus the tolerance more of it.
   When the relay will start, the remaining excess not absorbed by the load will be absorbed by the dimmer.
 
-- The relay will automatically stop when `Grid Virtual Power >= 5% of Relay Threshold`.
-  In other words, the relay will automatically stop when there is no excess anymore but a grid import equal to or more than 5% of the relay threshold.
+- The relay will automatically stop when `Grid Virtual Power >= Tolerance x Relay Load` (7% by default).
+  In other words, the relay will automatically stop when there is no excess anymore but a grid import equal to or more than the tolerance of the relay load.
   When the relay will stop, there will be some excess again, which will be absorbed by the dimmer.
 
-For a 3000W three-phase resistance, 5% means 30W per relay because there is 3x 1000W resistances.
-For a 2100W three-phase resistance, 5% means 21W per relay because there is 3x 700W resistances.
+For a 3000W three-phase resistance, 7% means 70W per relay because there is 3x 1000W resistances.
+For a 2100W three-phase resistance, 7% means 49W per relay because there is 3x 700W resistances.
+
+These rules apply when `Automatic Control` is set to `Any Output`.
+
+When `Automatic Control` is set to `Output 1` or `Output 2`, the relay follows the routing of the selected output instead of the grid:
+
+- The relay will automatically start when the power routed to the selected output is enough to cover the `Relay Load` plus the tolerance (7% by default) on top of it.
+- The relay will automatically stop when the selected output almost stopped routing power (i.e. the power it routes fell below half the tolerance of the relay load).
+  This happens either when there is no excess anymore, or when the priority moved back to the other output.
+- Each relay only considers its own consumption to decide if it can be switched on or off:
+  the consumption of the other relay bound to the same output (if any) is already reflected in the routed power, because the router diverted it away from the dimmer.
+
+The `Tolerance` setting is used in both directions to avoid switching the relay on and off too frequently.
+For a relay load of 1000W with the default 7% tolerance, the relay will start when the selected output routes more than 1070W and will stop when it routes less than 35W.
+With two 1000W relays bound to the same output, the first relay will start when the output routes more than 1070W, and the second one when it routes more than 2070W.
 
 #### Display
 

@@ -58,11 +58,11 @@ namespace Mycila {
           }
           bool supportsMode(AutoMode mode) const {
             switch (mode) {
-              case AutoMode::OFF: return true;
-              case AutoMode::OUTPUT_1: return _autoMode == AutoMode::OUTPUT_1 || _autoMode == AutoMode::OUTPUT_ANY;
-              case AutoMode::OUTPUT_2: return _autoMode == AutoMode::OUTPUT_2 || _autoMode == AutoMode::OUTPUT_ANY;
+              case AutoMode::OFF:        return true;
+              case AutoMode::OUTPUT_1:   return _autoMode == AutoMode::OUTPUT_1 || _autoMode == AutoMode::OUTPUT_ANY;
+              case AutoMode::OUTPUT_2:   return _autoMode == AutoMode::OUTPUT_2 || _autoMode == AutoMode::OUTPUT_ANY;
               case AutoMode::OUTPUT_ANY: return _autoMode == AutoMode::OUTPUT_ANY;
-              default: return false;
+              default:                   return false;
             }
           }
 
@@ -76,16 +76,21 @@ namespace Mycila {
           /**
            * @brief Compute the load based on the grid voltage and the nominal load.
            */
-          std::optional<uint16_t> getNominalLoad(float gridVoltage) const {
-            if (std::isnan(gridVoltage) || gridVoltage <= 0 || _nominalLoad == 0) {
-              return std::nullopt;
+          std::optional<float> getNominalLoad(float gridVoltage) const {
+            if (_nominalLoad > 0 && gridVoltage > 0) {
+              // detects the grid nominal voltage
+              const float nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
+              // compute the amperage of the given nominal power of connected load
+              const float resistance = nominalVoltage * nominalVoltage / static_cast<float>(_nominalLoad);
+              // compute with the current voltage what the exact power of the load would be
+              return gridVoltage * gridVoltage / resistance;
             }
-            // detects the grid nominal voltage
-            const uint16_t nominalVoltage = static_cast<uint8_t>(gridVoltage / 100) == 1 ? 110 : 230;
-            // compute the amperage of the given nominal power of connected load
-            const float resistance = static_cast<float>(nominalVoltage * nominalVoltage) / static_cast<float>(_nominalLoad);
-            // compute with the current voltage what the exact power of the load would be
-            return static_cast<uint16_t>(gridVoltage * gridVoltage / resistance);
+            return std::nullopt;
+          }
+
+          std::optional<float> getConsumedPower(float gridVoltage) const {
+            if (isOff()) return 0.0f;
+            return getNominalLoad(gridVoltage);
           }
 
           void setTolerance(float tolerance) {

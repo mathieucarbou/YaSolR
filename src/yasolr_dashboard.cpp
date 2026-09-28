@@ -1530,9 +1530,9 @@ void YaSolR::Website::initCards() {
 
 void YaSolR::Website::updateCards() {
   // metrics
-  const float gridVoltage = grid.getVoltage().value_or(0.0f);
+  const float gridVoltage = grid.getVoltage().value_or(NAN);
 
-  _gridVoltage.setValue(gridVoltage);
+  _gridVoltage.setValue(std::isnan(gridVoltage) ? 0.0f : gridVoltage);
   _gridPower.setValue(grid.getPower().value_or(0.0f));
 
   Mycila::metric::Metrics routerMetrics;
@@ -1617,16 +1617,16 @@ void YaSolR::Website::updateCards() {
   if (relay1) {
     _relay1Switch.setValue(relay1->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay1->getNominalLoad(gridVoltage).value_or(0);
-    _relay1Switch.setMessage(relay1->isOn() && load ? std::to_string(load) + " W" : "");
+    float load = relay1->getConsumedPower(gridVoltage).value_or(NAN);
+    _relay1Switch.setMessage(load > 0 ? std::to_string(static_cast<uint16_t>(load)) + " W" : "");
 #endif
   }
 
   if (relay2) {
     _relay2Switch.setValue(relay2->isOn());
 #ifdef APP_MODEL_PRO
-    uint16_t load = relay2->getNominalLoad(gridVoltage).value_or(0);
-    _relay2Switch.setMessage(relay2->isOn() && load ? std::to_string(load) + " W" : "");
+    float load = relay2->getConsumedPower(gridVoltage).value_or(NAN);
+    _relay2Switch.setMessage(load > 0 ? std::to_string(static_cast<uint16_t>(load)) + " W" : "");
 #endif
   }
 
@@ -1872,14 +1872,14 @@ void YaSolR::Website::updateWarnings() {
 }
 
 void YaSolR::Website::updateCharts() {
-  std::optional<float> gridVoltage = grid.getVoltage();
+  const float gridVoltage = grid.getVoltage().value_or(NAN);
 
   // shift array
   memmove(&_gridPowerHistoryY[0], &_gridPowerHistoryY[1], sizeof(_gridPowerHistoryY) - sizeof(*_gridPowerHistoryY));
   memmove(&_routedPowerHistoryY[0], &_routedPowerHistoryY[1], sizeof(_routedPowerHistoryY) - sizeof(*_routedPowerHistoryY));
 
   // set new value
-  std::optional<float> routedPower = router.getTotalRoutedPower(gridVoltage.value_or(NAN));
+  std::optional<float> routedPower = router.getTotalRoutedPower(gridVoltage);
   _routedPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(routedPower.value_or(0));
   _gridPowerHistoryY[YASOLR_GRAPH_POINTS - 1] = std::round(grid.getPower().value_or(0));
 
@@ -1891,7 +1891,7 @@ void YaSolR::Website::updateCharts() {
   // output 1 harmonics
   if (_output1HarmonicLevels.displayed()) {
     output1.computeHarmonics(_output1HarmonicLevelY, YASOLR_HARMONICS);
-    std::optional<float> current = output1.getRoutedCurrent(gridVoltage.value_or(NAN));
+    std::optional<float> current = output1.getRoutedCurrent(gridVoltage);
     for (size_t i = 0; i < YASOLR_HARMONICS; i++) {
       _output1HarmonicCurrentY[i] = current.value_or(0) * _output1HarmonicLevelY[i] / 100.0f;
     }
@@ -1902,7 +1902,7 @@ void YaSolR::Website::updateCharts() {
   // output 2 harmonics
   if (_output2HarmonicLevels.displayed()) {
     output2.computeHarmonics(_output2HarmonicLevelsY, YASOLR_HARMONICS);
-    std::optional<float> current = output2.getRoutedCurrent(gridVoltage.value_or(NAN));
+    std::optional<float> current = output2.getRoutedCurrent(gridVoltage);
     for (size_t i = 0; i < YASOLR_HARMONICS; i++) {
       _output2HarmonicCurrentY[i] = current.value_or(0) * _output2HarmonicLevelsY[i] / 100.0f;
     }

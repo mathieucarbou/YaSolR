@@ -39,9 +39,18 @@ bool Mycila::Router::Relay::autoSwitch(float gridVoltage, float room) {
   if (!load.has_value())
     return false;
 
-  const uint16_t adjustedLoad = load.value();
+  const float adjustedLoad = load.value();
 
-  ESP_LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %" PRIu16 " W @ %" PRIu16 " V, Room: %.1f W, Tolerance: %.2f %%", _relay.getPin(), _nominalLoad, nominalVoltage, adjustedLoad, static_cast<uint16_t>(gridVoltage), room, _tolerance * 100.0f);
+  // The OFF threshold depends on the auto mode, because the meaning of "room" changes:
+  // * Any Output:  room = excess power - relay load -> the relay must stop when the excess no longer covers its load: room <= -load * tolerance
+  // * Output 1/2:  room = routed power of the output - relay load -> the relay must stop when its output stopped routing: room <= -load * (1 - tolerance / 2)
+  //   (i.e. routed <= load * tolerance / 2: almost no power left to route to this output, either because the priority
+  //   moved back to the other output, or because there is no excess anymore)
+  const float offThreshold = _autoMode == AutoMode::OUTPUT_ANY
+      ? -adjustedLoad * _tolerance
+      : -adjustedLoad * (1.0f - _tolerance / 2.0f);
+
+  ESP_LOGD(TAG, "Auto-Switching relay on pin %u ? Nominal load: %" PRIu16 " W @ %" PRIu16 " V, Load: %.1f W @ %.1f V, Room: %.1f W, Tolerance: %.2f %%, Off threshold: %.1f W", _relay.getPin(), _nominalLoad, nominalVoltage, adjustedLoad, gridVoltage, room, _tolerance * 100.0f, offThreshold);
 
   if (_relay.isOff()) {
     if (room >= adjustedLoad * (1.0f + _tolerance)) {
@@ -53,7 +62,7 @@ bool Mycila::Router::Relay::autoSwitch(float gridVoltage, float room) {
   }
 
   if (_relay.isOn()) {
-    if (room <= -adjustedLoad * _tolerance) {
+    if (room <= offThreshold) {
       ESP_LOGI(TAG, "Auto-Switching relay on pin %u %s", _relay.getPin(), "OFF");
       _relay.setState(false);
       return true;
