@@ -13,5 +13,5 @@ _site
 /platformio-device-monitor*.log
 /sdkconfig.*
 /site
-
+/src/idf_component.yml
 !/.vscode/extensions.json
