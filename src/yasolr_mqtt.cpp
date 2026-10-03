@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 extern const uint8_t ca_certs_bundle_start[] asm("_binary__pio_embed_cacerts_bin_start");
 extern const uint8_t ca_certs_bundle_end[] asm("_binary__pio_embed_cacerts_bin_end");
@@ -534,7 +535,7 @@ static void haDiscovery() {
 
   haDiscovery->publish<Mycila::HA::Value>("output1_state", "Output 1", "~/router/output1/state");
   haDiscovery->publish<Mycila::HA::State>("output1_bypass", "Output 1 Bypass", "~/router/output1/bypass", YASOLR_ON, YASOLR_OFF, "running");
-  haDiscovery->publish<Mycila::HA::Value>("output1_consuming", "Output 1 Consuming", "~/router/output1/consuming");
+  haDiscovery->publish<Mycila::HA::Enum>("output1_consuming", "Output 1 Consuming", "~/router/output1/consuming", std::vector<const char*>{Mycila::Router::Output::CONSUMING_STATE_ON, Mycila::Router::Output::CONSUMING_STATE_OFF, Mycila::Router::Output::CONSUMING_STATE_UNKNOWN, Mycila::Router::Output::CONSUMING_STATE_UNAVAILABLE});
   haDiscovery->publish<Mycila::HA::Number>("output1_dimmer_duty", "Output 1 Dimmer Duty Cycle", "~/router/output1/duty_cycle/set", "~/router/output1/duty_cycle", Mycila::HA::NumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler");
   haDiscovery->publish<Mycila::HA::Outlet>("output1_relay", "Output 1 Bypass", "~/router/output1/bypass/set", "~/router/output1/bypass", YASOLR_ON, YASOLR_OFF);
   haDiscovery->publish<Mycila::HA::Gauge>("output1_temperature", "Output 1 Temperature", "~/router/output1/temperature", "temperature", "mdi:thermometer", "°C");
@@ -545,7 +546,7 @@ static void haDiscovery() {
 
   haDiscovery->publish<Mycila::HA::Value>("output2_state", "Output 2", "~/router/output2/state");
   haDiscovery->publish<Mycila::HA::State>("output2_bypass", "Output 2 Bypass", "~/router/output2/bypass", YASOLR_ON, YASOLR_OFF, "running");
-  haDiscovery->publish<Mycila::HA::Value>("output2_consuming", "Output 2 Consuming", "~/router/output2/consuming");
+  haDiscovery->publish<Mycila::HA::Enum>("output2_consuming", "Output 2 Consuming", "~/router/output2/consuming", std::vector<const char*>{Mycila::Router::Output::CONSUMING_STATE_ON, Mycila::Router::Output::CONSUMING_STATE_OFF, Mycila::Router::Output::CONSUMING_STATE_UNKNOWN, Mycila::Router::Output::CONSUMING_STATE_UNAVAILABLE});
   haDiscovery->publish<Mycila::HA::Number>("output2_dimmer_duty", "Output 2 Dimmer Duty Cycle", "~/router/output2/duty_cycle/set", "~/router/output2/duty_cycle", Mycila::HA::NumberMode::SLIDER, 0.0f, 100.0f, 0.01f, "mdi:water-boiler");
   haDiscovery->publish<Mycila::HA::Outlet>("output2_relay", "Output 2 Bypass", "~/router/output2/bypass/set", "~/router/output2/bypass", YASOLR_ON, YASOLR_OFF);
   haDiscovery->publish<Mycila::HA::Gauge>("output2_temperature", "Output 2 Temperature", "~/router/output2/temperature", "temperature", "mdi:thermometer", "°C");
