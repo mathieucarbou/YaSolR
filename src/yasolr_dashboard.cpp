@@ -346,6 +346,8 @@ static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 static dash::InputCard<const char*> _froniusServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _froniusPort(dashboard, YASOLR_LBL_097);
+static dash::InputCard<const char*> _shellyLnmAddr(dashboard, YASOLR_LBL_096);
+static dash::InputCard<uint16_t> _shellyLnmPort(dashboard, YASOLR_LBL_097);
 
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046);
@@ -916,12 +918,16 @@ void YaSolR::Website::begin() {
   _victronPort.setTab(_hardwareConfigTab);
   _froniusServer.setTab(_hardwareConfigTab);
   _froniusPort.setTab(_hardwareConfigTab);
+  _shellyLnmAddr.setTab(_hardwareConfigTab);
+  _shellyLnmPort.setTab(_hardwareConfigTab);
 
   _numConfig(_victronPort, KEY_VICTRON_MODBUS_PORT);
   _numConfig(_froniusPort, KEY_FRONIUS_MODBUS_PORT);
+  _numConfig(_shellyLnmPort, KEY_SHELLY_LNM_PORT);
   _textConfig(_gridSource, KEY_GRID_SOURCE);
   _textConfig(_victronServer, KEY_VICTRON_MODBUS_SERVER);
   _textConfig(_froniusServer, KEY_FRONIUS_MODBUS_SERVER);
+  _textConfig(_shellyLnmAddr, KEY_SHELLY_LNM_ADDR);
 
   _gridFreq.onChange([](const char* value) {
     if (strcmp(value, "50 Hz") == 0) {
@@ -1410,10 +1416,14 @@ void YaSolR::Website::initCards() {
   _victronPort.setValue(config.get<uint16_t>(KEY_VICTRON_MODBUS_PORT));
   _froniusServer.setValue(config.getString(KEY_FRONIUS_MODBUS_SERVER));
   _froniusPort.setValue(config.get<uint16_t>(KEY_FRONIUS_MODBUS_PORT));
+  _shellyLnmAddr.setValue(config.getString(KEY_SHELLY_LNM_ADDR));
+  _shellyLnmPort.setValue(config.get<uint16_t>(KEY_SHELLY_LNM_PORT));
   _victronServer.setDisplay(grid.isUsing(Mycila::metric::Kind::VICTRON));
   _victronPort.setDisplay(grid.isUsing(Mycila::metric::Kind::VICTRON));
   _froniusServer.setDisplay(grid.isUsing(Mycila::metric::Kind::FRONIUS));
   _froniusPort.setDisplay(grid.isUsing(Mycila::metric::Kind::FRONIUS));
+  _shellyLnmAddr.setDisplay(grid.isUsing(Mycila::metric::Kind::SHELLY_LNM));
+  _shellyLnmPort.setDisplay(grid.isUsing(Mycila::metric::Kind::SHELLY_LNM));
 
   // output 1 dimmer
   _output1DimmerType.setValue(config.getString(KEY_OUTPUT1_DIMMER));
