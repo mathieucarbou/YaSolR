@@ -7,6 +7,7 @@
 #include <ringbuf.h>
 
 #include <algorithm>
+#include <cmath>
 #include <cstdint>
 #include <utility>
 
@@ -25,8 +26,7 @@ baudvine::RingBuf<float, 15>* shellyLnmMessageRateBuffer = nullptr;
 Mycila::Task* shellyLnmTask = nullptr;
 
 static void onData(AsyncUDPPacket& packet) {
-  // Shelly LNM wire protocol (see https://shelly-api-docs.shelly.cloud/gen2/DynamicComponents/LNM/#wire-protocol):
-  //
+  // Shelly LNM wire protocol:
   //   [header (12 bytes)] [payload (payload_len bytes)] [meta (meta_len bytes)]
   //
   // Binary header (little-endian, packed):
@@ -35,13 +35,47 @@ static void onData(AsyncUDPPacket& packet) {
   //   offset 3  size 1  payload_type 1 = status/event
   //   offset 4  size 2  payload_len  payload length in bytes (LE)
   //   offset 6  size 2  meta_len     meta block length (currently 0)
-  //   offset 8  size 4  reserved     reserved for future use
+  //   offset 8  size 4  reserved
   //
-  // For payload_type 1, the payload is a JSON object:
-  //   {"device":"shellyproem50-08f9e0e5c2f8","ts":1787225613.78,"status":{"em1:0":{"id":0,"voltage":241.8,"current":3.559,"act_power":291.5,"aprt_power":862.4,"pf":0.36,"freq":50.0,"calibration":"factory"}}}
-  //
-  // The "status" object can have different keys (em1:0, em:0, switch:0, etc.) depending on the Shelly device.
-  // We iterate over all status keys and extract the first one that contains voltage/current/power fields.
+  // For payload_type 1 the payload is a JSON object:
+  // {
+  //   "device": "shellyproem50-...",
+  //   "status": {
+  //     "em1:0": { "id": 0, "voltage": 241.8, "current": 3.559, "act_power": 291.5 }
+  //   }
+  // }
+  // {
+  //   "device": "shellypro3em-8813bfe1ab68",
+  //   "ts": 1790183354.65,
+  //   "status": {
+  //     "em:0": {
+  //       "id": 0,
+  //       "a_current": 0.027,
+  //       "a_voltage": 236.2,
+  //       "a_act_power": 0.0,
+  //       "a_aprt_power": 6.5,
+  //       "a_pf": 0.00,
+  //       "a_freq": 50.0,
+  //       "b_current": 0.182,
+  //       "b_voltage": 236.2,
+  //       "b_act_power": 20.9,
+  //       "b_aprt_power": 43.0,
+  //       "b_pf": 0.45,
+  //       "b_freq": 50.0,
+  //       "c_current": 1.301,
+  //       "c_voltage": 236.2,
+  //       "c_act_power": 165.5,
+  //       "c_aprt_power": 307.4,
+  //       "c_pf": 0.54,
+  //       "c_freq": 50.0,
+  //       "n_current": null,
+  //       "total_current": 1.511,
+  //       "total_act_power": 186.310,
+  //       "total_aprt_power": 356.925,
+  //       "user_calibrated_phase": []
+  //     }
+  //   }
+  // }
 
   const size_t len = packet.length();
   if (len < 12) {
@@ -101,9 +135,11 @@ static void onData(AsyncUDPPacket& packet) {
     if (component.isNull())
       continue;
 
-    // Check if this component has power-related fields
-    if (!component["act_power"].is<float>() &&
-        !component["voltage"].is<float>())
+    // 3-phase meter (e.g. Pro 3EM, "em:0"): total_act_power + per-phase a_/b_/c_ fields
+    const bool isThreePhase = component["total_act_power"].is<float>();
+
+    // Check if this component has power fields
+    if (!isThreePhase && !component["act_power"].is<float>())
       continue;
 
 #if YASOLR_DEBUG_SHELLY_LNM
@@ -115,12 +151,34 @@ static void onData(AsyncUDPPacket& packet) {
 #endif
 
     Mycila::metric::Metrics metrics;
-    metrics.voltage = component["voltage"] | NAN;
-    metrics.current = component["current"] | NAN;
-    metrics.power = component["act_power"] | NAN;
-    metrics.apparentPower = component["aprt_power"] | NAN;
-    metrics.powerFactor = component["pf"] | NAN;
-    metrics.frequency = component["freq"] | NAN;
+    if (isThreePhase) {
+      // mean of the phases which report a value
+      auto mean = [&component](const char* a, const char* b, const char* c) {
+        float sum = 0;
+        int count = 0;
+        for (const char* key : {a, b, c}) {
+          if (component[key].is<float>()) {
+            sum += component[key].as<float>();
+            count++;
+          }
+        }
+        return count ? sum / count : NAN;
+      };
+      metrics.voltage = mean("a_voltage", "b_voltage", "c_voltage");
+      metrics.current = component["total_current"] | NAN;
+      metrics.power = component["total_act_power"] | NAN;
+      metrics.apparentPower = component["total_aprt_power"] | NAN;
+      metrics.frequency = mean("a_freq", "b_freq", "c_freq");
+      if (!std::isnan(metrics.power) && !std::isnan(metrics.apparentPower) && metrics.apparentPower != 0)
+        metrics.powerFactor = metrics.power / metrics.apparentPower;
+    } else {
+      metrics.voltage = component["voltage"] | NAN;
+      metrics.current = component["current"] | NAN;
+      metrics.power = component["act_power"] | NAN;
+      metrics.apparentPower = component["aprt_power"] | NAN;
+      metrics.powerFactor = component["pf"] | NAN;
+      metrics.frequency = component["freq"] | NAN;
+    }
 
     grid.updateMetrics(std::move(metrics));
     pidTask.requestEarlyRun();
