@@ -346,8 +346,8 @@ static dash::InputCard<const char*> _victronServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _victronPort(dashboard, YASOLR_LBL_097);
 static dash::InputCard<const char*> _froniusServer(dashboard, YASOLR_LBL_096);
 static dash::InputCard<uint16_t> _froniusPort(dashboard, YASOLR_LBL_097);
-static dash::InputCard<const char*> _shellyLnmAddr(dashboard, YASOLR_LBL_096);
-static dash::InputCard<uint16_t> _shellyLnmPort(dashboard, YASOLR_LBL_097);
+static dash::InputCard<const char*> _shellyLnmAddr(dashboard, YASOLR_LBL_116);
+static dash::InputCard<uint16_t> _shellyLnmPort(dashboard, YASOLR_LBL_117);
 
 // output 1 dimmer
 static dash::SeparatorCard<const char*> _output1Sep1(dashboard, YASOLR_LBL_046);
