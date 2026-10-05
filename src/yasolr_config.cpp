@@ -311,10 +311,10 @@ void yasolr_init_config() {
           output1.setDimmerOff();
         }
         // Disable relays that are in auto mode and linked to this output
-        if (relay1->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_1)) {
+        if (relay1 && relay1->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_1)) {
           relay1->trySwitchRelay(false);
         }
-        if (relay2->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_1)) {
+        if (relay2 && relay2->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_1)) {
           relay2->trySwitchRelay(false);
         }
       }
@@ -373,10 +373,10 @@ void yasolr_init_config() {
           output2.setDimmerOff();
         }
         // Disable relays that are in auto mode and linked to this output
-        if (relay1->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_2)) {
+        if (relay1 && relay1->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_2)) {
           relay1->trySwitchRelay(false);
         }
-        if (relay2->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_2)) {
+        if (relay2 && relay2->isAutoRelayEnabled(Mycila::Router::Relay::AutoMode::OUTPUT_2)) {
           relay2->trySwitchRelay(false);
         }
       }
