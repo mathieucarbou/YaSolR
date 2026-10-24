@@ -14,4 +14,5 @@ _site
 /sdkconfig.*
 /site
 /src/idf_component.yml
+/src/idf_component.yml.orig
 !/.vscode/extensions.json

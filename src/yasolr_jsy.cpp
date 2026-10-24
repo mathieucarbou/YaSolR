@@ -45,6 +45,22 @@ static void init_read_task() {
   }
 }
 
+static void shutdown_read_task() {
+  if (jsyTask) {
+    jsyTask->setEnabled(false);
+  }
+  if (jsyTaskManager) {
+    jsyTaskManager->asyncStop();
+    jsyTaskManager->waitForAllTasksToComplete();
+    delete jsyTaskManager;
+    jsyTaskManager = nullptr;
+  }
+  if (jsyTask) {
+    delete jsyTask;
+    jsyTask = nullptr;
+  }
+}
+
 static void updateGrid(const Mycila::JSY::Metrics& channel) {
   Mycila::metric::Metrics metrics;
   metrics.apparentPower = channel.apparentPower;
@@ -211,6 +227,10 @@ static void yasolr_configure_jsy(const uint8_t index, Mycila::metric::Kind seria
 
       delete ptr;
       delete dataPtr;
+
+      if (jsy[0] == nullptr && jsy[1] == nullptr) {
+        shutdown_read_task();
+      }
     }
   }
 }
