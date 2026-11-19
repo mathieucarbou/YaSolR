@@ -187,7 +187,7 @@ static void yasolr_configure_jsy(const uint8_t index, Mycila::metric::Kind seria
   if (grid.isUsing(serialKind) || output1.isUsing(serialKind) || output2.isUsing(serialKind)) {
     // setup JSY if not done yet
     if (jsy[index] == nullptr) {
-      ESP_LOGI(TAG, "Enable JSY on UART Serial1");
+      ESP_LOGI(TAG, "Enable JSY on UART %d", (index + 1));
       jsy[index] = new Mycila::JSY();
       jsy[index]->begin(serial, rxPin, txPin);
 
@@ -213,7 +213,7 @@ static void yasolr_configure_jsy(const uint8_t index, Mycila::metric::Kind seria
     // disable JSY if enabled but leave the task manager in case we re-enable it later
     // stopping the whole task manager is supported but not deleting it to free memory, so we can lave it as-is
     if (jsy[index] != nullptr) {
-      ESP_LOGI(TAG, "Disable JSY on UART Serial1");
+      ESP_LOGI(TAG, "Disable JSY on UART %d", (index + 1));
 
       jsy[index]->setCallback(nullptr); // detach callback to avoid any potential call after end() and before delete
 
