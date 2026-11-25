@@ -439,23 +439,22 @@ static void publishData() {
 static void haDiscovery() {
   ESP_LOGI(TAG, "Publishing Home Assistant Discovery configuration");
 
-  Mycila::HA::Discovery* haDiscovery = new Mycila::HA::Discovery();
+  std::unique_ptr<Mycila::HA::Discovery> haDiscovery = std::make_unique<Mycila::HA::Discovery>(
+    Mycila::HA::Device{
+      .id = Mycila::AppInfo.defaultMqttClientId,
+      .name = Mycila::AppInfo.name + " " + Mycila::AppInfo.model + " " + Mycila::AppInfo.id,
+      .version = Mycila::AppInfo.version,
+      .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
+      .manufacturer = Mycila::AppInfo.manufacturer,
+      .url = std::string("http://") + espConnect.getIPAddress().toString().c_str(),
+    },
+    config.getString(KEY_MQTT_TOPIC),
+    [](const char* topic, const std::string& payload) -> Mycila::HA::err_t {
+      return mqtt->publish(topic, payload, true) ? Mycila::HA::Error::SUCCESS : Mycila::HA::Error::ERR_MQTT_PUBLISHER;
+    });
 
   haDiscovery->setDiscoveryTopic(config.getString(KEY_HA_DISCOVERY_TOPIC));
   haDiscovery->setWillTopic(YASOLR_MQTT_WILL_TOPIC_HA);
-  haDiscovery->begin({
-                       .id = Mycila::AppInfo.defaultMqttClientId,
-                       .name = Mycila::AppInfo.name + " " + Mycila::AppInfo.model + " " + Mycila::AppInfo.id,
-                       .version = Mycila::AppInfo.version,
-                       .model = Mycila::AppInfo.name + " " + Mycila::AppInfo.model,
-                       .manufacturer = Mycila::AppInfo.manufacturer,
-                       .url = std::string("http://") + espConnect.getIPAddress().toString().c_str(),
-                     },
-                     config.getString(KEY_MQTT_TOPIC),
-                     512,
-                     [](const char* topic, const std::string& payload) {
-                       mqtt->publish(topic, payload, true);
-                     });
 
   // CLEAR REMOVED ENTRIES
 
@@ -554,9 +553,6 @@ static void haDiscovery() {
   haDiscovery->publish<Mycila::HA::Gauge>("output2_power", "Output 2 Power", "~/router/output2/power", "power", nullptr, "W");
   haDiscovery->publish<Mycila::HA::Gauge>("output2_power_factor", "Output 2 Power Factor", "~/router/output2/power_factor", "power_factor");
   yield();
-
-  haDiscovery->end();
-  delete haDiscovery;
 
   ESP_LOGI(TAG, "Published Home Assistant Discovery configuration");
 }
