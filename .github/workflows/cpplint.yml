@@ -4,11 +4,8 @@ name: Cpplint
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "0 5 * * 1"
   push:
-    tags: ["v*"]
-    branches: ["*"]
+    branches: [main]
     paths: ["**/*.h", "**/*.cpp"]
   pull_request:
     paths: ["**/*.h", "**/*.cpp"]
